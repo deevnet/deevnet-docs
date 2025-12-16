@@ -5,13 +5,45 @@ type: docs
 
 # Deevnet Infrastructure Platform
 
-Welcome to the authoritative documentation repository for the Deevnet ecosystem.
+Deevnet is a collection of hardware, automation, and documentation for building reproducible on-premise infrastructure.
 
-This repository captures shared standards, architectural intent, correctness definitions, roadmaps, platform and tooling decisions, and operational policies that apply across all Deevnet repositories.
+---
+
+## Two Substrates
+
+Deevnet consists of two hardware deployments:
+
+### Deevnet Mobile (dvntm)
+
+A **portable lab** that packs into a toolkit. Includes:
+
+- Network infrastructure (router, switch, wireless AP)
+- Compute nodes (Proxmox hypervisors, Raspberry Pis)
+- Breadboards and components for embedded device prototyping
+- Full on-premise network that can be set up anywhere
+
+Deevnet Mobile provides a complete, self-contained environment for development, testing, and demos—whether at home, a coffee shop, or a client site.
+
+### Deevnet Home (dvnt)
+
+A **home infrastructure** deployment supporting various functions:
+
+- Permanent compute and storage
+- Home automation and IoT backends
+- Development and CI/CD environments
+- Media and personal services
+
+---
+
+## Adaptability
+
+While this project targets specific hardware, the patterns, automation, and documentation are designed to be **adaptable to any infrastructure**. The standards and architecture defined here can be applied to your own collection of devices and networks.
+
+---
 
 ## Design Philosophy
 
-This repository exists to:
+This documentation exists to:
 - make rebuilds boring,
 - make intent explicit,
 - prevent knowledge from living only in someone's head,
@@ -19,12 +51,14 @@ This repository exists to:
 
 If something "works" but violates these documents, it is considered **incorrect**.
 
+---
+
 ## Getting Started
 
-Browse the documentation sections in the left sidebar to explore:
+Browse the documentation sections in the sidebar:
 
-- **Standards** — Non-negotiable rules all projects must follow
 - **Architecture** — System-level design intent and contracts
+- **Standards** — Non-negotiable rules all projects must follow
 - **Roadmap** — Forward-looking shared intent
 - **Platforms & Tooling** — Hardware and software platform decisions
 - **Security** — Security posture and vulnerability management
