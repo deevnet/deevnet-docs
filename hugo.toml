@@ -1,10 +1,12 @@
 baseURL = "https://deevnet.github.io/deevnet-docs/"
 languageCode = "en-us"
-title = "Deevnet Docs"
+title = "Deevnet Infrastructure Platform"
 theme = "hugo-book"
 
 # Book theme configuration
 [params]
+  # Sidebar title (shorter than full site title)
+  BookTitle = "Deevnet"
   # Theme: auto follows system preference, or use "light" / "dark"
   BookTheme = "auto"
   # Show table of contents on the right
