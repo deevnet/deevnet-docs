@@ -9,7 +9,7 @@ Deevnet is a collection of hardware, automation, and documentation for building 
 
 ---
 
-## Two Substrates
+## Two Deployments
 
 Deevnet consists of two hardware deployments:
 
@@ -22,7 +22,7 @@ A **portable lab** that packs into a toolkit. Includes:
 - Breadboards and components for embedded device prototyping
 - Full on-premise network that can be set up anywhere
 
-Deevnet Mobile provides a complete, self-contained environment for development, testing, and demos—whether at home, a coffee shop, or a client site.
+Deevnet Mobile provides a complete, self-contained environment for development, testing, and demos—whether at home, a coffee shop, or a Meetup site.
 
 ### Deevnet Home (dvnt)
 
@@ -41,10 +41,10 @@ While this project targets specific hardware, the patterns, automation, and docu
 
 ---
 
-## Design Philosophy
+## Documentation Philosophy
 
 This documentation exists to:
-- make rebuilds boring,
+- seed context to AI agent tooling,
 - make intent explicit,
 - prevent knowledge from living only in someone's head,
 - and ensure future changes remain coherent.
