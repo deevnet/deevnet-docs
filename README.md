@@ -1,4 +1,5 @@
-## Shared Documentation for the Deevnet Infrastrure Ecosystem
+# Deevnet Docs
+## Shared Documentation for the Deevnet Ecosystem
 
 ### Purpose
 `deevnet-docs` is the **authoritative documentation repository** for the Deevnet ecosystem.
@@ -110,7 +111,26 @@ This section ensures infrastructure ages intentionally, not accidentally.
 
 ---
 
-### 7. Platforms Integration & Tooling
+### 7. Change Management, Automated Testing, and CI/CD
+Defines how **change is introduced safely** into the Deevnet ecosystem.
+
+Includes:
+- Change classification (routine vs disruptive)
+- Required validation before changes are applied
+- Automated testing expectations by layer
+- CI/CD pipeline responsibilities
+- Guardrails that prevent unsafe changes from reaching production substrates
+
+Automated testing and CI/CD exist to:
+- validate assumptions early,
+- prevent regressions,
+- and ensure changes preserve correctness.
+
+Manual changes without validation are considered defects.
+
+---
+
+### 8. Platforms Integration & Tooling
 Documents how documentation and standards integrate into the developer workflow.
 
 Includes:
@@ -138,7 +158,7 @@ Each repo may include a small local `STANDARDS.md` or `DOCS.md` that points back
 
 - Standards are versioned explicitly
 - Architectural documents evolve with clear intent
-- Roadmaps and platform rationale are expected to evolve over time
+- Roadmaps, platform rationale, and testing practices are expected to evolve over time
 
 Repositories should declare which **standards version** they conform to.
 
