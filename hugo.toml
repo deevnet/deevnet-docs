@@ -1,0 +1,40 @@
+baseURL = "https://deevnet.github.io/deevnet-docs/"
+languageCode = "en-us"
+title = "Deevnet Docs"
+theme = "hugo-book"
+
+# Book theme configuration
+[params]
+  # Theme: auto follows system preference, or use "light" / "dark"
+  BookTheme = "auto"
+  # Show table of contents on the right
+  BookToC = true
+  # Set the path to the logo
+  # BookLogo = "logo.png"
+  # Enable search (requires extended Hugo)
+  BookSearch = true
+  # Repository for "Edit this page" links
+  BookRepo = "https://github.com/deevnet/deevnet-docs"
+  # Enable "Edit this page" links
+  BookEditPath = "edit/main/content"
+  # Folder for menu resources
+  BookMenuBundle = "/menu"
+  # Section to use for the homepage
+  BookSection = "docs"
+  # Set site description for SEO
+  description = "Authoritative documentation for the Deevnet ecosystem"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 1
+    endLevel = 4
+
+# Menu configuration for left sidebar
+[menu]
+  [[menu.before]]
+    name = "GitHub"
+    url = "https://github.com/deevnet/deevnet-docs"
+    weight = 10
