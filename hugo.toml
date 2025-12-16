@@ -6,7 +6,7 @@ theme = "hugo-book"
 # Book theme configuration
 [params]
   # Sidebar title (shorter than full site title)
-  BookTitle = "Deevnet"
+  BookTitle = "Contents"
   # Theme: auto follows system preference, or use "light" / "dark"
   BookTheme = "auto"
   # Show table of contents on the right
