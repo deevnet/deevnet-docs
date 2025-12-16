@@ -1,9 +1,9 @@
 ---
-title: "Deevnet Docs"
+title: "Deevnet Infrastructure Platform"
 type: docs
 ---
 
-# Deevnet Documentation
+# Deevnet Infrastructure Platform
 
 Welcome to the authoritative documentation repository for the Deevnet ecosystem.
 
