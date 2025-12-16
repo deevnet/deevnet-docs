@@ -1,6 +1,6 @@
 ---
 title: "Standards"
-weight: 1
+weight: 2
 bookCollapseSection: true
 ---
 
