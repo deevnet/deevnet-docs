@@ -1,6 +1,7 @@
 ---
 title: "Bootstrap Node"
-weight: 2
+weight: 1
+bookCollapseSection: true
 ---
 
 # Bootstrap Node
@@ -52,9 +53,21 @@ During initial provisioning, the bootstrap node may NAT traffic for substrate ho
 
 ---
 
+## Ansible Controller
+
+The bootstrap node serves as the **Ansible controller** for the entire substrate. The `base` role provides:
+
+- System hostname configuration
+- Ansible installation
+- Baseline packages (vim, curl, htop, python3, chrony, bind-utils, etc.)
+
+All playbooks are executed from the bootstrap node, targeting substrate hosts via SSH.
+
+---
+
 ## Services Hosted
 
-The bootstrap node runs these services directly:
+The bootstrap node runs these services directly via the `bootstrap` role:
 
 | Service | Implementation | Purpose |
 |---------|----------------|---------|
@@ -62,7 +75,6 @@ The bootstrap node runs these services directly:
 | **PXE/TFTP** | dnsmasq | Network boot for bare-metal hosts |
 | **DNS** | dnsmasq | Name resolution during bootstrap |
 | **DHCP** | dnsmasq | IP assignment during bootstrap |
-| **Ansible** | CLI | Automation engine for all configuration |
 
 All infrastructure Git repositories are checked out locally.
 
@@ -146,14 +158,13 @@ Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-locatio
 
 ---
 
-## Relationship to Other Docs
+## Roles
 
-| Document | Relationship |
-|----------|--------------|
-| [Artifacts Server](/docs/architecture/artifacts-server/) | Bootstrap node runs this service |
-| [Correctness: Authority Modes](/docs/standards/correctness/#52-authority-modes-are-explicit) | Defines bootstrap vs OPNsense authority |
-| [Correctness: Air-Gap](/docs/standards/correctness/#54-substrate-provisioning-is-air-gapped) | Bootstrap node enables air-gapped provisioning |
-| [Correctness: Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location) | Bootstrap node is a multihomed host |
+The bootstrap node is configured using these `deevnet.builder` roles:
+
+- **[Artifacts Server](artifacts-server/)** — nginx-based artifact hosting for air-gapped provisioning
+- **[Workstation](workstation-role/)** — Developer tools, users, and environment setup
+- **[Omada Controller](omada-controller-role/)** — TP-Link network controller management
 
 ---
 
