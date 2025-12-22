@@ -70,6 +70,8 @@ Identity is expressed via:
 
 Identity does **not** change simply because software or workloads change.
 
+Hardware identity is expressed under deevnet: and is substrate-agnostic. Environment binding is expressed under env:.
+
 ---
 
 ## What Intent Means in Deevnet
