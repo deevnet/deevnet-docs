@@ -12,6 +12,7 @@ Documents how **infrastructure assets are tracked, managed, and retired**.
 
 This section includes:
 - Host identity and inventory sources of truth
+- Identity verus Intent
 - Hardware lifecycle stages (active, standby, retired)
 - Image and configuration lifecycle expectations
 - Decommissioning and cleanup principles
