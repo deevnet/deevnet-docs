@@ -217,6 +217,7 @@ Examples:
 ## 6. Inventory Naming (Ansible)
 
 ### 6.1 Inventory Host Identifiers
+
 Ansible inventory hostnames SHOULD match the DNS hostname without the domain:
 
 Examples:
@@ -226,9 +227,16 @@ Examples:
 - pi01
 - em01
 
-Environment association MUST be expressed via groups:
-- dvnt
-- dvntm
+Environment (substrate) association MUST be expressed by **one of the following methods**:
+
+- **Inventory boundary (preferred):**  
+  Separate inventories per substrate (e.g., `inventory/dvnt/`, `inventory/dvntm/`) implicitly define environment membership.
+
+- **Explicit substrate groups:**  
+  When using a combined inventory, hosts MUST belong to exactly one substrate group:
+  - `dvnt`
+  - `dvntm`
+
 
 ---
 
