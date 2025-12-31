@@ -1,12 +1,12 @@
 ---
-title: "GitHub"
+title: "Code Repositories"
 weight: 6
 bookCollapseSection: true
 ---
 
-# GitHub Repositories
+# Code Repositories
 
-All Deevnet projects are hosted on GitHub under the [deevnet](https://github.com/deevnet) organization.
+All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.com/deevnet)
 
 ---
 
