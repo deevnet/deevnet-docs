@@ -51,17 +51,3 @@ This documentation exists to:
 
 If something "works" but violates these documents, it is considered **incorrect**.
 
----
-
-## Getting Started
-
-Browse the documentation sections in the sidebar:
-
-- **Architecture** — System-level design intent and contracts
-- **Standards** — Non-negotiable rules all projects must follow
-- **Roadmap** — Forward-looking shared intent
-- **Platforms & Tooling** — Hardware and software platform decisions
-- **Security** — Security posture and vulnerability management
-- **Inventory & Lifecycle** — Asset tracking and lifecycle management
-- **Change Management** — How change is introduced safely
-- **Integration** — How docs integrate into developer workflow
