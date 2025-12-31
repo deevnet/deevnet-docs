@@ -1,5 +1,5 @@
 ---
-title: "Identity vs Intent in Deevnet"
+title: "Identity vs Intent"
 weight: 3
 ---
 
@@ -17,13 +17,13 @@ The goal of this separation is to ensure that:
 - Infrastructure history is not lost when systems are repurposed
 - Inventory remains truthful over time
 
-This document complements the **Deevnet Naming Standard** and focuses specifically on how inventory and configuration are modeled in Deevnet.
+This document complements the [Naming Standard](../naming/) and focuses specifically on how inventory and configuration are modeled in Deevnet.
 
 ---
 
 ## Core Principle
 
-**Identity describes what a system *is*.  
+**Identity describes what a system *is*.
 Intent describes what a system is *doing right now*.**
 
 These two concerns are related, but they must not be conflated.
@@ -59,13 +59,13 @@ Identity is expressed via:
 
 ### Examples of Identity
 
-- pi01.dvntm.deevnet.net  
+- pi01.dvntm.deevnet.net
   A specific Raspberry Pi slot
 
-- hv01.dvntm.deevnet.net  
+- hv01.dvntm.deevnet.net
   A hypervisor host
 
-- edge-rt01.dvntm.deevnet.net  
+- edge-rt01.dvntm.deevnet.net
   An edge routing appliance
 
 Identity does **not** change simply because software or workloads change.
@@ -172,7 +172,7 @@ A workload profile may include:
 - configuration templates
 - role parameters
 
-Workload profiles are loaded explicitly by playbooks and are **not** part of Ansible’s automatic variable precedence.
+Workload profiles are loaded explicitly by playbooks and are **not** part of Ansible's automatic variable precedence.
 
 ---
 
@@ -242,7 +242,7 @@ When SDR moves to another host:
 
 ## Relationship to Naming
 
-This document complements the **Deevnet Naming Standard**.
+This document complements the [Naming Standard](../naming/).
 
 The naming standard defines:
 
