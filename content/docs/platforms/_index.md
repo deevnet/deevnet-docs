@@ -19,3 +19,13 @@ This section includes:
 
 This section answers the question:
 > "Why did we choose this, and under what conditions would we change it?"
+
+---
+
+## Infrastructure Components
+
+Detailed documentation for substrate infrastructure:
+
+- [Bootstrap Node](bootstrap-node/) — Control plane for substrate provisioning
+- [OPNsense Router](opnsense-router/) — Firewall, gateway, DNS, DHCP
+- [Proxmox Hypervisors](proxmox-hypervisors/) — Virtualization platform
