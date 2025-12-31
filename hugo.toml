@@ -35,8 +35,4 @@ theme = "hugo-book"
     endLevel = 4
 
 # Menu configuration for left sidebar
-[menu]
-  [[menu.after]]
-    name = "GitHub"
-    url = "https://github.com/deevnet/deevnet-docs"
-    weight = 10
+# (GitHub link now lives on the Code Repositories page)
