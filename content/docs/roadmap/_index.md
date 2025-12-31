@@ -101,13 +101,17 @@ Tasks:
 
 ---
 
-### 10. ⏳ Full Air-Gap Support
+### 10. 🔄 Full Air-Gap Support
 
 Complete air-gapped provisioning for substrate layer:
-- OPNsense
-- Proxmox
-- Builder/Bootstrap node
+
+- ✅ Fedora install tree mirror
+- ✅ Fedora/Proxmox ISOs on artifact server
+- ✅ Proxmox VM template (kickstart uses cdrom)
+- ✅ Proxmox VE bare metal (embedded answer files)
+- ⏳ OPNsense (deferred - evaluating alternatives)
+- ⏳ Local dnf mirror for post-install updates
 
 **Excludes:** Raspberry Pi (different OS, out of scope for substrate air-gap).
 
-Requires local package mirrors (dnf reposync).
+See [Operational Runbook - Building & Recovery](/docs/runbook/building-recovery/) for procedures.
