@@ -29,7 +29,7 @@ Ansible collection for provisioning, artifacts, and PXE bootstrap.
 Packer-based image builds:
 - ✅ Proxmox Fedora template
 - ⏳ Proxmox installer (see item 7)
-- ⏳ Raspberry Pi images (see item 8)
+- ✅ Raspberry Pi images (see item 8)
 
 ---
 
@@ -47,7 +47,7 @@ OPNsense and Omada configuration automation.
 
 ---
 
-### 5. ⏳ dvntm Substrate Inventory
+### 5. 🔄 dvntm Substrate Inventory
 
 Bare metal hardware inventory with MAC addresses for network provisioning:
 
@@ -62,7 +62,7 @@ Bare metal hardware inventory with MAC addresses for network provisioning:
 
 ---
 
-### 6. ⏳ Bootstrap Node Provisioning Playbook
+### 6. 🔄 Bootstrap Node Provisioning Playbook
 
 Playbook to configure PXE, DHCP, and DNS on the bootstrap node.
 
@@ -78,7 +78,7 @@ Part of `deevnet-image-factory`.
 
 ---
 
-### 8. ⏳ Raspberry Pi Image Generation
+### 8. ✅ Raspberry Pi Image Generation
 
 Packer-based Pi image builds.
 
