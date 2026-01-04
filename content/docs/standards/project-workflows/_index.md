@@ -15,7 +15,8 @@ These templates provide proven workflow patterns extracted from successful proje
 ## Available Templates
 
 - **[Embedded Hardware](embedded-hardware/)** - Hardware projects with firmware, PCB design, and physical enclosures. Follows EVT/DVT/PVT lifecycle.
-- **[Infrastructure Automation](infrastructure-automation/)** - Infrastructure as Code projects for provisioning and managing systems.
+- **[Substrate IaC](substrate-iac/)** - Full infrastructure substrate builds with bare-metal provisioning, network automation, and rebuild validation.
+- **[IaC/CaC](iac-cac/)** - Lightweight Infrastructure/Configuration as Code for single systems or services.
 - **[Application Development](application-development/)** - Software projects including services, tools, and applications.
 
 ## Usage
