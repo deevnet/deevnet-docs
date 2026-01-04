@@ -11,9 +11,11 @@ Part of `deevnet-image-factory`.
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
+Each section below represents a project milestone.
+
 ---
 
-## Milestone: simh Emulation 🔄
+## simh Emulation 🔄
 
 PDP-11 emulation running on Raspberry Pi.
 
