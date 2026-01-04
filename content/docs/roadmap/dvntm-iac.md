@@ -17,13 +17,13 @@ Core infrastructure for building and deploying the substrate.
 
 | Task | Status |
 |------|--------|
-| Builder Collection (`deevnet.builder`) | ✅ |
+| Builder Node Ansible Collection (`deevnet.builder`) | ✅ |
 | Image Packaging - Proxmox Fedora template | ✅ |
 | Image Packaging - Proxmox installer | ✅ |
-| Raspberry Pi Base Image | ✅ |
+| Image Packaging - Raspberry Pi Base Image | ✅ |
 | Bootstrap Node Provisioning Playbook | ✅ |
 | Proxmox Automated Install via PXE | ✅ |
-| Full Air-Gap Support | ✅ |
+| Full Air-Gap Support (Fedora Mirror) | ✅ |
 
 ---
 
@@ -33,8 +33,9 @@ Documentation and inventory definitions.
 
 | Task | Status |
 |------|--------|
+| Hugo-based Documentation Site | ✅ |
 | Standards and Correctness Docs | ✅ |
-| dvntm Substrate Inventory (MAC addresses) | ✅ |
+| dvntm Substrate Bare-Metal Inventory (MAC addresses) | ✅ |
 
 ---
 
@@ -49,12 +50,12 @@ Automated configuration of network infrastructure.
 | OPNsense Alternatives Evaluation | ⏳ |
 | dvntm VLAN Plan | ⏳ |
 | Access Switch Automation (Omada) | ⏳ |
-| Proxmox Tenant Networking | ⏳ |
+| Proxmox Tenant Networking Design and Automation | ⏳ |
 | Wireless AP Automation (Omada) | ⏳ |
 
 ---
 
-## Milestone: Full Substrate Rebuild ⏳
+## Milestone: Full Substrate Rebuild Event ⏳
 
 End-to-end rebuild of the mobile substrate from scratch.
 
@@ -63,7 +64,7 @@ End-to-end rebuild of the mobile substrate from scratch.
 | 1 | Rebuild provisioner node | ⏳ |
 | 2 | Fetch artifacts (ISOs, install trees, containers) | ⏳ |
 | 3 | Enable bootstrap-authoritative mode | ⏳ |
-| 4 | Set up VLANs | ⏳ |
+| 4 | Set up VLANs on access switch | ⏳ |
 | 5 | Rebuild core router | ⏳ |
 | 6 | Configure wireless AP | ⏳ |
 | 7 | Rebuild Proxmox hypervisor | ⏳ |
@@ -79,6 +80,7 @@ Ongoing maintenance and updates.
 
 | Task | Status |
 |------|--------|
+| Patching Strategy - Switches | ⏳ |
 | Patching Strategy - Proxmox VE | ⏳ |
-| Patching Strategy - Firewall/router | ⏳ |
+| Patching Strategy - Firewall/Core router | ⏳ |
 | Patching Strategy - Linux packages | ⏳ |
