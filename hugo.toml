@@ -8,8 +8,6 @@ enableGitInfo = true
 
 # Book theme configuration
 [params]
-  # Show last modified date with link to commit
-  BookLastChangeLink = 'https://github.com/deevnet/deevnet-docs/commit/{{ .GitInfo.Hash }}'
   # Sidebar title (shorter than full site title)
   BookTitle = "Contents"
   # Theme: auto follows system preference, or use "light" / "dark"
@@ -20,10 +18,8 @@ enableGitInfo = true
   # BookLogo = "logo.png"
   # Enable search (requires extended Hugo)
   BookSearch = true
-  # Repository for "Edit this page" links
+  # Repository for commit links
   BookRepo = "https://github.com/deevnet/deevnet-docs"
-  # Enable "Edit this page" links
-  BookEditPath = "edit/main/content"
   # Folder for menu resources
   BookMenuBundle = "/menu"
   # Section to use for the homepage
