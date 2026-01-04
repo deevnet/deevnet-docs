@@ -80,17 +80,43 @@ Part of `deevnet-image-factory`.
 
 ---
 
-### 8. ✅ Raspberry Pi Image Generation
+### 8. ✅ Raspberry Pi Base Image
 
-Packer-based Pi image builds.
+Generic ansible-ready Raspberry Pi image.
 
 Part of `deevnet-image-factory`.
 
-**Subtask:** Software Defined Radio (SDR) image.
+---
+
+### 9. 🔄 Pi SDR Image
+
+Software Defined Radio image for Raspberry Pi with CaribouLite support.
+
+Part of `deevnet-image-factory`.
+
+Remaining work:
+- Post-image configuration tweaks
+- Build documentation
 
 ---
 
-### 9. ✅ Full Air-Gap Support
+### 10. 🔄 PiDP-11 Image
+
+PiDP-11 (PDP-11 replica) image for Raspberry Pi.
+
+Part of `deevnet-image-factory`.
+
+Uses simh to emulate PDP-11 with multiple OS options.
+
+---
+
+### 11. ⏳ SDR Client Setup
+
+Configure GQRX or other SDR front-end to tune Pi SDR remotely.
+
+---
+
+### 12. ✅ Full Air-Gap Support
 
 Complete air-gapped provisioning for substrate layer:
 
@@ -105,7 +131,7 @@ See [Operational Runbook - Building & Recovery](/docs/runbook/building-recovery/
 
 ---
 
-### 10. ⏳ OPNsense Alternatives Evaluation
+### 13. ⏳ OPNsense Alternatives Evaluation
 
 Evaluate firewall/router alternatives that support automated PXE installation.
 
@@ -113,7 +139,7 @@ Current OPNsense lacks PXE install support, limiting full air-gap automation.
 
 ---
 
-### 11. ⏳ dvntm VLAN Plan
+### 14. ⏳ dvntm VLAN Plan
 
 Define VLAN topology for mobile substrate:
 
@@ -124,7 +150,7 @@ Define VLAN topology for mobile substrate:
 
 ---
 
-### 12. ⏳ Access Switch Automation
+### 15. ⏳ Access Switch Automation
 
 Automate Omada switch configuration via `deevnet.net` collection:
 
@@ -134,7 +160,7 @@ Automate Omada switch configuration via `deevnet.net` collection:
 
 ---
 
-### 13. ⏳ Proxmox Tenant Networking
+### 16. ⏳ Proxmox Tenant Networking
 
 Each tenant isolated in its own network segment.
 
@@ -147,7 +173,7 @@ Tasks:
 
 ---
 
-### 14. ⏳ Wireless AP Automation
+### 17. ⏳ Wireless AP Automation
 
 Automate TP-Link Omada AP configuration via `deevnet.net` collection:
 
@@ -157,7 +183,7 @@ Automate TP-Link Omada AP configuration via `deevnet.net` collection:
 
 ---
 
-### 15. ⏳ dvntm Substrate Rebuild
+### 18. ⏳ dvntm Substrate Rebuild
 
 End-to-end rebuild of the mobile substrate from scratch:
 
@@ -174,7 +200,7 @@ Validates full air-gap recovery capability.
 
 ---
 
-### 16. ⏳ Patching Strategy
+### 19. ⏳ Patching Strategy
 
 Define approach for keeping infrastructure components up to date:
 
