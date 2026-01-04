@@ -27,3 +27,8 @@ This is the **authoritative documentation repository** for the Deevnet ecosystem
 ## Usage by Other Repos
 
 Other Deevnet repositories include this as a Git submodule at `docs/deevnet/` and reference standards by version.
+
+## Documentation Guidelines
+
+- **No "See Also" sections**: Cross-references are unstable during active development. Focus on content, not links.
+- **Placeholder sections OK**: Create structure with TBD/placeholder content to establish document organization.

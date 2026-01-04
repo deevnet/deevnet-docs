@@ -133,10 +133,3 @@ All infrastructure configuration lives in version-controlled repositories:
 - `ansible-collection-deevnet.net` — Network configuration
 - `deevnet-image-factory` — OS image builds
 
----
-
-## See Also
-
-- [Platforms & Tooling](../platforms/) — Implementation details for infrastructure components
-- [Standards](../standards/) — Naming conventions and correctness definitions
-- [Inventory](../inventory/) — Identity vs Intent separation

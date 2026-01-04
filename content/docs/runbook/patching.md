@@ -48,9 +48,3 @@ When this decision is made, document:
 3. Rollback procedures
 4. Security advisory monitoring
 
----
-
-## See Also
-
-- [Artifacts Server - Package Mirrors](/docs/platforms/bootstrap-node/artifacts-server/#package-mirrors)
-- [Roadmap Item 10](/docs/roadmap/#10--full-air-gap-support)

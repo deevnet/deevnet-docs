@@ -52,9 +52,3 @@ When retiring a host:
 4. Archive or wipe storage as appropriate
 5. Update documentation
 
----
-
-## See Also
-
-- [Identity vs Intent](/docs/standards/identity-vs-intent/) - How identity and intent are separated
-- [Building & Recovery](../building-recovery/) - Provisioning new hosts
