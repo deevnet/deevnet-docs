@@ -3,8 +3,13 @@ languageCode = "en-us"
 title = "Deevnet Infrastructure Platform"
 theme = "hugo-book"
 
+# Enable git-based last modified dates
+enableGitInfo = true
+
 # Book theme configuration
 [params]
+  # Show last modified date with link to commit
+  BookLastChangeLink = 'https://github.com/deevnet/deevnet-docs/commit/{{ .GitInfo.Hash }}'
   # Sidebar title (shorter than full site title)
   BookTitle = "Contents"
   # Theme: auto follows system preference, or use "light" / "dark"
