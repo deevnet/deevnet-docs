@@ -14,6 +14,8 @@ Bluetooth Phone Gateway for vintage telephone integration.
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
+Each section below represents a project milestone.
+
 ---
 
 ## Project Vision & Scope 🔄
@@ -33,7 +35,7 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 
 ---
 
-## Milestone: Requirements & Constraints ⏳
+## Requirements & Constraints ⏳
 
 Define what success means before building.
 
@@ -48,7 +50,7 @@ Define what success means before building.
 
 ---
 
-## Milestone: Architecture & Design 🔄
+## Architecture & Design 🔄
 
 Translate requirements into a complete system design.
 
@@ -65,7 +67,7 @@ Translate requirements into a complete system design.
 
 ---
 
-## Milestone: Proof of Concept / EVT ⏳
+## Proof of Concept / EVT ⏳
 
 De-risk the hardest problems early using breadboards and bench tests.
 
@@ -80,7 +82,7 @@ De-risk the hardest problems early using breadboards and bench tests.
 
 ---
 
-## Milestone: Firmware Development 🔄
+## Firmware Development 🔄
 
 ESP32 firmware implementing telephony behavior and system control.
 
@@ -98,7 +100,7 @@ ESP32 firmware implementing telephony behavior and system control.
 
 ---
 
-## Milestone: Custom PCB (DVT) ⏳
+## Custom PCB (DVT) ⏳
 
 Transition from prototype to a reproducible hardware design.
 
@@ -115,7 +117,7 @@ Transition from prototype to a reproducible hardware design.
 
 ---
 
-## Milestone: Enclosure & Mechanical Integration ⏳
+## Enclosure & Mechanical Integration ⏳
 
 Package the device for real-world use.
 
@@ -129,7 +131,7 @@ Package the device for real-world use.
 
 ---
 
-## Milestone: Verification & Validation ⏳
+## Verification & Validation ⏳
 
 Prove the system meets its requirements.
 
@@ -144,7 +146,7 @@ Prove the system meets its requirements.
 
 ---
 
-## Milestone: Production Readiness (PVT) ⏳
+## Production Readiness (PVT) ⏳
 
 Prepare the design for repeatable builds.
 
@@ -158,7 +160,7 @@ Prepare the design for repeatable builds.
 
 ---
 
-## Milestone: Documentation 🔄
+## Documentation 🔄
 
 Create durable documentation for users and future builders.
 
@@ -172,7 +174,7 @@ Create durable documentation for users and future builders.
 
 ---
 
-## Milestone: Deployment & Operations ⏳
+## Deployment & Operations ⏳
 
 Put the system into real use.
 

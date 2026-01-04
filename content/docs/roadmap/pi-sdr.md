@@ -11,9 +11,11 @@ Part of `deevnet-image-factory`.
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
+Each section below represents a project milestone.
+
 ---
 
-## Milestone: CaribouLite Backend 🔄
+## CaribouLite Backend 🔄
 
 Get CaribouLite SDR hardware working on Raspberry Pi.
 
@@ -26,7 +28,7 @@ Get CaribouLite SDR hardware working on Raspberry Pi.
 
 ---
 
-## Milestone: SDR Client ⏳
+## SDR Client ⏳
 
 Configure remote client to tune Pi SDR.
 

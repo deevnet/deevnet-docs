@@ -9,9 +9,11 @@ Full automation of mobile substrate provisioning and management.
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
+Each section below represents a project milestone.
+
 ---
 
-## Milestone: Substrate Provisioning ✅
+## Substrate Provisioning ✅
 
 Core infrastructure for building and deploying the substrate.
 
@@ -27,7 +29,7 @@ Core infrastructure for building and deploying the substrate.
 
 ---
 
-## Milestone: Inventory & Standards ✅
+## Inventory & Standards ✅
 
 Documentation and inventory definitions.
 
@@ -39,7 +41,7 @@ Documentation and inventory definitions.
 
 ---
 
-## Milestone: Network Automation ⏳
+## Network Automation ⏳
 
 Automated configuration of network infrastructure.
 
@@ -55,7 +57,7 @@ Automated configuration of network infrastructure.
 
 ---
 
-## Milestone: Full Substrate Rebuild Event ⏳
+## Full Substrate Rebuild Event ⏳
 
 End-to-end rebuild of the mobile substrate from scratch.
 
@@ -74,7 +76,7 @@ Validates full air-gap recovery capability.
 
 ---
 
-## Milestone: Day 2 Operations ⏳
+## Day 2 Operations ⏳
 
 Ongoing maintenance and updates.
 
