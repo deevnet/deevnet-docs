@@ -14,196 +14,47 @@ Roadmaps are **informational**, not binding contracts.
 
 ---
 
-## Milestones
+## Projects
 
-### 1. ✅ Builder Collection
-`deevnet.builder`
+### [DVNTM Infrastructure as Code](dvntm-iac/)
 
-Ansible collection for provisioning, artifacts, and PXE bootstrap.
+Full automation of mobile substrate provisioning and management.
 
----
-
-### 2. ✅ Image Packaging
-`deevnet-image-factory`
-
-Packer-based image builds:
-- ✅ Proxmox Fedora template
-- ✅ Proxmox installer (see item 7)
-- ✅ Raspberry Pi images (see item 8)
+| Milestone | Status |
+|-----------|--------|
+| Substrate Provisioning | ✅ Complete |
+| Inventory & Standards | ✅ Complete |
+| Network Automation | ⏳ Planned |
+| Full Substrate Rebuild | ⏳ Planned |
+| Day 2 Operations | ⏳ Planned |
 
 ---
 
-### 3. ✅ Standards and Correctness Docs
-`deevnet-docs`
+### [Pi-SDR](pi-sdr/)
 
-Correctness, naming, and architecture documentation.
+Software Defined Radio on Raspberry Pi with CaribouLite.
 
----
-
-### 4. ✅ Ansible Network Collection
-`deevnet.net`
-
-Inventory-driven OPNsense network configuration:
-- DHCP static reservations via Kea API
-- DNS host overrides and aliases via Unbound API
+| Milestone | Status |
+|-----------|--------|
+| CaribouLite Backend | 🔄 In Progress |
+| SDR Client | ⏳ Planned |
 
 ---
 
-### 5. ✅ dvntm Substrate Inventory
+### [PiDP-11](pidp11/)
 
-Bare metal hardware inventory with MAC addresses for network provisioning:
+PDP-11 replica using simh emulation.
 
-| Qty | Device |
-|-----|--------|
-| 1x | Travel router (upstream gateway) |
-| 1x | 24-port Omada switch |
-| 1x | OPNsense firewall/router |
-| 1x | Proxmox server |
-| 1x | TP-Link wireless AP |
-| 4x | Raspberry Pi |
+| Milestone | Status |
+|-----------|--------|
+| simh Emulation | 🔄 In Progress |
 
 ---
 
-### 6. ✅ Bootstrap Node Provisioning Playbook
+### [Ma Bell](mabell/)
 
-Playbook to configure PXE, DHCP, and DNS on the bootstrap node.
+Bluetooth Phone Gateway for vintage telephone integration.
 
-Enables bootstrap-authoritative mode for substrate provisioning.
-
----
-
-### 7. ✅ Proxmox Automated Install
-
-Automated Proxmox installation via PXE.
-
-Part of `deevnet-image-factory`.
-
----
-
-### 8. ✅ Raspberry Pi Base Image
-
-Generic ansible-ready Raspberry Pi image.
-
-Part of `deevnet-image-factory`.
-
----
-
-### 9. 🔄 Pi SDR Image
-
-Software Defined Radio image for Raspberry Pi with CaribouLite support.
-
-Part of `deevnet-image-factory`.
-
-Remaining work:
-- Post-image configuration tweaks
-- Build documentation
-
----
-
-### 10. 🔄 PiDP-11 Image
-
-PiDP-11 (PDP-11 replica) image for Raspberry Pi.
-
-Part of `deevnet-image-factory`.
-
-Uses simh to emulate PDP-11 with multiple OS options.
-
----
-
-### 11. ⏳ SDR Client Setup
-
-Configure GQRX or other SDR front-end to tune Pi SDR remotely.
-
----
-
-### 12. ✅ Full Air-Gap Support
-
-Complete air-gapped provisioning for substrate layer:
-
-- ✅ Fedora install tree mirror
-- ✅ Fedora/Proxmox ISOs on artifact server
-- ✅ Proxmox VM template (kickstart uses cdrom)
-- ✅ Proxmox VE bare metal (embedded answer files)
-
-**Excludes:** Raspberry Pi (different OS, out of scope for substrate air-gap).
-
-See [Operational Runbook - Building & Recovery](/docs/runbook/building-recovery/) for procedures.
-
----
-
-### 13. ⏳ OPNsense Alternatives Evaluation
-
-Evaluate firewall/router alternatives that support automated PXE installation.
-
-Current OPNsense lacks PXE install support, limiting full air-gap automation.
-
----
-
-### 14. ⏳ dvntm VLAN Plan
-
-Define VLAN topology for mobile substrate:
-
-- Tenant VLAN assignments
-- IP ranges per VLAN
-- Inter-VLAN routing rules
-- Guest network isolation
-
----
-
-### 15. ⏳ Access Switch Automation
-
-Automate Omada switch configuration via `deevnet.net` collection:
-
-- VLAN creation and port assignments
-- Trunk/access port configuration
-- LACP/port channel setup
-
----
-
-### 16. ⏳ Proxmox Tenant Networking
-
-Each tenant isolated in its own network segment.
-
-Tasks:
-- Pre-allocate VLAN IDs per tenant (e.g., VLAN 100=grooveiq, 101=vintronics, 102=iot-backend)
-- Configure Proxmox bridges with VLAN tagging support
-- Define IP ranges per tenant VLAN
-- Firewall rules for inter-tenant isolation / routing
-- Integrate tenant VLAN definitions into inventory (config-as-code)
-
----
-
-### 17. ⏳ Wireless AP Automation
-
-Automate TP-Link Omada AP configuration via `deevnet.net` collection:
-
-- SSID provisioning
-- Guest network isolation
-- VLAN assignments per SSID
-
----
-
-### 18. ⏳ dvntm Substrate Rebuild
-
-End-to-end rebuild of the mobile substrate from scratch:
-
-1. Rebuild provisioner node
-2. Fetch artifacts (ISOs, install trees, containers)
-3. Enable bootstrap-authoritative mode
-4. Set up VLANs
-5. Rebuild core router
-6. Configure wireless AP
-7. Rebuild Proxmox hypervisor
-8. Rebuild all application tenants
-
-Validates full air-gap recovery capability.
-
----
-
-### 19. ⏳ Patching Strategy
-
-Define approach for keeping infrastructure components up to date:
-
-- Proxmox VE hypervisors
-- Firewall/router (OPNsense or alternative)
-- Linux packages on provisioned hosts
+| Milestone | Status |
+|-----------|--------|
+| Gateway Core | ⏳ Planned |
