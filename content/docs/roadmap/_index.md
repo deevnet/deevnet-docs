@@ -25,7 +25,7 @@ Full automation of mobile substrate provisioning and management.
 | Substrate Provisioning | ✅ Complete |
 | Inventory & Standards | ✅ Complete |
 | Network Automation | ⏳ Planned |
-| Full Substrate Rebuild | ⏳ Planned |
+| Full Substrate Rebuild Event | ⏳ Planned |
 | Day 2 Operations | ⏳ Planned |
 
 ---
@@ -57,10 +57,8 @@ Bluetooth Phone Gateway for vintage telephone integration.
 
 | Milestone | Status |
 |-----------|--------|
-| Design | 🔄 In Progress |
-| Hardware Prototype | ⏳ Planned |
+| Requirements & Architecture | 🔄 In Progress |
+| Hardware Prototype (EVT) | ⏳ Planned |
 | Firmware Development | 🔄 In Progress |
-| PCB | ⏳ Planned |
-| Enclosure | ⏳ Planned |
-| Documentation | 🔄 In Progress |
-| Deployment | ⏳ Planned |
+| Custom PCB (DVT) | ⏳ Planned |
+| Verification & Deployment | ⏳ Planned |
