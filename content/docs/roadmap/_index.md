@@ -64,7 +64,7 @@ Bare metal hardware inventory with MAC addresses for network provisioning:
 
 ---
 
-### 6. 🔄 Bootstrap Node Provisioning Playbook
+### 6. ✅ Bootstrap Node Provisioning Playbook
 
 Playbook to configure PXE, DHCP, and DNS on the bootstrap node.
 
@@ -90,20 +90,7 @@ Part of `deevnet-image-factory`.
 
 ---
 
-### 9. ⏳ Proxmox Tenant Networking
-
-Each tenant isolated in its own network segment.
-
-Tasks:
-- Pre-allocate VLAN IDs per tenant (e.g., VLAN 100=grooveiq, 101=vintronics, 102=iot-backend)
-- Configure Proxmox bridges with VLAN tagging support
-- Define IP ranges per tenant VLAN
-- OPNsense rules for inter-tenant isolation / routing
-- Integrate tenant VLAN definitions into inventory (config-as-code)
-
----
-
-### 10. ✅ Full Air-Gap Support
+### 9. ✅ Full Air-Gap Support
 
 Complete air-gapped provisioning for substrate layer:
 
@@ -118,7 +105,7 @@ See [Operational Runbook - Building & Recovery](/docs/runbook/building-recovery/
 
 ---
 
-### 11. ⏳ OPNsense Alternatives Evaluation
+### 10. ⏳ OPNsense Alternatives Evaluation
 
 Evaluate firewall/router alternatives that support automated PXE installation.
 
@@ -126,7 +113,68 @@ Current OPNsense lacks PXE install support, limiting full air-gap automation.
 
 ---
 
-### 12. ⏳ Patching Strategy
+### 11. ⏳ dvntm VLAN Plan
+
+Define VLAN topology for mobile substrate:
+
+- Tenant VLAN assignments
+- IP ranges per VLAN
+- Inter-VLAN routing rules
+- Guest network isolation
+
+---
+
+### 12. ⏳ Access Switch Automation
+
+Automate Omada switch configuration via `deevnet.net` collection:
+
+- VLAN creation and port assignments
+- Trunk/access port configuration
+- LACP/port channel setup
+
+---
+
+### 13. ⏳ Proxmox Tenant Networking
+
+Each tenant isolated in its own network segment.
+
+Tasks:
+- Pre-allocate VLAN IDs per tenant (e.g., VLAN 100=grooveiq, 101=vintronics, 102=iot-backend)
+- Configure Proxmox bridges with VLAN tagging support
+- Define IP ranges per tenant VLAN
+- Firewall rules for inter-tenant isolation / routing
+- Integrate tenant VLAN definitions into inventory (config-as-code)
+
+---
+
+### 14. ⏳ Wireless AP Automation
+
+Automate TP-Link Omada AP configuration via `deevnet.net` collection:
+
+- SSID provisioning
+- Guest network isolation
+- VLAN assignments per SSID
+
+---
+
+### 15. ⏳ dvntm Substrate Rebuild
+
+End-to-end rebuild of the mobile substrate from scratch:
+
+1. Rebuild provisioner node
+2. Fetch artifacts (ISOs, install trees, containers)
+3. Enable bootstrap-authoritative mode
+4. Set up VLANs
+5. Rebuild core router
+6. Configure wireless AP
+7. Rebuild Proxmox hypervisor
+8. Rebuild all application tenants
+
+Validates full air-gap recovery capability.
+
+---
+
+### 16. ⏳ Patching Strategy
 
 Define approach for keeping infrastructure components up to date:
 

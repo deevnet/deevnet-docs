@@ -65,9 +65,3 @@ Future enhancements:
 - Automated testing in dvntm substrate
 - Promotion workflow (dvntm → dvnt)
 
----
-
-## See Also
-
-- [Building & Recovery](../building-recovery/) - Provisioning workflows
-- [Patching](../patching/) - Update procedures

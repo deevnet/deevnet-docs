@@ -148,8 +148,30 @@ See [Patching](../patching/) for day 2 update considerations.
 
 ---
 
-## See Also
+## Set Up VLANs
 
-- [Artifacts Server](/docs/platforms/bootstrap-node/artifacts-server/) - Artifact staging details
-- [Bootstrap Node](/docs/platforms/bootstrap-node/) - Control plane overview
-- [Roadmap Item 10](/docs/roadmap/#10--full-air-gap-support) - Air-gap progress tracking
+*TBD - Configure VLAN tagging on switch and Proxmox bridges.*
+
+---
+
+## Rebuild Core Router
+
+*TBD - Reinstall and configure firewall/router.*
+
+---
+
+## Rebuild Proxmox Hypervisor
+
+*TBD - PXE boot and install Proxmox VE from local artifacts.*
+
+---
+
+## Configure Wireless AP
+
+*TBD - Set up SSIDs, guest networks, and VLAN assignments on Omada AP.*
+
+---
+
+## Rebuild Application Tenants
+
+*TBD - Provision tenant VMs and restore application workloads.*

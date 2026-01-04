@@ -45,9 +45,3 @@ Detailed security documentation is planned. Key areas to document:
 - Patch timelines by severity
 - Emergency response procedures
 
----
-
-## See Also
-
-- [Patching](../patching/) - Day 2 update procedures
-- [Building & Recovery](../building-recovery/) - Secure provisioning
