@@ -57,4 +57,10 @@ Bluetooth Phone Gateway for vintage telephone integration.
 
 | Milestone | Status |
 |-----------|--------|
-| Gateway Core | ⏳ Planned |
+| Design | 🔄 In Progress |
+| Hardware Prototype | ⏳ Planned |
+| Firmware Development | 🔄 In Progress |
+| PCB | ⏳ Planned |
+| Enclosure | ⏳ Planned |
+| Documentation | 🔄 In Progress |
+| Deployment | ⏳ Planned |
