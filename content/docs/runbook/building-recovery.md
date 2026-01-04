@@ -48,6 +48,40 @@ curl -I http://artifacts.dvntm.deevnet.net/isos/proxmox/proxmox-ve_8.4-1.iso
 
 ---
 
+## Enable Bootstrap-Authoritative Mode
+
+Before PXE booting substrate hosts, enable the bootstrap node as the DNS/DHCP authority for the network.
+
+This makes the bootstrap node the gateway and DNS forwarder for 192.168.10.0/23, bypassing OPNsense during initial provisioning.
+
+### Commands
+
+```bash
+cd ~/dvnt/ansible-collection-deevnet.builder
+make bootstrap-auth
+```
+
+This runs the `bootstrap-authoritative.yml` playbook which:
+
+- Enables dnsmasq for DHCP (192.168.10.100-192.168.11.254) and DNS forwarding
+- Configures IP forwarding and NAT on the WAN interface
+- Makes the provisioner (192.168.10.95) the gateway for substrate hosts
+
+### Verification
+
+```bash
+# Check dnsmasq is running
+systemctl status dnsmasq
+
+# Verify DHCP is listening
+ss -ulnp | grep :67
+
+# Test DNS forwarding
+dig @192.168.10.95 google.com
+```
+
+---
+
 ## Phase 2: Offline Recovery
 
 With artifacts staged, the bootstrap node can rebuild the substrate without internet.

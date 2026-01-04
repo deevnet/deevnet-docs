@@ -23,12 +23,12 @@ Ansible collection for provisioning, artifacts, and PXE bootstrap.
 
 ---
 
-### 2. 🔄 Image Packaging
+### 2. ✅ Image Packaging
 `deevnet-image-factory`
 
 Packer-based image builds:
 - ✅ Proxmox Fedora template
-- ⏳ Proxmox installer (see item 7)
+- ✅ Proxmox installer (see item 7)
 - ✅ Raspberry Pi images (see item 8)
 
 ---
@@ -40,14 +40,16 @@ Correctness, naming, and architecture documentation.
 
 ---
 
-### 4. 🔄 Ansible Network Collection
+### 4. ✅ Ansible Network Collection
 `deevnet.net`
 
-OPNsense and Omada configuration automation.
+Inventory-driven OPNsense network configuration:
+- DHCP static reservations via Kea API
+- DNS host overrides and aliases via Unbound API
 
 ---
 
-### 5. 🔄 dvntm Substrate Inventory
+### 5. ✅ dvntm Substrate Inventory
 
 Bare metal hardware inventory with MAC addresses for network provisioning:
 
@@ -56,7 +58,7 @@ Bare metal hardware inventory with MAC addresses for network provisioning:
 | 1x | Travel router (upstream gateway) |
 | 1x | 24-port Omada switch |
 | 1x | OPNsense firewall/router |
-| 2x | Proxmox hypervisors |
+| 1x | Proxmox server |
 | 1x | TP-Link wireless AP |
 | 4x | Raspberry Pi |
 
@@ -70,7 +72,7 @@ Enables bootstrap-authoritative mode for substrate provisioning.
 
 ---
 
-### 7. ⏳ Proxmox Automated Install
+### 7. ✅ Proxmox Automated Install
 
 Automated Proxmox installation via PXE.
 
@@ -101,7 +103,7 @@ Tasks:
 
 ---
 
-### 10. 🔄 Full Air-Gap Support
+### 10. ✅ Full Air-Gap Support
 
 Complete air-gapped provisioning for substrate layer:
 
@@ -109,9 +111,25 @@ Complete air-gapped provisioning for substrate layer:
 - ✅ Fedora/Proxmox ISOs on artifact server
 - ✅ Proxmox VM template (kickstart uses cdrom)
 - ✅ Proxmox VE bare metal (embedded answer files)
-- ⏳ OPNsense (deferred - evaluating alternatives)
-- ⏳ Local dnf mirror for post-install updates
 
 **Excludes:** Raspberry Pi (different OS, out of scope for substrate air-gap).
 
 See [Operational Runbook - Building & Recovery](/docs/runbook/building-recovery/) for procedures.
+
+---
+
+### 11. ⏳ OPNsense Alternatives Evaluation
+
+Evaluate firewall/router alternatives that support automated PXE installation.
+
+Current OPNsense lacks PXE install support, limiting full air-gap automation.
+
+---
+
+### 12. ⏳ Patching Strategy
+
+Define approach for keeping infrastructure components up to date:
+
+- Proxmox VE hypervisors
+- Firewall/router (OPNsense or alternative)
+- Linux packages on provisioned hosts
