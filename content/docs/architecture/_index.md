@@ -83,7 +83,9 @@ The **bootstrap node** is the entry point for standing up a substrate:
 - Firewall and NAT gateway
 - Authoritative DNS for substrate zone
 - DHCP with static mappings
-- Inter-subnet routing and tenant VLAN isolation (future)
+- Inter-segment routing with VLAN isolation
+
+See [Substrate Networking](substrate-networking/) for the network segmentation model.
 
 ### Compute
 

@@ -15,6 +15,7 @@ This section includes:
 - [Naming conventions](naming/) - How systems and services are named
 - [Correctness definitions](correctness/) - Infrastructure invariants
 - [Identity vs Intent](identity-vs-intent/) - Separation of host identity from workload intent
+- [Network Segmentation](network-segmentation/) - VLAN isolation and trust boundaries
 - [Project Workflows](project-workflows/) - Reusable milestone templates for new projects
 
 If a project conflicts with standards, **standards win**.
