@@ -21,11 +21,12 @@ Network segmentation divides each substrate into isolated broadcast domains with
 
 ## Segment Model
 
-Each substrate implements five segment types:
+Each substrate implements six segment types:
 
 | Segment | Purpose | Trust Level |
 |---------|---------|-------------|
 | Management | Infrastructure control plane | High |
+| Trusted | High-trust user devices | High |
 | Storage | Dedicated storage traffic | High |
 | Tenant | Per-tenant workload isolation | Medium |
 | IoT | Untrusted/embedded devices | Low |
@@ -46,6 +47,22 @@ The management segment carries infrastructure control traffic.
 - Full access to all infrastructure
 - Source of Ansible automation
 - Never exposed to untrusted networks
+
+### Trusted Segment
+
+The trusted segment contains high-trust user devices that require broad network access but are not part of the infrastructure control plane.
+
+**Typical inhabitants:**
+- Personal workstations (`ws01`, `ws02`)
+- Laptops and primary user devices
+- Multi-homed desktops with access to multiple segments
+
+**Properties:**
+- High trust level, similar to management
+- Can initiate connections to most segments (except guest)
+- May access management services for administration
+- Users are authenticated and devices are known/managed
+- Subject to endpoint security requirements
 
 ### Storage Segment
 
@@ -116,13 +133,15 @@ The guest segment provides network access for transient devices without substrat
 Segments form a trust hierarchy with controlled routing between them:
 
 ```
-                    ┌─────────────────────┐
-                    │     Management      │  ← Full infrastructure access
-                    │    (High Trust)     │
-                    └──────────┬──────────┘
-                               │ manages
-            ┌──────────────────┼──────────────────┐
-            ▼                  ▼                  ▼
+┌─────────────────────┐   ┌─────────────────────┐
+│     Management      │   │       Trusted       │  ← High-trust segments
+│    (High Trust)     │   │    (High Trust)     │
+└──────────┬──────────┘   └──────────┬──────────┘
+           │ manages                 │ user access
+           └────────────┬────────────┘
+                        │
+     ┌──────────────────┼──────────────────┐
+     ▼                  ▼                  ▼
 ┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
 │      Storage      │ │  Tenant Segments  │ │        IoT        │
 │   (High Trust)    │ │  (Medium Trust)   │ │   (Low Trust)     │
@@ -140,7 +159,8 @@ Segments form a trust hierarchy with controlled routing between them:
 
 - **Default deny** — Traffic between segments is blocked unless explicitly allowed
 - **Management can reach all** — Management segment initiates connections to all others
-- **Storage is isolated** — Only management and designated compute hosts access storage
+- **Trusted has broad access** — Trusted segment can reach most segments except guest; similar to management but for user devices
+- **Storage is isolated** — Only management, trusted, and designated compute hosts access storage
 - **Tenants are isolated** — Tenants cannot see each other; access shared services via firewall rules
 - **IoT is outbound-only** — IoT devices can reach internet; inbound requires explicit rules
 - **Guest has no substrate access** — Guest segment routes only to internet gateway
@@ -201,7 +221,7 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Substrates use five segment types: Management, Storage, Tenant, IoT, Guest
+1. Substrates use six segment types: Management, Trusted, Storage, Tenant, IoT, Guest
 2. Segments form a trust hierarchy with default-deny routing between them
 3. Each substrate implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP

@@ -36,11 +36,23 @@ The management segment contains infrastructure control plane systems.
 - Management segment MUST contain the bootstrap/provisioner node
 - Management segment SHOULD contain dedicated hypervisor management interfaces when hardware supports it
 - Single-NIC hypervisors SHOULD use VLAN trunking or firewall rules to isolate management access
-- Management segment MUST NOT contain end-user workloads
+- Management segment MUST NOT contain end-user workloads or personal devices
 - Management segment SHOULD contain IPMI/BMC interfaces
 - Hosts in management segment MUST use `-mgmt` suffix for interface DNS entries (e.g., `hv01-mgmt.dvntm.deevnet.net`)
 
-### 2. Storage Segment
+### 2. Trusted Segment
+
+The trusted segment contains high-trust user devices that require broad network access.
+
+- Trusted segment SHOULD exist when user workstations need elevated access beyond tenant segments
+- Trusted segment MUST contain only known, managed devices
+- Trusted segment MAY access management services for administration purposes
+- Trusted segment MUST NOT contain infrastructure control plane systems (those belong in management)
+- Trusted segment SHOULD have endpoint security requirements (e.g., disk encryption, managed updates)
+- Trusted segment MAY access storage segment for user data access
+- Devices in trusted segment SHOULD be authenticated users with known identities
+
+### 3. Storage Segment
 
 The storage segment isolates storage protocol traffic.
 
@@ -50,7 +62,7 @@ The storage segment isolates storage protocol traffic.
 - Hosts in storage segment MUST use `-stor` suffix for interface DNS entries (e.g., `hv01-stor.dvntm.deevnet.net`)
 - Storage segment MAY use jumbo frames when all participants support them
 
-### 3. Tenant Segments
+### 4. Tenant Segments
 
 Tenant segments provide workload isolation per tenant namespace.
 
@@ -60,7 +72,7 @@ Tenant segments provide workload isolation per tenant namespace.
 - Tenant segments MAY access shared services via explicit firewall rules
 - Each tenant segment MUST have its own DHCP scope
 
-### 4. IoT Segment
+### 5. IoT Segment
 
 The IoT segment isolates untrusted or embedded devices.
 
@@ -70,7 +82,7 @@ The IoT segment isolates untrusted or embedded devices.
 - IoT segment MUST NOT have unrestricted inbound access
 - Devices in IoT segment SHOULD be treated as potentially compromised
 
-### 5. Guest Segment
+### 6. Guest Segment
 
 The guest segment provides transient network access.
 
@@ -96,6 +108,8 @@ The following inter-segment flows are permitted when explicitly configured:
 | Source | Destination | Condition |
 |--------|-------------|-----------|
 | Management | Any | Always allowed (for administration) |
+| Trusted | Most segments | Allowed except guest (for user administration) |
+| Trusted | Storage | Required for user data access |
 | Compute hosts | Storage | Required for storage access |
 | Tenant | Shared services | Explicit per-service rules |
 | IoT | Internet | Outbound only |
@@ -115,7 +129,7 @@ The following flows MUST NOT be permitted:
 
 - Each segment MUST have a dedicated DHCP scope
 - DHCP scopes MUST NOT overlap
-- Management and storage segments SHOULD use static DHCP mappings
+- Management, trusted, and storage segments SHOULD use static DHCP mappings
 - Tenant segments SHOULD use static mappings for known hosts
 - IoT and guest segments MAY use dynamic pools
 
