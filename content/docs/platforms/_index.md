@@ -27,5 +27,6 @@ This section answers the question:
 Detailed documentation for substrate infrastructure:
 
 - [Bootstrap Node](bootstrap-node/) — Control plane for substrate provisioning
-- [OPNsense Router](opnsense-router/) — Firewall, gateway, DNS, DHCP
+- [OPNsense Router](opnsense-router/) — Current firewall, gateway, DNS, DHCP
+- [VyOS Router](vyos-router/) — Target router platform (evaluation)
 - [Proxmox Hypervisors](proxmox-hypervisors/) — Virtualization platform
