@@ -14,7 +14,7 @@ Goals:
 - **Self-contained** — All automation, artifacts, and services on one device
 - **Portable** — Move between substrates (dvntm, dvnt) as needed
 - **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
-- **Disposable authority** — Hands off control to OPNsense once the substrate is running
+- **Disposable authority** — Hands off control to Core Router once the substrate is running
 
 "Bring one box, provision everything."
 
@@ -49,7 +49,7 @@ The same physical device can be moved between substrates:
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
 - **Downstream interface**: Becomes the gateway for the substrate during bootstrap
 
-During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once OPNsense is configured, routing authority transitions.
+During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions.
 
 ---
 
@@ -72,9 +72,11 @@ The bootstrap node runs these services directly via the `bootstrap` role:
 | Service | Implementation | Purpose |
 |---------|----------------|---------|
 | **Artifacts** | nginx | ISOs, images, netboot files, packages |
-| **PXE/TFTP** | dnsmasq | Network boot for bare-metal hosts |
-| **DNS** | dnsmasq | Name resolution during bootstrap |
-| **DHCP** | dnsmasq | IP assignment during bootstrap |
+| **TFTP** | in.tftpd (systemd) | Network boot files (GRUB, kernel, initrd) |
+
+In **Core Router-Authoritative** mode (normal operation), DHCP and DNS are provided by Core Router, not the bootstrap node. The bootstrap node only provides TFTP for PXE boot files.
+
+See [PXE Boot Infrastructure](pxe-boot-infrastructure/) for details.
 
 All infrastructure Git repositories are checked out locally.
 
@@ -86,7 +88,7 @@ The bootstrap node **configures** these services, which run on separate devices:
 
 | Target | Collection | Purpose |
 |--------|------------|---------|
-| **OPNsense** | `deevnet.net` | Firewall, router, production DNS/DHCP |
+| **Core Router** | `deevnet.net` | Firewall, router, production DNS/DHCP |
 | **Omada controller** | `deevnet.builder` | TP-Link switch and AP management |
 | **Proxmox** | `deevnet.builder` | Hypervisor for VMs |
 | **Substrate hosts** | `deevnet.builder` | Admin nodes, compute, storage |
@@ -101,17 +103,20 @@ Per the [Correctness Standard](/docs/standards/correctness/#52-authority-modes-a
 
 ### Bootstrap-Authoritative
 
-During initial substrate provisioning:
-- Bootstrap node provides DNS, DHCP, and gateway services
+During initial substrate provisioning (rare, greenfield only):
+- Bootstrap node provides DNS, DHCP, and gateway services via dnsmasq
 - All substrate hosts depend on the bootstrap node for network identity
-- OPNsense is not yet configured (or is being provisioned)
+- Core Router is not yet configured (or is being provisioned)
 
-### OPNsense-Authoritative
+### Core Router-Authoritative (Normal Operation)
 
-After OPNsense is running:
-- OPNsense provides DNS, DHCP, and gateway services
-- Bootstrap node's dnsmasq is disabled or restricted
-- Bootstrap node becomes a regular admin host
+After Core Router is running (standard mode):
+- Core Router (Kea) provides DNS and DHCP services
+- Core Router provides gateway and routing
+- Bootstrap node provides **TFTP only** for PXE boot
+- Bootstrap node is a regular admin host
+
+**Most PXE provisioning happens in Core Router-Authoritative mode** — Core Router Kea provides DHCP with PXE options (next-server, boot-file-name), and the bootstrap node serves boot files via TFTP.
 
 **The transition between modes is explicit, not automatic.**
 
@@ -119,13 +124,27 @@ After OPNsense is running:
 
 ## Provisioning Workflow
 
+### Core Router-Authoritative (Normal)
+
+For adding new hosts to an existing substrate:
+
+1. **Add DHCP reservation**: Create host entry in Core Router Kea with MAC, IP, and PXE options
+2. **Add MAC config**: Add entry to `bootstrap_grub_mac_configs` in inventory
+3. **Apply bootstrap role**: Generates MAC-specific GRUB config
+4. **PXE boot host**: Host boots, gets DHCP from Core Router, TFTP from bootstrap node
+5. **Automated install**: Kickstart completes without intervention
+
+### Bootstrap-Authoritative (Greenfield)
+
+For initial substrate buildout when Core Router doesn't exist:
+
 1. **Connect upstream**: Bootstrap node plugs into host network, gets internet access
 2. **Activate downstream**: Bootstrap node's substrate interface comes up with static IP
 3. **Start services**: dnsmasq (DHCP/DNS/TFTP) and nginx (artifacts) start
 4. **PXE boot targets**: Bare-metal hosts boot from bootstrap node
-5. **Provision OPNsense**: OPNsense VM is installed and configured via Ansible
-6. **Transition authority**: DHCP/DNS moves to OPNsense
-7. **Bootstrap becomes admin**: dnsmasq stops; bootstrap node is now just another host
+5. **Provision Core Router**: Core Router VM is installed and configured via Ansible
+6. **Transition authority**: DHCP/DNS moves to Core Router, dnsmasq stops
+7. **Bootstrap becomes admin**: Bootstrap node provides TFTP only
 
 ---
 
@@ -158,10 +177,11 @@ Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-locatio
 
 ---
 
-## Roles
+## Roles and Services
 
 The bootstrap node is configured using these `deevnet.builder` roles:
 
+- **[PXE Boot Infrastructure](pxe-boot-infrastructure/)** — TFTP server and GRUB configs for network boot
 - **[Artifacts Server](artifacts-server/)** — nginx-based artifact hosting for air-gapped provisioning
 - **[Workstation](workstation-role/)** — Developer tools, users, and environment setup
 - **[Omada Controller](omada-controller-role/)** — TP-Link network controller management
@@ -173,7 +193,7 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 The bootstrap node is the entry point for substrate provisioning:
 
 1. **One device** contains all automation and artifacts
-2. **Dual-homed** between upstream network and substrate
-3. **Temporarily authoritative** for DNS/DHCP during bootstrap
-4. **Configures** OPNsense, Omada, and all substrate hosts
-5. **Transitions** to regular admin role once substrate is running
+2. **TFTP server** for PXE boot files (GRUB, kernel, initrd)
+3. **Artifact server** for install media, kickstarts, and packages
+4. **Configures** Core Router, Omada, and all substrate hosts via Ansible
+5. **Core Router provides DHCP** with PXE options pointing to bootstrap node's TFTP

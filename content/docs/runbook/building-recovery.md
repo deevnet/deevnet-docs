@@ -48,37 +48,43 @@ curl -I http://artifacts.dvntm.deevnet.net/isos/proxmox/proxmox-ve_8.4-1.iso
 
 ---
 
-## Enable Bootstrap-Authoritative Mode
+## PXE Boot Modes
 
-Before PXE booting substrate hosts, enable the bootstrap node as the DNS/DHCP authority for the network.
+PXE provisioning operates in two modes. **Most operations use Core Router-Authoritative mode.**
 
-This makes the bootstrap node the gateway and DNS forwarder for 192.168.10.0/23, bypassing OPNsense during initial provisioning.
+### Core Router-Authoritative (Normal)
 
-### Commands
+When Core Router is running (standard operation):
+
+1. Core Router Kea provides DHCP with PXE options:
+   - `next-server`: 192.168.10.95 (bootstrap node)
+   - `boot-file-name`: grubx64.efi
+2. Bootstrap node provides TFTP only (no dnsmasq needed)
+3. Host PXE boots, gets DHCP from Core Router, TFTP from bootstrap
+
+**To add a new PXE host:**
+
+```bash
+# 1. Add DHCP reservation in Core Router (via UI or API)
+# 2. Add MAC config to inventory
+# 3. Apply bootstrap role
+cd ~/dvnt/ansible-collection-deevnet.builder
+make rebuild
+ansible-playbook playbooks/site.yml --limit bootstrap_nodes
+```
+
+See [PXE Boot Infrastructure](/docs/platforms/bootstrap-node/pxe-boot-infrastructure/) for details.
+
+### Bootstrap-Authoritative (Greenfield Only)
+
+Only for initial substrate buildout when Core Router doesn't exist yet:
 
 ```bash
 cd ~/dvnt/ansible-collection-deevnet.builder
 make bootstrap-auth
 ```
 
-This runs the `bootstrap-authoritative.yml` playbook which:
-
-- Enables dnsmasq for DHCP (192.168.10.100-192.168.11.254) and DNS forwarding
-- Configures IP forwarding and NAT on the WAN interface
-- Makes the provisioner (192.168.10.95) the gateway for substrate hosts
-
-### Verification
-
-```bash
-# Check dnsmasq is running
-systemctl status dnsmasq
-
-# Verify DHCP is listening
-ss -ulnp | grep :67
-
-# Test DNS forwarding
-dig @192.168.10.95 google.com
-```
+This enables dnsmasq for DHCP/DNS/TFTP. After Core Router is provisioned, transition to Core Router-Authoritative mode and disable dnsmasq.
 
 ---
 
@@ -110,11 +116,20 @@ Boot customized ISO with embedded answer file:
 
 ### Recovery Sequence
 
-1. Bootstrap node connects to substrate network
-2. Start dnsmasq (DHCP/DNS/TFTP) and nginx (artifacts)
+**If Core Router is running** (normal recovery):
+1. Verify Core Router Kea has correct DHCP reservations with PXE options
+2. Verify bootstrap node TFTP is running (`systemctl status tftp.socket`)
 3. PXE boot target hosts
-4. Hosts install from local artifacts (ISO/cdrom)
+4. Hosts install from local artifacts (artifact server)
 5. Post-install: Ansible configures services
+
+**If Core Router is down** (full substrate recovery):
+1. Bootstrap node connects to substrate network
+2. Enable bootstrap-authoritative mode (`make bootstrap-auth`)
+3. Start dnsmasq (DHCP/DNS/TFTP) and nginx (artifacts)
+4. PXE boot target hosts including Core Router
+5. Transition to Core Router-authoritative mode
+6. Post-install: Ansible configures services
 
 ---
 
@@ -125,13 +140,13 @@ Boot customized ISO with embedded answer file:
 | Proxmox VM template | kickstart + cdrom | Ready |
 | Proxmox VE bare metal | embedded answer file | Ready |
 | Fedora packages (install) | local mirror/ISO | Ready |
-| OPNsense | manual | Gap |
+| Core Router | manual | Gap |
 
 ---
 
 ## Known Gaps
 
-### OPNsense
+### Core Router
 
 No automated install/recovery exists. Current workaround:
 
