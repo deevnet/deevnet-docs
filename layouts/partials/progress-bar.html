@@ -1,0 +1,26 @@
+{{- $completed := .completed | default 0 -}}
+{{- $in_progress := .in_progress | default 0 -}}
+{{- $planned := .planned | default 0 -}}
+{{- $total := add $completed (add $in_progress $planned) -}}
+
+{{- if gt $total 0 -}}
+<div class="progress-container" style="margin: 0.5em 0;">
+  <div class="progress-bar" style="display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: #e0e0e0;">
+    {{- if gt $completed 0 -}}
+    <div style="width: {{ mul (div (float $completed) (float $total)) 100 }}%; background: #4caf50;" title="{{ $completed }} completed"></div>
+    {{- end -}}
+    {{- if gt $in_progress 0 -}}
+    <div style="width: {{ mul (div (float $in_progress) (float $total)) 100 }}%; background: #2196f3;" title="{{ $in_progress }} in progress"></div>
+    {{- end -}}
+    {{- if gt $planned 0 -}}
+    <div style="width: {{ mul (div (float $planned) (float $total)) 100 }}%; background: #ff9800;" title="{{ $planned }} planned"></div>
+    {{- end -}}
+  </div>
+  <div style="font-size: 0.85em; margin-top: 0.3em; color: #666;">
+    <span style="color: #4caf50;">&#x2713; {{ $completed }}</span> |
+    <span style="color: #2196f3;">&#x21bb; {{ $in_progress }}</span> |
+    <span style="color: #ff9800;">&#x23f3; {{ $planned }}</span>
+    ({{ $total }} total)
+  </div>
+</div>
+{{- end -}}

@@ -1,15 +1,18 @@
 ---
 title: "DVNTM Infrastructure as Code"
 weight: 1
+tasks_completed: 12
+tasks_in_progress: 0
+tasks_planned: 17
 ---
 
 # DVNTM Infrastructure as Code
 
 Full automation of mobile substrate provisioning and management.
 
-**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+{{< overall-progress >}}
 
-Each section below represents a project milestone.
+**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
 ---
 
@@ -17,15 +20,13 @@ Each section below represents a project milestone.
 
 Core infrastructure for building and deploying the substrate.
 
-| Task | Status |
-|------|--------|
-| Builder Node Ansible Collection (`deevnet.builder`) | ✅ |
-| Image Packaging - Proxmox Fedora template | ✅ |
-| Image Packaging - Proxmox installer | ✅ |
-| Image Packaging - Raspberry Pi Base Image | ✅ |
-| Bootstrap Node Provisioning Playbook | ✅ |
-| Proxmox Automated Install via PXE | ✅ |
-| Full Air-Gap Support (Fedora Mirror) | ✅ |
+- ✅ Builder Node Ansible Collection (`deevnet.builder`)
+- ✅ Image Packaging - Proxmox Fedora template
+- ✅ Image Packaging - Proxmox installer
+- ✅ Image Packaging - Raspberry Pi Base Image
+- ✅ Bootstrap Node Provisioning Playbook
+- ✅ Proxmox Automated Install via PXE
+- ✅ Full Air-Gap Support (Fedora Mirror)
 
 ---
 
@@ -33,11 +34,9 @@ Core infrastructure for building and deploying the substrate.
 
 Documentation and inventory definitions.
 
-| Task | Status |
-|------|--------|
-| Hugo-based Documentation Site | ✅ |
-| Standards and Correctness Docs | ✅ |
-| dvntm Substrate Bare-Metal Inventory (MAC addresses) | ✅ |
+- ✅ Hugo-based Documentation Site
+- ✅ Standards and Correctness Docs
+- ✅ dvntm Substrate Bare-Metal Inventory (MAC addresses)
 
 ---
 
@@ -45,34 +44,28 @@ Documentation and inventory definitions.
 
 Automated configuration of network infrastructure.
 
-| Task | Status |
-|------|--------|
-| Ansible Network Collection - DHCP reservations | ✅ |
-| Ansible Network Collection - DNS host overrides | ✅ |
-| OPNsense Alternatives Evaluation | ⏳ |
-| dvntm VLAN Plan | ⏳ |
-| Access Switch Automation (Omada) | ⏳ |
-| Proxmox Tenant Networking Design and Automation | ⏳ |
-| Wireless AP Automation (Omada) | ⏳ |
+- ✅ Ansible Network Collection - DHCP reservations
+- ✅ Ansible Network Collection - DNS host overrides
+- ⏳ OPNsense Alternatives Evaluation
+- ⏳ dvntm VLAN Plan
+- ⏳ Access Switch Automation (Omada)
+- ⏳ Proxmox Tenant Networking Design and Automation
+- ⏳ Wireless AP Automation (Omada)
 
 ---
 
 ## Full Substrate Rebuild Event ⏳
 
-End-to-end rebuild of the mobile substrate from scratch.
+End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap recovery capability.
 
-| Step | Task | Status |
-|------|------|--------|
-| 1 | Rebuild provisioner node | ⏳ |
-| 2 | Fetch artifacts (ISOs, install trees, containers) | ⏳ |
-| 3 | Enable bootstrap-authoritative mode | ⏳ |
-| 4 | Set up VLANs on access switch | ⏳ |
-| 5 | Rebuild core router | ⏳ |
-| 6 | Configure wireless AP | ⏳ |
-| 7 | Rebuild Proxmox hypervisor | ⏳ |
-| 8 | Rebuild all application tenants | ⏳ |
-
-Validates full air-gap recovery capability.
+- ⏳ Rebuild provisioner node
+- ⏳ Fetch artifacts (ISOs, install trees, containers)
+- ⏳ Enable bootstrap-authoritative mode
+- ⏳ Set up VLANs on access switch
+- ⏳ Rebuild core router
+- ⏳ Configure wireless AP
+- ⏳ Rebuild Proxmox hypervisor
+- ⏳ Rebuild all application tenants
 
 ---
 
@@ -80,9 +73,7 @@ Validates full air-gap recovery capability.
 
 Ongoing maintenance and updates.
 
-| Task | Status |
-|------|--------|
-| Patching Strategy - Switches | ⏳ |
-| Patching Strategy - Proxmox VE | ⏳ |
-| Patching Strategy - Firewall/Core router | ⏳ |
-| Patching Strategy - Linux packages | ⏳ |
+- ⏳ Patching Strategy - Switches
+- ⏳ Patching Strategy - Proxmox VE
+- ⏳ Patching Strategy - Firewall/Core router
+- ⏳ Patching Strategy - Linux packages

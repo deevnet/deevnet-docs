@@ -1,0 +1,5 @@
+{{- $completed := .Params.tasks_completed | default 0 -}}
+{{- $in_progress := .Params.tasks_in_progress | default 0 -}}
+{{- $planned := .Params.tasks_planned | default 0 -}}
+
+{{- partial "progress-bar.html" (dict "completed" $completed "in_progress" $in_progress "planned" $planned) -}}

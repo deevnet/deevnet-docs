@@ -1,0 +1,16 @@
+{{- range .Page.Pages -}}
+  {{- $completed := .Params.tasks_completed | default 0 -}}
+  {{- $in_progress := .Params.tasks_in_progress | default 0 -}}
+  {{- $planned := .Params.tasks_planned | default 0 -}}
+  {{- $total := add $completed (add $in_progress $planned) -}}
+
+  {{- if gt $total 0 -}}
+  <div style="margin-bottom: 1.5em;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3em;">
+      <a href="{{ .RelPermalink }}" style="font-weight: 500;">{{ .Title }}</a>
+      <span style="font-size: 0.85em; color: #888;">{{ $completed }}/{{ $total }}</span>
+    </div>
+    {{- partial "progress-bar.html" (dict "completed" $completed "in_progress" $in_progress "planned" $planned) -}}
+  </div>
+  {{- end -}}
+{{- end -}}
