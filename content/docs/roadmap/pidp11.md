@@ -1,6 +1,9 @@
 ---
 title: "PiDP-11"
 weight: 3
+tasks_completed: 1
+tasks_in_progress: 1
+tasks_planned: 2
 ---
 
 # PiDP-11 Project
@@ -9,9 +12,9 @@ PDP-11 replica using simh emulation on Raspberry Pi.
 
 Part of `deevnet-image-factory`.
 
-**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+{{< overall-progress >}}
 
-Each section below represents a project milestone.
+**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
 ---
 
@@ -19,9 +22,7 @@ Each section below represents a project milestone.
 
 PDP-11 emulation running on Raspberry Pi.
 
-| Task | Status |
-|------|--------|
-| Base Pi image with ansible support | ✅ |
-| simh installation and configuration | 🔄 |
-| Multiple OS options (RT-11, RSX-11, 2.11BSD) | ⏳ |
-| Build documentation | ⏳ |
+- ✅ Base Pi image with ansible support
+- 🔄 simh installation and configuration
+- ⏳ Multiple OS options (RT-11, RSX-11, 2.11BSD)
+- ⏳ Build documentation

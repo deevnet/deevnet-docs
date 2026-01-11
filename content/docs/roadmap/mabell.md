@@ -1,6 +1,9 @@
 ---
 title: "Ma Bell"
 weight: 4
+tasks_completed: 0
+tasks_in_progress: 0
+tasks_planned: 63
 ---
 
 # Ma Bell Project
@@ -9,12 +12,12 @@ Bluetooth Phone Gateway for vintage telephone integration.
 
 *Project implemented in a separate repository.*
 
-- **GitHub:** https://github.com/cdeever/esp32-ma-bell-gateway  
+- **GitHub:** https://github.com/cdeever/esp32-ma-bell-gateway
 - **Documentation:** https://cdeever.github.io/esp32-ma-bell-gateway/
 
-**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+{{< overall-progress >}}
 
-Each section below represents a project milestone.
+**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
 ---
 
@@ -39,14 +42,12 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 
 Define what success means before building.
 
-| Task | Status |
-|-----|--------|
-| User scenarios (incoming/outgoing calls, edge cases) | ⏳ |
-| Functional requirements (FR-xxx) | ⏳ |
-| Non-functional requirements (latency, audio quality, reliability) | ⏳ |
-| Electrical & mechanical constraints | ⏳ |
-| Acceptance criteria for each requirement | ⏳ |
-| Risk register (top technical risks + mitigations) | ⏳ |
+- ⏳ User scenarios (incoming/outgoing calls, edge cases)
+- ⏳ Functional requirements (FR-xxx)
+- ⏳ Non-functional requirements (latency, audio quality, reliability)
+- ⏳ Electrical & mechanical constraints
+- ⏳ Acceptance criteria for each requirement
+- ⏳ Risk register (top technical risks + mitigations)
 
 ---
 
@@ -54,16 +55,14 @@ Define what success means before building.
 
 Translate requirements into a complete system design.
 
-| Task | Status |
-|-----|--------|
-| System block diagram | ⏳ |
-| Power architecture & protection strategy | ⏳ |
-| Audio signal chain & gain staging plan | ⏳ |
-| Hook switch, dial pulse, and ring detection design | ⏳ |
-| Bluetooth integration architecture | ⏳ |
-| Firmware architecture & state machine definition | ⏳ |
-| Interface specifications (electrical, audio, software) | ⏳ |
-| Verification & test plan (requirements → tests mapping) | ⏳ |
+- ⏳ System block diagram
+- ⏳ Power architecture & protection strategy
+- ⏳ Audio signal chain & gain staging plan
+- ⏳ Hook switch, dial pulse, and ring detection design
+- ⏳ Bluetooth integration architecture
+- ⏳ Firmware architecture & state machine definition
+- ⏳ Interface specifications (electrical, audio, software)
+- ⏳ Verification & test plan (requirements → tests mapping)
 
 ---
 
@@ -71,14 +70,12 @@ Translate requirements into a complete system design.
 
 De-risk the hardest problems early using breadboards and bench tests.
 
-| Task | Status |
-|-----|--------|
-| Breadboard core signal chain | ⏳ |
-| ESP32 bring-up & peripheral validation | ⏳ |
-| Dial pulse timing & debounce experiments | ⏳ |
-| Ring generation & ring-trip validation | ⏳ |
-| Audio path measurements (levels, noise, echo) | ⏳ |
-| Bench test notes and captured measurements | ⏳ |
+- ⏳ Breadboard core signal chain
+- ⏳ ESP32 bring-up & peripheral validation
+- ⏳ Dial pulse timing & debounce experiments
+- ⏳ Ring generation & ring-trip validation
+- ⏳ Audio path measurements (levels, noise, echo)
+- ⏳ Bench test notes and captured measurements
 
 ---
 
@@ -86,17 +83,15 @@ De-risk the hardest problems early using breadboards and bench tests.
 
 ESP32 firmware implementing telephony behavior and system control.
 
-| Task | Status |
-|-----|--------|
-| ESP32 base firmware & build system | ⏳ |
-| Bluetooth HFP profile implementation | ⏳ |
-| Call state machine implementation | ⏳ |
-| Dial tone, ring, busy, reorder tone generation | ⏳ |
-| Rotary pulse detection & validation | ⏳ |
-| Configuration storage (NVS schema) | ⏳ |
-| Logging & diagnostics | ⏳ |
-| Firmware versioning & release tagging | ⏳ |
-| Optional OTA update mechanism | ⏳ |
+- ⏳ ESP32 base firmware & build system
+- ⏳ Bluetooth HFP profile implementation
+- ⏳ Call state machine implementation
+- ⏳ Dial tone, ring, busy, reorder tone generation
+- ⏳ Rotary pulse detection & validation
+- ⏳ Configuration storage (NVS schema)
+- ⏳ Logging & diagnostics
+- ⏳ Firmware versioning & release tagging
+- ⏳ Optional OTA update mechanism
 
 ---
 
@@ -104,16 +99,14 @@ ESP32 firmware implementing telephony behavior and system control.
 
 Transition from prototype to a reproducible hardware design.
 
-| Task | Status |
-|-----|--------|
-| Schematic capture | ⏳ |
-| BOM with alternates | ⏳ |
-| PCB layout & DFM/DFA review | ⏳ |
-| Test points & programming header | ⏳ |
-| Fabrication | ⏳ |
-| Assembly | ⏳ |
-| Hardware bring-up checklist | ⏳ |
-| Electrical verification against requirements | ⏳ |
+- ⏳ Schematic capture
+- ⏳ BOM with alternates
+- ⏳ PCB layout & DFM/DFA review
+- ⏳ Test points & programming header
+- ⏳ Fabrication
+- ⏳ Assembly
+- ⏳ Hardware bring-up checklist
+- ⏳ Electrical verification against requirements
 
 ---
 
@@ -121,13 +114,11 @@ Transition from prototype to a reproducible hardware design.
 
 Package the device for real-world use.
 
-| Task | Status |
-|-----|--------|
-| Enclosure requirements & constraints | ⏳ |
-| Connector placement & strain relief | ⏳ |
-| Enclosure design (3D print or fabrication) | ⏳ |
-| Thermal and safety considerations | ⏳ |
-| Final mechanical assembly | ⏳ |
+- ⏳ Enclosure requirements & constraints
+- ⏳ Connector placement & strain relief
+- ⏳ Enclosure design (3D print or fabrication)
+- ⏳ Thermal and safety considerations
+- ⏳ Final mechanical assembly
 
 ---
 
@@ -135,14 +126,12 @@ Package the device for real-world use.
 
 Prove the system meets its requirements.
 
-| Task | Status |
-|-----|--------|
-| Requirements → test traceability | ⏳ |
-| Functional test execution | ⏳ |
-| Audio quality & latency validation | ⏳ |
-| Long-duration stability testing | ⏳ |
-| Regression testing after changes | ⏳ |
-| Issue tracking & resolution | ⏳ |
+- ⏳ Requirements → test traceability
+- ⏳ Functional test execution
+- ⏳ Audio quality & latency validation
+- ⏳ Long-duration stability testing
+- ⏳ Regression testing after changes
+- ⏳ Issue tracking & resolution
 
 ---
 
@@ -150,13 +139,11 @@ Prove the system meets its requirements.
 
 Prepare the design for repeatable builds.
 
-| Task | Status |
-|-----|--------|
-| Assembly documentation | ⏳ |
-| Manufacturing test procedure | ⏳ |
-| Test fixtures / jigs | ⏳ |
-| Calibration & setup process | ⏳ |
-| Revision control (Rev A, Rev B, etc.) | ⏳ |
+- ⏳ Assembly documentation
+- ⏳ Manufacturing test procedure
+- ⏳ Test fixtures / jigs
+- ⏳ Calibration & setup process
+- ⏳ Revision control (Rev A, Rev B, etc.)
 
 ---
 
@@ -164,13 +151,11 @@ Prepare the design for repeatable builds.
 
 Create durable documentation for users and future builders.
 
-| Task | Status |
-|-----|--------|
-| Build instructions | ⏳ |
-| Installation & wiring guide | ⏳ |
-| User guide | ⏳ |
-| Troubleshooting guide | ⏳ |
-| Design notes & lessons learned | ⏳ |
+- ⏳ Build instructions
+- ⏳ Installation & wiring guide
+- ⏳ User guide
+- ⏳ Troubleshooting guide
+- ⏳ Design notes & lessons learned
 
 ---
 
@@ -178,10 +163,8 @@ Create durable documentation for users and future builders.
 
 Put the system into real use.
 
-| Task | Status |
-|-----|--------|
-| Final integration testing | ⏳ |
-| Installation procedure | ⏳ |
-| Field diagnostics workflow | ⏳ |
-| Release notes | ⏳ |
-| Ongoing maintenance plan | ⏳ |
+- ⏳ Final integration testing
+- ⏳ Installation procedure
+- ⏳ Field diagnostics workflow
+- ⏳ Release notes
+- ⏳ Ongoing maintenance plan
