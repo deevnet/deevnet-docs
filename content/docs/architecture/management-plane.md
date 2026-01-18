@@ -30,6 +30,41 @@ It does **not** host tenant workloads.
 
 ---
 
+## 1.1 Physical vs Virtual Management Services
+
+The management plane encompasses both **physical** and **virtual** services:
+
+### Physical Layer (Core Router)
+
+Services that run on dedicated hardware (router/gateway appliance):
+
+| Service | Description |
+|---------|-------------|
+| **DNS** | Authoritative for substrate zones, forwarding for external |
+| **DHCP** | Static mappings for known hosts, dynamic pools |
+| **NAT** | Outbound gateway for all segments |
+| **Firewall** | Inter-segment and egress rules |
+
+These services are provided by the Core Router ([OPNsense](/docs/platforms/opnsense-router/)
+or [VyOS](/docs/platforms/vyos-router/)) and must remain operational even if all
+hypervisors are down.
+
+### Virtual Layer (Management Hypervisor)
+
+Services that run as VMs on the dedicated management hypervisor:
+
+| Service | Description |
+|---------|-------------|
+| **Observability** | Metrics collection, log aggregation, alerting |
+| **Automation** | Ansible runners, image factory helpers |
+| **Access** | Jump hosts, out-of-band tooling |
+
+Virtual management services may be rebuilt from the physical layer.
+See [Virtual Management Services](/docs/architecture/virtual-management-services/)
+for details on what runs on the management hypervisor.
+
+---
+
 ## 2. Management Plane vs Substrates
 
 ### 2.1 Substrates
