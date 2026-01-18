@@ -50,3 +50,11 @@ remains lowercase.
 
 MAC addresses belong in `infrastructure.interfaces.<name>.mac` as part
 of host identity per the [Identity vs Intent](../identity-vs-intent/) standard.
+
+## Related Standards
+
+- [MAC Namespace Specification](../mac-naming/) - Defines the semantic structure
+  of MAC addresses (environment, role, instance encoding)
+
+This document defines **how** MAC addresses are formatted. The namespace
+specification defines **what** values they contain.
