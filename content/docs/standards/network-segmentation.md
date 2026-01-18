@@ -11,7 +11,7 @@ Defines mandatory requirements for network segmentation in Deevnet substrates.
 
 ## Purpose
 
-This standard establishes rules for how substrates implement network segmentation. It complements the [Substrate Networking](/docs/architecture/substrate-networking/) architecture document, which describes the segment model and design rationale.
+This standard establishes rules for how substrates implement network segmentation. It complements the [Substrate Networking](/docs/architecture/substrate/networking/) architecture document, which describes the segment model and design rationale.
 
 ---
 
