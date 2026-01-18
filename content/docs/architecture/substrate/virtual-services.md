@@ -1,6 +1,6 @@
 ---
-title: "Virtual Management Services"
-weight: 21
+title: "Virtual Services"
+weight: 3
 ---
 
 # Virtual Management Services
@@ -89,8 +89,7 @@ The following services run on the **Core Router** (hardware layer), not as VMs:
 | Firewall rules | Core Router |
 
 These services must remain operational even if all hypervisors are down.
-See [Management Plane Architecture](/docs/architecture/management-plane/) for
-the physical vs virtual service distinction.
+See [Management Plane](management-plane/) for the physical vs virtual service distinction.
 
 ---
 
@@ -151,7 +150,7 @@ If a service is required to **recover the platform**, it belongs on the manageme
 
 | Document | Relationship |
 |---------|--------------|
-| [Management Plane Architecture](/docs/architecture/management-plane/) | Defines physical vs virtual service boundaries |
+| [Management Plane](management-plane/) | Defines physical vs virtual service boundaries |
 | [Proxmox Hypervisors](/docs/platforms/proxmox-hypervisors/) | mgmt runs on dedicated hypervisor |
 | [Bootstrap Node](/docs/platforms/bootstrap-node/) | Builds mgmt substrate |
 | [MAC Namespace Specification](/docs/standards/mac-naming/) | Defines mgmt network identity |

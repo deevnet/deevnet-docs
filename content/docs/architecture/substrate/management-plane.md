@@ -1,6 +1,6 @@
 ---
-title: "Management Plane Architecture"
-weight: 20
+title: "Management Plane"
+weight: 2
 ---
 
 # Deevnet Management Plane Architecture
@@ -8,7 +8,7 @@ weight: 20
 ### Purpose
 This document defines the **Management Plane** within Deevnet.
 
-The management plane is responsible for **provisioning, recovery, and out-of-band control** of substrates.  
+The management plane is responsible for **provisioning, recovery, and out-of-band control** of substrates.
 It exists *outside* normal workload substrates and may interact with multiple substrates simultaneously.
 
 This document describes **architecture and intent**, not implementation details.
@@ -60,8 +60,7 @@ Services that run as VMs on the dedicated management hypervisor:
 | **Access** | Jump hosts, out-of-band tooling |
 
 Virtual management services may be rebuilt from the physical layer.
-See [Virtual Management Services](/docs/architecture/virtual-management-services/)
-for details on what runs on the management hypervisor.
+See [Virtual Services](virtual-services/) for details on what runs on the management hypervisor.
 
 ---
 
@@ -138,16 +137,16 @@ DNS authority boundaries are explicit and intentional.
 
 The `mgmt.deevnet.net` zone operates in two modes depending on substrate state.
 
-### 4.1 OPNsense-Authoritative (BAU)
+### 4.1 Router-Authoritative (BAU)
 
 During normal operation:
 
-- OPNsense is the DNS authority for the substrate
-- OPNsense holds `mgmt.deevnet.net` records (CNAMEs → provisioner host A record)
+- Core Router is the DNS authority for the substrate
+- Core Router holds `mgmt.deevnet.net` records (CNAMEs → provisioner host A record)
 - Provisioner's dnsmasq is **disabled**
 - Provisioner uses reserved IP at low end of subnet (e.g., `192.168.10.95`)
 
-Example records in OPNsense:
+Example records in Core Router:
 ```
 provisioner-01.mgmt.deevnet.net  A     192.168.10.95
 artifacts.mgmt.deevnet.net       CNAME provisioner-01.mgmt.deevnet.net
@@ -163,7 +162,7 @@ During substrate rebuild:
 
 - Provisioner is the DNS/DHCP/TFTP authority
 - Provisioner's dnsmasq holds `mgmt.deevnet.net` records
-- OPNsense may not exist (or may be the host being provisioned)
+- Core Router may not exist (or may be the host being provisioned)
 - Provisioner uses gateway IP (e.g., `192.168.10.1`)
 
 Example records in provisioner dnsmasq:
@@ -178,11 +177,11 @@ tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
 
 ### 4.3 No Runtime Conflict
 
-Records exist in both OPNsense config and provisioner dnsmasq config, but:
+Records exist in both Core Router config and provisioner dnsmasq config, but:
 
 - only one authority is active at a time
 - provisioner's dnsmasq is disabled during BAU
-- OPNsense does not exist (or is being rebuilt) during provisioner-authoritative mode
+- Core Router does not exist (or is being rebuilt) during provisioner-authoritative mode
 
 This is intentional duplication, not conflicting truth.
 
@@ -193,7 +192,7 @@ This is intentional duplication, not conflicting truth.
 ### 5.1 Provisioner Is a Role, Not a Pet
 The provisioner is a **role** that any suitable host can assume via code.
 
-- no host is permanently “the provisioner”
+- no host is permanently "the provisioner"
 - rebuilding or replacing the provisioner is expected
 - authority is logical, not physical
 
@@ -272,7 +271,7 @@ The management plane architecture is considered **correct** when:
 - multi-homed reachability is explicit in naming
 - substrates remain authoritative only for substrate concerns
 
-If a substrate must be “mostly working” in order to be rebuilt, the architecture is incorrect.
+If a substrate must be "mostly working" in order to be rebuilt, the architecture is incorrect.
 
 ---
 
@@ -285,5 +284,3 @@ Related documents define:
 - **Secure Identity** — how access and secrets are handled
 - **Provisioning Architecture** — how management services are used during bootstrap
 - **Standards** — naming, DNS, and access rules derived from this model
-
----

@@ -1,6 +1,6 @@
 ---
-title: "Substrate Networking"
-weight: 2
+title: "Networking"
+weight: 1
 ---
 
 # Substrate Networking
@@ -94,6 +94,8 @@ Tenant segments provide network isolation between workload namespaces. Each tena
 - Access to shared services via explicit firewall rules
 - Each tenant segment has its own DHCP scope
 
+See [Tenant Networking](/docs/architecture/tenant/networking/) for tenant-specific network architecture.
+
 ### IoT Segment
 
 The IoT segment isolates embedded and less-trusted devices that may have limited security capabilities.
@@ -176,7 +178,7 @@ Network segmentation is substrate-scoped:
 - The same segment model applies to all substrates
 - Implementation details (VLAN IDs, IP ranges) vary per substrate
 
-This aligns with the [substrate independence principle](/docs/architecture/#substrate-independence) — each substrate can be built, operated, and torn down without affecting the other.
+This aligns with the substrate independence principle — each substrate can be built, operated, and torn down without affecting the other.
 
 ---
 
