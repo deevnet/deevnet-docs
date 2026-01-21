@@ -109,34 +109,6 @@ The UniFi controller provides a REST API. Automation is currently manual but pla
 
 ---
 
-## Hosting on Bootstrap Node
-
-Both controllers run on the bootstrap node as Podman containers, managed by systemd:
-
-| Controller | Container | Service |
-|------------|-----------|---------|
-| Omada SDN | `omada-controller` | `podman-omada-controller.service` |
-| UniFi Network | `unifi-controller` | `podman-unifi-controller.service` |
-
-### Why Bootstrap Node?
-
-- **Initial configuration**: Controllers must be available before VLANs exist
-- **Single management point**: Bootstrap node already serves as automation hub
-- **Portable**: Same device moves between substrates
-- **Air-gap capable**: Controllers work without internet once devices are adopted
-
-### Network Considerations
-
-During initial substrate setup, managed devices must reach the controller:
-
-1. Devices boot with factory defaults (no VLAN tagging)
-2. Controller discovers devices on untagged/native VLAN
-3. Devices are adopted and configured
-4. VLAN configuration is pushed to devices
-5. Subsequent management can occur over management VLAN
-
----
-
 ## Controller Comparison
 
 | Feature | Omada SDN (dvntm) | UniFi Network (dvnt) |
