@@ -64,6 +64,6 @@ Each platform page documents:
 | Packer | OS image builds |
 | Fedora/RHEL | Primary OS (dnf-based, SELinux) |
 | Proxmox VE | Virtualization platform |
-| VyOS | Target router platform |
-| OPNsense | Current router platform |
+| OPNsense | Router platform |
+| VyOS | Under evaluation (see [Evaluations](/docs/platforms/evaluations/)) |
 | TP-Link Omada | Switch and AP management |
