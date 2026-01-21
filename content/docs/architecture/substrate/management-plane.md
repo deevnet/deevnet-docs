@@ -45,8 +45,7 @@ Services that run on dedicated hardware (router/gateway appliance):
 | **NAT** | Outbound gateway for all segments |
 | **Firewall** | Inter-segment and egress rules |
 
-These services are provided by the Core Router ([OPNsense](/docs/platforms/opnsense-router/)
-or [VyOS](/docs/platforms/vyos-router/)) and must remain operational even if all
+These services are provided by the Core Router and must remain operational even if all
 hypervisors are down.
 
 ### Virtual Layer (Management Hypervisor)

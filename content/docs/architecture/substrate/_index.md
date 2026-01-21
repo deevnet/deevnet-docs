@@ -46,17 +46,25 @@ The same physical bootstrap node can move between substrates—it provisions whi
 
 ### Control Plane
 
-The **bootstrap node** is the entry point for standing up a substrate:
+The control plane consists of out-of-band provisioning and centralized services:
+
+**Bootstrap Node** — Out-of-band provisioning for initial substrate setup:
 - Hosts artifact server (nginx) for images, ISOs, packages
 - Runs PXE/TFTP for bare-metal provisioning
 - Provides DNS/DHCP during initial bootstrap
 - Configures all other substrate components via Ansible
 
-See [Builder](builder/) for the architectural role of the bootstrap node.
+**Control Plane Node** — Hypervisor-based centralized services:
+- Secrets management
+- Centralized logging and metrics
+- Automation runners and CI/CD
+
+See [Builder](builder/) for the bootstrap node architecture.
+See [Virtual Services](virtual-services/) for the control plane services.
 
 ### Network
 
-The **Core Router** (OPNsense or VyOS) is the production network authority:
+The **Core Router** is the production network authority:
 - Firewall and NAT gateway
 - Authoritative DNS for substrate zone
 - DHCP with static mappings

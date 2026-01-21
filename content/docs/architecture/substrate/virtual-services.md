@@ -7,9 +7,7 @@ weight: 3
 
 > **Scope**: This document covers services that run as **VMs on the management
 > hypervisor**. For physical/hardware management services (DNS, DHCP, NAT),
-> see the Core Router documentation
-> ([OPNsense](/docs/platforms/opnsense-router/) or
-> [VyOS](/docs/platforms/vyos-router/)).
+> see the Core Router platform documentation.
 
 ## Purpose
 
