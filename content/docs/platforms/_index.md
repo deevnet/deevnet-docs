@@ -1,6 +1,6 @@
 ---
 title: "Platforms & Tooling"
-weight: 2
+weight: 3
 bookCollapseSection: true
 ---
 
