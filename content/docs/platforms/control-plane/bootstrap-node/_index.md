@@ -100,6 +100,10 @@ The bootstrap node runs these services directly via the `bootstrap` role:
 |---------|----------------|---------|
 | **Artifacts** | nginx | ISOs, images, netboot files, packages |
 | **TFTP** | in.tftpd (systemd) | Network boot files (GRUB, kernel, initrd) |
+| **Omada Controller** | Podman container | TP-Link switch and AP management (dvntm) |
+| **UniFi Controller** | Podman container | Ubiquiti switch and AP management (dvnt) |
+
+The network controllers are hosted on the bootstrap node because they must be available for initial switch and AP configuration before VLANs exist. See [Network Controllers](/docs/platforms/network/network-controllers/) for details.
 
 In **Core Router-Authoritative** mode (normal operation), DHCP and DNS are provided by Core Router, not the bootstrap node. The bootstrap node only provides TFTP for PXE boot files.
 
@@ -116,7 +120,6 @@ The bootstrap node **configures** these services, which run on separate devices:
 | Target | Collection | Purpose |
 |--------|------------|---------|
 | **Core Router** | `deevnet.net` | Firewall, router, production DNS/DHCP |
-| **Omada controller** | `deevnet.builder` | TP-Link switch and AP management |
 | **Proxmox** | `deevnet.builder` | Hypervisor for VMs |
 | **Substrate hosts** | `deevnet.builder` | Admin nodes, compute, storage |
 
@@ -211,7 +214,8 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 - **[PXE Boot Infrastructure](pxe-boot-infrastructure/)** — TFTP server and GRUB configs for network boot
 - **[Artifacts Server](artifacts-server/)** — nginx-based artifact hosting for air-gapped provisioning
 - **[Workstation](workstation-role/)** — Developer tools, users, and environment setup
-- **[Omada Controller](omada-controller-role/)** — TP-Link network controller management
+- **[Omada Controller](omada-controller-role/)** — TP-Link network controller for dvntm
+- **[UniFi Controller](unifi-controller-role/)** — Ubiquiti network controller for dvnt
 
 ---
 
@@ -222,5 +226,6 @@ The bootstrap node is the entry point for substrate provisioning:
 1. **One device** contains all automation and artifacts
 2. **TFTP server** for PXE boot files (GRUB, kernel, initrd)
 3. **Artifact server** for install media, kickstarts, and packages
-4. **Configures** Core Router, Omada, and all substrate hosts via Ansible
-5. **Core Router provides DHCP** with PXE options pointing to bootstrap node's TFTP
+4. **Network controllers** (Omada, UniFi) for switch and AP management
+5. **Configures** Core Router and all substrate hosts via Ansible
+6. **Core Router provides DHCP** with PXE options pointing to bootstrap node's TFTP
