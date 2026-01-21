@@ -10,98 +10,10 @@ bookCollapseSection: true
 
 The core router is the **production network authority** for each Deevnet substrate. It provides routing, firewall, DNS, DHCP, and gateway services for all substrate hosts.
 
----
-
-## Hardware
-
-| Substrate | Hardware | Notes |
-|-----------|----------|-------|
-| **dvntm** | Proxmox VM | Virtualized for portability |
-| **dvnt** | Proxmox VM or dedicated appliance | TBD based on performance needs |
-
-### Selection Rationale
-
-Running the core router as a VM on Proxmox provides:
-- Portability for the mobile substrate
-- Snapshot and backup capabilities
-- Consistent deployment model across substrates
-
-Dedicated hardware may be considered for dvnt if performance requirements exceed VM capabilities.
-
----
-
-## Operating System
-
-| Attribute | Current | Target |
-|-----------|---------|--------|
-| **OS** | OPNsense (FreeBSD-based) | VyOS (Debian-based) |
-| **Version** | OPNsense 24.x | VyOS rolling release |
-
-### Automation Capability
-
-**OPNsense (Current)**:
-- API-based configuration via `deevnet.net` collection
-- **No PXE boot support** — requires manual USB installation
-- Day-2 automation is good; initial provisioning is manual
-
-**VyOS (Target)**:
-- cloud-init support for automated initial configuration
-- Official `vyos.vyos` Ansible collection
-- CLI-centric, designed for automation
-- ISO can be staged on artifact server for air-gap deployment
-
----
-
-## VyOS Migration Evaluation
-
-OPNsense has served well for production routing but has a critical limitation: **no automated installation support**. This creates an air-gap in the otherwise automated substrate provisioning workflow.
-
-### Why VyOS?
-
-| Requirement | OPNsense | VyOS |
-|-------------|----------|------|
-| Automated install | No PXE, manual USB only | cloud-init + staged ISO |
-| Air-gap recovery | Manual reinstall | Staged ISO, automated |
-| Config-as-code | API-based | Native CLI + Ansible |
-| Day-2 automation | Good (Ansible) | Excellent (vyos.vyos) |
-| WebUI | Yes | No (CLI-centric) |
-
-### Tradeoffs Accepted
-
-- **No WebUI**: All management via CLI or Ansible. Aligns with config-as-code principles.
-- **Rolling release**: LTS requires subscription. Rolling is free and acceptable for homelab.
-
-### Migration Status
-
-| Phase | Status |
-|-------|--------|
-| Platform evaluation | Complete |
-| Manual testing (Proxmox VM) | Pending |
-| cloud-init automation | Pending |
-| Ansible roles | Pending |
-| Production cutover | Pending |
-
----
-
-## Roles
-
-The core router provides the following services (documented in sub-pages):
-
-| Role | Description |
-|------|-------------|
-| **DNS** | Authoritative for substrate zone, forwarder for upstream |
-| **DHCP** | Static mappings for known hosts, pool for dynamic clients |
-| **Firewall** | NAT, inter-subnet rules, future VLAN isolation |
-| **Gateway** | Default route for all substrate traffic |
-
----
-
-## Network Position
-
 ```
 ┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│    Upstream     │◄────►│   Core Router    │◄────►│  Substrate Hosts    │
-│   (Edge Router) │      │                  │      │                     │
+│   Edge Router   │◄────►│   Core Router    │◄────►│  Substrate Hosts    │
+│   (unmanaged)   │      │   (managed)      │      │                     │
 └─────────────────┘      └──────────────────┘      └─────────────────────┘
 ```
 
@@ -112,9 +24,107 @@ The core router provides the following services (documented in sub-pages):
 
 ---
 
-## Configuration Management
+## ZimaBoard 832
 
-### OPNsense (Current)
+**Substrate**: dvntm (mobile)
+
+The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile substrate. Its low power consumption and passive cooling make it ideal for portable deployments.
+
+### Hardware
+
+| Attribute | Value |
+|-----------|-------|
+| **Model** | ZimaBoard 832 |
+| **CPU** | Intel Celeron N3450 quad-core (1.1-2.2GHz) |
+| **Memory** | 8GB LPDDR4 |
+| **Storage** | 32GB eMMC |
+| **Ethernet** | 2x Gigabit LAN |
+| **Expansion** | PCIe x4, 2x SATA 6.0 Gb/s |
+| **USB** | 2x USB 3.0 |
+| **Video** | Mini DisplayPort (4K/60Hz) |
+| **Power** | 6W TDP, 12V DC barrel jack |
+| **Cooling** | Passive (aluminum case heatsink) |
+
+### Selection Rationale
+
+- **Compact x86 form factor** fits mobile substrate
+- **Dual Gigabit Ethernet** for WAN/LAN separation
+- **Low power consumption** (<6W TDP) suitable for always-on operation
+- **Passive cooling** (fanless, silent) for noise-sensitive environments
+- **x86 architecture** supports OPNsense natively
+
+### Operating System
+
+| Attribute | Value |
+|-----------|-------|
+| **OS** | OPNsense |
+| **Version** | 24.x |
+| **Base** | FreeBSD |
+
+### Roles
+
+| Role | Description |
+|------|-------------|
+| **DNS Forwarding** | Forwards DNS queries to upstream resolver |
+| **DHCP** | Static mappings for known hosts, pool for dynamic clients |
+| **NAT** | Masquerades substrate traffic to upstream |
+| **Wake-on-LAN** | WoL proxy for substrate hosts |
+| **Gateway** | Default route for all substrate traffic |
+
+---
+
+## Seeed Studio ODYSSEY X86J4125864
+
+**Substrate**: dvnt (home)
+
+The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home substrate. It provides more compute headroom and expansion options compared to the mobile router.
+
+### Hardware
+
+| Attribute | Value |
+|-----------|-------|
+| **Model** | ODYSSEY X86J4125864 |
+| **CPU** | Intel Celeron J4125 quad-core (2.0-2.7GHz) |
+| **Memory** | 8GB LPDDR4 |
+| **Storage** | 64GB eMMC |
+| **Ethernet** | 2x Gigabit LAN (Realtek) |
+| **Expansion** | M.2 B-Key, M.2 M-Key, SATA III |
+| **USB** | 4x USB (2x USB 3.0, 2x USB 2.0) |
+| **Video** | HDMI 2.0a + DP 1.2a (4K/60Hz) |
+| **Wireless** | Wi-Fi 802.11ac, Bluetooth 5.0 |
+| **Power** | ~10-12W typical, 12V DC |
+| **Cooling** | Active (included fan) |
+| **Co-processor** | ATSAMD21 (Arduino compatible) |
+
+### Selection Rationale
+
+- **Dual Gigabit Ethernet** for WAN/LAN separation
+- **x86 architecture** supports OPNsense natively
+- **Sufficient compute** for home network routing
+- **M.2 slots** for expansion (future 10GbE, NVMe)
+- **eMMC storage** for reliable boot
+
+### Operating System
+
+| Attribute | Value |
+|-----------|-------|
+| **OS** | OPNsense |
+| **Version** | 24.x |
+| **Base** | FreeBSD |
+
+### Roles
+
+| Role | Description |
+|------|-------------|
+| **DNS Forwarding** | Forwards DNS queries to upstream resolver |
+| **DHCP** | Static mappings for known hosts, pool for dynamic clients |
+| **NAT** | Masquerades substrate traffic to upstream |
+| **Wake-on-LAN** | WoL proxy for substrate hosts |
+| **Gateway** | Default route for all substrate traffic |
+
+---
+
+## Configuration Management
 
 Configured via the `deevnet.net` Ansible collection:
 
@@ -124,17 +134,6 @@ Configured via the `deevnet.net` Ansible collection:
 | DHCP static mappings | Pushed from inventory |
 | Firewall rules | Defined in playbooks |
 | WoL targets | Defined in inventory |
-
-### VyOS (Target)
-
-Will be configured via the `vyos.vyos` Ansible collection:
-
-| Component | Module |
-|-----------|--------|
-| Interfaces | `vyos_interfaces` |
-| Firewall rules | `vyos_firewall_rules` |
-| System settings | `vyos_system`, `vyos_hostname` |
-| Static routes | `vyos_static_routes` |
 
 ---
 
