@@ -77,5 +77,6 @@ The artifact server hosts all required images, packages, and configurations.
 All infrastructure configuration lives in version-controlled repositories:
 - `ansible-inventory-deevnet` — Host identity and variables
 - `ansible-collection-deevnet.builder` — Provisioning roles
+- `ansible-collection-deevnet.mgmt` — Control plane and centralized services
 - `ansible-collection-deevnet.net` — Network configuration
 - `deevnet-image-factory` — OS image builds
