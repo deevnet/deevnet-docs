@@ -20,20 +20,47 @@ Goals:
 
 ---
 
-## Physical Model
+## Hardware
 
-The bootstrap node is typically a small x86 PC:
+| Substrate | Hardware | Notes |
+|-----------|----------|-------|
+| **dvntm** | Developer workstation | Portable laptop with dual-NIC capability |
+| **dvnt** | Developer workstation | Desktop or mini PC (NUC-style) |
 
-| Attribute | Requirement |
-|-----------|-------------|
-| **Form factor** | Mini PC, NUC-style, or small 1U |
-| **NICs** | Dual-NIC minimum (upstream + substrate) |
-| **Storage** | Sufficient for artifacts (~500GB recommended) |
-| **OS** | Fedora with `deevnet.builder` collection applied |
+### Selection Rationale
 
-The same physical device can be moved between substrates:
+The bootstrap node requires:
+
+| Attribute | Requirement | Rationale |
+|-----------|-------------|-----------|
+| **Form factor** | Portable | Must move between substrates |
+| **NICs** | Dual-NIC minimum | Upstream + substrate connectivity |
+| **Storage** | ~500GB+ | Artifacts (ISOs, images, packages) |
+| **RAM** | 16GB+ | Ansible execution, artifact serving |
+| **CPU** | Modern x86_64 | Packer builds, general automation |
+
+The same physical device can serve both substrates:
 - **dvntm** — Mobile/portable lab
 - **dvnt** — Home infrastructure
+
+---
+
+## Operating System
+
+| Attribute | Value |
+|-----------|-------|
+| **OS** | Fedora Workstation |
+| **Version** | Fedora 43+ |
+| **Collection** | `deevnet.builder` applied |
+
+### Automation Capability
+
+- **PXE install**: Fedora supports fully automated kickstart installation via PXE
+- **cloud-init**: Supported for VM deployments
+- **Ansible**: Native Python support, no agent required
+- **Air-gap**: OS and packages can be staged on artifact server
+
+The bootstrap node is provisioned via PXE from another bootstrap node, or manually installed and then configured via Ansible self-application
 
 ---
 
@@ -177,7 +204,7 @@ Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-locatio
 
 ---
 
-## Roles and Services
+## Roles
 
 The bootstrap node is configured using these `deevnet.builder` roles:
 
