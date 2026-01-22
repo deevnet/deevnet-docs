@@ -16,8 +16,8 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 | Substrate | Hardware | Notes |
 |-----------|----------|-------|
-| **dvntm** | 32GB RAM, 1TB storage | Portable mini PC or NUC-style |
-| **dvnt** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
+| **dvntm** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
+| **dvnt** | TBD | TBD |
 
 ### Selection Rationale
 
@@ -51,9 +51,9 @@ Proxmox is treated as an API surface for management workloads, not a declarative
 
 ## Dell Optiplex 7050 MFF
 
-**Substrate**: dvnt (home)
+**Substrate**: dvntm (mobile)
 
-The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the management hypervisor for the home substrate. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
+The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the management hypervisor for the mobile substrate. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
 
 ![Dell Optiplex 7050 MFF](dell-optiplex-7050-mff.jpg)
 
@@ -73,7 +73,7 @@ The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used
 
 - **Repurposed enterprise desktop** - reliable, well-supported hardware
 - **32GB RAM** meets management hypervisor requirements for multiple VMs
-- **Compact form factor** suitable for home lab placement
+- **Compact form factor** suitable for mobile lab placement
 - **Low power consumption** for always-on operation
 - **Intel VT-x/VT-d** for Proxmox virtualization support
 - **Intel I219-LM NIC** for reliable network connectivity
