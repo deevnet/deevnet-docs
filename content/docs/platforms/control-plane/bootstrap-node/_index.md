@@ -25,7 +25,7 @@ Goals:
 | Substrate | Hardware | Notes |
 |-----------|----------|-------|
 | **dvntm** | Developer workstation | Portable laptop with dual-NIC capability |
-| **dvnt** | Developer workstation | Desktop or mini PC (NUC-style) |
+| **dvnt** | AOOSTAR N1 PRO | Mini PC with dual 2.5GbE |
 
 ### Selection Rationale
 
@@ -77,6 +77,34 @@ The bootstrap node is provisioned via PXE from another bootstrap node, or manual
 - **Downstream interface**: Becomes the gateway for the substrate during bootstrap
 
 During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions.
+
+---
+
+## AOOSTAR N1 PRO
+
+**Substrate**: dvnt (home)
+
+The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home substrate. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
+
+### Hardware
+
+| Attribute | Value |
+|-----------|-------|
+| **Model** | AOOSTAR N1 PRO |
+| **CPU** | Intel N150 (upgraded N100 variant) |
+| **Memory** | 12GB LPDDR5 |
+| **Storage** | 1TB NVMe SSD |
+| **Ethernet** | 2x 2.5GbE (Intel i226-V) |
+| **Form factor** | Mini PC |
+| **Cooling** | Active (fan) |
+
+### Selection Rationale
+
+- **Dual 2.5GbE NICs** for upstream + substrate connectivity (bootstrap requirement)
+- **Compact form factor** for dedicated always-on bootstrap role
+- **12GB RAM** sufficient for artifact serving and Ansible execution
+- **1TB storage** for ISOs, images, and boot artifacts
+- **Intel i226-V NICs** for reliable network performance
 
 ---
 
