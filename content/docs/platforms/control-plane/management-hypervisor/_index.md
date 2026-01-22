@@ -55,6 +55,8 @@ Proxmox is treated as an API surface for management workloads, not a declarative
 
 The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the management hypervisor for the home substrate. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
 
+![Dell Optiplex 7050 MFF](dell-optiplex-7050-mff.jpg)
+
 ### Hardware
 
 | Attribute | Value |

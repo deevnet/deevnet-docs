@@ -86,6 +86,8 @@ During initial provisioning, the bootstrap node may NAT traffic for substrate ho
 
 The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home substrate. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
 
+![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
+
 ### Hardware
 
 | Attribute | Value |

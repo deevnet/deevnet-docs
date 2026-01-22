@@ -26,6 +26,8 @@ Edge routers are **external** to the substrate — they provide connectivity but
 
 The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge router for the mobile substrate. It provides upstream connectivity when traveling — connecting to hotel Wi-Fi, tethered phones, or any available network.
 
+![GL-iNet GL-AXT1800 Slate AX](gl-axt1800-slate-ax.webp)
+
 ### Hardware
 
 | Attribute | Value |
