@@ -1,9 +1,9 @@
 ---
-title: "PXE Boot Infrastructure"
-weight: 2
+title: "PXE Role"
+weight: 3
 ---
 
-# PXE Boot Infrastructure
+# PXE Role
 
 ## Purpose
 
