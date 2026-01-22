@@ -24,6 +24,8 @@ The access switch provides **Layer 2 connectivity** for substrate hosts, connect
 
 The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It provides VLAN support and can be configured via SSH or the Omada controller.
 
+![TP-Link Omada SG2218](tplink-sg2218.webp)
+
 ### Hardware
 
 | Attribute | Value |
@@ -72,6 +74,8 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 
 The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product line. It serves as the primary access switch for the home substrate.
 
+![Ubiquiti UniFi USW-24-G2](ubiquiti-usw-24-g2.webp)
+
 ### Hardware
 
 | Attribute | Value |
@@ -118,6 +122,8 @@ The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product 
 **Substrate**: dvnt (home) — Secondary switch
 
 The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in areas away from the primary switch.
+
+![Ubiquiti UniFi US-8](ubiquiti-us-8.webp)
 
 ### Hardware
 
