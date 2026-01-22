@@ -1,6 +1,6 @@
 ---
 title: "Workstation Role"
-weight: 2
+weight: 1
 ---
 
 # Workstation Role

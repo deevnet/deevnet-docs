@@ -1,9 +1,9 @@
 ---
-title: "Artifacts Server"
-weight: 1
+title: "Artifacts Role"
+weight: 2
 ---
 
-# Artifacts Server
+# Artifacts Role
 
 ## Purpose
 
