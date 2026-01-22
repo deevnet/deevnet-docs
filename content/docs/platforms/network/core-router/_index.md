@@ -30,6 +30,8 @@ The core router is the **production network authority** for each Deevnet substra
 
 The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile substrate. Its low power consumption and passive cooling make it ideal for portable deployments.
 
+![ZimaBoard 832](zimaboard-832.webp)
+
 ### Hardware
 
 | Attribute | Value |
@@ -78,6 +80,8 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 **Substrate**: dvnt (home)
 
 The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home substrate. It provides more compute headroom and expansion options compared to the mobile router.
+
+![Seeed Studio ODYSSEY X86J4125864](odyssey-x86j4125864.webp)
 
 ### Hardware
 
