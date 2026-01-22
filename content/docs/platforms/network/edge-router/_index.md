@@ -76,6 +76,8 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 
 The BGW320 is AT&T's fiber gateway combining an ONT (Optical Network Terminal) and router in one unit. It provides the primary internet connection for the home substrate.
 
+![AT&T Fiber BGW320](att-bgw320.webp)
+
 ### Hardware
 
 | Attribute | Value |
@@ -124,6 +126,8 @@ The BGW320 is configured for **IP Passthrough** mode:
 **Substrate**: dvnt (home) — Secondary connection (failover)
 
 Spectrum provides the secondary internet connection for WAN failover. This connection is **not yet implemented** but planned for redundancy.
+
+![Spectrum Modem](spectrum-modem.webp)
 
 ### Hardware
 
