@@ -2,8 +2,8 @@
 title: "DVNTM Infrastructure as Code"
 weight: 1
 tasks_completed: 12
-tasks_in_progress: 0
-tasks_planned: 17
+tasks_in_progress: 2
+tasks_planned: 15
 ---
 
 # DVNTM Infrastructure as Code
@@ -40,14 +40,14 @@ Documentation and inventory definitions.
 
 ---
 
-## Network Automation ⏳
+## Network Automation 🔄
 
 Automated configuration of network infrastructure.
 
 - ✅ Ansible Network Collection - DHCP reservations
 - ✅ Ansible Network Collection - DNS host overrides
-- ⏳ OPNsense Alternatives Evaluation
-- ⏳ dvntm VLAN Plan
+- 🔄 OPNsense Alternatives Evaluation
+- 🔄 dvntm VLAN Plan
 - ⏳ Access Switch Automation (Omada)
 - ⏳ Proxmox Tenant Networking Design and Automation
 - ⏳ Wireless AP Automation (Omada)
