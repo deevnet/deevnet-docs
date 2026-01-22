@@ -24,6 +24,8 @@ The access point provides **wireless connectivity** for mobile devices, laptops,
 
 The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN product line. Despite being outdoor-rated, its rugged design makes it suitable for the mobile substrate's varied deployment environments.
 
+![TP-Link Omada EAP650-Outdoor](tplink-eap650-outdoor.webp)
+
 ### Hardware
 
 | Attribute | Value |
@@ -72,6 +74,8 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 **Substrate**: dvnt (home) — 2 units
 
 The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniFi product line. Two units provide coverage throughout the home substrate.
+
+![Ubiquiti UniFi UAP-AC-M](ubiquiti-uap-ac-m.webp)
 
 ### Hardware
 
