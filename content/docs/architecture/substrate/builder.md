@@ -26,13 +26,13 @@ The builder answers this question by providing:
 
 ## Architectural Role
 
-The builder exists at the **control plane** layer of substrate infrastructure:
+The builder exists at the **management plane** layer of substrate infrastructure:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │              Substrate Infrastructure                   │
 ├─────────────────────────────────────────────────────────┤
-│  Control Plane    │ Builder (provisioning,             │
+│  Management Plane    │ Builder (provisioning,             │
 │                   │ artifacts, PXE/TFTP)               │
 ├───────────────────┼─────────────────────────────────────┤
 │  Network          │ Core Router (gateway, firewall,    │
@@ -154,7 +154,7 @@ Authority transitions are:
 
 ## Summary
 
-1. The builder is the control plane for substrate provisioning
+1. The builder is the management plane for substrate provisioning
 2. Self-contained, portable, and air-gapped capable
 3. Has temporary authority during bootstrap, transitions to admin role
 4. Provisions substrate infrastructure only (not tenants)

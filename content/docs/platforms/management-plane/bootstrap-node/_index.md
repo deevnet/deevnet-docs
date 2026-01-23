@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 ## Purpose
 
-The bootstrap node is the **control plane** for standing up a Deevnet substrate. It's a single, portable device that contains everything needed to provision and configure an entire environment from scratch.
+The bootstrap node is the **management plane** for standing up a Deevnet substrate. It's a single, portable device that contains everything needed to provision and configure an entire environment from scratch.
 
 Goals:
 - **Self-contained** — All automation, artifacts, and services on one device

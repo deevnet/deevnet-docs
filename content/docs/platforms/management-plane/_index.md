@@ -1,16 +1,16 @@
 ---
-title: "Control Plane"
+title: "Management Plane"
 weight: 2
 bookCollapseSection: true
 ---
 
-# Control Plane
+# Management Plane
 
-The **control plane** provides infrastructure services required to provision, manage, and operate the substrate. These are the foundational systems that must be operational before tenant workloads can run.
+The **management plane** provides infrastructure services required to provision, manage, and operate the substrate. These are the foundational systems that must be operational before tenant workloads can run.
 
 ---
 
-## Control Plane Components
+## Management Plane Components
 
 | Component | Purpose |
 |-----------|---------|
@@ -21,7 +21,7 @@ The **control plane** provides infrastructure services required to provision, ma
 
 ## Characteristics
 
-Control plane infrastructure is:
+Management plane infrastructure is:
 
 - **Infrastructure-critical** — Must remain available to support recovery and rebuild operations
 - **Slow change cadence** — Changes are deliberate and carefully tested
@@ -32,7 +32,7 @@ Control plane infrastructure is:
 
 ## Recovery Model
 
-The control plane is designed for recoverability:
+The management plane is designed for recoverability:
 
 1. **Bootstrap node** can rebuild the entire substrate from staged artifacts
 2. **Management hypervisor** hosts are rebuilt from Packer templates
@@ -44,10 +44,10 @@ If the management hypervisor fails, the bootstrap node can reprovision it. If th
 
 ## Separation from Tenant Compute
 
-Control plane infrastructure is deliberately separated from tenant workloads:
+Management plane infrastructure is deliberately separated from tenant workloads:
 
-| Aspect | Control Plane | Tenant Compute |
-|--------|---------------|----------------|
+| Aspect | Management Plane | Tenant Compute |
+|--------|------------------|----------------|
 | **Change cadence** | Slow, deliberate | Fast, experimental |
 | **Blast radius** | Must be minimized | Tolerable |
 | **Rebuild tolerance** | Low — avoid rebuilds | High — expect rebuilds |

@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Substrate Architecture
 
-A **substrate** is an infrastructure environment—a self-contained network with its own compute, storage, and control plane.
+A **substrate** is an infrastructure environment—a self-contained network with its own compute, storage, and management plane.
 
 ---
 
@@ -20,7 +20,7 @@ A **substrate** is an infrastructure environment—a self-contained network with
 Each substrate:
 - Has its own IP address space and routing
 - Operates independently (can function without the other)
-- Contains a complete infrastructure stack (control plane, network, compute)
+- Contains a complete infrastructure stack (management plane, network, compute)
 - Has its own DNS zone (`dvntm.deevnet.net`, `dvnt.deevnet.net`)
 
 The same physical bootstrap node can move between substrates—it provisions whichever environment it's connected to.
@@ -33,7 +33,7 @@ The same physical bootstrap node can move between substrates—it provisions whi
 ┌─────────────────────────────────────────────────────────┐
 │              Substrate Infrastructure                   │
 ├─────────────────────────────────────────────────────────┤
-│  Control Plane    │ Bootstrap node (provisioning,      │
+│  Management Plane │ Bootstrap node (provisioning,      │
 │                   │ artifacts, PXE/TFTP)               │
 ├───────────────────┼─────────────────────────────────────┤
 │  Network          │ Core Router (gateway, firewall,    │
@@ -44,9 +44,9 @@ The same physical bootstrap node can move between substrates—it provisions whi
 └───────────────────┴─────────────────────────────────────┘
 ```
 
-### Control Plane
+### Management Plane
 
-The control plane consists of out-of-band provisioning and centralized services:
+The management plane consists of out-of-band provisioning and centralized services:
 
 **Bootstrap Node** — Out-of-band provisioning for initial substrate setup:
 - Hosts artifact server (nginx) for images, ISOs, packages
@@ -54,13 +54,13 @@ The control plane consists of out-of-band provisioning and centralized services:
 - Provides DNS/DHCP during initial bootstrap
 - Configures all other substrate components via Ansible
 
-**Control Plane Node** — Hypervisor-based centralized services:
+**Management Plane Node** — Hypervisor-based centralized services:
 - Secrets management
 - Centralized logging and metrics
 - Automation runners and CI/CD
 
 See [Builder](builder/) for the bootstrap node architecture.
-See [Virtual Services](virtual-services/) for the control plane services.
+See [Virtual Services](virtual-services/) for the management plane services.
 
 ### Network
 
@@ -101,6 +101,6 @@ See [Management Plane](management-plane/) for details on authority models.
 ## Child Documents
 
 - [Networking](networking/) — Network segmentation and VLAN model
-- [Management Plane](management-plane/) — Infrastructure control and DNS authority
+- [Management Plane](management-plane/) — Infrastructure management and DNS authority
 - [Virtual Services](virtual-services/) — VM-based management services
 - [Builder](builder/) — Bootstrap node and provisioning architecture

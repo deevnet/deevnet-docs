@@ -25,7 +25,7 @@ Each substrate implements six segment types:
 
 | Segment | Purpose | Trust Level |
 |---------|---------|-------------|
-| Management | Infrastructure control plane | High |
+| Management | Infrastructure management plane | High |
 | Trusted | High-trust user devices | High |
 | Storage | Dedicated storage traffic | High |
 | Tenant | Per-tenant workload isolation | Medium |
@@ -50,7 +50,7 @@ The management segment carries infrastructure control traffic.
 
 ### Trusted Segment
 
-The trusted segment contains high-trust user devices that require broad network access but are not part of the infrastructure control plane.
+The trusted segment contains high-trust user devices that require broad network access but are not part of the infrastructure management plane.
 
 **Typical inhabitants:**
 - Personal workstations (`ws01`, `ws02`)

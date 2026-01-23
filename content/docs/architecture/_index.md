@@ -29,7 +29,7 @@ Deevnet uses a **two-layer architecture** that separates infrastructure from wor
 ### [Substrate](substrate/)
 
 A **substrate** is an infrastructure environment—a self-contained network with
-its own compute, storage, and control plane.
+its own compute, storage, and management plane.
 
 - **dvntm** — Mobile/portable lab for development, testing, and demos
 - **dvnt** — Production home infrastructure (always-on, stable)
@@ -77,6 +77,6 @@ The artifact server hosts all required images, packages, and configurations.
 All infrastructure configuration lives in version-controlled repositories:
 - `ansible-inventory-deevnet` — Host identity and variables
 - `ansible-collection-deevnet.builder` — Provisioning roles
-- `ansible-collection-deevnet.mgmt` — Control plane and centralized services
+- `ansible-collection-deevnet.mgmt` — Management plane and centralized services
 - `ansible-collection-deevnet.net` — Network configuration
 - `deevnet-image-factory` — OS image builds

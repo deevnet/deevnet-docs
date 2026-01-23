@@ -25,7 +25,7 @@ Quick reference for VLAN assignments and network configuration in dvntm substrat
 
 | Segment | Trust Level | Purpose |
 |---------|-------------|---------|
-| Management | High | Infrastructure control plane (provisioners, hypervisor mgmt, switches, IPMI) |
+| Management | High | Infrastructure management plane (provisioners, hypervisor mgmt, switches, IPMI) |
 | Trusted | High | User devices (workstations, laptops, personal devices) |
 | Storage | High | Dedicated storage traffic (NAS, backup targets) |
 | IoT | Low | Embedded/untrusted devices (Pis, sensors, smart home) |

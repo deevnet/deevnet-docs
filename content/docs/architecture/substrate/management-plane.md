@@ -23,7 +23,7 @@ The management plane exists to answer one question:
 
 It provides:
 - provisioning services (PXE, artifacts, bootstrap tooling),
-- control-plane access (builders, bastions),
+- management-plane access (builders, bastions),
 - and optional out-of-band services (serial consoles, OOB access).
 
 It does **not** host tenant workloads.

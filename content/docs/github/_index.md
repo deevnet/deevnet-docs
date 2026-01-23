@@ -15,7 +15,7 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
 | Repository | Description |
 |------------|-------------|
 | [ansible-collection-deevnet.builder](https://github.com/deevnet/ansible-collection-deevnet.builder) | Ansible collection for workstations, artifact servers, PXE boot |
-| [ansible-collection-deevnet.mgmt](https://github.com/deevnet/ansible-collection-deevnet.mgmt) | Control plane and centralized services |
+| [ansible-collection-deevnet.mgmt](https://github.com/deevnet/ansible-collection-deevnet.mgmt) | Management plane and centralized services |
 | [ansible-collection-deevnet.net](https://github.com/deevnet/ansible-collection-deevnet.net) | Network-focused Ansible collection (OPNsense, Omada) |
 | [ansible-inventory-deevnet](https://github.com/deevnet/ansible-inventory-deevnet) | Central inventory for platform infrastructure |
 | [deevnet-image-factory](https://github.com/deevnet/deevnet-image-factory) | Packer builds for Raspberry Pi and Proxmox templates |
