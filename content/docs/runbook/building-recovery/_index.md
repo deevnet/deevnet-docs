@@ -57,10 +57,8 @@ This means:
 - [Inventory Setup](inventory-setup/) - Seed MAC addresses and host definitions
 - [PXE Boot Modes](pxe-boot-modes/) - Network boot in normal vs greenfield scenarios
 - [Build Sequence](build-sequence/) - Order of operations for substrate build
-- [Build VLANs](build-vlans/) - Configure network segmentation
-- [Build Core Router](build-core-router/) - Install and configure firewall/router
-- [Build Proxmox](build-proxmox/) - PXE install hypervisor hosts
-- [Build Wireless](build-wireless/) - Configure access points
+- [Build Network](build-network/) - Core Router, VLANs, wireless (`deevnet.net` collection)
+- [Build Management Plane](build-management-plane/) - Proxmox hypervisors
 - [Build Tenants](build-tenants/) - Provision application workloads
 
 ---
