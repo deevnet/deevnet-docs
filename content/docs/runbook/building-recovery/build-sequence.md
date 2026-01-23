@@ -13,11 +13,9 @@ With artifacts pre-staged and inventory seeded, the bootstrap node can build the
 
 When building the full substrate, follow this order:
 
-1. **Core Router** - Provides DHCP, DNS, routing
-2. **Switch/VLANs** - Network segmentation
-3. **Proxmox Hypervisors** - Compute substrate
-4. **Wireless AP** - Optional, for wireless access
-5. **Application Tenants** - Workloads
+1. **Network** - Core Router, VLANs, wireless (see [Build Network](../build-network/))
+2. **Management Plane** - Proxmox hypervisors (see [Build Management Plane](../build-management-plane/))
+3. **Application Tenants** - Workloads (see [Build Tenants](../build-tenants/))
 
 ---
 
