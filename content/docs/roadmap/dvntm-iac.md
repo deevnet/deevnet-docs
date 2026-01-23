@@ -3,7 +3,7 @@ title: "DVNTM Infrastructure Automation"
 weight: 1
 tasks_completed: 15
 tasks_in_progress: 2
-tasks_planned: 8
+tasks_planned: 14
 ---
 
 # DVNTM Infrastructure Automation
@@ -80,6 +80,19 @@ Automated configuration of network infrastructure.
 - ⏳ Wireless AP Automation (Omada)
 - ⏳ Migrate core router automation to OPNsense alternative
 - ⏳ Document network build/rebuild steps in recovery plan
+
+---
+
+## Build Verification ⏳
+
+Automated verification that the substrate was built according to inventory and is fully functional. Produces a single report proving build correctness.
+
+- ⏳ Centralized build logging (aggregate logs from all phases)
+- ⏳ Inventory conformance checks (running state matches inventory definitions)
+- ⏳ Network connectivity matrix (verify all expected paths work)
+- ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API)
+- ⏳ Hardware validation (MAC addresses, IP assignments match inventory)
+- ⏳ Build report generation (consolidated pass/fail with evidence)
 
 ---
 
