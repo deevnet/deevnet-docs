@@ -3,7 +3,7 @@ title: "DVNTM Infrastructure Automation"
 weight: 1
 tasks_completed: 15
 tasks_in_progress: 2
-tasks_planned: 11
+tasks_planned: 6
 ---
 
 # DVNTM Infrastructure Automation
@@ -85,11 +85,6 @@ Automated configuration of network infrastructure.
 
 End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap recovery capability. Completing this milestone signals the project is done.
 
-- ⏳ Rebuild provisioner node
-- ⏳ Fetch artifacts (ISOs, install trees, containers)
-- ⏳ Enable bootstrap-authoritative mode
-- ⏳ Set up VLANs on access switch
-- ⏳ Rebuild core router
-- ⏳ Configure wireless AP
-- ⏳ Rebuild Proxmox hypervisor
-- ⏳ Rebuild all application tenants
+- ⏳ Execute full substrate rebuild
+- ⏳ Iterate on code and documentation fixes
+- ⏳ Roadmap non-critical improvements for future work
