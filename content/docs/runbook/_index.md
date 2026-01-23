@@ -12,7 +12,7 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
 
 ## Sections
 
-- [Building & Recovery](building-recovery/) - Substrate provisioning and disaster recovery
+- [Building Infrastructure](building-recovery/) - Substrate provisioning (new builds, recovery, hardware replacement)
 - [Patching](patching/) - Day 2 maintenance and updates
 - [Security](security/) - Security posture and vulnerability management
 - [Inventory Lifecycle](inventory-lifecycle/) - Asset tracking and decommissioning
