@@ -60,6 +60,7 @@ This means:
 - [Build Network](build-network/) - Core Router, VLANs, wireless (`deevnet.net` collection)
 - [Build Management Plane](build-management-plane/) - Proxmox hypervisors
 - [Build Tenants](build-tenants/) - Provision application workloads
+- [Build Verification](build-verification/) - End-to-end validation
 
 ---
 

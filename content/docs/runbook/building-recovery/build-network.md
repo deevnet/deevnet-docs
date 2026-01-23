@@ -65,15 +65,3 @@ Set up SSIDs, guest networks, and VLAN assignments on Omada AP.
 
 *TBD - AP configuration details*
 
----
-
-## Verification
-
-```bash
-# Verify Core Router services
-ping gateway.dvntm.deevnet.net
-dig +short @192.168.10.1 hv01.dvntm.deevnet.net
-
-# Verify VLAN connectivity
-# Verify wireless SSIDs broadcast
-```

@@ -20,9 +20,3 @@ Provision tenant VMs and deploy application workloads.
 ## Procedure
 
 *TBD*
-
----
-
-## Verification
-
-*TBD*

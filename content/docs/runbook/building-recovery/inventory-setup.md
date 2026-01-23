@@ -113,17 +113,3 @@ Then apply configuration as above.
 | `env.interfaces.<iface>.dns.dhcp_reservation` | Create DHCP reservation |
 | `env.interfaces.<iface>.dns.cnames` | List of CNAME aliases |
 
----
-
-## Verification
-
-After applying configuration:
-
-```bash
-# Verify DNS resolution
-dig +short hv03.dvntm.deevnet.net
-
-# Verify DHCP reservation exists (on Core Router)
-# Check PXE config generated
-ls /srv/tftp/pxelinux.cfg/
-```

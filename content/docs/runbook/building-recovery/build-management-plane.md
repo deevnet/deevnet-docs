@@ -21,9 +21,3 @@ PXE boot and install Proxmox VE hypervisors from local artifacts.
 ## Procedure
 
 *TBD*
-
----
-
-## Verification
-
-*TBD*
