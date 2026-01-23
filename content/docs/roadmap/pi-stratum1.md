@@ -3,7 +3,7 @@ title: "Pi Stratum 1"
 weight: 3
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 7
+tasks_planned: 9
 ---
 
 # Pi Stratum 1 NTP Server
@@ -38,6 +38,7 @@ Deploy a local Stratum 1 NTP server using GPS as the time source, providing accu
 
 - ⏳ Define time accuracy requirements
 - ⏳ Define GPS antenna placement constraints
+- ⏳ Define telemetry and alerting requirements
 
 ---
 
@@ -54,6 +55,7 @@ Deploy a local Stratum 1 NTP server using GPS as the time source, providing accu
 - ⏳ Base Pi Zero image
 - ⏳ GPS daemon (gpsd) configuration
 - ⏳ NTP/Chrony configuration for Stratum 1
+- ⏳ Telemetry and alerting configuration
 - ⏳ Test scripts for time accuracy validation
 
 ---
