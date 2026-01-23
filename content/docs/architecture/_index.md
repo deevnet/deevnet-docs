@@ -10,20 +10,40 @@ System-level design intent and contracts between layers.
 
 ---
 
-## Two-Layer Model
-
-Deevnet uses a **two-layer architecture** that separates infrastructure from workloads:
+## Substrate Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  Tenants (Workloads)                    │
-│         grooveiq, vintronics, moneyrouter, etc.         │
-└────────────────────────┬────────────────────────────────┘
-                         │ runs on
-┌────────────────────────▼────────────────────────────────┐
-│              Substrate (Infrastructure)                 │
-│     dvntm (mobile), dvnt (production)                   │
-└─────────────────────────────────────────────────────────┘
+                                    ┌─────────────┐
+                                    │   Builder   │
+                                    │ (portable)  │
+                                    └──────┬──────┘
+                                           │
+┌──────────┐    ┌─────────────────────────────────────────────────────────┐
+│          │    │                    Substrate                            │
+│ Internet ├────┤  ┌─────────────┐                                        │
+│          │    │  │ Edge Router │                                        │
+└──────────┘    │  └──────┬──────┘                                        │
+                │         │                                               │
+                │  ┌──────▼──────┐                                        │
+                │  │ Core Router │  DNS, DHCP, Firewall, Gateway          │
+                │  └──────┬──────┘                                        │
+                │         │                                               │
+                │  ┌──────▼───────┐                                       │
+                │  │ Access Switch │  VLANs, L2 Connectivity              │
+                │  └──────┬───────┘                                       │
+                │         │                                               │
+                │  ┌──────┴──────────────────────┐                        │
+                │  │                             │                        │
+                │  ▼                             ▼                        │
+                │  ┌───────────────┐  ┌───────────────────┐               │
+                │  │  Management   │  │ Tenant Hypervisor │               │
+                │  │  Hypervisor   │  │    + Compute      │               │
+                │  │               │  │                   │               │
+                │  │ Observability │  │  Tenant Workloads │               │
+                │  │ Automation    │  │  (VMs, containers)│               │
+                │  └───────────────┘  └───────────────────┘               │
+                │                                                         │
+                └─────────────────────────────────────────────────────────┘
 ```
 
 ### [Substrate](substrate/)
