@@ -18,7 +18,7 @@ Part of `deevnet-image-factory`.
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
 Deploy a local Stratum 1 NTP server using GPS as the time source, providing accurate time synchronization for all substrate hosts independent of internet connectivity.
 

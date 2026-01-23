@@ -8,7 +8,7 @@ tasks_planned: 1
 
 # Pi-SDR Project
 
-Software Defined Radio on Raspberry Pi with CaribouLite support.
+Hardware adoption of the CaribouLite SDR HAT — software-defined radio on Raspberry Pi.
 
 Part of `deevnet-image-factory`.
 
@@ -18,9 +18,9 @@ Part of `deevnet-image-factory`.
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
-Deploy a software-defined radio platform using CaribouLite HAT on Raspberry Pi for RF signal monitoring and experimentation.
+Adopt the CaribouLite SDR HAT hardware and deploy a software-defined radio platform on Raspberry Pi for RF signal monitoring and experimentation.
 
 **In Scope**
 - CaribouLite SDR hardware integration
@@ -48,7 +48,6 @@ Get CaribouLite SDR hardware working on Raspberry Pi.
 - ✅ Base Pi image with ansible support
 - ✅ CaribouLite driver installation
 - ✅ Post-image configuration tweaks
-- ✅ Build documentation
 
 ---
 
@@ -58,4 +57,10 @@ Configure remote client to tune Pi SDR.
 
 - 🔄 GQRX or alternative front-end setup
 - ✅ Network streaming configuration
+
+---
+
+## Documentation ✅
+
+- ✅ Build documentation
 - ⏳ Client documentation

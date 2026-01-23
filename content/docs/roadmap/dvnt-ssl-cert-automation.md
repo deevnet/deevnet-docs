@@ -3,7 +3,7 @@ title: "SSL Cert Automation"
 weight: 5
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 15
+tasks_planned: 16
 ---
 
 # SSL Cert Automation
@@ -16,7 +16,7 @@ Automated SSL certificate provisioning and renewal for substrate services.
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
 Eliminate browser security warnings and enable secure communication between substrate services by deploying an internal Certificate Authority and automating certificate lifecycle management.
 
@@ -70,4 +70,10 @@ Automated renewal and distribution.
 - ⏳ Automated certificate renewal via cron/systemd timer
 - ⏳ Certificate deployment playbook
 - ⏳ Expiration monitoring and alerting
-- ⏳ Document manual renewal procedure (fallback)
+
+---
+
+## Documentation ⏳
+
+- ⏳ Certificate management runbook
+- ⏳ Manual renewal procedure (fallback)
