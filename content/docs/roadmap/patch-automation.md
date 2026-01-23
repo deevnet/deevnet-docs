@@ -3,7 +3,7 @@ title: "Patch Automation"
 weight: 4
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 7
+tasks_planned: 9
 ---
 
 # Patch Automation
@@ -16,7 +16,7 @@ Automated patching strategies for substrate infrastructure components.
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
 Define and implement consistent patching strategies across all substrate components to maintain security posture while minimizing downtime.
 
@@ -48,3 +48,10 @@ Ongoing maintenance and security updates.
 - ⏳ Patching Strategy - Proxmox VE
 - ⏳ Patching Strategy - Firewall/Core router
 - ⏳ Patching Strategy - Linux packages
+
+---
+
+## Documentation ⏳
+
+- ⏳ Patching runbook
+- ⏳ Rollback procedures

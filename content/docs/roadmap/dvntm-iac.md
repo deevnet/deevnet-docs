@@ -19,7 +19,7 @@ Full automation of mobile substrate provisioning and management using Infrastruc
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
 Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate from bare metal to running services, with complete air-gap recovery capability.
 

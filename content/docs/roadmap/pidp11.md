@@ -3,12 +3,12 @@ title: "PiDP-11"
 weight: 3
 tasks_completed: 1
 tasks_in_progress: 1
-tasks_planned: 4
+tasks_planned: 8
 ---
 
 # PiDP-11 Project
 
-PDP-11 replica using simh emulation on Raspberry Pi.
+Hardware adoption of the PiDP-11 kit — a PDP-11 replica using simh emulation on Raspberry Pi.
 
 Part of `deevnet-image-factory`.
 
@@ -18,11 +18,12 @@ Part of `deevnet-image-factory`.
 
 ---
 
-## Project Scope
+## Project Vision & Scope
 
-Build a functional PDP-11 replica using the PiDP-11 kit with simh emulation, capable of running period-accurate operating systems.
+Build a functional PDP-11 replica by assembling the PiDP-11 kit and running simh emulation, capable of running period-accurate operating systems with an authentic front panel experience.
 
 **In Scope**
+- PiDP-11 kit assembly and testing
 - simh PDP-11 emulation on Raspberry Pi
 - Front panel LED/switch integration
 - Multiple OS support (RT-11, RSX-11, 2.11BSD)
@@ -41,6 +42,16 @@ Build a functional PDP-11 replica using the PiDP-11 kit with simh emulation, cap
 
 ---
 
+## Kit Assembly ⏳
+
+PiDP-11 kit build and hardware verification.
+
+- ⏳ Pretest components before soldering
+- ⏳ Assemble kit per instructions
+- ⏳ Verify front panel LED/switch operation
+
+---
+
 ## simh Emulation 🔄
 
 PDP-11 emulation running on Raspberry Pi.
@@ -48,4 +59,10 @@ PDP-11 emulation running on Raspberry Pi.
 - ✅ Base Pi image with ansible support
 - 🔄 simh installation and configuration
 - ⏳ Multiple OS options (RT-11, RSX-11, 2.11BSD)
+
+---
+
+## Documentation ⏳
+
 - ⏳ Build documentation
+- ⏳ Usage guide
