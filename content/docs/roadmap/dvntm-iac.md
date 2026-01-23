@@ -1,7 +1,7 @@
 ---
 title: "DVNTM Infrastructure Automation"
 weight: 1
-tasks_completed: 12
+tasks_completed: 15
 tasks_in_progress: 2
 tasks_planned: 11
 ---
@@ -16,6 +16,30 @@ Full automation of mobile substrate provisioning and management using Infrastruc
 {{< overall-progress >}}
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+
+---
+
+## Project Scope
+
+Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate from bare metal to running services, with complete air-gap recovery capability.
+
+**In Scope**
+- Bare-metal provisioning (PXE, Ansible)
+- Network infrastructure automation
+- Image factory for all platforms
+- Full air-gap rebuild capability
+
+**Out of Scope**
+- Application/tenant workload automation (separate per-tenant)
+- Cloud infrastructure (this is on-prem only)
+
+---
+
+## Requirements ✅
+
+- ✅ Define substrate inventory and MAC addresses
+- ✅ Define network topology and VLANs
+- ✅ Define air-gap artifact requirements
 
 ---
 

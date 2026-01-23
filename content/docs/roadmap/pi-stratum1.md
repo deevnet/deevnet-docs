@@ -3,7 +3,7 @@ title: "Pi Stratum 1"
 weight: 3
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 5
+tasks_planned: 7
 ---
 
 # Pi Stratum 1 NTP Server
@@ -15,6 +15,29 @@ Part of `deevnet-image-factory`.
 {{< overall-progress >}}
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+
+---
+
+## Project Scope
+
+Deploy a local Stratum 1 NTP server using GPS as the time source, providing accurate time synchronization for all substrate hosts independent of internet connectivity.
+
+**In Scope**
+- GPS-disciplined NTP server on Pi Zero
+- Serve time to substrate hosts
+- Air-gap capable (no internet required)
+- Baked image via deevnet-image-factory
+
+**Out of Scope**
+- Public NTP service
+- Redundant time sources
+
+---
+
+## Requirements ⏳
+
+- ⏳ Define time accuracy requirements
+- ⏳ Define GPS antenna placement constraints
 
 ---
 
