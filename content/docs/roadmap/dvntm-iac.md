@@ -1,14 +1,14 @@
 ---
-title: "DVNTM Infrastructure as Code"
+title: "DVNTM Infrastructure Automation"
 weight: 1
 tasks_completed: 12
 tasks_in_progress: 2
-tasks_planned: 15
+tasks_planned: 11
 ---
 
-# DVNTM Infrastructure as Code
+# DVNTM Infrastructure Automation
 
-Full automation of mobile substrate provisioning and management.
+Full automation of mobile substrate provisioning and management using Infrastructure as Code (IaC) and Configuration as Code (CaC) solutions.
 
 {{< overall-progress >}}
 
@@ -56,7 +56,7 @@ Automated configuration of network infrastructure.
 
 ## Full Substrate Rebuild Event ⏳
 
-End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap recovery capability.
+End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap recovery capability. Completing this milestone signals the project is done.
 
 - ⏳ Rebuild provisioner node
 - ⏳ Fetch artifacts (ISOs, install trees, containers)
@@ -66,14 +66,3 @@ End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap 
 - ⏳ Configure wireless AP
 - ⏳ Rebuild Proxmox hypervisor
 - ⏳ Rebuild all application tenants
-
----
-
-## Day 2 Operations ⏳
-
-Ongoing maintenance and updates.
-
-- ⏳ Patching Strategy - Switches
-- ⏳ Patching Strategy - Proxmox VE
-- ⏳ Patching Strategy - Firewall/Core router
-- ⏳ Patching Strategy - Linux packages
