@@ -1,18 +1,43 @@
 ---
-title: "DVNT SSL Cert Automation"
+title: "SSL Cert Automation"
 weight: 5
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 12
+tasks_planned: 15
 ---
 
-# DVNT SSL Cert Automation
+# SSL Cert Automation
 
-Automated SSL certificate provisioning and renewal for dvnt (home) substrate services.
+Automated SSL certificate provisioning and renewal for substrate services.
 
 {{< overall-progress >}}
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+
+---
+
+## Project Scope
+
+Eliminate browser security warnings and enable secure communication between substrate services by deploying an internal Certificate Authority and automating certificate lifecycle management.
+
+**In Scope**
+- Internal CA deployment and trust distribution
+- SSL certificates for infrastructure web UIs (Proxmox, OPNsense, Omada)
+- Automated certificate renewal
+- Expiration monitoring
+
+**Out of Scope**
+- Public-facing certificates (use Let's Encrypt separately)
+- Client certificate authentication
+- Code signing certificates
+
+---
+
+## Requirements ⏳
+
+- ⏳ Define certificate naming conventions
+- ⏳ Define certificate validity periods
+- ⏳ Define renewal thresholds and alerting
 
 ---
 
