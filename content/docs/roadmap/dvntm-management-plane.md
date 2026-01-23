@@ -1,12 +1,12 @@
 ---
-title: "DVNTM Control Plane"
+title: "DVNTM Management Plane"
 weight: 2
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 33
 ---
 
-# DVNTM Control Plane
+# DVNTM Management Plane
 
 Centralized management services for the dvntm (mobile) substrate — logging, telemetry, alerting, secrets, and identity.
 
@@ -21,7 +21,7 @@ Centralized management services for the dvntm (mobile) substrate — logging, te
 
 ## Project Vision & Scope
 
-Deploy a unified control plane providing observability, security, and identity services for all substrate components, running as tenants on the Proxmox hypervisor.
+Deploy a unified management plane providing observability, security, and identity services for all substrate components, running as tenants on the Proxmox hypervisor.
 
 **In Scope**
 - Centralized logging aggregation and search
@@ -119,6 +119,6 @@ Automated verification that the substrate was built according to inventory and i
 
 ## Documentation ⏳
 
-- ⏳ Control plane architecture overview
+- ⏳ Management plane architecture overview
 - ⏳ Service deployment runbook
 - ⏳ Operations and troubleshooting guide
