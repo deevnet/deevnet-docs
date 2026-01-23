@@ -3,7 +3,7 @@ title: "DVNTM Infrastructure Automation"
 weight: 1
 tasks_completed: 15
 tasks_in_progress: 2
-tasks_planned: 14
+tasks_planned: 9
 ---
 
 # DVNTM Infrastructure Automation
@@ -83,16 +83,11 @@ Automated configuration of network infrastructure.
 
 ---
 
-## Build Verification ⏳
+## Build Logging ⏳
 
-Automated verification that the substrate was built according to inventory and is fully functional. Produces a single report proving build correctness.
+Centralized logging during substrate provisioning.
 
 - ⏳ Centralized build logging (aggregate logs from all phases)
-- ⏳ Inventory conformance checks (running state matches inventory definitions)
-- ⏳ Network connectivity matrix (verify all expected paths work)
-- ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API)
-- ⏳ Hardware validation (MAC addresses, IP assignments match inventory)
-- ⏳ Build report generation (consolidated pass/fail with evidence)
 
 ---
 

@@ -3,7 +3,7 @@ title: "DVNTM Control Plane"
 weight: 2
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 28
+tasks_planned: 33
 ---
 
 # DVNTM Control Plane
@@ -102,6 +102,18 @@ Centralized authentication and authorization.
 - ⏳ Deploy identity provider
 - ⏳ Configure SSO for infrastructure services
 - ⏳ Define RBAC policies
+
+---
+
+## Build Verification ⏳
+
+Automated verification that the substrate was built according to inventory and is fully functional. Produces a single report proving build correctness.
+
+- ⏳ Inventory conformance checks (running state matches inventory definitions)
+- ⏳ Network connectivity matrix (verify all expected paths work)
+- ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API)
+- ⏳ Hardware validation (MAC addresses, IP assignments match inventory)
+- ⏳ Build report generation (consolidated pass/fail with evidence)
 
 ---
 
