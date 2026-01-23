@@ -1,9 +1,9 @@
 ---
 title: "Ma Bell"
 weight: 4
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 63
+tasks_completed: 21
+tasks_in_progress: 5
+tasks_planned: 37
 ---
 
 # Ma Bell Project
@@ -38,15 +38,15 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 
 ---
 
-## Requirements & Constraints ⏳
+## Requirements & Constraints ✅
 
 Define what success means before building.
 
-- ⏳ User scenarios (incoming/outgoing calls, edge cases)
-- ⏳ Functional requirements (FR-xxx)
-- ⏳ Non-functional requirements (latency, audio quality, reliability)
-- ⏳ Electrical & mechanical constraints
-- ⏳ Acceptance criteria for each requirement
+- ✅ User scenarios (incoming/outgoing calls, edge cases)
+- ✅ Functional requirements (FR-xxx)
+- ✅ Non-functional requirements (latency, audio quality, reliability)
+- ✅ Electrical & mechanical constraints
+- ✅ Acceptance criteria for each requirement
 - ⏳ Risk register (top technical risks + mitigations)
 
 ---
@@ -55,13 +55,13 @@ Define what success means before building.
 
 Translate requirements into a complete system design.
 
-- ⏳ System block diagram
-- ⏳ Power architecture & protection strategy
-- ⏳ Audio signal chain & gain staging plan
-- ⏳ Hook switch, dial pulse, and ring detection design
-- ⏳ Bluetooth integration architecture
-- ⏳ Firmware architecture & state machine definition
-- ⏳ Interface specifications (electrical, audio, software)
+- ✅ System block diagram
+- ✅ Power architecture & protection strategy
+- ✅ Audio signal chain & gain staging plan
+- ✅ Hook switch, dial pulse, and ring detection design
+- ✅ Bluetooth integration architecture
+- ✅ Firmware architecture & state machine definition
+- ✅ Interface specifications (electrical, audio, software)
 - ⏳ Verification & test plan (requirements → tests mapping)
 
 ---
@@ -83,14 +83,14 @@ De-risk the hardest problems early using breadboards and bench tests.
 
 ESP32 firmware implementing telephony behavior and system control.
 
-- ⏳ ESP32 base firmware & build system
-- ⏳ Bluetooth HFP profile implementation
-- ⏳ Call state machine implementation
-- ⏳ Dial tone, ring, busy, reorder tone generation
-- ⏳ Rotary pulse detection & validation
-- ⏳ Configuration storage (NVS schema)
-- ⏳ Logging & diagnostics
-- ⏳ Firmware versioning & release tagging
+- ✅ ESP32 base firmware & build system
+- ✅ Bluetooth HFP profile implementation
+- ✅ Call state machine implementation
+- ✅ Dial tone, ring, busy, reorder tone generation
+- 🔄 Rotary pulse detection & validation
+- ✅ Configuration storage (NVS schema)
+- ✅ Logging & diagnostics
+- 🔄 Firmware versioning & release tagging
 - ⏳ Optional OTA update mechanism
 
 ---
@@ -151,9 +151,9 @@ Prepare the design for repeatable builds.
 
 Create durable documentation for users and future builders.
 
-- ⏳ Build instructions
-- ⏳ Installation & wiring guide
-- ⏳ User guide
+- 🔄 Build instructions
+- 🔄 Installation & wiring guide
+- 🔄 User guide
 - ⏳ Troubleshooting guide
 - ⏳ Design notes & lessons learned
 
