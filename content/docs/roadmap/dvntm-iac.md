@@ -10,6 +10,9 @@ tasks_planned: 11
 
 Full automation of mobile substrate provisioning and management using Infrastructure as Code (IaC) and Configuration as Code (CaC) solutions.
 
+- **GitHub:** https://github.com/deevnet
+- **Documentation:** https://deevnet.github.io/deevnet-docs/
+
 {{< overall-progress >}}
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
