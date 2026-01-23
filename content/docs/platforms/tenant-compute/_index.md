@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Tenant Compute
 
-The **tenant compute layer** provides resources for application workloads, experiments, and user-facing services. Unlike the control plane, tenant compute is designed for higher churn and experimentation.
+The **tenant compute layer** provides resources for application workloads, experiments, and user-facing services. Unlike the management plane, tenant compute is designed for higher churn and experimentation.
 
 ---
 
@@ -41,18 +41,18 @@ Tenant compute infrastructure is:
 
 ---
 
-## Separation from Control Plane
+## Separation from Management Plane
 
-Tenant compute is deliberately separated from control plane infrastructure:
+Tenant compute is deliberately separated from management plane infrastructure:
 
-| Aspect | Control Plane | Tenant Compute |
-|--------|---------------|----------------|
+| Aspect | Management Plane | Tenant Compute |
+|--------|------------------|----------------|
 | **Change cadence** | Slow, deliberate | Fast, experimental |
 | **Blast radius** | Must be minimized | Tolerable |
 | **Rebuild tolerance** | Low — avoid rebuilds | High — expect rebuilds |
 | **Provisioning** | Ansible | Terraform (future) |
 
-This separation ensures that tenant experimentation cannot impact substrate stability. If a tenant VM misbehaves or a tenant hypervisor fails, the control plane remains operational.
+This separation ensures that tenant experimentation cannot impact substrate stability. If a tenant VM misbehaves or a tenant hypervisor fails, the management plane remains operational.
 
 ---
 

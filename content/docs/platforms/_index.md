@@ -23,9 +23,9 @@ The **network layer** provides connectivity, routing, and network services:
 - **Access Switch** — Layer 2 connectivity, VLAN tagging
 - **Access Point** — Wireless connectivity
 
-### Control Plane
+### Management Plane
 
-The **control plane** provides infrastructure services for substrate management:
+The **management plane** provides infrastructure services for substrate management:
 
 - **Bootstrap Node** — Ansible controller, artifact server, PXE boot
 - **Management Hypervisor** — Observability, automation, access services (Proxmox Node 1)

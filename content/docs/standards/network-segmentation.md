@@ -30,7 +30,7 @@ This standard establishes rules for how substrates implement network segmentatio
 
 ### 1. Management Segment
 
-The management segment contains infrastructure control plane systems.
+The management segment contains infrastructure management plane systems.
 
 - Management segment MUST exist in every substrate
 - Management segment MUST contain the bootstrap/provisioner node
@@ -47,7 +47,7 @@ The trusted segment contains high-trust user devices that require broad network 
 - Trusted segment SHOULD exist when user workstations need elevated access beyond tenant segments
 - Trusted segment MUST contain only known, managed devices
 - Trusted segment MAY access management services for administration purposes
-- Trusted segment MUST NOT contain infrastructure control plane systems (those belong in management)
+- Trusted segment MUST NOT contain infrastructure management plane systems (those belong in management)
 - Trusted segment SHOULD have endpoint security requirements (e.g., disk encryption, managed updates)
 - Trusted segment MAY access storage segment for user data access
 - Devices in trusted segment SHOULD be authenticated users with known identities
