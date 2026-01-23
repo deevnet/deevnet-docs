@@ -28,22 +28,38 @@ Deevnet uses a **two-layer architecture** that separates infrastructure from wor
 
 ### [Substrate](substrate/)
 
-A **substrate** is an infrastructure environment—a self-contained network with
-its own compute, storage, and management plane.
+A **substrate** is an infrastructure environment—a self-contained network with its own compute, storage, and management plane.
 
 - **dvntm** — Mobile/portable lab for development, testing, and demos
 - **dvnt** — Production home infrastructure (always-on, stable)
 
-Each substrate operates independently and contains:
+#### Substrate Independence
+
+Each substrate operates independently through its **networking** and **management plane**:
+
+- **Networking** — Self-contained routing, DNS, DHCP, and segmentation via Core Router
+- **Management Plane** — Provisioning, observability, and operational services
+
+No cross-substrate dependencies for core functionality. Each substrate can be built, operated, and torn down without affecting the other.
+
+#### What a Substrate Provides
+
+A substrate provides virtualization services and compute resources for tenant workloads. For **dvntm** specifically, it serves as a stable, portable network that remains insulated from upstream internet connectivity—whether connected to home, hotel, or conference WiFi, the internal network remains consistent.
+
+See:
 - [Networking](substrate/networking/) — Network segmentation and VLAN model
-- [Management Plane](substrate/management-plane/) — Infrastructure control and DNS authority
+- [Management Plane](substrate/management-plane/) — Infrastructure management and DNS authority
 - [Virtual Services](substrate/virtual-services/) — VM-based management services
-- [Builder](substrate/builder/) — Bootstrap node and provisioning architecture
+
+#### Builder (Bootstrap Node)
+
+The **builder** is architecturally part of the substrate but operates with independence—it can move between substrates and provision whichever environment it's connected to. The builder contains all artifacts and automation needed for air-gapped substrate provisioning.
+
+See [Builder](substrate/builder/) for the bootstrap node and provisioning architecture.
 
 ### [Tenant](tenant/)
 
-A **tenant** is a logical workload namespace representing an application or
-service domain.
+A **tenant** is a logical workload namespace representing an application or service domain.
 
 Examples: `grooveiq`, `vintronics`, `moneyrouter`
 
@@ -54,29 +70,10 @@ Tenants live **on** substrates, not defining them:
 
 ---
 
-## Design Principles
+## Standards
 
-### Substrate Independence
+Design principles, correctness invariants, and infrastructure rules are defined in [Standards](/docs/standards/):
 
-Each substrate (dvntm, dvnt) must be operable independently. No cross-substrate
-dependencies for core functionality.
-
-### Identity vs Intent
-
-Hosts have **stable identity** (hostname, MAC, IP) that doesn't change when
-workloads change. Workloads express **intent** and can move between hosts via
-DNS CNAMEs.
-
-### Air-Gapped Provisioning
-
-Substrate infrastructure can be provisioned without upstream internet access.
-The artifact server hosts all required images, packages, and configurations.
-
-### Config-as-Code
-
-All infrastructure configuration lives in version-controlled repositories:
-- `ansible-inventory-deevnet` — Host identity and variables
-- `ansible-collection-deevnet.builder` — Provisioning roles
-- `ansible-collection-deevnet.mgmt` — Management plane and centralized services
-- `ansible-collection-deevnet.net` — Network configuration
-- `deevnet-image-factory` — OS image builds
+- [Correctness](/docs/standards/correctness/) — What it means for infrastructure to be correct
+- [Identity vs Intent](/docs/standards/identity-vs-intent/) — Separation of host identity from workload intent
+- [Naming](/docs/standards/naming/) — How systems and services are named
