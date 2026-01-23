@@ -3,7 +3,7 @@ title: "DVNTM Infrastructure Automation"
 weight: 1
 tasks_completed: 15
 tasks_in_progress: 2
-tasks_planned: 6
+tasks_planned: 8
 ---
 
 # DVNTM Infrastructure Automation
@@ -78,6 +78,8 @@ Automated configuration of network infrastructure.
 - ⏳ Access Switch Automation (Omada)
 - ⏳ Proxmox Tenant Networking Design and Automation
 - ⏳ Wireless AP Automation (Omada)
+- ⏳ Migrate core router automation to OPNsense alternative
+- ⏳ Document network build/rebuild steps in recovery plan
 
 ---
 
