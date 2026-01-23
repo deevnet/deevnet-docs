@@ -42,6 +42,17 @@ Each substrate operates independently through its **networking** and **managemen
 
 No cross-substrate dependencies for core functionality. Each substrate can be built, operated, and torn down without affecting the other.
 
+#### Stateless Infrastructure
+
+Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via Ansible—no backup, restore, or data recovery required for the substrate itself.
+
+Benefits:
+- **Rebuild from scratch** — Any host can be wiped and reprovisioned
+- **Hardware replacement** — Swap failed hardware without data migration
+- **No snapshots or backups** — Configuration is code, not state
+
+Tenant workloads may have stateful data requiring separate backup/recovery procedures.
+
 #### What a Substrate Provides
 
 A substrate provides virtualization services and compute resources for tenant workloads. For **dvntm** specifically, it serves as a stable, portable network that remains insulated from upstream internet connectivity—whether connected to home, hotel, or conference WiFi, the internal network remains consistent.
