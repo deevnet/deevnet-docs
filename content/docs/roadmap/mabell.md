@@ -1,9 +1,9 @@
 ---
 title: "Ma Bell"
 weight: 4
-tasks_completed: 21
+tasks_completed: 20
 tasks_in_progress: 5
-tasks_planned: 37
+tasks_planned: 38
 ---
 
 # Ma Bell Project
@@ -43,7 +43,7 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 Define what success means before building.
 
 - ✅ User scenarios (incoming/outgoing calls, edge cases)
-- ✅ Functional requirements (FR-xxx)
+- ⏳ Functional requirements (FR-xxx)
 - ✅ Non-functional requirements (latency, audio quality, reliability)
 - ✅ Electrical & mechanical constraints
 - ✅ Acceptance criteria for each requirement
