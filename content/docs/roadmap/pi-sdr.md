@@ -1,9 +1,9 @@
 ---
 title: "Pi-SDR"
 weight: 2
-tasks_completed: 1
+tasks_completed: 5
 tasks_in_progress: 1
-tasks_planned: 5
+tasks_planned: 1
 ---
 
 # Pi-SDR Project
@@ -18,21 +18,21 @@ Part of `deevnet-image-factory`.
 
 ---
 
-## CaribouLite Backend 🔄
+## CaribouLite Backend ✅
 
 Get CaribouLite SDR hardware working on Raspberry Pi.
 
 - ✅ Base Pi image with ansible support
-- 🔄 CaribouLite driver installation
-- ⏳ Post-image configuration tweaks
-- ⏳ Build documentation
+- ✅ CaribouLite driver installation
+- ✅ Post-image configuration tweaks
+- ✅ Build documentation
 
 ---
 
-## SDR Client ⏳
+## SDR Client 🔄
 
 Configure remote client to tune Pi SDR.
 
-- ⏳ GQRX or alternative front-end setup
-- ⏳ Network streaming configuration
+- 🔄 GQRX or alternative front-end setup
+- ✅ Network streaming configuration
 - ⏳ Client documentation
