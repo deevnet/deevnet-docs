@@ -1,9 +1,9 @@
 ---
 title: "Ma Bell"
 weight: 4
-tasks_completed: 20
+tasks_completed: 23
 tasks_in_progress: 5
-tasks_planned: 38
+tasks_planned: 35
 ---
 
 # Ma Bell Project
@@ -43,15 +43,15 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 Define what success means before building.
 
 - ✅ User scenarios (incoming/outgoing calls, edge cases)
-- ⏳ Functional requirements (FR-xxx)
+- ✅ Functional requirements (FR-xxx)
 - ✅ Non-functional requirements (latency, audio quality, reliability)
 - ✅ Electrical & mechanical constraints
 - ✅ Acceptance criteria for each requirement
-- ⏳ Risk register (top technical risks + mitigations)
+- ✅ Risk register (top technical risks + mitigations)
 
 ---
 
-## Architecture & Design 🔄
+## Architecture & Design ✅
 
 Translate requirements into a complete system design.
 
@@ -62,7 +62,7 @@ Translate requirements into a complete system design.
 - ✅ Bluetooth integration architecture
 - ✅ Firmware architecture & state machine definition
 - ✅ Interface specifications (electrical, audio, software)
-- ⏳ Verification & test plan (requirements → tests mapping)
+- ✅ Verification & test plan (requirements → tests mapping)
 
 ---
 
