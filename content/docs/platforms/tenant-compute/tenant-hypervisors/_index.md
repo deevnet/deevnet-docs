@@ -139,13 +139,10 @@ For a two-node lab environment:
 
 ## Network Position
 
-```
-┌─────────────────┐      ┌────────────────────┐      ┌─────────────────────┐
-│  Core Router    │◄────►│ Tenant             │◄────►│  Tenant VMs         │
-│                 │      │ Hypervisor         │      │  (apps, experiments,│
-│                 │      │ (Proxmox Node 2)   │      │   sandboxes)        │
-└─────────────────┘      └────────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Core Router] <--> B[Tenant Hypervisor<br>Proxmox Node 2] <--> C[Tenant VMs<br>apps, experiments, sandboxes]
+{{< /mermaid >}}
 
 Guest VMs receive network configuration from Core Router DHCP.
 

@@ -10,12 +10,10 @@ bookCollapseSection: true
 
 The core router is the **production network authority** for each Deevnet substrate. It provides routing, firewall, DNS, DHCP, and gateway services for all substrate hosts.
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│   Edge Router   │◄────►│   Core Router    │◄────►│  Substrate Hosts    │
-│   (unmanaged)   │      │   (managed)      │      │                     │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Substrate Hosts]
+{{< /mermaid >}}
 
 | Substrate | Upstream Connection |
 |-----------|---------------------|

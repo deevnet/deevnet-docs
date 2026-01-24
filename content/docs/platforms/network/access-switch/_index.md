@@ -9,12 +9,10 @@ weight: 3
 
 The access switch provides **Layer 2 connectivity** for substrate hosts, connecting endpoints to the core router. Access switches handle VLAN tagging, port isolation, and traffic aggregation.
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│   Core Router   │◄────►│   Access Switch  │◄────►│  Substrate Hosts    │
-│                 │      │                  │      │                     │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Core Router] <--> B[Access Switch] <--> C[Substrate Hosts]
+{{< /mermaid >}}
 
 ---
 

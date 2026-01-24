@@ -40,12 +40,10 @@ Goals:
 
 ## Network Position
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│  Core Router    │◄────►│  Access Switch   │◄────►│  Raspberry Pi Bank  │
-│                 │      │  (IoT VLAN)      │      │  (4x Pi4 8GB)       │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Core Router] <--> B[Access Switch<br>IoT VLAN] <--> C[Raspberry Pi Bank<br>4x Pi4 8GB]
+{{< /mermaid >}}
 
 Pis are placed on the IoT network segment for isolation from management workloads.
 

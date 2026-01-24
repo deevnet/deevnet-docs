@@ -11,12 +11,10 @@ The edge router provides **upstream connectivity** between the substrate and the
 
 Edge routers are **external** to the substrate — they provide connectivity but are not managed by Deevnet automation. Configuration is manual or vendor-managed. The substrate assumes each edge router provides DHCP on its LAN interface (for bootstrap node or core router upstream connectivity).
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│   Edge Router   │◄────►│   Core Router    │◄────►│  Substrate Hosts    │
-│   (unmanaged)   │      │   (managed)      │      │                     │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Substrate Hosts]
+{{< /mermaid >}}
 
 ---
 

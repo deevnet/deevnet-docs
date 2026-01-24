@@ -39,18 +39,18 @@ Once validated on VMs, the same MAC-specific config works unchanged on bare meta
 
 ## Architecture
 
-```
-┌─────────────────┐         ┌──────────────────┐         ┌─────────────────┐
-│   PXE Client    │◄──DHCP──│   Core Router    │         │  Bootstrap Node │
-│  (VM or bare)   │         │   (Kea DHCP)     │         │    (TFTP)       │
-└────────┬────────┘         └──────────────────┘         └────────┬────────┘
-         │                                                        │
-         │                         TFTP                           │
-         └───────────────────────────────────────────────────────►│
-                            grubx64.efi                           │
-                            grub.cfg-<MAC>                        │
-                            vmlinuz, initrd.img                   │
-```
+{{< mermaid >}}
+sequenceDiagram
+    participant Client as PXE Client<br>(VM or bare)
+    participant Router as Core Router<br>(Kea DHCP)
+    participant Boot as Bootstrap Node<br>(TFTP)
+
+    Client->>Router: DHCP Request
+    Router-->>Client: IP + next-server + boot-file
+    Client->>Boot: TFTP: grubx64.efi
+    Client->>Boot: TFTP: grub.cfg-MAC
+    Client->>Boot: TFTP: vmlinuz, initrd.img
+{{< /mermaid >}}
 
 | Component | Host | Implementation | Role |
 |-----------|------|----------------|------|

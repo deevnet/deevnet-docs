@@ -90,12 +90,10 @@ The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for
 
 ## Network Position
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│  Host Network   │◄────►│  Bootstrap Node  │◄────►│  Substrate Network  │
-│  (WAN/upstream) │      │   (dual-homed)   │      │    (dvntm/dvnt)     │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Substrate Network<br>dvntm/dvnt]
+{{< /mermaid >}}
 
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
 - **Downstream interface**: Becomes the gateway for the substrate during bootstrap

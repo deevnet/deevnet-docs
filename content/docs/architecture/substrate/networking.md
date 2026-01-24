@@ -134,28 +134,22 @@ The guest segment provides network access for transient devices without substrat
 
 Segments form a trust hierarchy with controlled routing between them:
 
-```
-┌─────────────────────┐   ┌─────────────────────┐
-│     Management      │   │       Trusted       │  ← High-trust segments
-│    (High Trust)     │   │    (High Trust)     │
-└──────────┬──────────┘   └──────────┬──────────┘
-           │ manages                 │ user access
-           └────────────┬────────────┘
-                        │
-     ┌──────────────────┼──────────────────┐
-     ▼                  ▼                  ▼
-┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
-│      Storage      │ │  Tenant Segments  │ │        IoT        │
-│   (High Trust)    │ │  (Medium Trust)   │ │   (Low Trust)     │
-└───────────────────┘ └───────────────────┘ └───────────────────┘
-                               │
-                          no access
-                               │
-                    ┌──────────▼──────────┐
-                    │        Guest        │  ← Internet only
-                    │    (Untrusted)      │
-                    └─────────────────────┘
-```
+{{< mermaid >}}
+graph TB
+    subgraph high["High-trust segments"]
+        Mgmt[Management<br>High Trust]
+        Trusted[Trusted<br>High Trust]
+    end
+
+    Mgmt -->|manages| Storage[Storage<br>High Trust]
+    Mgmt -->|manages| Tenant[Tenant Segments<br>Medium Trust]
+    Mgmt -->|manages| IoT[IoT<br>Low Trust]
+    Trusted -->|user access| Storage
+    Trusted -->|user access| Tenant
+    Trusted -->|user access| IoT
+
+    Tenant -.->|no access| Guest[Guest<br>Untrusted<br>Internet only]
+{{< /mermaid >}}
 
 ### Default Routing Policy
 
