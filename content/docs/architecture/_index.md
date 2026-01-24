@@ -12,36 +12,56 @@ Deevnet architecture is organized around **substrates** (independent infrastruct
 
 ## Substrate Architecture
 
-{{< mermaid >}}
-flowchart TB
-    Internet[Internet]
-    Internet --> EdgeRouter[Edge Router]
-    EdgeRouter --- Builder[Builder Node]
+{{< graphviz >}}
+digraph architecture {
+    graph [
+        rankdir=TB,
+        splines=ortho,
+        nodesep=0.6,
+        ranksep=0.8
+    ]
+    node [shape=box, style="rounded,filled", fillcolor=white]
+    edge [arrowsize=0.7]
 
-    subgraph Substrate[" Substrate"]
-        CoreRouter[Core Router<br>DNS, DHCP, Firewall]
-        WirelessAP[Wireless AP]
-        AccessSwitch[Access Switch]
-        MgmtHV[Management<br>Hypervisor]
+    // Top row - force same rank for Edge Router and Builder
+    Internet [label="Internet"]
+    EdgeRouter [label="Edge Router"]
+    Builder [label="Builder Node"]
 
-        subgraph Tenant[" Tenant"]
-            TenantHV[Tenant<br>Hypervisor]
-            PiCompute[Pi Compute<br>edge/IoT]
-        end
+    Internet -> EdgeRouter
+    { rank=same; EdgeRouter; Builder }
+    EdgeRouter -> Builder [style=dashed, dir=none]
 
-        CoreRouter --> WirelessAP
-        CoreRouter --> AccessSwitch
-        AccessSwitch --> MgmtHV
-        AccessSwitch --> TenantHV
-        AccessSwitch --> PiCompute
-    end
+    subgraph cluster_substrate {
+        label="Substrate"
+        style=filled
+        fillcolor="#e0f0ff"
 
-    EdgeRouter --> CoreRouter
-    Builder --> AccessSwitch
+        CoreRouter [label="Core Router\nDNS, DHCP, Firewall"]
+        WirelessAP [label="Wireless AP"]
+        AccessSwitch [label="Access Switch"]
+        MgmtHV [label="Management\nHypervisor"]
 
-    style Substrate fill:#e0f0ff,stroke:#333
-    style Tenant fill:#fff3cd,stroke:#333
-{{< /mermaid >}}
+        subgraph cluster_tenant {
+            label="Tenant"
+            style=filled
+            fillcolor="#fff3cd"
+
+            TenantHV [label="Tenant\nHypervisor"]
+            PiCompute [label="Pi Compute\nEdge / IoT"]
+        }
+
+        CoreRouter -> WirelessAP
+        CoreRouter -> AccessSwitch
+        AccessSwitch -> MgmtHV
+        AccessSwitch -> TenantHV
+        AccessSwitch -> PiCompute
+    }
+
+    EdgeRouter -> CoreRouter
+    Builder -> AccessSwitch
+}
+{{< /graphviz >}}
 
 ### [Substrate](substrate/)
 

@@ -1,0 +1,26 @@
+{{ if not (.Page.Scratch.Get "graphviz") }}
+<script src="https://unpkg.com/@viz-js/viz@3.4.0/lib/viz-standalone.js"></script>
+{{ .Page.Scratch.Set "graphviz" true }}
+{{ end }}
+
+<div class="graphviz-diagram{{ with .Get "class" }} {{ . }}{{ end }}">
+  <script type="text/graphviz">
+    {{- .Inner -}}
+  </script>
+</div>
+
+<script>
+(function() {
+  const containers = document.querySelectorAll('.graphviz-diagram');
+  containers.forEach(container => {
+    const script = container.querySelector('script[type="text/graphviz"]');
+    if (script && !container.querySelector('svg')) {
+      Viz.instance().then(viz => {
+        const svg = viz.renderSVGElement(script.textContent);
+        container.appendChild(svg);
+        script.remove();
+      });
+    }
+  });
+})();
+</script>
