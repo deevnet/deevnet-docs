@@ -9,12 +9,10 @@ weight: 5
 
 Network controllers provide **centralized management** for switches and access points. They enable VLAN configuration, firmware updates, and API-based automation across all managed network devices.
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│ Bootstrap Node  │◄────►│ Network Controller│◄────►│  Switches & APs     │
-│ (hosts controller)     │ (Omada/UniFi)    │      │  (managed devices)  │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Bootstrap Node<br>hosts controller] <--> B[Network Controller<br>Omada/UniFi] <--> C[Switches & APs<br>managed devices]
+{{< /mermaid >}}
 
 Both controllers run on the **bootstrap node** as containerized services, providing management capability during initial network configuration.
 

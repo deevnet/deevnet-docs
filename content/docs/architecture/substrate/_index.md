@@ -29,20 +29,16 @@ The same physical bootstrap node can move between substrates—it provisions whi
 
 ## Infrastructure Layers
 
-```
-┌─────────────────────────────────────────────────────────┐
-│              Substrate Infrastructure                   │
-├─────────────────────────────────────────────────────────┤
-│  Management Plane │ Bootstrap node (provisioning,      │
-│                   │ artifacts, PXE/TFTP)               │
-├───────────────────┼─────────────────────────────────────┤
-│  Network          │ Core Router (gateway, firewall,    │
-│                   │ DNS, DHCP), switches, APs          │
-├───────────────────┼─────────────────────────────────────┤
-│  Compute          │ Proxmox hypervisors, Raspberry Pis,│
-│                   │ embedded devices                   │
-└───────────────────┴─────────────────────────────────────┘
-```
+{{< mermaid >}}
+block-beta
+    columns 1
+    block:infra["Substrate Infrastructure"]
+        columns 2
+        mp["Management Plane"]:1 mpd["Bootstrap node (provisioning, artifacts, PXE/TFTP)"]:1
+        net["Network"]:1 netd["Core Router (gateway, firewall, DNS, DHCP), switches, APs"]:1
+        comp["Compute"]:1 compd["Proxmox hypervisors, Raspberry Pis, embedded devices"]:1
+    end
+{{< /mermaid >}}
 
 ### Management Plane
 

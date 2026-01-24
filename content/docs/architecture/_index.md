@@ -12,36 +12,36 @@ Deevnet architecture is organized around **substrates** (independent infrastruct
 
 ## Substrate Architecture
 
-```
-                                                                ┌───────────────┐
-                                                                │    Builder    │
-┌──────────┐      ┌─────────────┐                               │  (portable)   │
-│ Internet │──────│ Edge Router │                               └───────┬───────┘
-└──────────┘      └──────┬──────┘                                       │
-                         │                                              │
-┌────────────────────────┼──────────────────────────────────────────────┼──────┐
-│ Substrate              │                                              │      │
-│             ┌──────────▼──────────┐                                   │      │
-│             │     Core Router     │                                   │      │
-│             │ DNS, DHCP, Firewall │                                   │      │
-│             └──────────┬──────────┘                                   │      │
-│                        │                                              │      │
-│          ┌─────────────┴─────────────┐                                │      │
-│          │                           │                                │      │
-│  ┌───────▼────────┐       ┌──────────▼──────────┐◄────────────────────┘      │
-│  │  Wireless AP   │       │    Access Switch    │                            │
-│  └────────────────┘       └──────────┬──────────┘                            │
-│                                      │                                       │
-│            ┌─────────────────────────┼─────────────────────────┐             │
-│            │                         │                         │             │
-│  ┌─────────▼────────┐  ┌─────────────▼─────────┐  ┌────────────▼──────────┐  │
-│  │    Management    │  │   Tenant Hypervisor   │  │  Pi Compute (edge/IoT)│  │
-│  │    Hypervisor    │  └───────────────────────┘  ├─────┬─────┬─────┬─────┤  │
-│  └──────────────────┘                             │ pi1 │ pi2 │ pi3 │ pi4 │  │
-│                                                   └─────┴─────┴─────┴─────┘  │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
-```
+{{< mermaid >}}
+flowchart TB
+    Internet[Internet]
+    Internet --> EdgeRouter[Edge Router]
+    EdgeRouter --- Builder[Builder Node]
+
+    subgraph Substrate[" Substrate"]
+        CoreRouter[Core Router<br>DNS, DHCP, Firewall]
+        WirelessAP[Wireless AP]
+        AccessSwitch[Access Switch]
+        MgmtHV[Management<br>Hypervisor]
+
+        subgraph Tenant[" Tenant"]
+            TenantHV[Tenant<br>Hypervisor]
+            PiCompute[Pi Compute<br>edge/IoT]
+        end
+
+        CoreRouter --> WirelessAP
+        CoreRouter --> AccessSwitch
+        AccessSwitch --> MgmtHV
+        AccessSwitch --> TenantHV
+        AccessSwitch --> PiCompute
+    end
+
+    EdgeRouter --> CoreRouter
+    Builder --> AccessSwitch
+
+    style Substrate fill:#e0f0ff,stroke:#333
+    style Tenant fill:#fff3cd,stroke:#333
+{{< /mermaid >}}
 
 ### [Substrate](substrate/)
 

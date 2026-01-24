@@ -9,12 +9,10 @@ weight: 4
 
 The access point provides **wireless connectivity** for mobile devices, laptops, and IoT devices within the substrate.
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│  Access Switch  │◄────►│   Access Point   │◄────►│  Wireless Clients   │
-│  (PoE + VLAN)   │      │   (Wi-Fi)        │      │                     │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Access Switch<br>PoE + VLAN] <--> B[Access Point<br>Wi-Fi] <--> C[Wireless Clients]
+{{< /mermaid >}}
 
 ---
 

@@ -14,17 +14,16 @@ A **tenant** is a logical workload namespace representing an application or serv
 
 Tenants are the workload layer that runs **on top of** substrate infrastructure:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                  Tenants (Workloads)                    │
-│         grooveiq, vintronics, moneyrouter, etc.         │
-└────────────────────────┬────────────────────────────────┘
-                         │ runs on
-┌────────────────────────▼────────────────────────────────┐
-│              Substrate Infrastructure                   │
-│     (Network, Compute, Management Plane, Builder)       │
-└─────────────────────────────────────────────────────────┘
-```
+{{< mermaid >}}
+graph TB
+    subgraph tenants["Tenants (Workloads)"]
+        T["grooveiq, vintronics, moneyrouter, etc."]
+    end
+    subgraph substrate["Substrate Infrastructure"]
+        S["Network, Compute, Management Plane, Builder"]
+    end
+    tenants -->|runs on| substrate
+{{< /mermaid >}}
 
 Examples of tenants: `grooveiq`, `vintronics`, `moneyrouter`
 

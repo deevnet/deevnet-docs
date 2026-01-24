@@ -34,12 +34,10 @@ Software-defined radio (SDR) receiver for RF signal monitoring and experimentati
 
 ## Network Position
 
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────────┐
-│  Core Router    │◄────►│  Access Switch   │◄────►│  CaribouLite SDR    │
-│                 │      │  (IoT VLAN)      │      │  (Pi4 + SDR HAT)    │
-└─────────────────┘      └──────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Core Router] <--> B[Access Switch<br>IoT VLAN] <--> C[CaribouLite SDR<br>Pi4 + SDR HAT]
+{{< /mermaid >}}
 
 Deployed on the IoT VLAN for isolation from management traffic.
 

@@ -113,17 +113,16 @@ identity requirements.
 
 Tenant networking is a layer on top of [Substrate Networking](/docs/architecture/substrate/networking/):
 
-```
-┌─────────────────────────────────────────────────────────┐
-│              Tenant VLANs (per-tenant)                  │
-│     grooveiq (100), vintronics (101), etc.              │
-└────────────────────────┬────────────────────────────────┘
-                         │ isolated from
-┌────────────────────────▼────────────────────────────────┐
-│           Substrate Segments (shared)                   │
-│   Management, Trusted, Storage, IoT, Guest              │
-└─────────────────────────────────────────────────────────┘
-```
+{{< mermaid >}}
+graph TB
+    subgraph tenant["Tenant VLANs (per-tenant)"]
+        T["grooveiq (100), vintronics (101), etc."]
+    end
+    subgraph substrate["Substrate Segments (shared)"]
+        S["Management, Trusted, Storage, IoT, Guest"]
+    end
+    tenant -->|isolated from| substrate
+{{< /mermaid >}}
 
 Tenant VLANs:
 - Use the same Core Router for routing and firewall

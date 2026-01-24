@@ -157,13 +157,10 @@ Management VMs are created using **Ansible only** — simplicity and recoverabil
 
 ## Network Position
 
-```
-┌─────────────────┐      ┌────────────────────┐      ┌─────────────────────┐
-│  Core Router    │◄────►│ Management         │◄────►│  Management VMs     │
-│                 │      │ Hypervisor         │      │  (observability,    │
-│                 │      │ (Proxmox Node 1)   │      │   automation, etc)  │
-└─────────────────┘      └────────────────────┘      └─────────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Core Router] <--> B[Management Hypervisor<br>Proxmox Node 1] <--> C[Management VMs<br>observability, automation]
+{{< /mermaid >}}
 
 Guest VMs receive network configuration from Core Router DHCP, using static mappings for known management-plane hosts.
 

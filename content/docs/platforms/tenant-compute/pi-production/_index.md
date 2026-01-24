@@ -21,12 +21,10 @@ Each production Pi:
 
 Projects follow this path from experiment to production:
 
-```
-┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│  Image Factory  │─────►│  Pi Lab         │─────►│  Pi Production  │
-│  (Build image)  │      │  (Test & tune)  │      │  (Deploy)       │
-└─────────────────┘      └─────────────────┘      └─────────────────┘
-```
+{{< mermaid >}}
+graph LR
+    A[Image Factory<br>Build image] --> B[Pi Lab<br>Test & tune] --> C[Pi Production<br>Deploy]
+{{< /mermaid >}}
 
 1. **Image Factory** — Build the base image with packages, configs, and test scripts
 2. **Pi Lab** — Flash to a bank Pi, boot, validate, iterate until working
