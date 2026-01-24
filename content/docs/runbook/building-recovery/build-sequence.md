@@ -1,63 +1,51 @@
 ---
-title: "Build Substrate"
+title: "Configure PXE"
 weight: 4
 ---
 
-# Build Substrate
+# Configure PXE
 
-Linear sequence for a greenfield substrate build. Callouts indicate where to start for component-only rebuilds.
-
----
-
-## Prerequisites
-
-1. **Artifacts staged** — See [Stage Artifacts](../online-preparation/)
-2. **Inventory seeded** — See [Seed Inventory](../inventory-setup/)
-3. **Bootstrap node connected** to substrate network
+Configure PXE boot authority before provisioning hosts.
 
 ---
 
-## Step 1: Enable Bootstrap-Authoritative Mode
+## Greenfield Build (No Core Router)
+
+For initial substrate build or full recovery, the bootstrap node provides DNS/DHCP/TFTP.
 
 ```bash
 cd ~/dvnt/ansible-collection-deevnet.builder
 make bootstrap-auth
 ```
 
-> **Component rebuild:** If Core Router is running, skip to Step 4.
+This enables dnsmasq for DHCP/DNS/TFTP and configures the bootstrap node as the network gateway.
+
+Proceed to [Build Network](../build-network/) to provision Core Router.
 
 ---
 
-## Step 2: Build Network
+## Component Rebuild (Core Router Running)
 
-See [Build Network](../build-network/) for Core Router, VLANs, and wireless.
+If Core Router is already operational, no PXE reconfiguration is needed. The bootstrap node provides TFTP only; Core Router handles DHCP with PXE options.
 
-> **Core Router rebuild only:** Start here, then proceed to Step 3.
-
----
-
-## Step 3: Enable Core-Authoritative Mode
+Verify TFTP is running:
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.builder
-make core-auth
+systemctl status tftp.socket
 ```
 
----
-
-## Step 4: Build Management Plane
-
-See [Build Management Plane](../build-management-plane/) for hypervisor provisioning.
-
-> **Hypervisor rebuild only:** Start here.
+Proceed directly to:
+- [Build Network](../build-network/) for Core Router rebuild
+- [Build Management Plane](../build-management-plane/) for hypervisor rebuild
+- [Build Tenants](../build-tenants/) for tenant rebuild
 
 ---
 
-## Quick Reference
+## Mode Comparison
 
-| Scenario | Start at |
-|----------|----------|
-| Greenfield | Step 1 |
-| Core Router rebuild | Step 2 |
-| Hypervisor rebuild | Step 4 |
-| Tenant rebuild | [Build Tenants](../build-tenants/) |
+| Aspect | Bootstrap-Authoritative | Core-Authoritative |
+|--------|-------------------------|---------------------|
+| DHCP | Bootstrap (dnsmasq) | Core Router (Kea) |
+| DNS | Bootstrap (dnsmasq) | Core Router |
+| TFTP | Bootstrap (dnsmasq) | Bootstrap (standalone) |
+| Use case | Greenfield / full recovery | Normal operations |

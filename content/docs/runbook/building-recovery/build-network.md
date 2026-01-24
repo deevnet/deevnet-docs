@@ -51,6 +51,32 @@ No automated install exists. Manual USB install required.
 
 ---
 
+## Transition PXE to Core Router
+
+After Core Router is configured with DHCP/DNS, transition the bootstrap node to TFTP-only mode:
+
+```bash
+cd ~/dvnt/ansible-collection-deevnet.builder
+make core-auth
+```
+
+This disables dnsmasq and masquerading on the bootstrap node. Core Router now handles DNS/DHCP; bootstrap node provides TFTP only.
+
+### Verify the transition
+
+```bash
+# dnsmasq should be stopped
+systemctl status dnsmasq
+
+# TFTP should be running
+systemctl status tftp.socket
+
+# DNS should resolve via Core Router
+dig artifacts.dvntm.deevnet.net
+```
+
+---
+
 ## VLANs
 
 Configure VLAN tagging on switch and define segments.
