@@ -10,7 +10,7 @@ Deevnet architecture is organized around **substrates** (independent infrastruct
 
 ---
 
-## Substrate Architecture
+## System Overview
 
 {{< graphviz >}}
 digraph architecture {
