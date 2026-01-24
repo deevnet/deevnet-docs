@@ -52,8 +52,14 @@ This enables dnsmasq for DHCP/DNS/TFTP on the bootstrap node.
 After Core Router is provisioned:
 
 1. Configure Core Router Kea with DHCP reservations and PXE options
-2. Disable dnsmasq on bootstrap node
-3. Verify TFTP still served from bootstrap node
+2. Transition bootstrap node to TFTP-only mode:
+
+```bash
+cd ~/dvnt/ansible-collection-deevnet.builder
+make core-auth
+```
+
+This disables dnsmasq and masquerading, keeping only standalone TFTP.
 
 ---
 
