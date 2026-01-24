@@ -55,7 +55,7 @@ This means:
 
 - [Stage Artifacts](online-preparation/) — Fetch artifacts from internet sources
 - [Seed Inventory](inventory-setup/) — Define MAC addresses and host definitions
-- [Build Substrate](build-sequence/) — Linear sequence for greenfield build
+- [Configure PXE](build-sequence/) — Set PXE authority for build scenario
 - [Build Network](build-network/) — Core Router, VLANs, wireless
 - [Build Management Plane](build-management-plane/) — Proxmox hypervisors
 - [Verify Substrate](build-verification/) — Validate substrate infrastructure
