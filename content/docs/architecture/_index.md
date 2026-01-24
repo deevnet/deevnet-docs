@@ -18,29 +18,30 @@ digraph architecture {
         rankdir=TB,
         splines=ortho,
         nodesep=0.6,
-        ranksep=0.8
+        ranksep=0.8,
+        fontname="Helvetica"
     ]
-    node [shape=box, style="rounded,filled", fillcolor=white]
-    edge [arrowsize=0.7]
+    node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica"]
+    edge [arrowsize=0.7, fontname="Helvetica"]
 
     // Top row - force same rank for Edge Router and Builder
-    Internet [label="Internet"]
+    Internet [label="Internet", width=1.5]
     EdgeRouter [label="Edge Router"]
     Builder [label="Builder Node"]
 
     Internet -> EdgeRouter
     { rank=same; EdgeRouter; Builder }
-    EdgeRouter -> Builder [style=dashed, dir=none]
+    EdgeRouter -> Builder [minlen=2]
 
     subgraph cluster_substrate {
         label="Substrate"
         style=filled
         fillcolor="#e0f0ff"
 
-        CoreRouter [label="Core Router\nDNS, DHCP, Firewall"]
-        WirelessAP [label="Wireless AP"]
-        AccessSwitch [label="Access Switch"]
-        MgmtHV [label="Management\nHypervisor"]
+        CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
+        WirelessAP [label="Wireless AP", width=1.0]
+        AccessSwitch [label="Access Switch", width=4.5]
+        MgmtHV [label="Management Plane\nHypervisor", width=2.2]
 
         subgraph cluster_tenant {
             label="Tenant"
