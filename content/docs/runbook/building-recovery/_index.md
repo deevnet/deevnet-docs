@@ -53,14 +53,14 @@ This means:
 
 ## Build Procedures
 
-- [Online Preparation](online-preparation/) - Stage artifacts from internet sources
-- [Inventory Setup](inventory-setup/) - Seed MAC addresses and host definitions
-- [PXE Boot Modes](pxe-boot-modes/) - Network boot in normal vs greenfield scenarios
-- [Build Sequence](build-sequence/) - Order of operations for substrate build
-- [Build Network](build-network/) - Core Router, VLANs, wireless (`deevnet.net` collection)
-- [Build Management Plane](build-management-plane/) - Proxmox hypervisors
-- [Build Tenants](build-tenants/) - Provision application workloads
-- [Build Verification](build-verification/) - End-to-end validation
+- [Stage Artifacts](online-preparation/) — Fetch artifacts from internet sources
+- [Seed Inventory](inventory-setup/) — Define MAC addresses and host definitions
+- [Build Substrate](build-sequence/) — Linear sequence for greenfield build
+- [Build Network](build-network/) — Core Router, VLANs, wireless
+- [Build Management Plane](build-management-plane/) — Proxmox hypervisors
+- [Verify Substrate](build-verification/) — Validate substrate infrastructure
+- [Build Tenants](build-tenants/) — Provision application workloads
+- [Verify Tenants](verify-tenants/) — Validate tenant applications
 
 ---
 

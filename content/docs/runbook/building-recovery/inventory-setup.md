@@ -1,9 +1,9 @@
 ---
-title: "Inventory Setup"
+title: "Seed Inventory"
 weight: 2
 ---
 
-# Inventory Setup
+# Seed Inventory
 
 Before any host can be PXE booted, its definition must exist in the Ansible inventory. MAC addresses, IP assignments, DNS records, and DHCP reservations are all driven from host_vars.
 

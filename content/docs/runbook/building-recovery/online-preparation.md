@@ -1,9 +1,9 @@
 ---
-title: "Online Preparation"
+title: "Stage Artifacts"
 weight: 1
 ---
 
-# Online Preparation
+# Stage Artifacts
 
 The builder node (with internet access) stages artifacts to the artifact server before any recovery is needed.
 

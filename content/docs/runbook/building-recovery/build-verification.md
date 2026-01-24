@@ -1,11 +1,11 @@
 ---
-title: "Build Verification"
-weight: 20
+title: "Verify Substrate"
+weight: 13
 ---
 
-# Build Verification
+# Verify Substrate
 
-End-to-end verification after substrate build is complete.
+Validation after substrate build is complete.
 
 ---
 
