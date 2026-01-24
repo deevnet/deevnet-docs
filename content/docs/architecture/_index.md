@@ -19,13 +19,15 @@ digraph architecture {
         splines=ortho,
         nodesep=0.6,
         ranksep=0.8,
-        fontname="Helvetica"
+        fontname="Helvetica",
+        bgcolor="#e0e0e0",
+        pad=0.15
     ]
     node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica"]
     edge [arrowsize=0.7, fontname="Helvetica"]
 
     // Top row - force same rank for Edge Router and Builder
-    Internet [label="Internet", width=1.5]
+    Internet [label="Internet/Upstream LAN", width=2.5]
     EdgeRouter [label="Edge Router"]
     Builder [label="Builder Node"]
 
