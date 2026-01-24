@@ -11,7 +11,7 @@ Platform evaluation documents capture decision rationale for technologies consid
 
 ## VyOS Evaluation
 
-OPNsense has served well for production routing but has a critical limitation: **no automated installation support**. This creates an air-gap in the otherwise automated substrate provisioning workflow.
+OPNsense has served well for production routing but has a critical limitation: **no automated installation support**. This creates a gap in the otherwise automated substrate provisioning workflow.
 
 ### Why VyOS?
 

@@ -60,7 +60,7 @@ The management plane consists of out-of-band provisioning and centralized servic
 - Automation runners and CI/CD
 
 See [Builder](builder/) for the bootstrap node architecture.
-See [Virtual Services](virtual-services/) for the management plane services.
+See [Management Plane](management-plane/) for the virtual management services.
 
 ### Network
 
@@ -101,6 +101,5 @@ See [Management Plane](management-plane/) for details on authority models.
 ## Child Documents
 
 - [Networking](networking/) — Network segmentation and VLAN model
-- [Management Plane](management-plane/) — Infrastructure management and DNS authority
-- [Virtual Services](virtual-services/) — VM-based management services
+- [Management Plane](management-plane/) — Infrastructure management, DNS authority, and VM-based services
 - [Builder](builder/) — Bootstrap node and provisioning architecture

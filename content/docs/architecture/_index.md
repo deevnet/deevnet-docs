@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Architecture
 
-System-level design intent and contracts between layers.
+Deevnet architecture is organized around **substrates** (independent infrastructure environments) and **tenants** (logical workload namespaces that run on substrates).
 
 ---
 
@@ -76,8 +76,7 @@ A substrate provides virtualization services and compute resources for tenant wo
 
 See:
 - [Networking](substrate/networking/) — Network segmentation and VLAN model
-- [Management Plane](substrate/management-plane/) — Infrastructure management and DNS authority
-- [Virtual Services](substrate/virtual-services/) — VM-based management services
+- [Management Plane](substrate/management-plane/) — Infrastructure management, DNS authority, and VM-based services
 
 #### Builder (Bootstrap Node)
 
