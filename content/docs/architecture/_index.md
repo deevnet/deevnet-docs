@@ -80,11 +80,15 @@ Each substrate operates independently through its **networking** and **managemen
 - **Networking** — Self-contained routing, DNS, DHCP, and segmentation via Core Router
 - **Management Plane** — Provisioning, observability, and operational services
 
+{{< hint info >}}
 No cross-substrate dependencies for core functionality. Each substrate can be built, operated, and torn down without affecting the other.
+{{< /hint >}}
 
 #### Stateless Infrastructure
 
-Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via Ansible—no backup, restore, or data recovery required for the substrate itself.
+{{< hint info >}}
+Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via Ansible — no backup, restore, or data recovery required for the substrate itself.
+{{< /hint >}}
 
 Benefits:
 - **Rebuild from scratch** — Any host can be wiped and reprovisioned

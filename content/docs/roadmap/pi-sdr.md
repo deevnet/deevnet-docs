@@ -34,13 +34,16 @@ Adopt the CaribouLite SDR HAT hardware and deploy a software-defined radio platf
 
 ---
 
+{{< details "Requirements — Complete" >}}
 ## Requirements ✅
 
 - ✅ Define supported frequency ranges
 - ✅ Define network streaming protocol
+{{< /details >}}
 
 ---
 
+{{< details "CaribouLite Backend — Complete" >}}
 ## CaribouLite Backend ✅
 
 Get CaribouLite SDR hardware working on Raspberry Pi.
@@ -48,6 +51,7 @@ Get CaribouLite SDR hardware working on Raspberry Pi.
 - ✅ Base Pi image with ansible support
 - ✅ CaribouLite driver installation
 - ✅ Post-image configuration tweaks
+{{< /details >}}
 
 ---
 

@@ -8,18 +8,32 @@ bookCollapseSection: true
 
 All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.com/deevnet)
 
----
-
-## Repositories
-
-| Repository | Description |
-|------------|-------------|
-| [ansible-collection-deevnet.builder](https://github.com/deevnet/ansible-collection-deevnet.builder) | Ansible collection for workstations, artifact servers, PXE boot |
-| [ansible-collection-deevnet.mgmt](https://github.com/deevnet/ansible-collection-deevnet.mgmt) | Management plane and centralized services |
-| [ansible-collection-deevnet.net](https://github.com/deevnet/ansible-collection-deevnet.net) | Network-focused Ansible collection (OPNsense, Omada) |
-| [ansible-inventory-deevnet](https://github.com/deevnet/ansible-inventory-deevnet) | Central inventory for platform infrastructure |
-| [deevnet-image-factory](https://github.com/deevnet/deevnet-image-factory) | Packer builds for Raspberry Pi and Proxmox templates |
-| [deevnet-docs](https://github.com/deevnet/deevnet-docs) | This documentation site |
+<div class="section-cards">
+  <a class="section-card" href="https://github.com/deevnet/ansible-collection-deevnet.builder">
+    <h3>deevnet.builder</h3>
+    <p>Ansible collection for workstations, artifact servers, PXE boot.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/ansible-collection-deevnet.mgmt">
+    <h3>deevnet.mgmt</h3>
+    <p>Management plane and centralized services.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/ansible-collection-deevnet.net">
+    <h3>deevnet.net</h3>
+    <p>Network-focused Ansible collection (OPNsense, Omada).</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/ansible-inventory-deevnet">
+    <h3>ansible-inventory</h3>
+    <p>Central inventory for platform infrastructure.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-image-factory">
+    <h3>image-factory</h3>
+    <p>Packer builds for Raspberry Pi and Proxmox templates.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-docs">
+    <h3>deevnet-docs</h3>
+    <p>This documentation site.</p>
+  </a>
+</div>
 
 ---
 
@@ -56,6 +70,6 @@ git clone git@github.com:deevnet/deevnet-docs.git
 
 ## Standards Authority
 
-`deevnet-docs` is authoritative—if a project conflicts with standards defined here, standards win.
+`deevnet-docs` is authoritative — if a project conflicts with standards defined here, standards win.
 
 Other repos may include it as a git submodule at `docs/deevnet/`.

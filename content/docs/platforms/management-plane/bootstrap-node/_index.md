@@ -98,7 +98,9 @@ graph LR
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
 - **Downstream interface**: Becomes the gateway for the substrate during bootstrap
 
-During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions.
+{{< hint warning >}}
+During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions. This handoff is **explicit, not automatic**.
+{{< /hint >}}
 
 ---
 
