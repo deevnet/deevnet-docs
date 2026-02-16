@@ -26,7 +26,6 @@ A **portable lab** that packs into a toolkit. Includes:
 - Breadboards and components for embedded device prototyping
 - Full on-premise network that can be set up anywhere
 
-Deevnet Mobile provides a complete, self-contained environment for development, testing, and demos — whether at home, a coffee shop, or a Meetup site.
 
 <--->
 
