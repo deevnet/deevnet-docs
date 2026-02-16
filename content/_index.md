@@ -4,8 +4,11 @@ type: docs
 ---
 
 <div class="landing-hero">
-  <h1>Deevnet Infrastructure Platform</h1>
-  <p class="subtitle">Hardware, automation, and documentation for building reproducible on-premise infrastructure.</p>
+
+# Deevnet Infrastructure Platform
+
+<p class="subtitle">Hardware, automation, and documentation for building reproducible on-premise infrastructure.</p>
+
 </div>
 
 ## Two Deployments
@@ -14,7 +17,7 @@ type: docs
 
 ### Deevnet Mobile (dvntm)
 
-<img src="dvntm.png" alt="Deevnet Mobile kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
+<img src="20260210_160235.jpg" alt="Deevnet Mobile kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
 A **portable lab** that packs into a toolkit. Includes:
 
@@ -29,7 +32,7 @@ Deevnet Mobile provides a complete, self-contained environment for development, 
 
 ### Deevnet Home (dvnt)
 
-<img src="dvnt-home.png" alt="Deevnet Home rack" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
+<img src="20230509_181137.jpg" alt="Deevnet Home rack" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
 A **home infrastructure** deployment supporting various functions:
 
