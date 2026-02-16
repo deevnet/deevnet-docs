@@ -121,5 +121,5 @@ mgmt_dns_01:
 ## Related Standards
 
 - [MAC Address Format](../mac-address-format/) - Formatting rules (lowercase, colons)
-- [Proxmox Hypervisors](/docs/platforms/proxmox-hypervisors/#deterministic-mac-addressing) -
+- [Management Hypervisor](/docs/platforms/management-plane/management-hypervisor/#deterministic-mac-addressing) -
   Platform implementation and policy rationale

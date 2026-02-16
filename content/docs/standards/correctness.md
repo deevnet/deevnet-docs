@@ -234,7 +234,7 @@ Substrate hosts MUST be provisionable without upstream internet dependencies.
 
 Air-gap scope is **substrate only**. Tenants and edge devices may follow different policies.
 
-See [Artifacts Server](/docs/architecture/artifacts-server/) for implementation details.
+See [Artifacts Role](/docs/platforms/management-plane/bootstrap-node/artifacts-role/) for implementation details.
 
 ---
 

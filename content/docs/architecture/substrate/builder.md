@@ -120,7 +120,7 @@ The builder role is implemented by the **bootstrap node**:
 | **Network boot** | in.tftpd with GRUB configs |
 | **Automation** | Ansible controller for all substrate hosts |
 
-See [Bootstrap Node](/docs/platforms/bootstrap-node/) for implementation details.
+See [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/) for implementation details.
 
 ---
 
