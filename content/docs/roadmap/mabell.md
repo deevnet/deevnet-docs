@@ -38,7 +38,7 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 
 ---
 
-{{< details "Requirements & Constraints — Complete" >}}
+{{% details "Requirements & Constraints — Complete" %}}
 ## Requirements & Constraints ✅
 
 Define what success means before building.
@@ -49,11 +49,11 @@ Define what success means before building.
 - ✅ Electrical & mechanical constraints
 - ✅ Acceptance criteria for each requirement
 - ✅ Risk register (top technical risks + mitigations)
-{{< /details >}}
+{{% /details %}}
 
 ---
 
-{{< details "Architecture & Design — Complete" >}}
+{{% details "Architecture & Design — Complete" %}}
 ## Architecture & Design ✅
 
 Translate requirements into a complete system design.
@@ -66,7 +66,7 @@ Translate requirements into a complete system design.
 - ✅ Firmware architecture & state machine definition
 - ✅ Interface specifications (electrical, audio, software)
 - ✅ Verification & test plan (requirements → tests mapping)
-{{< /details >}}
+{{% /details %}}
 
 ---
 

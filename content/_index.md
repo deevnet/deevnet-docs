@@ -10,7 +10,7 @@ type: docs
 
 ## Two Deployments
 
-{{< columns >}}
+{{% columns %}}
 
 ### Deevnet Mobile (dvntm)
 
@@ -38,7 +38,7 @@ A **home infrastructure** deployment supporting various functions:
 - Development and CI/CD environments
 - Media and personal services
 
-{{< /columns >}}
+{{% /columns %}}
 
 ---
 
@@ -87,6 +87,6 @@ This documentation exists to:
 - prevent knowledge from living only in someone's head,
 - and ensure future changes remain coherent.
 
-{{< hint danger >}}
+{{% hint danger %}}
 If something "works" but violates these documents, it is considered **incorrect**.
-{{< /hint >}}
+{{% /hint %}}

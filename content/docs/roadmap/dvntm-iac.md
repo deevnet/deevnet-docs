@@ -35,17 +35,17 @@ Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate
 
 ---
 
-{{< details "Requirements — Complete" >}}
+{{% details "Requirements — Complete" %}}
 ## Requirements ✅
 
 - ✅ Define substrate inventory and MAC addresses
 - ✅ Define network topology and VLANs
 - ✅ Define air-gap artifact requirements
-{{< /details >}}
+{{% /details %}}
 
 ---
 
-{{< details "Substrate Provisioning — Complete" >}}
+{{% details "Substrate Provisioning — Complete" %}}
 ## Substrate Provisioning ✅
 
 Core infrastructure for building and deploying the substrate.
@@ -57,11 +57,11 @@ Core infrastructure for building and deploying the substrate.
 - ✅ Bootstrap Node Provisioning Playbook
 - ✅ Proxmox Automated Install via PXE
 - ✅ Full Air-Gap Support (Fedora Mirror)
-{{< /details >}}
+{{% /details %}}
 
 ---
 
-{{< details "Inventory & Standards — Complete" >}}
+{{% details "Inventory & Standards — Complete" %}}
 ## Inventory & Standards ✅
 
 Documentation and inventory definitions.
@@ -69,7 +69,7 @@ Documentation and inventory definitions.
 - ✅ Hugo-based Documentation Site
 - ✅ Standards and Correctness Docs
 - ✅ dvntm Substrate Bare-Metal Inventory (MAC addresses)
-{{< /details >}}
+{{% /details %}}
 
 ---
 

@@ -22,9 +22,9 @@ graph LR
 
 ---
 
-{{< tabs "core-router-hardware" >}}
+{{% tabs "core-router-hardware" %}}
 
-{{< tab "dvntm — ZimaBoard 832" >}}
+{{% tab "dvntm — ZimaBoard 832" %}}
 
 **Substrate**: dvntm (mobile) {{< status-badge "active" "Active" >}}
 
@@ -73,9 +73,9 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 | **Wake-on-LAN** | WoL proxy for substrate hosts |
 | **Gateway** | Default route for all substrate traffic |
 
-{{< /tab >}}
+{{% /tab %}}
 
-{{< tab "dvnt — ODYSSEY X86J4125864" >}}
+{{% tab "dvnt — ODYSSEY X86J4125864" %}}
 
 **Substrate**: dvnt (home) {{< status-badge "active" "Active" >}}
 
@@ -126,9 +126,9 @@ The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router 
 | **Wake-on-LAN** | WoL proxy for substrate hosts |
 | **Gateway** | Default route for all substrate traffic |
 
-{{< /tab >}}
+{{% /tab %}}
 
-{{< /tabs >}}
+{{% /tabs %}}
 
 ---
 
@@ -155,6 +155,6 @@ Per the [Correctness Standard](/docs/standards/correctness/#52-authority-modes-a
 4. Bootstrap node's dnsmasq is disabled
 5. Core router becomes the production DNS/DHCP server
 
-{{< hint warning >}}
+{{% hint warning %}}
 **This transition is explicit, not automatic.** Running two DNS/DHCP authorities simultaneously will cause conflicts.
-{{< /hint >}}
+{{% /hint %}}

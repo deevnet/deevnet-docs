@@ -8,9 +8,9 @@ bookCollapseSection: true
 
 Defines **non-negotiable rules** that all Deevnet projects must follow.
 
-{{< hint warning >}}
+{{% hint warning %}}
 If a project conflicts with standards, **standards win**.
-{{< /hint >}}
+{{% /hint %}}
 
 <div class="section-cards">
   <a class="section-card" href="naming/">
