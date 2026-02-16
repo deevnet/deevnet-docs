@@ -7,11 +7,9 @@ type: docs
 
 # Deevnet Infrastructure Platform
 
-<p class="subtitle">Hardware, automation, and documentation for building reproducible on-premise infrastructure.</p>
+<p class="subtitle"><em>Infrastructure. Automated. Reproducible. Documented.</em></p>
 
 </div>
-
-## Two Deployments
 
 {{% columns %}}
 
