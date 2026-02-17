@@ -128,6 +128,7 @@ Dark-mode status badges also swap text color to `#0f172a` for contrast on bright
 - Centered layout, 2.2rem/700-weight heading in accent color
 - `.subtitle` paragraph in muted text, max-width 600px
 - Bottom border separating hero from content
+- **Title pinned to top:** `padding: 0 1rem 1.5rem` (zero top padding) and `h1 { margin-top: 0 }` — removes the default gap so the heading sits flush at the top of the page
 
 #### Section Cards (`.section-cards` + `.section-card`)
 
