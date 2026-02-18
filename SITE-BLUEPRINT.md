@@ -283,6 +283,18 @@ Hugo has two shortcode delimiter styles with different behavior:
 - `project-progress-list`
 - `roadmap-progress`
 
+### `relref` Links Must Use Markdown Link Syntax
+
+A bare `{{</* relref */>}}` shortcode outputs a URL path as plain text — it does **not** create a clickable link on its own. Always wrap `relref` in markdown link syntax:
+
+```markdown
+<!-- Correct — clickable link -->
+See [Page Title]({{< relref "some-page" >}}) for details.
+
+<!-- Wrong — renders as plain text path -->
+See {{< relref "some-page" >}} for details.
+```
+
 ---
 
 ## 6. Built-in Theme Shortcodes Used
