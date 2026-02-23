@@ -3,7 +3,7 @@ title: "Ma Bell"
 weight: 4
 tasks_completed: 19
 tasks_in_progress: 7
-tasks_planned: 51
+tasks_planned: 50
 ---
 
 # Ma Bell Project
@@ -102,7 +102,7 @@ ESP32 firmware implementing telephony behavior and system control.
 - ✅ Logging & diagnostics
 - 🔄 Firmware versioning & release tagging
 - ⏳ Validate firmware against low-voltage test rig
-- ⏳ Optional OTA update mechanism
+
 
 ---
 
