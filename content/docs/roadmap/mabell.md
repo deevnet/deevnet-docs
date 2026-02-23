@@ -3,7 +3,7 @@ title: "Ma Bell"
 weight: 4
 tasks_completed: 19
 tasks_in_progress: 7
-tasks_planned: 49
+tasks_planned: 51
 ---
 
 # Ma Bell Project
@@ -82,6 +82,7 @@ Safe, breadboard-based simulator for firmware development — no line voltage re
 - ⏳ Pulse dial simulator (NE555 timer)
 - ⏳ Ring indicator & ring detect feedback
 - ⏳ Audio I/O validation (I2S wiring)
+- ⏳ DTMF tone generator for touch-tone dial simulation
 - ⏳ LED & button wiring
 - ⏳ Full 24-feature firmware test matrix pass
 
@@ -96,6 +97,7 @@ ESP32 firmware implementing telephony behavior and system control.
 - ✅ Call state machine implementation
 - 🔄 Dial tone, ring, busy, reorder tone generation
 - 🔄 Rotary pulse detection & validation
+- ⏳ DTMF detection (touch-tone phone support)
 - ✅ Configuration storage (NVS schema)
 - ✅ Logging & diagnostics
 - 🔄 Firmware versioning & release tagging
