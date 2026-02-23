@@ -1,8 +1,8 @@
 ---
 title: "Ma Bell"
 weight: 4
-tasks_completed: 20
-tasks_in_progress: 6
+tasks_completed: 19
+tasks_in_progress: 7
 tasks_planned: 49
 ---
 
@@ -94,7 +94,7 @@ ESP32 firmware implementing telephony behavior and system control.
 - ✅ ESP32 base firmware & build system
 - ✅ Bluetooth HFP profile implementation
 - ✅ Call state machine implementation
-- ✅ Dial tone, ring, busy, reorder tone generation
+- 🔄 Dial tone, ring, busy, reorder tone generation
 - 🔄 Rotary pulse detection & validation
 - ✅ Configuration storage (NVS schema)
 - ✅ Logging & diagnostics
