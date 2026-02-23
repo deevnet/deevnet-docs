@@ -1,9 +1,9 @@
 ---
 title: "Ma Bell"
 weight: 4
-tasks_completed: 23
-tasks_in_progress: 5
-tasks_planned: 35
+tasks_completed: 20
+tasks_in_progress: 6
+tasks_planned: 46
 ---
 
 # Ma Bell Project
@@ -70,16 +70,35 @@ Translate requirements into a complete system design.
 
 ---
 
-## Proof of Concept / EVT ⏳
+## Low-Voltage Test Rig (EVT-1) 🔄
 
-De-risk the hardest problems early using breadboards and bench tests.
+Safe, breadboard-based simulator for firmware development — no line voltage required.
 
-- ⏳ Breadboard core signal chain
-- ⏳ ESP32 bring-up & peripheral validation
-- ⏳ Dial pulse timing & debounce experiments
-- ⏳ Ring generation & ring-trip validation
+📄 **Build guide:** [`impl/low-voltage-test-rig.md`](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/low-voltage-test-rig.md)
+
+- 🔄 Order & collect low-voltage components
+- ⏳ Breadboard ESP32 + PCM5100 DAC + PCM1808 ADC
+- ⏳ Hook switch simulator (GPIO 32)
+- ⏳ Pulse dial simulator (NE555 timer)
+- ⏳ Ring indicator & ring detect feedback
+- ⏳ Audio I/O validation (I2S wiring)
+- ⏳ LED & button wiring
+- ⏳ Full 24-feature firmware test matrix pass
+
+---
+
+## Full-Voltage Prototype (EVT-2) ⏳
+
+Production-representative prototype with SLIC, ring generator, and real telephone.
+
+📄 **Build guide:** [`impl/prototyping-build-guide.md`](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/prototyping-build-guide.md)
+
+- ⏳ Sub-A: ESP32 + codec breadboard (3.3V)
+- ⏳ Sub-B: SLIC + line interface (mixed voltage)
+- ⏳ Sub-C: Ring generator (48V→90V AC)
+- ⏳ Power sequencing & safety validation
+- ⏳ Integration of all sub-assemblies
 - ⏳ Audio path measurements (levels, noise, echo)
-- ⏳ Bench test notes and captured measurements
 
 ---
 
@@ -95,6 +114,7 @@ ESP32 firmware implementing telephony behavior and system control.
 - ✅ Configuration storage (NVS schema)
 - ✅ Logging & diagnostics
 - 🔄 Firmware versioning & release tagging
+- ⏳ Validate firmware against low-voltage test rig
 - ⏳ Optional OTA update mechanism
 
 ---
