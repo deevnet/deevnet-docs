@@ -107,11 +107,12 @@ ESP32 firmware implementing telephony behavior and system control.
 ## Full-Voltage Prototype (EVT-2) ⏳
 
 Production-representative prototype with SLIC, ring generator, and real telephone.
+Using **KS0835F SLIC module** (AG1171/AG1170 compatible) for the line interface.
 
 📄 **Build guide:** [`impl/prototyping-build-guide.md`](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/prototyping-build-guide.md)
 
 - ⏳ Sub-A: ESP32 + codec breadboard (3.3V)
-- ⏳ Sub-B: SLIC + line interface (mixed voltage)
+- ⏳ Sub-B: KS0835F SLIC module + line interface (mixed voltage)
 - ⏳ Sub-C: Ring generator (48V→90V AC)
 - ⏳ Power sequencing & safety validation
 - ⏳ Integration of all sub-assemblies
