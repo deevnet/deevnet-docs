@@ -3,7 +3,7 @@ title: "Ma Bell"
 weight: 4
 tasks_completed: 20
 tasks_in_progress: 6
-tasks_planned: 46
+tasks_planned: 49
 ---
 
 # Ma Bell Project
@@ -87,6 +87,23 @@ Safe, breadboard-based simulator for firmware development — no line voltage re
 
 ---
 
+## Firmware Development 🔄
+
+ESP32 firmware implementing telephony behavior and system control.
+
+- ✅ ESP32 base firmware & build system
+- ✅ Bluetooth HFP profile implementation
+- ✅ Call state machine implementation
+- ✅ Dial tone, ring, busy, reorder tone generation
+- 🔄 Rotary pulse detection & validation
+- ✅ Configuration storage (NVS schema)
+- ✅ Logging & diagnostics
+- 🔄 Firmware versioning & release tagging
+- ⏳ Validate firmware against low-voltage test rig
+- ⏳ Optional OTA update mechanism
+
+---
+
 ## Full-Voltage Prototype (EVT-2) ⏳
 
 Production-representative prototype with SLIC, ring generator, and real telephone.
@@ -102,20 +119,13 @@ Production-representative prototype with SLIC, ring generator, and real telephon
 
 ---
 
-## Firmware Development 🔄
+## Firmware Adjustment (EVT-2 Integration) ⏳
 
-ESP32 firmware implementing telephony behavior and system control.
+Validate and tune firmware on the full-voltage prototype. Should be largely compatible from EVT-1 testing.
 
-- ✅ ESP32 base firmware & build system
-- ✅ Bluetooth HFP profile implementation
-- ✅ Call state machine implementation
-- ✅ Dial tone, ring, busy, reorder tone generation
-- 🔄 Rotary pulse detection & validation
-- ✅ Configuration storage (NVS schema)
-- ✅ Logging & diagnostics
-- 🔄 Firmware versioning & release tagging
-- ⏳ Validate firmware against low-voltage test rig
-- ⏳ Optional OTA update mechanism
+- ⏳ Re-run test matrix against full-voltage hardware
+- ⏳ Tune audio gain staging for SLIC signal path
+- ⏳ Validate ring-trip and hook detection with real phone
 
 ---
 
