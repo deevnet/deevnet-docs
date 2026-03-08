@@ -7,7 +7,7 @@ weight: 2
 
 ### Purpose
 
-This document defines the **core router services** of the management plane—DNS, DHCP, NAT, firewall, and the naming/authority model that underpins all substrate operations.
+This document defines the **foundational platform services** of the management plane—DNS, DHCP, NAT, routing, firewall, and the naming/authority model that underpins all substrate operations.
 
 These services must remain operational even if all virtual infrastructure is lost.
 
@@ -24,6 +24,7 @@ The Core Platform is dedicated hardware providing foundational management servic
 | **DNS** | Authoritative for substrate zones, forwarding for external |
 | **DHCP** | Static mappings for known hosts, dynamic pools |
 | **NAT** | Outbound gateway for all segments |
+| **Routing** | Inter-segment and gateway routing |
 | **Firewall** | Inter-segment and egress rules |
 
 These services are provided by the Core Router. The [Builder](../builder/) complements the Core Router with provisioning, artifact hosting, and PXE/TFTP services. Together they form the Core Platform.
@@ -132,46 +133,7 @@ This is intentional duplication, not conflicting truth.
 
 ---
 
-## 4. Replaceable Provisioner Role
-
-### 4.1 Provisioner Is a Role, Not a Pet
-
-The provisioner is a **role** that any suitable host can assume via code.
-
-- no host is permanently "the provisioner"
-- rebuilding or replacing the provisioner is expected
-- authority is logical, not physical
-
-Example:
-```
-artifacts.mgmt.deevnet.net -> provisioner-01.mgmt.deevnet.net
-```
-
-Switching provisioners requires only DNS changes, not consumer changes.
-
----
-
-### 4.2 Multi-Homing Without Identity Confusion
-
-A management host may be reachable from multiple substrates.
-
-Instead of ambiguous multi-A records, **interface-specific identities** may be published:
-
-```
-provisioner-01-dvnt.mgmt.deevnet.net
-provisioner-01-dvntm.mgmt.deevnet.net
-```
-
-Each name maps to the IP address used by that substrate.
-
-This preserves:
-- truthful routing
-- clear firewall policy
-- explicit blast-radius boundaries
-
----
-
-## 5. Substrate Consumption of Management Services
+## 4. Substrate Consumption of Management Services
 
 Substrates expose **substrate-scoped service names** as their contract:
 

@@ -48,7 +48,46 @@ For the DNS authority model and naming conventions that the builder participates
 
 ---
 
-## 2. Authority Transition
+## 2. Replaceable Provisioner Role
+
+### 2.1 Provisioner Is a Role, Not a Pet
+
+The provisioner is a **role** that any suitable host can assume via code.
+
+- no host is permanently "the provisioner"
+- rebuilding or replacing the provisioner is expected
+- authority is logical, not physical
+
+Example:
+```
+artifacts.mgmt.deevnet.net -> provisioner-01.mgmt.deevnet.net
+```
+
+Switching provisioners requires only DNS changes, not consumer changes.
+
+---
+
+### 2.2 Multi-Homing Without Identity Confusion
+
+A management host may be reachable from multiple substrates.
+
+Instead of ambiguous multi-A records, **interface-specific identities** may be published:
+
+```
+provisioner-01-dvnt.mgmt.deevnet.net
+provisioner-01-dvntm.mgmt.deevnet.net
+```
+
+Each name maps to the IP address used by that substrate.
+
+This preserves:
+- truthful routing
+- clear firewall policy
+- explicit blast-radius boundaries
+
+---
+
+## 3. Authority Transition
 
 The builder participates in explicit authority transitions:
 
@@ -62,7 +101,7 @@ The transition is explicit and deliberate—never automatic.
 
 ---
 
-## 3. Relationship to Tenants
+## 4. Relationship to Tenants
 
 The builder provisions **substrate infrastructure only**:
 - Core Router configuration
@@ -76,7 +115,7 @@ provisioning architecture.
 
 ---
 
-## 4. Implementation
+## 5. Implementation
 
 The builder role is implemented by the **bootstrap node**:
 
@@ -92,7 +131,7 @@ See [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/) for imple
 
 ---
 
-## 5. Design Principles
+## 6. Design Principles
 
 **Ansible-First** — All substrate provisioning uses Ansible: idempotent configuration, version-controlled playbooks, traceable changes, no Terraform for substrate infrastructure.
 
@@ -102,7 +141,7 @@ See [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/) for imple
 
 ---
 
-## 6. Out-of-Band and Adjacent Services
+## 7. Out-of-Band and Adjacent Services
 
 The management plane is the natural home for OOB and control infrastructure, including:
 

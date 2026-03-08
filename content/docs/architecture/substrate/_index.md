@@ -49,7 +49,7 @@ The management plane consists of core infrastructure services and optional virtu
 - Portable across substrates, air-gapped capable
 - Out-of-band control and recovery services
 
-**Core Services** — Core Router services on dedicated hardware:
+**Core Services** — Foundational services on dedicated hardware:
 - DNS authority model and naming
 - DHCP, NAT, firewall
 - Authority transitions between builder and router
@@ -61,7 +61,7 @@ The management plane consists of core infrastructure services and optional virtu
 
 See [Management Plane](management-plane/) for the full management plane architecture.
 See [Builder](management-plane/builder/) for the bootstrap node and provisioning architecture.
-See [Core Services](management-plane/core-services/) for core router details.
+See [Core Services](management-plane/core-services/) for core platform details.
 See [Virtual Services](management-plane/virtual-services/) for virtual management services.
 
 ### Network

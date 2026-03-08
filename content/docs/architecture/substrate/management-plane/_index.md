@@ -40,13 +40,13 @@ See [Builder](builder/) for the complete builder architecture.
 
 ### Core Services (Physical)
 
-The foundational tier—Core Router services that must remain operational even if all virtual infrastructure is lost:
+The foundational tier—dedicated hardware services that must remain operational even if all virtual infrastructure is lost:
 
 - DNS authority model and naming
 - DHCP, NAT, and firewall
 - Authority transitions between builder and router
 
-See [Core Services](core-services/) for the core router architecture.
+See [Core Services](core-services/) for the core platform architecture.
 
 ### Virtual Services (Hypervisor)
 
