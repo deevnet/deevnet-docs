@@ -30,13 +30,13 @@ It does **not** host tenant workloads.
 
 ---
 
-## 1.1 Physical vs Virtual Management Services
+## 1.1 Core Platform vs Management Hypervisor
 
 The management plane encompasses both **physical** and **virtual** services:
 
-### Physical Layer (Core Router)
+### Core Platform
 
-Services that run on dedicated hardware (router/gateway appliance):
+The Core Platform is the foundational tier of the management plane—dedicated hardware (Core Router + Bootstrap Node) that must remain operational even if all virtual infrastructure is lost:
 
 | Service | Description |
 |---------|-------------|
@@ -45,12 +45,11 @@ Services that run on dedicated hardware (router/gateway appliance):
 | **NAT** | Outbound gateway for all segments |
 | **Firewall** | Inter-segment and egress rules |
 
-These services are provided by the Core Router and must remain operational even if all
-hypervisors are down.
+These services are provided by the Core Router. The Bootstrap Node complements the Core Router with provisioning, artifact hosting, and PXE/TFTP services. Together they form the Core Platform.
 
-### Virtual Layer (Management Hypervisor)
+### Management Hypervisor
 
-The management plane also includes **virtual services** running on a dedicated management hypervisor—observability, automation runners, and access tooling. These services are additive to the physical layer and may be rebuilt from it.
+The management plane also includes **virtual services** running on a dedicated management hypervisor—observability, automation runners, and access tooling. These services are additive to the Core Platform and may be rebuilt from it.
 
 See [Management Hypervisor](../management-hypervisor/) for the complete virtual layer architecture, including platform placement, design principles, provisioning model, and failure philosophy.
 

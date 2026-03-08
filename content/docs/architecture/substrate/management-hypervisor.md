@@ -9,7 +9,7 @@ weight: 3
 
 This document defines the **virtual management services** layer within the Deevnet management plane.
 
-Virtual management services run on a dedicated hypervisor and provide observability, automation, and access tooling. They are **additive** to the physical management layer—the substrate functions without them, using only the Core Router and bootstrap node.
+Virtual management services run on a dedicated hypervisor and provide observability, automation, and access tooling. They are **additive** to the Core Platform—the substrate functions without them, using only the Core Router and Bootstrap Node.
 
 These services may be rebuilt entirely from the physical layer. If the management hypervisor is lost, core provisioning and network services remain operational.
 
@@ -117,6 +117,6 @@ If a service is required to **recover the platform**, it belongs on the manageme
 This document defines the **virtual management services architecture**.
 
 Related documents:
-- **[Management Plane](../management-plane/)** — core management plane architecture (DNS authority, naming, provisioner role)
+- **[Management Plane](../management-plane/)** — Core Platform architecture (DNS authority, naming, provisioner role)
 - **Correctness** — invariants that must always hold
 - **Standards** — naming, DNS, and access rules derived from the management plane model

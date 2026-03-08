@@ -44,7 +44,7 @@ block-beta
 
 The management plane consists of core infrastructure services and optional virtual management services:
 
-**Core Management Plane** — Foundational services on dedicated hardware:
+**Core Platform** — Foundational services on dedicated hardware (Core Router + Bootstrap Node):
 - DNS authority model and naming
 - Provisioner role and authority transitions
 - Out-of-band control and recovery services
@@ -60,7 +60,7 @@ The management plane consists of core infrastructure services and optional virtu
 - Automation runners and CI/CD
 - Jump hosts and access tooling
 
-See [Management Plane](management-plane/) for core management plane architecture.
+See [Management Plane](management-plane/) for Core Platform architecture.
 See [Management Hypervisor](management-hypervisor/) for virtual management services.
 See [Builder](builder/) for the bootstrap node architecture.
 
@@ -104,6 +104,6 @@ See [Management Plane](management-plane/) for details on authority models.
 
 - [Networking](networking/) — Network segmentation and VLAN model
 - [Addressing](addressing/) — IP addressing convention and subnet model
-- [Management Plane](management-plane/) — Core management plane architecture, DNS authority, and provisioner role
+- [Management Plane](management-plane/) — Core Platform architecture, DNS authority, and provisioner role
 - [Management Hypervisor](management-hypervisor/) — Virtual management services architecture
 - [Builder](builder/) — Bootstrap node and provisioning architecture
