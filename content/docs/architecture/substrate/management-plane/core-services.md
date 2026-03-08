@@ -15,9 +15,9 @@ For the builder that provisions these services, see [Builder](../builder/).
 
 ---
 
-## 1. Core Platform
+## 1. Core Services
 
-The Core Platform provides foundational management services:
+The Core Services provides foundational management services:
 
 | Service | Description |
 |---------|-------------|
@@ -27,7 +27,7 @@ The Core Platform provides foundational management services:
 | **Routing** | Inter-segment and gateway routing |
 | **Firewall** | Inter-segment and egress rules |
 
-In production, these services are provided by dedicated network infrastructure. The [Builder](../builder/) complements with provisioning, artifact hosting, and PXE/TFTP services. Together they form the Core Platform.
+In production, these services are provided by dedicated network infrastructure. The [Builder](../builder/) complements with provisioning, artifact hosting, and PXE/TFTP services.
 
 ---
 

@@ -87,7 +87,7 @@ No cross-substrate dependencies for core functionality. Each substrate can be bu
 #### Stateless Infrastructure
 
 {{% hint info %}}
-Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via Ansible — no backup, restore, or data recovery required for the substrate itself.
+Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via automation — no backup, restore, or data recovery required for the substrate itself.
 {{% /hint %}}
 
 Benefits:

@@ -93,10 +93,10 @@ Substrate provisioning uses **explicit authority transitions**:
 
 | Mode | DNS/DHCP Authority | When |
 |------|-------------------|------|
-| **Bootstrap-authoritative** | Builder (dnsmasq) | During initial provisioning |
-| **Router-authoritative** | Core Router | Production operation |
+| **Bootstrap** | Builder | During initial provisioning or recovery |
+| **Production** | Network infrastructure | Normal operation |
 
-The transition is explicit—once the Core Router is configured and validated, the builder stops serving DNS/DHCP and becomes a regular admin host.
+The transition is explicit — only one authority is active at a time. Once production network infrastructure is configured and validated, the builder's DNS/DHCP services are disabled.
 
 See [Core Services](management-plane/core-services/) for details on authority models.
 

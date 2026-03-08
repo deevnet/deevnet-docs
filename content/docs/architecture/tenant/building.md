@@ -21,9 +21,9 @@ Tenant building provides:
 
 ## Terraform-First Approach
 
-Unlike substrate infrastructure (Ansible-first), tenant workloads use **Terraform**:
+Unlike substrate infrastructure (automation-first), tenant workloads use **Terraform**:
 
-| Aspect | Substrate (Ansible) | Tenant (Terraform) |
+| Aspect | Substrate (Automation) | Tenant (Terraform) |
 |--------|--------------------|--------------------|
 | **Change frequency** | Rare, deliberate | Frequent, agile |
 | **State model** | Procedural, idempotent | Declarative, stateful |
@@ -88,7 +88,7 @@ Terraform creates or updates VMs on the tenant hypervisor.
 
 After VMs are created:
 - Ansible applies application-level configuration
-- DNS records are created (may be automated via Terraform)
+- DNS records are created as part of the Terraform configuration
 - Monitoring is configured
 
 ---
@@ -141,7 +141,7 @@ This separation:
 | Aspect | Substrate Builder | Tenant Building |
 |--------|-------------------|-----------------|
 | **Target** | Substrate infrastructure | Tenant workloads |
-| **Tool** | Ansible | Terraform |
+| **Tool** | Automation | Terraform |
 | **Hypervisor** | Management plane | Tenant hypervisor |
 | **Lifecycle** | Long-lived, stable | Frequent create/destroy |
 | **Authority** | Platform admins | May delegate to tenant admins |
@@ -174,12 +174,11 @@ deterministic MACs are mandatory.
 
 Before provisioning tenant VMs:
 
-1. **VLAN configured** — Core Router has tenant VLAN interface
+1. **VLAN configured** — Network infrastructure has tenant VLAN interface
 2. **DHCP scope exists** — Either dynamic pool or static reservations
 3. **Firewall zone defined** — Tenant security policies in place
-4. **DNS zone ready** — Zone exists for `tenant.substrate.deevnet.net`
 
-These are substrate-level prerequisites managed by the substrate builder.
+These are substrate-level prerequisites managed by substrate automation. Tenant DNS records are created as part of the tenant's own Terraform configuration, not as a substrate prerequisite.
 
 ---
 

@@ -9,7 +9,7 @@ weight: 3
 
 This document defines the **extended management services** layer within the Deevnet management plane.
 
-Extended management services provide observability, automation, and access tooling. They are **additive** to the Core Platform—the substrate functions without them, using only the Core Router and Builder.
+Extended management services provide observability, automation, and access tooling. They are **additive** to [Core Services](../core-services/)—the minimal set of services required for the substrate to function on its own.
 
 These services may be rebuilt entirely from the builder and core services. If the extended services tier is lost, core provisioning and network services remain operational.
 
@@ -24,7 +24,7 @@ Services that run in the extended management tier:
 | Service | Description |
 |---------|-------------|
 | **Observability** | Metrics collection, log aggregation, alerting |
-| **Automation** | Ansible runners, image factory helpers |
+| **Automation** | Build automation runners, image factory helpers |
 | **Access** | Jump hosts, out-of-band tooling |
 
 ---
@@ -75,8 +75,8 @@ The extended services tier is intentionally boring. That is a feature.
 
 Extended services are provisioned from the builder:
 
-- Post-install configuration via Ansible
-- Management-plane VMs are created using **Ansible**
+- Post-install configuration via build automation
+- Management-plane VMs are created using build automation tooling
 - Simplicity and traceability are prioritized
 
 Terraform is intentionally **not used** for management-plane workloads.
@@ -88,12 +88,10 @@ see [Implementation & Tooling](/docs/platforms/).
 
 ## 6. Network Identity
 
-All management-plane VMs:
-- Use **deterministic MAC addresses**
-- Receive **static DHCP mappings**
-- Have predictable DNS records
-
-Details are defined in the [MAC Namespace Specification](/docs/standards/mac-naming/).
+All management-plane hosts:
+- Have **stable, predictable network identities**
+- Receive **static address assignments**
+- Have deterministic DNS records
 
 ---
 

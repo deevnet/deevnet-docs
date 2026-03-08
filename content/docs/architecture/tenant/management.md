@@ -26,10 +26,9 @@ Tenant management provides:
 Creating a new tenant involves:
 
 1. **Reserve VLAN and subnet** — Allocate from tenant IP range
-2. **Configure Core Router** — Add VLAN interface, DHCP scope, firewall zone
-3. **Create DNS zone** — Add `tenant.substrate.deevnet.net` zone
-4. **Provision VMs** — Deploy tenant workloads via Terraform
-5. **Configure observability** — Set up log/metric collection for tenant
+2. **Configure network infrastructure** — Add VLAN interface, DHCP scope, firewall zone
+3. **Provision tenant** — Deploy VMs and DNS records via Terraform
+4. **Configure observability** — Set up log/metric collection for tenant
 
 ### Update
 
@@ -39,17 +38,16 @@ Updating a tenant may include:
 - Updating firewall rules
 - Modifying DNS records
 
-Updates are applied via Terraform for VMs, Ansible for network configuration.
+Updates are applied via Terraform for tenant resources, automation for network configuration.
 
 ### Destroy
 
 Destroying a tenant:
 
-1. **Destroy VMs** — Terraform destroys all tenant workloads
-2. **Remove DNS records** — Clean up tenant zone
-3. **Remove network config** — Delete VLAN, DHCP scope, firewall zone
-4. **Archive data** — Backup logs and metrics if required
-5. **Release resources** — Return VLAN ID and subnet to pool
+1. **Destroy tenant resources** — Terraform destroys VMs and DNS records
+2. **Remove network config** — Delete VLAN, DHCP scope, firewall zone
+3. **Archive data** — Backup logs and metrics if required
+4. **Release resources** — Return VLAN ID and subnet to pool
 
 ---
 
@@ -109,7 +107,7 @@ Tenant management is distinct from substrate management:
 | Aspect | Substrate Management | Tenant Management |
 |--------|---------------------|-------------------|
 | **Scope** | Infrastructure (router, hypervisors) | Workloads (VMs, applications) |
-| **Tooling** | Ansible-first | Terraform-first |
+| **Tooling** | Automation-first | Terraform-first |
 | **Lifecycle** | Rare changes, high stability | Frequent changes, agile |
 | **Authority** | Platform admins only | May delegate to tenant admins |
 

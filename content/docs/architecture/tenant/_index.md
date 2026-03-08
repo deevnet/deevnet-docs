@@ -20,9 +20,9 @@ graph TB
         T["grooveiq, vintronics, moneyrouter, etc."]
     end
     subgraph substrate["Substrate Infrastructure"]
-        S["Network, Compute, Management Plane, Builder"]
+        S["Network, Compute, Management Plane"]
     end
-    tenants -->|runs on| substrate
+    tenants -->|deployed on| substrate
 {{< /mermaid >}}
 
 Examples of tenants: `grooveiq`, `vintronics`, `moneyrouter`
@@ -69,7 +69,7 @@ service.tenant.substrate.deevnet.net
 | **Purpose** | Infrastructure environment | Workload namespace |
 | **Contains** | Network, compute, management | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
-| **Provisioning** | Ansible-first (builder) | Terraform-first |
+| **Provisioning** | Automation-first | Terraform-first |
 | **Example** | `dvntm`, `dvnt` | `grooveiq`, `vintronics` |
 
 ---

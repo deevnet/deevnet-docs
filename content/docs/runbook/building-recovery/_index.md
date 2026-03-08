@@ -39,7 +39,7 @@ In all cases, the process starts with seeding MAC addresses into inventory.
 
 ## Stateless Substrate
 
-The substrate (Core Router, hypervisors, network infrastructure) is stateless. All configuration is defined in source control and applied via Ansible. No backup, restore, or data recovery is required for the substrate itself—just rebuild from scratch.
+The substrate (Core Router, hypervisors, network infrastructure) is stateless. All configuration is defined in source control and applied via automation. No backup, restore, or data recovery is required for the substrate itself—just rebuild from scratch.
 
 This means:
 - No substrate snapshots or backups to maintain
