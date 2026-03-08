@@ -1,8 +1,8 @@
 ---
 title: "DVNTM Builder & Core Services"
 weight: 1
-tasks_completed: 17
-tasks_in_progress: 1
+tasks_completed: 19
+tasks_in_progress: 2
 tasks_planned: 5
 ---
 
@@ -78,10 +78,11 @@ Documentation and inventory definitions.
 
 Automated configuration of network infrastructure.
 
-- ✅ Ansible Network Collection - DHCP reservations
-- ✅ Ansible Network Collection - DNS host overrides
+- ✅ DNS Automation
+- ✅ DHCP Automation
 - ✅ OPNsense Alternatives Evaluation
 - ✅ dvntm VLAN Plan
+- 🔄 Core Router Automation
 - 🔄 Document network build/rebuild steps in recovery plan
 - ⏳ Access Switch Automation
 - ⏳ Wireless AP Automation
