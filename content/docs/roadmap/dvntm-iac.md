@@ -78,10 +78,10 @@ Documentation and inventory definitions.
 
 Automated configuration of network infrastructure.
 
-- ✅ DNS Automation
-- ✅ DHCP Automation
 - ✅ OPNsense Alternatives Evaluation
 - ✅ dvntm VLAN Plan
+- ✅ DNS Automation
+- ✅ DHCP Automation
 - 🔄 Core Router Automation
 - 🔄 Document network build/rebuild steps in recovery plan
 - ⏳ Access Switch Automation
