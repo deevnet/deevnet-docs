@@ -1,17 +1,17 @@
 ---
-title: "Virtual Services"
+title: "Extended Services"
 weight: 3
 ---
 
-# Virtual Services Architecture
+# Extended Services Architecture
 
 ### Purpose
 
-This document defines the **virtual management services** layer within the Deevnet management plane.
+This document defines the **extended management services** layer within the Deevnet management plane.
 
-Virtual management services run on a dedicated hypervisor and provide observability, automation, and access tooling. They are **additive** to the Core Platform—the substrate functions without them, using only the Core Router and Bootstrap Node.
+Extended management services provide observability, automation, and access tooling. They are **additive** to the Core Platform—the substrate functions without them, using only the Core Router and Builder.
 
-These services may be rebuilt entirely from the physical layer. If the management hypervisor is lost, core provisioning and network services remain operational.
+These services may be rebuilt entirely from the builder and core services. If the extended services tier is lost, core provisioning and network services remain operational.
 
 For core management plane architecture (DNS authority, naming, provisioner role, OOB services), see [Core Services](../core-services/).
 
@@ -19,7 +19,7 @@ For core management plane architecture (DNS authority, naming, provisioner role,
 
 ## 1. Service Overview
 
-Services that run as VMs on the dedicated management hypervisor:
+Services that run in the extended management tier:
 
 | Service | Description |
 |---------|-------------|
@@ -29,13 +29,12 @@ Services that run as VMs on the dedicated management hypervisor:
 
 ---
 
-## 2. Platform Placement
+## 2. Isolation Model
 
-Virtual management services run on a **dedicated Proxmox hypervisor**.
+Extended management services are isolated from tenant workloads.
 
 | Attribute | Value |
 |---------|------|
-| **Hypervisor role** | Management Plane |
 | **Workload type** | Infrastructure-critical |
 | **Change cadence** | Slow and deliberate |
 | **Blast radius** | Isolated from tenants |
@@ -49,14 +48,14 @@ This separation ensures:
 
 ## 3. Design Principles
 
-Virtual management services follow a strict set of principles:
+Extended management services follow a strict set of principles:
 
 - **Stability over velocity**
 - **Explicit configuration over convenience**
 - **Recoverability over optimization**
 - **Isolation from tenant experimentation**
 
-The management hypervisor is intentionally boring. That is a feature.
+The extended services tier is intentionally boring. That is a feature.
 
 ---
 
@@ -74,17 +73,16 @@ The management hypervisor is intentionally boring. That is a feature.
 
 ## 5. Provisioning Model
 
-**Hypervisor Layer:**
-- Proxmox installation performed via bootstrap process
-- Post-install configuration via Ansible
-- No Proxmox clustering required
+Extended services are provisioned from the builder:
 
-**VM Lifecycle:**
+- Post-install configuration via Ansible
 - Management-plane VMs are created using **Ansible**
-- Proxmox is treated as an API, not a declarative state engine
 - Simplicity and traceability are prioritized
 
 Terraform is intentionally **not used** for management-plane workloads.
+
+For the current platform and tooling used to host extended services,
+see [Implementation & Tooling](/docs/platforms/).
 
 ---
 
@@ -108,4 +106,4 @@ If something breaks:
 - Observability must continue to function
 - Recovery tooling must remain online
 
-If a service is required to **recover the platform**, it belongs on the management hypervisor.
+If a service is required to **recover the platform**, it belongs in the extended services tier.

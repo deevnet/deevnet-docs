@@ -20,7 +20,7 @@ Implementation details live in their respective repositories. This repository de
     <p>Naming conventions, correctness definitions, and identity rules.</p>
   </a>
   <a class="section-card" href="platforms/">
-    <h3>Platforms & Tooling</h3>
+    <h3>Implementation & Tooling</h3>
     <p>Hardware selections, OS choices, and technology stack rationale.</p>
   </a>
   <a class="section-card" href="runbook/">

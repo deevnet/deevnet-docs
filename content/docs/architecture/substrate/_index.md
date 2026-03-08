@@ -23,7 +23,7 @@ Each substrate:
 - Contains a complete infrastructure stack (management plane, network, compute)
 - Has its own DNS zone (`dvntm.deevnet.net`, `dvnt.deevnet.net`)
 
-The same physical bootstrap node can move between substrates—it provisions whichever environment it's connected to.
+The same builder can move between substrates—it provisions whichever environment it's connected to.
 
 ---
 
@@ -34,9 +34,9 @@ block-beta
     columns 1
     block:infra["Substrate Infrastructure"]
         columns 2
-        mp["Management Plane"]:1 mpd["Bootstrap node (provisioning, artifacts, PXE/TFTP)"]:1
+        mp["Management Plane"]:1 mpd["Builder (provisioning, artifacts, PXE/TFTP)"]:1
         net["Network"]:1 netd["Core Router (gateway, firewall, DNS, DHCP), switches, APs"]:1
-        comp["Compute"]:1 compd["Proxmox hypervisors, Raspberry Pis, embedded devices"]:1
+        comp["Compute"]:1 compd["Compute hosts, Raspberry Pis, embedded devices"]:1
     end
 {{< /mermaid >}}
 
@@ -44,25 +44,25 @@ block-beta
 
 The management plane consists of core infrastructure services and optional virtual management services:
 
-**Builder** — The out-of-band provisioning machine (bootstrap node) that builds everything else:
+**Builder** — The out-of-band provisioning role that builds everything else:
 - Artifact hosting, PXE/TFTP, Ansible controller
 - Portable across substrates, air-gapped capable
 - Out-of-band control and recovery services
 
-**Core Services** — Foundational services on dedicated hardware:
+**Core Services** — Foundational services that must survive loss of all other tiers:
 - DNS authority model and naming
 - DHCP, NAT, firewall
 - Authority transitions between builder and router
 
-**Virtual Services** — Additive services on a dedicated management hypervisor:
+**Extended Services** — Additive services providing observability, automation, and access:
 - Centralized logging and metrics
 - Automation runners and CI/CD
 - Jump hosts and access tooling
 
 See [Management Plane](management-plane/) for the full management plane architecture.
-See [Builder](management-plane/builder/) for the bootstrap node and provisioning architecture.
+See [Builder](management-plane/builder/) for the provisioning architecture.
 See [Core Services](management-plane/core-services/) for core platform details.
-See [Virtual Services](management-plane/virtual-services/) for virtual management services.
+See [Extended Services](management-plane/extended-services/) for extended management services.
 
 ### Network
 
@@ -76,7 +76,7 @@ See [Networking](networking/) for the network segmentation model.
 
 ### Compute
 
-**Proxmox hypervisors** host virtualized workloads:
+**Compute hosts** provide virtualized workloads:
 - Management-plane VMs (observability, automation, access)
 - Tenant application VMs
 
@@ -91,10 +91,10 @@ Substrate provisioning uses **explicit authority transitions**:
 
 | Mode | DNS/DHCP Authority | When |
 |------|-------------------|------|
-| **Bootstrap-authoritative** | Bootstrap node (dnsmasq) | During initial provisioning |
+| **Bootstrap-authoritative** | Builder (dnsmasq) | During initial provisioning |
 | **Router-authoritative** | Core Router | Production operation |
 
-The transition is explicit—once the Core Router is configured and validated, the bootstrap node stops serving DNS/DHCP and becomes a regular admin host.
+The transition is explicit—once the Core Router is configured and validated, the builder stops serving DNS/DHCP and becomes a regular admin host.
 
 See [Core Services](management-plane/core-services/) for details on authority models.
 
@@ -104,4 +104,4 @@ See [Core Services](management-plane/core-services/) for details on authority mo
 
 - [Networking](networking/) — Network segmentation and VLAN model
 - [Addressing](addressing/) — IP addressing convention and subnet model
-- [Management Plane](management-plane/) — Management plane overview, core and virtual services
+- [Management Plane](management-plane/) — Management plane overview, core and extended services

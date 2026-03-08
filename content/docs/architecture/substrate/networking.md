@@ -40,7 +40,7 @@ Each substrate implements nine segment types:
 The management segment carries infrastructure control traffic.
 
 **Typical inhabitants:**
-- Bootstrap node (`provisioner-ph01`)
+- Builder (`provisioner-ph01`)
 - Hypervisor management interfaces (`hv01-mgmt`, `hv02-mgmt`)
 - Router management interfaces (`core-rt01-mgmt`)
 - Switch management interfaces (`sw01-mgmt`)
@@ -277,7 +277,7 @@ Segmentation behavior differs between authority modes:
 
 During bootstrap, the provisioner operates on a flat network to PXE boot and configure hosts. Once the core router is configured with VLAN interfaces and the switch is configured for trunking, the substrate transitions to full segmentation.
 
-The transition is explicit — segment configuration is part of the authority handoff from bootstrap node to core router.
+The transition is explicit — segment configuration is part of the authority handoff from builder to core router.
 
 ---
 

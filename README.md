@@ -69,7 +69,7 @@ Roadmaps are **informational**, not binding contracts.
 
 ---
 
-### 4. Platforms & Tooling
+### 4. Implementation & Tooling
 Documents **hardware and software platform decisions**, including rationale and trade-offs.
 
 Includes:

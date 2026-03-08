@@ -54,7 +54,7 @@ A **home infrastructure** deployment supporting various functions:
     <p>Non-negotiable rules for naming, correctness, and identity.</p>
   </a>
   <a class="section-card" href="docs/platforms/">
-    <h3>Platforms & Tooling</h3>
+    <h3>Implementation & Tooling</h3>
     <p>Hardware and software platform decisions with rationale.</p>
   </a>
   <a class="section-card" href="docs/runbook/">

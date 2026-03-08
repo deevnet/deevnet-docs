@@ -25,11 +25,11 @@ It does **not** host tenant workloads.
 
 ## Three-Tier Architecture
 
-The management plane encompasses the **builder**, **core services**, and **virtual services**:
+The management plane encompasses the **builder**, **core services**, and **extended services**:
 
-### Builder (Bootstrap Node)
+### Builder
 
-The out-of-band provisioning machine that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever substrate it's connected to:
+The out-of-band provisioning role that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever substrate it's connected to:
 
 - Artifact hosting (OS images, packages, kickstarts)
 - PXE/TFTP network boot infrastructure
@@ -38,9 +38,9 @@ The out-of-band provisioning machine that builds everything else. Self-contained
 
 See [Builder](builder/) for the complete builder architecture.
 
-### Core Services (Physical)
+### Core Services
 
-The foundational tier—dedicated hardware services that must remain operational even if all virtual infrastructure is lost:
+The foundational tier—services that must remain operational even if all extended services are lost:
 
 - DNS authority model and naming
 - DHCP, NAT, and firewall
@@ -48,15 +48,15 @@ The foundational tier—dedicated hardware services that must remain operational
 
 See [Core Services](core-services/) for the core platform architecture.
 
-### Virtual Services (Hypervisor)
+### Extended Services
 
-Additive services running on a dedicated management hypervisor—observability, automation runners, and access tooling. These may be rebuilt entirely from the builder and core services:
+Additive services providing observability, automation runners, and access tooling. These may be rebuilt entirely from the builder and core services:
 
 - Centralized logging and metrics
 - Automation runners and CI/CD
 - Jump hosts and access tooling
 
-See [Virtual Services](virtual-services/) for the complete virtual layer architecture.
+See [Extended Services](extended-services/) for the complete extended services architecture.
 
 ---
 

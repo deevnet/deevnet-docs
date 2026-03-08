@@ -3,11 +3,11 @@ title: "Builder"
 weight: 1
 ---
 
-# Builder (Bootstrap Node)
+# Builder
 
 ### Purpose
 
-The **builder** is the architectural role responsible for provisioning and configuring all substrate infrastructure. This role is implemented by the bootstrap node.
+The **builder** is the architectural role responsible for provisioning and configuring all substrate infrastructure.
 
 Every substrate needs a way to be created from scratch:
 
@@ -32,7 +32,7 @@ For the DNS authority model and naming conventions that the builder participates
 - Git repositories for all IaC
 
 **Portable** — A single builder can move between substrates:
-- Same physical device serves dvntm or dvnt
+- Same builder serves dvntm or dvnt
 - Provisions whichever environment it's connected to
 - No substrate-specific hardware requirements
 
@@ -117,17 +117,8 @@ provisioning architecture.
 
 ## 5. Implementation
 
-The builder role is implemented by the **bootstrap node**:
-
-| Aspect | Implementation |
-|--------|----------------|
-| **Hardware** | Mini PC with dual NICs |
-| **OS** | Fedora with `deevnet.builder` collection |
-| **Artifacts** | nginx serving images and packages |
-| **Network boot** | in.tftpd with GRUB configs |
-| **Automation** | Ansible controller for all substrate hosts |
-
-See [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/) for implementation details.
+For the current hardware, OS, and tooling that implement the builder role,
+see [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/).
 
 ---
 

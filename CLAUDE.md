@@ -18,7 +18,7 @@ This is the **authoritative documentation repository** for the Deevnet ecosystem
 1. **Standards** - Non-negotiable rules (naming conventions, correctness definitions)
 2. **Architecture** - System-level design intent and layer contracts
 3. **Roadmap** - Forward-looking shared intent (informational, not binding)
-4. **Platforms & Tooling** - Hardware/software platform decisions with rationale
+4. **Implementation & Tooling** - Hardware/software platform decisions with rationale
 5. **Security & Vulnerability Management** - Trust boundaries, credential management, security posture
 6. **Inventory & Lifecycle Management** - Asset tracking, hardware lifecycle stages
 7. **Change Management, Testing, CI/CD** - How change is introduced safely

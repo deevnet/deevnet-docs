@@ -29,7 +29,7 @@ digraph architecture {
     // Top row - force same rank for Edge Router and Builder
     Internet [label="Internet/Upstream LAN", width=2.5]
     EdgeRouter [label="Edge Router"]
-    Builder [label="Builder Node"]
+    Builder [label="Builder"]
 
     Internet -> EdgeRouter
     { rank=same; EdgeRouter; Builder }
@@ -43,14 +43,14 @@ digraph architecture {
         CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
         WirelessAP [label="Wireless AP", width=1.0]
         AccessSwitch [label="Access Switch", width=4.5]
-        MgmtHV [label="Management Plane\nHypervisor", width=2.2]
+        MgmtHV [label="Extended\nServices", width=2.2]
 
         subgraph cluster_tenant {
             label="Tenant"
             style=filled
             fillcolor="#fff3cd"
 
-            TenantHV [label="Tenant\nHypervisor"]
+            TenantHV [label="Tenant\nCompute"]
             PiCompute [label="Pi Compute\nEdge / IoT"]
         }
 
@@ -105,11 +105,11 @@ See:
 - [Networking](substrate/networking/) — Network segmentation and VLAN model
 - [Management Plane](substrate/management-plane/) — Infrastructure management, DNS authority, and VM-based services
 
-#### Builder (Bootstrap Node)
+#### Builder
 
 The **builder** is architecturally part of the substrate but operates with independence—it can move between substrates and provision whichever environment it's connected to. The builder contains all artifacts and automation needed for air-gapped substrate provisioning.
 
-See [Builder](substrate/management-plane/builder/) for the bootstrap node and provisioning architecture.
+See [Builder](substrate/management-plane/builder/) for the provisioning architecture.
 
 ### [Tenant](tenant/)
 

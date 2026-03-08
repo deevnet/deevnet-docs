@@ -1,12 +1,12 @@
 ---
-title: "Platforms & Tooling"
+title: "Implementation & Tooling"
 weight: 3
 bookCollapseSection: true
 ---
 
-# Platforms & Tooling
+# Implementation & Tooling
 
-Documents **hardware and software platform decisions**, organized by substrate architecture layer.
+Documents **implementation decisions**—hardware, operating systems, and tooling—organized by substrate architecture layer.
 
 ---
 

@@ -9,15 +9,15 @@ weight: 2
 
 This document defines the **foundational platform services** of the management plane—DNS, DHCP, NAT, routing, firewall, and the naming/authority model that underpins all substrate operations.
 
-These services must remain operational even if all virtual infrastructure is lost.
+These services must remain operational even if all extended services are lost.
 
-For the bootstrap node (builder) that provisions these services, see [Builder](../builder/).
+For the builder that provisions these services, see [Builder](../builder/).
 
 ---
 
 ## 1. Core Platform
 
-The Core Platform is dedicated hardware providing foundational management services:
+The Core Platform provides foundational management services:
 
 | Service | Description |
 |---------|-------------|
