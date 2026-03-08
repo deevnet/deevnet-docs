@@ -55,8 +55,8 @@ Quick reference for VLAN assignments and network configuration across Deevnet su
 | Platform | High | Shared infrastructure services (DNS, NTP, artifact mirrors, reverse proxy) |
 | Tenant | Medium | Per-tenant workload isolation |
 | IoT Backend | Medium | IoT application backends (MQTT, Home Assistant, data pipelines) |
-| IoT | Low | Embedded/untrusted devices (Pis, sensors, smart home) |
 | IoT Vendor | Very Low | Vendor-managed IoT containment zone (cloud-dependent, unauditable) |
+| IoT | Medium | Custom-developed embedded devices with controlled firmware (Pis, sensors) |
 | Guest | Untrusted | Transient visitor access (internet only) |
 
 ---

@@ -30,8 +30,8 @@ Each substrate implements nine segment types:
 | Storage | Dedicated storage traffic | High |
 | Platform | Shared infrastructure services | High |
 | Tenant | Per-tenant workload isolation | Medium |
-| IoT | Untrusted/embedded devices | Low |
 | IoT Vendor | Vendor-managed/untrusted IoT containment | Very Low |
+| IoT | Custom-developed embedded devices with controlled firmware | Medium |
 | IoT Backend | IoT application backends | Medium |
 | Guest | Transient visitor access | Untrusted |
 
@@ -99,23 +99,6 @@ Tenant segments provide network isolation between workload namespaces. Each tena
 
 See [Tenant Networking](/docs/architecture/tenant/networking/) for tenant-specific network architecture.
 
-### IoT Segment
-
-The IoT segment isolates embedded and less-trusted devices that may have limited security capabilities.
-
-**Typical inhabitants:**
-- Raspberry Pis (`pi01`, `pi02`, `pi03`)
-- Embedded devices (`em01`, `em02`)
-- SDR receivers (e.g., `sdr.dvntm.deevnet.net` → `pi01`)
-- Sensors and IoT gateways
-- Smart home devices
-
-**Properties:**
-- Devices may have vulnerabilities or limited patching
-- Outbound internet access (controlled)
-- Limited or no access to management segment
-- May need access to specific tenant services
-
 ### Platform Segment
 
 The platform segment contains shared infrastructure services that multiple segments need to access.
@@ -146,10 +129,26 @@ The IoT vendor segment is a strict containment zone for vendor-managed devices t
 
 **Properties:**
 - Outbound internet access only (for vendor cloud connectivity)
-- Complete isolation from all internal segments — stricter than regular IoT
+- Complete isolation from all internal segments — stricter than IoT
 - No inbound access from any segment
 - Devices are assumed compromised by default
 - Cannot reach management, storage, tenant, or platform segments
+
+### IoT Segment
+
+The IoT segment contains custom-developed embedded devices with controlled firmware. Unlike the IoT Vendor segment, these devices run firmware that is built, managed, and updated through the Deevnet automation pipeline.
+
+**Typical inhabitants:**
+- Raspberry Pis (`pi01`, `pi02`, `pi03`)
+- Embedded devices (`em01`, `em02`)
+- SDR receivers (e.g., `sdr.dvntm.deevnet.net` → `pi01`)
+- Sensors and IoT gateways
+
+**Properties:**
+- Medium trust — firmware is custom-developed and controlled
+- Outbound internet access (controlled)
+- Limited or no access to management segment
+- May need access to specific tenant services
 
 ### IoT Backend Segment
 
@@ -200,7 +199,7 @@ graph TB
     Mgmt -->|manages| Platform[Platform<br>High Trust]
     Mgmt -->|manages| Tenant[Tenant Segments<br>Medium Trust]
     Mgmt -->|manages| IoTBackend[IoT Backend<br>Medium Trust]
-    Mgmt -->|manages| IoT[IoT<br>Low Trust]
+    Mgmt -->|manages| IoT[IoT<br>Medium Trust]
     Mgmt -->|manages| IoTVendor[IoT Vendor<br>Very Low Trust]
     Trusted -->|user access| Storage
     Trusted -->|user access| Platform
@@ -284,7 +283,7 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Substrates use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT, IoT Vendor, IoT Backend, Guest
+1. Substrates use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT Vendor, IoT, IoT Backend, Guest
 2. Segments form a trust hierarchy with default-deny routing between them
 3. Each substrate implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP

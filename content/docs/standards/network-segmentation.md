@@ -72,15 +72,15 @@ Tenant segments provide workload isolation per tenant namespace.
 - Tenant segments MAY access shared services via explicit firewall rules
 - Each tenant segment MUST have its own DHCP scope
 
-### 5. IoT Segment
+### 5. Platform Segment
 
-The IoT segment isolates untrusted or embedded devices.
+The platform segment contains shared infrastructure services.
 
-- IoT segment MUST exist when untrusted devices are present
-- IoT segment MUST be isolated from management segment
-- IoT segment SHOULD allow controlled outbound internet access
-- IoT segment MUST NOT have unrestricted inbound access
-- Devices in IoT segment SHOULD be treated as potentially compromised
+- Platform segment MUST contain only shared services (DNS, NTP, artifact mirrors, reverse proxy)
+- Platform segment MUST be reachable from management, trusted, tenant, and IoT backend segments
+- Platform segment MUST NOT contain user workloads or tenant applications
+- Platform segment MUST use static DHCP mappings only
+- Platform segment SHOULD be treated as high-trust infrastructure
 
 ### 6. Guest Segment
 
@@ -91,17 +91,7 @@ The guest segment provides transient network access.
 - Guest segment MUST use dynamic DHCP only (no static mappings)
 - Guest segment MAY enforce bandwidth or time limits
 
-### 7. Platform Segment
-
-The platform segment contains shared infrastructure services.
-
-- Platform segment MUST contain only shared services (DNS, NTP, artifact mirrors, reverse proxy)
-- Platform segment MUST be reachable from management, trusted, tenant, and IoT backend segments
-- Platform segment MUST NOT contain user workloads or tenant applications
-- Platform segment MUST use static DHCP mappings only
-- Platform segment SHOULD be treated as high-trust infrastructure
-
-### 8. IoT Vendor Segment
+### 7. IoT Vendor Segment
 
 The IoT vendor segment is a strict containment zone for vendor-managed devices.
 
@@ -109,7 +99,17 @@ The IoT vendor segment is a strict containment zone for vendor-managed devices.
 - IoT vendor segment MUST allow outbound internet access only (for vendor cloud)
 - IoT vendor segment MUST NOT have inbound access from any segment
 - IoT vendor segment MUST NOT access management, storage, tenant, or platform segments
-- IoT vendor segment is stricter than the regular IoT segment — devices are assumed compromised
+- IoT vendor segment is stricter than the IoT segment — devices are assumed compromised
+
+### 8. IoT Segment
+
+The IoT segment contains custom-developed embedded devices with controlled firmware. Unlike the IoT Vendor segment, these devices run firmware that is built, managed, and updated through the Deevnet automation pipeline.
+
+- IoT segment MUST exist when custom-developed embedded devices are present
+- IoT segment MUST be isolated from management segment
+- IoT segment SHOULD allow controlled outbound internet access
+- IoT segment MUST NOT have unrestricted inbound access
+- IoT segment has medium trust — devices run controlled firmware but have limited security capabilities
 
 ### 9. IoT Backend Segment
 
