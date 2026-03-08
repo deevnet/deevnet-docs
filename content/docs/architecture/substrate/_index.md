@@ -44,25 +44,20 @@ block-beta
 
 The management plane consists of core infrastructure services and optional virtual management services:
 
-**Core Platform** — Foundational services on dedicated hardware (Core Router + Bootstrap Node):
+**Core Services** — Foundational services on dedicated hardware (Core Router + Bootstrap Node):
 - DNS authority model and naming
 - Provisioner role and authority transitions
+- Bootstrap node (artifacts, PXE/TFTP, automation)
 - Out-of-band control and recovery services
 
-**Bootstrap Node** — Out-of-band provisioning for initial substrate setup:
-- Hosts artifact server (nginx) for images, ISOs, packages
-- Runs PXE/TFTP for bare-metal provisioning
-- Provides DNS/DHCP during initial bootstrap
-- Configures all other substrate components via Ansible
-
-**Management Hypervisor** — Virtual services on a dedicated hypervisor:
+**Virtual Services** — Additive services on a dedicated management hypervisor:
 - Centralized logging and metrics
 - Automation runners and CI/CD
 - Jump hosts and access tooling
 
-See [Management Plane](management-plane/) for Core Platform architecture.
-See [Management Hypervisor](management-hypervisor/) for virtual management services.
-See [Builder](builder/) for the bootstrap node architecture.
+See [Management Plane](management-plane/) for the full management plane architecture.
+See [Core Services](management-plane/core-services/) for physical infrastructure details.
+See [Virtual Services](management-plane/virtual-services/) for virtual management services.
 
 ### Network
 
@@ -96,7 +91,7 @@ Substrate provisioning uses **explicit authority transitions**:
 
 The transition is explicit—once the Core Router is configured and validated, the bootstrap node stops serving DNS/DHCP and becomes a regular admin host.
 
-See [Management Plane](management-plane/) for details on authority models.
+See [Core Services](management-plane/core-services/) for details on authority models.
 
 ---
 
@@ -104,6 +99,4 @@ See [Management Plane](management-plane/) for details on authority models.
 
 - [Networking](networking/) — Network segmentation and VLAN model
 - [Addressing](addressing/) — IP addressing convention and subnet model
-- [Management Plane](management-plane/) — Core Platform architecture, DNS authority, and provisioner role
-- [Management Hypervisor](management-hypervisor/) — Virtual management services architecture
-- [Builder](builder/) — Bootstrap node and provisioning architecture
+- [Management Plane](management-plane/) — Management plane overview, core and virtual services

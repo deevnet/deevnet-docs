@@ -121,5 +121,5 @@ mgmt_dns_01:
 ## Related Standards
 
 - [MAC Address Format](../mac-address-format/) - Formatting rules (lowercase, colons)
-- [Management Hypervisor](/docs/platforms/management-plane/management-hypervisor/#deterministic-mac-addressing) -
-  Platform implementation and policy rationale
+- [Virtual Services](/docs/architecture/substrate/management-plane/virtual-services/) -
+  Virtual management services architecture and deterministic MAC addressing

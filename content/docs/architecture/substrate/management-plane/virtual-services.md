@@ -1,9 +1,9 @@
 ---
-title: "Management Hypervisor"
-weight: 3
+title: "Virtual Services"
+weight: 2
 ---
 
-# Management Hypervisor Architecture
+# Virtual Services Architecture
 
 ### Purpose
 
@@ -13,7 +13,7 @@ Virtual management services run on a dedicated hypervisor and provide observabil
 
 These services may be rebuilt entirely from the physical layer. If the management hypervisor is lost, core provisioning and network services remain operational.
 
-For the core management plane architecture (DNS authority, naming, provisioner role, OOB services), see [Management Plane](../management-plane/).
+For core management plane architecture (DNS authority, naming, provisioner role, OOB services), see [Core Services](../core-services/).
 
 ---
 
@@ -109,14 +109,3 @@ If something breaks:
 - Recovery tooling must remain online
 
 If a service is required to **recover the platform**, it belongs on the management hypervisor.
-
----
-
-## 8. Relationship to Other Documents
-
-This document defines the **virtual management services architecture**.
-
-Related documents:
-- **[Management Plane](../management-plane/)** — Core Platform architecture (DNS authority, naming, provisioner role)
-- **Correctness** — invariants that must always hold
-- **Standards** — naming, DNS, and access rules derived from the management plane model

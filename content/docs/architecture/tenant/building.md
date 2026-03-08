@@ -146,7 +146,7 @@ This separation:
 | **Lifecycle** | Long-lived, stable | Frequent create/destroy |
 | **Authority** | Platform admins | May delegate to tenant admins |
 
-The substrate [Builder](/docs/architecture/substrate/builder/) provisions
+The substrate [Core Services](/docs/architecture/substrate/management-plane/core-services/) provisions
 the infrastructure that tenant building runs on top of.
 
 ---

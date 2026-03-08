@@ -109,7 +109,7 @@ See:
 
 The **builder** is architecturally part of the substrate but operates with independence—it can move between substrates and provision whichever environment it's connected to. The builder contains all artifacts and automation needed for air-gapped substrate provisioning.
 
-See [Builder](substrate/builder/) for the bootstrap node and provisioning architecture.
+See [Core Services](substrate/management-plane/core-services/) for the bootstrap node and provisioning architecture.
 
 ### [Tenant](tenant/)
 
