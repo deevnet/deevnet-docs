@@ -66,6 +66,8 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
+The platform is organized into two architectural layers: **substrates** and **tenants**. Substrates own the infrastructure — the physical and virtual resources that make the platform run. Tenants own the workloads — the applications and services that run on that infrastructure. This separation means infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between substrates without being coupled to any one environment.
+
 ### [Substrate](substrate/)
 
 The diagram above shows a single substrate. Each substrate is independent — it can be built, operated, and torn down without affecting any other — and stateless, with all configuration defined in source control. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, management plane, and the builder provisioning model.
