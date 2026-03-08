@@ -1,14 +1,14 @@
 ---
-title: "DVNTM Infrastructure Automation"
+title: "DVNTM Builder & Core Services"
 weight: 1
 tasks_completed: 17
-tasks_in_progress: 0
-tasks_planned: 9
+tasks_in_progress: 1
+tasks_planned: 5
 ---
 
-# DVNTM Infrastructure Automation
+# DVNTM Builder & Core Services
 
-Full automation of mobile substrate provisioning and management using Infrastructure as Code (IaC) and Configuration as Code (CaC) solutions.
+Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) substrate from bare metal.
 
 - **GitHub:** https://github.com/deevnet
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
@@ -21,15 +21,16 @@ Full automation of mobile substrate provisioning and management using Infrastruc
 
 ## Project Vision & Scope
 
-Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate from bare metal to running services, with complete air-gap recovery capability.
+Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate from bare metal to running core services, with complete air-gap recovery capability. Culminates in a full substrate rebuild event.
 
 **In Scope**
 - Bare-metal provisioning (PXE, Ansible)
-- Network infrastructure automation
+- Network infrastructure automation (switching, wireless, routing)
 - Image factory for all platforms
 - Full air-gap rebuild capability
 
 **Out of Scope**
+- Extended management plane (logging, telemetry, secrets, identity — separate project)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 
@@ -81,19 +82,9 @@ Automated configuration of network infrastructure.
 - ✅ Ansible Network Collection - DNS host overrides
 - ✅ OPNsense Alternatives Evaluation
 - ✅ dvntm VLAN Plan
-- ⏳ Access Switch Automation (Omada)
-- ⏳ Proxmox Tenant Networking Design and Automation
-- ⏳ Wireless AP Automation (Omada)
-- ⏳ Migrate core router automation to OPNsense alternative
-- ⏳ Document network build/rebuild steps in recovery plan
-
----
-
-## Build Logging ⏳
-
-Centralized logging during substrate provisioning.
-
-- ⏳ Centralized build logging (aggregate logs from all phases)
+- 🔄 Document network build/rebuild steps in recovery plan
+- ⏳ Access Switch Automation
+- ⏳ Wireless AP Automation
 
 ---
 

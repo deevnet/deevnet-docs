@@ -1,14 +1,14 @@
 ---
-title: "DVNTM Management Plane"
+title: "DVNTM Extended Management Plane"
 weight: 2
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 33
 ---
 
-# DVNTM Management Plane
+# DVNTM Extended Management Plane
 
-Centralized management services for the dvntm (mobile) substrate — logging, telemetry, alerting, secrets, and identity.
+Extended management services for the dvntm (mobile) substrate — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
 
 - **GitHub:** https://github.com/deevnet/ansible-collection-deevnet.mgmt
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
