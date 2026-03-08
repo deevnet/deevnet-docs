@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Substrate Architecture
 
-A **substrate** is an infrastructure environment—a self-contained network with its own compute, storage, and management plane.
+A **substrate** is a self-contained infrastructure environment — its own networking, compute, storage, and management plane, all defined as code. Substrates are independent: each one can be built, operated, and torn down without affecting any other. They are also stateless — all configuration lives in source control and is applied through automation, so any substrate can be reprovisioned from scratch at any time.
 
 ---
 

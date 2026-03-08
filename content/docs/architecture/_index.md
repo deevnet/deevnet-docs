@@ -6,7 +6,9 @@ bookCollapseSection: true
 
 # Architecture
 
-Deevnet architecture is organized around **substrates** (independent infrastructure environments) and **tenants** (logical workload namespaces that run on substrates).
+A **substrate** is a self-contained infrastructure environment — its own networking (routing, DNS, DHCP, segmentation), compute, storage, and management plane, all defined as code. Substrates are independent: each one can be built, operated, and torn down without affecting any other. They are also stateless — all configuration lives in source control and is applied through automation, so any substrate can be reprovisioned from scratch at any time.
+
+**Tenants** are logical workload namespaces (application or service domains) that run *on* substrates. A tenant defines what runs; a substrate defines where and how it runs.
 
 ---
 
@@ -68,48 +70,7 @@ digraph architecture {
 
 ### [Substrate](substrate/)
 
-A **substrate** is an infrastructure environment—a self-contained network with its own compute, storage, and management plane.
-
-- **dvntm** — Mobile/portable lab for development, testing, and demos
-- **dvnt** — Production home infrastructure (always-on, stable)
-
-#### Substrate Independence
-
-Each substrate operates independently through its **networking** and **management plane**:
-
-- **Networking** — Self-contained routing, DNS, DHCP, and segmentation via Core Router
-- **Management Plane** — Provisioning, observability, and operational services
-
-{{% hint info %}}
-No cross-substrate dependencies for core functionality. Each substrate can be built, operated, and torn down without affecting the other.
-{{% /hint %}}
-
-#### Stateless Infrastructure
-
-{{% hint info %}}
-Substrate infrastructure is **stateless**. All configuration is defined in source control and applied via automation — no backup, restore, or data recovery required for the substrate itself.
-{{% /hint %}}
-
-Benefits:
-- **Rebuild from scratch** — Any host can be wiped and reprovisioned
-- **Hardware replacement** — Swap failed hardware without data migration
-- **No snapshots or backups** — Configuration is code, not state
-
-Tenant workloads may have stateful data requiring separate backup/recovery procedures.
-
-#### What a Substrate Provides
-
-A substrate provides virtualization services and compute resources for tenant workloads. For **dvntm** specifically, it serves as a stable, portable network that remains insulated from upstream internet connectivity—whether connected to home, hotel, or conference WiFi, the internal network remains consistent.
-
-See:
-- [Networking](substrate/networking/) — Network segmentation and VLAN model
-- [Management Plane](substrate/management-plane/) — Infrastructure management, DNS authority, and operational services
-
-#### Builder
-
-The **builder** is architecturally part of the substrate but operates with independence—it can move between substrates and provision whichever environment it's connected to. The builder contains all artifacts and automation needed for air-gapped substrate provisioning.
-
-See [Builder](substrate/management-plane/builder/) for the provisioning architecture.
+The diagram above shows a single substrate. Each substrate is independent — it can be built, operated, and torn down without affecting any other — and stateless, with all configuration defined in source control. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, management plane, and the builder provisioning model.
 
 ### [Tenant](tenant/)
 
