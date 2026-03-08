@@ -35,14 +35,14 @@ block-beta
     block:infra["Substrate Infrastructure"]
         columns 2
         mp["Management Plane"]:1 mpd["Builder (provisioning, artifacts, PXE/TFTP)"]:1
-        net["Network"]:1 netd["Core Router (gateway, firewall, DNS, DHCP), switches, APs"]:1
-        comp["Compute"]:1 compd["Compute hosts, Raspberry Pis, embedded devices"]:1
+        net["Network"]:1 netd["Gateway, firewall, DNS, DHCP, switching, wireless"]:1
+        comp["Compute"]:1 compd["Virtualization, edge and embedded compute"]:1
     end
 {{< /mermaid >}}
 
 ### Management Plane
 
-The management plane consists of core infrastructure services and optional virtual management services:
+The management plane consists of three tiers:
 
 **Builder** — The out-of-band provisioning role that builds everything else:
 - Artifact hosting, PXE/TFTP, Ansible controller
@@ -66,22 +66,24 @@ See [Extended Services](management-plane/extended-services/) for extended manage
 
 ### Network
 
-The **Core Router** is the production network authority:
-- Firewall and NAT gateway
-- Authoritative DNS for substrate zone
-- DHCP with static mappings
-- Inter-segment routing with VLAN isolation
+The network layer provides connectivity, segmentation, and foundational services for the substrate:
+
+- **Routing and gateway** — NAT, inter-segment routing, upstream connectivity
+- **Firewall** — Segment isolation and egress policy
+- **DNS** — Authoritative resolution for the substrate zone
+- **DHCP** — Static mappings for known hosts, dynamic pools per segment
+- **Switching and wireless** — VLAN trunking and wireless access
 
 See [Networking](networking/) for the network segmentation model.
 
 ### Compute
 
-**Compute hosts** provide virtualized workloads:
-- Management-plane VMs (observability, automation, access)
+**Virtualization** — Hosts management-plane and tenant workloads as VMs:
+- Extended services (observability, automation, access)
 - Tenant application VMs
 
-**Raspberry Pis and embedded devices** handle edge workloads:
-- SDR, IoT gateways, sensors
+**Edge and embedded** — Lightweight compute for IoT and signal processing:
+- SDR receivers, IoT gateways, sensors
 
 ---
 
