@@ -3,7 +3,7 @@ title: "DVNTM Builder & Core Services"
 weight: 1
 tasks_completed: 19
 tasks_in_progress: 2
-tasks_planned: 5
+tasks_planned: 8
 ---
 
 # DVNTM Builder & Core Services
@@ -91,8 +91,11 @@ Automated configuration of network infrastructure.
 
 ## Full Substrate Rebuild Event ⏳
 
-End-to-end rebuild of the mobile substrate from scratch. Validates full air-gap recovery capability. Completing this milestone signals the project is done.
+End-to-end rebuild of the builder node and core network services from scratch. Validates air-gap recovery capability and exercises all automation built in prior milestones. Completing this milestone signals the builder & core services project is done.
 
-- ⏳ Execute full substrate rebuild
-- ⏳ Iterate on code and documentation fixes
+- ⏳ Read and analyze the build/recovery plan
+- ⏳ Rebuild the builder node (no version bump)
+- ⏳ Rebuild core services (core router, access switch, AP) and collect findings and gaps
+- ⏳ Apply fixes and iterate until all steps are accounted for
 - ⏳ Roadmap non-critical improvements for future work
+- ⏳ Tag all deevnet repos with a coordinated release version
