@@ -91,6 +91,36 @@ The guest segment provides transient network access.
 - Guest segment MUST use dynamic DHCP only (no static mappings)
 - Guest segment MAY enforce bandwidth or time limits
 
+### 7. Platform Segment
+
+The platform segment contains shared infrastructure services.
+
+- Platform segment MUST contain only shared services (DNS, NTP, artifact mirrors, reverse proxy)
+- Platform segment MUST be reachable from management, trusted, tenant, and IoT backend segments
+- Platform segment MUST NOT contain user workloads or tenant applications
+- Platform segment MUST use static DHCP mappings only
+- Platform segment SHOULD be treated as high-trust infrastructure
+
+### 8. IoT Vendor Segment
+
+The IoT vendor segment is a strict containment zone for vendor-managed devices.
+
+- IoT vendor segment MUST be fully isolated from all internal segments
+- IoT vendor segment MUST allow outbound internet access only (for vendor cloud)
+- IoT vendor segment MUST NOT have inbound access from any segment
+- IoT vendor segment MUST NOT access management, storage, tenant, or platform segments
+- IoT vendor segment is stricter than the regular IoT segment — devices are assumed compromised
+
+### 9. IoT Backend Segment
+
+The IoT backend segment hosts application backends that process IoT data.
+
+- IoT backend segment MUST accept inbound connections from IoT segment
+- IoT backend segment MAY access platform segment for shared services
+- IoT backend segment MUST NOT access management segment directly
+- IoT backend segment MUST use static DHCP mappings only
+- IoT backend segment SHOULD validate and sanitize all input from IoT devices
+
 ---
 
 ## Inter-Segment Communication
@@ -112,6 +142,9 @@ The following inter-segment flows are permitted when explicitly configured:
 | Trusted | Storage | Required for user data access |
 | Compute hosts | Storage | Required for storage access |
 | Tenant | Shared services | Explicit per-service rules |
+| Platform | Internet | Outbound for updates and external APIs |
+| IoT Backend | Platform | Shared service access (DNS, NTP) |
+| IoT | IoT Backend | Sensor data, MQTT publish |
 | IoT | Internet | Outbound only |
 | Guest | Internet gateway | Outbound only |
 
@@ -122,6 +155,8 @@ The following flows MUST NOT be permitted:
 - Guest to any internal segment
 - Tenant to tenant (cross-tenant)
 - IoT to management (unless explicitly required for specific devices)
+- IoT vendor to any internal segment (full containment)
+- IoT backend to management (must go through platform)
 
 ---
 
@@ -129,9 +164,10 @@ The following flows MUST NOT be permitted:
 
 - Each segment MUST have a dedicated DHCP scope
 - DHCP scopes MUST NOT overlap
-- Management, trusted, and storage segments SHOULD use static DHCP mappings
+- Management, trusted, storage, platform, and IoT backend segments SHOULD use static DHCP mappings
 - Tenant segments SHOULD use static mappings for known hosts
 - IoT and guest segments MAY use dynamic pools
+- IoT vendor segment MAY use dynamic pools
 
 ---
 

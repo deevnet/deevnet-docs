@@ -21,15 +21,18 @@ Network segmentation divides each substrate into isolated broadcast domains with
 
 ## Segment Model
 
-Each substrate implements six segment types:
+Each substrate implements nine segment types:
 
 | Segment | Purpose | Trust Level |
 |---------|---------|-------------|
 | Management | Infrastructure management plane | High |
 | Trusted | High-trust user devices | High |
 | Storage | Dedicated storage traffic | High |
+| Platform | Shared infrastructure services | High |
 | Tenant | Per-tenant workload isolation | Medium |
 | IoT | Untrusted/embedded devices | Low |
+| IoT Vendor | Vendor-managed/untrusted IoT containment | Very Low |
+| IoT Backend | IoT application backends | Medium |
 | Guest | Transient visitor access | Untrusted |
 
 ### Management Segment
@@ -113,6 +116,58 @@ The IoT segment isolates embedded and less-trusted devices that may have limited
 - Limited or no access to management segment
 - May need access to specific tenant services
 
+### Platform Segment
+
+The platform segment contains shared infrastructure services that multiple segments need to access.
+
+**Typical inhabitants:**
+- DNS resolvers (`dns01`, `dns02`)
+- NTP servers
+- Artifact mirrors and package caches
+- Reverse proxy / load balancer
+- Certificate authority
+
+**Properties:**
+- Reachable from management, trusted, tenant, and IoT backend segments
+- High trust — hosts are fully managed infrastructure
+- Static DHCP only
+- No direct user workloads
+- Services are shared, not tenant-specific
+
+### IoT Vendor Segment
+
+The IoT vendor segment is a strict containment zone for vendor-managed devices that phone home to cloud services and cannot be fully audited.
+
+**Typical inhabitants:**
+- Smart home hubs with vendor cloud dependencies
+- IP cameras with vendor firmware
+- Consumer IoT devices (smart plugs, thermostats)
+- Any device where firmware updates are vendor-controlled
+
+**Properties:**
+- Outbound internet access only (for vendor cloud connectivity)
+- Complete isolation from all internal segments — stricter than regular IoT
+- No inbound access from any segment
+- Devices are assumed compromised by default
+- Cannot reach management, storage, tenant, or platform segments
+
+### IoT Backend Segment
+
+The IoT backend segment hosts application backends that process IoT data — MQTT brokers, home automation controllers, and data pipelines.
+
+**Typical inhabitants:**
+- MQTT brokers (`mqtt01`)
+- Home Assistant instances
+- IoT data ingestion and processing services
+- Time-series databases for sensor data
+
+**Properties:**
+- Accepts inbound connections from IoT segment (sensor data, MQTT publish)
+- May access platform segment (DNS, NTP, artifact mirrors)
+- Must not access management segment directly
+- Medium trust — hosts are managed but handle untrusted input
+- Static DHCP only
+
 ### Guest Segment
 
 The guest segment provides network access for transient devices without substrate access.
@@ -142,13 +197,22 @@ graph TB
     end
 
     Mgmt -->|manages| Storage[Storage<br>High Trust]
+    Mgmt -->|manages| Platform[Platform<br>High Trust]
     Mgmt -->|manages| Tenant[Tenant Segments<br>Medium Trust]
+    Mgmt -->|manages| IoTBackend[IoT Backend<br>Medium Trust]
     Mgmt -->|manages| IoT[IoT<br>Low Trust]
+    Mgmt -->|manages| IoTVendor[IoT Vendor<br>Very Low Trust]
     Trusted -->|user access| Storage
+    Trusted -->|user access| Platform
     Trusted -->|user access| Tenant
+    Trusted -->|user access| IoTBackend
     Trusted -->|user access| IoT
 
+    IoT -->|sensor data| IoTBackend
+    IoTBackend -->|shared services| Platform
+
     Tenant -.->|no access| Guest[Guest<br>Untrusted<br>Internet only]
+    IoTVendor -.->|internet only| Guest
 {{< /mermaid >}}
 
 ### Default Routing Policy
@@ -159,6 +223,9 @@ graph TB
 - **Storage is isolated** — Only management, trusted, and designated compute hosts access storage
 - **Tenants are isolated** — Tenants cannot see each other; access shared services via firewall rules
 - **IoT is outbound-only** — IoT devices can reach internet; inbound requires explicit rules
+- **Platform is broadly reachable** — Management, trusted, tenant, and IoT backend segments can reach platform services
+- **IoT Vendor is fully contained** — Outbound internet only; no access to any internal segment
+- **IoT Backend accepts IoT traffic** — Inbound from IoT, outbound to platform; no direct management access
 - **Guest has no substrate access** — Guest segment routes only to internet gateway
 
 ---
@@ -217,7 +284,7 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Substrates use six segment types: Management, Trusted, Storage, Tenant, IoT, Guest
+1. Substrates use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT, IoT Vendor, IoT Backend, Guest
 2. Segments form a trust hierarchy with default-deny routing between them
 3. Each substrate implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP

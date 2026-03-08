@@ -12,10 +12,10 @@ A **substrate** is an infrastructure environment—a self-contained network with
 
 ## Substrate Definitions
 
-| Substrate | Purpose |
-|-----------|---------|
-| **dvntm** | Mobile/portable lab for development, testing, and demos |
-| **dvnt** | Production home infrastructure (always-on, stable) |
+| Substrate | Purpose | Address Block |
+|-----------|---------|---------------|
+| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 |
+| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 |
 
 Each substrate:
 - Has its own IP address space and routing
@@ -97,5 +97,6 @@ See [Management Plane](management-plane/) for details on authority models.
 ## Child Documents
 
 - [Networking](networking/) — Network segmentation and VLAN model
+- [Addressing](addressing/) — IP addressing convention and subnet model
 - [Management Plane](management-plane/) — Infrastructure management, DNS authority, and VM-based services
 - [Builder](builder/) — Bootstrap node and provisioning architecture
