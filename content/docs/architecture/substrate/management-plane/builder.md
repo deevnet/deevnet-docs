@@ -7,7 +7,7 @@ weight: 1
 
 ### Purpose
 
-The **builder** is the architectural role responsible for provisioning and configuring all substrate infrastructure.
+The **builder** is the architectural function responsible for provisioning and configuring all substrate infrastructure.
 
 Every substrate needs a way to be created from scratch:
 
@@ -26,7 +26,7 @@ For the DNS authority model and naming conventions that the builder participates
 ## 1. Key Properties
 
 **Self-Contained** — Contains everything needed to stand up a substrate:
-- Automation code (Ansible collections, playbooks)
+- Infrastructure as Code and Configuration as Code definitions
 - Artifact server (OS images, packages, kickstarts)
 - Network boot infrastructure (TFTP, GRUB configs)
 - Git repositories for all IaC
@@ -95,7 +95,7 @@ The builder participates in explicit authority transitions:
 |-------|-------------|------------------|
 | **Bootstrap** | DNS, DHCP, gateway, TFTP, artifacts | Does not exist |
 | **Transition** | TFTP, artifacts | DNS, DHCP, gateway |
-| **Production** | TFTP, artifacts, Ansible controller | DNS, DHCP, gateway, firewall |
+| **Production** | TFTP, artifacts, automation controller | DNS, DHCP, gateway, firewall |
 
 The transition is explicit and deliberate—never automatic.
 
@@ -124,7 +124,7 @@ see [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/).
 
 ## 6. Design Principles
 
-**Ansible-First** — All substrate provisioning uses Ansible: idempotent configuration, version-controlled playbooks, traceable changes, no Terraform for substrate infrastructure.
+**Configuration as Code** — All substrate provisioning is code-driven: idempotent configuration, version-controlled definitions, traceable changes.
 
 **Deterministic Identity** — All provisioned hosts receive: deterministic MAC addresses (for VMs), static DHCP reservations, predictable DNS records, inventory-defined identity.
 

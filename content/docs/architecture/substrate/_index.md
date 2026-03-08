@@ -45,7 +45,7 @@ block-beta
 The management plane consists of three tiers:
 
 **Builder** — The out-of-band provisioning role that builds everything else:
-- Artifact hosting, PXE/TFTP, Ansible controller
+- Artifact hosting, PXE/TFTP, automation controller
 - Portable across substrates, air-gapped capable
 - Out-of-band control and recovery services
 
