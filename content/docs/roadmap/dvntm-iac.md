@@ -95,7 +95,7 @@ End-to-end rebuild of the builder node and core network services from scratch. V
 
 - ⏳ Read and analyze the build/recovery plan
 - ⏳ Rebuild the builder node (no version bump)
-- ⏳ Rebuild core services (core router, access switch, AP) and collect findings and gaps
+- ⏳ Rebuild core services (core router, access switch, AP) — collect timings, findings, and identify gaps
 - ⏳ Apply fixes and iterate until all steps are accounted for
 - ⏳ Roadmap non-critical improvements for future work
 - ⏳ Tag all deevnet repos with a coordinated release version
