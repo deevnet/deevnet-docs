@@ -44,11 +44,15 @@ block-beta
 
 The management plane consists of core infrastructure services and optional virtual management services:
 
-**Core Services** — Foundational services on dedicated hardware (Core Router + Bootstrap Node):
-- DNS authority model and naming
-- Provisioner role and authority transitions
-- Bootstrap node (artifacts, PXE/TFTP, automation)
+**Builder** — The out-of-band provisioning machine (bootstrap node) that builds everything else:
+- Artifact hosting, PXE/TFTP, Ansible controller
+- Portable across substrates, air-gapped capable
 - Out-of-band control and recovery services
+
+**Core Services** — Core Router services on dedicated hardware:
+- DNS authority model and naming
+- DHCP, NAT, firewall
+- Authority transitions between builder and router
 
 **Virtual Services** — Additive services on a dedicated management hypervisor:
 - Centralized logging and metrics
@@ -56,7 +60,8 @@ The management plane consists of core infrastructure services and optional virtu
 - Jump hosts and access tooling
 
 See [Management Plane](management-plane/) for the full management plane architecture.
-See [Core Services](management-plane/core-services/) for physical infrastructure details.
+See [Builder](management-plane/builder/) for the bootstrap node and provisioning architecture.
+See [Core Services](management-plane/core-services/) for core router details.
 See [Virtual Services](management-plane/virtual-services/) for virtual management services.
 
 ### Network

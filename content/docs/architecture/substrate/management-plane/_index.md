@@ -23,24 +23,34 @@ It does **not** host tenant workloads.
 
 ---
 
-## Two-Tier Architecture
+## Three-Tier Architecture
 
-The management plane encompasses both **physical** and **virtual** services:
+The management plane encompasses the **builder**, **core services**, and **virtual services**:
+
+### Builder (Bootstrap Node)
+
+The out-of-band provisioning machine that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever substrate it's connected to:
+
+- Artifact hosting (OS images, packages, kickstarts)
+- PXE/TFTP network boot infrastructure
+- Ansible controller for all substrate hosts
+- Out-of-band control and recovery services
+
+See [Builder](builder/) for the complete builder architecture.
 
 ### Core Services (Physical)
 
-The foundational tier—dedicated hardware (Core Router + Bootstrap Node) that must remain operational even if all virtual infrastructure is lost:
+The foundational tier—Core Router services that must remain operational even if all virtual infrastructure is lost:
 
 - DNS authority model and naming
-- Provisioner role and authority transitions
-- PXE/TFTP and artifact hosting
-- Out-of-band control and recovery services
+- DHCP, NAT, and firewall
+- Authority transitions between builder and router
 
-See [Core Services](core-services/) for the complete physical layer architecture.
+See [Core Services](core-services/) for the core router architecture.
 
 ### Virtual Services (Hypervisor)
 
-Additive services running on a dedicated management hypervisor—observability, automation runners, and access tooling. These may be rebuilt entirely from the Core Services tier:
+Additive services running on a dedicated management hypervisor—observability, automation runners, and access tooling. These may be rebuilt entirely from the builder and core services:
 
 - Centralized logging and metrics
 - Automation runners and CI/CD

@@ -1,6 +1,6 @@
 ---
 title: "Virtual Services"
-weight: 2
+weight: 3
 ---
 
 # Virtual Services Architecture
