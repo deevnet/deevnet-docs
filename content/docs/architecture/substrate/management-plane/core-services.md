@@ -27,7 +27,7 @@ The Core Platform provides foundational management services:
 | **Routing** | Inter-segment and gateway routing |
 | **Firewall** | Inter-segment and egress rules |
 
-These services are provided by the Core Router. The [Builder](../builder/) complements the Core Router with provisioning, artifact hosting, and PXE/TFTP services. Together they form the Core Platform.
+In production, these services are provided by dedicated network infrastructure. The [Builder](../builder/) complements with provisioning, artifact hosting, and PXE/TFTP services. Together they form the Core Platform.
 
 ---
 
@@ -83,53 +83,36 @@ DNS authority boundaries are explicit and intentional.
 
 The `mgmt.deevnet.net` zone operates in two modes depending on substrate state.
 
-### 3.1 Router-Authoritative (BAU)
+### 3.1 Production Mode
 
 During normal operation:
 
-- Core Router is the DNS authority for the substrate
-- Core Router holds `mgmt.deevnet.net` records (CNAMEs -> provisioner host A record)
-- Provisioner's dnsmasq is **disabled**
-- Provisioner uses reserved IP at low end of subnet (e.g., `192.168.10.95`)
+- Dedicated network infrastructure is the DNS/DHCP authority for the substrate
+- Management service records (artifacts, PXE, TFTP) resolve to the current provisioner host
+- The builder's local DNS/DHCP services are **inactive**
+- The builder uses a reserved IP outside the DHCP pool
 
-Example records in Core Router:
-```
-provisioner-01.mgmt.deevnet.net  A     192.168.10.95
-artifacts.mgmt.deevnet.net       CNAME provisioner-01.mgmt.deevnet.net
-pxe.mgmt.deevnet.net             CNAME provisioner-01.mgmt.deevnet.net
-tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
-```
+### 3.2 Bootstrap Mode
 
----
+During substrate build or recovery:
 
-### 3.2 Provisioner-Authoritative (Rebuild)
-
-During substrate rebuild:
-
-- Provisioner is the DNS/DHCP/TFTP authority
-- Provisioner's dnsmasq holds `mgmt.deevnet.net` records
-- Core Router may not exist (or may be the host being provisioned)
-- Provisioner uses gateway IP (e.g., `192.168.10.1`)
-
-Example records in provisioner dnsmasq:
-```
-provisioner-01.mgmt.deevnet.net  A     192.168.10.1
-artifacts.mgmt.deevnet.net       CNAME provisioner-01.mgmt.deevnet.net
-pxe.mgmt.deevnet.net             CNAME provisioner-01.mgmt.deevnet.net
-tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
-```
-
----
+- The builder is the DNS/DHCP/TFTP authority
+- The builder holds all `mgmt.deevnet.net` records locally
+- Production network infrastructure may not exist yet
+- The builder assumes the gateway IP for the management segment
 
 ### 3.3 No Runtime Conflict
 
-Records exist in both Core Router config and provisioner dnsmasq config, but:
+Records are defined in both production network config and builder config, but:
 
-- only one authority is active at a time
-- provisioner's dnsmasq is disabled during BAU
-- Core Router does not exist (or is being rebuilt) during provisioner-authoritative mode
+- Only one authority is active at a time
+- The builder's DNS/DHCP is disabled during production mode
+- Production infrastructure does not exist (or is being rebuilt) during bootstrap mode
 
-This is intentional duplication, not conflicting truth.
+This is intentional duplication with exclusive activation, not conflicting truth.
+
+For per-substrate implementation details, see [Core Services Implementation](/docs/platforms/management-plane/core-services/).
+For the authority transition procedure, see [Authority Transition](/docs/runbook/authority-transition/).
 
 ---
 

@@ -29,6 +29,10 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Change Management</h3>
     <p>Safe change introduction and CI/CD processes.</p>
   </a>
+  <a class="section-card" href="authority-transition/">
+    <h3>Authority Transition</h3>
+    <p>DNS/DHCP authority transitions between builder and production infrastructure.</p>
+  </a>
   <a class="section-card" href="network-reference/">
     <h3>Network Reference</h3>
     <p>VLAN assignments and network configuration details.</p>
