@@ -6,9 +6,7 @@ bookCollapseSection: true
 
 # Architecture
 
-A **substrate** is a self-contained infrastructure environment — its own networking (routing, DNS, DHCP, segmentation), compute, storage, and management plane, all defined as code. Substrates are independent: each one can be built, operated, and torn down without affecting any other. They are also stateless — all configuration lives in source control and is applied through automation, so any substrate can be reprovisioned from scratch at any time.
-
-**Tenants** are logical workload namespaces (application or service domains) that run *on* substrates. A tenant defines what runs; a substrate defines where and how it runs.
+The **Deevnet platform** is a collection of physical and virtual infrastructure — routing, switching, wireless, DNS, DHCP, NAT, WAN uplink, compute, and virtualization — provisioned entirely through Infrastructure as Code and Configuration as Code. Every device, service, and network segment is defined in source control and applied via automation, making the platform fully reproducible and rebuildable from scratch.
 
 ---
 
