@@ -1,8 +1,8 @@
 ---
 title: "DVNTM Infrastructure Automation"
 weight: 1
-tasks_completed: 15
-tasks_in_progress: 2
+tasks_completed: 17
+tasks_in_progress: 0
 tasks_planned: 9
 ---
 
@@ -79,8 +79,8 @@ Automated configuration of network infrastructure.
 
 - ✅ Ansible Network Collection - DHCP reservations
 - ✅ Ansible Network Collection - DNS host overrides
-- 🔄 OPNsense Alternatives Evaluation
-- 🔄 dvntm VLAN Plan
+- ✅ OPNsense Alternatives Evaluation
+- ✅ dvntm VLAN Plan
 - ⏳ Access Switch Automation (Omada)
 - ⏳ Proxmox Tenant Networking Design and Automation
 - ⏳ Wireless AP Automation (Omada)

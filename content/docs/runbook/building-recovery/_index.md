@@ -71,12 +71,12 @@ This means:
 | Proxmox VM template | kickstart + cdrom | Ready |
 | Proxmox VE bare metal | embedded answer file | Ready |
 | Fedora packages (install) | local mirror/ISO | Ready |
-| Core Router | manual | Gap |
+| Core Router | manual USB install | Manual — accepted prereq |
 
 ---
 
 ## Known Gaps
 
-**Core Router** - No automated install. Current workaround is manual install from USB followed by config restore via API. Future options include USB installer with embedded config or alternative whitebox solution.
+**Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Future Evaluations](../../platforms/evaluations/).
 
 **Post-Install Updates** - See [Patching](../patching/) for day 2 considerations.

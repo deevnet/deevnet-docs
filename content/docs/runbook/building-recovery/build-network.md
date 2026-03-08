@@ -23,6 +23,16 @@ Configure network infrastructure: Core Router, VLANs, and wireless access points
 
 ## Prerequisites
 
+Before the automated build-network procedures begin, the following manual steps must be completed:
+
+| Prerequisite | Method | Notes |
+|--------------|--------|-------|
+| Core Router | Fresh OPNsense install from USB | Manual installer; no PXE support |
+| Access Switch | Factory reset to default state | Clears any prior VLAN/port config |
+| Wireless AP | Factory reset to default state | Clears any prior SSID/network config |
+
+Additionally:
+
 - Inventory seeded with network device definitions
 - Physical network cabling in place
 

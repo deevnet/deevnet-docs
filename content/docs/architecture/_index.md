@@ -103,7 +103,7 @@ A substrate provides virtualization services and compute resources for tenant wo
 
 See:
 - [Networking](substrate/networking/) — Network segmentation and VLAN model
-- [Management Plane](substrate/management-plane/) — Infrastructure management, DNS authority, and VM-based services
+- [Management Plane](substrate/management-plane/) — Infrastructure management, DNS authority, and operational services
 
 #### Builder
 
@@ -120,7 +120,7 @@ Examples: `grooveiq`, `vintronics`, `moneyrouter`
 Tenants live **on** substrates, not defining them:
 - [Networking](tenant/networking/) — Tenant network isolation and VLAN model
 - [Management](tenant/management/) — Tenant lifecycle and observability
-- [Building](tenant/building/) — Tenant provisioning with Terraform
+- [Building](tenant/building/) — Tenant provisioning
 
 ---
 

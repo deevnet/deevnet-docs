@@ -91,4 +91,4 @@ The tenant is logically the same (`grooveiq`), but instances are substrate-scope
 
 - [Networking](networking/) — Tenant network isolation and VLAN model
 - [Management](management/) — Tenant lifecycle and observability
-- [Building](building/) — Tenant provisioning with Terraform
+- [Building](building/) — Tenant provisioning
