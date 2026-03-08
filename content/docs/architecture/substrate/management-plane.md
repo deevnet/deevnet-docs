@@ -50,86 +50,9 @@ hypervisors are down.
 
 ### Virtual Layer (Management Hypervisor)
 
-Services that run as VMs on the dedicated management hypervisor:
+The management plane also includes **virtual services** running on a dedicated management hypervisor—observability, automation runners, and access tooling. These services are additive to the physical layer and may be rebuilt from it.
 
-| Service | Description |
-|---------|-------------|
-| **Observability** | Metrics collection, log aggregation, alerting |
-| **Automation** | Ansible runners, image factory helpers |
-| **Access** | Jump hosts, out-of-band tooling |
-
-Virtual management services may be rebuilt from the physical layer.
-
-#### Platform Placement
-
-Virtual management services run on a **dedicated Proxmox hypervisor**.
-
-| Attribute | Value |
-|---------|------|
-| **Hypervisor role** | Management Plane |
-| **Workload type** | Infrastructure-critical |
-| **Change cadence** | Slow and deliberate |
-| **Blast radius** | Isolated from tenants |
-
-This separation ensures:
-- Tenant rebuilds cannot disrupt core services
-- Observability and access remain available during failures
-- Platform recovery paths are always reachable
-
-#### Design Principles
-
-Virtual management services follow a strict set of principles:
-
-- **Stability over velocity**
-- **Explicit configuration over convenience**
-- **Recoverability over optimization**
-- **Isolation from tenant experimentation**
-
-The management hypervisor is intentionally boring. That is a feature.
-
-#### Service Characteristics
-
-| Attribute | Requirement |
-|--------|------------|
-| **Availability** | High (relative to lab scale) |
-| **Identity** | Stable and deterministic |
-| **Network addressing** | Static via DHCP reservations |
-| **Backup** | Mandatory |
-| **Rebuild support** | Must assist rebuilds, not depend on them |
-
-#### Provisioning Model
-
-**Hypervisor Layer:**
-- Proxmox installation performed via bootstrap process
-- Post-install configuration via Ansible
-- No Proxmox clustering required
-
-**VM Lifecycle:**
-- Management-plane VMs are created using **Ansible**
-- Proxmox is treated as an API, not a declarative state engine
-- Simplicity and traceability are prioritized
-
-Terraform is intentionally **not used** for management-plane workloads.
-
-#### Network Identity
-
-All management-plane VMs:
-- Use **deterministic MAC addresses**
-- Receive **static DHCP mappings**
-- Have predictable DNS records
-
-Details are defined in the [MAC Namespace Specification](/docs/standards/mac-naming/).
-
-#### Failure Philosophy
-
-If something breaks:
-
-- Tenant workloads may be destroyed and rebuilt
-- Management-plane services must still be reachable
-- Observability must continue to function
-- Recovery tooling must remain online
-
-If a service is required to **recover the platform**, it belongs on the management hypervisor.
+See [Management Hypervisor](../management-hypervisor/) for the complete virtual layer architecture, including platform placement, design principles, provisioning model, and failure philosophy.
 
 ---
 
@@ -353,3 +276,4 @@ Related documents define:
 - **Secure Identity** — how access and secrets are handled
 - **Provisioning Architecture** — how management services are used during bootstrap
 - **Standards** — naming, DNS, and access rules derived from this model
+- **[Management Hypervisor](../management-hypervisor/)** — virtual management services architecture
