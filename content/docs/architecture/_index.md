@@ -96,18 +96,18 @@ A **site** is a self-contained infrastructure boundary with its own IP address s
 
 Each site operates independently — it contains a complete infrastructure stack (networking, compute, management plane) and can function without the other.
 
-## [Substrate](substrate/)
+### [Substrate](substrate/)
 
 The shared infrastructure foundation within a site — networking, compute, storage, and management plane. Covers infrastructure layers, the builder provisioning model, and authority modes.
 
-## [Network Segmentation](network-segmentation/)
+### [Network Segmentation](network-segmentation/)
 
 The network segmentation model that divides each substrate into isolated broadcast domains. Defines nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
 
-## [Addressing](addressing/)
+### [Addressing](addressing/)
 
 The IP addressing convention for Deevnet sites. Covers VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
 
-## [Tenant](tenant/)
+### [Tenant](tenant/)
 
 The workload isolation model for applications and services running within sites. Covers tenant networking, lifecycle management, and provisioning.
