@@ -13,10 +13,10 @@ Defines the IP addressing convention for Deevnet sites.
 
 Each site is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
 
-| Site | Site ID | Address Block |
-|------|---------|---------------|
-| **dvnt** | 10 | 10.10.0.0/16 |
-| **dvntm** | 20 | 10.20.0.0/16 |
+| Site | Address Block |
+|------|---------------|
+| **dvnt** | 10.10.0.0/16 |
+| **dvntm** | 10.20.0.0/16 |
 
 The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
 

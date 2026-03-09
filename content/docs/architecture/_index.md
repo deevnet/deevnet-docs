@@ -85,18 +85,16 @@ digraph architecture {
 
 The platform is organized around three architectural concepts: **sites**, **substrates**, and **tenants**. A **site** is a self-contained infrastructure boundary — an independent deployment that can be built, operated, and torn down without affecting any other. Within each site, the **substrate** provides the shared infrastructure foundation (networking, compute, management plane), and **tenants** run the workloads (applications and services). This separation means infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between sites without being coupled to any one environment.
 
-## Site Definitions
+## Sites
 
-| Site | Purpose | Address Block |
-|------|---------|---------------|
-| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 |
-| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 |
+A **site** is a self-contained infrastructure boundary with its own IP address space, DNS zone, and complete infrastructure stack. Each site can be built, operated, and torn down independently.
 
-Each site:
-- Has its own IP address space and routing
-- Operates independently (can function without the other)
-- Contains a complete infrastructure stack (management plane, network, compute)
-- Has its own DNS zone (`dvntm.deevnet.net`, `dvnt.deevnet.net`)
+| Site | Purpose | Address Block | DNS Zone |
+|------|---------|---------------|----------|
+| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | dvnt.deevnet.net |
+| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | dvntm.deevnet.net |
+
+Each site operates independently — it contains a complete infrastructure stack (networking, compute, management plane) and can function without the other.
 
 ### [Substrate](substrate/)
 
@@ -108,7 +106,7 @@ Defines the network segmentation model — nine segment types, trust hierarchy, 
 
 ### [Addressing](addressing/)
 
-Defines the IP addressing convention for Deevnet sites — site address blocks, VLAN-based subnets, host ranges, and gateway conventions.
+Defines the IP addressing convention for Deevnet sites — VLAN-based subnets, host ranges, and gateway conventions.
 
 ### [Tenant](tenant/)
 
@@ -120,13 +118,3 @@ Tenants live **within** sites, not defining them:
 - [Networking](tenant/networking/) — Tenant network isolation and VLAN model
 - [Management](tenant/management/) — Tenant lifecycle and observability
 - [Building](tenant/building/) — Tenant provisioning
-
----
-
-## Standards
-
-Design principles, correctness invariants, and infrastructure rules are defined in [Standards](/docs/standards/):
-
-- [Correctness](/docs/standards/correctness/) — What it means for infrastructure to be correct
-- [Identity vs Intent](/docs/standards/identity-vs-intent/) — Separation of host identity from workload intent
-- [Naming](/docs/standards/naming/) — How systems and services are named
