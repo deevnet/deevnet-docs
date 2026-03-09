@@ -16,13 +16,12 @@ For site definitions (dvnt, dvntm) and the independence model, see [Architecture
 
 {{< mermaid >}}
 block-beta
-    columns 1
-    block:infra["Substrate Infrastructure"]
-        columns 2
-        space:2
-        core["Core Services"]:1 cored["Network · Compute · Storage¹"]:1
-        ext["Extended Services"]:1 extd["Observability · Automation · Access"]:1
-    end
+    columns 2
+    hdr["Substrate Infrastructure"]:2
+    core["Core Services"]:1 cored["Network · Compute · Storage¹"]:1
+    ext["Extended Services"]:1 extd["Observability · Automation · Access"]:1
+    classDef header fill:transparent,stroke:none,font-weight:bold
+    class hdr header
 {{< /mermaid >}}
 
 ¹ Storage is a planned future addition to core services.
