@@ -19,30 +19,32 @@ block-beta
     columns 1
     block:infra["Substrate Infrastructure"]
         columns 2
-        net["Network"]:1 netd["Routing, firewall, DNS, DHCP, switching, wireless"]:1
-        svc["Services"]:1 svcd["Core (DNS, DHCP, firewall) · Extended (observability, automation, access)"]:1
-        comp["Compute"]:1 compd["Virtualization hosts for management-plane and tenant workloads"]:1
+        core["Core Services"]:1 cored["Network · Compute · Storage¹"]:1
+        ext["Extended Services"]:1 extd["Observability · Automation · Access"]:1
     end
 {{< /mermaid >}}
 
-### Network
+¹ Storage is a planned future addition to core services.
 
-The network layer provides connectivity, segmentation, and foundational services for the substrate:
+### Core Services
 
+The foundational infrastructure that must survive loss of all other tiers:
+
+**Network** — Connectivity, segmentation, and foundational network services:
 - **Routing and gateway** — NAT, inter-segment routing, upstream connectivity
 - **Firewall** — Segment isolation and egress policy
 - **DNS** — Authoritative resolution for the substrate zone
 - **DHCP** — Static mappings for known hosts, dynamic pools per segment
 - **Switching and wireless** — VLAN trunking and wireless access
 
+**Compute** — Virtualization hosts for management-plane and tenant workloads:
+- Extended services (observability, automation, access)
+- Tenant application VMs
+
+**Storage**¹ — Shared and persistent storage for substrate consumers.
+
 See [Networking](networking/) for the network segmentation model.
-
-### Core Services
-
-Foundational services that must survive loss of all other tiers:
-- DNS authority model and naming
-- DHCP, NAT, firewall
-- Provided by network infrastructure in production
+See [Core Services](management-plane/core-services/) for core platform details.
 
 ### Extended Services
 
@@ -52,14 +54,7 @@ Additive services providing observability, automation, and access — runs on th
 - Jump hosts and access tooling
 
 See [Management Plane](management-plane/) for how these services are provisioned and managed.
-See [Core Services](management-plane/core-services/) for core platform details.
 See [Extended Services](management-plane/extended-services/) for extended management services.
-
-### Compute
-
-Virtualization hosts run management-plane and tenant workloads as VMs:
-- Extended services (observability, automation, access)
-- Tenant application VMs
 
 ---
 
