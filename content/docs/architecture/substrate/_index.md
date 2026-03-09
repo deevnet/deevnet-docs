@@ -20,8 +20,6 @@ block-beta
     hdr["Substrate Infrastructure"]:2
     core["Core Services"]:1 cored["Network · Compute · Storage¹"]:1
     ext["Extended Services"]:1 extd["Observability · Automation · Access"]:1
-    classDef header fill:transparent,stroke:none,font-weight:bold
-    class hdr header
 {{< /mermaid >}}
 
 ¹ Storage is a planned future addition to core services.
