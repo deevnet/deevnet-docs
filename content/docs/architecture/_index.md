@@ -102,6 +102,10 @@ Each site:
 
 Within a site, the substrate provides the shared infrastructure foundation. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, compute, storage, management plane, and the builder provisioning model.
 
+### [Network Segmentation](network-segmentation/)
+
+Defines the network segmentation model — nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
+
 ### [Addressing](addressing/)
 
 Defines the IP addressing convention for Deevnet sites — site address blocks, VLAN-based subnets, host ranges, and gateway conventions.

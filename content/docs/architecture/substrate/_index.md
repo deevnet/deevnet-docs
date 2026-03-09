@@ -41,7 +41,8 @@ The foundational infrastructure that must survive loss of all other tiers:
 
 **Storage**¹ — Shared and persistent storage for substrate consumers.
 
-See [Networking](networking/) for the network segmentation model.
+See [Networking](networking/) for substrate networking services (DNS, DHCP, firewall, VLAN routing, switching).
+See [Network Segmentation](/docs/architecture/network-segmentation/) for the segment model and trust hierarchy.
 See [Core Services](management-plane/core-services/) for core platform details.
 
 ### Extended Services
@@ -58,7 +59,7 @@ See [Extended Services](management-plane/extended-services/) for extended manage
 
 ## Child Documents
 
-- [Networking](networking/) — Network segmentation and VLAN model
+- [Networking](networking/) — Networking services: DNS, DHCP, firewall, VLAN routing, switching
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
 - [Management Plane](management-plane/) — Management plane overview, core and extended services
