@@ -27,8 +27,8 @@ digraph architecture {
     graph [
         rankdir=TB,
         splines=ortho,
-        nodesep=0.6,
-        ranksep=0.8,
+        nodesep=0.5,
+        ranksep=0.7,
         fontname="Helvetica",
         bgcolor="#e0e0e0",
         pad=0.15
@@ -49,22 +49,25 @@ digraph architecture {
         label="Site"
         style=filled
         fillcolor="#d0e8d0"
+        margin=8
 
         subgraph cluster_substrate {
             label="Substrate"
             style=filled
             fillcolor="#e0f0ff"
+            margin=8
 
-            CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
+            CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.2]
             WirelessAP [label="Wireless AP", width=1.0]
-            AccessSwitch [label="Access Switch", width=4.5]
-            MgmtHV [label="Extended\nServices", width=2.2]
+            AccessSwitch [label="Access Switch", width=3.8]
+            MgmtHV [label="Extended\nServices", width=1.8]
         }
 
         subgraph cluster_tenant {
             label="Tenant"
             style=filled
             fillcolor="#fff3cd"
+            margin=8
 
             TenantHV [label="Tenant\nCompute"]
             PiCompute [label="Pi Compute\nEdge / IoT"]
