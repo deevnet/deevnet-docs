@@ -3,7 +3,7 @@ title: "Addressing"
 weight: 2
 ---
 
-# Substrate Addressing
+# Addressing
 
 Defines the IP addressing convention for Deevnet sites.
 

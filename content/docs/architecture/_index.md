@@ -100,7 +100,11 @@ Each site:
 
 ### [Substrate](substrate/)
 
-Within a site, the substrate provides the shared infrastructure foundation. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, management plane, and the builder provisioning model.
+Within a site, the substrate provides the shared infrastructure foundation. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, compute, storage, management plane, and the builder provisioning model.
+
+### [Addressing](addressing/)
+
+Defines the IP addressing convention for Deevnet sites — site address blocks, VLAN-based subnets, host ranges, and gateway conventions.
 
 ### [Tenant](tenant/)
 

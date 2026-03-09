@@ -59,5 +59,6 @@ See [Extended Services](management-plane/extended-services/) for extended manage
 ## Child Documents
 
 - [Networking](networking/) — Network segmentation and VLAN model
-- [Addressing](addressing/) — IP addressing convention and subnet model
+- [Compute](compute/) — Virtualization and compute model
+- [Storage](storage/) — Shared and persistent storage
 - [Management Plane](management-plane/) — Management plane overview, core and extended services
