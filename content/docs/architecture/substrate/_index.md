@@ -6,11 +6,9 @@ bookCollapseSection: true
 
 # Substrate Architecture
 
-Within a site, the **substrate** provides the shared infrastructure foundation — networking, compute, storage, and management plane, all defined as code. The substrate is stateless — all configuration lives in source control and is applied through automation, so it can be reprovisioned from scratch at any time.
+Within a site, the **substrate** provides the shared infrastructure foundation — networking, compute, and services, all defined as code. The substrate is stateless — all configuration lives in source control and is applied through automation, so it can be reprovisioned from scratch at any time.
 
 For site definitions (dvnt, dvntm) and the independence model, see [Architecture](../).
-
-The same builder can move between sites—it provisions whichever environment it's connected to.
 
 ---
 
@@ -21,35 +19,11 @@ block-beta
     columns 1
     block:infra["Substrate Infrastructure"]
         columns 2
-        mp["Management Plane"]:1 mpd["Builder (provisioning, artifacts, PXE/TFTP)"]:1
-        net["Network"]:1 netd["Gateway, firewall, DNS, DHCP, switching, wireless"]:1
-        comp["Compute"]:1 compd["Virtualization, edge and embedded compute"]:1
+        net["Network"]:1 netd["Routing, firewall, DNS, DHCP, switching, wireless"]:1
+        svc["Services"]:1 svcd["Core (DNS, DHCP, firewall) · Extended (observability, automation, access)"]:1
+        comp["Compute"]:1 compd["Virtualization hosts for management-plane and tenant workloads"]:1
     end
 {{< /mermaid >}}
-
-### Management Plane
-
-The management plane consists of three tiers:
-
-**Builder** — The out-of-band provisioning role that builds everything else:
-- Artifact hosting, PXE/TFTP, automation controller
-- Portable across sites, air-gapped capable
-- Out-of-band control and recovery services
-
-**Core Services** — Foundational services that must survive loss of all other tiers:
-- DNS authority model and naming
-- DHCP, NAT, firewall
-- Authority transitions between builder and router
-
-**Extended Services** — Additive services providing observability, automation, and access:
-- Centralized logging and metrics
-- Automation runners and CI/CD
-- Jump hosts and access tooling
-
-See [Management Plane](management-plane/) for the full management plane architecture.
-See [Builder](management-plane/builder/) for the provisioning architecture.
-See [Core Services](management-plane/core-services/) for core platform details.
-See [Extended Services](management-plane/extended-services/) for extended management services.
 
 ### Network
 
@@ -63,29 +37,29 @@ The network layer provides connectivity, segmentation, and foundational services
 
 See [Networking](networking/) for the network segmentation model.
 
+### Core Services
+
+Foundational services that must survive loss of all other tiers:
+- DNS authority model and naming
+- DHCP, NAT, firewall
+- Provided by network infrastructure in production
+
+### Extended Services
+
+Additive services providing observability, automation, and access — runs on the management hypervisor:
+- Centralized logging and metrics
+- Automation runners and CI/CD
+- Jump hosts and access tooling
+
+See [Management Plane](management-plane/) for how these services are provisioned and managed.
+See [Core Services](management-plane/core-services/) for core platform details.
+See [Extended Services](management-plane/extended-services/) for extended management services.
+
 ### Compute
 
-**Virtualization** — Hosts management-plane and tenant workloads as VMs:
+Virtualization hosts run management-plane and tenant workloads as VMs:
 - Extended services (observability, automation, access)
 - Tenant application VMs
-
-**Edge and embedded** — Lightweight compute for IoT and signal processing:
-- SDR receivers, IoT gateways, sensors
-
----
-
-## Authority Modes
-
-Substrate provisioning uses **explicit authority transitions**:
-
-| Mode | DNS/DHCP Authority | When |
-|------|-------------------|------|
-| **Bootstrap** | Builder | During initial provisioning or recovery |
-| **Production** | Network infrastructure | Normal operation |
-
-The transition is explicit — only one authority is active at a time. Once production network infrastructure is configured and validated, the builder's DNS/DHCP services are disabled.
-
-See [Core Services](management-plane/core-services/) for details on authority models.
 
 ---
 
