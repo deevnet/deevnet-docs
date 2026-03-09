@@ -98,23 +98,16 @@ Each site operates independently — it contains a complete infrastructure stack
 
 ### [Substrate](substrate/)
 
-Within a site, the substrate provides the shared infrastructure foundation. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, compute, storage, management plane, and the builder provisioning model.
+The shared infrastructure foundation within a site — networking, compute, storage, and management plane. Covers infrastructure layers, the builder provisioning model, and authority modes.
 
 ### [Network Segmentation](network-segmentation/)
 
-Defines the network segmentation model — nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
+The network segmentation model that divides each substrate into isolated broadcast domains. Defines nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
 
 ### [Addressing](addressing/)
 
-Defines the IP addressing convention for Deevnet sites — VLAN-based subnets, host ranges, and gateway conventions.
+The IP addressing convention for Deevnet sites. Covers VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
 
 ### [Tenant](tenant/)
 
-A **tenant** is a logical workload namespace representing an application or service domain.
-
-Examples: `grooveiq`, `vintronics`, `moneyrouter`
-
-Tenants live **within** sites, not defining them:
-- [Networking](tenant/networking/) — Tenant network isolation and VLAN model
-- [Management](tenant/management/) — Tenant lifecycle and observability
-- [Building](tenant/building/) — Tenant provisioning
+The workload isolation model for applications and services running within sites. Covers tenant networking, lifecycle management, and provisioning.
