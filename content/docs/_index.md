@@ -13,7 +13,7 @@ Implementation details live in their respective repositories. This repository de
 <div class="section-cards">
   <a class="section-card" href="architecture/">
     <h3>Architecture</h3>
-    <p>Substrates, tenants, network topology, and system design.</p>
+    <p>Sites, substrates, tenants, and system-level design.</p>
   </a>
   <a class="section-card" href="standards/">
     <h3>Standards</h3>

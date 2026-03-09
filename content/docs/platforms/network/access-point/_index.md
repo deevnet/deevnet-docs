@@ -7,7 +7,7 @@ weight: 4
 
 ## Purpose
 
-The access point provides **wireless connectivity** for mobile devices, laptops, and IoT devices within the substrate.
+The access point provides **wireless connectivity** for mobile devices, laptops, and IoT devices within the site.
 
 {{< mermaid >}}
 graph LR
@@ -18,9 +18,9 @@ graph LR
 
 ## TP-Link Omada EAP650-Outdoor
 
-**Substrate**: dvntm (mobile)
+**Site**: dvntm (mobile)
 
-The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN product line. Despite being outdoor-rated, its rugged design makes it suitable for the mobile substrate's varied deployment environments.
+The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN product line. Despite being outdoor-rated, its rugged design makes it suitable for the mobile site's varied deployment environments.
 
 ![TP-Link Omada EAP650-Outdoor](tplink-eap650-outdoor.webp)
 
@@ -69,9 +69,9 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 
 ## Ubiquiti UniFi UAP-AC-M
 
-**Substrate**: dvnt (home) — 2 units
+**Site**: dvnt (home) — 2 units
 
-The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniFi product line. Two units provide coverage throughout the home substrate.
+The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniFi product line. Two units provide coverage throughout the home site.
 
 ![Ubiquiti UniFi UAP-AC-M](ubiquiti-uap-ac-m.webp)
 
@@ -133,8 +133,8 @@ Both access points meet the core selection criteria:
 
 ## Configuration Management
 
-| Substrate | Controller | Automation |
-|-----------|------------|------------|
+| Site | Controller | Automation |
+|------|------------|------------|
 | **dvntm** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
 | **dvnt** | UniFi Network | UniFi API (manual currently) |
 

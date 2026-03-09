@@ -13,8 +13,8 @@ The network controller role deploys **centralized management software** for swit
 
 ## Controllers
 
-| Substrate | Controller | Managed Devices |
-|-----------|------------|-----------------|
+| Site | Controller | Managed Devices |
+|------|------------|-----------------|
 | **dvntm** | TP-Link Omada SDN | SG2218 switch, EAP650-Outdoor AP |
 | **dvnt** | Ubiquiti UniFi Network | USW-24-G2, US-8 switches, UAP-AC-M APs |
 
@@ -36,7 +36,7 @@ Both controllers run on the bootstrap node because they must be available for in
 Container images are fetched as tarballs from the local artifacts server:
 
 1. Artifacts role downloads image from upstream, saves as tarball
-2. Controller role fetches tarball from `http://artifacts.<substrate>.deevnet.net/`
+2. Controller role fetches tarball from `http://artifacts.<site>.deevnet.net/`
 3. `podman load` imports the image
 4. `podman create` sets up the container
 5. systemd manages the lifecycle

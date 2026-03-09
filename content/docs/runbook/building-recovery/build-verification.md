@@ -1,11 +1,11 @@
 ---
-title: "Verify Substrate"
+title: "Verify Site"
 weight: 13
 ---
 
-# Verify Substrate
+# Verify Site
 
-Validation after substrate build is complete.
+Validation after site build is complete.
 
 ---
 

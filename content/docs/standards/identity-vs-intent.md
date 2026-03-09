@@ -46,7 +46,7 @@ Deevnet explicitly avoids this by design.
 Identity answers questions like:
 
 - What physical or virtual system is this?
-- Where does it live (substrate)?
+- Where does it live (site)?
 - How is it addressed?
 - What hardware or execution class is it?
 
@@ -128,7 +128,7 @@ Deevnet separates these concerns explicitly.
 
 - Inventory structure
 - host_vars
-- Substrate boundaries
+- Site boundaries
 
 Identity variables should be:
 

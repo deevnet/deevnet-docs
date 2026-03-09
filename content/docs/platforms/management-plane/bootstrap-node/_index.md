@@ -8,14 +8,14 @@ bookCollapseSection: true
 
 ## Purpose
 
-The bootstrap node is the **management plane** for standing up a Deevnet substrate. It's a single, portable device that contains everything needed to provision and configure an entire environment from scratch.
+The bootstrap node is the **management plane** for standing up a Deevnet site. It's a single, portable device that contains everything needed to provision and configure an entire environment from scratch.
 
 Goals:
 - **Self-contained** — All automation, artifacts, and services on one device
-- **Portable** — Move between substrates (dvntm, dvnt) as needed
-- **Out-of-band** — Can operate independently of the substrate network
+- **Portable** — Move between sites (dvntm, dvnt) as needed
+- **Out-of-band** — Can operate independently of the site network
 - **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
-- **Disposable authority** — Hands off control to Core Router once the substrate is running
+- **Disposable authority** — Hands off control to Core Router once the site is running
 
 "Bring one box, provision everything."
 
@@ -23,8 +23,8 @@ Goals:
 
 ## Hardware
 
-| Substrate | Hardware | Notes |
-|-----------|----------|-------|
+| Site | Hardware | Notes |
+|------|----------|-------|
 | **dvntm** | Developer workstation | Portable laptop with dual-NIC capability |
 | **dvnt** | AOOSTAR N1 PRO | Mini PC with dual 2.5GbE |
 
@@ -34,13 +34,13 @@ The bootstrap node requires:
 
 | Attribute | Requirement | Rationale |
 |-----------|-------------|-----------|
-| **Form factor** | Portable | Must move between substrates |
+| **Form factor** | Portable | Must move between sites |
 | **NICs** | Dual-NIC minimum | Upstream + substrate connectivity |
 | **Storage** | ~500GB+ | Artifacts (ISOs, images, packages) |
 | **RAM** | 16GB+ | Ansible execution, artifact serving |
 | **CPU** | Modern x86_64 | Packer builds, general automation |
 
-The same physical device can serve both substrates:
+The same physical device can serve both sites:
 - **dvntm** — Mobile/portable lab
 - **dvnt** — Home infrastructure
 
@@ -60,9 +60,9 @@ The bootstrap node is provisioned via PXE from another bootstrap node, or manual
 
 ## AOOSTAR N1 PRO
 
-**Substrate**: dvnt (home)
+**Site**: dvnt (home)
 
-The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home substrate. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
+The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home site. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
 
 ![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
 
@@ -92,11 +92,11 @@ The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for
 
 {{< mermaid >}}
 graph LR
-    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Substrate Network<br>dvntm/dvnt]
+    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>dvntm/dvnt]
 {{< /mermaid >}}
 
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
-- **Downstream interface**: Becomes the gateway for the substrate during bootstrap
+- **Downstream interface**: Becomes the gateway for the site during bootstrap
 
 {{% hint warning %}}
 During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions. This handoff is **explicit, not automatic**.
@@ -142,4 +142,4 @@ All Deevnet repositories are checked out to a standard location:
 └── deevnet-docs/                         # This documentation (submodule)
 ```
 
-The inventory is substrate-specific. Running playbooks from the bootstrap node targets the connected substrate.
+The inventory is site-specific. Running playbooks from the bootstrap node targets the connected site.

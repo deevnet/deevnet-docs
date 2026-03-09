@@ -20,9 +20,9 @@ Both controllers run on the **bootstrap node** as containerized services, provid
 
 ## TP-Link Omada SDN Controller
 
-**Substrate**: dvntm (mobile)
+**Site**: dvntm (mobile)
 
-The Omada SDN Controller manages all TP-Link Omada devices in the mobile substrate, including the SG2218 switch and EAP650-Outdoor access point.
+The Omada SDN Controller manages all TP-Link Omada devices in the mobile site, including the SG2218 switch and EAP650-Outdoor access point.
 
 ### Software
 
@@ -64,9 +64,9 @@ The Omada controller provides a REST API used by the `deevnet.net` Ansible colle
 
 ## Ubiquiti UniFi Network Application
 
-**Substrate**: dvnt (home)
+**Site**: dvnt (home)
 
-The UniFi Network Application manages all Ubiquiti UniFi devices in the home substrate, including the USW-24-G2 and US-8 switches, and both UAP-AC-M access points.
+The UniFi Network Application manages all Ubiquiti UniFi devices in the home site, including the USW-24-G2 and US-8 switches, and both UAP-AC-M access points.
 
 ### Software
 

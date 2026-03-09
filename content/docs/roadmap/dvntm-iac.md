@@ -8,7 +8,7 @@ tasks_planned: 8
 
 # DVNTM Builder & Core Services
 
-Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) substrate from bare metal.
+Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) site from bare metal.
 
 - **GitHub:** https://github.com/deevnet
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
@@ -21,7 +21,7 @@ Builder infrastructure, network automation, and core services required to provis
 
 ## Project Vision & Scope
 
-Achieve fully automated, repeatable provisioning of the dvntm (mobile) substrate from bare metal to running core services, with complete air-gap recovery capability. Culminates in a full substrate rebuild event.
+Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from bare metal to running core services, with complete air-gap recovery capability. Culminates in a full site rebuild event.
 
 **In Scope**
 - Bare-metal provisioning (PXE, Ansible)
@@ -69,7 +69,7 @@ Documentation and inventory definitions.
 
 - ✅ Hugo-based Documentation Site
 - ✅ Standards and Correctness Docs
-- ✅ dvntm Substrate Bare-Metal Inventory (MAC addresses)
+- ✅ dvntm Site Bare-Metal Inventory (MAC addresses)
 {{% /details %}}
 
 ---
@@ -89,7 +89,7 @@ Automated configuration of network infrastructure.
 
 ---
 
-## Full Substrate Rebuild Event ⏳
+## Full Site Rebuild Event ⏳
 
 End-to-end rebuild of the builder node and core network services from scratch. Validates air-gap recovery capability and exercises all automation built in prior milestones. Completing this milestone signals the builder & core services project is done.
 

@@ -5,7 +5,7 @@ weight: 3
 
 # Core Services Implementation
 
-How each substrate implements the DNS authority model defined in [Core Services Architecture](/docs/architecture/substrate/management-plane/core-services/).
+How each site implements the DNS authority model defined in [Core Services Architecture](/docs/architecture/substrate/management-plane/core-services/).
 
 ---
 
@@ -43,4 +43,4 @@ tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
 
 ## dvnt (Production)
 
-_Placeholder — implementation details to be documented when dvnt substrate is built._
+_Placeholder — implementation details to be documented when dvnt site is built._

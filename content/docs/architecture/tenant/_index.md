@@ -12,7 +12,7 @@ A **tenant** is a logical workload namespace representing an application or serv
 
 ## What is a Tenant?
 
-Tenants are the workload layer that runs **on top of** substrate infrastructure:
+Tenants are the workload layer that runs **within** sites, on top of substrate infrastructure:
 
 {{< mermaid >}}
 graph TB
@@ -31,11 +31,11 @@ Examples of tenants: `grooveiq`, `vintronics`, `moneyrouter`
 
 ## Key Properties
 
-### Tenants Live On Substrates
+### Tenants Live Within Sites
 
 Tenants:
-- Run **on** substrates, not defining them
-- May be deployed to one or more substrates
+- Run **within** sites, not defining them
+- May be deployed to one or more sites
 - Are isolated from other tenants
 - Share substrate infrastructure (network, compute, management)
 
@@ -51,22 +51,22 @@ Tenants express **intent** (what's running), not **identity** (what the host is)
 Tenant services follow a hierarchical DNS pattern:
 
 ```
-service.tenant.substrate.deevnet.net
+service.tenant.site.deevnet.net
 ```
 
 **Example:** `api.grooveiq.dvntm.deevnet.net`
 - `api` — the service
 - `grooveiq` — the tenant
-- `dvntm` — the substrate
+- `dvntm` — the site
 - `deevnet.net` — the domain
 
 ---
 
-## Tenant vs Substrate
+## Tenant vs Site
 
-| Aspect | Substrate | Tenant |
-|--------|-----------|--------|
-| **Purpose** | Infrastructure environment | Workload namespace |
+| Aspect | Site | Tenant |
+|--------|------|--------|
+| **Purpose** | Infrastructure boundary | Workload namespace |
 | **Contains** | Network, compute, management | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
 | **Provisioning** | Automation-first | Terraform-first |
@@ -74,16 +74,16 @@ service.tenant.substrate.deevnet.net
 
 ---
 
-## Multi-Substrate Tenants
+## Multi-Site Tenants
 
-A tenant may be deployed to multiple substrates:
+A tenant may be deployed to multiple sites:
 
 ```
 api.grooveiq.dvntm.deevnet.net  — Development instance
 api.grooveiq.dvnt.deevnet.net   — Production instance
 ```
 
-The tenant is logically the same (`grooveiq`), but instances are substrate-scoped.
+The tenant is logically the same (`grooveiq`), but instances are site-scoped.
 
 ---
 

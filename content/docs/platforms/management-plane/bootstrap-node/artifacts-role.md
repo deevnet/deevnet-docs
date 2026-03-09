@@ -27,7 +27,7 @@ The artifacts server provides:
 | **Custom scripts** | Post-install automation payloads |
 | **OS images** | ISO images or extracted install trees |
 
-Artifacts are served via HTTP at `artifacts.<substrate>.deevnet.net`.
+Artifacts are served via HTTP at `artifacts.<site>.deevnet.net`.
 
 ---
 
@@ -168,8 +168,8 @@ rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' > /root/sbom.txt
 
 Per the [Naming Standard](/docs/standards/naming/):
 
-- `artifacts.<substrate>.deevnet.net` — Substrate-scoped name (required)
-- `artifacts.deevnet.net` — Global alias (optional, CNAME to active substrate)
+- `artifacts.<site>.deevnet.net` — Site-scoped name (required)
+- `artifacts.deevnet.net` — Global alias (optional, CNAME to active site)
 
 The service name is the contract. The underlying host can change without affecting consumers.
 
@@ -191,8 +191,8 @@ Per the [Correctness Standard](/docs/standards/correctness/#33-multihoming-servi
 
 The artifacts server is the foundation of air-gapped substrate provisioning:
 
-1. **Scope to substrate** — Don't try to air-gap everything
-2. **Serve via DNS name** — `artifacts.<substrate>.deevnet.net`
+1. **Scope to site** — Don't try to air-gap everything
+2. **Serve via DNS name** — `artifacts.<site>.deevnet.net`
 3. **Include package mirrors** — dnf reposync for Fedora hosts
 4. **Verify integrity** — GPG signatures, OpenSCAP for compliance
 5. **Document co-location** — If sharing a host with PXE/DNS, track the blast radius

@@ -5,7 +5,7 @@ weight: 6
 
 # Network Reference
 
-Quick reference for VLAN assignments and network configuration across Deevnet substrates.
+Quick reference for VLAN assignments and network configuration across Deevnet sites.
 
 ---
 

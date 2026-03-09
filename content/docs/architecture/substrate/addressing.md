@@ -5,26 +5,26 @@ weight: 2
 
 # Substrate Addressing
 
-Defines the IP addressing convention for Deevnet substrates.
+Defines the IP addressing convention for Deevnet sites.
 
 ---
 
 ## Addressing Convention
 
-Each substrate is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
+Each site is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
 
-| Substrate | Substrate ID | Address Block |
-|-----------|-------------|---------------|
+| Site | Site ID | Address Block |
+|------|---------|---------------|
 | **dvnt** | 10 | 10.10.0.0/16 |
 | **dvntm** | 20 | 10.20.0.0/16 |
 
-The addressing pattern is: `10.{substrate_id}.{vlan_id}.0/24`
+The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
 
-- The second octet identifies the substrate
+- The second octet identifies the site
 - The third octet matches the VLAN ID for that segment
-- Each segment subnet is a /24 within the substrate's /16
+- Each segment subnet is a /24 within the site's /16
 
-This creates a predictable, self-documenting address scheme where any IP immediately reveals which substrate and segment it belongs to.
+This creates a predictable, self-documenting address scheme where any IP immediately reveals which site and segment it belongs to.
 
 ---
 
@@ -54,7 +54,7 @@ Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive
 
 ## WAN Operation Modes
 
-The dvntm substrate operates in two WAN modes depending on physical location:
+The dvntm site operates in two WAN modes depending on physical location:
 
 ### Travel Mode
 
@@ -71,7 +71,7 @@ When dvntm is co-located with dvnt, the dvntm WAN connects to dvnt's trusted seg
 - dvntm WAN IP: assigned from 10.10.10.0/24 (dvnt trusted)
 - dvnt routes 10.20.0.0/16 to dvntm's WAN IP
 - NAT is disabled on dvntm's WAN — traffic flows with clean source IPs
-- Both substrates can communicate with full visibility
+- Both sites can communicate with full visibility
 
 This allows dvntm devices to be reachable from dvnt without double-NAT, while dvntm retains its own addressing and can undock at any time.
 

@@ -8,7 +8,7 @@ tasks_planned: 33
 
 # DVNTM Extended Management Plane
 
-Extended management services for the dvntm (mobile) substrate — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
+Extended management services for the dvntm (mobile) site — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
 
 - **GitHub:** https://github.com/deevnet/ansible-collection-deevnet.mgmt
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
@@ -34,7 +34,7 @@ Deploy a unified management plane providing observability, security, and identit
 **Out of Scope**
 - Application-specific monitoring (handled per-tenant)
 - External identity federation (future phase)
-- Multi-substrate federation
+- Multi-site federation
 
 ---
 
@@ -107,7 +107,7 @@ Centralized authentication and authorization.
 
 ## Build Verification ⏳
 
-Automated verification that the substrate was built according to inventory and is fully functional. Produces a single report proving build correctness.
+Automated verification that the site was built according to inventory and is fully functional. Produces a single report proving build correctness.
 
 - ⏳ Inventory conformance checks (running state matches inventory definitions)
 - ⏳ Network connectivity matrix (verify all expected paths work)

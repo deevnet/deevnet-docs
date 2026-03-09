@@ -1,11 +1,11 @@
 ---
-title: "Substrate IaC"
+title: "Site IaC"
 weight: 2
 ---
 
-# Substrate IaC Workflow
+# Site IaC Workflow
 
-Template for full infrastructure substrate builds involving bare-metal provisioning, network automation, and end-to-end rebuild validation. Use this for complex, multi-layer infrastructure projects.
+Template for full infrastructure site builds involving bare-metal provisioning, network automation, and end-to-end rebuild validation. Use this for complex, multi-layer infrastructure projects.
 
 For simpler automation projects, see [IaC/CaC](../iac-cac/).
 
@@ -32,7 +32,7 @@ Define the infrastructure domain and automation goals.
 
 ## Milestone: Provisioning Automation ⏳
 
-Core infrastructure for building and deploying the substrate.
+Core infrastructure for building and deploying the site.
 
 | Task | Status |
 |------|--------|

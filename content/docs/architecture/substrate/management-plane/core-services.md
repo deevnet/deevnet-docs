@@ -111,14 +111,14 @@ Records are defined in both production network config and builder config, but:
 
 This is intentional duplication with exclusive activation, not conflicting truth.
 
-For per-substrate implementation details, see [Core Services Implementation](/docs/platforms/management-plane/core-services/).
+For per-site implementation details, see [Core Services Implementation](/docs/platforms/management-plane/core-services/).
 For the authority transition procedure, see [Authority Transition](/docs/runbook/authority-transition/).
 
 ---
 
-## 4. Substrate Consumption of Management Services
+## 4. Site Consumption of Management Services
 
-Substrates expose **substrate-scoped service names** as their contract:
+Sites expose **site-scoped service names** as their contract:
 
 ```
 artifacts.dvnt.deevnet.net

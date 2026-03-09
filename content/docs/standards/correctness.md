@@ -58,25 +58,25 @@ Any component that “reaches across layers” is incorrect.
 
 ---
 
-## 2. Substrate Model Correctness
+## 2. Site and Substrate Model Correctness
 
-### 2.1 Substrates Are Physical/Logical Environments
-Substrates (e.g., `dvnt`, `dvntm`) represent **where** things run, not **what** runs.
+### 2.1 Sites Are Physical/Logical Environments
+Sites (e.g., `dvnt`, `dvntm`) represent **where** things run, not **what** runs.
 
-- Each substrate has its own IP space
-- Each substrate has its own routing/security boundary
-- Each substrate may have its own OPNsense instance
-- Substrates may be separate VLANs or separate physical networks
+- Each site has its own IP space
+- Each site has its own routing/security boundary
+- Each site may have its own OPNsense instance
+- Sites may be separate VLANs or separate physical networks
 
-Mixing workload identity into substrate naming is incorrect.
+Mixing workload identity into site naming is incorrect.
 
 ---
 
-### 2.2 Substrate Independence
-Each substrate MUST be operable independently.
+### 2.2 Site Independence
+Each site MUST be operable independently.
 
 - dvnt and dvntm can be brought up, torn down, or rebuilt independently
-- Provisioning in one substrate must not implicitly depend on the other
+- Provisioning in one site must not implicitly depend on the other
 - Shared global aliases (e.g., `artifacts.deevnet.net`) must be explicit and controlled
 
 ---
@@ -137,7 +137,7 @@ Co-located services share a failure domain:
 Co-location relationships MUST be documented in config-as-code inventory. Implicit or undocumented co-location is incorrect.
 
 #### When Multihoming Is Appropriate
-- Resource-constrained environments (lab, mobile substrate)
+- Resource-constrained environments (lab, mobile site)
 - Non-critical or tightly-coupled services
 - Services with similar security posture and trust level
 
@@ -167,13 +167,13 @@ If DNS is wrong, everything else is wrong.
 
 ---
 
-### 4.2 Substrate-Scoped Names Are Mandatory
-Every infrastructure service MUST have a substrate-scoped name:
+### 4.2 Site-Scoped Names Are Mandatory
+Every infrastructure service MUST have a site-scoped name:
 
 - `artifacts.dvnt.deevnet.net`
 - `artifacts.dvntm.deevnet.net`
 
-Global aliases are optional but must never replace substrate-scoped truth.
+Global aliases are optional but must never replace site-scoped truth.
 
 ---
 
@@ -243,18 +243,18 @@ See [Artifacts Role](/docs/platforms/management-plane/bootstrap-node/artifacts-r
 ### 6.1 Tenants Are Logical, Not Physical
 Tenants represent workloads, not networks.
 
-- Tenants live on substrates
+- Tenants live within sites
 - Tenants do not define routing boundaries
-- Tenants may be deployed to multiple substrates
+- Tenants may be deployed to multiple sites
 
-Embedding tenant identity into substrate design is incorrect.
+Embedding tenant identity into site design is incorrect.
 
 ---
 
 ### 6.2 Tenant Naming Is Explicit
 Tenant services are named clearly:
 
-- `<service>.<tenant>.<substrate>.deevnet.net`
+- `<service>.<tenant>.<site>.deevnet.net`
 
 This makes placement, ownership, and blast radius obvious.
 
@@ -309,7 +309,7 @@ If it requires oral tradition, correctness has failed.
 ### 9.2 Debuggability Is Required
 A correct system allows you to answer quickly:
 - What environment am I in?
-- What substrate is authoritative?
+- What authority is active?
 - Where should this service resolve?
 - Why would provisioning fail?
 
@@ -324,7 +324,7 @@ Deevnet infrastructure is **correct** when:
 - A fresh node can be provisioned deterministically
 - No hard-coded IPs exist in provisioning paths
 - Network identity is declared once and reused everywhere
-- Substrates and tenants are cleanly separated
+- Sites, substrates, and tenants are cleanly separated
 - DNS expresses intent, not accidents
 - Automation can validate readiness before irreversible actions
 - Rebuilding a lab is boring

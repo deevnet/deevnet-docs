@@ -36,19 +36,19 @@ with substrate segments (Management, Trusted, Storage, IoT, Guest).
 
 ## Tenant DNS Zones
 
-Each tenant has a DNS zone scoped to its substrate:
+Each tenant has a DNS zone scoped to its site:
 
 ```
-tenant.substrate.deevnet.net
+tenant.site.deevnet.net
 ```
 
 **Examples:**
-- `grooveiq.dvntm.deevnet.net` — GrooveIQ on dvntm substrate
-- `vintronics.dvnt.deevnet.net` — Vintronics on dvnt substrate
+- `grooveiq.dvntm.deevnet.net` — GrooveIQ on dvntm site
+- `vintronics.dvnt.deevnet.net` — Vintronics on dvnt site
 
 Services within a tenant use the pattern:
 ```
-service.tenant.substrate.deevnet.net
+service.tenant.site.deevnet.net
 ```
 
 **Examples:**
@@ -162,6 +162,6 @@ These are tracked in the [Roadmap](/docs/roadmap/).
 
 1. Each tenant gets a dedicated VLAN for isolation
 2. Default-deny routing between tenants
-3. DNS follows `service.tenant.substrate.deevnet.net` pattern
+3. DNS follows `service.tenant.site.deevnet.net` pattern
 4. Per-tenant DHCP scopes from Core Router
 5. Access to shared services via explicit firewall rules

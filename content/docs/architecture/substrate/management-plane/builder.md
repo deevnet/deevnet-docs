@@ -9,7 +9,7 @@ weight: 1
 
 The **builder** is the architectural function responsible for provisioning and configuring all substrate infrastructure.
 
-Every substrate needs a way to be created from scratch:
+Every site needs a way to be created from scratch:
 
 > *How do you provision infrastructure when no infrastructure exists yet?*
 
@@ -31,10 +31,10 @@ For the DNS authority model and naming conventions that the builder participates
 - Network boot infrastructure (TFTP, GRUB configs)
 - Git repositories for all IaC
 
-**Portable** — A single builder can move between substrates:
+**Portable** — A single builder can move between sites:
 - Same builder serves dvntm or dvnt
 - Provisions whichever environment it's connected to
-- No substrate-specific hardware requirements
+- No site-specific hardware requirements
 
 **Air-Gapped Capable** — Once artifacts are staged, the builder can provision without upstream internet:
 - All required images stored locally
@@ -69,7 +69,7 @@ Switching provisioners requires only DNS changes, not consumer changes.
 
 ### 2.2 Multi-Homing Without Identity Confusion
 
-A management host may be reachable from multiple substrates.
+A management host may be reachable from multiple sites.
 
 Instead of ambiguous multi-A records, **interface-specific identities** may be published:
 
@@ -78,7 +78,7 @@ provisioner-01-dvnt.mgmt.deevnet.net
 provisioner-01-dvntm.mgmt.deevnet.net
 ```
 
-Each name maps to the IP address used by that substrate.
+Each name maps to the IP address used by that site.
 
 This preserves:
 - truthful routing
@@ -144,4 +144,4 @@ The management plane is the natural home for OOB and control infrastructure, inc
 These services:
 - live in `mgmt.deevnet.net`
 - are independent of any substrate lifecycle
-- remain reachable even when substrates are impaired
+- remain reachable even when sites are impaired

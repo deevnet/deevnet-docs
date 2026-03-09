@@ -11,14 +11,14 @@ The access switch provides **Layer 2 connectivity** for substrate hosts, connect
 
 {{< mermaid >}}
 graph LR
-    A[Core Router] <--> B[Access Switch] <--> C[Substrate Hosts]
+    A[Core Router] <--> B[Access Switch] <--> C[Site Hosts]
 {{< /mermaid >}}
 
 ---
 
 ## TP-Link Omada SG2218
 
-**Substrate**: dvntm (mobile)
+**Site**: dvntm (mobile)
 
 The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It provides VLAN support and can be configured via SSH or the Omada controller.
 
@@ -43,7 +43,7 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 - **VLAN support**: 802.1Q VLAN tagging for network segmentation
 - **SSH access**: CLI configuration for automation
 - **Omada SDN**: Centralized management via Omada controller
-- **Compact**: Fits mobile substrate form factor
+- **Compact**: Fits mobile site form factor
 - **SFP uplinks**: Future 1G fiber connectivity option
 - **Fanless**: Silent operation (passive cooling)
 
@@ -68,9 +68,9 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 
 ## Ubiquiti UniFi USW-24-G2
 
-**Substrate**: dvnt (home) — Primary switch
+**Site**: dvnt (home) — Primary switch
 
-The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product line. It serves as the primary access switch for the home substrate.
+The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product line. It serves as the primary access switch for the home site.
 
 ![Ubiquiti UniFi USW-24-G2](ubiquiti-usw-24-g2.webp)
 
@@ -117,7 +117,7 @@ The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product 
 
 ## Ubiquiti UniFi US-8
 
-**Substrate**: dvnt (home) — Secondary switch
+**Site**: dvnt (home) — Secondary switch
 
 The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in areas away from the primary switch.
 
@@ -164,8 +164,8 @@ The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in 
 
 ## Configuration Management
 
-| Substrate | Controller | Automation |
-|-----------|------------|------------|
+| Site | Controller | Automation |
+|------|------------|------------|
 | **dvntm** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
 | **dvnt** | UniFi Network | UniFi API (manual currently) |
 

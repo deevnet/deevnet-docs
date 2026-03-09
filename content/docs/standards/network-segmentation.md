@@ -5,13 +5,13 @@ weight: 5
 
 # Network Segmentation
 
-Defines mandatory requirements for network segmentation in Deevnet substrates.
+Defines mandatory requirements for network segmentation in Deevnet sites.
 
 ---
 
 ## Purpose
 
-This standard establishes rules for how substrates implement network segmentation. It complements the [Substrate Networking](/docs/architecture/substrate/networking/) architecture document, which describes the segment model and design rationale.
+This standard establishes rules for how sites implement network segmentation. It complements the [Substrate Networking](/docs/architecture/substrate/networking/) architecture document, which describes the segment model and design rationale.
 
 ---
 
@@ -32,7 +32,7 @@ This standard establishes rules for how substrates implement network segmentatio
 
 The management segment contains infrastructure management plane systems.
 
-- Management segment MUST exist in every substrate
+- Management segment MUST exist in every site
 - Management segment MUST contain the bootstrap/provisioner node
 - Management segment SHOULD contain dedicated hypervisor management interfaces when hardware supports it
 - Single-NIC hypervisors SHOULD use VLAN trunking or firewall rules to isolate management access
@@ -57,7 +57,7 @@ The trusted segment contains high-trust user devices that require broad network 
 The storage segment isolates storage protocol traffic.
 
 - Storage segment SHOULD exist when dedicated storage traffic is needed
-- Storage segment MAY be omitted in minimal substrates
+- Storage segment MAY be omitted in minimal sites
 - Storage segment MUST NOT carry non-storage traffic
 - Hosts in storage segment MUST use `-stor` suffix for interface DNS entries (e.g., `hv01-stor.dvntm.deevnet.net`)
 - Storage segment MAY use jumbo frames when all participants support them
@@ -180,12 +180,12 @@ The following flows MUST NOT be permitted:
 
 ---
 
-## Substrate Independence
+## Site Independence
 
-- Each substrate MUST implement segmentation independently
-- Segment implementation (VLAN IDs, IP ranges) MAY differ between substrates
-- No implicit dependencies between substrate segments
-- Cross-substrate communication MUST traverse external routing
+- Each site MUST implement segmentation independently
+- Segment implementation (VLAN IDs, IP ranges) MAY differ between sites
+- No implicit dependencies between site segments
+- Cross-site communication MUST traverse external routing
 
 ---
 
@@ -196,5 +196,5 @@ Network segmentation is correct when:
 1. **Segment membership is declarative** — Host segment assignment is defined in inventory, not discovered
 2. **Traffic policies are auditable** — All inter-segment rules exist as code
 3. **Trust boundaries are enforced** — Firewall rules implement the trust hierarchy
-4. **Segments are substrate-scoped** — No cross-substrate segment dependencies
+4. **Segments are site-scoped** — No cross-site segment dependencies
 5. **Authority is explicit** — Segment routing is controlled by the core router in production mode

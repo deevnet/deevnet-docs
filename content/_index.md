@@ -47,7 +47,7 @@ A **home infrastructure** deployment supporting various functions:
 <div class="section-cards">
   <a class="section-card" href="docs/architecture/">
     <h3>Architecture</h3>
-    <p>Substrates, tenants, and system-level design intent.</p>
+    <p>Sites, substrates, tenants, and system-level design intent.</p>
   </a>
   <a class="section-card" href="docs/standards/">
     <h3>Standards</h3>

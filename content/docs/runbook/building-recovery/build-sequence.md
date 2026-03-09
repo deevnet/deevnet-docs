@@ -11,7 +11,7 @@ Configure PXE boot authority before provisioning hosts.
 
 ## Greenfield Build (No Core Router)
 
-For initial substrate build or full recovery, the bootstrap node provides DNS/DHCP/TFTP.
+For initial site build or full recovery, the bootstrap node provides DNS/DHCP/TFTP.
 
 ```bash
 cd ~/dvnt/ansible-collection-deevnet.builder

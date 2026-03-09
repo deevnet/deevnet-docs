@@ -6,24 +6,11 @@ bookCollapseSection: true
 
 # Substrate Architecture
 
-A **substrate** is a self-contained infrastructure environment — its own networking, compute, storage, and management plane, all defined as code. Substrates are independent: each one can be built, operated, and torn down without affecting any other. They are also stateless — all configuration lives in source control and is applied through automation, so any substrate can be reprovisioned from scratch at any time.
+Within a site, the **substrate** provides the shared infrastructure foundation — networking, compute, storage, and management plane, all defined as code. The substrate is stateless — all configuration lives in source control and is applied through automation, so it can be reprovisioned from scratch at any time.
 
----
+For site definitions (dvnt, dvntm) and the independence model, see [Architecture](../).
 
-## Substrate Definitions
-
-| Substrate | Purpose | Address Block |
-|-----------|---------|---------------|
-| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 |
-| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 |
-
-Each substrate:
-- Has its own IP address space and routing
-- Operates independently (can function without the other)
-- Contains a complete infrastructure stack (management plane, network, compute)
-- Has its own DNS zone (`dvntm.deevnet.net`, `dvnt.deevnet.net`)
-
-The same builder can move between substrates—it provisions whichever environment it's connected to.
+The same builder can move between sites—it provisions whichever environment it's connected to.
 
 ---
 
@@ -46,7 +33,7 @@ The management plane consists of three tiers:
 
 **Builder** — The out-of-band provisioning role that builds everything else:
 - Artifact hosting, PXE/TFTP, automation controller
-- Portable across substrates, air-gapped capable
+- Portable across sites, air-gapped capable
 - Out-of-band control and recovery services
 
 **Core Services** — Foundational services that must survive loss of all other tiers:

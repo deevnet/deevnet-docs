@@ -14,7 +14,7 @@ Day 2 maintenance and security updates for substrate hosts.
 This section will document:
 
 - Online patching (hosts with internet access)
-- Offline patching (air-gapped substrate)
+- Offline patching (air-gapped site)
 - Local dnf mirror setup for full air-gap
 
 ---

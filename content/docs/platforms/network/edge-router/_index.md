@@ -7,22 +7,22 @@ weight: 1
 
 ## Purpose
 
-The edge router provides **upstream connectivity** between the substrate and the external network (ISP, travel router, or host network).
+The edge router provides **upstream connectivity** between the site and the external network (ISP, travel router, or host network).
 
-Edge routers are **external** to the substrate — they provide connectivity but are not managed by Deevnet automation. Configuration is manual or vendor-managed. The substrate assumes each edge router provides DHCP on its LAN interface (for bootstrap node or core router upstream connectivity).
+Edge routers are **external** to the site — they provide connectivity but are not managed by Deevnet automation. Configuration is manual or vendor-managed. The site assumes each edge router provides DHCP on its LAN interface (for bootstrap node or core router upstream connectivity).
 
 {{< mermaid >}}
 graph LR
-    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Substrate Hosts]
+    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
 {{< /mermaid >}}
 
 ---
 
 ## GL-iNet GL-AXT1800 (Slate AX)
 
-**Substrate**: dvntm (mobile)
+**Site**: dvntm (mobile)
 
-The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge router for the mobile substrate. It provides upstream connectivity when traveling — connecting to hotel Wi-Fi, tethered phones, or any available network.
+The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge router for the mobile site. It provides upstream connectivity when traveling — connecting to hotel Wi-Fi, tethered phones, or any available network.
 
 ![GL-iNet GL-AXT1800 Slate AX](gl-axt1800-slate-ax.webp)
 
@@ -70,9 +70,9 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 
 ## AT&T Fiber BGW320
 
-**Substrate**: dvnt (home) — Primary connection
+**Site**: dvnt (home) — Primary connection
 
-The BGW320 is AT&T's fiber gateway combining an ONT (Optical Network Terminal) and router in one unit. It provides the primary internet connection for the home substrate.
+The BGW320 is AT&T's fiber gateway combining an ONT (Optical Network Terminal) and router in one unit. It provides the primary internet connection for the home site.
 
 ![AT&T Fiber BGW320](att-bgw320.webp)
 
@@ -121,7 +121,7 @@ The BGW320 is configured for **IP Passthrough** mode:
 
 ## Spectrum Internet
 
-**Substrate**: dvnt (home) — Secondary connection (failover)
+**Site**: dvnt (home) — Secondary connection (failover)
 
 Spectrum provides the secondary internet connection for WAN failover. This connection is **not yet implemented** but planned for redundancy.
 

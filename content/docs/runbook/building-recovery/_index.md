@@ -31,7 +31,7 @@ With artifacts pre-staged, the bootstrap node can build the entire substrate wit
 | Greenfield build | New infrastructure from scratch |
 | Disaster recovery | Rebuild after failure |
 | Hardware replacement | New hardware = new MAC addresses |
-| Capacity expansion | Adding hosts to existing substrate |
+| Capacity expansion | Adding hosts to existing site |
 
 In all cases, the process starts with seeding MAC addresses into inventory.
 
@@ -58,7 +58,7 @@ This means:
 - [Configure PXE](build-sequence/) — Set PXE authority for build scenario
 - [Build Network](build-network/) — Core Router, VLANs, wireless
 - [Build Management Plane](build-management-plane/) — Proxmox hypervisors
-- [Verify Substrate](build-verification/) — Validate substrate infrastructure
+- [Verify Site](build-verification/) — Validate site infrastructure
 - [Build Tenants](build-tenants/) — Provision application workloads
 - [Verify Tenants](verify-tenants/) — Validate tenant applications
 

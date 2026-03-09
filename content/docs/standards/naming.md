@@ -24,20 +24,20 @@ This naming standard applies to:
 
 ## 1. Definitions
 
-### Substrate
-A substrate is a network environment that hosts systems and workloads.
+### Site
+A site is a self-contained infrastructure boundary that hosts systems and workloads.
 
-Current substrates:
-- dvnt — home substrate
-- dvntm — mobile substrate
+Current sites:
+- dvnt — home site
+- dvntm — mobile site
 
-Substrate names are treated as environment identifiers, not workloads.
+Site names are treated as environment identifiers, not workloads.
 
 ### Tenant
-A tenant is a logical workload namespace (e.g., grooveiq, vintronics). Tenants may be deployed to one or more substrates.
+A tenant is a logical workload namespace (e.g., grooveiq, vintronics). Tenants may be deployed to one or more sites.
 
 ### Host
-A host is a physical, virtual, or embedded system with a deterministic identity (ideally MAC → IP mapping on a substrate network).
+A host is a physical, virtual, or embedded system with a deterministic identity (ideally MAC → IP mapping on a site network).
 
 ### Service
 A service is a logical endpoint that may move between hosts without changing its public name.
@@ -49,13 +49,13 @@ A service is a logical endpoint that may move between hosts without changing its
 ### 2.1 Root Zone
 deevnet.net is the root DNS zone.
 
-### 2.2 Substrate Zones
-Each substrate has its own sub-zone:
+### 2.2 Site Zones
+Each site has its own sub-zone:
 
 - dvnt.deevnet.net
 - dvntm.deevnet.net
 
-All substrate-specific host and service records MUST exist in the corresponding substrate zone.
+All site-specific host and service records MUST exist in the corresponding site zone.
 
 ---
 
@@ -63,9 +63,9 @@ All substrate-specific host and service records MUST exist in the corresponding 
 
 ### 3.1 Hostname Format
 
-Hosts MUST use short, functional hostnames within a substrate zone using the following grammar:
+Hosts MUST use short, functional hostnames within a site zone using the following grammar:
 
-[role-]formNN.substrate.deevnet.net
+[role-]formNN.site.deevnet.net
 
 Where:
 - role (optional) = architectural or functional role
@@ -148,11 +148,11 @@ Services SHOULD resolve to hosts using DNS records (CNAME preferred).
 
 ---
 
-### 4.2 Substrate-Scoped Service Names (Preferred)
+### 4.2 Site-Scoped Service Names (Preferred)
 
-Infrastructure services MUST use substrate-scoped DNS names:
+Infrastructure services MUST use site-scoped DNS names:
 
-service.substrate.deevnet.net
+service.site.deevnet.net
 
 Examples:
 - artifacts.dvntm.deevnet.net
@@ -173,7 +173,7 @@ service.deevnet.net
 Rules:
 - MUST be managed via Config-as-Code
 - MUST NOT change implicitly
-- SHOULD be a CNAME to a substrate-scoped service
+- SHOULD be a CNAME to a site-scoped service
 
 Example:
 artifacts.deevnet.net → artifacts.dvntm.deevnet.net
@@ -183,7 +183,7 @@ artifacts.deevnet.net → artifacts.dvntm.deevnet.net
 ## 5. Tenant Naming
 
 ### 5.1 Tenant Names
-Tenant names represent workload namespaces and MUST be distinct from substrate names.
+Tenant names represent workload namespaces and MUST be distinct from site names.
 
 Examples:
 - grooveiq
@@ -195,7 +195,7 @@ Examples:
 ### 5.2 Tenant DNS Patterns
 Tenants SHOULD be expressed under the substrate zone:
 
-tenant.substrate.deevnet.net
+tenant.site.deevnet.net
 
 Examples:
 - grooveiq.dvntm.deevnet.net
@@ -206,7 +206,7 @@ Examples:
 ### 5.3 Tenant Service Names
 Tenant services SHOULD be expressed as:
 
-service.tenant.substrate.deevnet.net
+service.tenant.site.deevnet.net
 
 Examples:
 - api.grooveiq.dvntm.deevnet.net
@@ -227,13 +227,13 @@ Examples:
 - pi01
 - em01
 
-Environment (substrate) association MUST be expressed by **one of the following methods**:
+Environment (site) association MUST be expressed by **one of the following methods**:
 
-- **Inventory boundary (preferred):**  
-  Separate inventories per substrate (e.g., `inventory/dvnt/`, `inventory/dvntm/`) implicitly define environment membership.
+- **Inventory boundary (preferred):**
+  Separate inventories per site (e.g., `inventory/dvnt/`, `inventory/dvntm/`) implicitly define environment membership.
 
-- **Explicit substrate groups:**  
-  When using a combined inventory, hosts MUST belong to exactly one substrate group:
+- **Explicit site groups:**
+  When using a combined inventory, hosts MUST belong to exactly one site group:
   - `dvnt`
   - `dvntm`
 
@@ -243,7 +243,7 @@ Environment (substrate) association MUST be expressed by **one of the following 
 ### 6.2 Mapping to DNS
 Inventory entries SHOULD map deterministically to FQDNs:
 
-inventory_hostname.substrate.deevnet.net
+inventory_hostname.site.deevnet.net
 
 ---
 
@@ -291,7 +291,7 @@ Services:
 
 ## 9. Policy Notes
 
-- Substrate names MUST remain environment identifiers only.
+- Site names MUST remain environment identifiers only.
 - Roles MUST describe architecture, not implementation.
 - Form codes MUST reflect execution or hardware class.
 - Hard-coded IPs in provisioning flows SHOULD be treated as defects.

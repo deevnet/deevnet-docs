@@ -8,14 +8,14 @@ bookCollapseSection: true
 
 ## Purpose
 
-The core router is the **production network authority** for each Deevnet substrate. It provides routing, firewall, DNS, DHCP, and gateway services for all substrate hosts.
+The core router is the **production network authority** for each Deevnet site. It provides routing, firewall, DNS, DHCP, and gateway services for all substrate hosts.
 
 {{< mermaid >}}
 graph LR
-    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Substrate Hosts]
+    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
 {{< /mermaid >}}
 
-| Substrate | Upstream Connection |
+| Site | Upstream Connection |
 |-----------|---------------------|
 | **dvntm** | Travel router (portable WAN) |
 | **dvnt** | ISP router (home internet) |
@@ -26,9 +26,9 @@ graph LR
 
 {{% tab "dvntm — ZimaBoard 832" %}}
 
-**Substrate**: dvntm (mobile) {{< status-badge "active" "Active" >}}
+**Site**: dvntm (mobile) {{< status-badge "active" "Active" >}}
 
-The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile substrate. Its low power consumption and passive cooling make it ideal for portable deployments.
+The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile site. Its low power consumption and passive cooling make it ideal for portable deployments.
 
 ![ZimaBoard 832](zimaboard-832.webp)
 
@@ -49,7 +49,7 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 
 ### Selection Rationale
 
-- **Compact x86 form factor** fits mobile substrate
+- **Compact x86 form factor** fits mobile site
 - **Dual Gigabit Ethernet** for WAN/LAN separation
 - **Low power consumption** (<6W TDP) suitable for always-on operation
 - **Passive cooling** (fanless, silent) for noise-sensitive environments
@@ -77,9 +77,9 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 
 {{% tab "dvnt — ODYSSEY X86J4125864" %}}
 
-**Substrate**: dvnt (home) {{< status-badge "active" "Active" >}}
+**Site**: dvnt (home) {{< status-badge "active" "Active" >}}
 
-The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home substrate. It provides more compute headroom and expansion options compared to the mobile router.
+The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home site. It provides more compute headroom and expansion options compared to the mobile router.
 
 ![Seeed Studio ODYSSEY X86J4125864](odyssey-x86j4125864.webp)
 

@@ -10,6 +10,16 @@ The **Deevnet platform** is a collection of physical and virtual infrastructure 
 
 ---
 
+## Design Philosophy
+
+Deevnet's infrastructure architecture is inspired by patterns used in large-scale cloud platforms. Concepts such as infrastructure boundaries, automation-first provisioning, and tenant isolation are intentionally applied.
+
+However, Deevnet operates at a much smaller scale than hyperscale cloud providers. Instead of modeling multiple global regions and availability zones, the architecture focuses on independent infrastructure sites that can be built, operated, and reprovisioned entirely from code.
+
+This approach preserves the architectural principles of cloud infrastructure while remaining practical for a home and portable lab environment.
+
+---
+
 ## System Overview
 
 {{< graphviz >}}
@@ -35,15 +45,21 @@ digraph architecture {
     { rank=same; EdgeRouter; Builder }
     EdgeRouter -> Builder [minlen=2]
 
-    subgraph cluster_substrate {
-        label="Substrate"
+    subgraph cluster_site {
+        label="Site"
         style=filled
-        fillcolor="#e0f0ff"
+        fillcolor="#d0e8d0"
 
-        CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
-        WirelessAP [label="Wireless AP", width=1.0]
-        AccessSwitch [label="Access Switch", width=4.5]
-        MgmtHV [label="Extended\nServices", width=2.2]
+        subgraph cluster_substrate {
+            label="Substrate"
+            style=filled
+            fillcolor="#e0f0ff"
+
+            CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
+            WirelessAP [label="Wireless AP", width=1.0]
+            AccessSwitch [label="Access Switch", width=4.5]
+            MgmtHV [label="Extended\nServices", width=2.2]
+        }
 
         subgraph cluster_tenant {
             label="Tenant"
@@ -66,11 +82,24 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-The platform is organized into two architectural layers: **substrates** and **tenants**. Substrates own the infrastructure — the physical and virtual resources that make the platform run. Tenants own the workloads — the applications and services that run on that infrastructure. This separation means infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between substrates without being coupled to any one environment.
+The platform is organized around three architectural concepts: **sites**, **substrates**, and **tenants**. A **site** is a self-contained infrastructure boundary — an independent deployment that can be built, operated, and torn down without affecting any other. Within each site, the **substrate** provides the shared infrastructure foundation (networking, compute, management plane), and **tenants** run the workloads (applications and services). This separation means infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between sites without being coupled to any one environment.
+
+## Site Definitions
+
+| Site | Purpose | Address Block |
+|------|---------|---------------|
+| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 |
+| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 |
+
+Each site:
+- Has its own IP address space and routing
+- Operates independently (can function without the other)
+- Contains a complete infrastructure stack (management plane, network, compute)
+- Has its own DNS zone (`dvntm.deevnet.net`, `dvnt.deevnet.net`)
 
 ### [Substrate](substrate/)
 
-The diagram above shows a single substrate. Each substrate is independent — it can be built, operated, and torn down without affecting any other — and stateless, with all configuration defined in source control. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, management plane, and the builder provisioning model.
+Within a site, the substrate provides the shared infrastructure foundation. The [Substrate Architecture](substrate/) section covers infrastructure layers, networking, management plane, and the builder provisioning model.
 
 ### [Tenant](tenant/)
 
@@ -78,7 +107,7 @@ A **tenant** is a logical workload namespace representing an application or serv
 
 Examples: `grooveiq`, `vintronics`, `moneyrouter`
 
-Tenants live **on** substrates, not defining them:
+Tenants live **within** sites, not defining them:
 - [Networking](tenant/networking/) — Tenant network isolation and VLAN model
 - [Management](tenant/management/) — Tenant lifecycle and observability
 - [Building](tenant/building/) — Tenant provisioning

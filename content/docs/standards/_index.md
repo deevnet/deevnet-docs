@@ -15,7 +15,7 @@ If a project conflicts with standards, **standards win**.
 <div class="section-cards">
   <a class="section-card" href="naming/">
     <h3>Naming Conventions</h3>
-    <p>How systems and services are named across all substrates.</p>
+    <p>How systems and services are named across all sites.</p>
   </a>
   <a class="section-card" href="correctness/">
     <h3>Correctness Definitions</h3>

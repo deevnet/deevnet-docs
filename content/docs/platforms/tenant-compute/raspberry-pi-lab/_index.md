@@ -19,7 +19,7 @@ Goals:
 
 ## Hardware
 
-**Substrate**: dvntm (mobile)
+**Site**: dvntm (mobile)
 
 | Quantity | Model | RAM | Notes |
 |----------|-------|-----|-------|

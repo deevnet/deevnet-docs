@@ -5,7 +5,7 @@ weight: 1
 
 # Substrate Networking
 
-Defines the network segmentation model for Deevnet substrates.
+Defines the network segmentation model for Deevnet sites.
 
 ---
 
@@ -80,7 +80,7 @@ The storage segment isolates storage protocol traffic from other network activit
 - High-bandwidth, low-latency requirements
 - May use jumbo frames
 - No internet access required
-- Optional in minimal substrates where storage traffic is negligible
+- Optional in minimal sites where storage traffic is negligible
 
 ### Tenant Segments
 
@@ -233,12 +233,12 @@ graph TB
 
 Network segmentation is substrate-scoped:
 
-- Each substrate (dvnt, dvntm) implements segmentation independently
-- No cross-substrate segment dependencies
-- The same segment model applies to all substrates
-- Implementation details (VLAN IDs, IP ranges) vary per substrate
+- Each site (dvnt, dvntm) implements segmentation independently
+- No cross-site segment dependencies
+- The same segment model applies to all sites
+- Implementation details (VLAN IDs, IP ranges) vary per site
 
-This aligns with the substrate independence principle — each substrate can be built, operated, and torn down without affecting the other.
+This aligns with the site independence principle — each site can be built, operated, and torn down without affecting the other.
 
 ---
 
@@ -283,8 +283,8 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Substrates use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT Vendor, IoT, IoT Backend, Guest
+1. Sites use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT Vendor, IoT, IoT Backend, Guest
 2. Segments form a trust hierarchy with default-deny routing between them
-3. Each substrate implements segmentation independently
+3. Each site implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP
 5. Bootstrap mode uses flat networking; production mode uses full segmentation

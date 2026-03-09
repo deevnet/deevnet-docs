@@ -8,11 +8,11 @@ bookCollapseSection: true
 
 ### Purpose
 
-The management plane is responsible for **provisioning, recovery, and out-of-band control** of substrates.
+The management plane is responsible for **provisioning, recovery, and out-of-band control** of site infrastructure.
 
-It exists *outside* normal workload substrates and may interact with multiple substrates simultaneously.
+It exists *outside* normal workload operations and may interact with multiple sites simultaneously.
 
-> *How are substrates created, repaired, and controlled without depending on themselves?*
+> *How are sites created, repaired, and controlled without depending on themselves?*
 
 It provides:
 - provisioning services (PXE, artifacts, bootstrap tooling),
@@ -29,7 +29,7 @@ The management plane encompasses the **builder**, **core services**, and **exten
 
 ### Builder
 
-The out-of-band provisioning role that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever substrate it's connected to:
+The out-of-band provisioning role that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever site it's connected to:
 
 - Artifact hosting (OS images, packages, kickstarts)
 - PXE/TFTP network boot infrastructure
@@ -64,7 +64,7 @@ See [Extended Services](extended-services/) for the complete extended services a
 
 The management plane architecture is considered **correct** when:
 
-- substrates can be provisioned without depending on themselves
+- sites can be provisioned without depending on themselves
 - management services have stable DNS identities
 - provisioner hosts are replaceable without consumer impact
 - multi-homed reachability is explicit in naming

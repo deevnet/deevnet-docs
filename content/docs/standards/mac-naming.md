@@ -8,7 +8,7 @@ weight: 5
 ## Purpose
 
 This document defines the **deterministic MAC address strategy** used across the
-Deevnet substrate, with a primary focus on **management-plane workloads**.
+Deevnet platform, with a primary focus on **management-plane workloads**.
 
 Deterministic MAC addressing enables:
 - Stable DHCP reservations
