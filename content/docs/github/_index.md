@@ -1,5 +1,5 @@
 ---
-title: "Code Repositories"
+title: "💻 Code Repositories"
 weight: 6
 bookCollapseSection: true
 ---

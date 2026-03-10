@@ -1,5 +1,5 @@
 ---
-title: "Operational Runbook"
+title: "📋 Operational Runbook"
 weight: 4
 bookCollapseSection: true
 ---

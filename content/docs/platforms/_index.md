@@ -1,5 +1,5 @@
 ---
-title: "Implementation & Tooling"
+title: "🛠️ Implementation & Tooling"
 weight: 3
 bookCollapseSection: true
 ---

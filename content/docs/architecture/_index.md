@@ -1,5 +1,5 @@
 ---
-title: "Architecture"
+title: "🏗️ Architecture"
 weight: 1
 bookCollapseSection: true
 ---
