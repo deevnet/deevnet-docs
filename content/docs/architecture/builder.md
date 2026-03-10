@@ -19,8 +19,6 @@ The builder answers this by providing:
 - Automation to configure every substrate component
 - Authority transition from bootstrap to production
 
-For the DNS authority model and naming conventions that the builder participates in, see [Core Services](substrate/management-plane/core-services/).
-
 ---
 
 ## Key Properties
