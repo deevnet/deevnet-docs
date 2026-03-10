@@ -114,16 +114,6 @@ The transition is explicit and deliberate—never automatic.
 
 ---
 
-## Design Principles
-
-**Configuration as Code** — All substrate provisioning is code-driven: idempotent configuration, version-controlled definitions, traceable changes.
-
-**Deterministic Identity** — All provisioned hosts receive: deterministic MAC addresses (for VMs), static DHCP reservations, predictable DNS records, inventory-defined identity.
-
-**Explicit Authority** — Authority transitions are: documented in runbooks, triggered manually, validated before completion, never automatic.
-
----
-
 ## Out-of-Band and Adjacent Services
 
 The management plane is the natural home for OOB and control infrastructure, including:
