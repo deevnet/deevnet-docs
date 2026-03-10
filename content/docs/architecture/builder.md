@@ -62,9 +62,9 @@ This means the builder must carry a complete, self-contained copy of every resou
 - **Git repositories** — A local mirror of every repository in the `deevnet` GitHub organization (IaC, CaC, inventory, playbooks), so automation runs entirely against local clones
 - **OS and package artifacts** — Installation images, kickstart configs, and package mirrors staged locally
 
-Once the Core Router is provisioned and validated, DNS/DHCP authority transfers to it and the builder's bootstrap services are deactivated. The builder retains TFTP, artifact hosting, and automation controller duties in production.
-
 ### Authority Transition
+
+Once the Core Router is provisioned and validated, DNS/DHCP authority transfers to it and the builder's bootstrap services are deactivated. The builder retains TFTP, artifact hosting, and automation controller duties in production.
 
 The builder participates in explicit authority transitions:
 
