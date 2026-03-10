@@ -48,26 +48,6 @@ The builder drives this entire sequence from its own local resources — no exte
 
 ---
 
-## Multi-Homing Without Identity Confusion
-
-A builder node may be reachable from multiple sites.
-
-Instead of ambiguous multi-A records, **interface-specific identities** may be published:
-
-```
-provisioner-01-dvnt.mgmt.deevnet.net
-provisioner-01-dvntm.mgmt.deevnet.net
-```
-
-Each name maps to the IP address used by that site.
-
-This preserves:
-- truthful routing
-- clear firewall policy
-- explicit blast-radius boundaries
-
----
-
 ## Bootstrap Services
 
 During initial build, the builder **is** the network — no other infrastructure exists yet. It runs its own DNS, DHCP, and gateway services so that newly provisioned hosts can resolve names, obtain addresses, and reach the builder's artifact server without depending on anything it hasn't built yet.
@@ -93,3 +73,22 @@ The builder participates in explicit authority transitions:
 
 The transition is explicit and deliberate—never automatic.
 
+---
+
+## Multi-Homing Without Identity Confusion
+
+A builder node may be reachable from multiple sites.
+
+Instead of ambiguous multi-A records, **interface-specific identities** may be published:
+
+```
+provisioner-01-dvnt.mgmt.deevnet.net
+provisioner-01-dvntm.mgmt.deevnet.net
+```
+
+Each name maps to the IP address used by that site.
+
+This preserves:
+- truthful routing
+- clear firewall policy
+- explicit blast-radius boundaries
