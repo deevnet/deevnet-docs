@@ -15,7 +15,7 @@ Every site needs a way to be created from scratch:
 
 The builder answers this by providing:
 - A self-contained provisioning platform
-- All artifacts needed for air-gapped deployment
+- All artifacts needed for deployment
 - Automation to configure every substrate component
 - Authority transition from bootstrap to production
 
