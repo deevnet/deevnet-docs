@@ -35,21 +35,7 @@ The builder answers this by providing:
 
 ---
 
-## Out-of-Band and Adjacent Services
-
-The management plane is the natural home for OOB and control infrastructure, including:
-
-- serial console servers
-- OOB management gateways
-- bastion or jump hosts
-- emergency recovery tooling
-
-These services:
-- live in `mgmt.deevnet.net`
-- are independent of any substrate lifecycle
-- remain reachable even when sites are impaired
-
-### Multi-Homing Without Identity Confusion
+## Multi-Homing Without Identity Confusion
 
 A builder node may be reachable from multiple sites.
 
