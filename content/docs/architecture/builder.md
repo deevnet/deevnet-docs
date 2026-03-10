@@ -31,6 +31,8 @@ The builder answers this by providing:
 
 **Disposable Authority** — The builder holds temporary DNS/DHCP/gateway authority during bootstrap, then hands off to the Core Router. It can become a regular admin host in production.
 
+**Replaceable Provisioner** — The provisioner is a role, not a pet. Any suitable host can assume it via code — rebuilding or replacing the provisioner is expected. Switching provisioners requires only DNS changes, not consumer changes.
+
 ---
 
 ## Bootstrap Services
@@ -48,26 +50,7 @@ Once the Core Router is provisioned and validated, DNS/DHCP authority transfers 
 
 ---
 
-## Replaceable Provisioner Role
-
-### Provisioner Is a Role, Not a Pet
-
-The provisioner is a **role** that any suitable host can assume via code.
-
-- no host is permanently "the provisioner"
-- rebuilding or replacing the provisioner is expected
-- authority is logical, not physical
-
-Example:
-```
-artifacts.mgmt.deevnet.net -> provisioner-01.mgmt.deevnet.net
-```
-
-Switching provisioners requires only DNS changes, not consumer changes.
-
----
-
-### Multi-Homing Without Identity Confusion
+## Multi-Homing Without Identity Confusion
 
 A management host may be reachable from multiple sites.
 
