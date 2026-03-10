@@ -49,6 +49,24 @@ These services:
 - are independent of any substrate lifecycle
 - remain reachable even when sites are impaired
 
+### Multi-Homing Without Identity Confusion
+
+A builder node may be reachable from multiple sites.
+
+Instead of ambiguous multi-A records, **interface-specific identities** may be published:
+
+```
+provisioner-01-dvnt.mgmt.deevnet.net
+provisioner-01-dvntm.mgmt.deevnet.net
+```
+
+Each name maps to the IP address used by that site.
+
+This preserves:
+- truthful routing
+- clear firewall policy
+- explicit blast-radius boundaries
+
 ---
 
 ## Bootstrap Services
@@ -76,22 +94,3 @@ The builder participates in explicit authority transitions:
 
 The transition is explicit and deliberate—never automatic.
 
----
-
-## Multi-Homing Without Identity Confusion
-
-A management host may be reachable from multiple sites.
-
-Instead of ambiguous multi-A records, **interface-specific identities** may be published:
-
-```
-provisioner-01-dvnt.mgmt.deevnet.net
-provisioner-01-dvntm.mgmt.deevnet.net
-```
-
-Each name maps to the IP address used by that site.
-
-This preserves:
-- truthful routing
-- clear firewall policy
-- explicit blast-radius boundaries
