@@ -42,7 +42,7 @@ The builder answers this by providing:
 **Disposable Authority** — The builder has temporary authority during bootstrap:
 - May serve as DNS/DHCP/gateway initially
 - Hands off control to Core Router once configured
-- Becomes a regular admin host in production
+- Can become a regular admin host in production
 
 ---
 
