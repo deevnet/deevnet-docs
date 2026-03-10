@@ -5,7 +5,7 @@ weight: 1
 
 # Builder
 
-### Purpose
+## Purpose
 
 The **builder** is the architectural function responsible for provisioning and configuring all substrate infrastructure.
 
@@ -35,6 +35,22 @@ The builder answers this by providing:
 
 ---
 
+## Out-of-Band and Adjacent Services
+
+The management plane is the natural home for OOB and control infrastructure, including:
+
+- serial console servers
+- OOB management gateways
+- bastion or jump hosts
+- emergency recovery tooling
+
+These services:
+- live in `mgmt.deevnet.net`
+- are independent of any substrate lifecycle
+- remain reachable even when sites are impaired
+
+---
+
 ## Bootstrap Services
 
 During initial build, the builder **is** the network — no other infrastructure exists yet. It runs its own DNS, DHCP, and gateway services so that newly provisioned hosts can resolve names, obtain addresses, and reach the builder's artifact server without depending on anything it hasn't built yet.
@@ -47,6 +63,18 @@ This means the builder must carry a complete, self-contained copy of every resou
 - **OS and package artifacts** — Installation images, kickstart configs, and package mirrors staged locally
 
 Once the Core Router is provisioned and validated, DNS/DHCP authority transfers to it and the builder's bootstrap services are deactivated. The builder retains TFTP, artifact hosting, and automation controller duties in production.
+
+### Authority Transition
+
+The builder participates in explicit authority transitions:
+
+| Phase | Builder Role | Core Router Role |
+|-------|-------------|------------------|
+| **Bootstrap** | DNS, DHCP, gateway, TFTP, artifacts | Does not exist |
+| **Transition** | TFTP, artifacts | DNS, DHCP, gateway |
+| **Production** | TFTP, artifacts, automation controller | DNS, DHCP, gateway, firewall |
+
+The transition is explicit and deliberate—never automatic.
 
 ---
 
@@ -67,33 +95,3 @@ This preserves:
 - truthful routing
 - clear firewall policy
 - explicit blast-radius boundaries
-
----
-
-## Authority Transition
-
-The builder participates in explicit authority transitions:
-
-| Phase | Builder Role | Core Router Role |
-|-------|-------------|------------------|
-| **Bootstrap** | DNS, DHCP, gateway, TFTP, artifacts | Does not exist |
-| **Transition** | TFTP, artifacts | DNS, DHCP, gateway |
-| **Production** | TFTP, artifacts, automation controller | DNS, DHCP, gateway, firewall |
-
-The transition is explicit and deliberate—never automatic.
-
----
-
-## Out-of-Band and Adjacent Services
-
-The management plane is the natural home for OOB and control infrastructure, including:
-
-- serial console servers
-- OOB management gateways
-- bastion or jump hosts
-- emergency recovery tooling
-
-These services:
-- live in `mgmt.deevnet.net`
-- are independent of any substrate lifecycle
-- remain reachable even when sites are impaired
