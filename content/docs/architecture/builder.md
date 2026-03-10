@@ -114,13 +114,6 @@ The transition is explicit and deliberate—never automatic.
 
 ---
 
-## Implementation
-
-For the current hardware, OS, and tooling that implement the builder role,
-see [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/).
-
----
-
 ## Design Principles
 
 **Configuration as Code** — All substrate provisioning is code-driven: idempotent configuration, version-controlled definitions, traceable changes.
