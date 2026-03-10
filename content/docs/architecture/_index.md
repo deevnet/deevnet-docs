@@ -94,18 +94,18 @@ A **site** is an independent infrastructure deployment with its own IP address s
 | **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | dvnt.deevnet.net |
 | **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | dvntm.deevnet.net |
 
-### [Substrate](substrate/)
+### Substrate
 
-The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. Covers infrastructure layers, the builder provisioning model, and authority modes.
+The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. See [Substrate](substrate/) for infrastructure layers, the builder provisioning model, and authority modes.
 
-### [Network Segmentation](network-segmentation/)
+### Network Segmentation
 
-The network segmentation model that divides each substrate into isolated broadcast domains, enforcing trust boundaries and traffic separation at the network layer. Defines nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
+The network segmentation model that divides each substrate into isolated broadcast domains, enforcing trust boundaries and traffic separation at the network layer. See [Network Segmentation](network-segmentation/) for segment types, trust hierarchy, default routing policy, and authority mode transitions.
 
-### [Addressing](addressing/)
+### Addressing
 
-The IP addressing convention for Deevnet sites. Covers VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
+The IP addressing convention for Deevnet sites. See [Addressing](addressing/) for VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
 
-### [Tenant](tenant/)
+### Tenant
 
-A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. Covers tenant networking, lifecycle management, and provisioning.
+A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
