@@ -60,15 +60,15 @@ digraph architecture {
             WirelessAP [label="Wireless AP", width=1.0]
             AccessSwitch [label="Access Switch", width=4.5]
             MgmtHV [label="Extended\nServices", width=2.2]
-        }
 
-        subgraph cluster_tenant {
-            label="Tenant"
-            style=filled
-            fillcolor="#fff3cd"
+            subgraph cluster_tenant {
+                label="Tenant"
+                style=filled
+                fillcolor="#fff3cd"
 
-            TenantHV [label="Tenant\nCompute"]
-            PiCompute [label="Pi Compute\nEdge / IoT"]
+                TenantHV [label="Tenant\nCompute"]
+                PiCompute [label="Pi Compute\nEdge / IoT"]
+            }
         }
 
         CoreRouter -> WirelessAP
@@ -83,11 +83,11 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-The platform is organized around three architectural concepts: **sites**, **substrates**, and **tenants**. A **site** is a self-contained infrastructure boundary — an independent deployment that can be built, operated, and torn down without affecting any other. Within each site, the **substrate** provides the shared infrastructure foundation (networking, compute, management plane), and **tenants** run the workloads (applications and services). This separation means infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between sites without being coupled to any one environment.
+The platform is organized around three architectural boundaries: **sites**, **substrates**, and **tenants**. Each boundary defines a scope of ownership and isolation — infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between sites without being coupled to any one environment.
 
 ## Sites
 
-A **site** is a self-contained infrastructure boundary with its own IP address space, DNS zone, and complete infrastructure stack. Each site can be built, operated, and torn down independently.
+A **site** is a self-contained infrastructure boundary — an independent deployment with its own IP address space, DNS zone, and complete infrastructure stack. Sites can be built, operated, and torn down without affecting any other, making each one a standalone unit of provisioning and ownership.
 
 | Site | Purpose | Address Block | DNS Zone |
 |------|---------|---------------|----------|
@@ -98,11 +98,11 @@ Each site operates independently — it contains a complete infrastructure stack
 
 ### [Substrate](substrate/)
 
-The shared infrastructure foundation within a site — networking, compute, storage, and management plane. Covers infrastructure layers, the builder provisioning model, and authority modes.
+The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that all workloads run on, and can be rebuilt or replaced independently of the services it hosts. Covers infrastructure layers, the builder provisioning model, and authority modes.
 
 ### [Network Segmentation](network-segmentation/)
 
-The network segmentation model that divides each substrate into isolated broadcast domains. Defines nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
+The network segmentation model that divides each substrate into isolated broadcast domains, enforcing trust boundaries and traffic separation at the network layer. Defines nine segment types, trust hierarchy, default routing policy, and authority mode transitions.
 
 ### [Addressing](addressing/)
 
@@ -110,4 +110,4 @@ The IP addressing convention for Deevnet sites. Covers VLAN-based subnets, host 
 
 ### [Tenant](tenant/)
 
-The workload isolation model for applications and services running within sites. Covers tenant networking, lifecycle management, and provisioning.
+A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. Covers tenant networking, lifecycle management, and provisioning.
