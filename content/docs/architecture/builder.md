@@ -46,6 +46,21 @@ The builder answers this by providing:
 
 ---
 
+## Bootstrap Services
+
+During initial build, the builder **is** the network — no other infrastructure exists yet. It runs its own DNS, DHCP, and gateway services so that newly provisioned hosts can resolve names, obtain addresses, and reach the builder's artifact server without depending on anything it hasn't built yet.
+
+This means the builder must carry a complete, self-contained copy of every resource needed to stand up the substrate:
+
+- **DNS zone data** — All substrate host records, service CNAMEs, and reverse entries for the target site, served authoritatively by the builder until the Core Router takes over
+- **DHCP configuration** — Static reservations for every known host MAC, plus dynamic pools for initial PXE boot
+- **Git repositories** — A local mirror of every repository in the `deevnet` GitHub organization (IaC, CaC, inventory, playbooks), so automation runs entirely against local clones
+- **OS and package artifacts** — Installation images, kickstart configs, and package mirrors staged locally
+
+Once the Core Router is provisioned and validated, DNS/DHCP authority transfers to it and the builder's bootstrap services are deactivated. The builder retains TFTP, artifact hosting, and automation controller duties in production.
+
+---
+
 ## Replaceable Provisioner Role
 
 ### Provisioner Is a Role, Not a Pet
