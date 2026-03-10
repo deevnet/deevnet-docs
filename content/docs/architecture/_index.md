@@ -83,7 +83,7 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-The platform is organized around three architectural boundaries — **sites**, **substrates**, and **tenants** — that separate infrastructure from workloads. The hardware substrate within each site can be rebuilt or replaced without affecting the workloads running on it, and workloads can be deployed to any site without being coupled to a specific environment.
+The platform is organized around three architectural boundaries — **sites**, **substrates**, and **tenants** — that separate infrastructure from workloads. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
 
 ## Sites
 
@@ -96,7 +96,7 @@ A **site** is an independent infrastructure deployment with its own IP address s
 
 ### [Substrate](substrate/)
 
-The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on, but can be rebuilt or replaced independently of them. Covers infrastructure layers, the builder provisioning model, and authority modes.
+The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. Covers infrastructure layers, the builder provisioning model, and authority modes.
 
 ### [Network Segmentation](network-segmentation/)
 
