@@ -7,7 +7,7 @@ weight: 1
 
 ## Purpose
 
-The **builder** is the architectural function responsible for provisioning and configuring all substrate infrastructure.
+The **builder** is responsible for provisioning and configuring all substrate infrastructure.
 
 Every Deevnet Infrastructure Platform site needs a way to be created from scratch:
 
