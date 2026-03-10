@@ -83,22 +83,20 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-The platform is organized around three architectural boundaries: **sites**, **substrates**, and **tenants**. Each boundary defines a scope of ownership and isolation — infrastructure can be rebuilt or replaced independently of the services it hosts, and workloads can move between sites without being coupled to any one environment.
+The platform is organized around three architectural boundaries — **sites**, **substrates**, and **tenants** — that separate infrastructure from workloads. The hardware substrate within each site can be rebuilt or replaced without affecting the workloads running on it, and workloads can be deployed to any site without being coupled to a specific environment.
 
 ## Sites
 
-A **site** is a self-contained infrastructure boundary — an independent deployment with its own IP address space, DNS zone, and complete infrastructure stack. Sites can be built, operated, and torn down without affecting any other, making each one a standalone unit of provisioning and ownership.
+A **site** is an independent infrastructure deployment with its own IP address space, DNS zone, and complete hardware stack. Each site can be built, operated, and torn down without affecting any other.
 
 | Site | Purpose | Address Block | DNS Zone |
 |------|---------|---------------|----------|
 | **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | dvnt.deevnet.net |
 | **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | dvntm.deevnet.net |
 
-Each site operates independently — it contains a complete infrastructure stack (networking, compute, management plane) and can function without the other.
-
 ### [Substrate](substrate/)
 
-The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that all workloads run on, and can be rebuilt or replaced independently of the services it hosts. Covers infrastructure layers, the builder provisioning model, and authority modes.
+The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on, but can be rebuilt or replaced independently of them. Covers infrastructure layers, the builder provisioning model, and authority modes.
 
 ### [Network Segmentation](network-segmentation/)
 
