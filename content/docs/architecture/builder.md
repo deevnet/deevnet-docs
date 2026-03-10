@@ -21,28 +21,15 @@ The builder answers this by providing:
 
 ---
 
-## Key Properties
+## Design Principles
 
-**Self-Contained** — Contains everything needed to stand up a substrate:
-- Infrastructure as Code and Configuration as Code definitions
-- Artifact server (OS images, packages, kickstarts)
-- Network boot infrastructure (TFTP, GRUB configs)
-- Git repositories for all IaC
+**Self-Contained** — The builder carries everything needed to stand up a substrate: IaC/CaC definitions, OS images, network boot infrastructure, and Git repositories.
 
-**Portable** — A single builder can move between sites:
-- Same builder serves dvntm or dvnt
-- Provisions whichever environment it's connected to
-- No site-specific hardware requirements
+**Portable** — A single builder can provision any site. The same builder serves dvntm or dvnt — no site-specific hardware required.
 
-**Air-Gapped Capable** — Once artifacts are staged, the builder can provision without upstream internet:
-- All required images stored locally
-- No external dependencies during provisioning
-- Critical for isolated or bandwidth-limited deployments
+**Air-Gapped Capable** — Once artifacts are staged, the builder can provision without upstream internet. No external dependencies during build.
 
-**Disposable Authority** — The builder has temporary authority during bootstrap:
-- May serve as DNS/DHCP/gateway initially
-- Hands off control to Core Router once configured
-- Can become a regular admin host in production
+**Disposable Authority** — The builder holds temporary DNS/DHCP/gateway authority during bootstrap, then hands off to the Core Router. It can become a regular admin host in production.
 
 ---
 
