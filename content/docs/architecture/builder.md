@@ -23,7 +23,7 @@ For the DNS authority model and naming conventions that the builder participates
 
 ---
 
-## 1. Key Properties
+## Key Properties
 
 **Self-Contained** — Contains everything needed to stand up a substrate:
 - Infrastructure as Code and Configuration as Code definitions
@@ -48,9 +48,9 @@ For the DNS authority model and naming conventions that the builder participates
 
 ---
 
-## 2. Replaceable Provisioner Role
+## Replaceable Provisioner Role
 
-### 2.1 Provisioner Is a Role, Not a Pet
+### Provisioner Is a Role, Not a Pet
 
 The provisioner is a **role** that any suitable host can assume via code.
 
@@ -67,7 +67,7 @@ Switching provisioners requires only DNS changes, not consumer changes.
 
 ---
 
-### 2.2 Multi-Homing Without Identity Confusion
+### Multi-Homing Without Identity Confusion
 
 A management host may be reachable from multiple sites.
 
@@ -87,7 +87,7 @@ This preserves:
 
 ---
 
-## 3. Authority Transition
+## Authority Transition
 
 The builder participates in explicit authority transitions:
 
@@ -101,28 +101,14 @@ The transition is explicit and deliberate—never automatic.
 
 ---
 
-## 4. Relationship to Tenants
-
-The builder provisions **substrate infrastructure only**:
-- Core Router configuration
-- Hypervisor setup
-- Management plane VMs
-- Network switch and AP configuration
-
-Tenant workloads use a different provisioning model. See
-[Tenant Building](/docs/architecture/tenant/building/) for tenant-specific
-provisioning architecture.
-
----
-
-## 5. Implementation
+## Implementation
 
 For the current hardware, OS, and tooling that implement the builder role,
 see [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/).
 
 ---
 
-## 6. Design Principles
+## Design Principles
 
 **Configuration as Code** — All substrate provisioning is code-driven: idempotent configuration, version-controlled definitions, traceable changes.
 
@@ -132,7 +118,7 @@ see [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/).
 
 ---
 
-## 7. Out-of-Band and Adjacent Services
+## Out-of-Band and Adjacent Services
 
 The management plane is the natural home for OOB and control infrastructure, including:
 
