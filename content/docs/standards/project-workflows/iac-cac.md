@@ -5,7 +5,7 @@ weight: 3
 
 # IaC/CaC Workflow
 
-Template for Infrastructure as Code and Configuration as Code projects that automate a single system, appliance, or service. Use this for focused automation projects that don't require full substrate orchestration.
+Template for Infrastructure as Code and Configuration as Code projects that automate a single system, appliance, or service. Use this for focused automation projects that don't require full site orchestration.
 
 For complex multi-layer infrastructure, see [Site IaC](../site-iac/).
 
