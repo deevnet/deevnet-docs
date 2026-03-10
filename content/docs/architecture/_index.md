@@ -94,9 +94,13 @@ A **site** is an independent infrastructure deployment with its own IP address s
 | **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | dvnt.deevnet.net |
 | **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | dvntm.deevnet.net |
 
+### Builder
+
+The **builder** is the out-of-band provisioning function that creates substrates from scratch. Self-contained, portable, and air-gapped capable, it provisions whichever site it's connected to — then hands off authority to production infrastructure. See [Builder](builder/) for the provisioning model, authority transitions, and design principles.
+
 ### Substrate
 
-The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. See [Substrate](substrate/) for infrastructure layers, the builder provisioning model, and authority modes.
+The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. See [Substrate](substrate/) for infrastructure layers and authority modes.
 
 ### Network Segmentation
 

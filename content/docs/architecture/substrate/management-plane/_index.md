@@ -23,20 +23,9 @@ It does **not** host tenant workloads.
 
 ---
 
-## Three-Tier Architecture
+## Two-Tier Architecture
 
-The management plane encompasses the **builder**, **core services**, and **extended services**:
-
-### Builder
-
-The out-of-band provisioning role that builds everything else. Self-contained, portable, and air-gapped capable—it provisions whichever site it's connected to:
-
-- Artifact hosting (OS images, packages, kickstarts)
-- PXE/TFTP network boot infrastructure
-- Ansible controller for all substrate hosts
-- Out-of-band control and recovery services
-
-See [Builder](builder/) for the complete builder architecture.
+The management plane encompasses **core services** and **extended services**. The [Builder](/docs/architecture/builder/) — which provisions all substrate infrastructure — sits outside the substrate as a top-level architectural component.
 
 ### Core Services
 

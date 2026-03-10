@@ -11,7 +11,7 @@ This document defines the **foundational platform services** of the management p
 
 These services must remain operational even if all extended services are lost.
 
-For the builder that provisions these services, see [Builder](../builder/).
+For the builder that provisions these services, see [Builder](/docs/architecture/builder/).
 
 ---
 
@@ -27,7 +27,7 @@ The Core Services provides foundational management services:
 | **Routing** | Inter-segment and gateway routing |
 | **Firewall** | Inter-segment and egress rules |
 
-In production, these services are provided by dedicated network infrastructure. The [Builder](../builder/) complements with provisioning, artifact hosting, and PXE/TFTP services.
+In production, these services are provided by dedicated network infrastructure. The [Builder](/docs/architecture/builder/) complements with provisioning, artifact hosting, and PXE/TFTP services.
 
 ---
 
