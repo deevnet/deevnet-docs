@@ -53,7 +53,7 @@ During initial build, the builder **is** the network — no other infrastructure
 This means the builder must carry a complete, self-contained copy of every resource needed to stand up the substrate:
 
 - **DNS zone data** — All substrate host records, service CNAMEs, and reverse entries for the target site, served authoritatively by the builder until the Core Router takes over
-- **DHCP configuration** — Static reservations for every known host MAC, plus dynamic pools for initial PXE boot
+- **DHCP configuration** — Static reservations for every known host MAC, plus dynamic pools for initial PXE boot or OS image installation
 - **Git repositories** — A local mirror of every repository in the `deevnet` GitHub organization (IaC, CaC, inventory, playbooks), so automation runs entirely against local clones
 - **OS and package artifacts** — Installation images, kickstart configs, and package mirrors staged locally
 
