@@ -35,6 +35,19 @@ The builder answers this by providing:
 
 ---
 
+## How It Works
+
+The builder hosts all Infrastructure as Code and Configuration as Code used to set up the substrate. The build process follows a deliberate sequence:
+
+1. **Network boot** — Bare-metal and virtual hosts PXE boot from the builder, pulling OS images and kickstart configurations from its local artifact server
+2. **OS installation** — Hosts install from builder-hosted images and register against builder-hosted DHCP reservations, receiving deterministic IPs and hostnames
+3. **Configuration** — The builder runs automation (from its local Git mirrors) against the newly installed hosts, applying CaC to configure networking, services, and security policy
+4. **Validation** — Each host is verified against its expected state before proceeding to the next
+
+The builder drives this entire sequence from its own local resources — no external dependencies are required once artifacts are staged.
+
+---
+
 ## Multi-Homing Without Identity Confusion
 
 A builder node may be reachable from multiple sites.
