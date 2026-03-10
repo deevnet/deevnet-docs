@@ -14,7 +14,7 @@ Every Deevnet Infrastructure Platform site needs a way to be created from scratc
 > *How do you provision infrastructure when no infrastructure exists yet?*
 
 The builder answers this by providing:
-- A self-contained provisioning platform
+- A self-contained provisioning role
 - All artifacts needed for deployment
 - Automation to configure every substrate component
 - Authority transition from bootstrap to production
