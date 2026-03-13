@@ -21,44 +21,36 @@ Goals:
 
 ---
 
-## Hardware
+## Hardware Platforms
 
-| Site | Hardware | Notes |
-|------|----------|-------|
-| **dvntm** | Developer workstation | Portable laptop with dual-NIC capability |
-| **dvnt** | AOOSTAR N1 PRO | Mini PC with dual 2.5GbE |
+{{% tabs "bootstrap-node-hardware" %}}
 
-### Selection Rationale
+{{% tab "dvntm — Developer Workstation" %}}
 
-The bootstrap node requires:
+**Site**: dvntm (mobile)
 
-| Attribute | Requirement | Rationale |
-|-----------|-------------|-----------|
-| **Form factor** | Portable | Must move between sites |
-| **NICs** | Dual-NIC minimum | Upstream + substrate connectivity |
-| **Storage** | ~500GB+ | Artifacts (ISOs, images, packages) |
-| **RAM** | 16GB+ | Ansible execution, artifact serving |
-| **CPU** | Modern x86_64 | Packer builds, general automation |
+The mobile site uses a portable developer workstation (laptop) as its bootstrap node. Dual-NIC capability is achieved via built-in Ethernet or USB adapter.
 
-The same physical device can serve both sites:
-- **dvntm** — Mobile/portable lab
-- **dvnt** — Home infrastructure
-
----
-
-## Operating System
+### Hardware
 
 | Attribute | Value |
 |-----------|-------|
-| **OS** | Fedora Workstation |
-| **Version** | Fedora 43+ |
-| **Collection** | `deevnet.builder` applied |
+| **Type** | Developer workstation (laptop) |
+| **NICs** | Dual-NIC (built-in + USB adapter) |
+| **Storage** | 500GB+ |
+| **RAM** | 16GB+ |
+| **CPU** | Modern x86_64 |
 
-The bootstrap node is provisioned via PXE from another bootstrap node, or manually installed and then configured via Ansible self-application.
+### Selection Rationale
 
----
+- **Portability**: Already carried for development work
+- **Dual-NIC capable**: Upstream + substrate connectivity
+- **Sufficient resources**: Meets bootstrap node requirements
+- **Dual-purpose**: Serves as both workstation and bootstrap node
 
-## AOOSTAR N1 PRO
+{{% /tab %}}
+
+{{% tab "dvnt — AOOSTAR N1 PRO" %}}
 
 **Site**: dvnt (home)
 
@@ -85,6 +77,24 @@ The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for
 - **12GB RAM** sufficient for artifact serving and Ansible execution
 - **1TB storage** for ISOs, images, and boot artifacts
 - **Intel i226-V NICs** for reliable network performance
+
+{{% /tab %}}
+
+{{% /tabs %}}
+
+---
+
+## Operating System
+
+Both bootstrap nodes run Fedora Workstation, configured via the `deevnet.builder` Ansible collection.
+
+| Attribute | Value |
+|-----------|-------|
+| **OS** | Fedora Workstation |
+| **Version** | Fedora 43+ |
+| **Collection** | `deevnet.builder` applied |
+
+The bootstrap node is provisioned via PXE from another bootstrap node, or manually installed and then configured via Ansible self-application.
 
 ---
 

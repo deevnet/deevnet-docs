@@ -18,7 +18,11 @@ Both controllers run on the **bootstrap node** as containerized services, provid
 
 ---
 
-## TP-Link Omada SDN Controller
+## Software Platforms
+
+{{% tabs "network-controller-software" %}}
+
+{{% tab "dvntm — Omada SDN" %}}
 
 **Site**: dvntm (mobile)
 
@@ -60,9 +64,9 @@ The Omada controller provides a REST API used by the `deevnet.net` Ansible colle
 | VLANs | `omada_vlan` |
 | SSIDs | `omada_ssid` |
 
----
+{{% /tab %}}
 
-## Ubiquiti UniFi Network Application
+{{% tab "dvnt — UniFi Network" %}}
 
 **Site**: dvnt (home)
 
@@ -104,6 +108,10 @@ The UniFi controller provides a REST API. Automation is currently manual but pla
 | Switch ports | Manual (API available) |
 | VLANs/Networks | Manual (API available) |
 | WLANs | Manual (API available) |
+
+{{% /tab %}}
+
+{{% /tabs %}}
 
 ---
 

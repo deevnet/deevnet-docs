@@ -16,7 +16,11 @@ graph LR
 
 ---
 
-## TP-Link Omada EAP650-Outdoor
+## Hardware Platforms
+
+{{% tabs "access-point-hardware" %}}
+
+{{% tab "dvntm — EAP650-Outdoor" %}}
 
 **Site**: dvntm (mobile)
 
@@ -65,9 +69,9 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 | **SSID-to-VLAN mapping** | Multiple SSIDs mapped to VLANs |
 | **Band steering** | Directs capable clients to 5GHz |
 
----
+{{% /tab %}}
 
-## Ubiquiti UniFi UAP-AC-M
+{{% tab "dvnt — UAP-AC-M" %}}
 
 **Site**: dvnt (home) — 2 units
 
@@ -115,6 +119,10 @@ The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniF
 | **Wireless access** | Provides Wi-Fi 5 connectivity for clients |
 | **SSID-to-VLAN mapping** | Multiple SSIDs mapped to VLANs |
 | **Mesh backhaul** | Wireless uplink between units (if needed) |
+
+{{% /tab %}}
+
+{{% /tabs %}}
 
 ---
 

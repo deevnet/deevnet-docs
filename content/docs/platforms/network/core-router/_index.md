@@ -22,6 +22,8 @@ graph LR
 
 ---
 
+## Hardware Platforms
+
 {{% tabs "core-router-hardware" %}}
 
 {{% tab "dvntm — ZimaBoard 832" %}}
@@ -54,24 +56,6 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 - **Low power consumption** (<6W TDP) suitable for always-on operation
 - **Passive cooling** (fanless, silent) for noise-sensitive environments
 - **x86 architecture** supports OPNsense natively
-
-### Operating System
-
-| Attribute | Value |
-|-----------|-------|
-| **OS** | OPNsense |
-| **Version** | 24.x |
-| **Base** | FreeBSD |
-
-### Roles
-
-| Role | Description |
-|------|-------------|
-| **DNS Forwarding** | Forwards DNS queries to upstream resolver |
-| **DHCP** | Static mappings for known hosts, pool for dynamic clients |
-| **NAT** | Masquerades substrate traffic to upstream |
-| **Wake-on-LAN** | WoL proxy for substrate hosts |
-| **Gateway** | Default route for all substrate traffic |
 
 {{% /tab %}}
 
@@ -108,7 +92,15 @@ The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router 
 - **M.2 slots** for expansion (future 10GbE, NVMe)
 - **eMMC storage** for reliable boot
 
-### Operating System
+{{% /tab %}}
+
+{{% /tabs %}}
+
+---
+
+## Operating System
+
+Both core routers run OPNsense, providing a consistent firewall and routing platform across sites.
 
 | Attribute | Value |
 |-----------|-------|
@@ -116,7 +108,9 @@ The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router 
 | **Version** | 24.x |
 | **Base** | FreeBSD |
 
-### Roles
+---
+
+## Roles
 
 | Role | Description |
 |------|-------------|
@@ -125,10 +119,6 @@ The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router 
 | **NAT** | Masquerades substrate traffic to upstream |
 | **Wake-on-LAN** | WoL proxy for substrate hosts |
 | **Gateway** | Default route for all substrate traffic |
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 

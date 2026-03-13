@@ -18,7 +18,11 @@ graph LR
 
 ---
 
-## GL-iNet GL-AXT1800 (Slate AX)
+## Hardware Platforms
+
+{{% tabs "edge-router-hardware" %}}
+
+{{% tab "dvntm — GL-AXT1800" %}}
 
 **Site**: dvntm (mobile)
 
@@ -66,9 +70,9 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 | **DHCP** | Provides IP to core router WAN interface |
 | **Wi-Fi repeater** | Extends upstream Wi-Fi to wired connection |
 
----
+{{% /tab %}}
 
-## AT&T Fiber BGW320
+{{% tab "dvnt — BGW320" %}}
 
 **Site**: dvnt (home) — Primary connection
 
@@ -117,9 +121,9 @@ The BGW320 is configured for **IP Passthrough** mode:
 | **IP Passthrough** | Passes public IP to core router |
 | **DHCP** | Provides IP to core router WAN interface |
 
----
+{{% /tab %}}
 
-## Spectrum Internet
+{{% tab "dvnt — Spectrum (planned)" %}}
 
 **Site**: dvnt (home) — Secondary connection (failover)
 
@@ -164,3 +168,7 @@ Spectrum provides the secondary internet connection for WAN failover. This conne
 | **WAN connectivity** | Secondary internet path |
 | **DHCP** | Provides IP to core router secondary WAN |
 | **Failover** | Automatic switchover when primary fails |
+
+{{% /tab %}}
+
+{{% /tabs %}}

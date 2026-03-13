@@ -16,7 +16,11 @@ graph LR
 
 ---
 
-## TP-Link Omada SG2218
+## Hardware Platforms
+
+{{% tabs "access-switch-hardware" %}}
+
+{{% tab "dvntm — SG2218" %}}
 
 **Site**: dvntm (mobile)
 
@@ -64,9 +68,9 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 | **VLAN tagging** | 802.1Q trunk to core router |
 | **Port isolation** | Separates trust zones at L2 |
 
----
+{{% /tab %}}
 
-## Ubiquiti UniFi USW-24-G2
+{{% tab "dvnt — USW-24-G2" %}}
 
 **Site**: dvnt (home) — Primary switch
 
@@ -113,9 +117,9 @@ The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product 
 | **VLAN tagging** | 802.1Q trunk to core router |
 | **Port profiles** | Per-port VLAN assignment |
 
----
+{{% /tab %}}
 
-## Ubiquiti UniFi US-8
+{{% tab "dvnt — US-8" %}}
 
 **Site**: dvnt (home) — Secondary switch
 
@@ -159,6 +163,10 @@ The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in 
 | **L2 switching** | Secondary switching for remote hosts |
 | **VLAN tagging** | Extends VLANs from primary switch |
 | **Uplink** | Connects to USW-24-G2 via trunk |
+
+{{% /tab %}}
+
+{{% /tabs %}}
 
 ---
 

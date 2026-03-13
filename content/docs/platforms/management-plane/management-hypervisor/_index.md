@@ -12,44 +12,11 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 ---
 
-## Hardware
+## Hardware Platforms
 
-| Site | Hardware | Notes |
-|------|----------|-------|
-| **dvntm** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
-| **dvnt** | TBD | TBD |
+{{% tabs "management-hypervisor-hardware" %}}
 
-### Selection Rationale
-
-| Attribute | Requirement | Rationale |
-|-----------|-------------|-----------|
-| **RAM** | 32GB minimum | Multiple management VMs |
-| **Storage** | 1TB SSD | VM images, local storage |
-| **CPU** | Modern x86_64 with VT-x | Virtualization support |
-| **NICs** | Gigabit Ethernet | Substrate network connectivity |
-
----
-
-## Operating System
-
-| Attribute | Value |
-|-----------|-------|
-| **OS** | Proxmox VE |
-| **Version** | PVE 8.4.1 |
-| **Base** | Debian 12 (Bookworm) |
-
-### Automation Capability
-
-- **Installation**: Manual ISO install (no PXE support for Proxmox)
-- **Post-install**: Ansible configuration via `deevnet.builder` collection
-- **VM provisioning**: Ansible-only (no Terraform for management plane)
-- **Templates**: Packer-built Fedora templates stored locally
-
-Proxmox is treated as an API surface for management workloads, not a declarative state engine.
-
----
-
-## Dell Optiplex 7050 MFF
+{{% tab "dvntm — Dell Optiplex 7050 MFF" %}}
 
 **Site**: dvntm (mobile)
 
@@ -77,6 +44,48 @@ The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used
 - **Low power consumption** for always-on operation
 - **Intel VT-x/VT-d** for Proxmox virtualization support
 - **Intel I219-LM NIC** for reliable network connectivity
+
+{{% /tab %}}
+
+{{% tab "dvnt — TBD" %}}
+
+**Site**: dvnt (home)
+
+Hardware selection for the home site management hypervisor is pending.
+
+### Requirements
+
+| Attribute | Requirement | Rationale |
+|-----------|-------------|-----------|
+| **RAM** | 32GB minimum | Multiple management VMs |
+| **Storage** | 1TB SSD | VM images, local storage |
+| **CPU** | Modern x86_64 with VT-x | Virtualization support |
+| **NICs** | Gigabit Ethernet | Substrate network connectivity |
+
+{{% /tab %}}
+
+{{% /tabs %}}
+
+---
+
+## Operating System
+
+Both management hypervisors run Proxmox VE.
+
+| Attribute | Value |
+|-----------|-------|
+| **OS** | Proxmox VE |
+| **Version** | PVE 8.4.1 |
+| **Base** | Debian 12 (Bookworm) |
+
+### Automation Capability
+
+- **Installation**: Manual ISO install (no PXE support for Proxmox)
+- **Post-install**: Ansible configuration via `deevnet.builder` collection
+- **VM provisioning**: Ansible-only (no Terraform for management plane)
+- **Templates**: Packer-built Fedora templates stored locally
+
+Proxmox is treated as an API surface for management workloads, not a declarative state engine.
 
 ---
 
