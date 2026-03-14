@@ -13,25 +13,19 @@ This is a semi-automated migration: run a playbook, verify, proceed. Each phase 
 
 ## Prerequisites
 
-### Environment Variables
+### Vault Password
 
-Set these before running any migration phase:
+All secrets (OPNsense API credentials, switch credentials) are encrypted with Ansible Vault in the inventory:
 
-```bash
-# OPNsense API (phases 1, 5)
-export OPNSENSE_API_KEY="your-key"
-export OPNSENSE_API_SECRET="your-secret"
+- `group_vars/routers/vault.yml` — OPNsense API key and secret
+- `group_vars/switches/vault.yml` — switch user, password, and enable password
 
-# Switch CLI (phases 2, 3, 4, 6)
-export SWITCH_USER="admin"
-export SWITCH_PASSWORD="your-password"
-export SWITCH_ENABLE_PASSWORD="your-enable-password"
-```
+Every `make` target that touches routers or switches will prompt for the vault password automatically (`--ask-vault-pass`). No environment variable exports are needed.
 
 ### Pre-Migration Checklist
 
 - [ ] SSH to switch verified: `ssh $SWITCH_USER@access-sw01`
-- [ ] OPNsense API verified: `curl -u "$OPNSENSE_API_KEY:$OPNSENSE_API_SECRET" https://core-rt02/api/core/firmware/status`
+- [ ] OPNsense API verified: `ansible-vault view ../ansible-inventory-deevnet/dvntm-new/group_vars/routers/vault.yml` to confirm credentials, then `curl -u "KEY:SECRET" https://core-rt02/api/core/firmware/status`
 - [ ] Backup current switch config: `show running-config` and save output
 - [ ] Backup current OPNsense config: System -> Configuration -> Backups -> Download
 - [ ] Console/OOB access available (in case of connectivity loss during phase 3)
@@ -142,7 +136,7 @@ make migration-switch-test-port
 
 # Or specify a different port/VLAN:
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
-  ansible-playbook playbooks/migration/04-switch-test-port.yml \
+  ansible-playbook playbooks/migration/04-switch-test-port.yml --ask-vault-pass \
   -e test_port_interface="gigabitEthernet 1/0/24" \
   -e test_port_vlan_id=10
 ```
@@ -169,7 +163,7 @@ write memory
 
 Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
 
-Ensure Kea DHCP subnets are created in OPNsense first (Services -> Kea DHCP -> Subnets) and `dhcp_subnet_uuid` is updated in `group_vars/routers.yml` for each subnet.
+Ensure Kea DHCP subnets are created in OPNsense first (Services -> Kea DHCP -> Subnets) and `dhcp_subnet_uuid` is updated in `group_vars/routers/vars.yml` for each subnet.
 
 **Run:**
 ```bash

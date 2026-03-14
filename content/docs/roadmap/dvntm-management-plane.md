@@ -87,7 +87,10 @@ Proactive notification of issues.
 
 Secure storage and distribution of credentials.
 
-- ⏳ Evaluate secrets solutions (Vault, SOPS, etc.)
+**Interim:** Ansible Vault encrypts secrets at rest in inventory (`group_vars/*/vault.yml`), unlocked at runtime via `--ask-vault-pass`. This eliminates env var export workflows and keeps secrets encrypted in git.
+
+- ✅ Migrate IaC secrets from env var lookups to Ansible Vault in inventory
+- ⏳ Evaluate dedicated secrets solutions (Vault, SOPS, etc.)
 - ⏳ Deploy secrets management service
 - ⏳ Integrate with Ansible for secret injection
 - ⏳ Define secrets rotation policies
