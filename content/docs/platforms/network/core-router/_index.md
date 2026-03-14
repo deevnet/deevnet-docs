@@ -15,13 +15,6 @@ graph LR
     A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
 {{< /mermaid >}}
 
-| Site | Upstream Connection |
-|-----------|---------------------|
-| **dvntm** | Travel router (portable WAN) |
-| **dvnt** | ISP router (home internet) |
-
----
-
 ## Hardware Platforms
 
 {{% tabs "core-router-hardware" %}}
