@@ -37,4 +37,8 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Network Reference</h3>
     <p>VLAN assignments and network configuration details.</p>
   </a>
+  <a class="section-card" href="network-migration/">
+    <h3>Network Migration</h3>
+    <p>Flat-to-VLAN migration procedure for dvntm substrate.</p>
+  </a>
 </div>
