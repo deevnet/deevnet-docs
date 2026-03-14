@@ -19,7 +19,7 @@ Define the automation target and goals.
 
 **In Scope**
 - Target system or service
-- Automation tooling (Ansible, Packer, etc.)
+- Automation tooling
 - Configuration scope
 - Deployment target
 

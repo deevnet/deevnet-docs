@@ -35,7 +35,7 @@ Anything that “usually works” but cannot be proven deterministic is consider
 IP addresses are implementation details.
 
 - All provisioning, bootstrap, and integration flows MUST use DNS names
-- Hard-coded IPs in Kickstart, PXE, scripts, or configs are considered defects
+- Hard-coded IPs in install scripts, boot configs, or automation templates are considered defects
 - DNS names express intent; IPs express plumbing
 
 Correct infrastructure can survive IP changes without rewriting logic.
@@ -48,7 +48,7 @@ Each layer has a clear responsibility:
 - **Network (deevnet.network)**  
   Defines substrate topology, identity, DHCP/DNS, and provisioning readiness.
 - **Builder / Bootstrap (deevnet.builder)**  
-  Provides artifact hosting, PXE/TFTP, and tooling — but does not define topology.
+  Provides artifact hosting, network boot services, and tooling — but does not define topology.
 - **Image Factory (deevnet-image-factory)**  
   Builds OS images only; assumes the network contract is already satisfied.
 - **Tenants / Applications**  
@@ -65,7 +65,7 @@ Sites (e.g., `dvnt`, `dvntm`) represent **where** things run, not **what** runs.
 
 - Each site has its own IP space
 - Each site has its own routing/security boundary
-- Each site may have its own OPNsense instance
+- Each site may have its own gateway/firewall appliance
 - Sites may be separate VLANs or separate physical networks
 
 Mixing workload identity into site naming is incorrect.
@@ -160,7 +160,7 @@ Service names MUST remain stable regardless of co-location decisions.
 DNS is the primary contract between infrastructure layers.
 
 - Provisioning tools assume DNS works
-- Kickstart assumes DNS works
+- Install automation assumes DNS works
 - Automation assumes DNS works
 
 If DNS is wrong, everything else is wrong.
@@ -196,7 +196,7 @@ Provisioning assumes the following are true **before** it starts:
 - DNS resolves required service names
 - DHCP reservations match expected MAC → IP mappings
 - Artifact endpoints are reachable
-- PXE options (if used) are correct
+- Network boot options (if used) are correct
 
 Provisioning workflows must never “figure this out on the fly.”
 
@@ -205,7 +205,7 @@ Provisioning workflows must never “figure this out on the fly.”
 ### 5.2 Authority Modes Are Explicit
 Provisioning operates in one of two modes:
 
-- **OPNsense-authoritative**
+- **Gateway-authoritative**
 - **Bootstrap-authoritative**
 
 The mode MUST be explicitly declared.
@@ -221,14 +221,14 @@ Correct infrastructure supports preflight checks that:
 - Validate DHCP reservations
 - Fail fast with actionable errors
 
-If you only find out something is wrong *after* PXE boots, correctness has failed.
+If you only find out something is wrong *after* the host boots, correctness has failed.
 
 ---
 
 ### 5.4 Substrate Provisioning Is Air-Gapped
 Substrate hosts MUST be provisionable without upstream internet dependencies.
 
-- All artifacts (Kickstart, PXE, packages) served from local infrastructure
+- All artifacts (install configs, boot images, packages) served from local infrastructure
 - No fetches from public mirrors, CDNs, or external URLs during install
 - External dependencies create non-determinism and single points of failure
 

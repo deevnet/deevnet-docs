@@ -19,7 +19,7 @@ Define the infrastructure domain and automation goals.
 
 **In Scope**
 - Target infrastructure components
-- Automation tooling (Ansible, Terraform, etc.)
+- Automation tooling
 - Provisioning and configuration scope
 - Operational boundaries
 
@@ -40,7 +40,7 @@ Core infrastructure for building and deploying the site.
 | Base image creation and packaging | ⏳ |
 | Bootstrap node provisioning | ⏳ |
 | Hypervisor/platform provisioning | ⏳ |
-| Automated install mechanisms (PXE, cloud-init) | ⏳ |
+| Automated install mechanisms | ⏳ |
 | Artifact hosting and distribution | ⏳ |
 | Air-gap/offline support (if required) | ⏳ |
 

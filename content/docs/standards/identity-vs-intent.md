@@ -172,7 +172,7 @@ A workload profile may include:
 - configuration templates
 - role parameters
 
-Workload profiles are loaded explicitly by playbooks and are **not** part of Ansible's automatic variable precedence.
+Workload profiles are loaded explicitly by playbooks and are **not** automatically inherited through variable precedence.
 
 ---
 

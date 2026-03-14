@@ -18,7 +18,7 @@ This naming standard applies to:
 - DNS zones and hostnames
 - Service endpoints (artifacts, PXE, DNS, etc.)
 - Tenants (logical workload namespaces)
-- Inventory naming (Ansible host identifiers)
+- Inventory naming (host identifiers)
 
 ---
 
@@ -193,7 +193,7 @@ Examples:
 ---
 
 ### 5.2 Tenant DNS Patterns
-Tenants SHOULD be expressed under the substrate zone:
+Tenants SHOULD be expressed under the site zone:
 
 tenant.site.deevnet.net
 
@@ -214,11 +214,11 @@ Examples:
 
 ---
 
-## 6. Inventory Naming (Ansible)
+## 6. Inventory Naming
 
 ### 6.1 Inventory Host Identifiers
 
-Ansible inventory hostnames SHOULD match the DNS hostname without the domain:
+Inventory hostnames SHOULD match the DNS hostname without the domain:
 
 Examples:
 - hv01

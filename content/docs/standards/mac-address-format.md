@@ -39,8 +39,8 @@ practical alignment with the Unix ecosystem over formal documentation style.
 ## Runtime Normalization
 
 Some downstream systems expect specific formats:
-- The OPNsense DHCP role normalizes to uppercase at runtime (`| upper`)
-- PXE/TFTP infrastructure generates both upper and lowercase GRUB config
+- The gateway DHCP configuration normalizes to uppercase at runtime
+- Network boot infrastructure generates both upper and lowercase bootloader config
   filenames to handle firmware variations
 
 These transformations happen automatically. The source of truth in inventory

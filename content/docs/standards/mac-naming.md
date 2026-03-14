@@ -102,7 +102,7 @@ These values are illustrative; the key requirement is **consistency**.
 ## Source of Truth
 
 MAC addresses are stored in:
-- Ansible inventory
+- Inventory
 - Variable files
 - Version-controlled repositories
 
