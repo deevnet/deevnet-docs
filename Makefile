@@ -1,4 +1,18 @@
-.PHONY: html server publish clean
+.PHONY: help html server publish clean
+
+default: help
+
+help:
+	@echo "Deevnet Docs"
+	@echo ""
+	@echo "Usage: make <target>"
+	@echo ""
+	@echo "Targets:"
+	@echo "  html            Build the site to public/"
+	@echo "  server          Run local development server with live reload"
+	@echo "  serve-static    Build then serve with Python (no live reload)"
+	@echo "  publish         Push to GitHub to trigger Actions deployment"
+	@echo "  clean           Remove build artifacts"
 
 # Build the site to public/
 html:

@@ -85,7 +85,7 @@ no vlan 51
 no vlan 52
 no vlan 99
 end
-write memory
+copy running-config startup-config
 ```
 
 ---
@@ -103,13 +103,13 @@ make migration-switch-trunk
 
 **Verify:**
 ```
-show interfaces trunk
+show interface switchport gigabitEthernet 1/0/1
 ```
 - Uplink port shows mode: trunk
 - Native VLAN: 99
 - Allowed VLANs include all configured VLANs
 
-Also verify you can still reach the switch at its management IP (10.20.99.10).
+Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Phase 7.
 
 **Rollback:**
 Via console if network access is lost:
@@ -120,7 +120,7 @@ interface gigabitEthernet 1/0/1
   no switchport trunk allowed vlan
   no switchport trunk native vlan
 end
-write memory
+copy running-config startup-config
 ```
 
 ---
@@ -154,7 +154,7 @@ configure terminal
 interface gigabitEthernet 1/0/24
   switchport access vlan 1
 end
-write memory
+copy running-config startup-config
 ```
 
 ---
@@ -201,7 +201,7 @@ configure terminal
 interface range gigabitEthernet 1/0/2 - 24
   switchport access vlan 1
 end
-write memory
+copy running-config startup-config
 ```
 
 ---
@@ -210,26 +210,34 @@ write memory
 
 After all ports are migrated and verified:
 
-1. **Switch management VLAN** — if the switch management interface needs to move to VLAN 99:
+1. **Switch management VLAN** — move the switch management interface to VLAN 99:
    ```
    configure terminal
    interface vlan 99
      ip address 10.20.99.10 255.255.255.0
    no interface vlan 1
    end
-   write memory
+   copy running-config startup-config
    ```
 
-2. **Update ansible.cfg** — point inventory to `dvntm-new`:
-   ```
-   # In ansible-collection-deevnet.net/ansible.cfg
-   inventory = ../ansible-inventory-deevnet/dvntm-new
-   ```
-
-3. **Verify Ansible connectivity:**
+2. **Promote inventory** — `dvntm-new` becomes the active `dvntm`:
    ```bash
-   ansible switches -m ping
-   ansible all -m ping
+   cd ansible-inventory-deevnet
+   mv dvntm dvntm-old
+   mv dvntm-new dvntm
+   ```
+   No `ansible.cfg` changes needed — it already points to `dvntm`.
+
+3. **Verify Ansible connectivity** from each collection that uses the inventory:
+   ```bash
+   cd ansible-collection-deevnet.net
+   ansible switches -m ansible.netcommon.cli_command -a "command='show image-info'"
+   ansible dns_servers -m ping
+   ```
+
+4. **Clean up** — once stable, remove the old inventory:
+   ```bash
+   rm -rf ansible-inventory-deevnet/dvntm-old
    ```
 
 ---
@@ -261,7 +269,7 @@ After all phases complete and connectivity is verified:
 
 ### Lost switch access after trunk configuration
 - Connect via console cable
-- Check `show interfaces trunk` for native VLAN mismatch
+- Check `show interface switchport gigabitEthernet 1/0/1` for native VLAN mismatch
 - Revert to access mode on uplink if needed
 
 ### Device not getting DHCP lease
