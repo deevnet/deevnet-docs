@@ -7,36 +7,64 @@ weight: 8
 
 Migrate the dvntm substrate from a flat 192.168.10.0/24 network to segmented 10.20.x.0/24 VLANs.
 
-This is a semi-automated migration: run a playbook, verify, proceed. Each phase is a discrete `make` target. Do not skip phases or run them out of order.
+This is a semi-automated migration: run a playbook, verify, proceed. Each step is a discrete `make` target. Do not skip steps or run them out of order.
 
 ---
 
 ## Prerequisites
 
-### Vault Password
+### Vault
 
 All secrets (OPNsense API credentials, switch credentials) are encrypted with Ansible Vault in the inventory:
 
 - `group_vars/routers/vault.yml` — OPNsense API key and secret
 - `group_vars/switches/vault.yml` — switch user, password, and enable password
 
-Every `make` target that touches routers or switches will prompt for the vault password automatically (`--ask-vault-pass`). No environment variable exports are needed.
+Decrypt the vault files before starting the migration and re-encrypt when done:
+
+```bash
+cd ansible-inventory-deevnet
+make unvault    # decrypt — run once before starting
+# ... run migration steps ...
+make vault      # re-encrypt when migration is complete
+```
 
 ### Pre-Migration Checklist
 
 - [ ] SSH to switch verified: `ssh $SWITCH_USER@access-sw01`
-- [ ] OPNsense API verified: `ansible-vault view ../ansible-inventory-deevnet/dvntm-new/group_vars/routers/vault.yml` to confirm credentials, then `curl -u "KEY:SECRET" https://core-rt02/api/core/firmware/status`
+- [ ] Vault decrypted: `cd ansible-inventory-deevnet && make unvault`
+- [ ] OPNsense API verified: confirm credentials in `../ansible-inventory-deevnet/dvntm-new/group_vars/routers/vault.yml`, then `curl -u "KEY:SECRET" https://core-rt02/api/core/firmware/status`
 - [ ] Backup current switch config: `show running-config` and save output
 - [ ] Backup current OPNsense config: System -> Configuration -> Backups -> Download
-- [ ] Console/OOB access available (in case of connectivity loss during phase 3)
-- [ ] Port mapping confirmed: verify `switch_ports` in `host_vars/access-sw01.yml` matches physical cabling
+- [ ] Console/OOB access available (in case of connectivity loss during step 4)
 - [ ] Collection dependencies installed: `cd ansible-collection-deevnet.net && make deps`
 
 ---
 
-## Phase 1: OPNsense VLAN Interfaces
+## Step 1: Physical Port Mapping
 
-Create VLAN sub-interfaces on OPNsense. This phase is non-disruptive — it only adds new interfaces without affecting existing traffic.
+Verify that every device is physically connected to its intended switch port before making any logical changes. The port-to-VLAN assignments in `host_vars/access-sw01.yml` assume specific physical cabling — if a device is on the wrong port, it will land in the wrong VLAN after migration.
+
+**Run:**
+1. Open `host_vars/access-sw01.yml` and review the `switch_ports` mapping
+2. Physically trace or label each cable at the switch to confirm it matches the intended port assignment
+3. Relocate any mis-cabled devices to their correct ports
+
+**Verify:**
+```
+ssh $SWITCH_USER@access-sw01
+show mac address-table
+```
+Confirm each device's MAC address appears on the expected port.
+
+**Rollback:**
+No logical changes — this step is purely physical. Move cables back if needed.
+
+---
+
+## Step 2: OPNsense VLAN Interfaces
+
+Create VLAN sub-interfaces on OPNsense. This step is non-disruptive — it only adds new interfaces without affecting existing traffic.
 
 **Run:**
 ```bash
@@ -45,16 +73,16 @@ make migration-opnsense-vlans
 ```
 
 **Verify:**
-1. OPNsense GUI -> Interfaces -> Other Types -> VLAN
+1. OPNsense GUI -> Interfaces -> Devices -> VLAN
 2. Confirm 11 VLANs created on the correct parent interface
 3. Each VLAN shows the correct tag (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99)
 
 **Rollback:**
-Delete VLAN interfaces via OPNsense GUI -> Interfaces -> Other Types -> VLAN -> delete each entry.
+Delete VLAN interfaces via OPNsense GUI -> Interfaces -> Devices -> VLAN -> delete each entry.
 
 ---
 
-## Phase 2: Switch VLAN Database
+## Step 3: Switch VLAN Database
 
 Create VLANs in the switch VLAN database. Non-disruptive — VLANs are created but no ports are assigned yet.
 
@@ -90,7 +118,7 @@ copy running-config startup-config
 
 ---
 
-## Phase 3: Trunk Uplink
+## Step 4: Trunk Uplink
 
 Configure the switch uplink port as a trunk carrying all VLANs with management (VLAN 99) as native.
 
@@ -109,7 +137,7 @@ show interface switchport gigabitEthernet 1/0/1
 - Native VLAN: 99
 - Allowed VLANs include all configured VLANs
 
-Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Phase 7.
+Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Step 8.
 
 **Rollback:**
 Via console if network access is lost:
@@ -125,7 +153,7 @@ copy running-config startup-config
 
 ---
 
-## Phase 4: Test One Port
+## Step 5: Test One Port
 
 Move a single access port to a test VLAN to validate end-to-end connectivity before migrating all ports.
 
@@ -136,7 +164,7 @@ make migration-switch-test-port
 
 # Or specify a different port/VLAN:
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
-  ansible-playbook playbooks/migration/04-switch-test-port.yml --ask-vault-pass \
+  ansible-playbook playbooks/migration/04-switch-test-port.yml \
   -e test_port_interface="gigabitEthernet 1/0/24" \
   -e test_port_vlan_id=10
 ```
@@ -159,7 +187,7 @@ copy running-config startup-config
 
 ---
 
-## Phase 5: DHCP for New Subnets
+## Step 6: DHCP for New Subnets
 
 Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
 
@@ -173,14 +201,14 @@ make migration-opnsense-dhcp
 **Verify:**
 1. OPNsense GUI -> Services -> Kea DHCP -> Subnets — new subnets visible
 2. OPNsense GUI -> Services -> Kea DHCP -> Reservations — static mappings present
-3. A device on the test port (Phase 4) gets a correct DHCP lease
+3. A device on the test port (Step 5) gets a correct DHCP lease
 
 **Rollback:**
 Delete DHCP subnets and reservations via OPNsense GUI -> Services -> Kea DHCP.
 
 ---
 
-## Phase 6: Migrate Remaining Access Ports
+## Step 7: Migrate Remaining Access Ports
 
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
 
@@ -206,7 +234,7 @@ copy running-config startup-config
 
 ---
 
-## Phase 7: Management Cutover (Manual)
+## Step 8: Management Cutover (Manual)
 
 After all ports are migrated and verified:
 
@@ -244,24 +272,30 @@ After all ports are migrated and verified:
 
 ## Post-Migration
 
-After all phases complete and connectivity is verified:
+After all steps complete and connectivity is verified:
 
-1. **Run full DNS/DHCP roles** against `dvntm-new` inventory:
+1. **Re-encrypt vault files:**
+   ```bash
+   cd ansible-inventory-deevnet
+   make vault
+   ```
+
+2. **Run full DNS/DHCP roles** against `dvntm-new` inventory:
    ```bash
    make dns
    make dhcp
    ```
 
-2. **Remove old network config:**
+3. **Remove old network config:**
    - Delete 192.168.10.0/24 subnet from OPNsense
    - Remove any old static routes referencing 192.168.10.x
 
-3. **Ongoing switch management** — use the `switch` target for day-2 operations:
+4. **Ongoing switch management** — use the `switch` target for day-2 operations:
    ```bash
    make switch
    ```
 
-4. **Update documentation** — verify network-reference.md reflects the new state
+5. **Update documentation** — verify network-reference.md reflects the new state
 
 ---
 
