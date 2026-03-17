@@ -208,7 +208,54 @@ Delete DHCP subnets and reservations via OPNsense GUI -> Services -> Kea DHCP.
 
 ---
 
-## Step 7: Migrate Remaining Access Ports
+## Step 7: OPNsense Interface IPs
+
+Assign gateway IP addresses to each VLAN interface and enable them. After this step, the router can route traffic between VLAN subnets (subject to firewall policy).
+
+**Prerequisites:**
+- Step 2 complete (VLAN sub-interfaces exist on OPNsense)
+- VLAN devices assigned to interface slots in OPNsense (Interfaces -> Assignments)
+
+**Run:**
+```bash
+cd ansible-collection-deevnet.net
+make migration-opnsense-interfaces
+```
+
+**Verify:**
+1. OPNsense GUI -> Interfaces -> each VLAN interface shows its gateway IP with /24 mask
+2. Each interface shows status: enabled
+3. From test port (Step 5): `ping 10.20.10.1` (trusted gateway) — should succeed
+
+**Rollback:**
+Remove IP assignments via OPNsense GUI -> Interfaces -> select each VLAN interface -> clear IP and disable.
+
+---
+
+## Step 8: Inter-VLAN Firewall Rules
+
+Apply zone-based firewall policy (default-deny with explicit inter-zone allows). Rules are defined in `group_vars/all/firewall.yml` and managed via the OPNsense filter API.
+
+**Prerequisites:**
+- Step 7 complete (VLAN interfaces have IPs and are enabled)
+
+**Run:**
+```bash
+make migration-opnsense-firewall
+```
+
+**Verify:**
+1. OPNsense GUI -> Firewall -> Automation -> Filter — all rules prefixed with `ansible:` are present
+2. From management VLAN: `ping 10.20.10.1` (trusted gateway) — should succeed
+3. From guest VLAN: `ping 10.20.10.1` (trusted gateway) — should be denied
+4. From any VLAN: `ping 8.8.8.8` (internet) — should succeed for zones in `firewall_internet_zones`
+
+**Rollback:**
+Delete managed rules via OPNsense GUI -> Firewall -> Automation -> Filter -> delete rules prefixed with `ansible:`, then apply.
+
+---
+
+## Step 9: Migrate Remaining Access Ports
 
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
 
@@ -234,7 +281,7 @@ copy running-config startup-config
 
 ---
 
-## Step 8: Management Cutover (Manual)
+## Step 10: Management Cutover (Manual)
 
 After all ports are migrated and verified:
 
