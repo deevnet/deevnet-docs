@@ -94,6 +94,7 @@ The access switch connects all physical hosts to the core router:
 - **Trunk ports** carry tagged traffic for all VLANs between the switch and core router
 - **Access ports** assign hosts to their segment VLAN
 - Multi-homed hosts may connect to multiple access ports on different VLANs
+- **Native VLAN** on trunk ports is a dedicated blackhole VLAN (unrouted, no subnet) — untagged frames landing on a trunk are dropped into a dead VLAN rather than reaching a live network, preventing VLAN hopping and catching misconfigured devices
 
 ---
 

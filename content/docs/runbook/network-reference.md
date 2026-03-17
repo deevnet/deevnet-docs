@@ -24,6 +24,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 | Tenant 2 | 51 | 10.20.51.0/24 | 10.20.51.1 | Per-tenant |
 | Tenant 3 | 52 | 10.20.52.0/24 | 10.20.52.1 | Per-tenant |
 | Management | 99 | 10.20.99.0/24 | 10.20.99.1 | Static only |
+| Blackhole | 999 | — | — | None (unrouted) |
 
 ---
 
@@ -42,6 +43,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 | Tenant 2 | 51 | 10.10.51.0/24 | 10.10.51.1 | Per-tenant |
 | Tenant 3 | 52 | 10.10.52.0/24 | 10.10.52.1 | Per-tenant |
 | Management | 99 | 10.10.99.0/24 | 10.10.99.1 | Static only |
+| Blackhole | 999 | — | — | None (unrouted) |
 
 ---
 

@@ -120,7 +120,7 @@ copy running-config startup-config
 
 ## Step 4: Trunk Uplink
 
-Configure the switch uplink port as a trunk carrying all VLANs with management (VLAN 99) as native.
+Configure the switch uplink port as a trunk carrying all VLANs with blackhole (VLAN 999) as native.
 
 **WARNING:** If the native VLAN is misconfigured, you will lose switch access over the network. Ensure console/OOB access is available before proceeding.
 
@@ -134,7 +134,7 @@ make migration-switch-trunk
 show interface switchport gigabitEthernet 1/0/1
 ```
 - Uplink port shows mode: trunk
-- Native VLAN: 99
+- Native VLAN: 999
 - Allowed VLANs include all configured VLANs
 
 Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Step 8.

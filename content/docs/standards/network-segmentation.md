@@ -171,6 +171,16 @@ The following flows MUST NOT be permitted:
 
 ---
 
+## Trunk Port Native VLAN
+
+- Trunk ports MUST use a dedicated blackhole VLAN (VLAN 999) as the native VLAN
+- The blackhole VLAN MUST NOT have a routed interface, subnet, or gateway
+- The blackhole VLAN MUST NOT have DHCP enabled
+- Management traffic on trunk ports MUST be tagged, not native
+- The blackhole VLAN MUST exist in the switch VLAN database at every site
+
+---
+
 ## Firewall Zone Principles
 
 - Each segment MUST map to a firewall zone
