@@ -39,6 +39,19 @@ make vault      # re-encrypt when migration is complete
 - [ ] Console/OOB access available (in case of connectivity loss during step 4)
 - [ ] Collection dependencies installed: `cd ansible-collection-deevnet.net && make deps`
 
+### Builder Connectivity
+
+The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. Its WiFi interface provides WAN/upstream — do **not** rely on it for management connectivity, as AP reconfiguration during the migration may disrupt wireless.
+
+- The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/4`
+- The Omada controller on the builder manages `access-sw01` and `ap01` — if the builder loses switch connectivity, Omada management is lost
+- The builder's port is assigned to VLAN 99 (management) in the target inventory, with IP `10.20.99.95`
+
+**Pre-flight checks:**
+- [ ] Builder ethernet cable confirmed on `gi1/0/4` (not WiFi for substrate connectivity)
+- [ ] Omada UI accessible and showing `access-sw01` and `ap01` as connected
+- [ ] Builder currently reachable at `192.168.10.95`
+
 ---
 
 ## Step 1: Physical Port Mapping
@@ -153,24 +166,35 @@ copy running-config startup-config
 
 ---
 
-## Step 5: Test One Port
+## Step 5: Test Ports (Builder First)
 
-Move a single access port to a test VLAN to validate end-to-end connectivity before migrating all ports.
+Migrate the builder's port first to validate VLAN 99 end-to-end. This puts the builder on the management segment early, giving it routed access to all VLANs for the rest of the migration. Then test a second port on a different VLAN.
 
-**Run:**
+**5a — Builder port (`gi1/0/4`) to VLAN 99:**
+
+```bash
+ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
+  ansible-playbook playbooks/migration/04-switch-test-port.yml \
+  -e test_port_interface="gigabitEthernet 1/0/4" \
+  -e test_port_vlan_id=99
+```
+
+**Verify (5a):**
+1. Builder's IP changes from `192.168.10.95` to `10.20.99.95` — you will lose the current SSH session
+2. Reconnect: `ssh a_autoprov@10.20.99.95`
+3. `ping 10.20.99.1` (management gateway) — should succeed
+4. `ping 8.8.8.8` — internet access works
+5. Omada UI still shows `access-sw01` and `ap01` as connected
+
+**5b — Second test port (`gi1/0/24`) on VLAN 10:**
+
 ```bash
 # Default: port gi1/0/24 -> VLAN 10 (trusted)
 make migration-switch-test-port
-
-# Or specify a different port/VLAN:
-ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
-  ansible-playbook playbooks/migration/04-switch-test-port.yml \
-  -e test_port_interface="gigabitEthernet 1/0/24" \
-  -e test_port_vlan_id=10
 ```
 
-**Verify:**
-1. Connect a device to the test port
+**Verify (5b):**
+1. Connect a device to `gi1/0/24`
 2. Device receives DHCP lease from 10.20.10.x subnet
 3. `ping 10.20.10.1` (VLAN gateway) — should succeed
 4. `ping 8.8.8.8` — internet access works
@@ -179,6 +203,8 @@ ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
 **Rollback:**
 ```
 configure terminal
+interface gigabitEthernet 1/0/4
+  switchport access vlan 1
 interface gigabitEthernet 1/0/24
   switchport access vlan 1
 end
@@ -258,6 +284,14 @@ Delete managed rules via OPNsense GUI -> Firewall -> Automation -> Filter -> del
 ## Step 9: Migrate Remaining Access Ports
 
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
+
+{{< hint info >}}
+**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration (Step 10 / Post-Migration). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
+{{< /hint >}}
+
+{{< hint warning >}}
+**Wireless clients:** AP SSID-to-VLAN mappings are not reconfigured in this migration. When the AP's port moves to its target VLAN, wireless clients may lose connectivity. AP SSID reconfiguration is a separate post-migration task.
+{{< /hint >}}
 
 **Run:**
 ```bash
@@ -358,6 +392,20 @@ After all steps complete and connectivity is verified:
 - Verify DHCP subnet exists in OPNsense for that VLAN
 - Check OPNsense firewall rules allow DHCP on VLAN interface
 - Check `show mac address-table` to confirm device is on expected port
+
+### Builder lost connectivity during migration
+- Verify ethernet cable is connected to `gi1/0/4` — do not rely on WiFi for substrate access
+- Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/4`
+- Verify VLAN 99 interface is enabled with IP `10.20.99.1` in OPNsense
+- Check Omada controller status: if the builder is unreachable, Omada cannot manage the switch or AP
+- Last resort: revert the builder port to VLAN 1 via console:
+  ```
+  configure terminal
+  interface gigabitEthernet 1/0/4
+    switchport access vlan 1
+  end
+  copy running-config startup-config
+  ```
 
 ### Inter-VLAN routing not working
 - Verify VLAN interfaces have IP addresses assigned in OPNsense
