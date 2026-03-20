@@ -41,15 +41,16 @@ make vault      # re-encrypt when migration is complete
 
 ### Builder Connectivity
 
-The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. Its WiFi interface provides WAN/upstream — do **not** rely on it for management connectivity, as AP reconfiguration during the migration may disrupt wireless.
+The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. The builder's `eth1` (transit interface, DHCP) provides upstream/WAN connectivity — WiFi is disabled (`ip: null`). Do **not** rely on wireless for management connectivity.
 
 - The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/4`
-- The Omada controller on the builder manages `access-sw01` and `ap01` — if the builder loses switch connectivity, Omada management is lost
+- `eth1` (transit) must be connected to an upstream network and receiving a DHCP address — this is the builder's only path to the internet
+- The Omada controller on the builder manages device adoption and monitoring (switch is managed via SSH/CLI during migration) — Omada adoption of devices happens post-migration in Step 12
 - The builder's port is assigned to VLAN 99 (management) in the target inventory, with IP `10.20.99.95`
 
 **Pre-flight checks:**
 - [ ] Builder ethernet cable confirmed on `gi1/0/4` (not WiFi for substrate connectivity)
-- [ ] Omada UI accessible and showing `access-sw01` and `ap01` as connected
+- [ ] Builder `eth1` connected to upstream network and reachable via its DHCP address
 - [ ] Builder currently reachable at `192.168.10.95`
 
 ---
@@ -202,7 +203,7 @@ ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
 2. Reconnect: `ssh a_autoprov@10.20.99.95`
 3. `ping 10.20.99.1` (management gateway) — should succeed
 4. `ping 8.8.8.8` — internet access works
-5. Omada UI still shows `access-sw01` and `ap01` as connected
+5. Switch still responds to SSH: `ssh $SWITCH_USER@10.20.99.10` (Omada adoption happens in Step 12)
 
 **Rollback:**
 1. Revert builder port to VLAN 1 via console:
@@ -335,7 +336,7 @@ Move all remaining switch ports to their assigned VLANs as defined in `host_vars
 {{< /hint >}}
 
 {{< hint warning >}}
-**Wireless clients:** AP SSID-to-VLAN mappings are not reconfigured in this migration. When the AP's port moves to its target VLAN, wireless clients may lose connectivity. AP SSID reconfiguration is a separate post-migration task.
+**Wireless clients:** AP SSID-to-VLAN mappings are not reconfigured in this step. When the AP's port moves to its target VLAN, wireless clients may lose connectivity. SSID configuration is handled in Step 13 after Omada adoption (Step 12).
 {{< /hint >}}
 
 **Run:**
@@ -396,6 +397,51 @@ After all ports are migrated and verified:
 
 ---
 
+## Step 12: Omada Device Adoption
+
+After management cutover, adopt the switch and AP into the Omada SDN controller. Treat this as a fresh Omada install — devices are on new IPs/VLANs and need to be discovered and adopted.
+
+**Prerequisites:**
+- Step 11 complete (switch on VLAN 99 management IP, inventory promoted)
+- Builder reachable at `10.20.99.95`
+
+**Run:**
+1. Access the Omada controller at `https://10.20.99.95:8043`
+2. Complete the initial setup wizard (fresh install)
+3. Adopt `access-sw01` — it should appear as pending on VLAN 99 (management) at `10.20.99.10`
+4. Adopt `ap01` — it should appear as pending on its assigned VLAN
+5. If devices don't auto-discover, use manual adoption by IP
+
+**Verify:**
+1. Both devices show as "Connected" in the Omada dashboard
+2. Switch and AP firmware/model info visible in Omada
+
+**Rollback:**
+Omada adoption is non-disruptive — devices continue to function without Omada management. Remove a device from Omada if needed and re-adopt later.
+
+---
+
+## Step 13: AP SSID Configuration
+
+Configure SSID-to-VLAN mappings for wireless networks via the Omada controller.
+
+**Prerequisites:**
+- Step 12 complete (AP adopted in Omada)
+
+**Run:**
+1. In the Omada controller, configure SSID-to-VLAN mappings for each wireless network
+2. Assign each SSID to its appropriate VLAN ID
+
+**Verify:**
+1. Wireless client connects to an SSID
+2. Client receives a DHCP lease from the correct VLAN subnet
+3. Client has internet access
+
+**Rollback:**
+Revert SSID settings in Omada, or factory reset the AP and re-adopt in Step 12.
+
+---
+
 ## Post-Migration
 
 After all steps complete and connectivity is verified:
@@ -443,7 +489,7 @@ After all steps complete and connectivity is verified:
 - Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/4`
 - Verify VLAN 99 interface is enabled with IP `10.20.99.1` in OPNsense
 - If the builder has the wrong static IP config, revert the port to VLAN 1 and re-run the builder playbook with the dvntm inventory
-- Check Omada controller status: if the builder is unreachable, Omada cannot manage the switch or AP
+- If the builder is unreachable, Omada adoption (Step 12) cannot proceed — but the switch and AP continue to function independently
 - Last resort: revert the builder port to VLAN 1 via console:
   ```
   configure terminal
