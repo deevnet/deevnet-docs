@@ -150,7 +150,7 @@ show interface switchport gigabitEthernet 1/0/1
 - Native VLAN: 999
 - Allowed VLANs include all configured VLANs
 
-Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Step 8.
+Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Step 11.
 
 **Rollback:**
 Via console if network access is lost:
@@ -166,34 +166,73 @@ copy running-config startup-config
 
 ---
 
-## Step 5: Test Ports (Builder First)
+## Step 5: Builder Cutover to Management VLAN
 
-Migrate the builder's port first to validate VLAN 99 end-to-end. This puts the builder on the management segment early, giving it routed access to all VLANs for the rest of the migration. Then test a second port on a different VLAN.
+Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
 
-**5a — Builder port (`gi1/0/4`) to VLAN 99:**
+**Prerequisites:**
+- Step 4 complete (trunk uplink carrying VLAN 99)
+- Configure the OPNsense VLAN 99 interface with gateway IP `10.20.99.1/24`:
+  - OPNsense GUI -> Interfaces -> Assignments: assign the VLAN 99 device to an interface slot
+  - Set IPv4 to static `10.20.99.1/24`, enable the interface, apply
+
+**5a — Configure builder eth0 as static IP on the target network:**
 
 ```bash
+cd ansible-collection-deevnet.builder
+make rebuild
+ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
+  -i ../ansible-inventory-deevnet/dvntm-new
+```
+
+This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1`. The interface will not come up on the new IP until the port moves to VLAN 99.
+
+**5b — Move builder port (`gi1/0/4`) to VLAN 99:**
+
+```bash
+cd ../ansible-collection-deevnet.net
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
   ansible-playbook playbooks/migration/04-switch-test-port.yml \
   -e test_port_interface="gigabitEthernet 1/0/4" \
   -e test_port_vlan_id=99
 ```
 
-**Verify (5a):**
-1. Builder's IP changes from `192.168.10.95` to `10.20.99.95` — you will lose the current SSH session
+**Verify:**
+1. You will lose the current SSH session to `192.168.10.95`
 2. Reconnect: `ssh a_autoprov@10.20.99.95`
 3. `ping 10.20.99.1` (management gateway) — should succeed
 4. `ping 8.8.8.8` — internet access works
 5. Omada UI still shows `access-sw01` and `ap01` as connected
 
-**5b — Second test port (`gi1/0/24`) on VLAN 10:**
+**Rollback:**
+1. Revert builder port to VLAN 1 via console:
+   ```
+   configure terminal
+   interface gigabitEthernet 1/0/4
+     switchport access vlan 1
+   end
+   copy running-config startup-config
+   ```
+2. Re-run builder playbook with the current (dvntm) inventory to restore DHCP/original static config:
+   ```bash
+   cd ansible-collection-deevnet.builder
+   ansible-playbook playbooks/site.yml --limit provisioner-ph01
+   ```
 
+---
+
+## Step 6: Test Second Port
+
+Test a non-builder port on a different VLAN to validate the trunk + VLAN path end-to-end.
+
+**Run:**
 ```bash
+cd ansible-collection-deevnet.net
 # Default: port gi1/0/24 -> VLAN 10 (trusted)
 make migration-switch-test-port
 ```
 
-**Verify (5b):**
+**Verify:**
 1. Connect a device to `gi1/0/24`
 2. Device receives DHCP lease from 10.20.10.x subnet
 3. `ping 10.20.10.1` (VLAN gateway) — should succeed
@@ -203,8 +242,6 @@ make migration-switch-test-port
 **Rollback:**
 ```
 configure terminal
-interface gigabitEthernet 1/0/4
-  switchport access vlan 1
 interface gigabitEthernet 1/0/24
   switchport access vlan 1
 end
@@ -213,11 +250,15 @@ copy running-config startup-config
 
 ---
 
-## Step 6: DHCP for New Subnets
+## Step 7: DHCP for New Subnets
 
 Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
 
 Ensure Kea DHCP subnets are created in OPNsense first (Services -> Kea DHCP -> Subnets) and `dhcp_subnet_uuid` is updated in `group_vars/routers/vars.yml` for each subnet.
+
+{{< hint info >}}
+**Note:** VLAN 99 already has its gateway IP configured from Step 5. The DHCP configuration here covers the remaining subnets. VLAN 99 devices (builder, switch) use static IPs and do not require DHCP reservations.
+{{< /hint >}}
 
 **Run:**
 ```bash
@@ -227,16 +268,20 @@ make migration-opnsense-dhcp
 **Verify:**
 1. OPNsense GUI -> Services -> Kea DHCP -> Subnets — new subnets visible
 2. OPNsense GUI -> Services -> Kea DHCP -> Reservations — static mappings present
-3. A device on the test port (Step 5) gets a correct DHCP lease
+3. A device on the test port (Step 6) gets a correct DHCP lease
 
 **Rollback:**
 Delete DHCP subnets and reservations via OPNsense GUI -> Services -> Kea DHCP.
 
 ---
 
-## Step 7: OPNsense Interface IPs
+## Step 8: OPNsense Interface IPs
 
-Assign gateway IP addresses to each VLAN interface and enable them. After this step, the router can route traffic between VLAN subnets (subject to firewall policy).
+Assign gateway IP addresses to each remaining VLAN interface and enable them. After this step, the router can route traffic between VLAN subnets (subject to firewall policy).
+
+{{< hint info >}}
+**Note:** VLAN 99 was already configured with its gateway IP (`10.20.99.1/24`) in Step 5 as a prerequisite for the builder cutover.
+{{< /hint >}}
 
 **Prerequisites:**
 - Step 2 complete (VLAN sub-interfaces exist on OPNsense)
@@ -251,19 +296,19 @@ make migration-opnsense-interfaces
 **Verify:**
 1. OPNsense GUI -> Interfaces -> each VLAN interface shows its gateway IP with /24 mask
 2. Each interface shows status: enabled
-3. From test port (Step 5): `ping 10.20.10.1` (trusted gateway) — should succeed
+3. From test port (Step 6): `ping 10.20.10.1` (trusted gateway) — should succeed
 
 **Rollback:**
 Remove IP assignments via OPNsense GUI -> Interfaces -> select each VLAN interface -> clear IP and disable.
 
 ---
 
-## Step 8: Inter-VLAN Firewall Rules
+## Step 9: Inter-VLAN Firewall Rules
 
 Apply zone-based firewall policy (default-deny with explicit inter-zone allows). Rules are defined in `group_vars/all/firewall.yml` and managed via the OPNsense filter API.
 
 **Prerequisites:**
-- Step 7 complete (VLAN interfaces have IPs and are enabled)
+- Step 8 complete (VLAN interfaces have IPs and are enabled)
 
 **Run:**
 ```bash
@@ -281,12 +326,12 @@ Delete managed rules via OPNsense GUI -> Firewall -> Automation -> Filter -> del
 
 ---
 
-## Step 9: Migrate Remaining Access Ports
+## Step 10: Migrate Remaining Access Ports
 
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
 
 {{< hint info >}}
-**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration (Step 10 / Post-Migration). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
+**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration (Step 11 / Post-Migration). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
 {{< /hint >}}
 
 {{< hint warning >}}
@@ -315,7 +360,7 @@ copy running-config startup-config
 
 ---
 
-## Step 10: Management Cutover (Manual)
+## Step 11: Management Cutover (Manual)
 
 After all ports are migrated and verified:
 
@@ -393,10 +438,11 @@ After all steps complete and connectivity is verified:
 - Check OPNsense firewall rules allow DHCP on VLAN interface
 - Check `show mac address-table` to confirm device is on expected port
 
-### Builder lost connectivity during migration
+### Builder lost connectivity during Step 5
 - Verify ethernet cable is connected to `gi1/0/4` — do not rely on WiFi for substrate access
 - Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/4`
 - Verify VLAN 99 interface is enabled with IP `10.20.99.1` in OPNsense
+- If the builder has the wrong static IP config, revert the port to VLAN 1 and re-run the builder playbook with the dvntm inventory
 - Check Omada controller status: if the builder is unreachable, Omada cannot manage the switch or AP
 - Last resort: revert the builder port to VLAN 1 via console:
   ```
