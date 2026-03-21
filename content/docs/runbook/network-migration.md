@@ -176,12 +176,22 @@ copy running-config startup-config
 Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
 
 **Prerequisites:**
-- Step 4 complete (trunk uplink carrying VLAN 99)
-- Configure the OPNsense VLAN 99 interface with gateway IP `10.20.99.1/24`:
-  - OPNsense GUI -> Interfaces -> Assignments: assign the VLAN 99 device to an interface slot
-  - Set IPv4 to static `10.20.99.1/24`, enable the interface, apply
+- Step 4 complete (trunk uplink carrying tagged VLANs)
 
-**5a — Configure builder eth0 as static IP on the target network:**
+**5a — Assign and configure OPNsense VLAN interfaces:**
+
+Assign all VLAN devices to OPNsense interface slots and configure gateway IPs. The OPNsense API does not support interface assignment, so the playbook will pause and prompt you to assign devices via the GUI if needed.
+
+```bash
+cd ansible-collection-deevnet.net
+make migration-opnsense-assign
+```
+
+The playbook checks which VLAN devices are unassigned, pauses with instructions for the GUI step (Interfaces → Assignments → add each device → Save), then automatically configures all IPs and enables the interfaces.
+
+After this step, all VLAN gateways (including `10.20.99.1` for management) are active.
+
+**5b — Configure builder eth0 as static IP on the target network:**
 
 ```bash
 cd ansible-collection-deevnet.builder
@@ -192,7 +202,7 @@ ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
 
 This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a connection error — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
 
-**5b — Add VLAN 99 management IP to the switch:**
+**5c — Add VLAN 99 management IP to the switch:**
 
 The switch management interface is on VLAN 1 (`192.168.10.10`). After the builder moves to VLAN 99, it can no longer reach the switch on VLAN 1 (VLAN 1 is not carried on the trunk). This step adds a second management IP on VLAN 99 so the switch is dual-homed and reachable from both VLANs during the transition.
 
@@ -203,7 +213,7 @@ make migration-switch-mgmt-ip
 
 The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in Step 11 after migration completes.
 
-**5c — Move builder port (`gi1/0/16`) to VLAN 99:**
+**5d — Move builder port (`gi1/0/16`) to VLAN 99:**
 
 ```bash
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
