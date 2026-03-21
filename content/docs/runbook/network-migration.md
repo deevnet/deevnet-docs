@@ -180,14 +180,26 @@ Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a st
 
 **5a — Assign and configure OPNsense VLAN interfaces:**
 
-Assign all VLAN devices to OPNsense interface slots and configure gateway IPs. The OPNsense API does not support interface assignment, so the playbook will pause and prompt you to assign devices via the GUI if needed.
+Assign all VLAN devices to OPNsense interface slots and configure gateway IPs. The OPNsense API does not support interface assignment ([GitHub #7324](https://github.com/opnsense/core/issues/7324)), so the playbook will pause and prompt you to complete a manual GUI step before continuing with automated IP configuration.
+
+{{< hint warning >}}
+**Manual Step: OPNsense GUI — Interface Assignment**
+
+The OPNsense API can create VLAN devices but cannot assign them to interface slots. You must do this manually via the GUI. If the builder is headless, use an SSH tunnel from your desktop: `ssh -L 8443:192.168.10.1:443 a_autoprov@<builder-ip>`, then open `https://localhost:8443`.
+
+1. **Apply VLAN devices first:** Go to **Interfaces → Devices → VLAN**. Click the **Apply** button at the bottom of the page. This activates the VLAN devices on the OS — without this step, the devices will not appear as available for assignment.
+
+2. **Assign each VLAN device to an interface slot:** Go to **Interfaces → Assignments**. At the bottom of the page, use the **"New interface"** dropdown to select each VLAN device (vlan01 through vlan012) one at a time. Click **+** (Add) after each. Click **Save** when all devices are added.
+
+You do **not** need to configure IPs, descriptions, or enable the interfaces — the playbook handles all of that automatically after the assignment.
+{{< /hint >}}
 
 ```bash
 cd ansible-collection-deevnet.net
 make migration-opnsense-assign
 ```
 
-The playbook checks which VLAN devices are unassigned, pauses with instructions for the GUI step (Interfaces → Assignments → add each device → Save), then automatically configures all IPs and enables the interfaces.
+The playbook checks which VLAN devices are unassigned, pauses for the manual GUI step above, then automatically configures all gateway IPs and enables the interfaces.
 
 After this step, all VLAN gateways (including `10.20.99.1` for management) are active.
 
