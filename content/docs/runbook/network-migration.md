@@ -183,15 +183,21 @@ Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a st
 Assign all VLAN devices to OPNsense interface slots and configure gateway IPs. The OPNsense API does not support interface assignment ([GitHub #7324](https://github.com/opnsense/core/issues/7324)), so the playbook will pause and prompt you to complete a manual GUI step before continuing with automated IP configuration.
 
 {{< hint warning >}}
-**Manual Step: OPNsense GUI — Interface Assignment**
+**Manual Steps: OPNsense GUI — Interface Assignment and IP Configuration**
 
-The OPNsense API can create VLAN devices but cannot assign them to interface slots. You must do this manually via the GUI. If the builder is headless, use an SSH tunnel from your desktop: `ssh -L 8443:192.168.10.1:443 a_autoprov@<builder-ip>`, then open `https://localhost:8443`.
+OPNsense (as of 25.7) has no API for interface assignment OR setting interface IPs. Both must be done via the GUI. If the builder is headless, use an SSH tunnel from your desktop: `ssh -L 8443:192.168.10.1:443 a_autoprov@<builder-ip>`, then open `https://localhost:8443`.
 
-1. **Apply VLAN devices first:** Go to **Interfaces → Devices → VLAN**. Click the **Apply** button at the bottom of the page. This activates the VLAN devices on the OS — without this step, the devices will not appear as available for assignment.
+1. **Apply VLAN devices:** Go to **Interfaces → Devices → VLAN**. Click the **Apply** button at the bottom. This activates the VLAN devices on the OS — without this, they won't appear for assignment.
 
-2. **Assign each VLAN device to an interface slot:** Go to **Interfaces → Assignments**. At the bottom of the page, use the **"New interface"** dropdown to select each VLAN device (vlan01 through vlan012) one at a time. Click **+** (Add) after each. Click **Save** when all devices are added.
+2. **Assign each VLAN device to an interface slot:** Go to **Interfaces → Assignments**. Use the **"New interface"** dropdown at the bottom to add each VLAN device (vlan01 through vlan012) one at a time. Click **+** (Add) after each. Click **Save** when done.
 
-You do **not** need to configure IPs, descriptions, or enable the interfaces — the playbook handles all of that automatically after the assignment.
+3. **Configure IPs on each VLAN interface:** The playbook will show which interfaces need IPs. For each one, go to **Interfaces → [OPT name]**, set:
+   - **IPv4 Configuration Type:** Static IPv4
+   - **IPv4 address:** the gateway IP shown by the playbook (e.g., `10.20.99.1/24`)
+   - **Check "Enable Interface"**
+   - Click **Save**
+
+   After all interfaces are configured, click **Apply changes**.
 {{< /hint >}}
 
 ```bash
@@ -600,7 +606,7 @@ After all steps complete and connectivity is verified:
 
 Automation gaps and improvements identified during the initial migration run.
 
-- [ ] **Automate OPNsense interface assignment:** The OPNsense API does not support assigning VLAN devices to interface slots ([GitHub #7324](https://github.com/opnsense/core/issues/7324)). Step 5a requires a manual GUI step. Fix: enable SSH access for `a_autoprov` on OPNsense, write a playbook that edits `/conf/config.xml` to add interface assignments, then call `configctl interface reconfigure` to apply.
+- [ ] **Automate OPNsense interface assignment and IP config:** OPNsense (as of 25.7) has no API for interface assignment ([GitHub #7324](https://github.com/opnsense/core/issues/7324)) OR setting interface IPs (`setInterface` does not exist in the `OverviewController`). Step 5a requires two manual GUI steps: assigning VLAN devices and configuring IPs. Fix: enable SSH access for `a_autoprov` on OPNsense, write a playbook that edits `/conf/config.xml` to add assignments and IPs, then call `configctl interface reconfigure`.
 - [ ] **Remove VLAN 1 from trunk after migration:** VLAN 1 (System-VLAN) remains as an untagged member on the trunk uplink after migration. It is harmless (PVID 999 takes precedence) but should be cleaned up for hygiene.
 - [ ] **Verify `cli_config` idempotency on TP-Link SG2218:** The `cli_config` module does not detect existing config on SG2218 due to the minimal cliconf plugin. All switch tasks use `cli_command` with `changed_when: true` (always reports changed). Investigate implementing `get_config` parsing in the cliconf plugin for proper idempotency.
 - [ ] **Add pi03, pi04, hv02 port assignments:** These devices were removed from `switch_ports` because they were not connected during migration. Re-add when physically cabled.
