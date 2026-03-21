@@ -15,12 +15,7 @@ This is a semi-automated migration: run a playbook, verify, proceed. Each step i
 
 ### Vault
 
-All secrets (OPNsense API credentials, switch credentials) are encrypted with Ansible Vault in the inventory:
-
-- `group_vars/routers/vault.yml` — OPNsense API key and secret
-- `group_vars/switches/vault.yml` — switch user, password, and enable password
-
-Decrypt the vault files before starting the migration and re-encrypt when done:
+All secrets are encrypted with Ansible Vault in the inventory. Decrypt before starting the migration and re-encrypt when done:
 
 ```bash
 cd ansible-inventory-deevnet
@@ -31,9 +26,7 @@ make vault      # re-encrypt when migration is complete
 
 ### Pre-Migration Checklist
 
-- [ ] SSH to switch verified: `ssh $SWITCH_USER@access-sw01`
 - [ ] Vault decrypted: `cd ansible-inventory-deevnet && make unvault`
-- [ ] OPNsense API verified: confirm credentials in `../ansible-inventory-deevnet/dvntm-new/group_vars/routers/vault.yml`, then `curl -u "KEY:SECRET" https://core-rt02/api/core/firmware/status`
 - [ ] Backup current switch config: `show running-config` and save output
 - [ ] Backup current OPNsense config: System -> Configuration -> Backups -> Download
 - [ ] Console/OOB access available (in case of connectivity loss during step 4)
@@ -48,31 +41,42 @@ The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server
 - The Omada controller on the builder manages device adoption and monitoring (switch is managed via SSH/CLI during migration) — Omada adoption of devices happens post-migration in Step 12
 - The builder's port is assigned to VLAN 99 (management) in the target inventory, with IP `10.20.99.95`
 
-**Pre-flight checks:**
-- [ ] Builder ethernet cable confirmed on `gi1/0/4` (not WiFi for substrate connectivity)
-- [ ] Builder `eth1` connected to upstream network and reachable via its DHCP address
-- [ ] Builder currently reachable at `192.168.10.95`
+**Pre-flight checks:** Automated by `make preflight` (Step 1). The preflight playbook verifies builder service status, eth1 DHCP address, and internet connectivity.
 
----
-
-## Step 1: Physical Port Mapping
+### Physical Port Mapping
 
 Verify that every device is physically connected to its intended switch port before making any logical changes. The port-to-VLAN assignments in `host_vars/access-sw01.yml` assume specific physical cabling — if a device is on the wrong port, it will land in the wrong VLAN after migration.
 
-**Run:**
 1. Open `host_vars/access-sw01.yml` and review the `switch_ports` mapping
 2. Physically trace or label each cable at the switch to confirm it matches the intended port assignment
 3. Relocate any mis-cabled devices to their correct ports
 
+The MAC address table output in Step 1 (preflight) serves as verification that cabling is correct.
+
+---
+
+## Step 1: Preflight Check
+
+Run the automated preflight playbook to verify connectivity and readiness before starting any migration steps. This validates:
+
+- OPNsense API reachable (replaces manual `curl` check)
+- Switch SSH connectivity (replaces manual SSH check) and MAC address table for port mapping verification
+- AP reachable via ping
+- Builder: Omada controller active, eth1 has DHCP address, internet connectivity
+
+**Run:**
+```bash
+cd ansible-collection-deevnet.net
+make preflight
+```
+
 **Verify:**
-```
-ssh $SWITCH_USER@access-sw01
-show mac address-table
-```
-Confirm each device's MAC address appears on the expected port.
+All checks show `[PASS]`. Internet connectivity from the builder shows `[WARN]` if unreachable — this is informational and not a hard failure.
+
+Review the MAC address table output and confirm each device's MAC appears on its expected port (per the Physical Port Mapping prerequisite above).
 
 **Rollback:**
-No logical changes — this step is purely physical. Move cables back if needed.
+Read-only — no changes made.
 
 ---
 
