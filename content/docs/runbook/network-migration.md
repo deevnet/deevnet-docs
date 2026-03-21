@@ -209,6 +209,18 @@ The playbook checks which VLAN devices are unassigned, pauses for the manual GUI
 
 After this step, all VLAN gateways (including `10.20.99.1` for management) are active.
 
+**5a2 — Temporary firewall rules for VLAN interfaces:**
+
+OPNsense default-denies all traffic on new OPT interfaces. This adds temporary pass-all rules via the firewall API so traffic flows during migration. Step 9 replaces these with proper zone-based policy.
+
+{{< hint info >}}
+**Note:** This step runs AFTER the builder is on VLAN 99 and uses the VLAN 99 gateway IP (`10.20.99.1`) to reach OPNsense. If running during initial setup (builder still on VLAN 1), the playbook will need the `opnsense_api_url` overridden.
+{{< /hint >}}
+
+```bash
+make migration-opnsense-temp-fw
+```
+
 **5b — Add VLAN 99 management IP to the switch:**
 
 Add a second management IP on VLAN 99 to the switch while the builder can still reach it on VLAN 1. This must happen **before** the builder's IP changes — otherwise the builder and switch are on different subnets and cannot communicate.
