@@ -2,8 +2,8 @@
 title: "DVNTM Builder & Core Services"
 weight: 1
 tasks_completed: 19
-tasks_in_progress: 2
-tasks_planned: 8
+tasks_in_progress: 6
+tasks_planned: 6
 ---
 
 # DVNTM Builder & Core Services
@@ -84,8 +84,10 @@ Automated configuration of network infrastructure.
 - ✅ DNS Automation
 - ✅ DHCP Automation
 - 🔄 Core Router Automation
-- ⏳ Access Switch Automation
-- ⏳ Wireless AP Automation
+- 🔄 Access Switch Automation
+- 🔄 Wireless AP Automation
+- 🔄 Implement Network Segmentation
+- 🔄 Migrate to RFC1918 10 space
 
 ---
 
