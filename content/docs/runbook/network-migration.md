@@ -24,6 +24,10 @@ make unvault    # decrypt — run once before starting
 make vault      # re-encrypt when migration is complete
 ```
 
+### Migration Artifact Capture
+
+Migration logs (preflight, each migration step, postcheck) are automatically captured in `ansible-collection-deevnet.net/migration-logs/` with timestamps. Each `make` target produces a log file named `YYYYMMDD-HHMMSS-<target>.log`. No additional setup is required.
+
 ### Pre-Migration Checklist
 
 - [ ] Vault decrypted: `cd ansible-inventory-deevnet && make unvault`
@@ -451,28 +455,42 @@ Revert SSID settings in Omada, or factory reset the AP and re-adopt in Step 12.
 
 After all steps complete and connectivity is verified:
 
-1. **Re-encrypt vault files:**
+1. **Run automated post-migration validation:**
+   ```bash
+   cd ansible-collection-deevnet.net
+   make postcheck
+   ```
+   This runs against the `dvntm-new` inventory and validates:
+   - OPNsense has all expected VLAN interfaces
+   - Switch VLAN database and trunk uplink are correct
+   - All devices (switch, AP, builder) are reachable at target IPs
+   - All VLAN gateways are reachable (inter-VLAN routing works)
+   - Builder services are active with correct interface addresses
+
+   All checks should show `[PASS]`. Internet connectivity shows `[WARN]` if unreachable (non-fatal).
+
+2. **Re-encrypt vault files:**
    ```bash
    cd ansible-inventory-deevnet
    make vault
    ```
 
-2. **Run full DNS/DHCP roles** against `dvntm-new` inventory:
+3. **Run full DNS/DHCP roles** against `dvntm-new` inventory:
    ```bash
    make dns
    make dhcp
    ```
 
-3. **Remove old network config:**
+4. **Remove old network config:**
    - Delete 192.168.10.0/24 subnet from OPNsense
    - Remove any old static routes referencing 192.168.10.x
 
-4. **Ongoing switch management** — use the `switch` target for day-2 operations:
+5. **Ongoing switch management** — use the `switch` target for day-2 operations:
    ```bash
    make switch
    ```
 
-5. **Update documentation** — verify network-reference.md reflects the new state
+6. **Update documentation** — verify network-reference.md reflects the new state
 
 ---
 
