@@ -190,7 +190,7 @@ ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
   -i ../ansible-inventory-deevnet/dvntm-new
 ```
 
-This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1`. The interface will not come up on the new IP until the port moves to VLAN 99.
+This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a connection error — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
 
 **5b — Move builder port (`gi1/0/4`) to VLAN 99:**
 
@@ -202,12 +202,13 @@ ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
   -e test_port_vlan_id=99
 ```
 
+Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
+
 **Verify:**
-1. You will lose the current SSH session to `192.168.10.95`
-2. Reconnect: `ssh a_autoprov@10.20.99.95`
-3. `ping 10.20.99.1` (management gateway) — should succeed
-4. `ping 8.8.8.8` — internet access works
-5. Switch still responds to SSH: `ssh $SWITCH_USER@10.20.99.10` (Omada adoption happens in Step 12)
+1. Reconnect: `ssh a_autoprov@10.20.99.95`
+2. `ping 10.20.99.1` (management gateway) — should succeed
+3. `ping 8.8.8.8` — internet access works
+4. Switch still responds to SSH: `ssh $SWITCH_USER@10.20.99.10` (Omada adoption happens in Step 12)
 
 **Rollback:**
 1. Revert builder port to VLAN 1 via console:
