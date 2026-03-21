@@ -40,7 +40,7 @@ Migration logs (preflight, each migration step, postcheck) are automatically cap
 
 The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. The builder's `eth1` (transit interface, DHCP) provides upstream/WAN connectivity — WiFi is disabled (`ip: null`). Do **not** rely on wireless for management connectivity.
 
-- The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/4`
+- The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/16`
 - `eth1` (transit) must be connected to an upstream network and receiving a DHCP address — this is the builder's only path to the internet
 - The Omada controller on the builder manages device adoption and monitoring (switch is managed via SSH/CLI during migration) — Omada adoption of devices happens post-migration in Step 12
 - The builder's port is assigned to VLAN 99 (management) in the target inventory, with IP `10.20.99.95`
@@ -196,13 +196,13 @@ ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
 
 This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a connection error — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
 
-**5b — Move builder port (`gi1/0/4`) to VLAN 99:**
+**5b — Move builder port (`gi1/0/16`) to VLAN 99:**
 
 ```bash
 cd ../ansible-collection-deevnet.net
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
   ansible-playbook playbooks/migration/04-switch-test-port.yml \
-  -e test_port_interface="gigabitEthernet 1/0/4" \
+  -e test_port_interface="gigabitEthernet 1/0/16" \
   -e test_port_vlan_id=99
 ```
 
@@ -218,7 +218,7 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
 1. Revert builder port to VLAN 1 via console:
    ```
    configure terminal
-   interface gigabitEthernet 1/0/4
+   interface gigabitEthernet 1/0/16
      switchport access vlan 1
    end
    copy running-config startup-config
@@ -508,15 +508,15 @@ After all steps complete and connectivity is verified:
 - Check `show mac address-table` to confirm device is on expected port
 
 ### Builder lost connectivity during Step 5
-- Verify ethernet cable is connected to `gi1/0/4` — do not rely on WiFi for substrate access
-- Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/4`
+- Verify ethernet cable is connected to `gi1/0/16` — do not rely on WiFi for substrate access
+- Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/16`
 - Verify VLAN 99 interface is enabled with IP `10.20.99.1` in OPNsense
 - If the builder has the wrong static IP config, revert the port to VLAN 1 and re-run the builder playbook with the dvntm inventory
 - If the builder is unreachable, Omada adoption (Step 12) cannot proceed — but the switch and AP continue to function independently
 - Last resort: revert the builder port to VLAN 1 via console:
   ```
   configure terminal
-  interface gigabitEthernet 1/0/4
+  interface gigabitEthernet 1/0/16
     switchport access vlan 1
   end
   copy running-config startup-config
