@@ -140,11 +140,9 @@ copy running-config startup-config
 
 ---
 
-## Step 4: Trunk Uplink
+## Step 4: Trunk Uplink (Tagged VLANs)
 
-Configure the switch uplink port as a trunk carrying all VLANs with blackhole (VLAN 999) as native.
-
-**WARNING:** If the native VLAN is misconfigured, you will lose switch access over the network. Ensure console/OOB access is available before proceeding.
+Add all VLANs as tagged members on the uplink port. The PVID stays at 1 (the router's untagged traffic continues on VLAN 1). The PVID cutover to blackhole (999) happens in Step 9b — after OPNsense VLAN interfaces have IPs and the router is reachable via tagged VLANs.
 
 **Run:**
 ```bash
@@ -155,20 +153,18 @@ make migration-switch-trunk
 ```
 show interface switchport gigabitEthernet 1/0/1
 ```
-- Uplink port shows mode: trunk
-- Native VLAN: 999
-- Allowed VLANs include all configured VLANs
+- All VLANs (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99) are Tagged
+- VLAN 999 is Untagged
+- **PVID is still 1** (changes later in Step 9b)
 
-Also verify you can still reach the switch at its current management IP (192.168.10.10). The switch management IP moves to 10.20.99.10 in Step 11.
+Also verify you can still reach the router (`ping 192.168.10.1`) and the switch at `192.168.10.10`.
 
 **Rollback:**
-Via console if network access is lost:
 ```
 configure terminal
 interface gigabitEthernet 1/0/1
-  switchport mode access
-  no switchport trunk allowed vlan
-  no switchport trunk native vlan
+  no switchport general allowed vlan 10,20,25,30,31,35,40,50,51,52,99,999
+exit
 end
 copy running-config startup-config
 ```
@@ -350,6 +346,37 @@ make migration-opnsense-firewall
 
 **Rollback:**
 Delete managed rules via OPNsense GUI -> Firewall -> Automation -> Filter -> delete rules prefixed with `ansible:`, then apply.
+
+---
+
+## Step 9b: Trunk PVID Cutover to Blackhole
+
+Set the trunk uplink PVID to 999 (blackhole). After this step, untagged traffic on the trunk goes to the blackhole VLAN. The router is now reachable only via tagged VLAN interfaces.
+
+**Prerequisites:**
+- Step 8 complete (OPNsense VLAN interfaces have IPs — the router is reachable via tagged VLANs)
+- Verify the router is reachable via a VLAN IP before proceeding: `ping 10.20.99.1`
+
+**Run:**
+```bash
+make migration-switch-trunk-pvid
+```
+
+**Verify:**
+```
+show interface switchport gigabitEthernet 1/0/1
+```
+- PVID: 999
+
+**Rollback:**
+```
+configure terminal
+interface gigabitEthernet 1/0/1
+  switchport pvid 1
+exit
+end
+copy running-config startup-config
+```
 
 ---
 
