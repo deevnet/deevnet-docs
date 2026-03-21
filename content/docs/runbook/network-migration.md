@@ -203,23 +203,9 @@ The playbook checks which VLAN devices are unassigned, pauses for the manual GUI
 
 After this step, all VLAN gateways (including `10.20.99.1` for management) are active.
 
-**5b — Configure builder eth0 as static IP on the target network:**
+**5b — Add VLAN 99 management IP to the switch:**
 
-{{< hint info >}}
-**Chicken-and-egg:** The `dvntm-new` inventory resolves `ansible_host` to the target IP (`10.20.99.95`), which doesn't exist yet. The `BUILDER_CURRENT_IP` variable tells the Makefile to connect via the current IP instead.
-{{< /hint >}}
-
-```bash
-cd ansible-collection-deevnet.net
-make rebuild
-make migration-builder-network BUILDER_CURRENT_IP=192.168.10.95
-```
-
-This runs only the `base` role (network config) against the builder. It configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a timeout after the interface reload — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
-
-**5c — Add VLAN 99 management IP to the switch:**
-
-The switch management interface is on VLAN 1 (`192.168.10.10`). After the builder moves to VLAN 99, it can no longer reach the switch on VLAN 1 (VLAN 1 is not carried on the trunk). This step adds a second management IP on VLAN 99 so the switch is dual-homed and reachable from both VLANs during the transition.
+Add a second management IP on VLAN 99 to the switch while the builder can still reach it on VLAN 1. This must happen **before** the builder's IP changes — otherwise the builder and switch are on different subnets and cannot communicate.
 
 ```bash
 cd ansible-collection-deevnet.net
@@ -228,16 +214,28 @@ make migration-switch-mgmt-ip
 
 The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in Step 11 after migration completes.
 
-**5d — Move builder port (`gi1/0/16`) to VLAN 99:**
+**5c — Configure builder eth0 as static IP on the target network:**
+
+{{< hint info >}}
+**Chicken-and-egg:** The `dvntm-new` inventory resolves `ansible_host` to the target IP (`10.20.99.95`), which doesn't exist yet. The `BUILDER_CURRENT_IP` variable tells the Makefile to connect via the current IP instead.
+{{< /hint >}}
 
 ```bash
-ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
-  ansible-playbook playbooks/migration/04-switch-test-port.yml \
-  -e test_port_interface="gigabitEthernet 1/0/16" \
-  -e test_port_vlan_id=99
+make rebuild
+make migration-builder-network BUILDER_CURRENT_IP=192.168.10.95
 ```
 
-Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
+This runs only the `base` role (network config) against the builder. It configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a timeout after the interface reload — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
+
+**5d — Move builder port (`gi1/0/16`) to VLAN 99:**
+
+The builder's IP changed but its port is still on VLAN 1. The builder and switch are on different subnets on the same VLAN, so the playbook temporarily adds the old IP as a secondary address to reach the switch, moves the port, then cleans up.
+
+```bash
+make migration-builder-port-move
+```
+
+Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95` on the management VLAN.
 
 **Verify:**
 1. Reconnect: `ssh a_autoprov@10.20.99.95`
@@ -246,11 +244,13 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
 4. Switch responds to SSH at new address: `ssh $SWITCH_USER@10.20.99.10`
 
 **Rollback:**
-1. Revert builder port to VLAN 1 via console:
+1. Revert builder port to VLAN 1 via console (SG2218 General mode):
    ```
-   configure terminal
+   configure
    interface gigabitEthernet 1/0/16
-     switchport access vlan 1
+     switchport general allowed vlan 1 untagged
+     switchport pvid 1
+   exit
    end
    copy running-config startup-config
    ```
