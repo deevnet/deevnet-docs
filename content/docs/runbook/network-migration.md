@@ -196,10 +196,20 @@ ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
 
 This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a connection error — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
 
-**5b — Move builder port (`gi1/0/16`) to VLAN 99:**
+**5b — Add VLAN 99 management IP to the switch:**
+
+The switch management interface is on VLAN 1 (`192.168.10.10`). After the builder moves to VLAN 99, it can no longer reach the switch on VLAN 1 (VLAN 1 is not carried on the trunk). This step adds a second management IP on VLAN 99 so the switch is dual-homed and reachable from both VLANs during the transition.
 
 ```bash
-cd ../ansible-collection-deevnet.net
+cd ansible-collection-deevnet.net
+make migration-switch-mgmt-ip
+```
+
+The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in Step 11 after migration completes.
+
+**5c — Move builder port (`gi1/0/16`) to VLAN 99:**
+
+```bash
 ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:~/.ansible/collections" \
   ansible-playbook playbooks/migration/04-switch-test-port.yml \
   -e test_port_interface="gigabitEthernet 1/0/16" \
@@ -212,7 +222,7 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
 1. Reconnect: `ssh a_autoprov@10.20.99.95`
 2. `ping 10.20.99.1` (management gateway) — should succeed
 3. `ping 8.8.8.8` — internet access works
-4. Switch still responds to SSH: `ssh $SWITCH_USER@10.20.99.10` (Omada adoption happens in Step 12)
+4. Switch responds to SSH at new address: `ssh $SWITCH_USER@10.20.99.10`
 
 **Rollback:**
 1. Revert builder port to VLAN 1 via console:
@@ -223,7 +233,14 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95`.
    end
    copy running-config startup-config
    ```
-2. Re-run builder playbook with the current (dvntm) inventory to restore DHCP/original static config:
+2. Remove VLAN 99 management IP from switch:
+   ```
+   configure terminal
+   no interface vlan 99
+   end
+   copy running-config startup-config
+   ```
+3. Re-run builder playbook with the current (dvntm) inventory to restore DHCP/original static config:
    ```bash
    cd ansible-collection-deevnet.builder
    ansible-playbook playbooks/site.yml --limit provisioner-ph01
@@ -374,11 +391,9 @@ copy running-config startup-config
 
 After all ports are migrated and verified:
 
-1. **Switch management VLAN** — move the switch management interface to VLAN 99:
+1. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from Step 5b.
    ```
    configure terminal
-   interface vlan 99
-     ip address 10.20.99.10 255.255.255.0
    no interface vlan 1
    end
    copy running-config startup-config
