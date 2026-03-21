@@ -206,18 +206,16 @@ After this step, all VLAN gateways (including `10.20.99.1` for management) are a
 **5b — Configure builder eth0 as static IP on the target network:**
 
 {{< hint info >}}
-**Chicken-and-egg:** The `dvntm-new` inventory resolves `ansible_host` to the target IP (`10.20.99.95`), which doesn't exist yet. Override `ansible_host` with the current IP so Ansible can connect. The playbook applies the full `site.yml` — only the `base` role (network config) matters here; other roles may run but are harmless.
+**Chicken-and-egg:** The `dvntm-new` inventory resolves `ansible_host` to the target IP (`10.20.99.95`), which doesn't exist yet. The `BUILDER_CURRENT_IP` variable tells the Makefile to connect via the current IP instead.
 {{< /hint >}}
 
 ```bash
-cd ansible-collection-deevnet.builder
+cd ansible-collection-deevnet.net
 make rebuild
-ansible-playbook playbooks/site.yml --limit provisioner-ph01 \
-  -i ../ansible-inventory-deevnet/dvntm-new \
-  -e "ansible_host=192.168.10.95"
+make migration-builder-network BUILDER_CURRENT_IP=192.168.10.95
 ```
 
-This configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will fail with a timeout after the interface reload — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
+This runs only the `base` role (network config) against the builder. It configures eth0 with `10.20.99.95/24`, gateway `10.20.99.1` and **immediately reloads the interface**. The playbook will end with a timeout after the interface reload — this is expected. The builder's eth0 is now on `10.20.99.95` but its switch port is still on VLAN 1, so it is temporarily unreachable on either address.
 
 **5c — Add VLAN 99 management IP to the switch:**
 
@@ -607,4 +605,3 @@ Automation gaps and improvements identified during the initial migration run.
 - [ ] **Verify `cli_config` idempotency on TP-Link SG2218:** The `cli_config` module does not detect existing config on SG2218 due to the minimal cliconf plugin. All switch tasks use `cli_command` with `changed_when: true` (always reports changed). Investigate implementing `get_config` parsing in the cliconf plugin for proper idempotency.
 - [ ] **Add pi03, pi04, hv02 port assignments:** These devices were removed from `switch_ports` because they were not connected during migration. Re-add when physically cabled.
 - [ ] **Add `builder` group to inventories:** The `builder` group was missing from both `dvntm` and `dvntm-new` inventories, causing the `base` role play in `site.yml` to skip. Added during migration — verify this is the correct long-term grouping.
-- [ ] **Create a targeted network-config playbook for migration:** Step 5b runs `site.yml` which applies all roles (workstation, artifacts, omada, bootstrap) when only the `base` role (network interface config) is needed. Create a focused playbook or `make` target that only runs the `base` role with a connection override for the chicken-and-egg IP problem.
