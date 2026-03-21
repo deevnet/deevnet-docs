@@ -590,3 +590,14 @@ After all steps complete and connectivity is verified:
 - Verify VLAN interfaces have IP addresses assigned in OPNsense
 - Check OPNsense firewall rules for inter-VLAN traffic
 - Verify routing table: OPNsense GUI -> System -> Routes
+
+---
+
+## To Do
+
+Automation gaps and improvements identified during the initial migration run.
+
+- [ ] **Automate OPNsense interface assignment:** The OPNsense API does not support assigning VLAN devices to interface slots ([GitHub #7324](https://github.com/opnsense/core/issues/7324)). Step 5a requires a manual GUI step. Fix: enable SSH access for `a_autoprov` on OPNsense, write a playbook that edits `/conf/config.xml` to add interface assignments, then call `configctl interface reconfigure` to apply.
+- [ ] **Remove VLAN 1 from trunk after migration:** VLAN 1 (System-VLAN) remains as an untagged member on the trunk uplink after migration. It is harmless (PVID 999 takes precedence) but should be cleaned up for hygiene.
+- [ ] **Verify `cli_config` idempotency on TP-Link SG2218:** The `cli_config` module does not detect existing config on SG2218 due to the minimal cliconf plugin. All switch tasks use `cli_command` with `changed_when: true` (always reports changed). Investigate implementing `get_config` parsing in the cliconf plugin for proper idempotency.
+- [ ] **Add pi03, pi04, hv02 port assignments:** These devices were removed from `switch_ports` because they were not connected during migration. Re-add when physically cabled.

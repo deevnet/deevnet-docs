@@ -88,6 +88,8 @@ Automated configuration of network infrastructure.
 - 🔄 Wireless AP Automation
 - 🔄 Implement Network Segmentation
 - 🔄 Migrate to RFC1918 10 space
+- ⏳ Automate OPNsense interface assignment via SSH (eliminate manual GUI step in migration)
+- ⏳ TP-Link SG2218 cliconf idempotency (proper config diff support)
 
 ---
 
