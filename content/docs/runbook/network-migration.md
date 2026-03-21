@@ -316,6 +316,10 @@ copy running-config startup-config
 
 ---
 
+{{< hint info >}}
+**Post-cutover inventory:** All `make` targets from this point forward automatically use the `dvntm-new` inventory (target IPs on the new VLAN subnets). The builder is on VLAN 99 and can only reach devices at their new addresses. No manual `-i` overrides are needed.
+{{< /hint >}}
+
 ## Step 7: DHCP for New Subnets
 
 Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
