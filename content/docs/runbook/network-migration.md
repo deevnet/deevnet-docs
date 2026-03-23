@@ -631,10 +631,17 @@ After all steps complete and connectivity is verified:
 - Revert to access mode on uplink if needed
 
 ### Device not getting DHCP lease
+- **Kea not listening on VLAN interfaces:** Check OPNsense GUI → Services → Kea DHCP → Settings → Interfaces. All VLAN interfaces must be selected. By default, Kea only listens on LAN (re0). The `opnsense_dhcp` role automates this, but verify with: `ssh root@10.20.99.1 'cat /usr/local/etc/kea/kea-dhcp4.conf'` and check the `interfaces-config` section.
 - Verify port VLAN assignment: `show vlan brief`
 - Verify DHCP subnet exists in OPNsense for that VLAN
 - Check OPNsense firewall rules allow DHCP on VLAN interface
 - Check `show mac address-table` to confirm device is on expected port
+
+### AP not discoverable or adoption fails in Omada
+- **Factory reset AP** uses static fallback IP `192.168.0.254`, not DHCP. Add temp IP on builder (`sudo ip addr add 192.168.0.1/24 dev enp4s0`) and access AP web UI at `http://192.168.0.254` (admin/admin) to set inform URL.
+- **Adoption timeout (errorCode -39002):** AP can't reach controller on required ports. Check `ss -tlnp | grep 29814` — Omada must listen on **TCP** 29814 (not just UDP). Newer AP firmware (EAP650-Outdoor) requires TCP 29814 for v2 adoption.
+- **Omada controller version mismatch:** Controller 5.12.7 does not listen on TCP 29814. Update the controller to a version that supports v2 adoption protocol.
+- **Firewalld missing ports:** Verify `sudo firewall-cmd --list-ports` includes `29810-29814/udp` AND `29811-29814/tcp`.
 
 ### Builder lost connectivity during Step 5
 - Verify ethernet cable is connected to `gi1/0/16` — do not rely on WiFi for substrate access
@@ -672,3 +679,7 @@ Automation gaps and improvements identified during the initial migration run.
 - [ ] **Switch inventory after builder cutover:** After the builder moves to VLAN 99, the `dvntm` inventory still resolves the switch `ansible_host` to `192.168.10.10` (unreachable from VLAN 99). All post-cutover switch steps must either use the `dvntm-new` inventory (`-i ../ansible-inventory-deevnet/dvntm-new`) or override `ansible_host`. Consider promoting the inventory earlier or adding a migration-phase inventory override to the Makefile.
 - [ ] **Fix test-port default port number:** The `04-switch-test-port.yml` playbook defaults to `gigabitEthernet 1/0/24`, but the SG2218 only has 18 ports. Update the default to a valid unused port (e.g., `gigabitEthernet 1/0/18`).
 - [ ] **Step 6 verify assumes DHCP before Step 7:** The Step 6 verification expects a DHCP lease on the test VLAN, but DHCP for new subnets is not configured until Step 7. Update Step 6 verify to only check gateway reachability (ping), not DHCP.
+- [ ] **Update Omada controller for v2 adoption:** Controller 5.12.7 does not listen on TCP 29814. EAP650-Outdoor requires TCP 29814 for adoption. Update the container image to a newer version. The `omada_image_tag` in builder defaults is `5.12` — update to latest stable.
+- [ ] **Remove temp VLAN 99 DHCP pool:** A temporary DHCP pool (10.20.99.200-210) was added for AP discovery. Remove it after the AP gets a static IP via Omada adoption. Management VLAN devices should use static IPs only.
+- [ ] **OPNsense automation filter API non-functional:** The `firewall/filter/addRule` API saves rules but they never compile into the pf ruleset on OPNsense 25.7.10. The `05e-opnsense-temp-firewall.yml` playbook uses this API but the rules don't take effect. Temp rules had to be loaded via `pfctl -f` over SSH. Investigate whether this is a version bug or misconfiguration.
+- [ ] **Automate Kea DHCP interface enablement in subnet creation:** The `configure_kea_interfaces.yml` task was added to the opnsense_dhcp role. Verify it runs correctly during a clean rebuild and doesn't conflict with manual GUI interface selections.
