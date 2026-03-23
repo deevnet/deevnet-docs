@@ -518,8 +518,12 @@ After all ports are migrated and verified:
 4. **Verify Ansible connectivity** from each collection that uses the inventory:
    ```bash
    cd ansible-collection-deevnet.net
+   # Switch (SSH/CLI)
    ansible switches -m ansible.netcommon.cli_command -a "command='show image-info'"
-   ansible dns_servers -m ping
+   # OPNsense (API only — SSH is not available for a_autoprov)
+   ansible dns_servers -m uri -a "url='https://10.20.99.1/api/core/firmware/status' \
+     url_username='{{ opnsense_api_key }}' url_password='{{ opnsense_api_secret }}' \
+     force_basic_auth=true validate_certs=false"
    ```
 
 5. **Clean up** — once stable, remove the old inventory:
