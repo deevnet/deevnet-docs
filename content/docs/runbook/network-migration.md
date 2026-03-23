@@ -122,7 +122,7 @@ Confirm all VLANs (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99) appear with corre
 
 **Rollback:**
 ```
-configure terminal
+configure
 no vlan 10
 no vlan 20
 no vlan 25
@@ -161,7 +161,7 @@ Also verify you can still reach the router (`ping 192.168.10.1`) and the switch 
 
 **Rollback:**
 ```
-configure terminal
+configure
 interface gigabitEthernet 1/0/1
   no switchport general allowed vlan 10,20,25,30,31,35,40,50,51,52,99,999
 exit
@@ -274,7 +274,7 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95` o
    ```
 2. Remove VLAN 99 management IP from switch:
    ```
-   configure terminal
+   configure
    no interface vlan 99
    end
    copy running-config startup-config
@@ -307,7 +307,7 @@ make migration-switch-test-port
 
 **Rollback:**
 ```
-configure terminal
+configure
 interface gigabitEthernet 1/0/24
   switchport access vlan 1
 end
@@ -417,7 +417,7 @@ show interface switchport gigabitEthernet 1/0/1
 
 **Rollback:**
 ```
-configure terminal
+configure
 interface gigabitEthernet 1/0/1
   switchport pvid 1
 exit
@@ -450,47 +450,83 @@ make migration-switch-access-ports
 3. Spot-check: SSH to a management host, ping across VLANs (where firewall permits)
 
 **Rollback:**
-Move ports back to VLAN 1 (default):
+Move ports back to VLAN 1 (SG2218 General mode):
 ```
-configure terminal
-interface range gigabitEthernet 1/0/2 - 24
-  switchport access vlan 1
+configure
+interface gigabitEthernet 1/0/3
+  switchport general allowed vlan 1 untagged
+  switchport pvid 1
+exit
+interface gigabitEthernet 1/0/14
+  switchport general allowed vlan 1 untagged
+  switchport pvid 1
+exit
+interface gigabitEthernet 1/0/15
+  switchport general allowed vlan 1 untagged
+  switchport pvid 1
+exit
+interface gigabitEthernet 1/0/16
+  switchport general allowed vlan 1 untagged
+  switchport pvid 1
+exit
 end
 copy running-config startup-config
 ```
 
 ---
 
-## Step 11: Management Cutover (Manual)
+## Step 11: Management Cutover
 
 After all ports are migrated and verified:
 
-1. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from Step 5b.
+1. **Clean up VLAN 1 from migrated ports** — remove stale VLAN 1 membership from all ports that have been moved to new VLANs. On the SG2218, adding a new VLAN does not automatically remove VLAN 1. SSH to the switch and run:
    ```
-   configure terminal
+   configure
+   interface gigabitEthernet 1/0/3
+   no switchport general allowed vlan 1
+   exit
+   interface gigabitEthernet 1/0/4
+   no switchport general allowed vlan 1
+   exit
+   interface gigabitEthernet 1/0/14
+   no switchport general allowed vlan 1
+   exit
+   interface gigabitEthernet 1/0/15
+   no switchport general allowed vlan 1
+   exit
+   end
+   copy running-config startup-config
+   ```
+
+2. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from Step 5b.
+   ```
+   configure
    no interface vlan 1
    end
    copy running-config startup-config
    ```
 
-2. **Promote inventory** — `dvntm-new` becomes the active `dvntm`:
+3. **Promote inventory** — `dvntm-new` becomes the active `dvntm`. Use `git mv` to preserve file history:
    ```bash
    cd ansible-inventory-deevnet
-   mv dvntm dvntm-old
-   mv dvntm-new dvntm
+   git mv dvntm dvntm-old
+   git mv dvntm-new dvntm
+   git commit -m "Promote dvntm-new to dvntm for management cutover"
    ```
    No `ansible.cfg` changes needed — it already points to `dvntm`.
 
-3. **Verify Ansible connectivity** from each collection that uses the inventory:
+4. **Verify Ansible connectivity** from each collection that uses the inventory:
    ```bash
    cd ansible-collection-deevnet.net
    ansible switches -m ansible.netcommon.cli_command -a "command='show image-info'"
    ansible dns_servers -m ping
    ```
 
-4. **Clean up** — once stable, remove the old inventory:
+5. **Clean up** — once stable, remove the old inventory:
    ```bash
-   rm -rf ansible-inventory-deevnet/dvntm-old
+   cd ansible-inventory-deevnet
+   git rm -rf dvntm-old
+   git commit -m "Remove pre-migration inventory (dvntm-old)"
    ```
 
 ---
@@ -604,7 +640,7 @@ After all steps complete and connectivity is verified:
 - If the builder is unreachable, Omada adoption (Step 12) cannot proceed — but the switch and AP continue to function independently
 - Last resort: revert the builder port to VLAN 1 via console:
   ```
-  configure terminal
+  configure
   interface gigabitEthernet 1/0/16
     switchport access vlan 1
   end
