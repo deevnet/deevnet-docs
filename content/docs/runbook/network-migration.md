@@ -637,7 +637,61 @@ After all steps complete and connectivity is verified:
    make switch
    ```
 
-6. **Update documentation** — verify network-reference.md reflects the new state
+6. **Reconfigure devices still on old static IPs:**
+
+   Devices on VLAN 99 ports that still have old 192.168.10.x static IPs are on the same L2 segment as the builder but on a different subnet. Use a temporary secondary IP on the builder to reach them.
+
+   **Proxmox hypervisor (hv01) — `192.168.10.21` → `10.20.99.21`:**
+
+   From the builder:
+   ```bash
+   # Add temp IP on old subnet (same VLAN 99 L2)
+   sudo ip addr add 192.168.10.95/24 dev enp4s0
+
+   # Verify HV is reachable
+   ping -c 1 192.168.10.21
+
+   # SSH to Proxmox and reconfigure
+   ssh root@192.168.10.21
+   ```
+
+   On the Proxmox host, edit the network config:
+   ```bash
+   # Edit /etc/network/interfaces (Proxmox/Debian)
+   vi /etc/network/interfaces
+   ```
+
+   Change the `vmbr0` bridge IP from `192.168.10.21` to the target:
+   ```
+   auto vmbr0
+   iface vmbr0 inet static
+       address 10.20.99.21/24
+       gateway 10.20.99.1
+       bridge-ports enp0s31f6
+       bridge-stp off
+       bridge-fd 0
+   ```
+
+   Apply (this will drop the SSH session):
+   ```bash
+   ifreload -a
+   ```
+
+   Back on the builder, clean up and verify:
+   ```bash
+   # Remove temp IP
+   sudo ip addr del 192.168.10.95/24 dev enp4s0
+
+   # Verify HV at new IP
+   ping -c 2 10.20.99.21
+
+   # SSH to verify
+   ssh root@10.20.99.21
+   ```
+
+   Repeat this pattern for any other devices on management ports with old static IPs.
+
+7. **Update documentation** — verify network-reference.md reflects the new state
 
 ---
 
