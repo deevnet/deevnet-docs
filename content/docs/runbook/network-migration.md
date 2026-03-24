@@ -641,6 +641,29 @@ After all steps complete and connectivity is verified:
 
 ---
 
+## Management Access via SSH Tunnels
+
+The management VLAN (99) is not accessible from wireless clients. To reach management web UIs from a desktop, use SSH port forwarding through the builder's transit interface (`enp1s0`, DHCP on upstream network).
+
+The builder's transit IP can be found with: `ip -4 addr show enp1s0` on the builder.
+
+| Service | Target | SSH Tunnel Command | Browser URL |
+|---------|--------|-------------------|-------------|
+| OPNsense GUI | 10.20.99.1:443 | `ssh -L 8443:10.20.99.1:443 a_autoprov@<builder-transit-ip>` | `https://localhost:8443` |
+| Omada Controller | 10.20.99.95:8043 | `ssh -L 8043:10.20.99.95:8043 a_autoprov@<builder-transit-ip>` | `https://localhost:8043` |
+| AP Standalone UI | 10.20.99.9:80 | `ssh -L 8080:10.20.99.9:80 a_autoprov@<builder-transit-ip>` | `http://localhost:8080` |
+| Switch SSH | 10.20.99.10:22 | `ssh -L 2222:10.20.99.10:22 a_autoprov@<builder-transit-ip>` | `ssh -p 2222 <switch_user>@localhost` |
+
+{{< hint info >}}
+**Switch SSH quirks:** The SG2218 requires legacy SSH options: `-o PubkeyAuthentication=no -o KexAlgorithms=+diffie-hellman-group14-sha1 -o HostKeyAlgorithms=+ssh-rsa -o RequiredRSASize=0 -o StrictHostKeyChecking=no`
+{{< /hint >}}
+
+{{< hint info >}}
+**Future improvement:** Replace SSH tunnels with a management jumphost VM on VLAN 99 with a desktop environment or web proxy.
+{{< /hint >}}
+
+---
+
 ## Troubleshooting
 
 ### Lost switch access after trunk configuration
