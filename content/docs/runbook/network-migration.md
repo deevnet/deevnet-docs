@@ -705,6 +705,7 @@ The builder's transit IP can be found with: `ip -4 addr show enp1s0` on the buil
 |---------|--------|-------------------|-------------|
 | OPNsense GUI | 10.20.99.1:443 | `ssh -L 8443:10.20.99.1:443 a_autoprov@<builder-transit-ip>` | `https://localhost:8443` |
 | Omada Controller | 10.20.99.95:8043 | `ssh -L 8043:10.20.99.95:8043 a_autoprov@<builder-transit-ip>` | `https://localhost:8043` |
+| Proxmox GUI | 10.20.99.21:8006 | `ssh -L 8006:10.20.99.21:8006 a_autoprov@<builder-transit-ip>` | `https://localhost:8006` |
 | AP Standalone UI | 10.20.99.9:80 | `ssh -L 8080:10.20.99.9:80 a_autoprov@<builder-transit-ip>` | `http://localhost:8080` |
 | Switch SSH | 10.20.99.10:22 | `ssh -L 2222:10.20.99.10:22 a_autoprov@<builder-transit-ip>` | `ssh -p 2222 <switch_user>@localhost` |
 
