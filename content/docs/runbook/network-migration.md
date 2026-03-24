@@ -561,22 +561,44 @@ Omada adoption is non-disruptive — devices continue to function without Omada 
 
 ## Step 13: AP SSID Configuration
 
-Configure SSID-to-VLAN mappings for wireless networks via the Omada controller.
+Configure SSID-to-VLAN mappings for wireless networks.
 
-**Prerequisites:**
-- Step 12 complete (AP adopted in Omada)
+{{< hint warning >}}
+**AP Firmware Limitation:** Omada 6.1 cannot push VLAN config to EAP650-Outdoor firmware 1.0.4 (2023). The SSIDs must be configured via the **AP's standalone web UI** until the firmware is updated. After firmware update, Omada provisioning should work and this step can use `make migration-omada-ssids`.
+{{< /hint >}}
 
-**Run:**
-1. In the Omada controller, configure SSID-to-VLAN mappings for each wireless network
-2. Assign each SSID to its appropriate VLAN ID
+**SSIDs to configure:**
+
+| SSID | VLAN | Security | Purpose |
+|------|------|----------|---------|
+| DVNTM | 10 | WPA-Personal | Trusted |
+| DVNTM-IOT | 30 | WPA-Personal | IoT devices |
+| DVNTM-IOTV | 31 | WPA-Personal | IoT vendor devices |
+| DVNTM-GUEST | 40 | WPA-Personal | Guest |
+
+WiFi passwords are in `group_vars/all/vault.yml` under `deevnet_wifi_psk`.
+
+**Via AP standalone web UI:**
+1. Access AP web UI: `ssh -L 8080:<ap-ip>:80 a_autoprov@<builder-transit-ip>`, then `http://localhost:8080` (admin/admin or site device password)
+2. Go to **Wireless → SSID** settings
+3. Create each SSID with WPA-Personal, set the password, enable VLAN tagging with the correct VLAN ID
+4. Set the AP's management IP to static `10.20.99.9/24`, gateway `10.20.99.1`
+
+**Via Omada (after AP firmware update):**
+```bash
+make migration-omada-ssids
+```
 
 **Verify:**
-1. Wireless client connects to an SSID
-2. Client receives a DHCP lease from the correct VLAN subnet
-3. Client has internet access
+1. Connect to each SSID and confirm correct VLAN IP:
+   - DVNTM → `10.20.10.x`
+   - DVNTM-IOT → `10.20.30.x`
+   - DVNTM-IOTV → `10.20.31.x`
+   - DVNTM-GUEST → `10.20.40.x`
+2. Internet access works from each SSID
 
 **Rollback:**
-Revert SSID settings in Omada, or factory reset the AP and re-adopt in Step 12.
+Factory reset the AP and reconfigure SSIDs.
 
 ---
 
@@ -589,29 +611,25 @@ After all steps complete and connectivity is verified:
    cd ansible-collection-deevnet.net
    make postcheck
    ```
-   This runs against the `dvntm-new` inventory and validates:
-   - OPNsense has all expected VLAN interfaces
-   - Switch VLAN database and trunk uplink are correct
-   - All devices (switch, AP, builder) are reachable at target IPs
-   - All VLAN gateways are reachable (inter-VLAN routing works)
-   - Builder services are active with correct interface addresses
+   Validates OPNsense VLANs, switch database/trunk, device reachability, gateway IPs, and builder state. All checks should show `[PASS]`.
 
-   All checks should show `[PASS]`. Internet connectivity shows `[WARN]` if unreachable (non-fatal).
+2. **Run DNS and DHCP roles** (must run before vault encryption):
+   ```bash
+   cd ansible-collection-deevnet.net
+   make dns
+   make dhcp
+   ```
 
-2. **Re-encrypt vault files:**
+3. **Re-encrypt vault files:**
    ```bash
    cd ansible-inventory-deevnet
    make vault
    ```
 
-3. **Run full DNS/DHCP roles** against `dvntm-new` inventory:
-   ```bash
-   make dns
-   make dhcp
-   ```
-
 4. **Remove old network config:**
-   - Delete 192.168.10.0/24 subnet from OPNsense
+   - Delete old 192.168.10.0/23 Kea DHCP subnet (if not already removed)
+   - Remove temp VLAN 99 DHCP pool (if not already removed)
+   - Remove old 192.168.10.0 LAN interface from OPNsense (Interfaces → LAN → clear IP or reassign)
    - Remove any old static routes referencing 192.168.10.x
 
 5. **Ongoing switch management** — use the `switch` target for day-2 operations:
