@@ -1,9 +1,9 @@
 ---
 title: "DVNTM Builder & Core Services"
 weight: 1
-tasks_completed: 19
-tasks_in_progress: 6
-tasks_planned: 6
+tasks_completed: 28
+tasks_in_progress: 0
+tasks_planned: 13
 ---
 
 # DVNTM Builder & Core Services
@@ -74,22 +74,38 @@ Documentation and inventory definitions.
 
 ---
 
-## Network Automation 🔄
+## Network Automation ✅
 
-Automated configuration of network infrastructure.
+Automated configuration of network infrastructure. Migration from flat 192.168.10.0/24 to segmented 10.20.x.0/24 VLANs completed 2026-03-25.
 
 - ✅ OPNsense Alternatives Evaluation
-- 🔄 Document network build/rebuild steps in recovery plan
+- ✅ Document network build/rebuild steps in recovery plan
 - ✅ dvntm VLAN Plan
 - ✅ DNS Automation
-- ✅ DHCP Automation
-- 🔄 Core Router Automation
-- 🔄 Access Switch Automation
-- 🔄 Wireless AP Automation
-- 🔄 Implement Network Segmentation
-- 🔄 Migrate to RFC1918 10 space
-- ⏳ Automate OPNsense interface assignment via SSH (eliminate manual GUI step in migration)
-- ⏳ TP-Link SG2218 cliconf idempotency (proper config diff support)
+- ✅ DHCP Automation (Kea subnets auto-created, interface enablement automated)
+- ✅ Core Router Automation (OPNsense VLAN creation, firewall rules via API)
+- ✅ Access Switch Automation (SG2218 General mode, VLANs, trunk, access ports, default gateway)
+- ✅ Implement Network Segmentation (12 VLANs, zone-based firewall policy)
+- ✅ Migrate to RFC1918 10 space (10.20.x.0/24 subnets live)
+- ✅ Wireless AP SSID-to-VLAN configuration (manual via standalone UI — automation gap documented)
+- ✅ Document automation shortcomings and improvement backlog (see migration runbook To Do section and DVNTM Patch Automation below)
+
+---
+
+## DVNTM Patch Automation ⏳
+
+Firmware upgrades and automation improvements identified during the network migration. These are non-blocking enhancements — the network is fully functional, but these items improve automation coverage, idempotency, and reduce manual steps for future rebuilds.
+
+### Firmware Upgrades
+- ⏳ EAP650-Outdoor AP firmware update (1.0.4 → latest) — current firmware doesn't accept VLAN config from Omada 6.1 controller, requiring manual standalone UI configuration
+- ⏳ SG2218 Access Switch firmware update — evaluate newer firmware for improved CLI compatibility and Omada integration
+
+### Automation Improvements
+- ⏳ Automate OPNsense interface assignment and IP config via SSH (eliminate manual GUI steps — OPNsense 25.7 has no API for this)
+- ⏳ TP-Link SG2218 cliconf idempotency (proper config diff support in the Ansible cliconf plugin)
+- ⏳ OPNsense automation filter API investigation (addRule saves but doesn't compile to pf on 25.7.10)
+- ⏳ Omada SSID VLAN provisioning via controller after AP firmware update
+- ⏳ Replace curl-based Omada API tasks with Ansible uri module (eliminate command-line secret exposure)
 
 ---
 

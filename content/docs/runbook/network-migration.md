@@ -183,21 +183,14 @@ Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a st
 Assign all VLAN devices to OPNsense interface slots and configure gateway IPs. The OPNsense API does not support interface assignment ([GitHub #7324](https://github.com/opnsense/core/issues/7324)), so the playbook will pause and prompt you to complete a manual GUI step before continuing with automated IP configuration.
 
 {{< hint warning >}}
-**Manual Steps: OPNsense GUI — Interface Assignment and IP Configuration**
-
-OPNsense (as of 25.7) has no API for interface assignment OR setting interface IPs. Both must be done via the GUI. If the builder is headless, use an SSH tunnel from your desktop: `ssh -L 8443:192.168.10.1:443 a_autoprov@<builder-ip>`, then open `https://localhost:8443`.
-
-1. **Apply VLAN devices:** Go to **Interfaces → Devices → VLAN**. Click the **Apply** button at the bottom. This activates the VLAN devices on the OS — without this, they won't appear for assignment.
-
-2. **Assign each VLAN device to an interface slot:** Go to **Interfaces → Assignments**. Use the **"New interface"** dropdown at the bottom to add each VLAN device (vlan01 through vlan012) one at a time. Click **+** (Add) after each. Click **Save** when done.
-
-3. **Configure IPs on each VLAN interface:** The playbook will show which interfaces need IPs. For each one, go to **Interfaces → [OPT name]**, set:
-   - **IPv4 Configuration Type:** Static IPv4
-   - **IPv4 address:** the gateway IP shown by the playbook (e.g., `10.20.99.1/24`)
-   - **Check "Enable Interface"**
-   - Click **Save**
-
-   After all interfaces are configured, click **Apply changes**.
+**Manual Steps: OPNsense GUI — Interface Assignment and IP Configuration**\
+OPNsense (as of 25.7) has no API for interface assignment OR setting interface IPs. Both must be done via the GUI. If the builder is headless, use an SSH tunnel from your desktop: `ssh -L 8443:192.168.10.1:443 a_autoprov@<builder-ip>`, then open `https://localhost:8443`.\
+\
+**Step 1 — Apply VLAN devices:** Go to **Interfaces → Devices → VLAN**. Click the **Apply** button at the bottom. This activates the VLAN devices on the OS — without this, they won't appear for assignment.\
+\
+**Step 2 — Assign each VLAN device to an interface slot:** Go to **Interfaces → Assignments**. Use the **"New interface"** dropdown at the bottom to add each VLAN device (vlan01 through vlan012) one at a time. Click **+** (Add) after each. Click **Save** when done.\
+\
+**Step 3 — Configure IPs on each VLAN interface:** The playbook will show which interfaces need IPs. For each one, go to **Interfaces → [OPT name]** and set **IPv4 Configuration Type** to Static IPv4, enter the gateway IP shown by the playbook (e.g., `10.20.99.1/24`), check **Enable Interface**, and click **Save**. After all interfaces are configured, click **Apply changes**.
 {{< /hint >}}
 
 ```bash
