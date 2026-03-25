@@ -755,6 +755,7 @@ The builder's transit IP can be found with: `ip -4 addr show enp1s0` on the buil
   ```
 
 ### Inter-VLAN routing not working
+- **Check default gateway on target device:** Devices on VLAN 99 (management) need `ip route 0.0.0.0 0.0.0.0 10.20.99.1` to route responses back to other VLANs. Without this, the device receives cross-VLAN traffic but replies are silently dropped (no return route). This was the root cause of the "builder can't ping cross-VLAN gateways" issue — the switch had no default gateway.
 - Verify VLAN interfaces have IP addresses assigned in OPNsense
 - Check OPNsense firewall rules for inter-VLAN traffic
 - Verify routing table: OPNsense GUI -> System -> Routes
@@ -775,6 +776,7 @@ Automation gaps and improvements identified during the initial migration run.
 - [ ] **Switch inventory after builder cutover:** After the builder moves to VLAN 99, the `dvntm` inventory still resolves the switch `ansible_host` to `192.168.10.10` (unreachable from VLAN 99). All post-cutover switch steps must either use the `dvntm-new` inventory (`-i ../ansible-inventory-deevnet/dvntm-new`) or override `ansible_host`. Consider promoting the inventory earlier or adding a migration-phase inventory override to the Makefile.
 - [ ] **Fix test-port default port number:** The `04-switch-test-port.yml` playbook defaults to `gigabitEthernet 1/0/24`, but the SG2218 only has 18 ports. Update the default to a valid unused port (e.g., `gigabitEthernet 1/0/18`).
 - [ ] **Step 6 verify assumes DHCP before Step 7:** The Step 6 verification expects a DHCP lease on the test VLAN, but DHCP for new subnets is not configured until Step 7. Update Step 6 verify to only check gateway reachability (ping), not DHCP.
+- [x] **Switch default gateway for cross-VLAN routing:** The switch had no default route, causing cross-VLAN traffic responses to be silently dropped. Fixed: added `ip route 0.0.0.0 0.0.0.0 10.20.99.1` and gateway to inventory. The `05a-switch-dual-mgmt.yml` playbook should also configure the default gateway, or add it to the `switch_vlans` role so it's applied during any switch provisioning.
 - [x] **Update Omada controller for v2 adoption:** Controller upgraded to 6.1. TCP 29814 now supported. AP adoption works.
 - [ ] **Update EAP650-Outdoor firmware:** AP firmware 1.0.4 (2023) does not accept VLAN config from Omada 6.1 controller — `ssidOverrides` always show `vlanEnable: false` despite correct controller-side config. Force Provision and reboot don't help. Workaround: configure SSIDs with VLAN tagging via AP standalone web UI. Fix: update AP firmware to a version compatible with Omada 6.1, then re-adopt and verify VLAN provisioning works via controller.
 - [ ] **Omada SSID automation incomplete:** The `13-omada-ssids.yml` playbook creates SSIDs and Networks via API, but Omada 6.1 requires both Network objects AND `networkId` references in SSID `vlanSetting.customConfig`. Even with correct API config, the AP didn't apply VLANs (firmware issue). For rebuild: update AP firmware first, then verify the full automation chain works end-to-end.
