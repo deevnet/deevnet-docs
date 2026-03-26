@@ -103,14 +103,17 @@ Move switch ports to their assigned VLANs and configure AP SSIDs.
 
 See [Port Migration & Wireless](/docs/runbook/network-migration/port-migration/) for detailed steps.
 
-### 5. DNS and DHCP Finalization
+### 5. DNS, DHCP, and WoL Finalization
 
-Apply DNS host overrides and finalize DHCP configuration:
+Apply DNS host overrides, finalize DHCP configuration, and register Wake-on-LAN entries:
 
 ```bash
 ansible-playbook playbooks/dns.yml --ask-vault-pass
 ansible-playbook playbooks/dhcp.yml --ask-vault-pass
+ansible-playbook playbooks/wol.yml --ask-vault-pass
 ```
+
+The WoL playbook registers all hosts with `wol: true` in their inventory interface definitions into the OPNsense WoL dashboard. Requires the `os-wol` plugin to be installed on OPNsense.
 
 ---
 
