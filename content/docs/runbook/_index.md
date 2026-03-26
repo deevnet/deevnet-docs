@@ -38,7 +38,7 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <p>VLAN assignments and network configuration details.</p>
   </a>
   <a class="section-card" href="network-migration/">
-    <h3>Network Migration</h3>
-    <p>Flat-to-VLAN migration procedure for dvntm substrate.</p>
+    <h3>Network Segmentation</h3>
+    <p>VLAN segmentation procedures — foundation, DHCP, firewall, port assignment, wireless.</p>
   </a>
 </div>

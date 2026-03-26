@@ -51,16 +51,58 @@ This means:
 
 ---
 
+## Greenfield Build Sequence
+
+A complete build from scratch follows this sequence. Authority transitions and network segmentation are integrated steps — not separate procedures.
+
+{{< mermaid >}}
+flowchart TD
+    A["<b>1. Stage Artifacts</b><br/>Fetch OS images, ISOs, SSH keys"]
+    B["<b>2. Seed Inventory</b><br/>MAC addresses, host definitions"]
+    C["<b>3. Vault Operations</b><br/>Decrypt secrets for automation"]
+    D["<b>4. Configure PXE</b><br/><code>make bootstrap-auth</code>"]:::transition
+    E["<b>5. Build Core Router</b><br/>Manual OPNsense USB install"]:::manual
+    F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
+    G["<b>7. Build Management Plane</b><br/>PXE boot Proxmox hypervisors"]
+    H["<b>8. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
+    I["<b>9. Build Tenants</b><br/>Provision application VMs"]
+    J["<b>10. Verify Tenants</b><br/>Application health checks"]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I --> J
+
+    classDef default fill:#2d333b,stroke:#539bf5,color:#adbac7
+    classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c
+    classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068
+{{< /mermaid >}}
+
+**Legend:** {{< mermaid >}}flowchart LR; T["Authority transition"]:::transition; M["Manual step"]:::manual; classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c; classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068{{< /mermaid >}}
+
+---
+
 ## Build Procedures
+
+### Preparation
 
 - [Stage Artifacts](online-preparation/) — Fetch artifacts from internet sources
 - [Seed Inventory](inventory-setup/) — Define MAC addresses and host definitions
-- [Configure PXE](build-sequence/) — Set PXE authority for build scenario
-- [Build Network](build-network/) — Core Router, VLANs, wireless
-- [Build Management Plane](build-management-plane/) — Proxmox hypervisors
+- [Vault Operations](vault-operations/) — Decrypt secrets for automation
+
+### Build
+
+- [Configure PXE](build-sequence/) — Enter bootstrap-authoritative mode (`make bootstrap-auth`)
+- [Build Network](build-network/) — Core Router install, network segmentation, transition to core-authoritative (`make core-auth`)
+- [Build Management Plane](build-management-plane/) — PXE boot Proxmox hypervisors
+
+### Validate
+
 - [Verify Site](build-verification/) — Validate site infrastructure
 - [Build Tenants](build-tenants/) — Provision application workloads
 - [Verify Tenants](verify-tenants/) — Validate tenant applications
+
+### Reference
+
+- [Authority Transition](/docs/runbook/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
+- [Network Segmentation](/docs/runbook/network-migration/) — Detailed VLAN, firewall, and DHCP procedures
 
 ---
 

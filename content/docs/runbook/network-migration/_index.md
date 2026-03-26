@@ -1,22 +1,22 @@
 ---
-title: "Network Migration"
+title: "Network Segmentation"
 weight: 8
 bookCollapseSection: true
 ---
 
-# Network Migration: Flat to Segmented VLANs
+# Network Segmentation
 
-Migrate the dvntm substrate from a flat 192.168.10.0/24 network to segmented 10.20.x.0/24 VLANs.
+Procedures for building the segmented VLAN network on a substrate. These steps create VLAN infrastructure on OPNsense and the access switch, configure DHCP/DNS/firewall, assign ports to segments, and set up wireless.
 
-This is a semi-automated migration: run a playbook, verify, proceed. Each step is a discrete `make` target. Do not skip steps or run them out of order.
+These procedures are used during the [Build Network](/docs/runbook/building-recovery/build-network/) step of a greenfield build, and can be re-run for network changes or recovery.
 
 {{< hint info >}}
-**Migration completed 2026-03-25.** This runbook is retained for the full site rebuild event and as operational reference.
+**History:** These procedures were originally developed for the dvntm flat-to-VLAN migration (completed 2026-03-25). They are now the standard procedures for building network segmentation on any site.
 {{< /hint >}}
 
 ---
 
-## Migration Flow
+## Segmentation Flow
 
 {{< mermaid >}}
 flowchart TD
@@ -56,4 +56,4 @@ Move remaining switch ports to their assigned VLANs, perform the management cuto
 Run automated validation (`make postcheck`), refresh DNS/DHCP, re-encrypt vault, clean up old network config, reconfigure devices with old static IPs, and reference the SSH tunnel table for management access.
 
 ### [Troubleshooting](troubleshooting/)
-Common issues encountered during migration (lost switch access, DHCP failures, AP adoption problems, inter-VLAN routing) and the automation improvement backlog.
+Common issues encountered during network segmentation (lost switch access, DHCP failures, AP adoption problems, inter-VLAN routing) and the automation improvement backlog.
