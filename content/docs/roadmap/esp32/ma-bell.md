@@ -1,5 +1,5 @@
 ---
-title: "Ma Bell"
+title: "ESP32 Ma Bell Bluetooth Gateway"
 weight: 4
 tasks_completed: 19
 tasks_in_progress: 7

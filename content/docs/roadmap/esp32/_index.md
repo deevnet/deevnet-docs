@@ -1,5 +1,5 @@
 ---
-title: "ESP32"
+title: "Microcontroller"
 weight: 3
 bookCollapseSection: true
 tasks_completed: 19
@@ -7,9 +7,9 @@ tasks_in_progress: 7
 tasks_planned: 50
 ---
 
-# ESP32
+# Microcontroller
 
-Projects built on ESP32 microcontrollers.
+Projects built on microcontroller platforms.
 
 {{< overall-progress >}}
 
