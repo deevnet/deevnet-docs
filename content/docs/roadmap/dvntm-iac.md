@@ -1,12 +1,12 @@
 ---
 title: "DVNTM Builder & Core Services"
 weight: 1
-tasks_completed: 28
+tasks_completed: 30
 tasks_in_progress: 0
-tasks_planned: 13
+tasks_planned: 0
 ---
 
-# DVNTM Builder & Core Services
+# DVNTM Builder & Core Services ✅
 
 Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) site from bare metal.
 
@@ -21,7 +21,7 @@ Builder infrastructure, network automation, and core services required to provis
 
 ## Project Vision & Scope
 
-Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from bare metal to running core services, with complete air-gap recovery capability. Culminates in a full site rebuild event.
+Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from bare metal to running core services, with complete air-gap recovery capability.
 
 **In Scope**
 - Bare-metal provisioning (PXE, Ansible)
@@ -31,6 +31,8 @@ Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from
 
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
+- Patch automation and firmware upgrades — see [Patch Automation](../patch-automation/)
+- Full site rebuild event — see [DVNTM Full Site Rebuild](../dvntm-full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 
@@ -74,9 +76,10 @@ Documentation and inventory definitions.
 
 ---
 
+{{% details "Network Automation — Complete" %}}
 ## Network Automation ✅
 
-Automated configuration of network infrastructure. Migration from flat 192.168.10.0/24 to segmented 10.20.x.0/24 VLANs completed 2026-03-25.
+Automated configuration of network infrastructure. Migration from flat 192.168.10.0/24 to segmented 10.20.x.0/24 VLANs completed 2026-03-25. Authority transition automation completed 2026-03-26.
 
 - ✅ OPNsense Alternatives Evaluation
 - ✅ Document network build/rebuild steps in recovery plan
@@ -88,34 +91,7 @@ Automated configuration of network infrastructure. Migration from flat 192.168.1
 - ✅ Implement Network Segmentation (12 VLANs, zone-based firewall policy)
 - ✅ Migrate to RFC1918 10 space (10.20.x.0/24 subnets live)
 - ✅ Wireless AP SSID-to-VLAN configuration (manual via standalone UI — automation gap documented)
-- ✅ Document automation shortcomings and improvement backlog (see migration runbook To Do section and DVNTM Patch Automation below)
-
----
-
-## DVNTM Patch Automation ⏳
-
-Firmware upgrades and automation improvements identified during the network migration. These are non-blocking enhancements — the network is fully functional, but these items improve automation coverage, idempotency, and reduce manual steps for future rebuilds.
-
-### Firmware Upgrades
-- ⏳ EAP650-Outdoor AP firmware update (1.0.4 → latest) — current firmware doesn't accept VLAN config from Omada 6.1 controller, requiring manual standalone UI configuration
-- ⏳ SG2218 Access Switch firmware update — evaluate newer firmware for improved CLI compatibility and Omada integration
-
-### Automation Improvements
-- ⏳ Automate OPNsense interface assignment and IP config via SSH (eliminate manual GUI steps — OPNsense 25.7 has no API for this)
-- ⏳ TP-Link SG2218 cliconf idempotency (proper config diff support in the Ansible cliconf plugin)
-- ⏳ OPNsense automation filter API investigation (addRule saves but doesn't compile to pf on 25.7.10)
-- ⏳ Omada SSID VLAN provisioning via controller after AP firmware update
-- ⏳ Replace curl-based Omada API tasks with Ansible uri module (eliminate command-line secret exposure)
-
----
-
-## Full Site Rebuild Event ⏳
-
-End-to-end rebuild of the builder node and core network services from scratch. Validates air-gap recovery capability and exercises all automation built in prior milestones. Completing this milestone signals the builder & core services project is done.
-
-- ⏳ Read and analyze the build/recovery plan
-- ⏳ Rebuild the builder node (no version bump)
-- ⏳ Rebuild core services (core router, access switch, AP) — collect timings, findings, and identify gaps
-- ⏳ Apply fixes and iterate until all steps are accounted for
-- ⏳ Roadmap non-critical improvements for future work
-- ⏳ Tag all deevnet repos with a coordinated release version
+- ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Automation project)
+- ✅ Authority transition automation (bootstrap-auth/core-auth playbooks, DNS/DHCP host records from inventory, IP swap)
+- ✅ Unify build sequence documentation (authority transitions and network segmentation inline)
+{{% /details %}}
