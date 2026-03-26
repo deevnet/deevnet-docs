@@ -1,12 +1,12 @@
 ---
-title: "DVNTM Extended Management Plane"
+title: "Extended Management Plane"
 weight: 3
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 33
 ---
 
-# DVNTM Extended Management Plane
+# Extended Management Plane
 
 Extended management services for the dvntm (mobile) site — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
 

@@ -1,12 +1,12 @@
 ---
-title: "DVNTM Builder & Core Services"
+title: "Builder & Core Services"
 weight: 1
 tasks_completed: 30
 tasks_in_progress: 0
 tasks_planned: 0
 ---
 
-# DVNTM Builder & Core Services ✅
+# Builder & Core Services ✅
 
 Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) site from bare metal.
 
@@ -32,7 +32,7 @@ Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
 - Patch automation and firmware upgrades — see [Patch Automation](../patch-automation/)
-- Full site rebuild event — see [DVNTM Full Site Rebuild](../dvntm-full-rebuild/)
+- Full site rebuild event — see [Full Site Rebuild](../full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 

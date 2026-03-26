@@ -1,12 +1,12 @@
 ---
-title: "DVNTM Full Site Rebuild"
+title: "Full Site Rebuild"
 weight: 4
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 6
 ---
 
-# DVNTM Full Site Rebuild
+# Full Site Rebuild
 
 End-to-end rebuild of the dvntm site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Automation, and Extended Management Plane projects.
 
@@ -27,9 +27,9 @@ Perform a complete tear-down and rebuild of the dvntm (mobile) site to validate 
 - Coordinated release tagging across all deevnet repos
 
 **Prerequisites**
-- [DVNTM Builder & Core Services](../dvntm-iac/) — ✅ Complete
+- [Builder & Core Services](../builder/) — ✅ Complete
 - [Patch Automation](../patch-automation/) — firmware and automation improvements applied
-- [DVNTM Extended Management Plane](../dvntm-management-plane/) — management services deployable
+- [Extended Management Plane](../management-plane/) — management services deployable
 
 ---
 

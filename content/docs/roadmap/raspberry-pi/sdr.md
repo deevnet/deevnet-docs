@@ -1,5 +1,5 @@
 ---
-title: "Pi-SDR"
+title: "SDR Platform"
 weight: 2
 tasks_completed: 7
 tasks_in_progress: 1

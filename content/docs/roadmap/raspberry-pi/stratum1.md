@@ -1,5 +1,5 @@
 ---
-title: "Pi Stratum 1"
+title: "Stratum 1 NTP"
 weight: 3
 tasks_completed: 0
 tasks_in_progress: 0
