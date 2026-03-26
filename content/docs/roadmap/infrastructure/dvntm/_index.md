@@ -4,7 +4,7 @@ weight: 1
 bookCollapseSection: true
 tasks_completed: 30
 tasks_in_progress: 0
-tasks_planned: 71
+tasks_planned: 55
 ---
 
 # DVNTM (Mobile Site)
