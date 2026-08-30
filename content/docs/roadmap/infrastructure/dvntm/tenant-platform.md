@@ -1,9 +1,9 @@
 ---
 title: "Tenant Platform"
 weight: 4
-tasks_completed: 0
-tasks_in_progress: 1
-tasks_planned: 4
+tasks_completed: 1
+tasks_in_progress: 2
+tasks_planned: 3
 ---
 
 # Tenant Platform
@@ -18,16 +18,20 @@ supplies its own IaC/CaC to rebuild from scratch against the substrate.
 
 ---
 
-## Design tenant network architecture 🔄
+## Design tenant network architecture ✅
 
 How tenant traffic is isolated, routed, and addressed.
 
 - **Decided:** the fabric model — an EVPN overlay owned by the tenant compute domain,
   self-contained per hypervisor, single-member now and expandable to a cluster
   ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
-- **Open — DNS:** how tenant records are authored and published into the substrate zone, and who
-  resolves tenant names. *This is the open thread keeping this milestone in progress.*
-- **Open — numbering:** a globally-unique scheme for VNIs, VRF IDs, and tenant subnets.
+- **Decided:** the numbering scheme — the site `/16` split so tenant overlays live at
+  `10.20.128.0/18` and fabric loopbacks at `10.20.255.0/24`, with every tenant identifier derived
+  from a single allocated index ([ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)).
+- **Deferred — DNS:** how tenant records are authored and published into the substrate zone is
+  still undecided, and is tracked as its own thread below rather than holding this milestone open.
+  Proxmox's SDN DNS integration targets a PowerDNS API; the core router runs Unbound, so it does
+  not fit as-is.
 
 ## Define tenant contracts ⏳
 
@@ -39,26 +43,43 @@ The interface every tenant must satisfy to be rebuildable against the substrate.
   zone to publish into.
 - The tenant↔substrate boundary written as a specification, so any conforming tenant can be built.
 
-## Build the tenant fabric (Phase 1) ⏳
+## Build the tenant fabric (Phase 1) 🔄
 
 Stand up the single-member fabric on hv02.
 
-**Gated on** [Hypervisor Platform Uplift](/docs/roadmap/infrastructure/dvntm/hypervisor-uplift/) —
-PVE 8.4 has no SDN fabric object, so the underlay could only be hand-maintained node state,
-violating ADR-0001 build requirements #2 and #4.
+**No longer gated** — hv02 runs PVE 9.2.11 and serves `/cluster/sdn/fabrics`, so the underlay is
+defined as code rather than as hand-maintained node state.
 
-- EVPN SDN as code: controller, zone, VRF-per-tenant, anycast gateway, fabric IPAM/DHCP.
-- Underlay/VTEP identity; transit VLAN to the core router; switch port trunked for transit +
-  underlay (no per-tenant VLAN).
-- Core router reduced to the perimeter (NAT, tenant↔management policy).
+- ✅ Substrate transport: `tenant_transit` (VLAN 50) and `tenant_underlay` (VLAN 51) in inventory;
+  `tenant_1/2/3` removed. The tenant hypervisor's switch port is a trunk carrying both plus
+  management.
+- ✅ Hypervisor attachment: the bridge is VLAN-aware and the transit and underlay sub-interfaces
+  are up, driven from inventory by the `proxmox_node_network` role.
+- 🔄 EVPN SDN as code: fabric, VTEP identity and controller are written and plan cleanly; not yet
+  applied.
+- ⏳ Move the hypervisor's default route onto transit, so the data plane stops riding the
+  management segment.
+- ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
 
-## Tenant provisioning tooling ⏳
+## Tenant DNS publication ⏳
+
+The one part of the tenant contract still undecided: how a tenant authors its own records and
+publishes them into the substrate zone so `service.tenant.site.deevnet.net` resolves.
+
+- Proxmox SDN can register records itself, but only against a PowerDNS API — the core router runs
+  Unbound, so it does not fit without a shim.
+- The substrate's own DNS is inventory-driven Ansible, which is the opposite of tenant-owned.
+- Needs its own decision record before the tenant contract can be called complete.
+
+## Tenant provisioning tooling 🔄
 
 A repeatable, code-defined tenant lifecycle.
 
-- Reusable Terraform (`bpg/proxmox`) module implementing the tenant contract: SDN objects + VMs
-  from template + DNS publication.
-- One tenant = one instantiation; create, rebuild, and destroy from code.
+- ✅ Reusable Terraform (`bpg/proxmox`) module implementing the network and compute halves of the
+  tenant contract: VRF + VNet(s) + subnet with fabric DHCP + VMs from template.
+- ✅ One tenant = one instantiation, in `deevnet-tenant-factory`; create, rebuild and destroy from
+  code, with every identifier derived from one allocated index.
+- ⏳ DNS publication, pending the decision above.
 
 ## First tenant — end-to-end ⏳
 

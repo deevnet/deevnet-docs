@@ -115,7 +115,41 @@ management plane, independently, and does not join the tenant fabric.
 
 ---
 
+## Concrete allocation
+
+Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/). On hv02:
+
+| Element | Value |
+|---------|-------|
+| Fabric | `tfab`, OpenFabric, loopback prefix `10.20.255.0/24` |
+| VTEP identity | `pve2` = `10.20.255.2`, underlay over `vmbr0.51` |
+| EVPN controller | `evpn1`, ASN `65020` |
+| Transit | VLAN 50, `10.20.50.0/24`; hv02 `.22`, perimeter `.1` |
+| Underlay | VLAN 51, `10.20.51.0/24`; hv02 `.22`, no router presence |
+| Tenant overlays | `10.20.{128+n}.0/24`, anycast gateway `.1`, fabric DHCP `.100`–`.200` |
+
+### How egress actually works
+
+Tenant subnets carry **SNAT at the exit node**. Traffic leaving a tenant is translated to the
+exit node's transit address before it reaches the core router, which is what makes ADR-0001's
+promise literal: the perimeter never learns tenant address space, it only ever sees
+`10.20.50.0/24`.
+
+For that to hold, the hypervisor's default route must be on the transit interface rather than
+management — otherwise tenant egress would ride the management segment. Management stays
+reachable from any VLAN through source-based routing on the node: replies *sourced from* the
+management address go back out the management interface, while forwarded tenant traffic still
+takes the default route out transit.
+
 ## Status
 
-**Design only — no code yet.** Implementation is tracked as a roadmap project and begins after
-the design is settled.
+**Substrate and hypervisor attachment are in place; the fabric is written and not yet applied.**
+
+- ✅ Transit and underlay VLANs exist on the switch and the perimeter; the tenant hypervisor's
+  port is a trunk carrying both plus management.
+- ✅ hv02's bridge is VLAN-aware with `vmbr0.50` and `vmbr0.51` up, driven from inventory by the
+  `proxmox_node_network` Ansible role.
+- 🔄 The fabric, VTEP identity and EVPN controller are defined in `deevnet-tenant-factory` and
+  plan cleanly against hv02; not yet applied.
+- ⏳ Default route moved onto transit.
+- ⏳ First tenant end to end.

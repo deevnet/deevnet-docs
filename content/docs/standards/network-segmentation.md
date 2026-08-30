@@ -62,15 +62,24 @@ The storage segment isolates storage protocol traffic.
 - Hosts in storage segment MUST use `-stor` suffix for interface DNS entries (e.g., `hv01-stor.dvntm.deevnet.net`)
 - Storage segment MAY use jumbo frames when all participants support them
 
-### 4. Tenant Segments
+### 4. Tenant Networks
 
-Tenant segments provide workload isolation per tenant namespace.
+Tenant networks provide workload isolation per tenant. Since
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) they are **overlays owned by
+the tenant compute domain**, not VLANs owned by the core router. The isolation requirements are
+unchanged; where they are enforced is not.
 
-- Each tenant MUST have its own dedicated segment
-- Tenant segments MUST be isolated from each other by default
-- Tenant segments MUST NOT have direct access to management segment
-- Tenant segments MAY access shared services via explicit firewall rules
-- Each tenant segment MUST have its own DHCP scope
+- Each tenant MUST have its own isolated routing domain — one VRF per tenant in the tenant fabric
+- Tenant networks MUST be isolated from each other by default
+- Tenant networks MUST NOT have direct access to the management segment
+- Tenant networks MAY access shared services via explicit policy at the perimeter
+- Each tenant MUST have its own address allocation and DHCP scope, served by **fabric IPAM**
+- Tenant identifiers and subnets MUST be allocated from the globally-unique scheme in
+  [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)
+- A tenant MUST NOT require a VLAN, a switch change, or a core router change to create
+
+The core router sees only the aggregate **tenant transit** network and acts as its perimeter. It
+MUST NOT hold a VLAN interface or a DHCP scope per tenant.
 
 ### 5. Platform Segment
 

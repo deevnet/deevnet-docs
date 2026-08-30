@@ -35,8 +35,8 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 | Attribute | Value |
 |-----------|-------|
 | **OS** | Proxmox VE |
-| **Version** | PVE 8.4.1 |
-| **Base** | Debian 12 (Bookworm) |
+| **Version** | PVE 9.2.11 |
+| **Base** | Debian 13 (Trixie) |
 
 ### Automation Capability
 

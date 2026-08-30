@@ -26,6 +26,25 @@ The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
 
 This creates a predictable, self-documenting address scheme where any IP immediately reveals which site and segment it belongs to.
 
+### Splitting the site block
+
+The pattern above describes **substrate segments**, where the third octet is a VLAN ID. Tenant
+overlays are not VLANs, so they cannot be described by it. Each site's `/16` is therefore split,
+per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
+
+| Block (dvntm) | Purpose |
+|---------------|---------|
+| `10.20.0.0/17` | Substrate segments — third octet = VLAN ID, as above |
+| `10.20.128.0/18` | Tenant overlay subnets — `10.20.{128+n}.0/24` for tenant index `n` |
+| `10.20.255.0/24` | Tenant fabric loopbacks / VTEP identity |
+
+dvnt mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
+exactly **one aggregate per site** to route — which matters in home dock mode, where dvnt already
+routes `10.20.0.0/16` to dvntm and that route keeps covering tenants unchanged.
+
+So the third octet also tells you which side of the line an address is on: below `128` is a
+substrate segment, `128` and above is a tenant overlay.
+
 ---
 
 ## Gateway Convention
@@ -82,7 +101,7 @@ This allows dvntm devices to be reachable from dvnt without double-NAT, while dv
 | VLAN Range | Purpose |
 |------------|---------|
 | 10-40 | Core segment types (trusted, storage, platform, IoT, guest) |
-| 50-59 | Tenant segments |
+| 50-59 | Tenant fabric transport (transit, underlay) — *not* a network per tenant |
 | 60-69 | Reserved for future segment types |
 | 70-79 | Experimental/lab segments |
 | 99 | Management |

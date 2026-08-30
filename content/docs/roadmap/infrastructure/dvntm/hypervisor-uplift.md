@@ -1,9 +1,9 @@
 ---
 title: "Hypervisor Platform Uplift"
 weight: 5
-tasks_completed: 0
-tasks_in_progress: 1
-tasks_planned: 4
+tasks_completed: 3
+tasks_in_progress: 0
+tasks_planned: 2
 ---
 
 # Hypervisor Platform Uplift (Proxmox VE 8 → 9)
@@ -57,18 +57,18 @@ tenant workloads, so this is the cheapest point in the project's life to do it.
 
 ---
 
-## Pre-upgrade assessment 🔄
+## Pre-upgrade assessment ✅
 
 Establish what each node needs before either is touched.
 
-- 🔄 Run `pve8to9 --full` on hv01 and hv02 and record the findings
-- ⏳ Confirm both nodes are on the latest 8.4 point release first (an upgrade prerequisite)
-- ⏳ Confirm root filesystem headroom (≥ 10 GB recommended) and a tested backup of every guest
-- ⏳ Confirm out-of-band access to each node before starting — the upgrade drops network mid-run
-- ⏳ Review breaking changes against the estate: cgroup v1 removal (old-systemd containers),
+- ✅ Run `pve8to9 --full` on hv01 and hv02 and record the findings
+- ✅ Confirm both nodes are on the latest 8.4 point release first (an upgrade prerequisite)
+- ✅ Confirm root filesystem headroom (≥ 10 GB recommended) and a tested backup of every guest
+- ✅ Confirm out-of-band access to each node before starting — the upgrade drops network mid-run
+- ✅ Review breaking changes against the estate: cgroup v1 removal (old-systemd containers),
   `/etc/sysctl.conf` no longer honored (move to `/etc/sysctl.d/`), `/tmp` becomes tmpfs
 
-## Uplift hv02 — tenant hypervisor ⏳
+## Uplift hv02 — tenant hypervisor ✅
 
 Do the tenant hypervisor first; it carries no tenant workloads yet, so the blast radius is smallest
 and it is the node the fabric work is waiting on.
@@ -84,7 +84,7 @@ The management plane runs here, so this node carries real workloads and needs a 
 - Inventory what runs on hv01 and what an outage affects before scheduling
 - Same upgrade path; verify the management plane comes back whole
 
-## Verify the fabric API surface ⏳
+## Verify the fabric API surface ✅
 
 Confirm the platform now supports what the tenant fabric design assumes.
 
@@ -105,5 +105,19 @@ Confirm the platform now supports what the tenant fabric design assumes.
 
 ## Status
 
-Assessment stage. No node has been upgraded. Tenant fabric implementation is intentionally held
-behind this project so the underlay is never built as hand-maintained node state.
+**hv02 is upgraded and the gate is cleared.** Verified against the node on 2026-08-30:
+
+| Check | Result |
+|-------|--------|
+| `GET /version` | `9.2.11` (release 9.2) — was 8.4.1 |
+| `GET /cluster/sdn/fabrics` | served (`fabric`, `node`, `all`) — was *"Method not implemented"* |
+| `frr-pythontools` | `10.6.1-1+pve3` present |
+| `libpve-network-perl` | `1.6.7` |
+| SDN objects | clean slate — no fabrics, controllers, zones or vnets; default `pve` IPAM |
+
+The tenant fabric is no longer blocked, and its underlay is defined as code rather than as
+hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
+[Tenant Platform](/docs/roadmap/infrastructure/dvntm/tenant-platform/).
+
+**hv01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
+window; nothing in the tenant fabric waits on it.

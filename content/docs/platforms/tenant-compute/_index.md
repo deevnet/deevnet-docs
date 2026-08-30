@@ -56,13 +56,11 @@ This separation ensures that tenant experimentation cannot impact substrate stab
 
 ---
 
-## Future: VLAN Isolation
+### Tenant Networking
 
-Per the roadmap, VLAN-based tenant isolation is planned:
+Tenant networks are EVPN/VXLAN overlays owned by the tenant hypervisor's own SDN fabric — one VRF
+per tenant, an anycast gateway hosted by the fabric, and addressing from fabric IPAM. The core
+router is the perimeter for the aggregate transit network only.
 
-| Feature | Description |
-|---------|-------------|
-| **VLAN tagging** | Each tenant gets a dedicated VLAN |
-| **Core Router integration** | Inter-VLAN routing and firewall rules |
-| **Network isolation** | Tenants cannot see each other's traffic |
-| **Per-tenant DHCP** | Separate address pools per VLAN |
+See [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) and the
+[tenant fabric](/docs/platforms/tenant-compute/tenant-hypervisors/tenant-fabric/) implementation.
