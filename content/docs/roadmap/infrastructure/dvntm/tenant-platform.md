@@ -43,6 +43,10 @@ The interface every tenant must satisfy to be rebuildable against the substrate.
 
 Stand up the single-member fabric on hv02.
 
+**Gated on** [Hypervisor Platform Uplift](/docs/roadmap/infrastructure/dvntm/hypervisor-uplift/) —
+PVE 8.4 has no SDN fabric object, so the underlay could only be hand-maintained node state,
+violating ADR-0001 build requirements #2 and #4.
+
 - EVPN SDN as code: controller, zone, VRF-per-tenant, anycast gateway, fabric IPAM/DHCP.
 - Underlay/VTEP identity; transit VLAN to the core router; switch port trunked for transit +
   underlay (no per-tenant VLAN).
