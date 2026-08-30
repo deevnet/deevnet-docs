@@ -25,10 +25,10 @@ Tenant management provides:
 
 Creating a new tenant involves:
 
-1. **Reserve VLAN and subnet** — Allocate from tenant IP range
-2. **Configure network infrastructure** — Add VLAN interface, DHCP scope, firewall zone
-3. **Provision tenant** — Deploy VMs and DNS records via Terraform
-4. **Configure observability** — Set up log/metric collection for tenant
+1. **Define the tenant's network** — a virtual overlay in the tenant fabric (subnet, anycast gateway, isolation), declared in the tenant's own code — from a globally-unique addressing plan
+2. **Attach perimeter policy** — the core router's transit policy for the tenant's egress and shared-service access
+3. **Provision workloads and DNS** — deploy VMs and publish DNS records via Terraform
+4. **Configure observability** — set up log/metric collection for the tenant
 
 ### Update
 
@@ -44,10 +44,10 @@ Updates are applied via Terraform for tenant resources, automation for network c
 
 Destroying a tenant:
 
-1. **Destroy tenant resources** — Terraform destroys VMs and DNS records
-2. **Remove network config** — Delete VLAN, DHCP scope, firewall zone
-3. **Archive data** — Backup logs and metrics if required
-4. **Release resources** — Return VLAN ID and subnet to pool
+1. **Destroy tenant resources** — Terraform destroys VMs, the tenant's fabric overlay network, and DNS records
+2. **Withdraw perimeter policy** — remove the tenant's transit rules on the core router
+3. **Archive data** — back up logs and metrics if required
+4. **Release identifiers** — return the tenant's subnet and network identifiers to the globally-unique pool
 
 ---
 
@@ -112,7 +112,8 @@ Tenant management is distinct from substrate management:
 | **Authority** | Platform admins only | May delegate to tenant admins |
 
 The substrate [Management Plane](/docs/architecture/substrate/management-plane/)
-provides services that tenants consume (DNS, DHCP, observability).
+provides services that tenants consume (DNS zone, observability) and the perimeter for tenant
+egress. Tenant DHCP and addressing are owned by the tenant fabric, not the substrate.
 
 ---
 
@@ -121,7 +122,7 @@ provides services that tenants consume (DNS, DHCP, observability).
 ### Blast Radius Containment
 
 A problem in one tenant should not affect others:
-- Network isolation via VLANs
+- Network isolation via the tenant fabric (per-tenant routing domains)
 - Resource quotas (future)
 - Independent lifecycle
 
@@ -150,9 +151,9 @@ Common tenant operations:
 
 | Operation | Runbook |
 |-----------|---------|
-| Create new tenant | Reserve VLAN, configure router, deploy VMs |
+| Create new tenant | Define fabric overlay network, attach perimeter policy, deploy VMs |
 | Add VM to tenant | Update Terraform, apply, verify |
-| Debug tenant network | Check VLAN, DHCP, firewall rules |
+| Debug tenant network | Check the fabric overlay, fabric DHCP, and perimeter rules |
 | Investigate tenant issue | Query tenant-scoped logs and metrics |
 | Decommission tenant | Destroy VMs, clean up network, archive data |
 

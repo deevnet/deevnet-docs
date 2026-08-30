@@ -6,7 +6,9 @@ bookCollapseSection: true
 
 # Tenant Architecture
 
-A **tenant** is a logical workload namespace representing an application or service domain.
+A **tenant** is a logical workload namespace representing an application or service domain,
+**defined entirely as code** — its network, its workloads, and its DNS — so it can be rebuilt
+from scratch against the substrate.
 
 ---
 
@@ -38,6 +40,24 @@ Tenants:
 - May be deployed to one or more sites
 - Are isolated from other tenants
 - Share substrate infrastructure (network, compute, management)
+
+### Tenant Networks Are Virtual Overlays
+
+A tenant's network is a **virtual overlay owned by the tenant compute domain (the tenant fabric)**,
+not a physical VLAN on the core router. The tenant owns its own Layer 3 — subnet, gateway, routing,
+and isolation — while the core router acts only as the **perimeter** (NAT, internet egress, and
+tenant↔management policy on a transit boundary). Creating a tenant creates a virtual network; it
+requires **no change to physical switching**. This is the model established by
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/); see
+[Networking](/docs/architecture/tenant/networking/) for the full model.
+
+### Code Is the Source of Truth
+
+Every tenant supplies the **IaC and CaC** needed to rebuild itself from scratch against the
+substrate. Nothing about a tenant is precious hand-clicked state: its overlay network, its VMs,
+and its DNS records are all declared in the tenant's own code. Rebuilding a tenant reconstitutes
+it whole — network, workloads, and records — which is what keeps the substrate stateless and the
+tenant portable.
 
 ### Intent Over Identity
 
@@ -87,8 +107,26 @@ The tenant is logically the same (`grooveiq`), but instances are site-scoped.
 
 ---
 
+## The Tenant Contract
+
+A tenant is defined by the **contract** it satisfies with the substrate — a clean interface
+between what the tenant supplies and what the substrate guarantees:
+
+| The tenant supplies (as code) | The substrate guarantees |
+|-------------------------------|--------------------------|
+| Its overlay network (subnet, gateway, isolation) in the fabric | A tenant fabric to attach to |
+| Its workloads (VMs from a template) | Compute on the tenant hypervisor |
+| Its DNS records | A DNS zone to publish into |
+| Its addressing, from a globally-unique plan | A perimeter for egress and shared-service access |
+
+Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
+changing the substrate. The contract itself is being formalized — see the
+[Tenant Platform roadmap](/docs/roadmap/infrastructure/dvntm/tenant-platform/).
+
+---
+
 ## Child Documents
 
-- [Networking](networking/) — Tenant network isolation and VLAN model
-- [Management](management/) — Tenant lifecycle and observability
-- [Building](building/) — Tenant provisioning
+- [Networking](/docs/architecture/tenant/networking/) — Tenant network isolation via the overlay fabric
+- [Management](/docs/architecture/tenant/management/) — Tenant lifecycle and observability
+- [Building](/docs/architecture/tenant/building/) — Tenant provisioning as code

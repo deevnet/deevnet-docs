@@ -13,6 +13,7 @@ Defines the provisioning model for tenant workloads.
 
 Tenant building provides:
 - **Declarative infrastructure** — Define tenant environments as code
+- **Rebuild from scratch** — A tenant is fully reconstituted from its own code against the substrate: overlay network, VMs, and DNS
 - **Reproducibility** — Recreate tenant environments reliably
 - **Drift detection** — Identify manual changes
 - **Lifecycle automation** — Create, update, destroy via automation
@@ -60,10 +61,11 @@ module "grooveiq_api" {
   memory  = 4096
   disk    = "32G"
 
+  # Attach to the tenant's own overlay network in the fabric — not a core-router VLAN
   network = {
-    vlan_id = 100  # grooveiq VLAN
-    ip      = "10.100.0.10"
-    gateway = "10.100.0.1"
+    fabric_net = "grooveiq"     # the tenant's overlay, defined in the tenant's own code
+    ip         = "10.100.0.10"  # from the tenant's own subnet / fabric IPAM
+    gateway    = "10.100.0.1"   # anycast gateway hosted by the fabric
   }
 }
 ```
@@ -172,13 +174,19 @@ deterministic MACs are mandatory.
 
 ## Network Prerequisites
 
-Before provisioning tenant VMs:
+Under the tenant fabric model, a tenant **owns its own network** and creates it as part of its own
+code — a virtual overlay in the fabric with its subnet, anycast gateway, and DHCP. Configuring a
+per-tenant VLAN on the core router is **not** a build step.
 
-1. **VLAN configured** — Network infrastructure has tenant VLAN interface
-2. **DHCP scope exists** — Either dynamic pool or static reservations
-3. **Firewall zone defined** — Tenant security policies in place
+What the substrate must provide first (the substrate side of the [tenant contract](/docs/architecture/tenant/#the-tenant-contract)):
 
-These are substrate-level prerequisites managed by substrate automation. Tenant DNS records are created as part of the tenant's own Terraform configuration, not as a substrate prerequisite.
+1. **Tenant fabric present** — the tenant hypervisor runs the overlay fabric the tenant attaches to
+2. **Perimeter transit** — the core router provides the transit boundary for tenant egress and shared-service access
+3. **DNS zone** — the substrate zone the tenant publishes its records into
+
+The tenant's overlay network, addressing, and DNS records are all created by the tenant's own
+Terraform — not as substrate prerequisites. See
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/).
 
 ---
 
