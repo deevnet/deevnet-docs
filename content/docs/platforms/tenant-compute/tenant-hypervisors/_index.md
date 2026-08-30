@@ -135,29 +135,45 @@ For a two-node lab environment:
 - Local storage is simpler and faster
 - Manual VM placement is acceptable at this scale
 
+> **Trajectory note.** Non-clustered is the Phase 1 state, not a permanent constraint. The tenant
+> network is built as a **single-member fabric** designed to expand into a *tenant* cluster later
+> without redefinition — see [Tenant Fabric (SDN)](tenant-fabric/). Any such cluster is a cluster
+> of **tenant** hypervisors for its own quorum; it does not join the management hypervisor, which
+> follows a separate path.
+
 ---
 
 ## Network Position
 
 {{< mermaid >}}
 graph LR
-    A[Core Router] <--> B[Tenant Hypervisor<br>Proxmox Node 2] <--> C[Tenant VMs<br>apps, experiments, sandboxes]
+    A[Core Router<br>perimeter: NAT, policy] <-->|transit VLAN| B[Tenant Hypervisor<br>Proxmox Node 2<br>tenant fabric] <-->|VRF overlays| C[Tenant VMs<br>apps, experiments, sandboxes]
 {{< /mermaid >}}
 
-Guest VMs receive network configuration from Core Router DHCP.
+Tenant VMs receive addressing from the **tenant fabric** (SDN IPAM/DHCP). Aggregate tenant egress
+reaches the core router over a transit VLAN, where the core router applies NAT and perimeter
+policy. The core router does not serve tenant DHCP.
 
 ---
 
-## Future: VLAN Isolation
+## Tenant Networking: The Tenant Fabric
 
-When tenant networking is implemented:
+Tenant networking is a **routed overlay fabric** owned by this hypervisor, not a set of physical
+VLANs on the core router. Each tenant is a VRF-isolated virtual network with an anycast gateway
+hosted by the fabric; the core router is only the perimeter. The fabric is **self-contained on
+this node** and built as a single-member fabric that expands to a cluster without redefinition.
+
+See [Tenant Fabric (SDN)](tenant-fabric/) for the Proxmox SDN/EVPN implementation, and
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) for the decision and the
+options considered.
 
 | Feature | Description |
 |---------|-------------|
-| **VLAN tagging** | Each tenant gets a dedicated VLAN |
-| **Core Router integration** | Inter-VLAN routing and firewall rules |
-| **Network isolation** | Tenants cannot see each other's traffic |
-| **Per-tenant DHCP** | Separate address pools per VLAN |
+| **Overlay (EVPN/VXLAN)** | Tenant networks are virtual; no per-tenant switch change |
+| **VRF per tenant** | Tenants cannot see each other's traffic |
+| **Anycast gateway** | Tenant gateway hosted by the fabric, not the core router |
+| **Fabric IPAM / DHCP** | Address pools owned by the fabric, per tenant |
+| **Perimeter transit** | Aggregate egress to the core router for NAT and policy |
 
 ---
 

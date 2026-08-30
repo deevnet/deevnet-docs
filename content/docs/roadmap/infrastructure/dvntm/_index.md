@@ -3,8 +3,8 @@ title: "DVNTM (Mobile Site)"
 weight: 1
 bookCollapseSection: true
 tasks_completed: 30
-tasks_in_progress: 0
-tasks_planned: 55
+tasks_in_progress: 1
+tasks_planned: 59
 ---
 
 # DVNTM (Mobile Site)

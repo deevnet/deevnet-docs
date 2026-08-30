@@ -47,13 +47,21 @@ The firewall enforces zone-based policy with each segment mapped to a firewall z
 | TRUSTED | Broad outbound access; restricted inbound |
 | STOR | Highly restricted — only designated management and compute hosts |
 | PLATFORM | Accepts inbound from management, trusted, tenant, and IoT backend |
-| TENANT | Per-tenant rules; access to platform services via explicit allow |
+| TENANT | Perimeter for the tenant **transit network**; NAT, internet egress, and tenant↔management policy — see note below |
 | IOT | Outbound allowed; inbound restricted to IoT backend |
 | IOT_VENDOR | Outbound internet only; no internal access |
 | IOT_BACKEND | Accepts from IoT zone; outbound to platform |
 | GUEST | Internet gateway only; no internal access |
 
 The default policy is **deny all** — traffic between zones is blocked unless explicitly allowed.
+
+> **Tenant networking is owned by the tenant fabric, not the core router.**
+> Per [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/), each tenant's subnet,
+> gateway, routing, isolation, and DHCP live in the tenant compute domain. The core router does
+> **not** maintain a VLAN interface or DHCP scope per tenant. It sees only the aggregate tenant
+> **transit network** and acts as the perimeter for it — outbound NAT, internet egress, and
+> tenant↔management policy. The per-segment services below (VLAN routing, DHCP) apply to
+> substrate segments, not to individual tenants.
 
 ---
 
