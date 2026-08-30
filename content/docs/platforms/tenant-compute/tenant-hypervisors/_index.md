@@ -164,7 +164,7 @@ hosted by the fabric; the core router is only the perimeter. The fabric is **sel
 this node** and built as a single-member fabric that expands to a cluster without redefinition.
 
 See [Tenant Fabric (SDN)](tenant-fabric/) for the Proxmox SDN/EVPN implementation, and
-[ADR-0001]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}) for the decision and the
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) for the decision and the
 options considered.
 
 | Feature | Description |

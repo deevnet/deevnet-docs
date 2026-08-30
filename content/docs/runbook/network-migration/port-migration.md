@@ -14,7 +14,7 @@ Move remaining switch ports to their assigned VLANs, perform the management cuto
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
 
 {{< hint info >}}
-**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration ([Step 11](#step-11-management-cutover) / [Post-Migration](../post-migration/)). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
+**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration ([Step 11](#step-11-management-cutover) / [Post-Migration](/docs/runbook/network-migration/post-migration/)). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
 {{< /hint >}}
 
 {{< hint warning >}}
@@ -80,7 +80,7 @@ After all ports are migrated and verified:
    copy running-config startup-config
    ```
 
-2. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from [Step 5b](../builder-cutover/#5b--add-vlan-99-management-ip-to-the-switch).
+2. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from [Step 5b](/docs/runbook/network-migration/builder-cutover/#5b--add-vlan-99-management-ip-to-the-switch).
    ```
    configure
    no interface vlan 1

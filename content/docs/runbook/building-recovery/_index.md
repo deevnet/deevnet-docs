@@ -119,6 +119,6 @@ flowchart TD
 
 ## Known Gaps
 
-**Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Future Evaluations](../../platforms/evaluations/).
+**Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Future Evaluations](/docs/platforms/evaluations/).
 
-**Post-Install Updates** - See [Patching](../patching/) for day 2 considerations.
+**Post-Install Updates** - See [Patching](/docs/runbook/patching/) for day 2 considerations.

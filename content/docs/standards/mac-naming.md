@@ -17,7 +17,7 @@ Deterministic MAC addressing enables:
 - Clear mapping between identity layers
 
 > **Formatting**: All MAC addresses must follow the formatting rules in the
-> [MAC Address Format Standard](../mac-address-format/) (lowercase hex, colon
+> [MAC Address Format Standard](/docs/standards/mac-address-format/) (lowercase hex, colon
 > separators).
 
 ---
@@ -120,6 +120,6 @@ mgmt_dns_01:
 
 ## Related Standards
 
-- [MAC Address Format](../mac-address-format/) - Formatting rules (lowercase, colons)
+- [MAC Address Format](/docs/standards/mac-address-format/) - Formatting rules (lowercase, colons)
 - [Extended Services](/docs/architecture/substrate/management-plane/extended-services/) -
   Extended management services architecture and deterministic MAC addressing

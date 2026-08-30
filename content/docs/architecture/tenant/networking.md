@@ -8,7 +8,7 @@ weight: 1
 Defines the network isolation model for tenant workloads.
 
 > The model on this page was established by
-> [ADR-0001: Tenant Network Fabric]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}).
+> [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/).
 > It supersedes an earlier model in which the core router owned a physical VLAN, gateway, and
 > DHCP scope for every tenant.
 
@@ -48,7 +48,7 @@ reaches the perimeter.
 The **tenant fabric** is the logical tenant-network domain. It is currently realized on a single
 tenant hypervisor (a **single-member fabric**) and is designed to expand to additional members
 without redefinition — the boundary is the fabric, not any one host. See
-[Tenant Hypervisors]({{< relref "/docs/platforms/tenant-compute/tenant-hypervisors" >}}) for the platform
+[Tenant Hypervisors](/docs/platforms/tenant-compute/tenant-hypervisors/) for the platform
 realization and the single-node-to-cluster trajectory.
 
 ---
@@ -147,7 +147,7 @@ Tenant subnets, network identifiers, and routing-domain identifiers are allocate
 ## Relationship to Substrate Networking
 
 Tenant networking is a virtual layer on top of
-[Substrate Networking]({{< relref "/docs/architecture/substrate/networking" >}}). The substrate provides the
+[Substrate Networking](/docs/architecture/substrate/networking/). The substrate provides the
 physical underlay and the perimeter (core router); the tenant fabric provides the virtual tenant
 networks that ride on top of it.
 

@@ -158,4 +158,4 @@ dig artifacts.dvntm.deevnet.net
 
 Run the post-network verification checks:
 
-See [Post-Migration](/docs/runbook/network-migration/post-migration/) for the full validation procedure, or proceed to [Verify Site](../build-verification/) after the management plane is built.
+See [Post-Migration](/docs/runbook/network-migration/post-migration/) for the full validation procedure, or proceed to [Verify Site](/docs/runbook/building-recovery/build-verification/) after the management plane is built.

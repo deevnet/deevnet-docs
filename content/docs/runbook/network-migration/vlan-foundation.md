@@ -67,7 +67,7 @@ copy running-config startup-config
 
 ## Step 4: Trunk Uplink (Tagged VLANs)
 
-Add all VLANs as tagged members on the uplink port. The PVID stays at 1 (the router's untagged traffic continues on VLAN 1). The PVID cutover to blackhole (999) happens in [Step 9b](../services-and-routing/#step-9b-trunk-pvid-cutover-to-blackhole) — after OPNsense VLAN interfaces have IPs and the router is reachable via tagged VLANs.
+Add all VLANs as tagged members on the uplink port. The PVID stays at 1 (the router's untagged traffic continues on VLAN 1). The PVID cutover to blackhole (999) happens in [Step 9b](/docs/runbook/network-migration/services-and-routing/#step-9b-trunk-pvid-cutover-to-blackhole) — after OPNsense VLAN interfaces have IPs and the router is reachable via tagged VLANs.
 
 **Run:**
 ```bash

@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 ## Purpose
 
-Pi Production contains **graduated projects**—Raspberry Pi deployments that have moved from development in the [Raspberry Pi Lab]({{< relref "../raspberry-pi-lab" >}}) to permanent, dedicated hardware.
+Pi Production contains **graduated projects**—Raspberry Pi deployments that have moved from development in the [Raspberry Pi Lab](/docs/platforms/tenant-compute/raspberry-pi-lab/) to permanent, dedicated hardware.
 
 Each production Pi:
 - Runs a finalized, tested SD card image
@@ -36,7 +36,7 @@ graph LR
 
 | Project | Hardware | Purpose |
 |---------|----------|---------|
-| [CaribouLite SDR]({{< relref "cariboulite-sdr" >}}) | Pi 4 8GB + CaribouLite HAT | Software-defined radio receiver |
+| [CaribouLite SDR](/docs/platforms/tenant-compute/pi-production/cariboulite-sdr/) | Pi 4 8GB + CaribouLite HAT | Software-defined radio receiver |
 
 ---
 

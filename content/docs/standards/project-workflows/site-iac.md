@@ -7,7 +7,7 @@ weight: 2
 
 Template for full infrastructure site builds involving bare-metal provisioning, network automation, and end-to-end rebuild validation. Use this for complex, multi-layer infrastructure projects.
 
-For simpler automation projects, see [IaC/CaC](../iac-cac/).
+For simpler automation projects, see [IaC/CaC](/docs/standards/project-workflows/iac-cac/).
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 

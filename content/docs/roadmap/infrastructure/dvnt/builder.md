@@ -29,6 +29,6 @@ Achieve fully automated, repeatable provisioning of the dvnt (home) site from ba
 - dvnt-specific hardware (AOOSTAR N1 PRO provisioner, site networking gear)
 
 **Out of Scope**
-- Extended management plane — see [Extended Management Plane](../management-plane/)
-- Patch automation — see [Patch Automation](../patch-automation/)
-- Full site rebuild event — see [Full Site Rebuild](../full-rebuild/)
+- Extended management plane — see [Extended Management Plane](/docs/roadmap/infrastructure/dvnt/management-plane/)
+- Patch automation — see [Patch Automation](/docs/roadmap/infrastructure/dvnt/patch-automation/)
+- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/infrastructure/dvnt/full-rebuild/)

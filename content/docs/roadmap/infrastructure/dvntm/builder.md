@@ -31,8 +31,8 @@ Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from
 
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
-- Patch automation and firmware upgrades — see [Patch Automation](../patch-automation/)
-- Full site rebuild event — see [Full Site Rebuild](../full-rebuild/)
+- Patch automation and firmware upgrades — see [Patch Automation](/docs/roadmap/infrastructure/dvntm/patch-automation/)
+- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/infrastructure/dvntm/full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 

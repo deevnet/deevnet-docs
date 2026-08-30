@@ -27,9 +27,9 @@ Perform a complete tear-down and rebuild of the dvntm (mobile) site to validate 
 - Coordinated release tagging across all deevnet repos
 
 **Prerequisites**
-- [Builder & Core Services](../builder/) — ✅ Complete
-- [Patch Automation](../patch-automation/) — firmware and automation improvements applied
-- [Extended Management Plane](../management-plane/) — management services deployable
+- [Builder & Core Services](/docs/roadmap/infrastructure/dvntm/builder/) — ✅ Complete
+- [Patch Automation](/docs/roadmap/infrastructure/dvntm/patch-automation/) — firmware and automation improvements applied
+- [Extended Management Plane](/docs/roadmap/infrastructure/dvntm/management-plane/) — management services deployable
 
 ---
 

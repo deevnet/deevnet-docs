@@ -17,7 +17,7 @@ The goal of this separation is to ensure that:
 - Infrastructure history is not lost when systems are repurposed
 - Inventory remains truthful over time
 
-This document complements the [Naming Standard](../naming/) and focuses specifically on how inventory and configuration are modeled in Deevnet.
+This document complements the [Naming Standard](/docs/standards/naming/) and focuses specifically on how inventory and configuration are modeled in Deevnet.
 
 ---
 
@@ -242,7 +242,7 @@ When SDR moves to another host:
 
 ## Relationship to Naming
 
-This document complements the [Naming Standard](../naming/).
+This document complements the [Naming Standard](/docs/standards/naming/).
 
 The naming standard defines:
 

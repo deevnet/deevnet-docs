@@ -9,11 +9,11 @@ weight: 3
 
 This document defines the **extended management services** layer within the Deevnet management plane.
 
-Extended management services provide observability, automation, and access tooling. They are **additive** to [Core Services](../core-services/)—the minimal set of services required for the substrate to function on its own.
+Extended management services provide observability, automation, and access tooling. They are **additive** to [Core Services](/docs/architecture/substrate/management-plane/core-services/)—the minimal set of services required for the substrate to function on its own.
 
 These services may be rebuilt entirely from the builder and core services. If the extended services tier is lost, core provisioning and network services remain operational.
 
-For core management plane architecture (DNS authority, naming, provisioner role, OOB services), see [Core Services](../core-services/).
+For core management plane architecture (DNS authority, naming, provisioner role, OOB services), see [Core Services](/docs/architecture/substrate/management-plane/core-services/).
 
 ---
 

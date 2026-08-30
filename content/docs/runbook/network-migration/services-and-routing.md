@@ -49,7 +49,7 @@ Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
 Ensure Kea DHCP subnets are created in OPNsense first (Services -> Kea DHCP -> Subnets) and `dhcp_subnet_uuid` is updated in `group_vars/routers/vars.yml` for each subnet.
 
 {{< hint info >}}
-**Note:** VLAN 99 already has its gateway IP configured from [Step 5](../builder-cutover/). The DHCP configuration here covers the remaining subnets. VLAN 99 devices (builder, switch) use static IPs and do not require DHCP reservations.
+**Note:** VLAN 99 already has its gateway IP configured from [Step 5](/docs/runbook/network-migration/builder-cutover/). The DHCP configuration here covers the remaining subnets. VLAN 99 devices (builder, switch) use static IPs and do not require DHCP reservations.
 {{< /hint >}}
 
 **Run:**
@@ -72,11 +72,11 @@ Delete DHCP subnets and reservations via OPNsense GUI -> Services -> Kea DHCP.
 Assign gateway IP addresses to each remaining VLAN interface and enable them. After this step, the router can route traffic between VLAN subnets (subject to firewall policy).
 
 {{< hint info >}}
-**Note:** VLAN 99 was already configured with its gateway IP (`10.20.99.1/24`) in [Step 5](../builder-cutover/) as a prerequisite for the builder cutover.
+**Note:** VLAN 99 was already configured with its gateway IP (`10.20.99.1/24`) in [Step 5](/docs/runbook/network-migration/builder-cutover/) as a prerequisite for the builder cutover.
 {{< /hint >}}
 
 **Prerequisites:**
-- [Step 2](../vlan-foundation/#step-2-opnsense-vlan-interfaces) complete (VLAN sub-interfaces exist on OPNsense)
+- [Step 2](/docs/runbook/network-migration/vlan-foundation/#step-2-opnsense-vlan-interfaces) complete (VLAN sub-interfaces exist on OPNsense)
 - VLAN devices assigned to interface slots in OPNsense (Interfaces -> Assignments)
 
 **Run:**

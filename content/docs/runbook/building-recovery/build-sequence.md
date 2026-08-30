@@ -29,7 +29,7 @@ The IP swap is the last step — it drops the SSH connection. All configuration 
 
 The WAN interface, DHCP range, gateway IP, and DNS domain are all inventory-driven — no code changes are needed when switching between sites.
 
-Proceed to [Build Network](../build-network/) to provision Core Router.
+Proceed to [Build Network](/docs/runbook/building-recovery/build-network/) to provision Core Router.
 
 ---
 
@@ -44,9 +44,9 @@ systemctl status tftp.socket
 ```
 
 Proceed directly to:
-- [Build Network](../build-network/) for Core Router rebuild
-- [Build Management Plane](../build-management-plane/) for hypervisor rebuild
-- [Build Tenants](../build-tenants/) for tenant rebuild
+- [Build Network](/docs/runbook/building-recovery/build-network/) for Core Router rebuild
+- [Build Management Plane](/docs/runbook/building-recovery/build-management-plane/) for hypervisor rebuild
+- [Build Tenants](/docs/runbook/building-recovery/build-tenants/) for tenant rebuild
 
 ---
 

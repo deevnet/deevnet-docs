@@ -28,7 +28,7 @@ weight: 7
 - Check port VLAN assignment: `show interface switchport gigabitEthernet 1/0/16`
 - Verify VLAN 99 interface is enabled with IP `10.20.99.1` in OPNsense
 - If the builder has the wrong static IP config, revert the port to VLAN 1 and re-run the builder playbook with the dvntm inventory
-- If the builder is unreachable, Omada adoption ([Step 12](../port-migration/#step-12-omada-device-adoption)) cannot proceed — but the switch and AP continue to function independently
+- If the builder is unreachable, Omada adoption ([Step 12](/docs/runbook/network-migration/port-migration/#step-12-omada-device-adoption)) cannot proceed — but the switch and AP continue to function independently
 - Last resort: revert the builder port to VLAN 1 via console:
   ```
   configure

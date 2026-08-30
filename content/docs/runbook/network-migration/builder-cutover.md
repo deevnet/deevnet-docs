@@ -8,7 +8,7 @@ weight: 3
 Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
 
 **Prerequisites:**
-- [Step 4](../vlan-foundation/#step-4-trunk-uplink-tagged-vlans) complete (trunk uplink carrying tagged VLANs)
+- [Step 4](/docs/runbook/network-migration/vlan-foundation/#step-4-trunk-uplink-tagged-vlans) complete (trunk uplink carrying tagged VLANs)
 
 ---
 
@@ -39,7 +39,7 @@ After this step, all VLAN gateways (including `10.20.99.1` for management) are a
 
 ## 5a2 — Temporary firewall rules for VLAN interfaces
 
-OPNsense default-denies all traffic on new OPT interfaces. This adds temporary pass-all rules via the firewall API so traffic flows during migration. [Step 9](../services-and-routing/#step-9-inter-vlan-firewall-rules) replaces these with proper zone-based policy.
+OPNsense default-denies all traffic on new OPT interfaces. This adds temporary pass-all rules via the firewall API so traffic flows during migration. [Step 9](/docs/runbook/network-migration/services-and-routing/#step-9-inter-vlan-firewall-rules) replaces these with proper zone-based policy.
 
 {{< hint info >}}
 **Note:** This step runs AFTER the builder is on VLAN 99 and uses the VLAN 99 gateway IP (`10.20.99.1`) to reach OPNsense. If running during initial setup (builder still on VLAN 1), the playbook will need the `opnsense_api_url` overridden.
@@ -60,7 +60,7 @@ cd ansible-collection-deevnet.net
 make migration-switch-mgmt-ip
 ```
 
-The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in [Step 11](../port-migration/#step-11-management-cutover) after migration completes.
+The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in [Step 11](/docs/runbook/network-migration/port-migration/#step-11-management-cutover) after migration completes.
 
 ---
 

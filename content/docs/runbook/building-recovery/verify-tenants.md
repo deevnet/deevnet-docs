@@ -11,7 +11,7 @@ Validation after tenant workloads are provisioned.
 
 ## Prerequisites
 
-- Tenant VMs deployed via [Build Tenants](../build-tenants/)
+- Tenant VMs deployed via [Build Tenants](/docs/runbook/building-recovery/build-tenants/)
 - Application services started
 
 ---

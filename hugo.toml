@@ -24,6 +24,10 @@ enableGitInfo = true
   BookMenuBundle = "/menu"
   # Section to use for the homepage
   BookSection = "docs"
+  # Resolve in-content markdown links via the theme so they honor the
+  # baseURL subpath (/deevnet-docs/). Without this, absolute links like
+  # /docs/... render literally and 404 on the project Pages site.
+  BookPortableLinks = true
   # Set site description for SEO
   description = "Authoritative documentation for the Deevnet ecosystem"
 
