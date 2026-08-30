@@ -24,7 +24,7 @@ How tenant traffic is isolated, routed, and addressed.
 
 - **Decided:** the fabric model — an EVPN overlay owned by the tenant compute domain,
   self-contained per hypervisor, single-member now and expandable to a cluster
-  ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
+  ([ADR-0001]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}})).
 - **Open — DNS:** how tenant records are authored and published into the substrate zone, and who
   resolves tenant names. *This is the open thread keeping this milestone in progress.*
 - **Open — numbering:** a globally-unique scheme for VNIs, VRF IDs, and tenant subnets.
@@ -69,5 +69,5 @@ Prove the whole path with a real tenant.
 
 Not scheduled, not counted. Reached by **adding** members to the Phase 1 fabric, not rebuilding it
 — same SDN objects re-applied at cluster scope, underlay peers formed, a QDevice for quorum.
-Trajectory detail is in [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory).
+Trajectory detail is in [ADR-0001]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}#trajectory).
 The management hypervisor (hv01) follows a separate path and does not join the tenant fabric.

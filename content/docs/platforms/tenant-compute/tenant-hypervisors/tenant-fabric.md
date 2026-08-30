@@ -7,7 +7,7 @@ weight: 2
 
 The implementation of the tenant network model on the tenant hypervisor. The *why* and the
 options considered are recorded in
-[ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/); this
+[ADR-0001: Tenant Network Fabric]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}); this
 page is the *how* and the concrete technology choices.
 
 ---
@@ -105,7 +105,7 @@ DNS records**, landing on the fabric the hypervisor already provides.
 
 The fabric is built with exactly one member today and expands without redefinition. What changes
 and what stays identical is tabulated in
-[ADR-0001 → Trajectory](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory).
+[ADR-0001 → Trajectory]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}#trajectory).
 The short version: the SDN objects, the VRF-per-tenant model, the anycast gateway semantics, and
 the tenant IaC are **unchanged** when members are added; only the underlay gains peers and the
 cluster gains a QDevice for quorum. Nothing structural is torn out to scale.

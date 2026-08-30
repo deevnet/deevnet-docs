@@ -37,6 +37,6 @@ Records are numbered in the order they are accepted (`0001`, `0002`, …) and ne
 
 ## Records
 
-- [ADR-0001: Tenant Network Fabric](0001-tenant-network-fabric/) — tenant networking is an
+- [ADR-0001: Tenant Network Fabric]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}) — tenant networking is an
   overlay fabric owned by the tenant compute domain, self-contained per hypervisor, built as
   a single-member fabric that expands to a cluster without redefinition.

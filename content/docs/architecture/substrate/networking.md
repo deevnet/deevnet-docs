@@ -56,7 +56,7 @@ The firewall enforces zone-based policy with each segment mapped to a firewall z
 The default policy is **deny all** — traffic between zones is blocked unless explicitly allowed.
 
 > **Tenant networking is owned by the tenant fabric, not the core router.**
-> Per [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/), each tenant's subnet,
+> Per [ADR-0001]({{< relref "/docs/architecture/decisions/0001-tenant-network-fabric" >}}), each tenant's subnet,
 > gateway, routing, isolation, and DHCP live in the tenant compute domain. The core router does
 > **not** maintain a VLAN interface or DHCP scope per tenant. It sees only the aggregate tenant
 > **transit network** and acts as the perimeter for it — outbound NAT, internet egress, and
