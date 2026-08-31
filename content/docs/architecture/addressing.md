@@ -64,7 +64,7 @@ Each subnet uses `.1` as the gateway address:
 | .2-.49 | Static infrastructure hosts |
 | .50-.59 | Tenant-reserved addresses |
 | .60-.69 | Reserved for future use |
-| .70-.79 | Experimental/lab use |
+| .70-.79 | Experimental/lab use — `.79` is the transient image-build address (see [tenant hypervisors](/docs/platforms/tenant-compute/tenant-hypervisors/)) |
 | .100-.200 | DHCP dynamic pools (where applicable) |
 
 Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive static assignments in the low range. DHCP pools are used for segments with dynamic devices (trusted, IoT, guest).
