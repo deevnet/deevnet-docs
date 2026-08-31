@@ -46,29 +46,33 @@ Unlike substrate infrastructure (automation-first), tenant workloads use **Terra
 
 ### 1. Define Tenant Infrastructure
 
-Create Terraform configuration for tenant VMs:
+A tenant is a single module instantiation. Every identifier it uses — its VRF, its VNets, its
+subnet — derives from one allocated index, so there is very little to declare:
 
 ```hcl
-# Example: grooveiq tenant
-module "grooveiq_api" {
-  source = "../modules/proxmox-vm"
+module "tenant" {
+  source = "../../../modules/tenant"
 
-  name        = "api-vm01"
-  target_node = "pve-tenant"
-  template    = "fedora-43-template"
+  tenant_name  = "grooveiq"   # <= 8 chars: Proxmox caps SDN zone IDs, and the zone ID is the name
+  tenant_index = 2            # allocated in TENANTS.md; everything else follows from it
 
-  cores   = 2
-  memory  = 4096
-  disk    = "32G"
+  # Read from the fabric's own state, so a tenant need not know which
+  # hypervisor it lands on.
+  controller_id = data.terraform_remote_state.fabric.outputs.controller_id
+  node          = data.terraform_remote_state.fabric.outputs.node
 
-  # Attach to the tenant's own overlay network in the fabric — not a core-router VLAN
-  network = {
-    fabric_net = "grooveiq"     # the tenant's overlay, defined in the tenant's own code
-    ip         = "10.100.0.10"  # from the tenant's own subnet / fabric IPAM
-    gateway    = "10.100.0.1"   # anycast gateway hosted by the fabric
-  }
+  vm_count       = 2
+  template_vm_id = var.template_vm_id
+  ssh_keys       = var.ssh_keys
 }
 ```
+
+The module creates the tenant's EVPN zone (its VRF), its VNet, its addressed subnet, and its VMs.
+Addresses are **assigned from the subnet by cloud-init**, not leased — Proxmox implements SDN DHCP
+for Simple zones only, and a tenant zone is EVPN.
+
+Step-by-step instructions, including allocating the index and verifying the result, are in
+[Provisioning a Tenant](/docs/runbook/tenant-provisioning/).
 
 ### 2. Plan Changes
 
@@ -103,7 +107,7 @@ Tenant VMs clone from Proxmox templates:
 |-------------|-------------|
 | **Cloud-init** | Template must support cloud-init for initial config |
 | **SSH key injection** | Automation user SSH key injected at boot |
-| **Network config** | DHCP or static IP via cloud-init |
+| **Network config** | Address assigned from the tenant subnet via cloud-init |
 | **Base packages** | Python3 for Ansible, basic utilities |
 
 Templates are built by the [Image Factory](/docs/platforms/) and stored
@@ -165,7 +169,7 @@ For tenant VMs, MAC addresses may be:
 If deterministic MACs are needed:
 - Define MAC in Terraform configuration
 - Store in tenant inventory
-- Create corresponding DHCP reservation
+- Record the address in the tenant's own code (assigned, not leased)
 
 This is optional for tenants, unlike management-plane VMs where
 deterministic MACs are mandatory.
@@ -175,7 +179,7 @@ deterministic MACs are mandatory.
 ## Network Prerequisites
 
 Under the tenant fabric model, a tenant **owns its own network** and creates it as part of its own
-code — a virtual overlay in the fabric with its subnet, anycast gateway, and DHCP. Configuring a
+code — a virtual overlay in the fabric with its own subnet and anycast gateway. Configuring a
 per-tenant VLAN on the core router is **not** a build step.
 
 What the substrate must provide first (the substrate side of the [tenant contract](/docs/architecture/tenant/#the-tenant-contract)):
