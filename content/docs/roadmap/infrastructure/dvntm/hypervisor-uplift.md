@@ -120,4 +120,10 @@ hand-maintained node state — which was the whole reason for the gate. Implemen
 [Tenant Platform](/docs/roadmap/infrastructure/dvntm/tenant-platform/).
 
 **hv01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
-window; nothing in the tenant fabric waits on it.
+window; nothing in the tenant fabric waits on it. Nor does tenant DNS
+([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)) — cloning a template and
+running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on hv02.
+
+The **PVE 9.2-1 installer ISO is published to the artifact server** (`isos/proxmox`), so the uplift
+— or a full reinstall — can be done with no internet access. Its checksum is verified against
+Proxmox's GPG-signed `SHA256SUMS` rather than a hash pasted into inventory.

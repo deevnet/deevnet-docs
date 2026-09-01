@@ -26,6 +26,27 @@ Services that run in the extended management tier:
 | **Observability** | Metrics collection, log aggregation, alerting |
 | **Automation** | Build automation runners, image factory helpers |
 | **Access** | Jump hosts, out-of-band tooling |
+| **Tenant authoritative DNS** | PowerDNS holding per-tenant delegated zones ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)) |
+
+### 1.1 Two Service Hosts, Split by Audience
+
+Extended services are grouped onto shared hosts rather than one host per service, and the grouping
+follows **who the service serves**:
+
+| Host | Serves | Examples |
+|------|--------|----------|
+| **Tenant-facing** | Substrate services that tenants consume | Tenant authoritative DNS |
+| **Substrate-facing** | Services the substrate consumes about itself | Observability, automation, access |
+
+Both are substrate-owned. Naming a host for its audience follows the same convention as the
+`tenant_transit` and `tenant_underlay` VLANs of
+[ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/) — substrate resources named
+for the tenants they carry.
+
+The split exists for **change cadence**. Observability is poked at constantly; tenant DNS should be
+boring. Keeping them on separate hosts means a restart or an update in the noisy tier cannot take
+tenant name resolution with it. Service endpoints are CNAMEs, so a service may move between hosts
+without changing what consumers reference.
 
 ---
 
@@ -43,6 +64,10 @@ This separation ensures:
 - Tenant rebuilds cannot disrupt core services
 - Observability and access remain available during failures
 - Platform recovery paths are always reachable
+
+Isolation here means **no tenant code runs in this tier**. A service may still *serve* tenants —
+tenant authoritative DNS does — without a tenant being able to execute in it or write outside its
+own namespace.
 
 ---
 
@@ -80,6 +105,12 @@ Extended services are provisioned from the builder:
 - Simplicity and traceability are prioritized
 
 Terraform is intentionally **not used** for management-plane workloads.
+
+This holds even where a service exists to serve tenants. Under
+[ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) the DNS **server** is
+substrate and is provisioned by Ansible; the **records** inside its zones are tenant content and
+are written by the tenant's own Terraform. Substrate provides the machine, tenants provide the
+content — so no Terraform state is introduced for the substrate.
 
 For the current platform and tooling used to host extended services,
 see [Implementation & Tooling](/docs/platforms/).

@@ -98,8 +98,19 @@ The management hypervisor hosts these workload categories:
 | **Observability** | Metrics collection, log aggregation, alerting |
 | **Automation & CI** | Ansible runners, image factory helpers |
 | **Access & recovery** | Jump hosts, OOB tooling |
+| **Tenant-facing services** | Tenant authoritative DNS (ADR-0004) |
 
 > **Note**: Core network services (DNS, DHCP, NAT) run on the [Core Router](/docs/platforms/network/core-router/), not as VMs on the management hypervisor.
+>
+> This is about **resolution**, and it is unchanged. The core router remains the resolver every
+> substrate client asks, and remains authoritative for substrate names.
+>
+> It is not a rule against **authority**. Per
+> [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/), tenant DNS zones are
+> served by a PowerDNS Authoritative instance on the management hypervisor and delegated to from
+> the core router's Unbound. That is an extended management service, not a core network service —
+> a class that did not exist when the rule above was written. Losing it costs tenant name
+> resolution and nothing else.
 
 ---
 
