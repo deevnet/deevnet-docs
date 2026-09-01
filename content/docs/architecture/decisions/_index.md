@@ -48,3 +48,6 @@ question is written down, not when it is answered.
 - [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/) —
   tenant egress needs transit forwarding and a default route inside each tenant VRF; Proxmox's own
   exit-node behaviour routes around the perimeter rather than through it.
+- [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/) —
+  *Proposed.* How a tenant's own records reach the substrate resolver without either putting tenant
+  content in substrate inventory or putting two authorities on one zone.

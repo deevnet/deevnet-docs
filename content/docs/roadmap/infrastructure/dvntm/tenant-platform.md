@@ -71,10 +71,15 @@ defined as code rather than as hand-maintained node state.
 The one part of the tenant contract still undecided: how a tenant authors its own records and
 publishes them into the substrate zone so `service.tenant.site.deevnet.net` resolves.
 
+Framed in [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) — problem and
+constraints stated, decision open.
+
 - Proxmox SDN can register records itself, but only against a PowerDNS API — the core router runs
-  Unbound, so it does not fit without a shim.
+  Unbound, so it does not fit without a shim. Its registration is also tied to IPAM allocation,
+  which the tenant module bypasses by addressing from cloud-init, so a backend alone would publish
+  nothing.
 - The substrate's own DNS is inventory-driven Ansible, which is the opposite of tenant-owned.
-- Needs its own decision record before the tenant contract can be called complete.
+- The last open part of the tenant contract.
 
 ## Tenant provisioning tooling 🔄
 
