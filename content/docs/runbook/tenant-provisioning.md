@@ -27,9 +27,11 @@ inside it.
 | An anycast gateway | `.1` of your subnet, hosted by the fabric |
 | Outbound internet | SNAT at the fabric exit node, via the perimeter |
 | VMs from a base image | Fedora, cloud-init enabled |
+| A DNS zone of your own | `<tenant>.<site>.deevnet.net`, plus its reverse — you author the records |
 
 What you supply is the Terraform that declares it. Everything is code — a tenant is rebuilt from
-its own repository, not from a backup.
+its own repository, not from a backup. That includes your names: the substrate gives you the zone
+and the key to write it with, and never writes a record on your behalf.
 
 ---
 
@@ -38,6 +40,8 @@ its own repository, not from a backup.
 - Clone of [`deevnet-tenant-factory`](https://github.com/deevnet/deevnet-tenant-factory)
 - `terraform` on your PATH
 - Read access to the Deevnet inventory vault (credentials are rendered from it, never stored)
+- Your tenant's TSIG secret, exported as `TF_VAR_tsig_key_secret` — the substrate issues it during
+  onboarding (step 2) and it is what lets the tenant publish its own names
 
 ---
 
@@ -68,7 +72,47 @@ happens to be free on this node today will collide the moment the fabric gains a
 > limits SDN zone and VNet IDs to 8 characters and the zone ID *is* the tenant name. The module
 > validates this so you find out at `plan` rather than from the API.
 
-## 2. Create the tenant directory
+## 2. Onboard the tenant on the substrate
+
+Two substrate steps go with a new index, both driven from the same declared list and both done
+**once**. After this, nothing you do to the tenant touches a substrate repository again.
+
+Add the tenant to `deevnet_tenants` in `ansible-inventory-deevnet/<site>/group_vars/all/tenants.yml`:
+
+```yaml
+deevnet_tenants:
+  - name: tdemo
+    index: 1
+  - name: grooveiq
+    index: 2
+```
+
+Generate a TSIG secret and put it in the vault under `vault_tenant_tsig_keys['grooveiq']`:
+
+```bash
+openssl rand -base64 32
+```
+
+Then run the two substrate plays:
+
+```bash
+# Egress: give the tenant VRF a way out (ADR-0003)
+cd ansible-collection-deevnet.net
+ansible-playbook playbooks/proxmox-node-network.yml --tags tenant-egress
+
+# DNS: create the tenant's zones, issue and bind its key (ADR-0004)
+cd ../ansible-collection-deevnet.mgmt
+ansible-playbook playbooks/site.yml --limit tenant_dns --tags tenant-dns
+
+# Delegation: point the resolver at them
+cd ../ansible-collection-deevnet.net
+ansible-playbook playbooks/opnsense.yml --tags tenant-dns
+```
+
+Egress must be applied **after** the tenant's Terraform has created the VRF, so in practice this
+step is split: register the tenant and do the DNS half now, and run the egress tags after step 4.
+
+## 3. Create the tenant directory
 
 Copy the demo tenant and change two values:
 
@@ -97,7 +141,7 @@ module "tenant" {
 The controller and node are read from the fabric's own state rather than hardcoded, so a tenant
 does not need to know which hypervisor it lands on.
 
-## 3. Apply
+## 4. Apply
 
 ```bash
 make tenant-init  TENANT=tenants/dvntm/grooveiq
@@ -110,7 +154,7 @@ the repo. `AUTO=1` skips the approval prompt for non-interactive runs.
 
 This creates the tenant's EVPN zone (its VRF), its VNet, its subnet, and its VMs.
 
-## 4. Verify
+## 5. Verify
 
 ```bash
 terraform -chdir=tenants/dvntm/grooveiq output
@@ -125,8 +169,11 @@ Then confirm the things that actually matter:
 | Egress | `curl ifconfig.me` succeeds |
 | Perimeter | The core router sees source `10.20.50.22`, never `10.20.130.0/24` |
 | Isolation | Another tenant's subnet is unreachable |
+| Forward DNS | `dig @10.20.99.1 grooveiq-1.grooveiq.dvntm.deevnet.net +short` answers `10.20.130.10` |
+| Reverse DNS | `dig @10.20.99.1 -x 10.20.130.10 +short` answers the same name |
+| Namespace | An update signed with another tenant's key is **REFUSED** for your zone |
 
-## 5. Destroy
+## 6. Destroy
 
 ```bash
 make tenant-destroy TENANT=tenants/dvntm/grooveiq
@@ -156,3 +203,16 @@ find it — that is the design working.
 
 **Isolation is the VRF, not a firewall rule.** Tenants cannot reach each other because they are in
 separate routing domains, not because something is filtering between them.
+
+**Your names are not in the resolver you query.** Workloads resolve through the core router, but the
+core router holds none of your records. It delegates your zone to the tenant DNS server, which is
+authoritative for it. That is why an `opnsense_dns` run cannot delete your records — they were never
+there ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+
+**You cannot publish outside your own zone, and this is enforced.** Your TSIG key is bound to your
+zones by server-side metadata. An update aimed at another tenant's zone comes back REFUSED from
+PowerDNS; it is not a convention your Terraform is trusted to respect.
+
+**Destroying the tenant removes its names.** The records are in your Terraform state, so
+`make tenant-destroy` takes them with it. The zone and the key survive — those are substrate
+onboarding, not tenant content — so re-applying restores every name with no substrate action.

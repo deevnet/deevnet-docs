@@ -49,5 +49,5 @@ question is written down, not when it is answered.
   tenant egress needs transit forwarding and a default route inside each tenant VRF; Proxmox's own
   exit-node behaviour routes around the perimeter rather than through it.
 - [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/) —
-  *Proposed.* How a tenant's own records reach the substrate resolver without either putting tenant
-  content in substrate inventory or putting two authorities on one zone.
+  each tenant publishes into its own zone, delegated from the substrate zone and served by a
+  substrate-run PowerDNS, written by the tenant over RFC 2136 with a TSIG key scoped to that zone.

@@ -7,10 +7,10 @@ weight: 4
 
 |  |  |
 |--|--|
-| **Status** | **Proposed — problem stated, not yet decided** |
+| **Status** | Accepted |
 | **Date** | 2026-09-01 |
 | **Scope** | How a tenant's own DNS records reach the resolver substrate clients use |
-| **Depends on** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/) |
+| **Depends on** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/) |
 
 ---
 
@@ -105,22 +105,169 @@ which is why it belongs in a record.
 
 ## Decision
 
-**Not yet taken.** This record states the problem and the constraints; the options have not been
-evaluated.
+**A tenant publishes into its own zone, delegated from the substrate zone, served by a PowerDNS
+Authoritative instance the substrate runs, and written by the tenant over RFC 2136 with a TSIG key
+scoped to that zone.**
+
+The delegation is what resolves the deadlock. Neither authority has to give ground, because they
+stop sharing a zone.
+
+### 1. Naming is solved independently of Proxmox
+
+Tenant addressing stays as it is: cloud-init, derived from `tenant_index`. **PVE IPAM allocation is
+not adopted.** The `ipam = "pve"` attribute stays on the zone because the API requires it, but
+nothing allocates through it and PVE's IPAM database stays empty for tenant subnets.
+
+This closes the fork stated in the context. Inheriting Proxmox's DNS hook would mean rewriting how
+workloads are addressed in order to obtain **one A record per allocated IP**, named
+`<hostname>.<dnszone>`. A tenant needs more than that — service names, aliases, several names for
+one host, and records for things that are not VMs at all. It would also make Proxmox the authority
+for tenant naming, re-coupling the tenant contract to a substrate implementation detail that
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) went to some trouble to
+separate.
+
+So PowerDNS is **not** chosen because it is the only plugin PVE ships. That it is the only plugin is
+now irrelevant, since the plugin is not used. It is chosen for a real zone model, RFC 2136 support,
+and per-zone TSIG — the properties the constraints actually ask for.
+
+### 2. One delegated zone pair per tenant
+
+For tenant `t` with index `n` on site `s`:
+
+| Zone | Pattern | dvntm, `n` = 1 |
+|------|---------|----------------|
+| Forward | `t.s.deevnet.net` | `tdemo.dvntm.deevnet.net` |
+| Reverse | `{128+n}.{site_octet}.10.in-addr.arpa` | `129.20.10.in-addr.arpa` |
+
+Both derive from the single `tenant_index` of
+[ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/), so neither is a per-tenant
+decision. Naming is unchanged from what this record already called settled:
+`service.tenant.site.deevnet.net` still resolves, and now it resolves because something is
+authoritative for `tenant.site.deevnet.net` rather than because a substrate role wrote a host
+override.
+
+Unbound on the core router gets one **domain override** per tenant zone, forwarding it to the
+tenant DNS service. Substrate clients need no configuration; they ask the resolver they already ask.
+
+Reverse DNS is delivered rather than deferred. The addressing plan is deterministic and the
+delegation is already per-tenant, so the reverse zone costs one more `create-zone` at onboarding.
+PTR records inside it are tenant-authored and optional.
+
+### 3. Publication is RFC 2136 with a per-zone TSIG key
+
+PowerDNS Authoritative has a **single, global** HTTP API key. Publishing through the API would
+therefore make *Namespaced* a convention enforced by module discipline — any tenant holding the key
+could write any zone. That is not what the constraint says.
+
+Dynamic update gives the constraint teeth. Each tenant zone carries its own key:
+
+```
+pdnsutil create-zone            tdemo.dvntm.deevnet.net
+pdnsutil generate-tsig-key      tdemo hmac-sha256
+pdnsutil set-meta               tdemo.dvntm.deevnet.net TSIG-ALLOW-DNSUPDATE tdemo
+pdnsutil set-meta               tdemo.dvntm.deevnet.net ALLOW-DNSUPDATE-FROM 10.20.99.0/24
+```
+
+An update signed with `tdemo`'s key is accepted only for `tdemo`'s zones; anything else is REFUSED
+by the server. **A tenant cannot publish outside its namespace because the server will not let it**,
+not because the tenant module declines to try. That is testable, and the test belongs in the
+verification for this work.
+
+The cost is a less ergonomic Terraform provider (`hashicorp/dns` rather than a PowerDNS-native one)
+and a TSIG secret per tenant in the vault. Both are accepted; the constraint was stated as a
+requirement, not a preference.
+
+### 4. The server is substrate; the zones and records are tenant
+
+This is the same seam already drawn twice elsewhere in this estate. The core router is substrate
+though every tenant packet crosses it. The tenant hypervisor is substrate though only tenant
+workloads run on it. The DNS server is substrate though it holds nothing but tenant records.
+**Substrate provides the machine; tenants provide the content.**
+
+That line, not a new one, decides the tooling:
+
+| | Owner | Provisioned by |
+|---|---|---|
+| PowerDNS instance and its host | Substrate | Ansible |
+| Zone creation and TSIG issue | Substrate, at onboarding | Ansible |
+| Unbound delegation | Substrate | Ansible |
+| Records inside the zone | Tenant | The tenant's own Terraform |
+
+No Terraform state is introduced for substrate, so
+`architecture/substrate/management-plane/extended-services.md` §5 — *"Terraform is intentionally
+not used for management-plane workloads"* — is honoured rather than amended.
+
+The instance runs on **hv01**, the management hypervisor, as a container on a shared host for
+substrate services that serve tenants. It does not run on hv02: a service every tenant depends on
+does not belong in the tenant compute domain, and ADR-0001's plane split holds.
+
+### 5. Onboarding is a substrate act; the tenant lifecycle is not
+
+The constraint is *restored by a tenant rebuild alone* — not *no substrate involvement ever*.
+[ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/) already
+established that adding a tenant touches substrate, because egress does. Zone creation, TSIG issue
+and the Unbound delegation join that same one-time step, driven from the same declared tenant list.
+
+What must never require a substrate commit is the part that actually recurs: adding a record,
+changing one, destroying and rebuilding the tenant. Those are `terraform apply` and nothing else.
+
+---
 
 ## Consequences
 
-To be completed once a decision is made.
+**The two authorities stop meeting, so neither has to yield.** Tenant records are not in Unbound,
+so `opnsense_dns` and its `dns_delete_unmanaged` mode cannot reach them — the *survives substrate
+reconciliation* constraint is satisfied structurally rather than by careful configuration. This is
+the property that makes the answer worth the third moving part.
+
+**The core router becomes rebuildable without losing tenant names.** Its share of the arrangement is
+one domain override per tenant, regenerated from inventory. The records themselves live in PowerDNS
+and are re-derivable from tenant IaC, so *stateless substrate* holds at both ends.
+
+**Tenant DNS availability now depends on hv01.** If hv01 is down, tenant names stop resolving —
+substrate names are unaffected, because Unbound is untouched and still answers for everything it
+was already authoritative for. That is the correct direction for the failure to point, and it is
+better than the alternative in which the resolver itself moves. The mitigation, when it is wanted,
+is a PowerDNS secondary fed by AXFR; it is deliberately not built now.
+
+**PowerDNS shares a host with future tenant-facing services.** An OS update or a container restart
+on that host takes tenant DNS with it. Accepted at lab scale, and recorded here so it is not a
+surprise: it is the strongest argument for that secondary when the time comes. Substrate-facing
+management services are deliberately kept off this host, on a separate one, because their change
+cadence is much higher.
+
+**This is a documented-doctrine refinement, not only an addition.**
+`platforms/management-plane/management-hypervisor/_index.md` states that core network services run
+on the core router, not as VMs on the management hypervisor. That still holds for substrate
+*resolution*. What is new is tenant *authoritative* DNS, a class of service that did not exist when
+that sentence was written. The distinction is resolution versus authority, and that document is
+updated to say so.
+
+**Seam 2 of ADR-0001 is refined.** It said tenant DNS is "published into the substrate zone". More
+precisely, it is published into a zone **delegated from** the substrate zone. The ownership claim
+was right; the mechanism is one level down from where it read. ADR-0001 is not rewritten.
+
+**Adding a tenant now touches three things instead of two.** Terraform creates the fabric objects,
+Ansible gives the tenant a way out (ADR-0003) and now also a zone, a key and a delegation. The
+second and third are driven from one declared tenant list, so it is one Ansible run, not two. This
+is the same trade ADR-0003 accepted and for the same reason: reviewable in inventory, at the cost
+of a step.
+
+**Tenants gain a real capability boundary.** A TSIG key is a credential a tenant holds, which makes
+the tenant contract something a tenant is issued rather than something it is trusted to respect.
+That is a better foundation for the contract work still outstanding than a shared API key would
+have been.
 
 ---
 
 ## Current state
 
-For whoever picks this up:
+The decision is taken; the implementation is not yet built. For whoever picks it up:
 
-- Tenant workloads resolve **through** the substrate resolver but publish **nothing**. The tenant
-  module sets `dns.servers` on the workload and creates no records.
-- No tenant name resolves anywhere today. `tdemo-1` is reachable by address only.
-- The substrate's own DNS is complete and working; nothing here is a defect in it.
-- PVE IPAM is empty for tenant subnets, so adopting Proxmox's DNS hook would mean changing how
-  workloads are addressed, not just adding a backend.
+- Nothing about the substrate's own DNS changes. `opnsense_dns` keeps host overrides and aliases
+  exactly as it has them, and gains domain-override reconciliation for the delegations.
+- No tenant name resolves yet. `tdemo-1` is still reachable by address only; the end-to-end test of
+  this record is `dig tdemo-1.tdemo.dvntm.deevnet.net` answered through `10.20.99.1`.
+- PVE IPAM stays empty for tenant subnets, and that is now a decision rather than a gap.
+- The namespace boundary must be tested, not assumed: an update signed with one tenant's key,
+  aimed at another tenant's zone, must be REFUSED.
