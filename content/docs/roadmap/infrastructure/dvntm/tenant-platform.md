@@ -2,8 +2,8 @@
 title: "Tenant Platform"
 weight: 4
 tasks_completed: 1
-tasks_in_progress: 2
-tasks_planned: 3
+tasks_in_progress: 3
+tasks_planned: 2
 ---
 
 # Tenant Platform
@@ -55,10 +55,15 @@ defined as code rather than as hand-maintained node state.
   management.
 - ✅ Hypervisor attachment: the bridge is VLAN-aware and the transit and underlay sub-interfaces
   are up, driven from inventory by the `proxmox_node_network` role.
-- 🔄 EVPN SDN as code: fabric, VTEP identity and controller are written and plan cleanly; not yet
-  applied.
-- ⏳ Move the hypervisor's default route onto transit, so the data plane stops riding the
-  management segment.
+- ✅ EVPN SDN as code: fabric, VTEP identity and controller applied on hv02 from
+  `deevnet-tenant-factory`.
+- ✅ Hypervisor default route moved onto transit, so the data plane stops riding the management
+  segment.
+- ✅ Tenant egress through the perimeter: transit forwarding and a default route inside each
+  tenant VRF, both code-managed
+  ([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)). Proxmox's
+  own exit-node behaviour would have routed tenants *around* the perimeter onto the management
+  segment.
 - ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
 
 ## Tenant DNS publication ⏳
@@ -76,17 +81,21 @@ publishes them into the substrate zone so `service.tenant.site.deevnet.net` reso
 A repeatable, code-defined tenant lifecycle.
 
 - ✅ Reusable Terraform (`bpg/proxmox`) module implementing the network and compute halves of the
-  tenant contract: VRF + VNet(s) + subnet with fabric DHCP + VMs from template.
+  tenant contract: VRF + VNet(s) + subnet + VMs from template, addressed by cloud-init.
 - ✅ One tenant = one instantiation, in `deevnet-tenant-factory`; create, rebuild and destroy from
   code, with every identifier derived from one allocated index.
 - ⏳ DNS publication, pending the decision above.
 
-## First tenant — end-to-end ⏳
+## First tenant — end-to-end 🔄
 
 Prove the whole path with a real tenant.
 
-- Provision from code; verify addressing from the fabric, egress via the perimeter, inter-tenant
-  isolation, and rebuild-from-scratch.
+- ✅ Provisioned from code: `tdemo` (index 1, `10.20.129.0/24`), cloud-init addressed.
+- ✅ Egress via the perimeter, verified from inside the workload rather than from a NAT counter —
+  and verified *not* to reach the management segment on-link.
+- ⏳ Inter-tenant isolation — needs a second tenant to test against.
+- ⏳ DNS publication, pending the decision above.
+- ⏳ Rebuild-from-scratch drill.
 
 ---
 

@@ -25,7 +25,7 @@ node, and is not clustered with the management hypervisor.
 | Zone type | Proxmox SDN **EVPN zone** |
 | Tenant isolation | One **VRF** per tenant |
 | Tenant gateway | **Anycast gateway** hosted by the fabric (the tenant subnet's `.1`) |
-| IPAM / DHCP | Proxmox SDN IPAM + per-VNet DHCP |
+| IPAM / addressing | Proxmox SDN IPAM; workloads addressed by **cloud-init** (EVPN zones have no DHCP) |
 | North-south exit | Single **transit VLAN** to the core router (perimeter) |
 | Provisioning | Terraform, `bpg/proxmox` provider |
 
@@ -93,7 +93,8 @@ Per-tenant flow:
 
 1. Define the tenant's SDN objects (VRF, VNet(s), subnet, IPAM) — globally-unique numbering.
 2. Clone the Packer-built Fedora template into the tenant's VNet.
-3. cloud-init applies host config; addressing via SDN IPAM/DHCP.
+3. cloud-init applies host config **and the address itself** — derived from the tenant index,
+   not leased (Proxmox has no DHCP on EVPN zones).
 4. Publish the tenant's DNS records into the substrate zone (tenant-owned).
 
 A "tenant" becomes a small reusable Terraform module: **VRF + VNet(s) + N VMs from template +
@@ -126,7 +127,7 @@ Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-num
 | EVPN controller | `evpn1`, ASN `65020` |
 | Transit | VLAN 50, `10.20.50.0/24`; hv02 `.22`, perimeter `.1` |
 | Underlay | VLAN 51, `10.20.51.0/24`; hv02 `.22`, no router presence |
-| Tenant overlays | `10.20.{128+n}.0/24`, anycast gateway `.1`, fabric DHCP `.100`–`.200` |
+| Tenant overlays | `10.20.{128+n}.0/24`, anycast gateway `.1`, workload addresses from `.10` |
 
 ### How egress actually works
 
@@ -143,13 +144,28 @@ takes the default route out transit.
 
 ## Status
 
-**Substrate and hypervisor attachment are in place; the fabric is written and not yet applied.**
+**Phase 1 is built and a first tenant has working egress.**
 
 - ✅ Transit and underlay VLANs exist on the switch and the perimeter; the tenant hypervisor's
   port is a trunk carrying both plus management.
 - ✅ hv02's bridge is VLAN-aware with `vmbr0.50` and `vmbr0.51` up, driven from inventory by the
   `proxmox_node_network` Ansible role.
-- 🔄 The fabric, VTEP identity and EVPN controller are defined in `deevnet-tenant-factory` and
-  plan cleanly against hv02; not yet applied.
-- ⏳ Default route moved onto transit.
-- ⏳ First tenant end to end.
+- ✅ The fabric, VTEP identity and EVPN controller are applied on hv02 from
+  `deevnet-tenant-factory`.
+- ✅ Default route moved onto transit.
+- ✅ First tenant end to end — `tdemo` (index 1, `10.20.129.0/24`), addressed by cloud-init, with
+  internet egress through the perimeter.
+
+### How egress is enforced
+
+Two node-local settings the Ansible role owns, because Proxmox models neither
+([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)):
+
+- **Forwarding on the transit interface.** Proxmox sets `ip-forward on` only for the interfaces
+  its SDN config owns, and the transit interface is node substrate. Without it, tenant traffic
+  leaves and is answered but the replies are never forwarded back in — 100% loss in the VM while
+  the SNAT counter climbs.
+- **A default route inside each tenant VRF**, merged through `/etc/frr/frr.conf.local`. Proxmox's
+  own exit-node behaviour lets a VRF lookup fall through to the node's main table, which reaches
+  the management segment on-link and unSNATed. The explicit default is what makes *every*
+  non-connected destination leave via the perimeter.

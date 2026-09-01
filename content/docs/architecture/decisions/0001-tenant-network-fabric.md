@@ -208,6 +208,17 @@ not merge.
 
 ## Status of implementation
 
-**Documentation only. No code has been written.** This record and the accompanying architecture,
-platform, and roadmap pages establish the design; implementation is tracked as a roadmap project
-and begins only after this design is settled.
+**Phase 1 is built.** The fabric, EVPN controller, a tenant zone and VNet, and a first tenant
+workload are applied on hv02 — SDN objects and VMs from `deevnet-tenant-factory` (Terraform), the
+node's substrate attachment from the `deevnet.net` Ansible collection.
+
+Two departures from this record emerged in the building of it, both documented rather than
+silently absorbed:
+
+- Tenant workloads are addressed by **cloud-init, not fabric DHCP**. Proxmox implements SDN DHCP
+  in the *Simple* zone plugin only; EVPN zones have none. Seam 2's IPAM half stands, its DHCP half
+  does not — see [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/).
+- Egress needs node-local state Proxmox will not model, and Proxmox's own exit-node behaviour
+  routes *around* the perimeter rather than through it. See
+  [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), which also
+  refines build requirement #2: *no hand-carried node state*, not *no node state*.

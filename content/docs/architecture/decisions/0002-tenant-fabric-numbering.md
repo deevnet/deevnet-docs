@@ -79,11 +79,17 @@ A tenant is allocated a single **`tenant_index`** (`n`). Everything else follows
 | VNet VNI, `i`th vnet | `20000 + n*10 + i` | 20010 |
 | Overlay subnet | `10.20.{128+n}.0/24` | 10.20.129.0/24 |
 | Anycast gateway | `.1` of that subnet | 10.20.129.1 |
-| Fabric DHCP range | `.100` – `.200` | 10.20.129.100–200 |
+| Workload addresses | `.10` upward, by index | 10.20.129.10, .11, … |
 | BGP ASN (per site) | 65020 dvntm / 65010 dvnt | 65020 |
 
 dvnt uses bases `11000` and `21000`, so identifiers stay distinct across sites as well as across
 fabric members.
+
+> **Amended 2026-09-01.** This table originally reserved a fabric DHCP range of `.100`–`.200`.
+> Proxmox implements SDN DHCP in the *Simple* zone plugin only — EVPN zones have none, and the API
+> rejects the attribute outright. Workloads are addressed by cloud-init instead, derived from the
+> tenant index rather than leased, which also matches the deterministic addressing the rest of the
+> estate uses. `.2`–`.9` stay reserved for future fabric use.
 
 One number per tenant is the point. It removes the opportunity to hand-assign a VNI that happens
 to be free *today* on *this* node and collides the moment the fabric gains a member — which is
