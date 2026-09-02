@@ -121,8 +121,16 @@ see [Implementation & Tooling](/docs/platforms/).
 
 All management-plane hosts:
 - Have **stable, predictable network identities**
-- Receive **static address assignments**
+- Carry a **deterministic layer-2 identity**, defined in version control rather
+  than assigned by whatever creates the interface
+- Receive **fixed addresses via reservation**, keyed to that layer-2 identity,
+  rather than addresses configured into the host itself
 - Have deterministic DNS records
+
+Addressing by reservation rather than by host configuration is what makes a
+rebuild identity-preserving: the host asks for an address and is always given
+the same one, so nothing inside the host has to be restored for it to return to
+the network as itself.
 
 ---
 

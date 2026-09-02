@@ -132,14 +132,31 @@ For management-plane VMs, network identity must be stable and reproducible.
 
 - Proxmox does **not** generate deterministic MAC addresses automatically
 - All management-plane VMs explicitly define MAC addresses
-- MACs are generated **outside Proxmox** and stored in inventory/code
+- A MAC is **derived from the VM's Proxmox VMID** inside the locally
+  administered `02:de:<site octet>` namespace, then written into
+  version-controlled inventory
 - DHCP and DNS rely on these fixed MACs
+
+"Generated outside Proxmox" is not by itself enough — any hand-typed value
+satisfies it, including one copied off a running guest that carries Proxmox's
+own vendor OUI. The rule is that the value is **derived**, and the derivation is
+a pure function of a declared VMID. See the
+[MAC Namespace Specification](/docs/standards/mac-naming/) for the encoding and
+its rationale.
+
+Because the VMID is the sole source of the MAC, **changing a VMID is a
+renumbering**: the MAC, the DHCP reservation and the address move together.
+
+Since this node is not clustered (below), VMID uniqueness across the substrate
+is not something Proxmox can enforce. It is enforced by the allocator in
+[Allocate VM Identity](/docs/runbook/building-recovery/vm-identity/), which
+surveys every hypervisor before issuing one.
 
 This enables:
 - Stable DHCP reservations
 - Predictable IP addressing
 - Safe VM rebuilds without network reconfiguration
-- Clear mapping between hostnames, MACs, and roles
+- Clear mapping between hostnames, MACs, and VMIDs
 
 ---
 
@@ -195,7 +212,7 @@ The management hypervisor is intentionally separate from tenant workloads:
 | **Workloads** | Infrastructure-critical | Experiments, apps |
 | **Change cadence** | Slow, deliberate | Fast, experimental |
 | **Rebuild tolerance** | Low | High |
-| **MAC policy** | Deterministic | TBD |
+| **MAC policy** | Deterministic, derived from VMID | TBD |
 | **Provisioning** | Ansible | Terraform (future) |
 
 This separation reduces blast radius and ensures that tenant experimentation cannot impact platform stability.
