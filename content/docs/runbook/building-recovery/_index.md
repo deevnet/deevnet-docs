@@ -33,7 +33,10 @@ With artifacts pre-staged, the bootstrap node can build the entire substrate wit
 | Hardware replacement | New hardware = new MAC addresses |
 | Capacity expansion | Adding hosts to existing site |
 
-In all cases, the process starts with seeding MAC addresses into inventory.
+In all cases, the process starts with seeding MAC addresses into inventory. Bare-metal
+MACs are read off the hardware and recorded; management-plane VMs have no NIC to read
+until one is created, so their MACs are derived from the VMID instead — see
+[Allocate VM Identity](vm-identity/).
 
 ---
 
@@ -64,11 +67,12 @@ flowchart TD
     E["<b>5. Build Core Router</b><br/>Manual OPNsense USB install"]:::manual
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
     G["<b>7. Build Management Plane</b><br/>PXE boot Proxmox hypervisors"]
-    H["<b>8. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
-    I["<b>9. Build Tenants</b><br/>Provision application VMs"]
-    J["<b>10. Verify Tenants</b><br/>Application health checks"]
+    H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
+    I["<b>9. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
+    J["<b>10. Build Tenants</b><br/>Provision application VMs"]
+    K["<b>11. Verify Tenants</b><br/>Application health checks"]
 
-    A --> B --> C --> D --> E --> F --> G --> H --> I --> J
+    A --> B --> C --> D --> E --> F --> G --> H --> I --> J --> K
 
     classDef default fill:#2d333b,stroke:#539bf5,color:#adbac7
     classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c
@@ -92,6 +96,7 @@ flowchart TD
 - [Configure PXE](build-sequence/) — Enter bootstrap-authoritative mode (`make bootstrap-auth`)
 - [Build Network](build-network/) — Core Router install, network segmentation, transition to core-authoritative (`make core-auth`)
 - [Build Management Plane](build-management-plane/) — PXE boot Proxmox hypervisors
+- [Allocate VM Identity](vm-identity/) — Derive management-VM MACs from their VMID before first boot
 
 ### Validate
 

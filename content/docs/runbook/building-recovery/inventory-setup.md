@@ -94,10 +94,52 @@ When replacing hardware (new NIC = new MAC address), update the existing host_va
 infrastructure:
   interfaces:
     eth0:
-      mac: "new:ma:ca:dd:re:ss"   # updated MAC
+      mac: "d8:9e:f3:7d:94:c4"   # updated MAC, read off the new NIC
 ```
 
 Then apply configuration as above.
+
+---
+
+## Management-Plane VMs Are Different
+
+Everything above assumes a MAC is a hardware fact you can read off a NIC. A
+management-plane VM has no NIC to read until something creates one, so its MAC
+is **derived from its Proxmox VMID** and written into inventory by a tool rather
+than typed in by hand.
+
+Such a host uses a host_vars **directory**, with the generated values in their
+own file:
+
+```
+dvntm/host_vars/tenant-mgmt-vm01/
+├── vars.yml       # hand-written
+└── identity.yml   # GENERATED - do not edit
+```
+
+`vars.yml` references the generated values and defaults them, so the file parses
+before an identity exists:
+
+```yaml
+infrastructure:
+  form: vm
+  interfaces:
+    eth0:
+      mac: "{{ deevnet_assigned_mac | default('') }}"
+
+mgmt_vm:
+  vmid: "{{ deevnet_assigned_vmid | default(0) }}"
+```
+
+Then allocate the identity, which writes `identity.yml`:
+
+```bash
+cd ~/dvnt/ansible-collection-deevnet.mgmt
+make vm-identity-assign
+```
+
+Full procedure, including why allocation must precede the DHCP reservation and
+the VM's first boot: [Allocate VM Identity](vm-identity/).
 
 ---
 
@@ -107,6 +149,7 @@ Then apply configuration as above.
 |------|---------|
 | `infrastructure.form` | Device type (hv, rt, sw, ap, etc.) |
 | `infrastructure.interfaces.<iface>.mac` | MAC address |
+| `mgmt_vm.vmid` | Proxmox VMID (management-plane VMs only; source of the MAC) |
 | `env.interfaces.<iface>.ip` | IP address (or `dhcp`) |
 | `env.interfaces.<iface>.segment` | Network segment name |
 | `env.interfaces.<iface>.dns.host_a_record` | Create DNS A record |
