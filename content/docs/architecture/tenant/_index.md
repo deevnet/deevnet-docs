@@ -116,6 +116,7 @@ between what the tenant supplies and what the substrate guarantees:
 |-------------------------------|--------------------------|
 | Its overlay network (subnet, gateway, isolation) in the fabric | A tenant fabric to attach to |
 | Its workloads (VMs from a template) | Compute on the tenant hypervisor |
+| Its data disks, sized and attached to its VMs | VM images with a small, growable OS disk |
 | Its DNS records | A DNS zone to publish into |
 | Its addressing, from a globally-unique plan | A perimeter for egress and shared-service access |
 

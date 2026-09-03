@@ -109,6 +109,7 @@ Tenant VMs clone from Proxmox templates:
 | **SSH key injection** | Automation user SSH key injected at boot |
 | **Network config** | Address assigned from the tenant subnet via cloud-init |
 | **Base packages** | Python3 for Ansible, basic utilities |
+| **OS disk** | Small and growable; capacity for a workload comes from a separate data disk the tenant declares. See [Substrate Storage](/docs/architecture/substrate/storage/) |
 
 Templates are built by the [Image Factory](/docs/platforms/) and stored
 on the tenant hypervisor.
