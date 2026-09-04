@@ -66,3 +66,10 @@ question is written down, not when it is answered.
 - [ADR-0005: Tenant Zone Apex Ownership](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/) —
   a delegated zone's SOA and apex NS are substrate-owned and set at onboarding; extends ADR-0004,
   and records that this particular boundary is a convention rather than a server-enforced control.
+- [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/) —
+  each tenant lives in its own repository, consuming the tenant module by tag and a fabric
+  attachment the substrate issues at onboarding; extends ADR-0004's onboarding-versus-recurring
+  line into where the code itself lives.
+- [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/) —
+  the substrate offers an S3-compatible state store that tenants may use or decline; locking and
+  per-tenant isolation are server-enforced, and the opt-out is what makes the dependency acceptable.

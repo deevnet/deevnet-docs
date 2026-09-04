@@ -177,6 +177,35 @@ db_password_path: "secret/apps/foo/db_password"
 
 ---
 
+### 4.4 IaC Source and IaC State Are Different Things
+
+§4.3 governs IaC **source** — the `.tf`, `.tfvars` and playbook files a human writes. Terraform
+**state** is not source. It is the record of an apply, written by the tool, and it can contain
+attribute values that were never typed into any file.
+
+That distinction matters because the protection is different in kind. Source is protected by review:
+a secret in a `.tf` is visible in a diff. State is protected by nothing — it is machine-generated,
+rarely read, and a provider that decides to persist an attribute will do so silently on the next
+apply.
+
+The invariant:
+
+> **The moment state contains a secret value, whatever holds that state becomes a secret store.**
+
+So a repository holding state is a secret store, and a bucket holding state is a secret store, and
+both must be treated as one. Two rules follow:
+
+- **Prefer resources whose values can be re-derived.** A declaration that generates a credential
+  puts that credential in state permanently. Issue credentials out of band and reference them.
+- **Do not assume state is clean because it is clean today.** Whether a given provider persists a
+  sensitive attribute is that provider's implementation detail, and it can change under a version
+  bump with nothing in the configuration changing at all.
+
+Where Deevnet's own state lives, and what enforces this, is
+[ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/).
+
+---
+
 ## 5. Definition of “Secure” (for Deevnet Client Access)
 
 Deevnet client access is **secure** when:
