@@ -206,9 +206,24 @@ the hosts it is building. This is the split the
 concrete: the `infrastructure:` block is hardware identity and is substrate-agnostic, the `env:`
 block is the environment binding and is per-site.
 
-Because each site's resolver answers for the name locally, `dv00-builder-ph01` resolves to
-`10.10.99.95` at home and `10.20.99.95` on the mobile site. For an appliance that physically moves,
-split-horizon is the correct behaviour rather than an accident to be worked around.
+In DNS it is therefore **multi-homed**, in the sense
+[Builder & Core Services](/docs/architecture/builder/) already gives that word: one entry per site
+zone, each resolving to the address the box has at that site.
+
+```
+dv00-builder-ph01.home.deevnet.net    ->  10.10.99.95
+dv00-builder-ph01.mobile.deevnet.net  ->  10.20.99.95
+```
+
+Two fully qualified names, each with exactly one address. That page reached the same conclusion by
+a different route — it published *interface-specific identities* (`provisioner-01-dvnt`,
+`provisioner-01-dvntm`) precisely to avoid "ambiguous multi-A records." This record keeps its
+principle and improves its mechanism: the disambiguation moves out of the short name and into the
+zone, so one box keeps one identity instead of acquiring a name per site.
+
+Multi-A on a single name would be the wrong reading of "multi-homed" here. The appliance is at one
+site at a time by design, so an RRset holding both addresses would send half of all connections to
+an address where nothing is listening — a timeout rather than an error, which is the worse failure.
 
 ### The rename
 
@@ -272,15 +287,30 @@ The longest resulting name is `dv02-tenant-state-vm01` at 22 characters, and the
 - **A bare `dv02-hv01` needs the mapping known.** Fully qualified it is self-explanatory; in
   isolation it is not.
 
-### An apex record for `dv00` is not free
+### No apex record is needed, and the site code does not imply one
 
-The natural reading of "belongs to no site" is that the builder should be published at the apex, as
-`dv00-builder-ph01.deevnet.net`. The DNS role cannot do that: it applies one flat `dns_domain` to
-every host in `groups['all']`, and has no per-host zone override.
+"Belongs to no site" invites the reading that the builder wants an apex name,
+`dv00-builder-ph01.deevnet.net`. It does not. Multi-homing it per zone, as above, already gives it
+a correct name everywhere it is reachable, and each of those names is unambiguous. The site code
+describes the *box* — a machine with no home site — not the zone its records live in.
 
-**This record recommends not adding one.** Let the builder be published in whichever site zone it
-is attached to. The name stays globally unique, split-horizon resolves it to the local address, and
-no role change is needed. An apex record can be added later as a convenience if it earns itself.
+If an apex name is ever wanted anyway, the cost is not uniform, and it depends on which authority
+is serving at the time:
+
+- **While building a site the builder is its own DNS authority.** In bootstrap-authoritative mode
+  it runs dnsmasq and answers for the site zone itself, before the core router exists. dnsmasq
+  assembles each record's fully qualified name on its own line
+  (`address=/<name>.<domain>/<ip>`), so publishing a differently-domained record there costs one
+  template line. In the mode where the builder most needs to be findable by a name that does not
+  depend on the site, it is already free to publish one.
+- **In router-authoritative steady state it is not free.** The Unbound API takes hostname and
+  domain as separate fields, and the DNS role's reconciliation maps are keyed on hostname alone —
+  which is also why a name appearing in two zones on one resolver would collapse to a single map
+  entry. Supporting a per-record zone means re-keying those maps on `(hostname, domain)`, which is
+  a real change to the role's idempotency, not a template line.
+
+So the recommendation stands — publish per site zone, add no apex record — but the reason is that
+multi-homing makes it unnecessary, not that the role makes it hard.
 
 ### Defects this investigation surfaced
 
@@ -319,5 +349,10 @@ collections, not the standards. On acceptance:
 - The tenant registry's zone pattern `<tenant>.<site>.deevnet.net` resolves to
   `<tenant>.mobile.deevnet.net`. Destroying the demo tenant first — it is already marked for
   destruction after verification — leaves no live tenant zone to migrate.
+- [Builder & Core Services](/docs/architecture/builder/) §"Multi-Homing Without Identity Confusion"
+  keeps its principle but loses its mechanism. Its `provisioner-01-dvnt` /
+  `provisioner-01-dvntm` example put the site in the short name and is doubly out of date — it also
+  uses the retired `mgmt.deevnet.net` zone. Replace the example with the per-zone form; the
+  paragraph's reasoning about ambiguous multi-A records is still exactly right and should stay.
 - Standing up the home site under the scheme first is the low-risk order: it has no hosts, so it
   proves the naming, the zone and the renamed directory before any of it reaches the running site.
