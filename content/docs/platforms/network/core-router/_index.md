@@ -126,6 +126,52 @@ Configured via the `deevnet.net` Ansible collection:
 | Firewall rules | Defined in playbooks |
 | WoL targets | Defined in inventory |
 
+### DNS: Unbound
+
+Three distinct collections, reconciled from inventory by the `opnsense_dns` role:
+
+| What | OPNsense feature | Used for |
+|------|------------------|----------|
+| Address records | Host override | `host.dvntm.deevnet.net` → address |
+| Aliases | Host alias | Service names pointing at a host — stored as CNAMEs |
+| Zone forwards | Query Forwarding | Sending a tenant zone to the tenant authoritative service |
+
+**The API shape for Query Forwarding is not where you would look for it, verified on 25.7.10.**
+These rows are *not* part of `unbound/settings/get` — that payload's keys are `general`, `advanced`,
+`acls`, `dnsbl`, `forwarding`, `dots`, `hosts`, `aliases`, and `forwarding` is the *use system
+nameservers* toggle rather than a collection. Forward rows have their own endpoints and are wrapped
+in a `dot` object that backs both DNS-over-TLS and plain rows:
+
+```
+POST /api/unbound/settings/searchForward
+POST /api/unbound/settings/addForward
+POST /api/unbound/settings/setForward/<uuid>
+POST /api/unbound/settings/delForward/<uuid>
+
+body: {"dot": {"enabled": "1", "type": "forward",
+               "domain": "...", "server": "...", "description": "..."}}
+```
+
+`type` must be `forward`. The default would attempt DNS-over-TLS against an authoritative server on
+port 53.
+
+Changes land in the saved configuration only; the running resolver is not updated until
+`POST /api/unbound/service/reconfigure`.
+
+Because these are forwards rather than referrals, the resolver never consults the tenant zone's own
+apex records — see
+[Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/) for what that changes.
+
+### DHCP: Kea
+
+Reservations are generated from inventory and keyed on each host's declared hardware address, which
+makes the MAC load-bearing: a guest whose NIC does not carry its declared address does not match its
+reservation and silently receives a pool address instead. On the management segment the pool begins
+at `.200`, so that failure shows up as a host sitting somewhere in the `.200+` range with no name
+pointing at it.
+
+The platform segment has reservations only and no pool at all.
+
 ---
 
 ## Authority Transition

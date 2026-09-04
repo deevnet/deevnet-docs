@@ -67,11 +67,16 @@ The default policy is **deny all** — traffic between zones is blocked unless e
 
 ## DNS
 
-The core router provides DNS for the substrate:
+The core router resolves for the substrate:
 
-- **Authoritative** for the substrate zone (e.g., `dvntm.deevnet.net`)
-- **Forwarding** for external queries to upstream resolvers
-- Static records for infrastructure hosts; dynamic registration where supported
+- Answers for the substrate zone (e.g. `dvntm.deevnet.net`) from records generated out of inventory
+- Forwards external queries to upstream resolvers
+- Forwards each tenant zone to the tenant authoritative service, so tenant records never enter the
+  resolver's own configuration
+
+Substrate names and tenant names are held by two different authorities that meet at that forward.
+The full model — including why forwarding a zone is not the same as delegating it, and what that
+changes — is in [Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/).
 
 ---
 
@@ -79,9 +84,15 @@ The core router provides DNS for the substrate:
 
 Each segment has its own DHCP configuration on the core router:
 
-- **Static mappings** for known infrastructure hosts (routers, hypervisors, switches, APs)
-- **Dynamic pools** for segments with transient devices (trusted, IoT, guest)
-- **No dynamic DHCP** on management and platform segments — static only
+- **Reservations** for every declared host, keyed on its hardware address and generated from
+  inventory — this is how substrate hosts get their addresses, not local configuration
+- **Dynamic pools** for segments with transient devices (trusted, IoT, guest), positioned above the
+  reserved range so the two cannot collide
+- **No dynamic pool** on the platform segment — everything on it is declared
+
+Tenant workloads are not addressed from here at all; their overlay has no leasing service, so they
+are addressed from tenant code at creation. See
+[Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/).
 
 ---
 
