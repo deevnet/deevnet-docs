@@ -37,11 +37,23 @@ and the key to write it with, and never writes a record on your behalf.
 
 ## Prerequisites
 
-- Clone of [`deevnet-tenant-factory`](https://github.com/deevnet/deevnet-tenant-factory)
-- `terraform` on your PATH
+**Two clones**, because onboarding and the tenant lifecycle live in different places
+([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)):
+
+- [`deevnet-tenant-factory`](https://github.com/deevnet/deevnet-tenant-factory) — to allocate the
+  index, copy the reference implementation, and issue the fabric attachment. Substrate side.
+- `deevnet-tenant-<name>` — the tenant's own repository, which is where every apply happens.
+
+Also:
+
+- `terraform` on your PATH, and an ssh-agent that can reach GitHub (the tenant module is fetched by
+  git tag at `init`)
 - Read access to the Deevnet inventory vault (credentials are rendered from it, never stored)
 - Your tenant's TSIG secret, exported as `TF_VAR_tsig_key_secret` — the substrate issues it during
   onboarding (step 2) and it is what lets the tenant publish its own names
+- If you want the state store, your state credential as `AWS_ACCESS_KEY_ID` /
+  `AWS_SECRET_ACCESS_KEY`. It is optional
+  ([ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/))
 
 ---
 
@@ -112,41 +124,49 @@ ansible-playbook playbooks/opnsense.yml --tags tenant-dns
 Egress must be applied **after** the tenant's Terraform has created the VRF, so in practice this
 step is split: register the tenant and do the DNS half now, and run the egress tags after step 4.
 
-## 3. Create the tenant directory
+## 3. Create the tenant's repository
 
-Copy the demo tenant and change two values:
+A tenant is its own repository. Create `deevnet-tenant-grooveiq` and fill it from the reference
+implementation — a copy **out** of the factory, not into it:
 
 ```bash
-cp -r tenants/dvntm/t-demo tenants/dvntm/grooveiq
+cp -r examples/tenant/. ../deevnet-tenant-grooveiq/
 ```
 
-In `tenants/dvntm/grooveiq/main.tf`:
+The example cannot be applied as it stands: it ships with `tenant_index = 0`, which the module
+rejects. That is deliberate, so an unedited copy fails loudly rather than quietly becoming a second
+tenant with someone else's name. Replace every `REPLACE-ME`, and set the two values that actually
+differ, in `terraform.tfvars`:
 
 ```hcl
-module "tenant" {
-  source = "../../../modules/tenant"
-
-  tenant_name  = "grooveiq"   # <= 8 chars
-  tenant_index = 2            # from TENANTS.md
-
-  controller_id = data.terraform_remote_state.fabric.outputs.controller_id
-  node          = data.terraform_remote_state.fabric.outputs.node
-
-  template_vm_id = var.template_vm_id
-  vm_count       = 2
-  ssh_keys       = var.ssh_keys
-}
+tenant_name  = "grooveiq"   # <= 8 chars
+tenant_index = 2            # from TENANTS.md
 ```
 
-The controller and node are read from the fabric's own state rather than hardcoded, so a tenant
-does not need to know which hypervisor it lands on.
+Then have the substrate issue the fabric attachment — run this **in the factory**:
+
+```bash
+make tenant-attachment TENANT=../deevnet-tenant-grooveiq
+```
+
+That writes `fabric.auto.tfvars` with the controller and node. A tenant never *invents* them: the
+substrate hands them over at onboarding, in the same act that issues the TSIG key and the egress.
+They used to be read out of the fabric's Terraform state, which only worked while tenants lived
+inside the factory.
+
+If you want the state store, uncomment the `backend "s3"` block and set its key to
+`tenants/grooveiq/terraform.tfstate`. Leaving it commented is a valid choice — you then carry your
+own custody.
 
 ## 4. Apply
 
+Everything from here happens **in the tenant's repository**:
+
 ```bash
-make tenant-init  TENANT=tenants/dvntm/grooveiq
-make tenant-plan  TENANT=tenants/dvntm/grooveiq
-make tenant-apply TENANT=tenants/dvntm/grooveiq
+cd ../deevnet-tenant-grooveiq
+make init      # fetches the tagged module - needs GitHub and your ssh-agent
+make plan
+make apply
 ```
 
 Credentials are rendered from the inventory vault by the targets themselves; nothing is stored in
@@ -154,10 +174,15 @@ the repo. `AUTO=1` skips the approval prompt for non-interactive runs.
 
 This creates the tenant's EVPN zone (its VRF), its VNet, its subnet, and its VMs.
 
+**The module is pinned by tag**, and `init` vendors it into `.terraform/modules/`. Neither `plan`
+nor `apply` re-fetches it, so moving to a newer module version takes an explicit
+`terraform init -upgrade` — a repository that never re-inits stays on its old module indefinitely,
+quietly.
+
 ## 5. Verify
 
 ```bash
-terraform -chdir=tenants/dvntm/grooveiq output
+terraform output
 ```
 
 Then confirm the things that actually matter:
@@ -176,7 +201,7 @@ Then confirm the things that actually matter:
 ## 6. Destroy
 
 ```bash
-make tenant-destroy TENANT=tenants/dvntm/grooveiq
+make destroy    # in the tenant's own repository
 ```
 
 Removes the VMs and the tenant's SDN objects. Release the index in `TENANTS.md` in the same change.

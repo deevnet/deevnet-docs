@@ -29,6 +29,10 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
     <h3>image-factory</h3>
     <p>Packer builds for Raspberry Pi and Proxmox templates.</p>
   </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-tenant-factory">
+    <h3>tenant-factory</h3>
+    <p>The tenant fabric, the reusable tenant module, and the index registry. Substrate side — tenants themselves live elsewhere.</p>
+  </a>
   <a class="section-card" href="https://github.com/deevnet/deevnet-docs">
     <h3>deevnet-docs</h3>
     <p>This documentation site.</p>
@@ -46,10 +50,23 @@ dvnt/
 ├── ansible-collection-deevnet.net/
 ├── ansible-inventory-deevnet/
 ├── deevnet-image-factory/
+├── deevnet-tenant-factory/
+├── deevnet-tenant-<name>/          one per tenant
 └── deevnet-docs/
 ```
 
 All repositories are designed to be cloned into a common parent directory (typically `~/dvnt/` or `/srv/dvnt/`).
+
+### Tenants get their own repositories
+
+A tenant is **not** a directory inside a substrate repo. Each one is
+`deevnet-tenant-<name>`, and that repository is the tenant: its network, its workloads and its DNS
+records are declared there and rebuilt from there
+([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)).
+
+The split is what makes the tenant contract real rather than aspirational — a tenant's recurring
+lifecycle touches no substrate repository at all. New tenants are created by copying
+`examples/tenant/` **out of** the tenant factory, never by copying a live tenant.
 
 ---
 

@@ -54,7 +54,9 @@ requires **no change to physical switching**. This is the model established by
 ### Code Is the Source of Truth
 
 Every tenant supplies the **IaC and CaC** needed to rebuild itself from scratch against the
-substrate. Nothing about a tenant is precious hand-clicked state: its overlay network, its VMs,
+substrate, and it supplies them from **its own repository** — `deevnet-tenant-<name>`, not a
+directory inside a substrate repo
+([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)). Nothing about a tenant is precious hand-clicked state: its overlay network, its VMs,
 and its DNS records are all declared in the tenant's own code. Rebuilding a tenant reconstitutes
 it whole — network, workloads, and records — which is what keeps the substrate stateless and the
 tenant portable.
@@ -117,6 +119,8 @@ between what the tenant supplies and what the substrate guarantees:
 | Its overlay network (subnet, gateway, isolation) in the fabric | A tenant fabric to attach to |
 | Its workloads (VMs from a template) | Compute on the tenant hypervisor |
 | Its data disks, sized and attached to its VMs | VM images with a small, growable OS disk |
+| Its own repository, from which it is rebuilt | A fabric attachment, issued at onboarding |
+| Custody of its Terraform state, or use of the one offered | A state store it may use or decline |
 | Its DNS records | A DNS zone to publish into |
 | Its addressing, from a globally-unique plan | A perimeter for egress and shared-service access |
 

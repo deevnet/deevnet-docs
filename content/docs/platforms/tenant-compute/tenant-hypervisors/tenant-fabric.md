@@ -151,10 +151,14 @@ takes the default route out transit.
 - ✅ hv02's bridge is VLAN-aware with `vmbr0.50` and `vmbr0.51` up, driven from inventory by the
   `proxmox_node_network` Ansible role.
 - ✅ The fabric, VTEP identity and EVPN controller are applied on hv02 from
-  `deevnet-tenant-factory`.
+  `deevnet-tenant-factory`. That repository holds the substrate side only — the fabric, the
+  reusable tenant module and the index registry. **Tenants themselves are applied from their own
+  repositories** (`deevnet-tenant-<name>`), consuming the module by git tag
+  ([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)).
 - ✅ Default route moved onto transit.
 - ✅ First tenant end to end — `tdemo` (index 1, `10.20.129.0/24`), addressed by cloud-init, with
-  internet egress through the perimeter.
+  internet egress through the perimeter, its names resolving through the substrate resolver, and
+  its own repository.
 
 ### How egress is enforced
 
