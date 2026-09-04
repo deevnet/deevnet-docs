@@ -35,6 +35,32 @@ VMs can PXE boot to validate new OS configurations before bare-metal deployment:
 
 Once validated on VMs, the same MAC-specific config works unchanged on bare metal.
 
+#### UEFI VM clients require a VirtIO RNG device
+
+A Proxmox VM with `bios: ovmf` **cannot PXE boot without an entropy source**. This is a documented Proxmox 8.4 known issue — *"PXE boot on VM with OVMF requires VirtIO RNG"* ([Roadmap](https://pve.proxmox.com/wiki/Roadmap)) — and it arrived with `pve-edk2-firmware 4.2025.02` in PVE 8.3.5.
+
+EDK II's fix for CVE-2023-45237 makes the UEFI network stack depend on `EFI_RNG_PROTOCOL`. With no entropy source the firmware **disables network boot entirely**, so it never creates a network boot entry and the guest emits **zero DHCP packets**:
+
+```
+BdsDxe: failed to load Boot0001 "UEFI QEMU QEMU HARDDISK " ... Not Found
+BdsDxe: No bootable option or device was found.
+```
+
+Add the device when creating the VM:
+
+```
+rng0: source=/dev/urandom
+```
+
+Two things this failure is *not*, both verified on 2026-09-04 by rebuilding the VM from scratch each time and capturing on the segment:
+
+- **Not the NIC model.** `virtio` and `e1000` fail identically without entropy and both work with it. Keep `virtio`, to match what `deevnet.mgmt` `roles/proxmox_vm` uses for every other VM.
+- **Not stale firmware NVRAM.** A brand-new `efidisk0` behaves the same.
+
+The alternative entropy source is a CPU exposing RDRAND (`cpu: host`, or a named model). VirtIO RNG is preferred: it is migration-safe. Note the PVE 8 default `kvm64` has no RDRAND, so a VM with neither setting has no entropy at all.
+
+Bare-metal clients are unaffected — real firmware has its own entropy sources.
+
 ---
 
 ## Architecture
