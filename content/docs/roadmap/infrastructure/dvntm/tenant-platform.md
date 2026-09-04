@@ -87,9 +87,13 @@ A repeatable, code-defined tenant lifecycle.
 
 - ✅ Reusable Terraform (`bpg/proxmox`) module implementing the network and compute halves of the
   tenant contract: VRF + VNet(s) + subnet + VMs from template, addressed by cloud-init.
-- ✅ One tenant = one instantiation, in `deevnet-tenant-factory`; create, rebuild and destroy from
-  code, with every identifier derived from one allocated index.
-- ⏳ DNS publication, pending the decision above.
+- ✅ One tenant = one instantiation, **in its own repository** (`deevnet-tenant-<name>`), consuming
+  the module by git tag and a fabric attachment the substrate issues at onboarding (ADR-0006).
+  Create, rebuild and destroy from code, with every identifier derived from one allocated index.
+- ✅ A reference implementation new tenants are copied from, which **cannot itself be applied** —
+  it ships with an index the module rejects, so the guard does not depend on being read.
+- ✅ DNS publication over RFC 2136 with a per-zone TSIG key (ADR-0004), and a state store tenants
+  may use or decline (ADR-0007).
 
 ## First tenant — end-to-end 🔄
 
@@ -98,9 +102,16 @@ Prove the whole path with a real tenant.
 - ✅ Provisioned from code: `tdemo` (index 1, `10.20.129.0/24`), cloud-init addressed.
 - ✅ Egress via the perimeter, verified from inside the workload rather than from a NAT counter —
   and verified *not* to reach the management segment on-link.
-- ⏳ Inter-tenant isolation — needs a second tenant to test against.
-- ⏳ DNS publication, pending the decision above.
-- ⏳ Rebuild-from-scratch drill.
+- ✅ DNS publication end to end: `dig @10.20.99.1 tdemo-1.tdemo.dvntm.deevnet.net` answers
+  `10.20.129.10`, and the reverse answers the name — records written by the tenant's own Terraform
+  over TSIG-signed RFC 2136, served by substrate-run PowerDNS, reached through the resolver's
+  forward.
+- ✅ Moved to its own repository with an empty plan as the acceptance gate: same state, same
+  resource addresses, same running VM, same records, zero API mutations.
+- ⏳ Inter-tenant isolation — needs a second tenant to test against. Note the *state* half is
+  already server-enforced: a tenant's credential is refused for another tenant's prefix.
+- ⏳ Rebuild-from-scratch drill — now re-scoped to the reference implementation: create a throwaway
+  tenant repository from `examples/tenant/`, apply, verify, destroy. Run at each module MAJOR tag.
 
 ---
 

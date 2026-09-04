@@ -51,15 +51,19 @@ subnet — derives from one allocated index, so there is very little to declare:
 
 ```hcl
 module "tenant" {
-  source = "../../../modules/tenant"
+  # Consumed by tag from the factory, never by path: a tenant lives in its own
+  # repository. The tag is never moved, so this pins the module as precisely as
+  # a lock file pins providers.
+  source = "git::ssh://git@github.com/deevnet/deevnet-tenant-factory.git//modules/tenant?ref=tenant-module-v1.1.0"
 
   tenant_name  = "grooveiq"   # <= 8 chars: Proxmox caps SDN zone IDs, and the zone ID is the name
   tenant_index = 2            # allocated in TENANTS.md; everything else follows from it
 
-  # Read from the fabric's own state, so a tenant need not know which
-  # hypervisor it lands on.
-  controller_id = data.terraform_remote_state.fabric.outputs.controller_id
-  node          = data.terraform_remote_state.fabric.outputs.node
+  # Issued by the substrate at onboarding, alongside the tenant's DNS key and
+  # its egress. A tenant never invents these, and no longer reads them out of
+  # the fabric's state - it cannot, from its own repository.
+  controller_id = var.controller_id
+  node          = var.node
 
   vm_count       = 2
   template_vm_id = var.template_vm_id
@@ -116,30 +120,28 @@ on the tenant hypervisor.
 
 ---
 
-## Tenant Inventory Structure
+## One repository per tenant
 
-Tenant infrastructure is tracked in a separate inventory:
+A tenant's code lives in its own repository, `deevnet-tenant-<name>`, and that repository *is* the
+tenant ([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)):
 
 ```
-tenant-inventory/
-├── grooveiq/
-│   ├── hosts.yml
-│   ├── group_vars/
-│   └── terraform/
-├── vintronics/
-│   ├── hosts.yml
-│   ├── group_vars/
-│   └── terraform/
-└── moneyrouter/
-    ├── hosts.yml
-    ├── group_vars/
-    └── terraform/
+deevnet-tenant-grooveiq/
+├── main.tf              the module instantiation above
+├── variables.tf
+├── terraform.tfvars     tenant_name, tenant_index, ssh keys
+└── fabric.auto.tfvars   issued by the substrate - not authored here
 ```
 
-This separation:
-- Keeps tenant state isolated
-- Allows tenant-specific variables
-- Enables independent lifecycle management
+The substrate keeps the other half: the fabric, the module every tenant consumes, the index
+registry, and a reference implementation that new tenants are copied from and which cannot itself
+be applied.
+
+What this separation buys is precise: **a tenant's recurring lifecycle touches no substrate
+repository.** Adding a record, rebuilding, destroying — all happen here. Onboarding still touches
+substrate, because allocating an index and issuing a key, an egress and a fabric attachment are
+substrate acts; that division is
+[ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) §5.
 
 ---
 
