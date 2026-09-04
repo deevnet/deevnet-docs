@@ -12,6 +12,7 @@ weight: 4
 | **Scope** | How a tenant's own DNS records reach the resolver substrate clients use |
 | **Depends on** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/) |
 | **Extended by** | [ADR-0005: Tenant Zone Apex Ownership](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/) — the zone apex, which §4 does not assign |
+| **Extended by** | [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/) — where the tenant's code lives, which §5 does not say |
 
 ---
 

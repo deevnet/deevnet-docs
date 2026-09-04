@@ -199,10 +199,20 @@ Terraform — not as substrate prerequisites. See
 
 ### Terraform State
 
-Tenant Terraform state should be:
-- Stored in version control (for small deployments)
-- Or in remote backend (for team access)
-- Never edited manually
+The substrate **offers** a state store; a tenant may use it or keep state local and carry its own
+custody. The decision, and why the opt-out is load-bearing rather than a courtesy, is
+[ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/).
+
+Whichever a tenant picks, two rules hold:
+
+- **State is never edited by hand.**
+- **State must not come to contain a secret.** Prefer resources whose values can be re-derived over
+  ones that generate a credential, because a generated credential lives in state permanently. State
+  is not IaC source and is not protected the way source is — see
+  [Secure Identity §4.4](/docs/standards/secure-identity/#44-iac-source-and-iac-state-are-different-things).
+
+Losing state costs a rebuild, not a loss: nothing in a conforming tenant's state is irreplaceable,
+which is the same property that makes *rebuilt from code, not from a backup* true.
 
 ### Drift Handling
 
