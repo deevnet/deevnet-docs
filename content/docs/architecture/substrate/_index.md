@@ -62,4 +62,5 @@ See [Extended Services](management-plane/extended-services/) for extended manage
 - [Networking](networking/) — Networking services: DNS, DHCP, firewall, VLAN routing, switching
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
+- [Naming and Addressing](naming-and-addressing/) — How hosts and workloads get addresses and names, and where DNS authority changes hands
 - [Management Plane](management-plane/) — Management plane overview, core and extended services

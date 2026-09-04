@@ -282,6 +282,39 @@ Automation must be safely repeatable.
 
 ---
 
+### 7.3 Assert the Outcome, Not the Call
+A task that reports success has proven that a request was accepted. It has **not** proven that the
+intended state exists.
+
+Automation MUST verify the outcome wherever the two can diverge:
+
+- Read configuration back after writing it, and assert on what came back
+- Assert the guest booted on its reserved address, not that the create call returned 200
+- Assert the service answers, not that the unit was started
+
+This is not defensive padding. Every one of the following was a real defect that reported success:
+
+| What happened | What it looked like |
+|---|---|
+| A module silently dropped an unsupported field from an update | `changed`, with the field unchanged |
+| A request body used a templated dictionary key the templating engine does not expand | `ok`, nothing created |
+| A tagged include ran while every task inside it was filtered out | Green run, zero tasks executed |
+| An API accepted a write into an unknown key | `200`, no row created |
+
+The invariant: **if the only evidence is that automation was happy, there is no evidence.**
+
+---
+
+### 7.4 Handlers Need a Truthful `changed`
+Many HTTP-based modules cannot know whether a request altered anything, so they report `ok` by
+default. A `notify` attached to such a task never fires, and the change lands in saved
+configuration while the running service is never told.
+
+Where a task can change state, its `changed` result MUST reflect that — derived from the API's own
+answer where one is available, so a write that failed validation does not count as a change.
+
+---
+
 ## 8. Failure Semantics
 
 ### 8.1 Fail Loud, Fail Early
@@ -291,6 +324,21 @@ Correct infrastructure fails:
 - and with enough context to fix it.
 
 Silent failures, retries without explanation, or “best effort” provisioning are incorrect.
+
+---
+
+### 8.2 Guards Must Be Reachable
+A guard that cannot run is not a guard. Assertions written to catch a bad assumption have to be on
+a path that actually executes, and that is worth checking rather than assuming — a correctly written
+assert that is skipped is indistinguishable, from the outside, from an assert that passed.
+
+An assertion MUST also state what to do next. The useful form names the check to run by hand:
+
+> No `schema.sqlite3.sql` under `/usr/share` in this image. Find it with:
+> `podman run --rm --entrypoint /bin/sh IMAGE -c 'find / -name schema.sqlite3.sql'`
+
+That message is what turns a failed run into a fixed one; two defects were diagnosed in minutes
+because the assertion carried the command, rather than only the complaint.
 
 ---
 
