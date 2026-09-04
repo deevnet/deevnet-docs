@@ -7,6 +7,9 @@ weight: 11
 
 PXE boot and install Proxmox VE hypervisors from local artifacts.
 
+This covers the **hypervisors themselves**. Putting an OS on the VMs that run on top of
+them is a separate procedure.
+
 ---
 
 ## Prerequisites

@@ -68,11 +68,12 @@ flowchart TD
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
     G["<b>7. Build Management Plane</b><br/>PXE boot Proxmox hypervisors"]
     H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
-    I["<b>9. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
-    J["<b>10. Build Tenants</b><br/>Provision application VMs"]
-    K["<b>11. Verify Tenants</b><br/>Application health checks"]
+    I["<b>9. Build Management-Plane VMs</b><br/>Clone from template, or PXE netboot"]
+    J["<b>10. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
+    K["<b>11. Build Tenants</b><br/>Provision application VMs"]
+    L["<b>12. Verify Tenants</b><br/>Application health checks"]
 
-    A --> B --> C --> D --> E --> F --> G --> H --> I --> J --> K
+    A --> B --> C --> D --> E --> F --> G --> H --> I --> J --> K --> L
 
     classDef default fill:#2d333b,stroke:#539bf5,color:#adbac7
     classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c
@@ -97,6 +98,7 @@ flowchart TD
 - [Build Network](build-network/) — Core Router install, network segmentation, transition to core-authoritative (`make core-auth`)
 - [Build Management Plane](build-management-plane/) — PXE boot Proxmox hypervisors
 - [Allocate VM Identity](vm-identity/) — Derive management-VM MACs from their VMID before first boot
+- [Build a Management-Plane VM](build-management-vm/) — Put an OS on the VM, by template clone or PXE netboot
 
 ### Validate
 
