@@ -23,8 +23,8 @@ Both hypervisors currently run **PVE 8.4.1**. PVE 9 is based on Debian 13 (Trixi
 major-version distribution upgrade on each node, not a package update.
 
 **In Scope**
-- hv02 (tenant hypervisor, node `pve2`) — upgrade to PVE 9.x
-- hv01 (management hypervisor, node `pve`) — upgrade to PVE 9.x
+- hv02 (tenant hypervisor, node `dv02hyp002p02`) — upgrade to PVE 9.x
+- hv01 (management hypervisor, node `dv02hyp001p01`) — upgrade to PVE 9.x
 - Post-upgrade verification of the SDN API surface the tenant fabric depends on
 - Alignment of the Terraform provider baseline with the upgraded platform
 

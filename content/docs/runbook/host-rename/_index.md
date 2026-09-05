@@ -60,5 +60,8 @@ Least risky first. Each phase lands on its own and is verified before the next b
 | 10 | Appliance hostnames | Manual, per device |
 | 11 | The zone rename | Atomic, cross-repo |
 | 12 | Documentation and residue | Docs, filesystem paths |
+| 13 | Rename the Proxmox nodes | Out-of-band, per hypervisor |
 
 Phases 2–3 are reversible with a `git revert`. Phase 8 is the first change a user could notice.
+[Phase 13](/docs/runbook/host-rename/pve-node-rename/) came after the rest: the Proxmox node name is the one identifier
+with no supported rename, so it was left until the estate around it was already consistent.
