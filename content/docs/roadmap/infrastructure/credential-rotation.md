@@ -24,7 +24,7 @@ The standard's §1.1 is unambiguous about intent:
 
 But the word *rotation* does not appear anywhere in it. The substrate today runs on static, long-lived credentials — API tokens, vault passphrases, TSIG keys, the automation SSH key — with no defined lifetime, no inventory of where each is used, and no procedure for replacing one. The standard describes the destination; there is no route.
 
-This is **not** an urgent security posture item. dvntm is a lab on hardware that is treated as ephemeral, the blast radius is a home network, and nothing here is internet-facing. It is on the roadmap because the *process* is missing, and because the first time a credential genuinely needs replacing is the worst time to design the procedure.
+This is **not** an urgent security posture item. mobile is a lab on hardware that is treated as ephemeral, the blast radius is a home network, and nothing here is internet-facing. It is on the roadmap because the *process* is missing, and because the first time a credential genuinely needs replacing is the worst time to design the procedure.
 
 **In Scope**
 

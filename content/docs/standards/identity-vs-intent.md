@@ -59,13 +59,13 @@ Identity is expressed via:
 
 ### Examples of Identity
 
-- pi01.dvntm.deevnet.net
+- pi01.mobile.deevnet.net
   A specific Raspberry Pi slot
 
-- hv01.dvntm.deevnet.net
+- hv01.mobile.deevnet.net
   A hypervisor host
 
-- edge-rt01.dvntm.deevnet.net
+- edge-rt01.mobile.deevnet.net
   An edge routing appliance
 
 Identity does **not** change simply because software or workloads change.
@@ -228,7 +228,7 @@ A host named `pi01` running an SDR workload does **not** become `sdr-pi01`.
 
 Instead:
 
-- the service name `sdr.dvntm.deevnet.net` points to the host
+- the service name `sdr.mobile.deevnet.net` points to the host
 - DNS expresses current intent
 - the hostname remains truthful
 

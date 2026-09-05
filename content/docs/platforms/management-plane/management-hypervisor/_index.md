@@ -16,9 +16,9 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 {{% tabs "management-hypervisor-hardware" %}}
 
-{{% tab "dvntm — Dell Optiplex 7050 MFF" %}}
+{{% tab "mobile — Dell Optiplex 7050 MFF" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the management hypervisor for the mobile site. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
 
@@ -47,9 +47,9 @@ The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used
 
 {{% /tab %}}
 
-{{% tab "dvnt — TBD" %}}
+{{% tab "home — TBD" %}}
 
-**Site**: dvnt (home)
+**Site**: home (home)
 
 Hardware selection for the home site management hypervisor is pending.
 

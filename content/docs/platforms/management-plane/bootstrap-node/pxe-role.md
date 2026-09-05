@@ -192,7 +192,7 @@ set timeout=0
 set default=0
 
 menuentry "VyOS Rolling" {
-    linux /vyos/vmlinuz boot=live noautologin fetch=http://artifacts.dvntm.deevnet.net/netboot/vyos/filesystem.squashfs
+    linux /vyos/vmlinuz boot=live noautologin fetch=http://artifacts.mobile.deevnet.net/netboot/vyos/filesystem.squashfs
     initrd /vyos/initrd.img
 }
 ```
@@ -204,7 +204,7 @@ set timeout=0
 set default=0
 
 menuentry "Fedora 43 Server" {
-    linux /fedora/43/vmlinuz ip=dhcp rd.neednet=1 inst.repo=http://artifacts.dvntm.deevnet.net/fedora/43/mirror inst.ks=http://artifacts.dvntm.deevnet.net/kickstart/builder-node.ks
+    linux /fedora/43/vmlinuz ip=dhcp rd.neednet=1 inst.repo=http://artifacts.mobile.deevnet.net/fedora/43/mirror inst.ks=http://artifacts.mobile.deevnet.net/kickstart/builder-node.ks
     initrd /fedora/43/initrd.img
 }
 ```
@@ -232,7 +232,7 @@ Boot File Name: grubx64.efi
 
 ### 2. Add to Ansible Inventory
 
-In `ansible-inventory-deevnet/dvntm/group_vars/bootstrap_nodes.yml`:
+In `ansible-inventory-deevnet/mobile/group_vars/bootstrap_nodes.yml`:
 
 ```yaml
 bootstrap_grub_mac_configs:
@@ -241,14 +241,14 @@ bootstrap_grub_mac_configs:
     image_name: "Fedora 43 Server"
     dest_subdir: "fedora/43"
     boot_options: >-
-      inst.repo=http://artifacts.dvntm.deevnet.net/fedora/43/mirror
-      inst.ks=http://artifacts.dvntm.deevnet.net/kickstart/builder-node.ks
+      inst.repo=http://artifacts.mobile.deevnet.net/fedora/43/mirror
+      inst.ks=http://artifacts.mobile.deevnet.net/kickstart/builder-node.ks
 ```
 
 ### 3. Apply Bootstrap Role
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.builder
+cd ~/home/ansible-collection-deevnet.builder
 make rebuild
 ansible-playbook playbooks/site.yml --limit bootstrap_nodes
 ```

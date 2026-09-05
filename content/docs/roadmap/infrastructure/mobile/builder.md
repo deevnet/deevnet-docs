@@ -8,7 +8,7 @@ tasks_planned: 0
 
 # Builder & Core Services ✅
 
-Builder infrastructure, network automation, and core services required to provision and rebuild the dvntm (mobile) site from bare metal.
+Builder infrastructure, network automation, and core services required to provision and rebuild the mobile (mobile) site from bare metal.
 
 - **GitHub:** https://github.com/deevnet
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
@@ -21,7 +21,7 @@ Builder infrastructure, network automation, and core services required to provis
 
 ## Project Vision & Scope
 
-Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from bare metal to running core services, with complete air-gap recovery capability.
+Achieve fully automated, repeatable provisioning of the mobile (mobile) site from bare metal to running core services, with complete air-gap recovery capability.
 
 **In Scope**
 - Bare-metal provisioning (PXE, Ansible)
@@ -31,8 +31,8 @@ Achieve fully automated, repeatable provisioning of the dvntm (mobile) site from
 
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
-- Patch automation and firmware upgrades — see [Patch Automation](/docs/roadmap/infrastructure/dvntm/patch-automation/)
-- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/infrastructure/dvntm/full-rebuild/)
+- Patch automation and firmware upgrades — see [Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/)
+- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 
@@ -71,7 +71,7 @@ Documentation and inventory definitions.
 
 - ✅ Hugo-based Documentation Site
 - ✅ Standards and Correctness Docs
-- ✅ dvntm Site Bare-Metal Inventory (MAC addresses)
+- ✅ mobile Site Bare-Metal Inventory (MAC addresses)
 {{% /details %}}
 
 ---
@@ -83,7 +83,7 @@ Automated configuration of network infrastructure. Migration from flat 192.168.1
 
 - ✅ OPNsense Alternatives Evaluation
 - ✅ Document network build/rebuild steps in recovery plan
-- ✅ dvntm VLAN Plan
+- ✅ mobile VLAN Plan
 - ✅ DNS Automation
 - ✅ DHCP Automation (Kea subnets auto-created, interface enablement automated)
 - ✅ Core Router Automation (OPNsense VLAN creation, firewall rules via API)

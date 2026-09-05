@@ -8,7 +8,7 @@ tasks_planned: 0
 
 # Full Site Rebuild
 
-End-to-end rebuild of the dvnt (home) site from scratch. Validates that all dvnt automation is end-to-end and exercises the full build sequence.
+End-to-end rebuild of the home (home) site from scratch. Validates that all home automation is end-to-end and exercises the full build sequence.
 
 {{< overall-progress >}}
 

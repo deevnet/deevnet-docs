@@ -25,7 +25,7 @@ Before any host can be PXE booted, its definition must exist in the Ansible inve
 
 ```
 ansible-inventory-deevnet/
-└── dvntm/
+└── mobile/
     ├── hosts.yml           # Main inventory (hosts and group memberships)
     ├── group_vars/         # Variables by group
     └── host_vars/          # Per-host variables (MAC, IP, DNS, DHCP)
@@ -77,7 +77,7 @@ env:
 ### 3. Apply configuration
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.builder
+cd ~/home/ansible-collection-deevnet.builder
 make rebuild
 ansible-playbook playbooks/site.yml --limit bootstrap_nodes
 ```
@@ -112,7 +112,7 @@ Such a host uses a host_vars **directory**, with the generated values in their
 own file:
 
 ```
-dvntm/host_vars/tenant-mgmt-vm01/
+mobile/host_vars/tenant-mgmt-vm01/
 ├── vars.yml       # hand-written
 └── identity.yml   # GENERATED - do not edit
 ```
@@ -134,7 +134,7 @@ mgmt_vm:
 Then allocate the identity, which writes `identity.yml`:
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.mgmt
+cd ~/home/ansible-collection-deevnet.mgmt
 make vm-identity-assign
 ```
 

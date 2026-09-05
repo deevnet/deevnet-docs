@@ -19,11 +19,11 @@ Each build phase includes automated verification via Ansible. This page covers f
 
 ```bash
 # Core Router reachable
-ping gateway.dvntm.deevnet.net
+ping gateway.mobile.deevnet.net
 
 # DNS resolution working
-dig +short hv01.dvntm.deevnet.net
-dig +short @192.168.10.1 hv01.dvntm.deevnet.net
+dig +short hv01.mobile.deevnet.net
+dig +short @192.168.10.1 hv01.mobile.deevnet.net
 
 # DHCP serving leases
 # (check Core Router UI or API)
@@ -38,14 +38,14 @@ dig +short @192.168.10.1 hv01.dvntm.deevnet.net
 
 ```bash
 # Hypervisors reachable
-ping hv01.dvntm.deevnet.net
-ping hv02.dvntm.deevnet.net
+ping hv01.mobile.deevnet.net
+ping hv02.mobile.deevnet.net
 
 # Proxmox API accessible
-curl -k https://hv01.dvntm.deevnet.net:8006/api2/json/version
+curl -k https://hv01.mobile.deevnet.net:8006/api2/json/version
 
 # SSH access working
-ssh hv01.dvntm.deevnet.net hostname
+ssh hv01.mobile.deevnet.net hostname
 ```
 
 ---
@@ -60,7 +60,7 @@ systemctl status tftp.socket
 ls /srv/tftp/pxelinux.cfg/
 
 # Artifact server accessible
-curl -I http://artifacts.dvntm.deevnet.net/fedora/43/mirror/
+curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/
 ```
 
 ---

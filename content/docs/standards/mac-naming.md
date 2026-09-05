@@ -86,7 +86,7 @@ The namespace is a fixed three-octet prefix plus a three-octet suffix whose
 |-----|--------|
 | `02` | Locally administered prefix |
 | `DD` | Deevnet identifier (`de`) |
-| `EE` | Environment — the site octet of [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/): `20` = dvntm, `10` = dvnt |
+| `EE` | Environment — the site octet of [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/): `20` = mobile, `10` = home |
 
 The environment octet is **derived from the addressing plan**, not restated, so
 the namespace follows the environment with no second place to edit. Because it
@@ -141,9 +141,9 @@ survey.
 
 | Hostname | VMID | MAC Address |
 |--------|------|-------------|
-| tenant-mgmt-vm01 (dvntm) | 200 | `02:de:20:00:00:c8` |
-| — the same VMID in dvnt | 200 | `02:de:10:00:00:c8` |
-| — VMID 201 in dvntm | 201 | `02:de:20:00:00:c9` |
+| tenant-mgmt-vm01 (mobile) | 200 | `02:de:20:00:00:c8` |
+| — the same VMID in home | 200 | `02:de:10:00:00:c8` |
+| — VMID 201 in mobile | 201 | `02:de:20:00:00:c9` |
 
 ---
 

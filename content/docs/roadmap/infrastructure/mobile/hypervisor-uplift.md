@@ -30,11 +30,11 @@ major-version distribution upgrade on each node, not a package update.
 
 **Out of Scope**
 - Building the tenant fabric itself — tracked in
-  [Tenant Platform](/docs/roadmap/infrastructure/dvntm/tenant-platform/)
+  [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/)
 - Clustering either hypervisor — both remain standalone per
   [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)
 - Ongoing patch strategy — tracked in
-  [Patch Automation](/docs/roadmap/infrastructure/dvntm/patch-automation/)
+  [Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/)
 
 ---
 
@@ -117,7 +117,7 @@ Confirm the platform now supports what the tenant fabric design assumes.
 
 The tenant fabric is no longer blocked, and its underlay is defined as code rather than as
 hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
-[Tenant Platform](/docs/roadmap/infrastructure/dvntm/tenant-platform/).
+[Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/).
 
 **hv01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
 window; nothing in the tenant fabric waits on it. Nor does tenant DNS

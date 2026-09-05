@@ -81,8 +81,8 @@ tenant.site.deevnet.net
 ```
 
 **Examples:**
-- `grooveiq.dvntm.deevnet.net` — GrooveIQ on dvntm site
-- `vintronics.dvnt.deevnet.net` — Vintronics on dvnt site
+- `grooveiq.mobile.deevnet.net` — GrooveIQ on mobile site
+- `vintronics.home.deevnet.net` — Vintronics on home site
 
 Services within a tenant use the pattern:
 ```
@@ -90,8 +90,8 @@ service.tenant.site.deevnet.net
 ```
 
 **Examples:**
-- `api.grooveiq.dvntm.deevnet.net`
-- `db.grooveiq.dvntm.deevnet.net`
+- `api.grooveiq.mobile.deevnet.net`
+- `db.grooveiq.mobile.deevnet.net`
 
 Internal tenant records are **owned by the tenant** and created as part of tenant provisioning,
 then **published into the substrate zone** so tenant service names resolve consistently. This

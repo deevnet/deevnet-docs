@@ -20,9 +20,9 @@ graph LR
 
 {{% tabs "access-point-hardware" %}}
 
-{{% tab "dvntm — EAP650-Outdoor" %}}
+{{% tab "mobile — EAP650-Outdoor" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN product line. Despite being outdoor-rated, its rugged design makes it suitable for the mobile site's varied deployment environments.
 
@@ -49,7 +49,7 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 - **API manageable**: Omada controller provides REST API for automation
 - **Wi-Fi 6**: Modern standard with improved efficiency and capacity
 - **Rugged**: IP67 rating handles varied mobile deployment conditions
-- **Omada ecosystem**: Matches dvntm switch (SG2218) for unified management
+- **Omada ecosystem**: Matches mobile switch (SG2218) for unified management
 - **PoE powered**: Single cable for power and data
 
 ### Management
@@ -71,9 +71,9 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 
 {{% /tab %}}
 
-{{% tab "dvnt — UAP-AC-M" %}}
+{{% tab "home — UAP-AC-M" %}}
 
-**Site**: dvnt (home) — 2 units
+**Site**: home (home) — 2 units
 
 The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniFi product line. Two units provide coverage throughout the home site.
 
@@ -99,7 +99,7 @@ The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniF
 - **VLAN capable**: Supports VLAN tagging per SSID for network segmentation
 - **API manageable**: UniFi controller provides REST API for automation
 - **Mesh capable**: Wireless uplink for flexible placement
-- **UniFi ecosystem**: Matches dvnt switches (USW-24-G2, US-8)
+- **UniFi ecosystem**: Matches home switches (USW-24-G2, US-8)
 - **Compact**: Low-profile design for unobtrusive mounting
 - **PoE powered**: Single cable for power and data
 
@@ -130,7 +130,7 @@ The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniF
 
 Both access points meet the core selection criteria:
 
-| Requirement | EAP650-Outdoor (dvntm) | UAP-AC-M (dvnt) |
+| Requirement | EAP650-Outdoor (mobile) | UAP-AC-M (home) |
 |-------------|------------------------|-----------------|
 | **VLAN tagging** | ✓ Per-SSID | ✓ Per-SSID |
 | **API management** | ✓ Omada REST API | ✓ UniFi REST API |
@@ -143,8 +143,8 @@ Both access points meet the core selection criteria:
 
 | Site | Controller | Automation |
 |------|------------|------------|
-| **dvntm** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
-| **dvnt** | UniFi Network | UniFi API (manual currently) |
+| **mobile** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
+| **home** | UniFi Network | UniFi API (manual currently) |
 
 ### SSID Design
 

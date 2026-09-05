@@ -5,7 +5,7 @@ weight: 4
 
 # Future Evaluations
 
-Technologies being considered for future adoption. These evaluations are informational—none are blocking the current MVP dvntm platform.
+Technologies being considered for future adoption. These evaluations are informational—none are blocking the current MVP mobile platform.
 
 ---
 
@@ -41,7 +41,7 @@ OPNsense has served well for production routing. The lack of automated installat
 
 ## N100 Router Hardware Evaluation
 
-A future hardware evaluation. The current core routers (ZimaBoard 832 for dvntm, ODYSSEY X86J4125864 for dvnt) are general-purpose SBCs repurposed as routers. Purpose-built Intel N100 router appliances offer better performance, more Ethernet ports, and a form factor designed for the role.
+A future hardware evaluation. The current core routers (ZimaBoard 832 for mobile, ODYSSEY X86J4125864 for home) are general-purpose SBCs repurposed as routers. Purpose-built Intel N100 router appliances offer better performance, more Ethernet ports, and a form factor designed for the role.
 
 ### Why N100 Router Appliances?
 
@@ -94,5 +94,5 @@ This provisioning model is part of the N100 evaluation, not the current MVP appr
 | Hardware research | Pending |
 | OPNsense NVMe imaging workflow | Pending |
 | Procurement | Pending |
-| Validation (dvntm first) | Pending |
-| Production cutover (dvnt) | Pending |
+| Validation (mobile first) | Pending |
+| Production cutover (home) | Pending |

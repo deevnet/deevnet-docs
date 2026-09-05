@@ -9,7 +9,7 @@ tasks_planned: 0
 
 # DVNT (Home Network)
 
-Builder infrastructure, network automation, and core services for the dvnt (production home) site. A permanent, always-on installation with dedicated provisioning hardware and full network segmentation.
+Builder infrastructure, network automation, and core services for the home (production home) site. A permanent, always-on installation with dedicated provisioning hardware and full network segmentation.
 
 {{< overall-progress >}}
 

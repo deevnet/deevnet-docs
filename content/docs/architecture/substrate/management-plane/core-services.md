@@ -121,16 +121,16 @@ For the authority transition procedure, see [Authority Transition](/docs/runbook
 Sites expose **site-scoped service names** as their contract:
 
 ```
-artifacts.dvnt.deevnet.net
-artifacts.dvntm.deevnet.net
+artifacts.home.deevnet.net
+artifacts.mobile.deevnet.net
 ```
 
 In management-authoritative mode, these may alias to management services:
 
 ```
-artifacts.dvntm.deevnet.net
+artifacts.mobile.deevnet.net
   -> artifacts.mgmt.deevnet.net
-  -> provisioner-01-dvntm.mgmt.deevnet.net
+  -> provisioner-01-mobile.mgmt.deevnet.net
 ```
 
 Consumers never reference management-plane names directly.

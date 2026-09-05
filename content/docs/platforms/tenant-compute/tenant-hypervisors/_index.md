@@ -16,8 +16,8 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 
 | Site | Hardware | Notes |
 |------|----------|-------|
-| **dvntm** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
-| **dvnt** | TBD | Desktop or rack-mounted server |
+| **mobile** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
+| **home** | TBD | Desktop or rack-mounted server |
 
 ### Selection Rationale
 
@@ -49,7 +49,7 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 
 ## Dell Optiplex 7050 MFF
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the tenant hypervisor for the mobile site. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
 

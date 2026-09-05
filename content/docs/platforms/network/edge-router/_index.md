@@ -22,9 +22,9 @@ graph LR
 
 {{% tabs "edge-router-hardware" %}}
 
-{{% tab "dvntm — GL-AXT1800" %}}
+{{% tab "mobile — GL-AXT1800" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge router for the mobile site. It provides upstream connectivity when traveling — connecting to hotel Wi-Fi, tethered phones, or any available network.
 
@@ -72,9 +72,9 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 
 {{% /tab %}}
 
-{{% tab "dvnt — BGW320" %}}
+{{% tab "home — BGW320" %}}
 
-**Site**: dvnt (home) — Primary connection
+**Site**: home (home) — Primary connection
 
 The BGW320 is AT&T's fiber gateway combining an ONT (Optical Network Terminal) and router in one unit. It provides the primary internet connection for the home site.
 
@@ -123,9 +123,9 @@ The BGW320 is configured for **IP Passthrough** mode:
 
 {{% /tab %}}
 
-{{% tab "dvnt — Spectrum (planned)" %}}
+{{% tab "home — Spectrum (planned)" %}}
 
-**Site**: dvnt (home) — Secondary connection (failover)
+**Site**: home (home) — Secondary connection (failover)
 
 Spectrum provides the secondary internet connection for WAN failover. This connection is **not yet implemented** but planned for redundancy.
 

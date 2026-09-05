@@ -61,7 +61,7 @@ Any component that “reaches across layers” is incorrect.
 ## 2. Site and Substrate Model Correctness
 
 ### 2.1 Sites Are Physical/Logical Environments
-Sites (e.g., `dvnt`, `dvntm`) represent **where** things run, not **what** runs.
+Sites (e.g., `home`, `mobile`) represent **where** things run, not **what** runs.
 
 - Each site has its own IP space
 - Each site has its own routing/security boundary
@@ -75,7 +75,7 @@ Mixing workload identity into site naming is incorrect.
 ### 2.2 Site Independence
 Each site MUST be operable independently.
 
-- dvnt and dvntm can be brought up, torn down, or rebuilt independently
+- home and mobile can be brought up, torn down, or rebuilt independently
 - Provisioning in one site must not implicitly depend on the other
 - Shared global aliases (e.g., `artifacts.deevnet.net`) must be explicit and controlled
 
@@ -90,11 +90,11 @@ Hosts typically have multiple network interfaces (e.g., wired Ethernet, WiFi, ma
 - Assigned IP (L3 identity, per interface)
 - DNS name (human/contract identity, per interface)
 
-A host's **canonical identity** is the name used to refer to the host as a logical unit (e.g., `node01.dvnt.deevnet.net`). Individual interfaces are named to reflect their role:
+A host's **canonical identity** is the name used to refer to the host as a logical unit (e.g., `node01.home.deevnet.net`). Individual interfaces are named to reflect their role:
 
-- `node01.dvnt.deevnet.net` — canonical host identity (typically the primary interface)
-- `node01-mgmt.dvnt.deevnet.net` — management/IPMI interface
-- `node01-stor.dvnt.deevnet.net` — storage network interface
+- `node01.home.deevnet.net` — canonical host identity (typically the primary interface)
+- `node01-mgmt.home.deevnet.net` — management/IPMI interface
+- `node01-stor.home.deevnet.net` — storage network interface
 
 All interface-to-identity mappings are **Config-as-Code**, version-controlled, and auditable.
 
@@ -119,10 +119,10 @@ Binding a service permanently to a host name is incorrect.
 ### 3.3 Multihoming (Service Co-location)
 A single host may run multiple logical services. This is called **multihoming**.
 
-Example: `build-01.dvntm.deevnet.net` hosts:
-- `artifacts.dvntm.deevnet.net`
-- `pxe.dvntm.deevnet.net`
-- `dns.dvntm.deevnet.net`
+Example: `build-01.mobile.deevnet.net` hosts:
+- `artifacts.mobile.deevnet.net`
+- `pxe.mobile.deevnet.net`
+- `dns.mobile.deevnet.net`
 
 #### Naming Rule
 Each service MUST have its own DNS name (CNAME → host A record). Consumers address services by service name, never by host name.
@@ -170,8 +170,8 @@ If DNS is wrong, everything else is wrong.
 ### 4.2 Site-Scoped Names Are Mandatory
 Every infrastructure service MUST have a site-scoped name:
 
-- `artifacts.dvnt.deevnet.net`
-- `artifacts.dvntm.deevnet.net`
+- `artifacts.home.deevnet.net`
+- `artifacts.mobile.deevnet.net`
 
 Global aliases are optional but must never replace site-scoped truth.
 

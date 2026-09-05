@@ -69,7 +69,7 @@ The default policy is **deny all** — traffic between zones is blocked unless e
 
 The core router resolves for the substrate:
 
-- Answers for the substrate zone (e.g. `dvntm.deevnet.net`) from records generated out of inventory
+- Answers for the substrate zone (e.g. `mobile.deevnet.net`) from records generated out of inventory
 - Forwards external queries to upstream resolvers
 - Forwards each tenant zone to the tenant authoritative service, so tenant records never enter the
   resolver's own configuration

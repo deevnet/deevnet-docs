@@ -15,8 +15,8 @@ Each site is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
 
 | Site | Address Block |
 |------|---------------|
-| **dvnt** | 10.10.0.0/16 |
-| **dvntm** | 10.20.0.0/16 |
+| **home** | 10.10.0.0/16 |
+| **mobile** | 10.20.0.0/16 |
 
 The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
 
@@ -32,15 +32,15 @@ The pattern above describes **substrate segments**, where the third octet is a V
 overlays are not VLANs, so they cannot be described by it. Each site's `/16` is therefore split,
 per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
 
-| Block (dvntm) | Purpose |
+| Block (mobile) | Purpose |
 |---------------|---------|
 | `10.20.0.0/17` | Substrate segments — third octet = VLAN ID, as above |
 | `10.20.128.0/18` | Tenant overlay subnets — `10.20.{128+n}.0/24` for tenant index `n` |
 | `10.20.255.0/24` | Tenant fabric loopbacks / VTEP identity |
 
-dvnt mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
-exactly **one aggregate per site** to route — which matters in home dock mode, where dvnt already
-routes `10.20.0.0/16` to dvntm and that route keeps covering tenants unchanged.
+home mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
+exactly **one aggregate per site** to route — which matters in home dock mode, where home already
+routes `10.20.0.0/16` to mobile and that route keeps covering tenants unchanged.
 
 So the third octet also tells you which side of the line an address is on: below `128` is a
 substrate segment, `128` and above is a tenant overlay.
@@ -51,8 +51,8 @@ substrate segment, `128` and above is a tenant overlay.
 
 Each subnet uses `.1` as the gateway address:
 
-- `10.10.30.1` — dvnt IoT segment gateway
-- `10.20.99.1` — dvntm management segment gateway
+- `10.10.30.1` — home IoT segment gateway
+- `10.20.99.1` — mobile management segment gateway
 
 ---
 
@@ -73,26 +73,26 @@ Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive
 
 ## WAN Operation Modes
 
-The dvntm site operates in two WAN modes depending on physical location:
+The mobile site operates in two WAN modes depending on physical location:
 
 ### Travel Mode
 
-dvntm operates behind `edge-rt01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
+mobile operates behind `edge-rt01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
 
 - `edge-rt01` WAN: DHCP from upstream
 - `edge-rt01` LAN: 192.168.8.0/24 (unchanged, travel-router-local)
-- All dvntm traffic NATs through `edge-rt01`
+- All mobile traffic NATs through `edge-rt01`
 
 ### Home Dock Mode
 
-When dvntm is co-located with dvnt, the dvntm WAN connects to dvnt's trusted segment:
+When mobile is co-located with home, the mobile WAN connects to home's trusted segment:
 
-- dvntm WAN IP: assigned from 10.10.10.0/24 (dvnt trusted)
-- dvnt routes 10.20.0.0/16 to dvntm's WAN IP
-- NAT is disabled on dvntm's WAN — traffic flows with clean source IPs
+- mobile WAN IP: assigned from 10.10.10.0/24 (home trusted)
+- home routes 10.20.0.0/16 to mobile's WAN IP
+- NAT is disabled on mobile's WAN — traffic flows with clean source IPs
 - Both sites can communicate with full visibility
 
-This allows dvntm devices to be reachable from dvnt without double-NAT, while dvntm retains its own addressing and can undock at any time.
+This allows mobile devices to be reachable from home without double-NAT, while mobile retains its own addressing and can undock at any time.
 
 ---
 

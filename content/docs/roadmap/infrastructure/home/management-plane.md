@@ -8,7 +8,7 @@ tasks_planned: 0
 
 # Extended Management Plane
 
-Extended management services for the dvnt (home) site — logging, telemetry, alerting, secrets, and identity.
+Extended management services for the home (home) site — logging, telemetry, alerting, secrets, and identity.
 
 {{< overall-progress >}}
 

@@ -280,7 +280,7 @@ The documentation has said two things about the builder. The
 [authority transition gap analysis](/docs/runbook/authority-transition-gap-analysis/) describes one
 physical appliance that plugs into one site's management VLAN at a time, with its address per site
 defined in that site's inventory. The
-[home site roadmap](/docs/roadmap/infrastructure/dvnt/builder/) describes a permanent, always-on
+[home site roadmap](/docs/roadmap/infrastructure/home/builder/) describes a permanent, always-on
 provisioning node dedicated to the home site.
 
 This record settles it in favour of the roaming appliance, and site code `00` is what makes that

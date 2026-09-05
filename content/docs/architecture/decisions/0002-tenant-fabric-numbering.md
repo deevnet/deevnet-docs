@@ -43,11 +43,11 @@ The scheme has to answer three questions the existing addressing plan cannot:
 | `10.20.128.0/18` | **Tenant overlay subnets** — `10.20.{128+n}.0/24` per tenant, `n` = 1–63 |
 | `10.20.255.0/24` | **Fabric loopbacks / VTEP identity** — `pve2` = `10.20.255.2` |
 
-dvnt mirrors this in `10.10.0.0/16`.
+home mirrors this in `10.10.0.0/16`.
 
 The alternative was a separate `/16` per site for overlays. Splitting the existing block is
 better for one concrete operational reason: it keeps **exactly one aggregate per site**. In home
-dock mode, dvnt already routes `10.20.0.0/16` to dvntm, and that single route keeps covering
+dock mode, home already routes `10.20.0.0/16` to mobile, and that single route keeps covering
 tenants for free. A second `/16` would need its own route, at every point that already carries
 the first.
 
@@ -73,16 +73,16 @@ fabric.
 
 A tenant is allocated a single **`tenant_index`** (`n`). Everything else follows:
 
-| Identifier | Formula (dvntm) | `n = 1` |
+| Identifier | Formula (mobile) | `n = 1` |
 |------------|-----------------|---------|
 | VRF VXLAN — *the EVPN zone* | `10000 + n` | 10001 |
 | VNet VNI, `i`th vnet | `20000 + n*10 + i` | 20010 |
 | Overlay subnet | `10.20.{128+n}.0/24` | 10.20.129.0/24 |
 | Anycast gateway | `.1` of that subnet | 10.20.129.1 |
 | Workload addresses | `.10` upward, by index | 10.20.129.10, .11, … |
-| BGP ASN (per site) | 65020 dvntm / 65010 dvnt | 65020 |
+| BGP ASN (per site) | 65020 mobile / 65010 home | 65020 |
 
-dvnt uses bases `11000` and `21000`, so identifiers stay distinct across sites as well as across
+home uses bases `11000` and `21000`, so identifiers stay distinct across sites as well as across
 fabric members.
 
 > **Amended 2026-09-01.** This table originally reserved a fabric DHCP range of `.100`–`.200`.

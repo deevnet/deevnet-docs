@@ -8,7 +8,7 @@ tasks_planned: 6
 
 # Full Site Rebuild
 
-End-to-end rebuild of the dvntm site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Automation, and Extended Management Plane projects.
+End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Automation, and Extended Management Plane projects.
 
 {{< overall-progress >}}
 
@@ -18,7 +18,7 @@ End-to-end rebuild of the dvntm site from scratch. Validates air-gap recovery ca
 
 ## Project Vision & Scope
 
-Perform a complete tear-down and rebuild of the dvntm (mobile) site to validate that the infrastructure-as-code automation is truly end-to-end. This is the capstone event that proves the system works.
+Perform a complete tear-down and rebuild of the mobile (mobile) site to validate that the infrastructure-as-code automation is truly end-to-end. This is the capstone event that proves the system works.
 
 **In Scope**
 - Full substrate rebuild (builder, core router, switch, AP, hypervisors)
@@ -27,9 +27,9 @@ Perform a complete tear-down and rebuild of the dvntm (mobile) site to validate 
 - Coordinated release tagging across all deevnet repos
 
 **Prerequisites**
-- [Builder & Core Services](/docs/roadmap/infrastructure/dvntm/builder/) — ✅ Complete
-- [Patch Automation](/docs/roadmap/infrastructure/dvntm/patch-automation/) — firmware and automation improvements applied
-- [Extended Management Plane](/docs/roadmap/infrastructure/dvntm/management-plane/) — management services deployable
+- [Builder & Core Services](/docs/roadmap/infrastructure/mobile/builder/) — ✅ Complete
+- [Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/) — firmware and automation improvements applied
+- [Extended Management Plane](/docs/roadmap/infrastructure/mobile/management-plane/) — management services deployable
 
 ---
 

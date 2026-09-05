@@ -12,7 +12,7 @@ The bootstrap node is the **management plane** for standing up a Deevnet site. I
 
 Goals:
 - **Self-contained** — All automation, artifacts, and services on one device
-- **Portable** — Move between sites (dvntm, dvnt) as needed
+- **Portable** — Move between sites (mobile, home) as needed
 - **Out-of-band** — Can operate independently of the site network
 - **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
 - **Disposable authority** — Hands off control to Core Router once the site is running
@@ -25,9 +25,9 @@ Goals:
 
 {{% tabs "bootstrap-node-hardware" %}}
 
-{{% tab "dvntm — Developer Workstation" %}}
+{{% tab "mobile — Developer Workstation" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The mobile site uses a portable developer workstation (laptop) as its bootstrap node. Dual-NIC capability is achieved via built-in Ethernet or USB adapter.
 
@@ -50,9 +50,9 @@ The mobile site uses a portable developer workstation (laptop) as its bootstrap 
 
 {{% /tab %}}
 
-{{% tab "dvnt — AOOSTAR N1 PRO" %}}
+{{% tab "home — AOOSTAR N1 PRO" %}}
 
-**Site**: dvnt (home)
+**Site**: home (home)
 
 The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home site. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
 
@@ -102,7 +102,7 @@ The bootstrap node is provisioned via PXE from another bootstrap node, or manual
 
 {{< mermaid >}}
 graph LR
-    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>dvntm/dvnt]
+    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>mobile/home]
 {{< /mermaid >}}
 
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
@@ -131,9 +131,9 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 
 Per the [Naming Standard](/docs/standards/naming/):
 
-- `bootstrap.dvntm.deevnet.net` — The bootstrap node itself
-- `artifacts.dvntm.deevnet.net` → `bootstrap.dvntm.deevnet.net` (CNAME)
-- `pxe.dvntm.deevnet.net` → `bootstrap.dvntm.deevnet.net` (CNAME)
+- `bootstrap.mobile.deevnet.net` — The bootstrap node itself
+- `artifacts.mobile.deevnet.net` → `bootstrap.mobile.deevnet.net` (CNAME)
+- `pxe.mobile.deevnet.net` → `bootstrap.mobile.deevnet.net` (CNAME)
 
 Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location), the bootstrap node hosts multiple services. This co-location is intentional and documented—blast radius is understood.
 
@@ -144,10 +144,10 @@ Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-locatio
 All Deevnet repositories are checked out to a standard location:
 
 ```
-~/dvnt/
+~/home/
 ├── ansible-collection-deevnet.builder/   # Provisioning roles
 ├── ansible-collection-deevnet.net/       # Network device configuration
-├── ansible-inventory-deevnet/            # Host inventory (dvnt, dvntm)
+├── ansible-inventory-deevnet/            # Host inventory (home, mobile)
 ├── deevnet-image-factory/                # Packer image builds
 └── deevnet-docs/                         # This documentation (submodule)
 ```

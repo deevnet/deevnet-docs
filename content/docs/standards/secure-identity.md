@@ -66,8 +66,8 @@ Hostnames are the interface; IPs are plumbing.
 
 Example concept (DNS-driven access):
 ```sshconfig
-Host vdvntm-* dvntm*
-    HostName %h.dvntm.deevnet.net
+Host vdvntm-* mobile*
+    HostName %h.mobile.deevnet.net
 ```
 
 ---
@@ -112,7 +112,7 @@ Private keys MUST remain on the client.
 
 Example concept:
 ```sshconfig
-Host *.dvntm.deevnet.net
+Host *.mobile.deevnet.net
     ForwardAgent yes
 ```
 
@@ -128,7 +128,7 @@ Avoid “one host = one stanza” unless you need a true exception.
 
 Example concept (wildcards + shared settings):
 ```sshconfig
-Host vdvntm-* dvntm*
+Host vdvntm-* mobile*
     User cdeever
     IdentityFile ~/.ssh/id_ed25519
     ForwardAgent yes

@@ -20,9 +20,9 @@ graph LR
 
 {{% tabs "access-switch-hardware" %}}
 
-{{% tab "dvntm — SG2218" %}}
+{{% tab "mobile — SG2218" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It provides VLAN support and can be configured via SSH or the Omada controller.
 
@@ -70,9 +70,9 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 
 {{% /tab %}}
 
-{{% tab "dvnt — USW-24-G2" %}}
+{{% tab "home — USW-24-G2" %}}
 
-**Site**: dvnt (home) — Primary switch
+**Site**: home (home) — Primary switch
 
 The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product line. It serves as the primary access switch for the home site.
 
@@ -119,9 +119,9 @@ The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product 
 
 {{% /tab %}}
 
-{{% tab "dvnt — US-8" %}}
+{{% tab "home — US-8" %}}
 
-**Site**: dvnt (home) — Secondary switch
+**Site**: home (home) — Secondary switch
 
 The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in areas away from the primary switch.
 
@@ -174,8 +174,8 @@ The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in 
 
 | Site | Controller | Automation |
 |------|------------|------------|
-| **dvntm** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
-| **dvnt** | UniFi Network | UniFi API (manual currently) |
+| **mobile** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
+| **home** | UniFi Network | UniFi API (manual currently) |
 
 ### VLAN Configuration
 

@@ -100,14 +100,14 @@ dnf reposync --repoid=fedora --repoid=updates \
 ```ini
 [local-fedora]
 name=Local Fedora Mirror
-baseurl=http://artifacts.dvnt.deevnet.net/repos/fedora/41/fedora
+baseurl=http://artifacts.home.deevnet.net/repos/fedora/41/fedora
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-41-primary
 
 [local-updates]
 name=Local Fedora Updates Mirror
-baseurl=http://artifacts.dvnt.deevnet.net/repos/fedora/41/updates
+baseurl=http://artifacts.home.deevnet.net/repos/fedora/41/updates
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-41-primary

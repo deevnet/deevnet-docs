@@ -35,7 +35,7 @@ The order below is fixed and **not reorderable**. See
 3. **Delete any stale reservation for an address this host will take.** `opnsense_dhcp`
    reconciles by MAC and only ever adds or updates; a host rebuilt under a new MAC leaves
    its old reservation behind, and two reservations for one address is a failure that looks
-   like success. See [Declarative Reconciliation](/docs/roadmap/infrastructure/dvntm/reconciliation/).
+   like success. See [Declarative Reconciliation](/docs/roadmap/infrastructure/mobile/reconciliation/).
 4. `make dhcp && make dns` in `deevnet.net`.
 5. Build.
 

@@ -30,10 +30,10 @@ Leaving the question unanswered has a default, and the default is wrong. The fir
 produced this:
 
 ```
-$ dig @10.20.99.30 tdemo.dvntm.deevnet.net SOA +short
-a.misconfigured.dns.server.invalid. hostmaster.tdemo.dvntm.deevnet.net. 0 10800 3600 604800 3600
+$ dig @10.20.99.30 tdemo.mobile.deevnet.net SOA +short
+a.misconfigured.dns.server.invalid. hostmaster.tdemo.mobile.deevnet.net. 0 10800 3600 604800 3600
 
-$ dig @10.20.99.30 tdemo.dvntm.deevnet.net NS +short
+$ dig @10.20.99.30 tdemo.mobile.deevnet.net NS +short
 (nothing)
 ```
 
@@ -108,7 +108,7 @@ the machine, not the content.
 RFC 2181 §10.3 forbids an NS record pointing at an alias. The `tdns` name provisioned for the DNS
 host today is an Unbound **host alias**, which resolves as a CNAME, so it cannot be the apex NS
 target. The apex NS therefore names the host's own A record —
-`tenant-mgmt-vm01.dvntm.deevnet.net` — and `tdns` remains what it is: a convenience name for
+`tenant-mgmt-vm01.mobile.deevnet.net` — and `tdns` remains what it is: a convenience name for
 operators and for the `dns_update_server` variable, neither of which is a delegation.
 
 The same applies to the SOA MNAME, which should name the primary rather than a placeholder.
@@ -165,7 +165,7 @@ the same declared tenant list, so the cost lands in role complexity rather than 
 
 ## Current state
 
-- `tdemo.dvntm.deevnet.net` and `129.20.10.in-addr.arpa` exist on `10.20.99.30` with the placeholder
+- `tdemo.mobile.deevnet.net` and `129.20.10.in-addr.arpa` exist on `10.20.99.30` with the placeholder
   apex described above. Both answer; neither has an NS.
 - The Unbound delegation is not yet in place, so nothing resolves tenant names through
   `10.20.99.1` yet and the malformed apex is not currently reachable by any client.

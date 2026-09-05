@@ -5,7 +5,7 @@ weight: 8
 
 # Provisioning a Tenant
 
-How to create, verify and destroy a tenant on the dvntm substrate.
+How to create, verify and destroy a tenant on the mobile substrate.
 
 This is the operational procedure. The *why* is
 [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) (the fabric model) and
@@ -68,7 +68,7 @@ Open `TENANTS.md`, take the next free index, and add your row:
 |------:|--------|--------:|-------------|----------------|--------|
 | 2 | `grooveiq` | 10002 | 20020 | 10.20.130.0/24 | active |
 
-For index `n` on dvntm, everything follows:
+For index `n` on mobile, everything follows:
 
 | Identifier | Formula | `n = 2` |
 |---|---|---|
@@ -194,7 +194,7 @@ Then confirm the things that actually matter:
 | Egress | `curl ifconfig.me` succeeds |
 | Perimeter | The core router sees source `10.20.50.22`, never `10.20.130.0/24` |
 | Isolation | Another tenant's subnet is unreachable |
-| Forward DNS | `dig @10.20.99.1 grooveiq-1.grooveiq.dvntm.deevnet.net +short` answers `10.20.130.10` |
+| Forward DNS | `dig @10.20.99.1 grooveiq-1.grooveiq.mobile.deevnet.net +short` answers `10.20.130.10` |
 | Reverse DNS | `dig @10.20.99.1 -x 10.20.130.10 +short` answers the same name |
 | Namespace | An update signed with another tenant's key is **REFUSED** for your zone |
 

@@ -62,6 +62,6 @@ CI/CD automation is planned. Current validation is manual.
 Future enhancements:
 
 - GitHub Actions for syntax validation
-- Automated testing in dvntm site
-- Promotion workflow (dvntm → dvnt)
+- Automated testing in mobile site
+- Promotion workflow (mobile → home)
 
