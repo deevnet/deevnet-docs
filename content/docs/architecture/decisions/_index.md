@@ -73,3 +73,7 @@ question is written down, not when it is answered.
 - [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/) —
   the substrate offers an S3-compatible state store that tenants may use or decline; locking and
   per-tenant isolation are server-enforced, and the opt-out is what makes the dependency acceptable.
+- [ADR-0008: Host Naming and Site Codes](/docs/architecture/decisions/0008-host-naming-site-codes/) —
+  *Proposed.* A fixed-width site code in every hostname, so the short name is unambiguous wherever
+  it appears rather than only inside the inventory that loaded it; site zones renamed to say what
+  the site is, and code `00` for the builder appliance that belongs to no site.
