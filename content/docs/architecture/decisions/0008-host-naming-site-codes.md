@@ -118,9 +118,24 @@ of a half-remembered convention is misreading a hostname rather than failing to 
 invites deriving the digit from `deevnet_site_octet`, which would make the hostname a function of
 the IP plan — renumber a site and every host is renamed.
 
-### D — Fixed-width site code prefix: `dv02-hv01`
+### D — Fixed-width site code prefix: `dv02hyp001p01`
 
 Chosen. See below.
+
+### A separate question: how wide are the other fields?
+
+The four options above differ only in **where the site code sits**. Having settled that, the same
+argument applies to every other field, and the answer is the same one: fix the width.
+
+The alternative was to keep the existing variable-length grammar behind the site code —
+`dv02-tenant-state-vm01` beside `dv02-ap01`, 22 characters against 9. That reads more easily in
+isolation and needs no mnemonic table, but it gives up column alignment, makes the name unusable
+as a fixed-layout key, and leaves the estate with names whose only shared structure is a prefix.
+
+Compressing the role to a three-letter mnemonic and the form to a single letter is what buys the
+fixed width. Both are lossless in the sense that matters: the hardware class moves from the form
+code into the mnemonic, and the substrate — the one thing the mnemonic cannot carry, because
+`core-rt01` is a VM and `core-rt02` is not — stays in a dedicated field.
 
 ---
 
@@ -128,19 +143,98 @@ Chosen. See below.
 
 ### The pattern
 
+Every hostname is **thirteen characters**, and every field is fixed width. That is a property of
+the scheme, not an outcome of the names that happen to exist.
+
 ```
-dv{NN}-[role-]{form}{nn}
+dv{NN}{rrr}{sss}{f}{gg}
+
+dv | 02 | hyp | 001 | p | 01
 ```
 
-| Field | Meaning |
-|-------|---------|
-| `dv` | Constant. Marks the estate, and keeps the label from beginning with a digit |
-| `{NN}` | Two-digit site code |
-| `[role-]` | Optional role, unchanged from the existing grammar |
-| `{form}` | Form code — `hv vm ph pi em rt sw ap`, unchanged |
-| `{nn}` | Two-digit ordinal, restarting per site |
+| Range | Field | Meaning |
+|-------|-------|---------|
+| `[0:2]` | `dv` | Constant. Marks the estate, and keeps the label from beginning with a digit |
+| `[2:4]` | site | Two-digit site code |
+| `[4:7]` | role | Three-letter mnemonic |
+| `[7:10]` | sequence | `001`–`999`, restarting per role per site |
+| `[10]` | form | `p` physical · `v` virtual · `e` embedded · `c` container |
+| `[11:13]` | version | `01`–`99`, hardware generation of that instance |
 
-Ordinals restart per site because the site code already carries the uniqueness. Nothing renumbers.
+Sequences restart per role per site, because the site code already carries the uniqueness. They are
+allocated densely, with no gaps.
+
+Because the widths are fixed and there is no separator, extracting a field is pure substring
+slicing — no split step, and no dependence on how many separators a name happens to contain. The
+`dv` prefix earns its two characters by keeping the label off a leading digit, which RFC 1123
+permits but a good deal of tooling still mishandles.
+
+**The form letter sits between the two digit runs deliberately.** Every field boundary except
+`dv|02` is then a letter-to-digit transition, which the eye catches without knowing the widths.
+The alternative — sequence and version adjacent, form last — puts a five-digit run with a
+non-obvious 3+2 split at the centre of the name, where `dv02hyp00101p` gives a reader nothing to
+tell them it is not sequence `010` version `1`.
+
+`c` is reserved and unused: nothing is a first-class container host today, since PowerDNS and MinIO
+run as podman services on VMs. The letter costs nothing now and is awkward to retrofit later.
+
+Collapsing six physical form codes (`ph pi em rt sw ap`) into `p` moves the hardware class into the
+mnemonic. That is a gain rather than a loss of information: naming.md §3.2 requires form codes to
+"remain valid if the operating system or platform changes," and `p`/`v`/`e`/`c` is far more stable
+against that than `hv` or `pi`.
+
+### Role mnemonics
+
+| Code | Class | | Code | Class |
+|---|---|---|---|---|
+| `hyp` | hypervisor | | `bld` | builder |
+| `cor` | core router | | `tdn` | tenant DNS |
+| `edg` | edge router | | `tst` | tenant state |
+| `acc` | access switch | | `bgw` | bell gateway |
+| `wap` | wireless AP | | `rpi` | Raspberry Pi |
+
+This table is the part of the scheme that cannot be derived, which is why it lives in the record.
+
+`cor`, `edg` and `acc` name **topological position** rather than device type, which is what
+naming.md §3.3 asks of role prefixes on routing devices — "stable topological position rather than
+software implementation." It also survives the awkward fact that `core-rt01` is a VyOS VM while
+`core-rt02` is a physical appliance: `cor` is true of both, where a device-derived code would be
+pulling in two directions. Device type lives in the form letter and in the host's own variables.
+
+### The version field
+
+The last two digits distinguish successive hardware behind the same logical instance, so a
+replacement and the thing it replaces can exist **at the same time**:
+
+```
+dv00bld001p01   the box being replaced
+dv00bld001p02   its replacement, running alongside it
+```
+
+Both sit in inventory, both get a VMID → MAC → reservation → A record, both resolve, and the two
+generations sort adjacent.
+
+**The rule: increment when old and new must coexist.** A physical box being replaced, or a VM
+deliberately stood up as a separate instance for a migration. A plain rebuild does **not**
+increment — the substrate's whole stateless principle is that a rebuilt host returns to the same
+identity through the same VMID and MAC. Stating that line here is the point; without it, "do I bump
+this?" gets answered differently every time it is asked.
+
+This composes with the service CNAMEs the estate already publishes — `artifacts`, `pxe`, `tdns`,
+`tfstate`, `pve`. A hardware refresh becomes: stand the new generation up beside the old, then
+repoint one CNAME. Rolling back is the same move in reverse. That is what the naming standard's
+"service names are not hostnames" rule was already reaching for; the version field is what makes
+both ends nameable at once.
+
+Two digits rather than one because embedded and IoT fleets turn over fastest — 999 instances and 99
+generations per role per site.
+
+**This is not a hypothetical.** `hv02` has already had its hardware swapped, recorded in
+`ansible-inventory-deevnet` commit `775b503`, *"Set hv02 NIC MAC after hardware swap"*, where the
+interface MAC moves from `UNKNOWN` to `54:bf:64:87:ca:eb`. The current naming had no way to express
+it: the replacement silently inherited the name, and the only surviving trace is a commit message.
+Under this scheme `hv02` arrives at generation `02` on its first day, which is the strongest
+argument for the field that this record can make.
 
 ### Site codes
 
@@ -164,19 +258,20 @@ qualified form each explains the other; in bare form the numeric code needs the 
 
 - **No site code is a prefix of another.** `dv01` and `dv02` are the same length, so option A's
   glob hazard cannot occur regardless of how carefully a pattern is written.
-- **Names column-align.** A five-character prefix on every host makes lists and sorted output
-  readable, and makes the site the primary sort key.
+- **Names column-align.** A four-character prefix on every host — and, with the fields that follow
+  also fixed, a thirteen-character name — makes lists and sorted output readable, and makes the
+  site the primary sort key.
 - **It scales to a hundred sites**, which is more than enough, and is trivially extended by digit
   count if it ever is not.
 - **It leaves room for `00`** — a code for a host that belongs to no site, which the next section
   needs.
 
-### The `provisioner` role becomes `builder`
+### The `provisioner` role becomes `bld`
 
 `builder` is already the estate's word for this function: the inventory group is `builder`, the
 collection is `deevnet.builder`, and the architecture page is *Builder & Core Services*. Only the
-hostnames said `provisioner`. Renaming them removes the last holdout rather than introducing a new
-term.
+hostnames said `provisioner`. The mnemonic `bld` settles on the term everything else already uses,
+rather than compressing an outlier.
 
 ### The builder is site `00`
 
@@ -192,7 +287,7 @@ expressible. A host that moves between sites cannot honestly carry either site's
 it belongs to none.
 
 ```
-dv00-builder-ph01
+dv00bld001p01
   one physical box, one hardware identity
   listed in BOTH site inventories
   env at home   ->  10.10.99.95
@@ -211,8 +306,8 @@ In DNS it is therefore **multi-homed**, in the sense
 zone, each resolving to the address the box has at that site.
 
 ```
-dv00-builder-ph01.home.deevnet.net    ->  10.10.99.95
-dv00-builder-ph01.mobile.deevnet.net  ->  10.20.99.95
+dv00bld001p01.home.deevnet.net    ->  10.10.99.95
+dv00bld001p01.mobile.deevnet.net  ->  10.20.99.95
 ```
 
 Two fully qualified names, each with exactly one address. That page reached the same conclusion by
@@ -229,29 +324,43 @@ an address where nothing is listening — a timeout rather than an error, which 
 
 **Mobile — `mobile.deevnet.net`, code `02`**
 
-| Current | New |
-|---------|-----|
-| `edge-rt01` | `dv02-edge-rt01` |
-| `core-rt01` | `dv02-core-rt01` |
-| `core-rt02` | `dv02-core-rt02` |
-| `access-sw01` | `dv02-access-sw01` |
-| `ap01` | `dv02-ap01` |
-| `hv01` | `dv02-hv01` |
-| `hv02` | `dv02-hv02` |
-| `pi01`–`pi04` | `dv02-pi01`–`dv02-pi04` |
-| `provisioner-vm02` | `dv02-builder-vm02` |
-| `provisioner-vm03` | `dv02-builder-vm03` |
-| `tenant-mgmt-vm01` | `dv02-tenant-mgmt-vm01` |
-| `tenant-state-vm01` | `dv02-tenant-state-vm01` |
-| `bellgw-em01` | `dv02-bellgw-em01` |
-| `provisioner-ph01` | `dv00-builder-ph01` — leaves the site |
+Every host is first-generation except `hv02`, which has already been replaced once.
 
-**Home — `home.deevnet.net`, code `01`.** No hosts yet; the shell is built under the scheme
-directly, so nothing is renamed there.
+| Current | New | |
+|---------|-----|--|
+| `core-rt01` | `dv02cor001v01` | the VyOS VM |
+| `core-rt02` | `dv02cor002p01` | the physical Zima Board |
+| `edge-rt01` | `dv02edg001p01` | |
+| `access-sw01` | `dv02acc001p01` | |
+| `ap01` | `dv02wap001p01` | |
+| `hv01` | `dv02hyp001p01` | |
+| `hv02` | `dv02hyp002p02` | **generation 02** — hardware already swapped |
+| `pi01`–`pi04` | `dv02rpi001p01`–`dv02rpi004p01` | |
+| `provisioner-vm02` | `dv02bld001v01` | |
+| `provisioner-vm03` | `dv02bld002v01` | |
+| `tenant-mgmt-vm01` | `dv02tdn001v01` | |
+| `tenant-state-vm01` | `dv02tst001v01` | |
+| `bellgw-em01` | `dv02bgw001e01` | the only `e` in the estate today |
+| `provisioner-ph01` | `dv00bld001p01` | leaves the site |
 
-The longest resulting name is `dv02-tenant-state-vm01` at 22 characters, and the longest FQDN
-`dv02-tenant-state-vm01.mobile.deevnet.net` at 41 — against a 63-character DNS label limit and a
-64-character Linux hostname limit. Length is not a constraint.
+The two core routers show the scheme doing real work: `cor001` and `cor002` are the first and
+second core router, and the form letter — `v` for the VyOS VM, `p` for the Zima Board — records
+which is which. Today only the arbitrary ordinal separates them.
+
+**Home — `home.deevnet.net`, code `01`.** No hosts yet, so nothing is renamed; the shell is built
+under the scheme directly, and would begin `dv01cor001p01`, `dv01acc001p01`, `dv01wap001p01`,
+`dv01hyp001p01`.
+
+Every name is thirteen characters, and the longest FQDN — `dv02hyp001p01.mobile.deevnet.net` — is
+32, against a 63-character DNS label limit and a 64-character Linux hostname limit.
+
+### Where the Raspberry Pis sit
+
+`naming.md` §3.2 distinguishes `pi` ("full-size / primary Pi class") from `em` ("non-primary Pi:
+Pi Zero, Arduino Q, Jetson"). With `e` available, the Pis take `p` — they are general-purpose
+machines running a full OS, and `rpi` already carries the Pi-ness — leaving `bellgw-em01` as the
+only `e`. The roadmap names `jetson-em01` and `console-pi05` as future hosts, which is where the
+line will next be tested.
 
 ---
 
@@ -268,6 +377,13 @@ The longest resulting name is `dv02-tenant-state-vm01` at 22 characters, and the
 - **`builder` becomes consistent** across group, collection, role name and documentation.
 - **The combined-inventory option in the standard becomes real.** With globally unique names,
   §6.1's second method stops being a trap.
+- **A hardware refresh becomes a CNAME repoint.** The version field lets a replacement and the
+  thing it replaces hold distinct names, addresses and reservations at the same time, so the
+  cutover is switching one service alias and the rollback is switching it back. `hv02` is proof the
+  estate needed this before it had it.
+- **Names column-align and slice.** Thirteen fixed characters means sorted output lines up, and any
+  field is a substring at a known offset — no parsing, and nothing to break if a mnemonic ever
+  contains an unexpected character.
 
 ### Negative
 
@@ -284,13 +400,22 @@ The longest resulting name is `dv02-tenant-state-vm01` at 22 characters, and the
   recorded here so the trade is visible if it ever has to be revisited.
 - **Two vocabularies for "site"** — the numeric code in the hostname, the word in the zone, on top
   of the site octet that already exists in addressing.
-- **A bare `dv02-hv01` needs the mapping known.** Fully qualified it is self-explanatory; in
+- **A bare `dv02hyp001p01` needs the mapping known.** Fully qualified it is self-explanatory; in
   isolation it is not.
+- **Legibility is the real price.** `dv02tdn001v01` tells a stranger far less than
+  `tenant-mgmt-vm01` did, and the estate has no name-to-purpose lookup anywhere — no CMDB, no
+  inventory report, nothing that answers "what is this?" from a name. That is precisely why the
+  mnemonic table lives in this record rather than only in the standard, and why the field
+  breakdown is written out rather than left implied. A scheme that needs a decoder ring and does
+  not ship one is a worse trade than the variable-length names it replaced.
+- **Ten mnemonics have to be learned**, and they are chosen by a person rather than derived, so
+  they can be chosen badly. New classes need a code allocated deliberately, with the same care as
+  a tenant index.
 
 ### No apex record is needed, and the site code does not imply one
 
 "Belongs to no site" invites the reading that the builder wants an apex name,
-`dv00-builder-ph01.deevnet.net`. It does not. Multi-homing it per zone, as above, already gives it
+`dv00bld001p01.deevnet.net`. It does not. Multi-homing it per zone, as above, already gives it
 a correct name everywhere it is reachable, and each of those names is unambiguous. The site code
 describes the *box* — a machine with no home site — not the zone its records live in.
 
@@ -341,8 +466,11 @@ This record is `Proposed`. Nothing changes while it stands here — not the inve
 collections, not the standards. On acceptance:
 
 - The [Naming Standard](/docs/standards/naming/) is the first thing to change, since it is the
-  authority. §3.1's grammar gains the site code; §6.1's combined-inventory option stops being a
-  trap and its examples stop saying `provisioner-ph01`.
+  authority. §3.1's `[role-]formNN` grammar is replaced outright; §3.2's eight form codes become
+  the four-letter set, with the hardware classes they carried moving into the mnemonic table;
+  §3.3's rules on when a role is optional no longer apply, because the mnemonic is mandatory and
+  fixed width; and §6.1's combined-inventory option stops being a trap. Every example in the
+  document changes.
 - The site tables in [Addressing](/docs/architecture/addressing/) and the
   [Architecture index](/docs/architecture/), and the site names in
   [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/), follow.
