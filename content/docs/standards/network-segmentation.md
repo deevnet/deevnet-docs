@@ -38,7 +38,7 @@ The management segment contains infrastructure management plane systems.
 - Single-NIC hypervisors SHOULD use VLAN trunking or firewall rules to isolate management access
 - Management segment MUST NOT contain end-user workloads or personal devices
 - Management segment SHOULD contain IPMI/BMC interfaces
-- Hosts in management segment MUST use `-mgmt` suffix for interface DNS entries (e.g., `hv01-mgmt.dvntm.deevnet.net`)
+- Where a host's management interface is **not** its primary, that interface MUST be named with the `-mgmt` interface code ([ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) §3.6). Where it is the primary, it carries the host's root name and takes no suffix.
 
 ### 2. Trusted Segment
 
@@ -59,7 +59,7 @@ The storage segment isolates storage protocol traffic.
 - Storage segment SHOULD exist when dedicated storage traffic is needed
 - Storage segment MAY be omitted in minimal sites
 - Storage segment MUST NOT carry non-storage traffic
-- Hosts in storage segment MUST use `-stor` suffix for interface DNS entries (e.g., `hv01-stor.dvntm.deevnet.net`)
+- Hosts in storage segment MUST name that interface with the `-stor` interface code ([ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) §3.6)
 - Storage segment MAY use jumbo frames when all participants support them
 
 ### 4. Tenant Networks
