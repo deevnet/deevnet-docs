@@ -11,7 +11,7 @@ This document defines the canonical naming conventions for the Deevnet ecosystem
 - Deterministic (predictable, repeatable)
 - Scalable (works as the lab grows)
 - Readable (humans can understand intent quickly)
-- Environment-safe (dvnt vs dvntm is always explicit)
+- Environment-safe (the site is always explicit in the name)
 - Service-oriented (service names are stable even if hosts move)
 
 This naming standard applies to:
@@ -28,8 +28,8 @@ This naming standard applies to:
 A site is a self-contained infrastructure boundary that hosts systems and workloads.
 
 Current sites:
-- dvnt — home site
-- dvntm — mobile site
+- home — home site, site code `01`
+- mobile — mobile site, site code `02`
 
 Site names are treated as environment identifiers, not workloads.
 
@@ -52,10 +52,16 @@ deevnet.net is the root DNS zone.
 ### 2.2 Site Zones
 Each site has its own sub-zone:
 
-- dvnt.deevnet.net
-- dvntm.deevnet.net
+- home.deevnet.net
+- mobile.deevnet.net
 
 All site-specific host and service records MUST exist in the corresponding site zone.
+
+> **Migration in progress.** This standard was updated on acceptance of
+> [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) and states the target. The
+> estate currently runs on the `dvnt` / `dvntm` zones and the previous `[role-]formNN` hostnames;
+> both are being migrated in stages. Until that completes, the standard leads and reality follows —
+> see the [Host Rename runbook](/docs/runbook/host-rename/) for where the estate actually is.
 
 ---
 
@@ -63,78 +69,131 @@ All site-specific host and service records MUST exist in the corresponding site 
 
 ### 3.1 Hostname Format
 
-Hosts MUST use short, functional hostnames within a site zone using the following grammar:
+Hosts MUST use a fixed-width hostname of exactly **thirteen characters**, per
+[ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/):
 
-[role-]formNN.site.deevnet.net
+```
+dv{NN}{rrr}{sss}{f}{gg}
 
-Where:
-- role (optional) = architectural or functional role
-- form = execution or hardware class
-- NN = two-digit ordinal (01, 02, …)
+dv | 02 | hyp | 001 | p | 01
+```
+
+| Range | Field | Meaning |
+|-------|-------|---------|
+| `[0:2]` | `dv` | Constant. Marks the estate, and keeps the label off a leading digit |
+| `[2:4]` | site | Two-digit site code |
+| `[4:7]` | role | Three-letter mnemonic |
+| `[7:10]` | sequence | `001`–`999`, restarting per role per site |
+| `[10]` | form | Execution class — one letter |
+| `[11:13]` | version | `01`–`99`, hardware generation of that instance |
+
+Every field is fixed width, so a field is a substring at a known offset. Names MUST NOT contain a
+separator.
 
 Examples:
-- hv01.dvntm.deevnet.net
-- netctrl-vm01.dvntm.deevnet.net
-- provisioner-ph01.dvntm.deevnet.net
-- pi01.dvntm.deevnet.net
-- em01.dvntm.deevnet.net
+- dv02hyp001p01.mobile.deevnet.net
+- dv02cor001v01.mobile.deevnet.net
+- dv01hyp001p01.home.deevnet.net
+- dv00bld001p01.deevnet.net
 
 ---
 
-### 3.2 Form Codes (Execution / Hardware Class)
+### 3.2 Site Codes
+
+| Code | Site |
+|------|------|
+| `00` | No site — an appliance that moves between sites |
+| `01` | Home |
+| `02` | Mobile |
+
+A host that belongs to no site MUST use `00`. Site codes are allocated deliberately and MUST NOT be
+derived from the addressing plan, so that renumbering a site does not rename its hosts.
+
+---
+
+### 3.3 Form Codes (Execution Class)
 
 Form codes describe what the system is, not what software it runs.
 
-- hv — Hypervisor host (physical machine whose purpose is to host VMs)
-- vm — Virtual machine
-- ph — Physical host (non-hypervisor)
-- pi — Raspberry Pi (full-size / primary Pi class)
-- em — Embedded device (non-primary Pi: Pi Zero, Arduino Q, Jetson, etc.)
-- rt — Router / firewall appliance
-- sw — Switch
-- ap — Wireless access point
+- `p` — Physical
+- `v` — Virtual machine
+- `e` — Embedded device
+- `c` — Container *(reserved; unused)*
 
-Form codes MUST remain valid if the operating system or platform changes.
-
-
+Form codes MUST remain valid if the operating system or platform changes. The hardware class beyond
+physical-versus-virtual is carried by the role mnemonic, not by the form code.
 
 ---
 
-### 3.3 Role Usage Rules (Prescriptive)
+### 3.4 Role Mnemonics
 
-The role component is OPTIONAL and MUST be omitted when the form factor alone fully implies the architectural role.
+The role is a three-letter mnemonic and is **mandatory** — there is no unprefixed form.
 
-Role MAY be omitted when:
-- The form factor is unambiguous
-- The host is an anchor device
-- The name remains truthful if software changes
+| Code | Class | | Code | Class |
+|---|---|---|---|---|
+| `hyp` | Hypervisor | | `bld` | Builder |
+| `cor` | Core router | | `tdn` | Tenant DNS |
+| `edg` | Edge router | | `tst` | Tenant state |
+| `acc` | Access switch | | `bgw` | Bell gateway |
+| `wap` | Wireless AP | | `rpi` | Raspberry Pi |
 
-Examples:
-- hv01 (hypervisor role implied)
-- sw01, ap01
-- pi01 (general-purpose Pi pool)
+Mnemonics are allocated deliberately, like tenant indices. A new class MUST have its code added
+here in the same change that introduces the host.
 
-Role MUST be included when:
-- The form factor does not imply purpose
-- The host provides a specific service
-- The host is not fungible capacity
-
-Examples:
-- netctrl-vm01
-- provisioner-ph01
-
-For routing devices, role prefixes (e.g., edge, core) describe stable topological position rather than software implementation.
-
-Examples:
-- edge-rt01
-- core-rt02
+For network devices the mnemonic names **topological position** rather than device type — `cor` is
+correct whether the core router is an appliance or a virtual machine.
 
 ---
 
-### 3.4 Allowed Characters
+### 3.5 Sequence and Version
+
+The sequence distinguishes instances of the same role at the same site and restarts per role per
+site. It is allocated densely.
+
+The version distinguishes successive hardware behind one logical instance, so a replacement and the
+thing it replaces can exist at the same time. It MUST be incremented **when old and new must
+coexist** — a physical box being replaced, or a VM stood up as a separate instance for a migration.
+A plain rebuild MUST NOT increment it: a rebuilt host returns to the same identity through the same
+hardware address.
+
+---
+
+### 3.6 Secondary Interfaces
+
+The hostname is the host's **root name** and belongs to its primary address. Additional addressed
+interfaces MUST be named as the root name, a hyphen, and an interface code:
+
+```
+dv02cor002p01        the primary
+dv02cor002p01-wan    the upstream interface
+```
+
+A host with one addressed interface MUST NOT carry a suffix.
+
+| Code | Interface |
+|------|-----------|
+| `-wan` | Wired upstream |
+| `-wifi` | Wireless upstream |
+| `-lan` | Downstream |
+| `-stor` | Storage |
+| `-tran` | Fabric transit |
+| `-oob` | Lights-out / BMC |
+| `-mgmt` | Management, when it is not the primary |
+
+Interface codes are curated, and MUST NOT be derived from an interface's declared purpose or
+segment — a purpose collides where one host has two interfaces serving the same one, and a segment
+is absent on precisely the interfaces that need a name.
+
+Being named is not the same as being published: a record is published only where the address is
+deterministic. An interface leasing its address from an upstream network has a name here and no
+record in DNS.
+
+---
+
+### 3.7 Allowed Characters
 - Lowercase letters a–z
 - Digits 0–9
-- Hyphen (-)
+- Hyphen (-), only as the separator before an interface code
 - No underscores
 
 ---
@@ -155,10 +214,10 @@ Infrastructure services MUST use site-scoped DNS names:
 service.site.deevnet.net
 
 Examples:
-- artifacts.dvntm.deevnet.net
-- pxe.dvntm.deevnet.net
-- dns.dvnt.deevnet.net
-- vault.dvnt.deevnet.net
+- artifacts.mobile.deevnet.net
+- pxe.mobile.deevnet.net
+- dns.home.deevnet.net
+- vault.home.deevnet.net
 
 These records SHOULD be CNAMEs pointing to host A records.
 
@@ -176,7 +235,7 @@ Rules:
 - SHOULD be a CNAME to a site-scoped service
 
 Example:
-artifacts.deevnet.net → artifacts.dvntm.deevnet.net
+artifacts.deevnet.net → artifacts.mobile.deevnet.net
 
 ---
 
@@ -198,8 +257,8 @@ Tenants SHOULD be expressed under the site zone:
 tenant.site.deevnet.net
 
 Examples:
-- grooveiq.dvntm.deevnet.net
-- vintronics.dvnt.deevnet.net
+- grooveiq.mobile.deevnet.net
+- vintronics.home.deevnet.net
 
 ---
 
@@ -209,8 +268,8 @@ Tenant services SHOULD be expressed as:
 service.tenant.site.deevnet.net
 
 Examples:
-- api.grooveiq.dvntm.deevnet.net
-- mqtt.grooveiq.dvntm.deevnet.net
+- api.grooveiq.mobile.deevnet.net
+- mqtt.grooveiq.mobile.deevnet.net
 
 ---
 
@@ -218,24 +277,24 @@ Examples:
 
 ### 6.1 Inventory Host Identifiers
 
-Inventory hostnames SHOULD match the DNS hostname without the domain:
+Inventory hostnames MUST match the DNS hostname without the domain:
 
 Examples:
-- hv01
-- netctrl-vm01
-- provisioner-ph01
-- pi01
-- em01
+- dv02hyp001p01
+- dv02cor001v01
+- dv00bld001p01
+- dv02rpi001p01
 
-Environment (site) association MUST be expressed by **one of the following methods**:
+Because the site code is part of every hostname, names are unique across the whole estate, not only
+within a site. Environment (site) association MAY additionally be expressed by:
 
 - **Inventory boundary (preferred):**
-  Separate inventories per site (e.g., `inventory/dvnt/`, `inventory/dvntm/`) implicitly define environment membership.
+  Separate inventories per site (e.g., `inventory/home/`, `inventory/mobile/`) implicitly define environment membership.
 
 - **Explicit site groups:**
   When using a combined inventory, hosts MUST belong to exactly one site group:
-  - `dvnt`
-  - `dvntm`
+  - `home`
+  - `mobile`
 
 
 ---
@@ -265,27 +324,34 @@ This mapping is considered identity, not configuration, and SHOULD be maintained
 
 ## 8. Examples
 
-### 8.1 dvntm Infrastructure
+### 8.1 Mobile Site Infrastructure
 Hosts:
-- hv01.dvntm.deevnet.net
-- netctrl-vm01.dvntm.deevnet.net
-- provisioner-ph01.dvntm.deevnet.net
+- dv02hyp001p01.mobile.deevnet.net
+- dv02cor001v01.mobile.deevnet.net
+- dv02acc001p01.mobile.deevnet.net
 
 Services:
-- omada-ctrl.dvntm.deevnet.net → netctrl-vm01.dvntm.deevnet.net  
-- artifacts.dvntm.deevnet.net → provisioner-ph01.dvntm.deevnet.net
-- pxe.dvntm.deevnet.net → provisioner-ph01.dvntm.deevnet.net
+- omada-ctrl.mobile.deevnet.net → dv00bld001p01.deevnet.net
+- artifacts.mobile.deevnet.net → dv00bld001p01.deevnet.net
+- pxe.mobile.deevnet.net → dv00bld001p01.deevnet.net
 
 ---
 
-### 8.2 Embedded Capacity
+### 8.2 Edge / IoT
 Hosts:
-- pi01.dvntm.deevnet.net
-- pi02.dvntm.deevnet.net
-- em01.dvntm.deevnet.net
+- dv02rpi001p01.mobile.deevnet.net
+- dv02rpi002p01.mobile.deevnet.net
+- dv02bgw001e01.mobile.deevnet.net
 
 Services:
-- sdr.dvntm.deevnet.net → pi01.dvntm.deevnet.net
+- sdr.mobile.deevnet.net → dv02rpi001p01.mobile.deevnet.net
+
+---
+
+### 8.3 Secondary Interfaces
+- dv02cor002p01.mobile.deevnet.net — the primary address
+- dv02cor002p01-wan.mobile.deevnet.net — the upstream interface
+- dv02edg001p01-wifi.mobile.deevnet.net — wireless upstream, where `-wan` is already the wired one
 
 ---
 

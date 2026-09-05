@@ -7,8 +7,9 @@ weight: 8
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-09-04 |
+| **Accepted** | 2026-09-05 |
 | **Scope** | How a host is named, and how a site is identified in that name and in DNS |
 | **Related** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/) — the site octet this record's site codes sit alongside |
 
@@ -615,8 +616,8 @@ now:
 
 ## What follows acceptance
 
-This record is `Proposed`. Nothing changes while it stands here — not the inventories, not the
-collections, not the standards. On acceptance:
+Accepted 2026-09-05. Implementation is staged, and the order below is the order it is being done
+in — each step lands on its own, verified, before the next begins:
 
 - The [Naming Standard](/docs/standards/naming/) is the first thing to change, since it is the
   authority. §3.1's `[role-]formNN` grammar is replaced outright; §3.2's eight form codes become
