@@ -41,7 +41,7 @@ The scheme has to answer three questions the existing addressing plan cannot:
 |-------|---------|
 | `10.20.0.0/17` | Substrate segments — third octet = VLAN ID. Unchanged. |
 | `10.20.128.0/18` | **Tenant overlay subnets** — `10.20.{128+n}.0/24` per tenant, `n` = 1–63 |
-| `10.20.255.0/24` | **Fabric loopbacks / VTEP identity** — `pve2` = `10.20.255.2` |
+| `10.20.255.0/24` | **Fabric loopbacks / VTEP identity** — `dv02hyp002p02` = `10.20.255.2` |
 
 home mirrors this in `10.10.0.0/16`.
 

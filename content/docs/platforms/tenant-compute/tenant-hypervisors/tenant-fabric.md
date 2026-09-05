@@ -123,7 +123,7 @@ Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-num
 | Element | Value |
 |---------|-------|
 | Fabric | `tfab`, OpenFabric, loopback prefix `10.20.255.0/24` |
-| VTEP identity | `pve2` = `10.20.255.2`, underlay over `vmbr0.51` |
+| VTEP identity | `dv02hyp002p02` = `10.20.255.2`, underlay over `vmbr0.51` |
 | EVPN controller | `evpn1`, ASN `65020` |
 | Transit | VLAN 50, `10.20.50.0/24`; hv02 `.22`, perimeter `.1` |
 | Underlay | VLAN 51, `10.20.51.0/24`; hv02 `.22`, no router presence |
