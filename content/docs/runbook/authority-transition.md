@@ -43,7 +43,7 @@ Transfer DNS/DHCP authority from the builder to production network infrastructur
 
 1. **Transition builder to TFTP-only mode:**
    ```bash
-   cd ~/dvnt/ansible-collection-deevnet.builder
+   cd ~/home/ansible-collection-deevnet.builder
    make core-auth
    ```
    This disables dnsmasq, stops masquerading, installs standalone TFTP, and swaps the builder's IP from the gateway address to its reserved address. The SSH connection will drop.
@@ -57,7 +57,7 @@ Transfer DNS/DHCP authority from the builder to production network infrastructur
    systemctl status tftp.socket
 
    # DNS should resolve via the core router
-   dig artifacts.dvntm.deevnet.net
+   dig artifacts.mobile.deevnet.net
    ```
 
 3. **Verify transition log:**
@@ -88,14 +88,14 @@ Transfer DNS/DHCP authority from production network infrastructure back to the b
 
 1. **Disable OPNsense DNS/DHCP** (if the router is still operational):
    ```bash
-   cd ~/dvnt/ansible-collection-deevnet.net
+   cd ~/home/ansible-collection-deevnet.net
    ansible-playbook playbooks/disable-opnsense-services.yml --ask-vault-pass
    ```
    If the router is down or unreachable, skip this step.
 
 2. **Enable bootstrap-authoritative mode on the builder:**
    ```bash
-   cd ~/dvnt/ansible-collection-deevnet.builder
+   cd ~/home/ansible-collection-deevnet.builder
    make bootstrap-auth
    ```
    This enables dnsmasq with DNS host records and DHCP reservations from inventory, configures masquerading on the WAN interface, and swaps the builder's IP from the reserved address to the gateway address. The SSH connection will drop.
@@ -106,7 +106,7 @@ Transfer DNS/DHCP authority from production network infrastructure back to the b
    systemctl status dnsmasq
 
    # DNS should resolve via the builder
-   dig artifacts.dvntm.deevnet.net @localhost
+   dig artifacts.mobile.deevnet.net @localhost
 
    # TFTP should be available
    systemctl status dnsmasq   # dnsmasq provides TFTP in this mode
@@ -121,10 +121,10 @@ Transfer DNS/DHCP authority from production network infrastructure back to the b
 
 Re-enable OPNsense services and return the builder to production mode:
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.net
+cd ~/home/ansible-collection-deevnet.net
 ansible-playbook playbooks/enable-opnsense-services.yml --ask-vault-pass
 
-cd ~/dvnt/ansible-collection-deevnet.builder
+cd ~/home/ansible-collection-deevnet.builder
 make core-auth
 ```
 

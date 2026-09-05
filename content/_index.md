@@ -13,7 +13,7 @@ type: docs
 
 {{% columns %}}
 
-### Deevnet Mobile (dvntm)
+### Deevnet Mobile (mobile)
 
 <img src="20260210_160235.jpg" alt="Deevnet Mobile kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
@@ -27,7 +27,7 @@ A **portable lab** that packs into a toolkit. Includes:
 
 <--->
 
-### Deevnet Home (dvnt)
+### Deevnet Home (home)
 
 <img src="20230509_181137.jpg" alt="Deevnet Home rack" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 

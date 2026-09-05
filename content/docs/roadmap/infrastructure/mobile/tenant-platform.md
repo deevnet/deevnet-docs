@@ -8,7 +8,7 @@ tasks_planned: 2
 
 # Tenant Platform
 
-Deliver the capability to run **tenants** on the dvntm substrate — from network architecture
+Deliver the capability to run **tenants** on the mobile substrate — from network architecture
 through a repeatable, code-defined tenant lifecycle. Each tenant is an isolated workload that
 supplies its own IaC/CaC to rebuild from scratch against the substrate.
 
@@ -102,7 +102,7 @@ Prove the whole path with a real tenant.
 - ✅ Provisioned from code: `tdemo` (index 1, `10.20.129.0/24`), cloud-init addressed.
 - ✅ Egress via the perimeter, verified from inside the workload rather than from a NAT counter —
   and verified *not* to reach the management segment on-link.
-- ✅ DNS publication end to end: `dig @10.20.99.1 tdemo-1.tdemo.dvntm.deevnet.net` answers
+- ✅ DNS publication end to end: `dig @10.20.99.1 tdemo-1.tdemo.mobile.deevnet.net` answers
   `10.20.129.10`, and the reverse answers the name — records written by the tenant's own Terraform
   over TSIG-signed RFC 2136, served by substrate-run PowerDNS, reached through the resolver's
   forward.

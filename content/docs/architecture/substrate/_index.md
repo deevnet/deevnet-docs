@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 Within a site, the **substrate** provides the shared infrastructure foundation — networking, compute, and services, all defined as code. The substrate is stateless — all configuration lives in source control and is applied through automation, so it can be reprovisioned from scratch at any time.
 
-For site definitions (dvnt, dvntm) and the independence model, see [Architecture](/docs/architecture/).
+For site definitions (home, mobile) and the independence model, see [Architecture](/docs/architecture/).
 
 ---
 

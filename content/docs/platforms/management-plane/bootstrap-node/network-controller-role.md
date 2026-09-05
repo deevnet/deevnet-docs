@@ -15,8 +15,8 @@ The network controller role deploys **centralized management software** for swit
 
 | Site | Controller | Managed Devices |
 |------|------------|-----------------|
-| **dvntm** | TP-Link Omada SDN | SG2218 switch, EAP650-Outdoor AP |
-| **dvnt** | Ubiquiti UniFi Network | USW-24-G2, US-8 switches, UAP-AC-M APs |
+| **mobile** | TP-Link Omada SDN | SG2218 switch, EAP650-Outdoor AP |
+| **home** | Ubiquiti UniFi Network | USW-24-G2, US-8 switches, UAP-AC-M APs |
 
 Both controllers run on the bootstrap node because they must be available for initial network configuration before VLANs exist.
 
@@ -24,7 +24,7 @@ Both controllers run on the bootstrap node because they must be available for in
 
 ## Deployment
 
-| Attribute | Omada (dvntm) | UniFi (dvnt) |
+| Attribute | Omada (mobile) | UniFi (home) |
 |-----------|---------------|--------------|
 | **Container runtime** | Podman | Podman |
 | **Web UI port** | 8043 (HTTPS) | 8443 (HTTPS) |

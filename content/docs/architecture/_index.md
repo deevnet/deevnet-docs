@@ -91,8 +91,8 @@ A **site** is an independent infrastructure deployment with its own IP address s
 
 | Site | Purpose | Address Block | DNS Zone |
 |------|---------|---------------|----------|
-| **dvnt** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | dvnt.deevnet.net |
-| **dvntm** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | dvntm.deevnet.net |
+| **home** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | home.deevnet.net |
+| **mobile** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | mobile.deevnet.net |
 
 ### Builder
 

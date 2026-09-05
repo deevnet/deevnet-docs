@@ -8,7 +8,7 @@ tasks_planned: 33
 
 # Extended Management Plane
 
-Extended management services for the dvntm (mobile) site — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
+Extended management services for the mobile (mobile) site — logging, telemetry, alerting, secrets, and identity. Builds on the core substrate once it is operational.
 
 - **GitHub:** https://github.com/deevnet/ansible-collection-deevnet.mgmt
 - **Documentation:** https://deevnet.github.io/deevnet-docs/

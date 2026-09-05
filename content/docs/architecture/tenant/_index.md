@@ -76,10 +76,10 @@ Tenant services follow a hierarchical DNS pattern:
 service.tenant.site.deevnet.net
 ```
 
-**Example:** `api.grooveiq.dvntm.deevnet.net`
+**Example:** `api.grooveiq.mobile.deevnet.net`
 - `api` — the service
 - `grooveiq` — the tenant
-- `dvntm` — the site
+- `mobile` — the site
 - `deevnet.net` — the domain
 
 ---
@@ -92,7 +92,7 @@ service.tenant.site.deevnet.net
 | **Contains** | Network, compute, management | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
 | **Provisioning** | Automation-first | Terraform-first |
-| **Example** | `dvntm`, `dvnt` | `grooveiq`, `vintronics` |
+| **Example** | `mobile`, `home` | `grooveiq`, `vintronics` |
 
 ---
 
@@ -101,8 +101,8 @@ service.tenant.site.deevnet.net
 A tenant may be deployed to multiple sites:
 
 ```
-api.grooveiq.dvntm.deevnet.net  — Development instance
-api.grooveiq.dvnt.deevnet.net   — Production instance
+api.grooveiq.mobile.deevnet.net  — Development instance
+api.grooveiq.home.deevnet.net   — Production instance
 ```
 
 The tenant is logically the same (`grooveiq`), but instances are site-scoped.
@@ -126,7 +126,7 @@ between what the tenant supplies and what the substrate guarantees:
 
 Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
 changing the substrate. The contract itself is being formalized — see the
-[Tenant Platform roadmap](/docs/roadmap/infrastructure/dvntm/tenant-platform/).
+[Tenant Platform roadmap](/docs/roadmap/infrastructure/mobile/tenant-platform/).
 
 ---
 

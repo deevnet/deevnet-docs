@@ -26,8 +26,8 @@ closing egress, this is the last part of the tenant contract still undecided.
 ### What is already settled
 
 - **Naming.** A tenant's zone is `tenant.site.deevnet.net`; records are
-  `service.tenant.site.deevnet.net`. So `grooveiq.dvntm.deevnet.net`, and inside it
-  `api.grooveiq.dvntm.deevnet.net`.
+  `service.tenant.site.deevnet.net`. So `grooveiq.mobile.deevnet.net`, and inside it
+  `api.grooveiq.mobile.deevnet.net`.
 - **Ownership.** The tenant authors its own records as part of its IaC. The substrate supplies DNS
   *infrastructure*, not tenant content. A tenant rebuilt from scratch must restore its own names.
 - **Resolution path.** Tenants resolve through the substrate resolver; the tenant module hands
@@ -136,9 +136,9 @@ and per-zone TSIG — the properties the constraints actually ask for.
 
 For tenant `t` with index `n` on site `s`:
 
-| Zone | Pattern | dvntm, `n` = 1 |
+| Zone | Pattern | mobile, `n` = 1 |
 |------|---------|----------------|
-| Forward | `t.s.deevnet.net` | `tdemo.dvntm.deevnet.net` |
+| Forward | `t.s.deevnet.net` | `tdemo.mobile.deevnet.net` |
 | Reverse | `{128+n}.{site_octet}.10.in-addr.arpa` | `129.20.10.in-addr.arpa` |
 
 Both derive from the single `tenant_index` of
@@ -164,10 +164,10 @@ could write any zone. That is not what the constraint says.
 Dynamic update gives the constraint teeth. Each tenant zone carries its own key:
 
 ```
-pdnsutil create-zone            tdemo.dvntm.deevnet.net
+pdnsutil create-zone            tdemo.mobile.deevnet.net
 pdnsutil generate-tsig-key      tdemo hmac-sha256
-pdnsutil set-meta               tdemo.dvntm.deevnet.net TSIG-ALLOW-DNSUPDATE tdemo
-pdnsutil set-meta               tdemo.dvntm.deevnet.net ALLOW-DNSUPDATE-FROM 10.20.99.0/24
+pdnsutil set-meta               tdemo.mobile.deevnet.net TSIG-ALLOW-DNSUPDATE tdemo
+pdnsutil set-meta               tdemo.mobile.deevnet.net ALLOW-DNSUPDATE-FROM 10.20.99.0/24
 ```
 
 An update signed with `tdemo`'s key is accepted only for `tdemo`'s zones; anything else is REFUSED
@@ -269,7 +269,7 @@ The decision is taken; the implementation is not yet built. For whoever picks it
 - Nothing about the substrate's own DNS changes. `opnsense_dns` keeps host overrides and aliases
   exactly as it has them, and gains domain-override reconciliation for the delegations.
 - No tenant name resolves yet. `tdemo-1` is still reachable by address only; the end-to-end test of
-  this record is `dig tdemo-1.tdemo.dvntm.deevnet.net` answered through `10.20.99.1`.
+  this record is `dig tdemo-1.tdemo.mobile.deevnet.net` answered through `10.20.99.1`.
 - PVE IPAM stays empty for tenant subnets, and that is now a decision rather than a gap.
 - The namespace boundary must be tested, not assumed: an update signed with one tenant's key,
   aimed at another tenant's zone, must be REFUSED.

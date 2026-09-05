@@ -25,7 +25,7 @@ The builder answers this by providing:
 
 **Self-Contained** — The builder carries everything needed to stand up a substrate: IaC/CaC definitions, OS images, network boot infrastructure, and Git repositories.
 
-**Portable** — A single builder can provision any site. The same builder serves dvntm or dvnt — no site-specific hardware required.
+**Portable** — A single builder can provision any site. The same builder serves mobile or home — no site-specific hardware required.
 
 **Air-Gapped Capable** — Once artifacts are staged, the builder can provision without upstream internet. No external dependencies during build.
 
@@ -82,8 +82,8 @@ A builder node may be reachable from multiple sites.
 Instead of ambiguous multi-A records, **interface-specific identities** may be published:
 
 ```
-provisioner-01-dvnt.mgmt.deevnet.net
-provisioner-01-dvntm.mgmt.deevnet.net
+provisioner-01-home.mgmt.deevnet.net
+provisioner-01-mobile.mgmt.deevnet.net
 ```
 
 Each name maps to the IP address used by that site.

@@ -35,7 +35,7 @@ Read-only. Surveys every hypervisor, audits every MAC in inventory, prints the
 next free VMID, and writes nothing:
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.mgmt
+cd ~/home/ansible-collection-deevnet.mgmt
 make vm-identity
 ```
 
@@ -70,7 +70,7 @@ that the guest "booted but is not on" its expected address.
 keeps the prose; the generated file holds the two allocated values:
 
 ```
-dvntm/host_vars/tenant-mgmt-vm01/
+mobile/host_vars/tenant-mgmt-vm01/
 ├── vars.yml       # hand-written
 └── identity.yml   # GENERATED - do not edit
 ```
@@ -120,7 +120,7 @@ MAC.
 Fix reachability or the API token and re-run; do not work around it.
 
 Substrates do not need to coordinate with each other. The environment octet is
-part of the namespace, so dvntm's `02:de:20:…` and dvnt's `02:de:10:…` cannot
+part of the namespace, so mobile's `02:de:20:…` and home's `02:de:10:…` cannot
 collide even at identical VMIDs.
 
 ---

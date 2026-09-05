@@ -26,7 +26,7 @@ ways at once. The runbook states the intent plainly:
 
 > a tenant is rebuilt from its own repository, not from a backup
 
-and then instructs the operator to `cp -r tenants/dvntm/t-demo tenants/dvntm/grooveiq` — inside
+and then instructs the operator to `cp -r tenants/mobile/t-demo tenants/mobile/grooveiq` — inside
 `deevnet-tenant-factory`, a substrate repository. "Its own repository" has meant "its own directory
 in ours." Nothing enforces the boundary the documents assert.
 
@@ -41,7 +41,7 @@ identical for every tenant. Only `tenant_name` and `tenant_index` genuinely diff
 Three things, all in one file:
 
 1. `module "tenant" { source = "../../../modules/tenant" }` — a filesystem path.
-2. `data "terraform_remote_state" "fabric"` reading `fabric/dvntm-hv02/terraform.tfstate` by relative
+2. `data "terraform_remote_state" "fabric"` reading `fabric/mobile-hv02/terraform.tfstate` by relative
    path, for `controller_id` and `node`.
 3. `path.module` traversal, which is the mechanism for both.
 

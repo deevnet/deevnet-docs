@@ -49,7 +49,7 @@ Each platform page documents:
 | Section | Content |
 |---------|---------|
 | **Purpose** | Role in the substrate |
-| **Hardware** | dvntm vs dvnt hardware selections |
+| **Hardware** | mobile vs home hardware selections |
 | **Operating System** | OS choice and automation capability |
 | **Roles** | Services or functions provided |
 

@@ -19,9 +19,9 @@ graph LR
 
 {{% tabs "core-router-hardware" %}}
 
-{{% tab "dvntm — ZimaBoard 832" %}}
+{{% tab "mobile — ZimaBoard 832" %}}
 
-**Site**: dvntm (mobile) {{< status-badge "active" "Active" >}}
+**Site**: mobile (mobile) {{< status-badge "active" "Active" >}}
 
 The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile site. Its low power consumption and passive cooling make it ideal for portable deployments.
 
@@ -52,9 +52,9 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 
 {{% /tab %}}
 
-{{% tab "dvnt — ODYSSEY X86J4125864" %}}
+{{% tab "home — ODYSSEY X86J4125864" %}}
 
-**Site**: dvnt (home) {{< status-badge "active" "Active" >}}
+**Site**: home (home) {{< status-badge "active" "Active" >}}
 
 The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home site. It provides more compute headroom and expansion options compared to the mobile router.
 
@@ -132,7 +132,7 @@ Three distinct collections, reconciled from inventory by the `opnsense_dns` role
 
 | What | OPNsense feature | Used for |
 |------|------------------|----------|
-| Address records | Host override | `host.dvntm.deevnet.net` → address |
+| Address records | Host override | `host.mobile.deevnet.net` → address |
 | Aliases | Host alias | Service names pointing at a host — stored as CNAMEs |
 | Zone forwards | Query Forwarding | Sending a tenant zone to the tenant authoritative service |
 

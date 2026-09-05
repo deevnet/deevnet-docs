@@ -59,7 +59,7 @@ All site-specific host and service records MUST exist in the corresponding site 
 
 > **Migration in progress.** This standard was updated on acceptance of
 > [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) and states the target. The
-> estate currently runs on the `dvnt` / `dvntm` zones and the previous `[role-]formNN` hostnames;
+> estate currently runs on the `home` / `mobile` zones and the previous `[role-]formNN` hostnames;
 > both are being migrated in stages. Until that completes, the standard leads and reality follows —
 > see the [Host Rename runbook](/docs/runbook/host-rename/) for where the estate actually is.
 

@@ -50,7 +50,7 @@ No automated install exists. Manual USB install required.
 2. Boot from USB and complete installer
 3. Apply configuration via `deevnet.net` Ansible collection:
    ```bash
-   cd ~/dvnt/ansible-collection-deevnet.net
+   cd ~/home/ansible-collection-deevnet.net
    ansible-playbook playbooks/site.yml --limit routers
    ```
 
@@ -74,7 +74,7 @@ Create VLAN sub-interfaces on OPNsense and VLANs in the switch database. Non-dis
 See [VLAN Foundation](/docs/runbook/network-migration/vlan-foundation/) for detailed steps.
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.net
+cd ~/home/ansible-collection-deevnet.net
 make migration-opnsense-vlans    # OPNsense VLAN interfaces
 make migration-switch-vlans      # Switch VLAN database
 make migration-switch-trunk      # Trunk uplink with tagged VLANs
@@ -122,7 +122,7 @@ The WoL playbook registers all hosts with `wol: true` in their inventory interfa
 After the network is segmented and Core Router is handling DNS/DHCP, transition the bootstrap node to TFTP-only mode:
 
 ```bash
-cd ~/dvnt/ansible-collection-deevnet.builder
+cd ~/home/ansible-collection-deevnet.builder
 make core-auth
 ```
 
@@ -149,7 +149,7 @@ systemctl status dnsmasq
 systemctl status tftp.socket
 
 # DNS should resolve via Core Router
-dig artifacts.dvntm.deevnet.net
+dig artifacts.mobile.deevnet.net
 ```
 
 ---

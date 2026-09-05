@@ -87,7 +87,7 @@ The storage segment isolates storage protocol traffic from other network activit
 Tenant segments provide network isolation between workload namespaces. Each tenant gets its own segment.
 
 **Typical inhabitants:**
-- Tenant VMs (e.g., `app-vm01` hosting `api.grooveiq.dvntm.deevnet.net`)
+- Tenant VMs (e.g., `app-vm01` hosting `api.grooveiq.mobile.deevnet.net`)
 - Tenant containers
 - Tenant application endpoints
 
@@ -139,7 +139,7 @@ The IoT segment contains custom-developed embedded devices with controlled firmw
 **Typical inhabitants:**
 - Raspberry Pis (`pi01`, `pi02`, `pi03`)
 - Embedded devices (`em01`, `em02`)
-- SDR receivers (e.g., `sdr.dvntm.deevnet.net` → `pi01`)
+- SDR receivers (e.g., `sdr.mobile.deevnet.net` → `pi01`)
 - Sensors and IoT gateways
 
 **Properties:**
@@ -231,7 +231,7 @@ graph TB
 
 Network segmentation is substrate-scoped:
 
-- Each site (dvnt, dvntm) implements segmentation independently
+- Each site (home, mobile) implements segmentation independently
 - No cross-site segment dependencies
 - The same segment model applies to all sites
 - Implementation details (VLAN IDs, IP ranges) vary per site

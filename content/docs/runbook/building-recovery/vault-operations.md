@@ -73,13 +73,13 @@ The following `vault.yml` files exist across the inventory:
 
 | Path | Scope |
 |------|-------|
-| `dvntm/group_vars/all/vault.yml` | Site-wide secrets (dvntm) |
-| `dvntm/group_vars/routers/vault.yml` | Router credentials (dvntm) |
-| `dvntm/group_vars/switches/vault.yml` | Switch credentials (dvntm) |
-| `dvntm/group_vars/network_controllers/vault.yml` | Omada controller credentials (dvntm) |
-| `dvntm/host_vars/hv01/vault.yml` | hv01 secrets (dvntm) |
-| `dvntm/host_vars/hv02/vault.yml` | hv02 secrets (dvntm) |
-| `dvnt/group_vars/all/vault.yml` | Site-wide secrets (dvnt) |
+| `mobile/group_vars/all/vault.yml` | Site-wide secrets (mobile) |
+| `mobile/group_vars/routers/vault.yml` | Router credentials (mobile) |
+| `mobile/group_vars/switches/vault.yml` | Switch credentials (mobile) |
+| `mobile/group_vars/network_controllers/vault.yml` | Omada controller credentials (mobile) |
+| `mobile/host_vars/hv01/vault.yml` | hv01 secrets (mobile) |
+| `mobile/host_vars/hv02/vault.yml` | hv02 secrets (mobile) |
+| `home/group_vars/all/vault.yml` | Site-wide secrets (home) |
 
 This list is descriptive, not a definition. `make vault` and `make unvault` discover their targets
 with `find . -name 'vault.yml'`, so a new file is picked up without being added here — regenerate

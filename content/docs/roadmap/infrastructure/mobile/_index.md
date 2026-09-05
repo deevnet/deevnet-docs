@@ -9,7 +9,7 @@ tasks_planned: 74
 
 # DVNTM (Mobile Site)
 
-Builder infrastructure, network automation, and core services for the dvntm (mobile) site.
+Builder infrastructure, network automation, and core services for the mobile (mobile) site.
 
 {{< overall-progress >}}
 

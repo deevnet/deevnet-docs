@@ -44,7 +44,7 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
 ## Repository Layout
 
 ```
-dvnt/
+home/
 ├── ansible-collection-deevnet.builder/
 ├── ansible-collection-deevnet.mgmt/
 ├── ansible-collection-deevnet.net/
@@ -55,7 +55,7 @@ dvnt/
 └── deevnet-docs/
 ```
 
-All repositories are designed to be cloned into a common parent directory (typically `~/dvnt/` or `/srv/dvnt/`).
+All repositories are designed to be cloned into a common parent directory (typically `~/home/` or `/srv/home/`).
 
 ### Tenants get their own repositories
 
@@ -74,7 +74,7 @@ lifecycle touches no substrate repository at all. New tenants are created by cop
 
 ```bash
 # Clone all repositories
-mkdir -p ~/dvnt && cd ~/dvnt
+mkdir -p ~/home && cd ~/home
 git clone git@github.com:deevnet/ansible-collection-deevnet.builder.git
 git clone git@github.com:deevnet/ansible-collection-deevnet.mgmt.git
 git clone git@github.com:deevnet/ansible-collection-deevnet.net.git

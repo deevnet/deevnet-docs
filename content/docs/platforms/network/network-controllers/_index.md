@@ -22,9 +22,9 @@ Both controllers run on the **bootstrap node** as containerized services, provid
 
 {{% tabs "network-controller-software" %}}
 
-{{% tab "dvntm — Omada SDN" %}}
+{{% tab "mobile — Omada SDN" %}}
 
-**Site**: dvntm (mobile)
+**Site**: mobile (mobile)
 
 The Omada SDN Controller manages all TP-Link Omada devices in the mobile site, including the SG2218 switch and EAP650-Outdoor access point.
 
@@ -66,9 +66,9 @@ The Omada controller provides a REST API used by the `deevnet.net` Ansible colle
 
 {{% /tab %}}
 
-{{% tab "dvnt — UniFi Network" %}}
+{{% tab "home — UniFi Network" %}}
 
-**Site**: dvnt (home)
+**Site**: home (home)
 
 The UniFi Network Application manages all Ubiquiti UniFi devices in the home site, including the USW-24-G2 and US-8 switches, and both UAP-AC-M access points.
 
@@ -117,7 +117,7 @@ The UniFi controller provides a REST API. Automation is currently manual but pla
 
 ## Controller Comparison
 
-| Feature | Omada SDN (dvntm) | UniFi Network (dvnt) |
+| Feature | Omada SDN (mobile) | UniFi Network (home) |
 |---------|-------------------|----------------------|
 | **Managed switches** | SG2218 | USW-24-G2, US-8 |
 | **Managed APs** | EAP650-Outdoor | UAP-AC-M (x2) |

@@ -9,7 +9,7 @@ How each site implements the DNS authority model defined in [Core Services Archi
 
 ---
 
-## dvntm (Mobile Lab)
+## mobile (Mobile Lab)
 
 ### Production Mode
 
@@ -41,6 +41,6 @@ tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
 
 ---
 
-## dvnt (Production)
+## home (Production)
 
-_Placeholder — implementation details to be documented when dvnt site is built._
+_Placeholder — implementation details to be documented when home site is built._

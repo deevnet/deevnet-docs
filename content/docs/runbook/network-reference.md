@@ -9,7 +9,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 
 ---
 
-## dvntm VLAN Assignments
+## mobile VLAN Assignments
 
 | Segment | VLAN ID | Subnet | Gateway | DHCP |
 |---------|---------|--------|---------|------|
@@ -32,7 +32,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 
 ---
 
-## dvnt VLAN Assignments
+## home VLAN Assignments
 
 | Segment | VLAN ID | Subnet | Gateway | DHCP |
 |---------|---------|--------|---------|------|
@@ -71,8 +71,8 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 VLAN definitions are maintained in Ansible inventory:
 
 ```
-ansible-inventory-deevnet/dvntm/group_vars/all/vlans.yml
-ansible-inventory-deevnet/dvnt/group_vars/all/vlans.yml
+ansible-inventory-deevnet/mobile/group_vars/all/vlans.yml
+ansible-inventory-deevnet/home/group_vars/all/vlans.yml
 ```
 
 For segment design rationale and trust hierarchy, see the architecture documentation.

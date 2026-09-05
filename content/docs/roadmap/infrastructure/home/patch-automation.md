@@ -8,7 +8,7 @@ tasks_planned: 0
 
 # Patch Automation
 
-Firmware upgrades and automation improvements for the dvnt (home) site infrastructure.
+Firmware upgrades and automation improvements for the home (home) site infrastructure.
 
 {{< overall-progress >}}
 
