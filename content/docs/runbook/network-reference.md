@@ -71,7 +71,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 VLAN definitions are maintained in Ansible inventory:
 
 ```
-ansible-inventory-deevnet/dvntm-new/group_vars/all/vlans.yml
+ansible-inventory-deevnet/dvntm/group_vars/all/vlans.yml
 ansible-inventory-deevnet/dvnt/group_vars/all/vlans.yml
 ```
 

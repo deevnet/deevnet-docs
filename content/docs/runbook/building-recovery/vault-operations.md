@@ -73,10 +73,14 @@ The following `vault.yml` files exist across the inventory:
 
 | Path | Scope |
 |------|-------|
+| `dvntm/group_vars/all/vault.yml` | Site-wide secrets (dvntm) |
 | `dvntm/group_vars/routers/vault.yml` | Router credentials (dvntm) |
+| `dvntm/group_vars/switches/vault.yml` | Switch credentials (dvntm) |
+| `dvntm/group_vars/network_controllers/vault.yml` | Omada controller credentials (dvntm) |
 | `dvntm/host_vars/hv01/vault.yml` | hv01 secrets (dvntm) |
 | `dvntm/host_vars/hv02/vault.yml` | hv02 secrets (dvntm) |
-| `dvntm-new/group_vars/routers/vault.yml` | Router credentials (dvntm-new) |
-| `dvntm-new/group_vars/switches/vault.yml` | Switch credentials (dvntm-new) |
-| `dvntm-new/host_vars/hv01/vault.yml` | hv01 secrets (dvntm-new) |
-| `dvntm-new/host_vars/hv02/vault.yml` | hv02 secrets (dvntm-new) |
+| `dvnt/group_vars/all/vault.yml` | Site-wide secrets (dvnt) |
+
+This list is descriptive, not a definition. `make vault` and `make unvault` discover their targets
+with `find . -name 'vault.yml'`, so a new file is picked up without being added here — regenerate
+the list with that same command rather than trusting this table to be current.
