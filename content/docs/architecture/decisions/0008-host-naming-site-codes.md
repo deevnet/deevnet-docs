@@ -362,6 +362,153 @@ machines running a full OS, and `rpi` already carries the Pi-ness — leaving `b
 only `e`. The roadmap names `jetson-em01` and `console-pi05` as future hosts, which is where the
 line will next be tested.
 
+### The root name and secondary interfaces
+
+The thirteen-character name is the host's **root name**, and it belongs to the host's primary
+address. Additional addressed interfaces take the root name plus a dash plus an interface code:
+
+```
+dv02cor002p01        10.20.99.1     the primary
+dv02cor002p01-wan    the upstream interface
+```
+
+A host with one NIC — every Pi, switch and access point today — has no suffixed name at all. This
+is what the estate already does: exactly one interface per host carries `host_a_record: true` and
+takes the bare name.
+
+#### Interface codes
+
+| Code | Interface |
+|------|-----------|
+| `-wan` | Wired upstream |
+| `-wifi` | Wireless upstream |
+| `-lan` | Downstream |
+| `-stor` | Storage |
+| `-tran` | Fabric transit |
+| `-oob` | Lights-out / BMC |
+| `-mgmt` | Management, **when it is not the primary** |
+
+Allocated deliberately, like the role mnemonics. A new code is a conscious act rather than whatever
+was typed into a variables file.
+
+`-mgmt` is in the set but unused today. Under root-is-primary, a host whose primary interface is its
+management interface already holds that address on the bare name. The code exists for the case where
+the primary sits elsewhere — every Pi is `purpose: mgmt` on `segment: iot`, so a Pi that later
+gained a management-segment NIC would need it.
+
+#### Why the codes are curated rather than derived
+
+Two fields already in the data model look like they could supply the suffix. Neither can.
+
+**`purpose` collides.** `edge-rt01` has two interfaces with `purpose: wan` — the wired `eth-wan`
+and `wifi`. Both would render `-wan`, and the DNS role reconciles aliases and records on name
+alone, so which one survives is a function of ordering. That is the same defect class as the
+`core-rt01`/`core-rt02` collision recorded below. The distinction that resolves it is the
+**medium**, which `purpose` does not carry and never will, because both genuinely are WAN
+interfaces. Nor is `purpose` constrained — `bellgw-em01` carries `purpose: web`.
+
+**`segment` names nothing.** All seven secondary interfaces in the estate have no segment at all,
+because a secondary interface is close to definitionally the one *outside* a segment. WAN sits
+outside every segment; that is what makes it WAN.
+
+Rendered against the seven interfaces that have no name today:
+
+```
+core-rt01  eth0     ->  dv02cor001v01-wan
+core-rt02  eth1     ->  dv02cor002p01-wan
+edge-rt01  eth1     ->  dv02edg001p01-lan
+edge-rt01  eth-wan  ->  dv02edg001p01-wan
+edge-rt01  wifi     ->  dv02edg001p01-wifi     <- purpose would have collided here
+prov-ph01  eth1     ->  dv00bld001p01-tran
+prov-ph01  wifi     ->  dv00bld001p01-wifi
+```
+
+#### Being named is not the same as being published
+
+Six of those seven lease their address from upstream, and a leased address has no static record to
+publish. The convention says what an interface **is called**; a record is published only where the
+address is deterministic — a static assignment, or a MAC-keyed reservation, which is how every
+substrate address already works. A WAN interface leasing from a hotel network has a name here and
+no record in DNS.
+
+This also means the convention is being written **ahead of need**: only `edge-rt01`'s second LAN
+interface is statically addressed today. That is the right time to write it, because the home site
+build and any storage segment make it real immediately, and because a convention invented under
+pressure is a convention invented badly.
+
+#### This supersedes two lines in the segmentation standard
+
+[Network Segmentation](/docs/standards/network-segmentation/) §1 and §3 already mandate interface
+suffixes — `-mgmt` for hosts on the management segment, `-stor` for hosts on the storage segment.
+Nothing implements either, and the `-mgmt` rule contradicts root-is-primary as written: `hv01`'s
+only NIC *is* its management interface, so a literal reading gives `hv01-mgmt` and no bare `hv01`.
+The suffix belongs to the interface that is **not** the primary, and those two lines change with
+the standard on acceptance.
+
+#### The pipeline does not do this yet
+
+Publishing per-interface records is not free. The DNS role reads only the **first** interface with
+`host_a_record: true`, so a second addressed interface is invisible to it, and CNAMEs are harvested
+from that same interface only. The bootstrap dnsmasq template suffixes an alias and its target with
+the same domain, so a CNAME cannot cross zones either. None of that blocks the convention — it
+blocks publishing, and it is work that comes with the first host that needs a second record.
+
+### What the name deliberately does not carry
+
+Many naming schemes put rack and position in the hostname. This one does not, and that is a
+decision rather than an oversight.
+
+**Placement is intent, not identity.** [Identity vs Intent](/docs/standards/identity-vs-intent/)
+defines identity as "the stable, long-lived description of a system" and warns that mixing the two
+makes "hostnames become lies." A rack position in the name means moving a device renames it, and a
+rename cascades the full length of the chain this record depends on — declaration → MAC →
+reservation → A record → OS hostname. The standard's only location language is *"Where does it live
+(site)?"*, and the parenthetical scopes it to site, not to rack or position.
+
+Its *Services Are Intent, Not Identity* section is the direct precedent: a host named `pi01` running
+an SDR workload does not become `sdr-pi01` — the CNAME moves and the hostname does not. Placement is
+the same shape of fact.
+
+**The estate is heterogeneous by design.** Not everything is racked, and the platform pages already
+say so: the access switch is *"Desktop or rack (1U)"*, the access point is *"Wall/pole mount"*. A
+mandatory rack field forces a null value on the majority, and a field that is mostly placeholder
+stops carrying information and starts carrying noise. One site is also literally mobile, where rack
+position is meaningless.
+
+**And the estate has rejected this shape of problem twice already** — the builder cannot carry a
+site code because it roams between sites, hence `00`; and service names are kept separate from host
+names precisely so a service can move. Placement is the same class: a property that changes
+independently of the host's identity.
+
+**The version field marks where the line sits.** Hardware generation *is* in the name, because it
+changes only when the physical object is replaced — it is a fact about which object this is.
+Placement changes without the object changing. That is the test for whether something belongs in a
+name.
+
+#### If placement is ever wanted
+
+Aliases are the likely vehicle, since a stable *place* name pointing at whichever device currently
+occupies it is the mirror image of the service alias the estate already runs, and it degrades
+gracefully where a hostname field cannot — an unracked device simply has no alias, rather than
+carrying a null rack. **No convention is proposed here**, deliberately: a sketch in a decision
+record gets read as the decision.
+
+Two things would need settling first, recorded so they are not rediscovered:
+
+- **Inventory would be the source of truth, not DNS.** The estate declares once and generates
+  everything else. A location alias hand-written into `cnames:` would put a fact only in DNS, where
+  nothing else could read it and nothing would reconcile it. Placement belongs as an inventory
+  field, with any alias generated from it the way A records and reservations already are.
+- **An alias is a second thing that can be wrong**, and nothing reconciles it against physical
+  reality. A stale location alias is worse than no location data, because it misleads during
+  exactly the incident where someone is trying to find the box. The CNAME namespace also has no
+  uniqueness guard today — see the defects below — which would need fixing first rather than being
+  treated as a footnote.
+
+[Inventory & Lifecycle Management](/docs/runbook/inventory-lifecycle/) already claims this
+territory: asset tracking is in its scope, and it carries a five-stage lifecycle table that nothing
+implements. That is where placement would land, not in a new home.
+
 ---
 
 ## Consequences
@@ -411,6 +558,12 @@ line will next be tested.
 - **Ten mnemonics have to be learned**, and they are chosen by a person rather than derived, so
   they can be chosen badly. New classes need a code allocated deliberately, with the same care as
   a tenant index.
+- **The name cannot answer "where is it".** Placement is excluded on purpose, but the consequence
+  is that the question has no source of truth anywhere in the estate — not in the name, not in
+  inventory, not in a CMDB. Finding a box is currently a matter of knowing. That is no worse than
+  today, and it is worth stating that the scheme does not improve it.
+- **Interface codes are a second curated vocabulary**, on top of the role mnemonics, with the same
+  property: allocated by a person, so allocatable badly.
 
 ### No apex record is needed, and the site code does not imply one
 
@@ -482,5 +635,10 @@ collections, not the standards. On acceptance:
   `provisioner-01-dvntm` example put the site in the short name and is doubly out of date — it also
   uses the retired `mgmt.deevnet.net` zone. Replace the example with the per-zone form; the
   paragraph's reasoning about ambiguous multi-A records is still exactly right and should stay.
+- [Network Segmentation](/docs/standards/network-segmentation/) §1 and §3 lose their `-mgmt` and
+  `-stor` interface-suffix rules, which this record supersedes — the suffix belongs to an interface
+  that is not the primary, and §1's `hv01-mgmt` example says the opposite.
+- [Inventory & Lifecycle Management](/docs/runbook/inventory-lifecycle/) is where placement would
+  be taken up if it ever is. It already has the scope and none of the data model.
 - Standing up the home site under the scheme first is the low-risk order: it has no hosts, so it
   proves the naming, the zone and the renamed directory before any of it reaches the running site.
