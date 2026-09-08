@@ -85,15 +85,35 @@ switch port to a trunk rather than using a second port — there isn't one.
 There is no bonding, no LACP, and no NIC-level redundancy anywhere. A failed port, cable or
 NIC takes the host off the network.
 
-## The control plane is a single host
+## The rebuild path is duplicated inside the thing it rebuilds
 
-`dv00bld001p01` is simultaneously the builder, the workstation, the artifact server, the
-bootstrap/PXE node, the Omada network controller, and the designated out-of-band management
-host. It is also where the automation runs — which puts it *behind* the network policy it
-configures.
+The builder is **not** a single point of failure, and it is the one part of this page that
+mostly reads the other way. It is [explicitly a role rather than a
+pet](/docs/architecture/builder/) — *"any suitable host can assume it via code — rebuilding or
+replacing the provisioner is expected"* — and it is self-contained, portable and air-gapped
+capable, able to provision a site from nothing with no upstream dependency. That detachability
+is what makes *rebuild rather than failover* a credible strategy at all.
 
-If it is down, provisioning, PXE, artifact serving and wireless management are all down with
-it. If the policy it applies is wrong, it cannot reach the device to correct it.
+The duties are already spread. `builder` covers three hosts; artifact serving, bootstrap/PXE
+and workstation duties each cover two.
+
+The limit is **where** the copies live. Two of the three are management-plane VMs on
+`dv02hyp001p01` — inside the substrate they would be used to rebuild. For an everyday failure
+that duplication is real. For a substrate-level one it collapses to the third copy, the
+physical node you can detach and carry, and there is exactly one of those at the moment it
+matters most.
+
+One production role is genuinely single-instance: `dv00bld001p01` is the only
+`network_controllers` member, so the Omada controller has no second copy. That costs wireless
+and switch *management* rather than wireless or switching — adopted devices keep forwarding
+perfectly well without a controller.
+
+{{< hint info >}}
+**A caveat about deployment mode, not architecture.** In production the builder sits on the
+management segment, so automation runs from *behind* the policy it edits. The builder's own
+design allows it to be attached elsewhere — but that does not rescue a router with no rules
+loaded, which stays a [console job](/docs/runbook/console-recovery/core-router/).
+{{< /hint >}}
 
 ## One site has hardware
 
@@ -125,6 +145,10 @@ The compensating controls are real, and they are the reason the trade works:
 - **Identity is allocated, not discovered.** VMID → MAC → DHCP reservation → DNS record is a
   chain derived from inventory, so a rebuilt host comes back *as itself* rather than as a new
   machine that happens to do the same job.
+- **The provisioner is portable and replaceable.** The builder carries its own artifacts, Git
+  mirrors and boot infrastructure, provisions any site it is attached to, and is defined as a
+  role any suitable host can assume. This is the mechanism behind *rebuild, not failover* —
+  without it the rest of this page would be much harder to accept.
 - **Recovery is documented per device.** [Console Recovery](/docs/runbook/console-recovery/)
   covers the router, the hypervisors, the switch and the AP, including which cable each needs.
 - **The blast radius is understood.** [Network segmentation](/docs/architecture/network-segmentation/)
@@ -144,6 +168,7 @@ is a choice rather than a surprise.
 | Local storage only | The shared storage already scoped in [Substrate Storage](/docs/architecture/substrate/storage/) |
 | Single core router | A second appliance and a CARP pair, with the state sync that implies |
 | Single switch / single-homed hosts | A second switch, second NICs, and LACP or MLAG |
-| Single control-plane host | Splitting builder, artifacts and the Omada controller onto separate hosts |
+| Rebuild path collapses to one physical node | A second detachable builder — the provisioner is already a role, so this is hardware rather than design |
+| Single Omada controller | A second controller instance, or accepting that device management is best-effort |
 | One populated site | Hardware in `home`, which the inventory skeleton is already shaped for |
 | On-box backups only | Off-box config backup automation — the smallest item on this list, and the one with the best return |
