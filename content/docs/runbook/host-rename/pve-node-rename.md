@@ -1,14 +1,20 @@
 ---
-title: "Phase 13 — Rename a Proxmox Node"
-weight: 13
+title: "Rename a Proxmox Node"
+weight: 1
 ---
 
-# Phase 13 — Rename a Proxmox Node
+# Rename a Proxmox Node
 
-The last place the estate called a machine something other than its inventory name was the Proxmox
-node name. Both hypervisors were installed from the Proxmox ISO, which defaults the hostname to
-`pve`, so the nodes were `pve` and `pve2` while inventory called them `dv02hyp001p01` and
-`dv02hyp002p02`.
+Bringing a PVE node's name into agreement with its inventory name, on a standalone node,
+without restarting its guests.
+
+This is a standing procedure rather than a one-off. A hypervisor installed from the Proxmox
+ISO arrives called `pve`, because that is the installer's default, so any node built that way
+needs this — and the node name cannot be changed by any supported path afterwards. The
+[last section](#do-not-create-this-problem-again) is how to avoid needing it at all.
+
+It was last run on 2026-09-05, as the final phase of the
+[host rename](/docs/runbook/host-rename/):
 
 | Host | Node was | Node is |
 |------|----------|---------|
@@ -33,8 +39,8 @@ reinstall it, and rejoin.
   `/etc/pve/corosync.conf` does not exist).
 - A current backup of `/etc/pve` — `tar czf /root/etc-pve-$(date +%F).tgz /etc/pve`. This is a
   FUSE filesystem; the tarball is the rollback.
-- The inventory name is already correct (Phase 6). This phase makes the box agree with inventory,
-  not the other way round.
+- The inventory name is already correct. This procedure makes the box agree with inventory, not
+  the other way round.
 - Console access, not just SSH. The hostname change and the `pve-cluster` restart are both
   survivable over SSH, but a mistake in `/etc/hosts` is not.
 
