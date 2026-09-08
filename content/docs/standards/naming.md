@@ -136,6 +136,7 @@ The role is a three-letter mnemonic and is **mandatory** — there is no unprefi
 | `edg` | Edge router | | `tst` | Tenant state |
 | `acc` | Access switch | | `bgw` | Bell gateway |
 | `wap` | Wireless AP | | `rpi` | Raspberry Pi |
+| `mqt` | MQTT broker | | | |
 
 Mnemonics are allocated deliberately, like tenant indices. A new class MUST have its code added
 here in the same change that introduces the host.

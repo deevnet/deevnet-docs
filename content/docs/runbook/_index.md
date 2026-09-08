@@ -41,4 +41,8 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Network Segmentation</h3>
     <p>VLAN segmentation procedures — foundation, DHCP, firewall, port assignment, wireless.</p>
   </a>
+  <a class="section-card" href="rca/">
+    <h3>Incident RCAs</h3>
+    <p>Root cause analyses for infrastructure incidents — what broke, why, and what is still open.</p>
+  </a>
 </div>
