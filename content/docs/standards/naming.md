@@ -57,11 +57,11 @@ Each site has its own sub-zone:
 
 All site-specific host and service records MUST exist in the corresponding site zone.
 
-> **Migration in progress.** This standard was updated on acceptance of
-> [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) and states the target. The
-> estate currently runs on the `home` / `mobile` zones and the previous `[role-]formNN` hostnames;
-> both are being migrated in stages. Until that completes, the standard leads and reality follows —
-> see the [Host Rename runbook](/docs/runbook/host-rename/) for where the estate actually is.
+> **Adopted 2026-09-05.** This standard was updated on acceptance of
+> [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/), and the estate now runs on
+> it: fixed-width hostnames, site codes, and the `home` / `mobile` zones. The
+> [Host Rename runbook](/docs/runbook/host-rename/) records how it got there, and carries the two
+> hazards still waiting for any future rename.
 
 ---
 
