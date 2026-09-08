@@ -43,7 +43,7 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
   </a>
   <a class="section-card" href="console-recovery/">
     <h3>Console Recovery</h3>
-    <p>Getting back into the core router when the network cannot reach it, and restoring the config that locked you out.</p>
+    <p>Getting back into a device when the network cannot reach it — core router, hypervisors, access switch and AP.</p>
   </a>
   <a class="section-card" href="rca/">
     <h3>Incident RCAs</h3>
