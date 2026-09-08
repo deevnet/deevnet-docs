@@ -152,11 +152,16 @@ restore put back. The fix and the guards must land together.
 | 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `handlers/main.yml` | Open |
 | 5 | Add a reachability post-condition after apply — router 443/22 from management, control host across the LAN boundary, one host per policy-bearing segment | `opnsense_firewall` | Open |
 | 6 | Correct the discovery-fix commit message before the branch is pushed | `ansible-collection-deevnet.net` | Open |
-| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [change-management.md](/docs/runbook/change-management/) | Open |
+| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [change-management.md](/docs/runbook/change-management/) | **Done** |
 | 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | This runbook | Open |
 
 Actions 1–3 are the ones that would have prevented this outage. Action 4 is the one that makes
 surviving the change unnecessary: it does not depend on the control host staying reachable.
+
+Action 7 is done. Investigating it turned up a second case: `switch_vlans` uses
+`ansible.netcommon.cli_command`, which supports check mode but accepts only `show` commands,
+so `--check` there does not skip silently — every configuration line **fails**. Neither role
+family gives a usable dry run; the OPNsense one is worse only because it is quiet about it.
 
 ## Open items
 
