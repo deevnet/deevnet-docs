@@ -110,6 +110,10 @@ The network segmentation model that divides each substrate into isolated broadca
 
 The IP addressing convention for Deevnet sites. See [Addressing](addressing/) for VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
 
+### Limits
+
+What the hardware underneath the architecture cannot do — no out-of-band management, nothing clustered, local storage, and a single instance of every network device. Deevnet is designed to be rebuilt quickly rather than to stay up through a failure. See [Limits](limits/) for each constraint, what compensates for it, and what lifting it would take.
+
 ### Tenant
 
 A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
