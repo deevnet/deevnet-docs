@@ -59,13 +59,13 @@ Identity is expressed via:
 
 ### Examples of Identity
 
-- pi01.mobile.deevnet.net
+- dv02rpi001p01.mobile.deevnet.net
   A specific Raspberry Pi slot
 
-- hv01.mobile.deevnet.net
+- dv02hyp001p01.mobile.deevnet.net
   A hypervisor host
 
-- edge-rt01.mobile.deevnet.net
+- dv02edg001p01.mobile.deevnet.net
   An edge routing appliance
 
 Identity does **not** change simply because software or workloads change.
@@ -110,13 +110,13 @@ If workload-specific configuration is embedded directly in host variables:
 Example of what **not** to do:
 
 ```yaml
-# host_vars/pi01.yml
+# host_vars/dv02rpi001p01.yml
 install_sdr: true
 rtl_device: 0
 soapysdr_enabled: true
 ```
 
-This couples **identity** (pi01) with **intent** (SDR).
+This couples **identity** (dv02rpi001p01) with **intent** (SDR).
 
 ---
 
@@ -198,7 +198,7 @@ How intent is assigned is intentionally flexible.
 ### Option 1: Host-local workload list
 
 ```yaml
-# host_vars/pi01.yml
+# host_vars/dv02rpi001p01.yml
 dvnt_workloads:
   - sdr
 ```
@@ -209,8 +209,8 @@ Playbooks load the referenced workload profiles dynamically.
 
 ```
 assignments/
-  pi01.yml
-  pi02.yml
+  dv02rpi001p01.yml
+  dv02rpi002p01.yml
 ```
 
 Each assignment file lists the workloads currently attached to that host.
@@ -224,7 +224,7 @@ Both approaches preserve the same separation:
 
 ## Services Are Intent, Not Identity
 
-A host named `pi01` running an SDR workload does **not** become `sdr-pi01`.
+A host named `dv02rpi001p01` running an SDR workload does **not** become `dv02sdr001p01`.
 
 Instead:
 

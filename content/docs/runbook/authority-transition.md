@@ -149,6 +149,6 @@ make core-auth
 Both playbooks append to `/var/log/authority-transitions.log` with timestamp, direction, and operator. Example:
 
 ```
-2026-03-26T14:30:00+00:00 PROMOTE bootstrap-authoritative by cdeever on provisioner-ph01
-2026-03-26T15:45:00+00:00 REVERT core-authoritative by cdeever on provisioner-ph01
+2026-03-26T14:30:00+00:00 PROMOTE bootstrap-authoritative by cdeever on dv00bld001p01
+2026-03-26T15:45:00+00:00 REVERT core-authoritative by cdeever on dv00bld001p01
 ```

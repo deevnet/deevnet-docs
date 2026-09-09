@@ -20,7 +20,7 @@ implementation: what runs, and the specifics that are not guessable from the des
 | **Service** | PowerDNS Authoritative 4.9.17 |
 | **Backend** | SQLite (`gsqlite3`) |
 | **Runtime** | Podman container, `pdns-auth`, managed by a systemd unit |
-| **Host** | `tenant-mgmt-vm01` on the management hypervisor (hv01) |
+| **Host** | `dv02tdn001v01` on the management hypervisor (dv02hyp001p01) |
 | **Address** | `10.20.99.30`, DHCP reservation keyed on its declared MAC |
 | **Operator alias** | `tdns.mobile.deevnet.net` |
 | **Provisioned by** | `deevnet.mgmt`, role `powerdns` |
@@ -95,7 +95,7 @@ produces `zone.zone` rather than the apex. The apex is `@`:
 pdnsutil replace-rrset tdemo.mobile.deevnet.net tdemo.mobile.deevnet.net NS 3600 ...
 
 # right
-pdnsutil replace-rrset tdemo.mobile.deevnet.net @ NS 3600 tenant-mgmt-vm01.mobile.deevnet.net
+pdnsutil replace-rrset tdemo.mobile.deevnet.net @ NS 3600 dv02tdn001v01.mobile.deevnet.net
 ```
 
 ### `default-soa-content`, and it is not retroactive
@@ -112,7 +112,7 @@ which is why the role does that on every run rather than at creation
 
 `tdns` is a host **alias** on the resolver, so it resolves as a CNAME, and RFC 2181 §10.3 forbids an
 NS record pointing at an alias. The apex NS names the host's own address record,
-`tenant-mgmt-vm01.mobile.deevnet.net`. `tdns` remains an operator convenience and the value tenants
+`dv02tdn001v01.mobile.deevnet.net`. `tdns` remains an operator convenience and the value tenants
 point their updates at — neither of which is a delegation.
 
 ---
@@ -139,7 +139,7 @@ pdnsutil create-zone      tdemo.mobile.deevnet.net
 pdnsutil import-tsig-key  tdemo hmac-sha256 <secret from vault>
 pdnsutil set-meta         tdemo.mobile.deevnet.net TSIG-ALLOW-DNSUPDATE tdemo
 pdnsutil set-meta         tdemo.mobile.deevnet.net ALLOW-DNSUPDATE-FROM 10.20.99.0/24
-pdnsutil replace-rrset    tdemo.mobile.deevnet.net @ NS  3600 tenant-mgmt-vm01.mobile.deevnet.net
+pdnsutil replace-rrset    tdemo.mobile.deevnet.net @ NS  3600 dv02tdn001v01.mobile.deevnet.net
 ```
 
 All of it is driven from the declared tenant list, so it is one automation run rather than a
@@ -172,8 +172,8 @@ podman exec pdns-auth pdnsutil list-zone tdemo.mobile.deevnet.net
 A healthy apex names the server, not the placeholder:
 
 ```
-tdemo.mobile.deevnet.net  3600 IN NS   tenant-mgmt-vm01.mobile.deevnet.net.
-tdemo.mobile.deevnet.net  3600 IN SOA  tenant-mgmt-vm01.mobile.deevnet.net hostmaster.tdemo... 1 ...
+tdemo.mobile.deevnet.net  3600 IN NS   dv02tdn001v01.mobile.deevnet.net.
+tdemo.mobile.deevnet.net  3600 IN SOA  dv02tdn001v01.mobile.deevnet.net hostmaster.tdemo... 1 ...
 ```
 
 The namespace boundary is worth testing rather than assuming: an update signed with one tenant's key

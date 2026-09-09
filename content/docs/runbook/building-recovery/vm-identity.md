@@ -70,7 +70,7 @@ that the guest "booted but is not on" its expected address.
 keeps the prose; the generated file holds the two allocated values:
 
 ```
-mobile/host_vars/tenant-mgmt-vm01/
+mobile/host_vars/dv02tdn001v01/
 ├── vars.yml       # hand-written
 └── identity.yml   # GENERATED - do not edit
 ```
@@ -111,7 +111,7 @@ in the substrate — VMs, containers and templates alike — before answering.
 If any hypervisor fails to answer, it **refuses to allocate**:
 
 ```
-hv02 did not answer (1/2 hypervisors reachable). Refusing to allocate or audit
+dv02hyp002p02 did not answer (1/2 hypervisors reachable). Refusing to allocate or audit
 from a partial survey: a VMID free on the hypervisors that did answer may
 already be taken on one that did not, and the two VMs would end up sharing a
 MAC.
@@ -129,11 +129,11 @@ collide even at identical VMIDs.
 
 ```
 VMIDs in use across 2 hypervisor(s):
-100  pve   vdvntm-admin-01
-100  pve2  fedora-server-44-1.7-precloudinit
+100  dv02hyp001p01  vdvntm-admin-01
+100  dv02hyp002p02  fedora-server-44-1.7-precloudinit
 ...
 Declared in inventory (host, vmid, mac):
-tenant-mgmt-vm01  200  02:de:20:00:00:c8
+dv02tdn001v01  200  02:de:20:00:00:c8
 
 Awaiting allocation: none
 Range 200-299, namespace 02:de:20

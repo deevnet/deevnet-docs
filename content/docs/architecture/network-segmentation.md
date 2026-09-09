@@ -40,11 +40,11 @@ Each substrate implements nine segment types:
 The management segment carries infrastructure control traffic.
 
 **Typical inhabitants:**
-- Builder (`provisioner-ph01`)
-- Hypervisor management interfaces (`hv01-mgmt`, `hv02-mgmt`)
-- Router management interfaces (`core-rt01-mgmt`)
-- Switch management interfaces (`sw01-mgmt`)
-- IPMI/BMC interfaces (`hv01-ipmi`)
+- Builder (`dv00bld001p01`)
+- Hypervisor management interfaces (`dv02hyp001p01-mgmt`, `dv02hyp002p02-mgmt`)
+- Router management interfaces (`dv02cor002p01-mgmt`)
+- Switch management interfaces (`dv02acc001p01-mgmt`)
+- IPMI/BMC interfaces (`dv02hyp001p01-oob`)
 
 **Properties:**
 - Full access to all infrastructure
@@ -72,9 +72,9 @@ The trusted segment contains high-trust user devices that require broad network 
 The storage segment isolates storage protocol traffic from other network activity.
 
 **Typical inhabitants:**
-- NAS storage interfaces (`nas-ph01-stor`)
-- Hypervisor storage interfaces (`hv01-stor`, `hv02-stor`)
-- Backup target interfaces (`backup-vm01-stor`)
+- NAS storage interfaces
+- Hypervisor storage interfaces (`dv02hyp001p01-stor`, `dv02hyp002p02-stor`)
+- Backup target interfaces
 
 **Properties:**
 - High-bandwidth, low-latency requirements
@@ -137,9 +137,9 @@ The IoT vendor segment is a strict containment zone for vendor-managed devices t
 The IoT segment contains custom-developed embedded devices with controlled firmware. Unlike the IoT Vendor segment, these devices run firmware that is built, managed, and updated through the Deevnet automation pipeline.
 
 **Typical inhabitants:**
-- Raspberry Pis (`pi01`, `pi02`, `pi03`)
-- Embedded devices (`em01`, `em02`)
-- SDR receivers (e.g., `sdr.mobile.deevnet.net` → `pi01`)
+- Raspberry Pis (`dv02rpi001p01`, `dv02rpi002p01`, `dv02rpi003p01`)
+- Embedded devices (`dv02bgw001e01`)
+- SDR receivers (e.g., `sdr.mobile.deevnet.net` → `dv02rpi001p01`)
 - Sensors and IoT gateways
 
 **Properties:**

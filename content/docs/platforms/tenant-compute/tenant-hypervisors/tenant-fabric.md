@@ -16,7 +16,7 @@ page is the *how* and the concrete technology choices.
 
 The tenant network is a **routed overlay** built with **Proxmox SDN** in an **EVPN zone**. Each
 tenant is a VRF-isolated virtual network with an anycast gateway hosted by the fabric. The fabric
-is **self-contained per hypervisor**: hv02 runs its own SDN control plane, entirely local to the
+is **self-contained per hypervisor**: dv02hyp002p02 runs its own SDN control plane, entirely local to the
 node, and is not clustered with the management hypervisor.
 
 | Element | Choice |
@@ -38,12 +38,12 @@ node, and is not clustered with the management hypervisor.
 ## Self-contained per hypervisor
 
 Proxmox SDN configuration normally lives in the cluster filesystem and is replicated cluster-wide.
-On a standalone node it is local to that node. hv02 is **standalone**, so its SDN fabric is its
+On a standalone node it is local to that node. dv02hyp002p02 is **standalone**, so its SDN fabric is its
 own island:
 
-- hv02 runs its own SDN controller (FRR) and its own zones, VNets, and VRFs.
-- A tenant lives on hv02 and its overlay is hv02's — nothing spans to the management hypervisor.
-- Rebuilding hv02 reconstitutes its entire fabric from code, with no peer to reconcile against.
+- dv02hyp002p02 runs its own SDN controller (FRR) and its own zones, VNets, and VRFs.
+- A tenant lives on dv02hyp002p02 and its overlay is dv02hyp002p02's — nothing spans to the management hypervisor.
+- Rebuilding dv02hyp002p02 reconstitutes its entire fabric from code, with no peer to reconcile against.
 
 This preserves the non-clustered, stateless, plane-separated design already established for the
 hypervisors, and matches the goal that each tenant's IaC/CaC rebuilds it whole against the
@@ -111,22 +111,22 @@ The short version: the SDN objects, the VRF-per-tenant model, the anycast gatewa
 the tenant IaC are **unchanged** when members are added; only the underlay gains peers and the
 cluster gains a QDevice for quorum. Nothing structural is torn out to scale.
 
-The management hypervisor (hv01) is on a **separate** path — it may form its own cluster for the
+The management hypervisor (dv02hyp001p01) is on a **separate** path — it may form its own cluster for the
 management plane, independently, and does not join the tenant fabric.
 
 ---
 
 ## Concrete allocation
 
-Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/). On hv02:
+Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/). On dv02hyp002p02:
 
 | Element | Value |
 |---------|-------|
 | Fabric | `tfab`, OpenFabric, loopback prefix `10.20.255.0/24` |
 | VTEP identity | `dv02hyp002p02` = `10.20.255.2`, underlay over `vmbr0.51` |
 | EVPN controller | `evpn1`, ASN `65020` |
-| Transit | VLAN 50, `10.20.50.0/24`; hv02 `.22`, perimeter `.1` |
-| Underlay | VLAN 51, `10.20.51.0/24`; hv02 `.22`, no router presence |
+| Transit | VLAN 50, `10.20.50.0/24`; dv02hyp002p02 `.22`, perimeter `.1` |
+| Underlay | VLAN 51, `10.20.51.0/24`; dv02hyp002p02 `.22`, no router presence |
 | Tenant overlays | `10.20.{128+n}.0/24`, anycast gateway `.1`, workload addresses from `.10` |
 
 ### How egress actually works
@@ -148,9 +148,9 @@ takes the default route out transit.
 
 - ✅ Transit and underlay VLANs exist on the switch and the perimeter; the tenant hypervisor's
   port is a trunk carrying both plus management.
-- ✅ hv02's bridge is VLAN-aware with `vmbr0.50` and `vmbr0.51` up, driven from inventory by the
+- ✅ dv02hyp002p02's bridge is VLAN-aware with `vmbr0.50` and `vmbr0.51` up, driven from inventory by the
   `proxmox_node_network` Ansible role.
-- ✅ The fabric, VTEP identity and EVPN controller are applied on hv02 from
+- ✅ The fabric, VTEP identity and EVPN controller are applied on dv02hyp002p02 from
   `deevnet-tenant-factory`. That repository holds the substrate side only — the fabric, the
   reusable tenant module and the index registry. **Tenants themselves are applied from their own
   repositories** (`deevnet-tenant-<name>`), consuming the module by git tag

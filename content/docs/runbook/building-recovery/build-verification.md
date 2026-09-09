@@ -22,8 +22,8 @@ Each build phase includes automated verification via Ansible. This page covers f
 ping gateway.mobile.deevnet.net
 
 # DNS resolution working
-dig +short hv01.mobile.deevnet.net
-dig +short @192.168.10.1 hv01.mobile.deevnet.net
+dig +short dv02hyp001p01.mobile.deevnet.net
+dig +short @192.168.10.1 dv02hyp001p01.mobile.deevnet.net
 
 # DHCP serving leases
 # (check Core Router UI or API)
@@ -38,14 +38,14 @@ dig +short @192.168.10.1 hv01.mobile.deevnet.net
 
 ```bash
 # Hypervisors reachable
-ping hv01.mobile.deevnet.net
-ping hv02.mobile.deevnet.net
+ping dv02hyp001p01.mobile.deevnet.net
+ping dv02hyp002p02.mobile.deevnet.net
 
 # Proxmox API accessible
-curl -k https://hv01.mobile.deevnet.net:8006/api2/json/version
+curl -k https://dv02hyp001p01.mobile.deevnet.net:8006/api2/json/version
 
 # SSH access working
-ssh hv01.mobile.deevnet.net hostname
+ssh dv02hyp001p01.mobile.deevnet.net hostname
 ```
 
 ---

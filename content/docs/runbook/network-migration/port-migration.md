@@ -11,7 +11,7 @@ Move remaining switch ports to their assigned VLANs, perform the management cuto
 
 ## Step 10: Migrate Remaining Access Ports
 
-Move all remaining switch ports to their assigned VLANs as defined in `host_vars/access-sw01.yml`.
+Move all remaining switch ports to their assigned VLANs as defined in `host_vars/dv02acc001p01.yml`.
 
 {{< hint info >}}
 **DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration ([Step 11](#step-11-management-cutover) / [Post-Migration](/docs/runbook/network-migration/post-migration/)). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
@@ -128,8 +128,8 @@ After management cutover, adopt the switch and AP into the Omada SDN controller.
 **Run:**
 1. Access the Omada controller at `https://10.20.99.95:8043`
 2. Complete the initial setup wizard (fresh install)
-3. Adopt `access-sw01` — it should appear as pending on VLAN 99 (management) at `10.20.99.10`
-4. Adopt `ap01` — it should appear as pending on its assigned VLAN
+3. Adopt `dv02acc001p01` — it should appear as pending on VLAN 99 (management) at `10.20.99.10`
+4. Adopt `dv02wap001p01` — it should appear as pending on its assigned VLAN
 5. If devices don't auto-discover, use manual adoption by IP
 
 **Verify:**

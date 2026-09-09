@@ -23,8 +23,8 @@ Both hypervisors currently run **PVE 8.4.1**. PVE 9 is based on Debian 13 (Trixi
 major-version distribution upgrade on each node, not a package update.
 
 **In Scope**
-- hv02 (tenant hypervisor, node `dv02hyp002p02`) — upgrade to PVE 9.x
-- hv01 (management hypervisor, node `dv02hyp001p01`) — upgrade to PVE 9.x
+- dv02hyp002p02 (tenant hypervisor, node `dv02hyp002p02`) — upgrade to PVE 9.x
+- dv02hyp001p01 (management hypervisor, node `dv02hyp001p01`) — upgrade to PVE 9.x
 - Post-upgrade verification of the SDN API surface the tenant fabric depends on
 - Alignment of the Terraform provider baseline with the upgraded platform
 
@@ -46,13 +46,13 @@ adding a fabric member later is "add a neighbor" rather than "invent an underlay
 
 PVE 9 introduced **SDN Fabrics** — routed underlays (OpenFabric / OSPF) defined as first-class SDN
 objects and driven through the API, expressly to serve as an EVPN underlay. PVE 8.4 has no such
-object: verified against hv02, `GET /cluster/sdn/fabrics` returns *"Method not implemented"*.
+object: verified against dv02hyp002p02, `GET /cluster/sdn/fabrics` returns *"Method not implemented"*.
 
 On 8.4 the underlay would have to be a hand-maintained loopback in `/etc/network/interfaces` plus a
 static `peers` list on the EVPN controller. That is precisely the node-local, hand-carried state
 that requirements **#2 (SDN-as-code)** and **#4 (real underlay identity)** exist to prevent.
 
-Upgrading first means the underlay is Terraform-managed from line one. hv02 currently holds no
+Upgrading first means the underlay is Terraform-managed from line one. dv02hyp002p02 currently holds no
 tenant workloads, so this is the cheapest point in the project's life to do it.
 
 ---
@@ -61,14 +61,14 @@ tenant workloads, so this is the cheapest point in the project's life to do it.
 
 Establish what each node needs before either is touched.
 
-- ✅ Run `pve8to9 --full` on hv01 and hv02 and record the findings
+- ✅ Run `pve8to9 --full` on dv02hyp001p01 and dv02hyp002p02 and record the findings
 - ✅ Confirm both nodes are on the latest 8.4 point release first (an upgrade prerequisite)
 - ✅ Confirm root filesystem headroom (≥ 10 GB recommended) and a tested backup of every guest
 - ✅ Confirm out-of-band access to each node before starting — the upgrade drops network mid-run
 - ✅ Review breaking changes against the estate: cgroup v1 removal (old-systemd containers),
   `/etc/sysctl.conf` no longer honored (move to `/etc/sysctl.d/`), `/tmp` becomes tmpfs
 
-## Uplift hv02 — tenant hypervisor ✅
+## Uplift dv02hyp002p02 — tenant hypervisor ✅
 
 Do the tenant hypervisor first; it carries no tenant workloads yet, so the blast radius is smallest
 and it is the node the fabric work is waiting on.
@@ -77,11 +77,11 @@ and it is the node the fabric work is waiting on.
 - Verify the node returns healthy, guests start, and storage is intact
 - Confirm `GET /cluster/sdn/fabrics` is now served
 
-## Uplift hv01 — management hypervisor ⏳
+## Uplift dv02hyp001p01 — management hypervisor ⏳
 
 The management plane runs here, so this node carries real workloads and needs a maintenance window.
 
-- Inventory what runs on hv01 and what an outage affects before scheduling
+- Inventory what runs on dv02hyp001p01 and what an outage affects before scheduling
 - Same upgrade path; verify the management plane comes back whole
 
 ## Verify the fabric API surface ✅
@@ -105,7 +105,7 @@ Confirm the platform now supports what the tenant fabric design assumes.
 
 ## Status
 
-**hv02 is upgraded and the gate is cleared.** Verified against the node on 2026-08-30:
+**dv02hyp002p02 is upgraded and the gate is cleared.** Verified against the node on 2026-08-30:
 
 | Check | Result |
 |-------|--------|
@@ -119,10 +119,10 @@ The tenant fabric is no longer blocked, and its underlay is defined as code rath
 hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
 [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/).
 
-**hv01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
+**dv02hyp001p01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
 window; nothing in the tenant fabric waits on it. Nor does tenant DNS
 ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)) — cloning a template and
-running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on hv02.
+running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on dv02hyp002p02.
 
 The **PVE 9.2-1 installer ISO is published to the artifact server** (`isos/proxmox`), so the uplift
 — or a full reinstall — can be done with no internet access. Its checksum is verified against

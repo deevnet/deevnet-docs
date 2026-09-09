@@ -29,8 +29,8 @@ ansible-inventory-deevnet/
     ├── hosts.yml           # Main inventory (hosts and group memberships)
     ├── group_vars/         # Variables by group
     └── host_vars/          # Per-host variables (MAC, IP, DNS, DHCP)
-        ├── hv01.yml
-        ├── hv02.yml
+        ├── dv02hyp001p01.yml
+        ├── dv02hyp002p02.yml
         └── ...
 ```
 
@@ -45,9 +45,9 @@ Add the hostname to appropriate groups:
 ```yaml
 hypervisors:
   hosts:
-    hv01: {}
-    hv02: {}
-    hv03: {}    # new host
+    dv02hyp001p01: {}
+    dv02hyp002p02: {}
+    dv02hyp003p01: {}    # new host
 ```
 
 ### 2. Create host_vars file
@@ -71,7 +71,7 @@ env:
         host_a_record: true
         dhcp_reservation: true
         cnames:
-          - pve3
+          - dv02hyp003p01
 ```
 
 ### 3. Apply configuration
@@ -112,7 +112,7 @@ Such a host uses a host_vars **directory**, with the generated values in their
 own file:
 
 ```
-mobile/host_vars/tenant-mgmt-vm01/
+mobile/host_vars/dv02tdn001v01/
 ├── vars.yml       # hand-written
 └── identity.yml   # GENERATED - do not edit
 ```
