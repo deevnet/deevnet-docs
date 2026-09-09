@@ -8,8 +8,11 @@ weight: 4
 Recovering `dv02wap001p01` when it stops answering at 10.20.99.9 or its SSIDs stop serving
 the right VLANs — by factory reset, re-adoption, and reapplying its wireless configuration.
 
-Losing the AP is the least disruptive failure in this section. Nothing wired depends on it,
-so the site keeps running while you work.
+Nothing wired depends on the AP, so the site keeps running while you work — but **you**
+probably do. The AP supplies primary connectivity here, so the moment it stops serving, the
+laptop you would recover it from is off the network too, and every address in this page
+becomes unreachable. Getting a wired path onto the management segment is therefore step 1,
+not a footnote.
 
 ## What you need
 
@@ -17,7 +20,8 @@ so the site keeps running while you work.
 |---|---|
 | **Access** | Physical, to press and hold the reset button. |
 | **A laptop** | To reach the AP on its factory address. |
-| **A patch cable** | Only if you cannot reach it over the wire once reset. |
+| **A patch cable** | Always — it is how you get on the network at all. See step 1. |
+| **A wired port on the laptop** | Or a USB-Ethernet adapter. Keep one with the console kit. |
 
 | | |
 |---|---|
@@ -29,7 +33,71 @@ so the site keeps running while you work.
 
 ---
 
-## 1. Check the port before resetting the AP
+## 1. Get onto the management network by wire
+
+The AP is the primary path to this site. With it down or mid-reset there is no wireless
+management path, and the controller, the switch and the AP's own addresses are all on the far
+side of it. Everything below assumes you have already done this.
+
+Cable the laptop into the access switch `dv02acc001p01` on a port that is an **access port on
+VLAN 99**. Which port that is matters — the switch does not put a spare port on the management
+segment by default.
+
+| Port | VLAN | Occupied by |
+|---|---|---|
+| `gigabitEthernet 1/0/15` | 99 access | `dv02hyp001p01` management |
+| `gigabitEthernet 1/0/16` | 99 access | `dv00bld001p01` — the builder, which runs the Omada controller |
+
+{{< hint warning >}}
+**There is no spare management port declared.** `switch_vlans` configures only the ports listed
+in `switch_ports` in `host_vars/dv02acc001p01.yml` and leaves every other port at the switch
+default — untagged VLAN 1, which is not in `deevnet_vlans` and is not routed. A laptop in a
+free port gets a link light and nothing else, which reads exactly like a dead switch.
+
+So do **not** improvise a port on the day. Either declare one in advance (below), or borrow
+`1/0/15` — never `1/0/16`, which would take the Omada controller off the network at the moment
+you need it.
+{{< /hint >}}
+
+### Declare an operator port before you need it
+
+Add a dedicated port to `host_vars/dv02acc001p01.yml` under `switch_ports.access`, so the
+wired path exists the day the AP does not:
+
+```yaml
+    - interface: "gigabitEthernet 1/0/2"
+      vlan_id: 99
+      description: "operator laptop - console recovery"
+```
+
+Apply it while the network is still healthy:
+
+```bash
+cd ansible-collection-deevnet.net
+ansible-playbook playbooks/switch-vlans.yml --limit dv02acc001p01
+```
+
+### Address the laptop
+
+VLAN 99 is **static only** — there is no DHCP pool on the management segment, so a wired laptop
+will not lease an address. Set one by hand from outside the reserved range:
+
+```bash
+sudo ip addr add 10.20.99.50/24 dev <iface>
+sudo ip route add default via 10.20.99.1
+```
+
+Confirm the path before going further — if these fail, the fault is the switch or the router,
+not the AP:
+
+```bash
+ping -c2 10.20.99.1          # core router
+curl -k https://10.20.99.95:8043   # Omada controller on the builder
+```
+
+---
+
+## 2. Check the port before resetting the AP
 
 The AP is on a trunk. If its native VLAN or allowed list has drifted, the AP will look dead
 while being perfectly healthy — and resetting it will not help.
@@ -43,7 +111,7 @@ Native VLAN 99 with 10, 30, 31, 40 and 99 allowed. If that is wrong, fix the swi
 
 ---
 
-## 2. Reset
+## 3. Reset
 
 Press and hold the reset button until the AP restarts.
 
@@ -59,7 +127,7 @@ Then browse to `http://192.168.0.254` with `admin`/`admin`.
 
 ---
 
-## 3. Re-adopt into Omada
+## 4. Re-adopt into Omada
 
 Set the AP's **inform URL** to the controller so it can be discovered, then adopt it at
 `https://10.20.99.95:8043`. The full sequence is in
@@ -74,7 +142,7 @@ sudo ip addr del 192.168.0.1/24 dev enp4s0
 
 ---
 
-## 4. Reapply the SSIDs
+## 5. Reapply the SSIDs
 
 {{< hint warning >}}
 **Omada cannot push VLAN-tagged SSIDs to this AP.** Omada 6.1 will not provision VLAN
@@ -96,7 +164,7 @@ make migration-omada-ssids
 
 ---
 
-## 5. Verify
+## 6. Verify
 
 Per SSID, from a client:
 
