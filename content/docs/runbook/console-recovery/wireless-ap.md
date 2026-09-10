@@ -22,6 +22,7 @@ not a footnote.
 | **A laptop** | To reach the AP on its factory address. |
 | **A patch cable** | Always — it is how you get on the network at all. See step 1. |
 | **A wired port on the laptop** | Or a USB-Ethernet adapter. Keep one with the console kit. |
+| **The firmware chain** | Already mirrored — `http://artifacts.mobile.deevnet.net/firmware/eap650-outdoor/`. See step 4. |
 
 | | |
 |---|---|
@@ -129,7 +130,66 @@ Then browse to `http://192.168.0.254` with `admin`/`admin`.
 
 ---
 
-## 4. Re-adopt into Omada
+## 4. Upgrade the firmware before adopting
+
+Do this while the AP is still standalone. Adoption replaces its configuration with the
+controller's, and a controller several years newer than the AP's firmware is the combination
+that mis-provisions VLAN-tagged SSIDs — the problem [step 6](#6-reapply-the-ssids) exists to
+work around. Arriving at adoption on current firmware is what removes it.
+
+{{< hint danger >}}
+**This is a chain, not a step, and one hop is irreversible.** Every build since 1.2.x declares
+a minimum prior version, so an AP on the 2023 firmware cannot jump to current:
+
+| Target | Requires first | |
+|---|---|---|
+| `1.2.5 Build 20250321` | — | |
+| `1.3.3 Build 20251111` | 1.2.0 | **irreversible** — TP-Link state a downgrade needs their support |
+| `1.3.11 Build 20260703` | 1.3.1 | |
+
+Each hop reboots the AP. Wireless is already down from the reset in step 3 and stays down
+until step 6 — do not start this without being on the cable from
+[step 1](#1-get-onto-the-management-network-by-wire).
+{{< /hint >}}
+
+The files are mirrored on the artifact server, so no hop depends on TP-Link being reachable
+(`artifacts_to_fetch` in `group_vars/artifact_servers.yml` pins each one's sha256):
+
+```
+http://artifacts.mobile.deevnet.net/firmware/eap650-outdoor/
+```
+
+Take the `.bin`, not the `.zip` — the AP's web UI wants the payload, and the extracted
+`EAP650-Outdoorv1_<ver>_[<build>]_up_signed.bin` files are served alongside the archives. The
+`v1` in the name is the hardware match for EAP650-Outdoor(US) v1.0; TP-Link's own page notes
+`Vx.0 = Vx.6/Vx.8`, so a file labelled V1.6 is correct for this unit.
+
+### Reaching the AP to upload
+
+A reset AP is on `192.168.0.254`, which the management segment does not route. The builder can
+see both — it has 10.20.99.95 and the temporary address from step 3 — so forward a port through
+it rather than re-addressing the laptop:
+
+```bash
+ssh -L 8443:192.168.0.254:443 cdeever@10.20.99.95
+```
+
+Then browse `https://localhost:8443` and upload under **System → Firmware Update**. Download
+the `.bin` to the machine running the browser first; the AP has no route to the artifact server.
+
+### Between each hop
+
+The AP reboots and returns to `192.168.0.254`. Confirm the version actually moved before
+starting the next one — a failed flash that silently keeps the old image turns the next hop
+into a rejected upload rather than a bricked AP, but only if you notice:
+
+**Status → Device Information → Firmware Version**
+
+Expected sequence: `1.0.4` → `1.2.5` → `1.3.3` → `1.3.11`.
+
+---
+
+## 5. Re-adopt into Omada
 
 Set the AP's **inform URL** to the controller so it can be discovered, then adopt it at
 `https://10.20.99.95:8043`. The full sequence is in
@@ -144,13 +204,17 @@ sudo ip addr del 192.168.0.1/24 dev enp4s0
 
 ---
 
-## 5. Reapply the SSIDs
+## 6. Reapply the SSIDs
 
 {{< hint warning >}}
-**Omada cannot push VLAN-tagged SSIDs to this AP.** Omada 6.1 will not provision VLAN
-configuration to EAP650-Outdoor firmware 1.0.4 (2023), so the SSIDs must be configured in the
-**AP's own standalone web UI**, with their VLAN tags, after adoption. This is a firmware
-limitation, not a misconfiguration.
+**Only needed if the AP is still on old firmware.** Omada 6.1 will not provision VLAN
+configuration to EAP650-Outdoor firmware 1.0.4 (2023): the SSIDs have to be set in the **AP's
+own standalone web UI**, with their VLAN tags, after adoption. That is a firmware limitation,
+not a misconfiguration — and it is the reason [step 4](#4-upgrade-the-firmware-before-adopting)
+comes first.
+
+On current firmware the controller should push all four itself, and this step becomes a check
+rather than a task. Confirm which case you are in before hand-configuring anything.
 {{< /hint >}}
 
 SSIDs map to the VLANs the trunk allows — `DVNTM-IOT` onto VLAN 30 for custom-firmware
@@ -166,7 +230,7 @@ make migration-omada-ssids
 
 ---
 
-## 6. Verify
+## 7. Verify
 
 Per SSID, from a client:
 
