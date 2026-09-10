@@ -1,6 +1,8 @@
 ---
 title: "Authority Transition"
-weight: 2
+weight: 30
+aliases:
+  - /docs/runbook/authority-transition/
 ---
 
 # Authority Transition Runbook

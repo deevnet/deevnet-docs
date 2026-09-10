@@ -1,6 +1,8 @@
 ---
 title: "Hypervisor"
 weight: 2
+aliases:
+  - /docs/runbook/console-recovery/hypervisor/
 ---
 
 # Hypervisor
@@ -84,7 +86,7 @@ a `proxmox-node-network.yml` run, start here.
 Both nodes carry management **untagged** on their switch port's native VLAN 99, deliberately,
 so that `vmbr0` needs no change and the node cannot be lost by a VLAN edit. If management is
 untagged in `/etc/network/interfaces` but the switch port is no longer native 99, the fault
-is on the switch — see [access switch](/docs/runbook/console-recovery/access-switch/).
+is on the switch — see [access switch](/docs/runbook/recovery/console-recovery/access-switch/).
 
 ---
 

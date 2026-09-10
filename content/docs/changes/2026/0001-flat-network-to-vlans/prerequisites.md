@@ -2,6 +2,7 @@
 title: "1. Prerequisites & Preflight"
 weight: 1
 aliases:
+  - /docs/changes/2026/2026-03-21-flat-network-to-vlans/prerequisites/
   - /docs/migrations/2026-03-21-vlan-migration/prerequisites/
   - /docs/runbook/network-migration/prerequisites/
 ---
@@ -37,7 +38,7 @@ The builder (`dv00bld001p01`) hosts the Omada SDN controller, artifact server, a
 
 - The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/16`
 - `eth1` (transit) must be connected to an upstream network and receiving a DHCP address — this is the builder's only path to the internet
-- The Omada controller on the builder manages device adoption and monitoring (switch is managed via SSH/CLI during migration) — Omada adoption of devices happens post-migration in [Step 12](/docs/changes/2026/2026-03-21-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption)
+- The Omada controller on the builder manages device adoption and monitoring (switch is managed via SSH/CLI during migration) — Omada adoption of devices happens post-migration in [Step 12](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption)
 - The builder's port is assigned to VLAN 99 (management) in the target inventory, with IP `10.20.99.95`
 
 **Pre-flight checks:** Automated by `make preflight` (Step 1). The preflight playbook verifies builder service status, eth1 DHCP address, and internet connectivity.
@@ -74,4 +75,4 @@ All checks show `[PASS]`. Internet connectivity from the builder shows `[WARN]` 
 
 Review the MAC address table output and confirm each device's MAC appears on its expected port (per the Physical Port Mapping prerequisite above).
 
-**Undo:** [Undo Step 1](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-1)
+**Undo:** [Undo Step 1](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-1)

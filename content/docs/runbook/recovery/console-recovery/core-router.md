@@ -1,6 +1,8 @@
 ---
 title: "Core Router"
 weight: 1
+aliases:
+  - /docs/runbook/console-recovery/core-router/
 ---
 
 # Core Router
@@ -43,7 +45,7 @@ timeout 3 bash -c 'exec 3<>/dev/tcp/10.20.99.1/22'   # ssh
 | Gateway answers, 443 and 22 both refused | Firewall policy — the anti-lockout rules are gone. This page. |
 | Nothing answers, from any segment | Router down, or its LAN port. This page. |
 | Same-segment works, cross-segment does not | Zone policy. Still this page if the API is unreachable. |
-| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/console-recovery/access-switch/) or [troubleshooting](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/). |
+| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/recovery/console-recovery/access-switch/) or [troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/). |
 
 {{< hint warning >}}
 **A gateway answering ICMP proves nothing about the policy.** The router replies on its own
@@ -120,7 +122,7 @@ preview any of it.
 
 {{< hint info >}}
 **`opnsense_firewall` is guarded since 2026-09-08.** The guards in
-[incident actions 1–5](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/#corrective-actions)
+[INC-0001 actions 1–5](/docs/incidents/2026/0001-firewall-policy-deletion/#corrective-actions)
 have landed: it refuses a broken discovery, withholds deletions by default, protects the
 operator path, and applies behind a rollback savepoint. They were verified offline, not yet
 against this router, so treat its first real run here as a watched change with the console
@@ -138,5 +140,5 @@ open.
 This procedure was written after 2026-09-07, when an `opnsense_firewall` run deleted every
 managed filter rule on this router — including both anti-lockout rules — and the mini
 DisplayPort cable was the only remaining way in. The
-[incident record](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/) has the full
+[INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) has the full
 analysis and the actions taken.

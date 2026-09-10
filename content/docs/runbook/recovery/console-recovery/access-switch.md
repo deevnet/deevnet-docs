@@ -1,6 +1,8 @@
 ---
 title: "Access Switch"
 weight: 3
+aliases:
+  - /docs/runbook/console-recovery/access-switch/
 ---
 
 # Access Switch
@@ -25,7 +27,7 @@ time set aside — not as a quick thing to try.
 If the switch still responds on a console cable, fixing the specific fault is faster and far
 less disruptive than a reset. The usual culprit after a trunk change is a native VLAN
 mismatch on the uplink — see
-[troubleshooting](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/#lost-switch-access-after-trunk-configuration),
+[troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/#lost-switch-access-after-trunk-configuration),
 which covers reverting a port from the console.
 
 Reset only when the switch is unreachable by every route, or its configuration is unknown.
@@ -65,7 +67,7 @@ derived from inventory (10.20.99.10), and a factory-reset switch is not there ye
 
 Connect your laptop directly to a switch port and give yourself an address on the switch's
 default subnet — the same manoeuvre the
-[AP procedure](/docs/runbook/console-recovery/wireless-ap/) uses:
+[AP procedure](/docs/runbook/recovery/console-recovery/wireless-ap/) uses:
 
 ```bash
 sudo ip addr add 192.168.0.2/24 dev <iface>
@@ -131,7 +133,7 @@ ping -c1 10.20.99.1         # the router, through the restored trunk
 ping -c1 10.20.30.11        # a host on another segment
 ```
 
-Every VLAN in [the network reference](/docs/runbook/network-reference/) should be present,
+Every VLAN in [the network reference](/docs/runbook/network/network-reference/) should be present,
 and `gigabitEthernet 1/0/1` should be trunking with native VLAN 999.
 
 ---
@@ -140,7 +142,7 @@ and `gigabitEthernet 1/0/1` should be trunking with native VLAN 999.
 
 A factory reset drops the switch out of the Omada controller. Re-adopt it at
 `https://10.20.99.95:8043`, following
-[Omada device adoption](/docs/changes/2026/2026-03-21-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption).
+[Omada device adoption](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption).
 
 Adoption is management only — the switch forwards traffic correctly whether or not Omada has
 claimed it, so this is the last step rather than a prerequisite.
@@ -228,7 +230,7 @@ read `1.20.24 Build 20260509`, and the backup image should hold 1.20.1.
 
 The most important check is that those commands run at all. Ansible reaches this switch over
 SSH with legacy key exchange (see the options in
-[post-migration](/docs/changes/2026/2026-03-21-flat-network-to-vlans/post-migration/)), and two years of builds —
+[post-migration](/docs/changes/2026/0001-flat-network-to-vlans/post-migration/)), and two years of builds —
 including an OpenSSL update in 1.20.4 and an SSH stability fix in 1.20.19 — are where that
 could change.
 

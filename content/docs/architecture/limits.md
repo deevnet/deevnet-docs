@@ -28,7 +28,7 @@ When a device is misconfigured badly enough to lose its own management path, rec
 **physical**: a monitor and a USB keyboard, at the device. Different devices need different
 cables — mini DisplayPort for the core router, a DisplayPort→HDMI adapter for the hypervisors
 — which is a real operational cost at the moment you can least afford one. See
-[Console Recovery](/docs/runbook/console-recovery/).
+[Console Recovery](/docs/runbook/recovery/console-recovery/).
 
 The nearest substitute is Wake-on-LAN, declared per host (`wol: true`) and driven by
 `playbooks/wol.yml`. It is strictly one-way: it can wake a powered-down node, but it cannot
@@ -112,7 +112,7 @@ perfectly well without a controller.
 **A caveat about deployment mode, not architecture.** In production the builder sits on the
 management segment, so automation runs from *behind* the policy it edits. The builder's own
 design allows it to be attached elsewhere — but that does not rescue a router with no rules
-loaded, which stays a [console job](/docs/runbook/console-recovery/core-router/).
+loaded, which stays a [console job](/docs/runbook/recovery/console-recovery/core-router/).
 {{< /hint >}}
 
 ## One site has hardware
@@ -130,7 +130,7 @@ the rack leaves."*
 OPNsense keeps its own configuration history on the router, which covers a configuration
 mistake but not a failed disk. No collection carries off-box backup automation; the manual
 download step in the
-[segmentation prerequisites](/docs/changes/2026/2026-03-21-flat-network-to-vlans/prerequisites/) is the whole of
+[segmentation prerequisites](/docs/changes/2026/0001-flat-network-to-vlans/prerequisites/) is the whole of
 the practice.
 
 ---
@@ -149,7 +149,7 @@ The compensating controls are real, and they are the reason the trade works:
   mirrors and boot infrastructure, provisions any site it is attached to, and is defined as a
   role any suitable host can assume. This is the mechanism behind *rebuild, not failover* —
   without it the rest of this page would be much harder to accept.
-- **Recovery is documented per device.** [Console Recovery](/docs/runbook/console-recovery/)
+- **Recovery is documented per device.** [Console Recovery](/docs/runbook/recovery/console-recovery/)
   covers the router, the hypervisors, the switch and the AP, including which cable each needs.
 - **The blast radius is understood.** [Network segmentation](/docs/architecture/network-segmentation/)
   bounds what a compromised or misbehaving segment can reach, which matters more when there is

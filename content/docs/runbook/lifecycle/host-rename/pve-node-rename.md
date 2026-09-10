@@ -1,6 +1,8 @@
 ---
 title: "Rename a Proxmox Node"
 weight: 1
+aliases:
+  - /docs/runbook/host-rename/pve-node-rename/
 ---
 
 # Rename a Proxmox Node
@@ -13,13 +15,8 @@ ISO arrives called `pve`, because that is the installer's default, so any node b
 needs this — and the node name cannot be changed by any supported path afterwards. The
 [last section](#do-not-create-this-problem-again) is how to avoid needing it at all.
 
-It was last run on 2026-09-05, as the final phase of the
-[host rename](/docs/runbook/host-rename/):
-
-| Host | Node was | Node is |
-|------|----------|---------|
-| `dv02hyp001p01` | `pve` | `dv02hyp001p01` |
-| `dv02hyp002p02` | `pve2` | `dv02hyp002p02` |
+It was last run on 2026-09-05, on both hypervisors, as the final phase of the
+[host rename](/docs/changes/2026/0003-host-rename/).
 
 {{< hint danger >}}
 **A PVE node name is not renamable through any supported path.** There is no `pvecm rename`, no API

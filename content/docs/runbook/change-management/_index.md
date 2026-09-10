@@ -51,9 +51,9 @@ of change it is. A change has one of each.
 
 | Type | Means | Example |
 |------|-------|---------|
-| **Migration** | Moves a site, service or network from one design to another | [Flat network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) |
+| **Migration** | Moves a site, service or network from one design to another | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) flat network → VLANs; [CHG-0003](/docs/changes/2026/0003-host-rename/) host rename |
 | **Upgrade** | A new version of software or firmware on an existing system | Omada controller 6.1 → 6.3 |
-| **Configuration** | A settings change within the current design | Moving a switch port from access to trunk |
+| **Configuration** | A settings change within the current design | [CHG-0002](/docs/changes/2026/0002-authority-transition-rework/) authority transition rework; moving a switch port from access to trunk |
 | **Deployment** | A new system or service brought into service | The MQTT broker VM on IoT Backend |
 | **Decommission** | A system or service taken out of service | Dropping the VyOS roles |
 
@@ -64,7 +64,7 @@ of change it is. A change has one of each.
 Every **disruptive** change gets a change record, started before it runs. Structural and
 routine changes may have one; otherwise their commit history is their record.
 
-Records are kept under [Change Records](/docs/changes/), dated by the day execution starts, and
+Records are kept under [Change Records](/docs/changes/), numbered `CHG-NNNN` like ADRs, and
 start from the [change record template](change-record-template/). The template is maintained
 here; each record is retained there. When a change goes wrong in a way that affects service,
 the incident gets its own record under [Incident Records](/docs/incidents/) — see
@@ -95,7 +95,7 @@ ways.
 The first is the dangerous one, because it is silent: a clean check run reads as "nothing to
 change". On 2026-09-07 it preceded the deletion of every firewall rule on the core router and
 a total loss of site connectivity — see
-[the incident record](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/).
+[INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/).
 
 **Validate a network change this way instead:**
 
@@ -110,7 +110,7 @@ a total loss of site connectivity — see
 4. **Keep console access available** for any change to the core router or to the switch port
    carrying your management path. The automation host sits behind both, so a change that
    severs it also removes your ability to undo it —
-   [Console Recovery](/docs/runbook/console-recovery/) is what you follow if it does.
+   [Console Recovery](/docs/runbook/recovery/console-recovery/) is what you follow if it does.
 {{< /hint >}}
 
 ---

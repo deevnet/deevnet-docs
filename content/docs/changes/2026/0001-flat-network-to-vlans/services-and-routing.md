@@ -2,6 +2,7 @@
 title: "4. Services & Routing"
 weight: 4
 aliases:
+  - /docs/changes/2026/2026-03-21-flat-network-to-vlans/services-and-routing/
   - /docs/migrations/2026-03-21-vlan-migration/services-and-routing/
   - /docs/runbook/network-migration/services-and-routing/
 ---
@@ -34,7 +35,7 @@ make migration-switch-test-port
 4. `ping 8.8.8.8` — internet access works
 5. `ping 10.20.99.10` — inter-VLAN routing to switch management works (if firewall allows)
 
-**Undo:** [Undo Step 6](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-6)
+**Undo:** [Undo Step 6](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-6)
 
 ---
 
@@ -45,7 +46,7 @@ Configure Kea DHCP subnets and static reservations for the new VLAN subnets.
 Ensure Kea DHCP subnets are created in OPNsense first (Services -> Kea DHCP -> Subnets) and `dhcp_subnet_uuid` is updated in `group_vars/routers/vars.yml` for each subnet.
 
 {{< hint info >}}
-**Note:** VLAN 99 already has its gateway IP configured from [Step 5](/docs/changes/2026/2026-03-21-flat-network-to-vlans/builder-cutover/). The DHCP configuration here covers the remaining subnets. VLAN 99 devices (builder, switch) use static IPs and do not require DHCP reservations.
+**Note:** VLAN 99 already has its gateway IP configured from [Step 5](/docs/changes/2026/0001-flat-network-to-vlans/builder-cutover/). The DHCP configuration here covers the remaining subnets. VLAN 99 devices (builder, switch) use static IPs and do not require DHCP reservations.
 {{< /hint >}}
 
 **Run:**
@@ -58,7 +59,7 @@ make migration-opnsense-dhcp
 2. OPNsense GUI -> Services -> Kea DHCP -> Reservations — static mappings present
 3. A device on the test port (Step 6) gets a correct DHCP lease
 
-**Undo:** [Undo Step 7](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-7)
+**Undo:** [Undo Step 7](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-7)
 
 ---
 
@@ -67,11 +68,11 @@ make migration-opnsense-dhcp
 Assign gateway IP addresses to each remaining VLAN interface and enable them. After this step, the router can route traffic between VLAN subnets (subject to firewall policy).
 
 {{< hint info >}}
-**Note:** VLAN 99 was already configured with its gateway IP (`10.20.99.1/24`) in [Step 5](/docs/changes/2026/2026-03-21-flat-network-to-vlans/builder-cutover/) as a prerequisite for the builder cutover.
+**Note:** VLAN 99 was already configured with its gateway IP (`10.20.99.1/24`) in [Step 5](/docs/changes/2026/0001-flat-network-to-vlans/builder-cutover/) as a prerequisite for the builder cutover.
 {{< /hint >}}
 
 **Prerequisites:**
-- [Step 2](/docs/changes/2026/2026-03-21-flat-network-to-vlans/vlan-foundation/#step-2-opnsense-vlan-interfaces) complete (VLAN sub-interfaces exist on OPNsense)
+- [Step 2](/docs/changes/2026/0001-flat-network-to-vlans/vlan-foundation/#step-2-opnsense-vlan-interfaces) complete (VLAN sub-interfaces exist on OPNsense)
 - VLAN devices assigned to interface slots in OPNsense (Interfaces -> Assignments)
 
 **Run:**
@@ -85,7 +86,7 @@ make migration-opnsense-interfaces
 2. Each interface shows status: enabled
 3. From test port (Step 6): `ping 10.20.10.1` (trusted gateway) — should succeed
 
-**Undo:** [Undo Step 8](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-8)
+**Undo:** [Undo Step 8](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-8)
 
 ---
 
@@ -107,7 +108,7 @@ make migration-opnsense-firewall
 3. From guest VLAN: `ping 10.20.10.1` (trusted gateway) — should be denied
 4. From any VLAN: `ping 8.8.8.8` (internet) — should succeed for zones in `firewall_internet_zones`
 
-**Undo:** [Undo Step 9](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-9)
+**Undo:** [Undo Step 9](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-9)
 
 ---
 
@@ -130,4 +131,4 @@ show interface switchport gigabitEthernet 1/0/1
 ```
 - PVID: 999
 
-**Undo:** [Undo Step 9b](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-9b)
+**Undo:** [Undo Step 9b](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-9b)

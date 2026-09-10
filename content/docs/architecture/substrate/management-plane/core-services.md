@@ -112,7 +112,7 @@ Records are defined in both production network config and builder config, but:
 This is intentional duplication with exclusive activation, not conflicting truth.
 
 For per-site implementation details, see [Core Services Implementation](/docs/platforms/management-plane/core-services/).
-For the authority transition procedure, see [Authority Transition](/docs/runbook/authority-transition/).
+For the authority transition procedure, see [Authority Transition](/docs/runbook/building-recovery/authority-transition/).
 
 ---
 

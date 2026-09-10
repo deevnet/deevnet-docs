@@ -1,7 +1,9 @@
 ---
 title: "Console Recovery"
-weight: 7
+weight: 1
 bookCollapseSection: true
+aliases:
+  - /docs/runbook/console-recovery/
 ---
 
 # Console Recovery
@@ -20,10 +22,10 @@ that day.
 
 | Device | Address | Way in | Page |
 |---|---|---|---|
-| Core router `dv02cor002p01` | 10.20.99.1 | Mini DisplayPort + USB keyboard | [Core router](/docs/runbook/console-recovery/core-router/) |
-| Hypervisors `dv02hyp001p01`, `dv02hyp002p02` | 10.20.99.21, .22 | DisplayPort→HDMI adapter + USB keyboard | [Hypervisor](/docs/runbook/console-recovery/hypervisor/) |
-| Access switch `dv02acc001p01` | 10.20.99.10 | Factory reset, then reapply | [Access switch](/docs/runbook/console-recovery/access-switch/) |
-| Access point `dv02wap001p01` | 10.20.99.9 | Wired into the switch first, then factory reset | [Wireless AP](/docs/runbook/console-recovery/wireless-ap/) |
+| Core router `dv02cor002p01` | 10.20.99.1 | Mini DisplayPort + USB keyboard | [Core router](/docs/runbook/recovery/console-recovery/core-router/) |
+| Hypervisors `dv02hyp001p01`, `dv02hyp002p02` | 10.20.99.21, .22 | DisplayPort→HDMI adapter + USB keyboard | [Hypervisor](/docs/runbook/recovery/console-recovery/hypervisor/) |
+| Access switch `dv02acc001p01` | 10.20.99.10 | Factory reset, then reapply | [Access switch](/docs/runbook/recovery/console-recovery/access-switch/) |
+| Access point `dv02wap001p01` | 10.20.99.9 | Wired into the switch first, then factory reset | [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) |
 
 ## Two kinds of recovery
 
@@ -42,7 +44,7 @@ normally use to reach everything else here.** Wireless management dies with it, 
 recovery begins by cabling into the access switch rather than by touching the AP at all — and
 the management segment has no DHCP pool, so that laptop needs a hand-set address. Port
 `gigabitEthernet 1/0/2` on the access switch is declared and held empty for this; see
-[Wireless AP step 1](/docs/runbook/console-recovery/wireless-ap/).
+[Wireless AP step 1](/docs/runbook/recovery/console-recovery/wireless-ap/).
 
 ## Keep findable
 
@@ -58,7 +60,7 @@ the management segment has no DHCP pool, so that laptop needs a hand-set address
 
 Take a config backup before a disruptive change to the router: **System → Configuration →
 Backups → Download**, as the
-[segmentation prerequisites](/docs/changes/2026/2026-03-21-flat-network-to-vlans/prerequisites/) already
+[segmentation prerequisites](/docs/changes/2026/0001-flat-network-to-vlans/prerequisites/) already
 require. OPNsense keeps its own history on the box, which covers a configuration mistake but
 not a failed disk, and there is no off-box backup automation in any collection.
 
@@ -67,5 +69,5 @@ For the switch and the AP there is nothing to back up — inventory is the backu
 ## Related
 
 - [Change Management](/docs/runbook/change-management/) — what actually validates a network change, and why `--check --diff` does not
-- [Flat Network → VLANs: issues](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/) — faults that are not lockouts, as met during segmentation
+- [CHG-0001 issues and follow-ups](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/) — faults that are not lockouts, as met during segmentation
 - [Incident Records](/docs/incidents/) — where these procedures came from
