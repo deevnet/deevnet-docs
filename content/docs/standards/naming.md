@@ -60,8 +60,9 @@ All site-specific host and service records MUST exist in the corresponding site 
 > **Adopted 2026-09-05.** This standard was updated on acceptance of
 > [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/), and the estate now runs on
 > it: fixed-width hostnames, site codes, and the `home` / `mobile` zones. The
-> [Host Rename runbook](/docs/runbook/host-rename/) records how it got there, and carries the two
-> hazards still waiting for any future rename.
+> [host rename change record](/docs/changes/2026/2026-09-05-host-rename/) records how it got
+> there, and [Renaming Hosts](/docs/runbook/lifecycle/host-rename/) carries the two hazards still
+> waiting for any future rename.
 
 ---
 

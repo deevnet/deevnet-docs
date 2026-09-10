@@ -10,3 +10,4 @@ bookCollapseSection: true
 |---|---|---|---|---|
 | 2026-03-21 | [Flat Network → VLANs](2026-03-21-flat-network-to-vlans/) | Migration | mobile | Complete |
 | 2026-03-26 | [Authority Transition Rework](2026-03-26-authority-transition-rework/) | Configuration | mobile | Complete |
+| 2026-09-05 | [Host Rename (ADR-0008)](2026-09-05-host-rename/) | Migration | mobile | Complete |
