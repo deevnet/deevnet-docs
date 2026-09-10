@@ -24,14 +24,15 @@ New records start from the [change record template](/docs/runbook/change-managem
 
 ## Records
 
-| Date | Change | Type | Site | Status |
-|---|---|---|---|---|
-| 2026-03-21 | [Flat Network → VLANs](2026/2026-03-21-flat-network-to-vlans/) | Migration | mobile | Complete |
-| 2026-03-26 | [Authority Transition Rework](2026/2026-03-26-authority-transition-rework/) | Configuration | mobile | Complete |
-| 2026-09-05 | [Host Rename (ADR-0008)](2026/2026-09-05-host-rename/) | Migration | mobile | Complete |
+| ID | Date | Change | Type | Site | Status |
+|---|---|---|---|---|---|
+| CHG-0001 | 2026-03-21 | [Flat Network → VLANs](2026/0001-flat-network-to-vlans/) | Migration | mobile | Complete |
+| CHG-0002 | 2026-03-26 | [Authority Transition Rework](2026/0002-authority-transition-rework/) | Configuration | mobile | Complete |
+| CHG-0003 | 2026-09-05 | [Host Rename (ADR-0008)](2026/0003-host-rename/) | Migration | mobile | Complete |
 
-Records are grouped by year and named `YYYY-MM-DD — <what changed>`, dated by the day
-execution started.
+Records are numbered `CHG-NNNN` in the order they are opened, like
+[ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
+is cited. They are grouped by year, and each carries the date execution started.
 
 ## Retrospective records
 

@@ -2,6 +2,7 @@
 title: "6. Post-Migration"
 weight: 6
 aliases:
+  - /docs/changes/2026/2026-03-21-flat-network-to-vlans/post-migration/
   - /docs/migrations/2026-03-21-vlan-migration/post-migration/
   - /docs/runbook/network-migration/post-migration/
 ---

@@ -9,7 +9,9 @@ aliases:
 # Incident Records
 
 One record per incident on Deevnet infrastructure: what broke, how it was found, why it
-happened, how service came back, and what was done so it does not happen again.
+happened, how service came back, and what was done so it does not happen again. Records are
+numbered `INC-NNNN` in the order they are opened, like [ADRs](/docs/architecture/decisions/),
+and grouped by year.
 
 [Change Management](/docs/runbook/change-management/) states that *"manual changes without
 validation are considered defects."* Most incidents are what happened when a change reached a
@@ -24,6 +26,6 @@ in the runbook under [Incident Management](/docs/runbook/incident-management/).
 
 ## Records
 
-| Date | Incident | Site | Root cause | Actions |
-|------|----------|------|-----------|---------|
-| 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/2026-09-07-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Done; 3 open items |
+| ID | Date | Incident | Site | Root cause | Actions |
+|----|------|----------|------|-----------|---------|
+| INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Done; 3 open items |

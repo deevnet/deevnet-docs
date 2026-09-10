@@ -1,13 +1,14 @@
 ---
-title: "2026-03-21 — Flat Network → VLANs"
-weight: 20260321
+title: "CHG-0001: Flat Network → VLANs"
+weight: 1
 bookCollapseSection: true
 aliases:
+  - /docs/changes/2026/2026-03-21-flat-network-to-vlans/
   - /docs/migrations/2026-03-21-vlan-migration/
   - /docs/runbook/network-migration/
 ---
 
-# 2026-03-21 — Flat Network → VLANs
+# CHG-0001: Flat Network → VLANs
 
 {{< hint info >}}
 **Retrospective change record.** This was rebuilt after the fact from the runbook that drove
@@ -22,6 +23,7 @@ since been renamed `mobile`.
 
 | | |
 |---|---|
+| **Date** | 2026-03-21 |
 | **Change type** | Migration |
 | **Classification** | Disruptive |
 | **Status** | Complete. Executed 2026-03-21 to 2026-03-24, closed 2026-03-25. |
@@ -29,7 +31,7 @@ since been renamed `mobile`.
 | **Systems** | Core router `dv02cor002p01` (OPNsense), access switch `dv02acc001p01` (SG2218), AP `dv02wap001p01` (EAP650-Outdoor), builder `dv00bld001p01` with the Omada controller, hypervisor `dv02hyp001p01` |
 | **Automation** | `ansible-collection-deevnet.net`, `make migration-*` targets, run against a target inventory `dvntm-new` |
 | **Risk** | High. The builder's own network path moves mid-change, and a console cable is required. |
-| **Related changes** | [2026-03-26 — Authority Transition Rework](/docs/changes/2026/2026-03-26-authority-transition-rework/), which repaired the authority transition playbooks this change left non-functional |
+| **Related changes** | [CHG-0002: Authority Transition Rework](/docs/changes/2026/0002-authority-transition-rework/), which repaired the authority transition playbooks this change left non-functional |
 | **Related incidents** | None |
 | **Related runbooks** | [Build Network](/docs/runbook/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/recovery/console-recovery/) |
 
@@ -182,7 +184,7 @@ handed out `10.20.40.50` (VLAN 40).
 **Knock-on effect.** The change left the authority transition playbooks non-functional on the new
 network. `bootstrap-auth` no longer enabled DHCP and would have handed out the wrong gateway.
 Nothing in this plan covered them. A review found it the day after the change closed, and it was
-fixed the same morning: [2026-03-26 — Authority Transition Rework](/docs/changes/2026/2026-03-26-authority-transition-rework/).
+fixed the same morning: [CHG-0002: Authority Transition Rework](/docs/changes/2026/0002-authority-transition-rework/).
 
 The AP was forgotten from the controller on 2026-03-24 with a configuration reset, and has been
 pending since. The switch was never adopted. Both still run their 2023–2024 firmware. The rest

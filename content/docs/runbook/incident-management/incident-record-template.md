@@ -6,8 +6,9 @@ weight: 1
 # Incident Record Template (INC)
 
 The shape every [incident record](/docs/incidents/) takes. Copy the skeleton below into
-`content/docs/incidents/<YYYY>/<YYYY-MM-DD>-<slug>.md`.
-[2026-09-07 — Firewall Policy Deleted, Total Connectivity Loss](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/)
+`content/docs/incidents/<YYYY>/<NNNN>-<slug>.md`, numbered with the next unused `INC-NNNN` —
+global across years and never reused, like ADRs.
+[INC-0001: Firewall Policy Deleted, Total Connectivity Loss](/docs/incidents/2026/0001-firewall-policy-deletion/)
 is a worked example.
 
 Start the record while the incident is fresh, even with most sections empty. The timeline
@@ -19,14 +20,15 @@ and the wrong turns are the parts memory loses first.
 
 ````markdown
 ---
-title: "YYYY-MM-DD — <What broke>"
-weight: YYYYMMDD
+title: "INC-NNNN: <What broke>"
+weight: NNNN
 ---
 
-# YYYY-MM-DD — <What broke>
+# INC-NNNN: <What broke>
 
 | | |
 |---|---|
+| **Date** | YYYY-MM-DD — the day it began |
 | **Site** | |
 | **Systems** | Devices, hosts and roles involved, by inventory name |
 | **Severity** | What was lost, and what recovery required |

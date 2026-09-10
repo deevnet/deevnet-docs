@@ -1,11 +1,11 @@
 ---
-title: "2026-03-26 — Authority Transition Rework"
-weight: 20260326
+title: "CHG-0002: Authority Transition Rework"
+weight: 2
 aliases:
   - /docs/runbook/authority-transition-gap-analysis/
 ---
 
-# 2026-03-26 — Authority Transition Rework
+# CHG-0002: Authority Transition Rework
 
 {{< hint info >}}
 **Retrospective change record.** This was rebuilt from the gap analysis written at the time,
@@ -18,6 +18,7 @@ Host names follow ADR-0008. At the time the builder was `provisioner-ph01`, the 
 
 | | |
 |---|---|
+| **Date** | 2026-03-26 |
 | **Change type** | Configuration |
 | **Classification** | Structural — playbook, role and inventory changes |
 | **Status** | Complete. Analysed and fixed on 2026-03-26. |
@@ -25,7 +26,7 @@ Host names follow ADR-0008. At the time the builder was `provisioner-ph01`, the 
 | **Systems** | Builder `dv00bld001p01`: the `bootstrap` role and `bootstrap-authoritative.yml` / `core-authoritative.yml` in `ansible-collection-deevnet.builder`; `disable-` / `enable-opnsense-services.yml` in `ansible-collection-deevnet.net`; `group_vars/bootstrap_nodes.yml` |
 | **Automation** | Builder `f5d38d6`, net `d37a95f`, inventory `9600744`, docs `9e0b967` |
 | **Risk** | Low to the running site. Nothing changes until an authority transition is run, and then the builder's own IP swap is the risky step. |
-| **Related changes** | [2026-03-21 — Flat Network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/), which left these playbooks non-functional |
+| **Related changes** | [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/), which left these playbooks non-functional |
 | **Related incidents** | None |
 | **Related runbooks** | [Authority Transition](/docs/runbook/building-recovery/authority-transition/); [Configure PXE](/docs/runbook/building-recovery/build-sequence/) (`make bootstrap-auth`); [Build Network](/docs/runbook/building-recovery/build-network/) (`make core-auth`) |
 
@@ -35,7 +36,7 @@ Host names follow ADR-0008. At the time the builder was `provisioner-ph01`, the 
 
 The **authority transition** is how the builder takes over DNS, DHCP and the gateway from the
 core router to bootstrap a site (`make bootstrap-auth`), and hands them back afterwards
-(`make core-auth`). The [VLAN migration](/docs/changes/2026/2026-03-21-flat-network-to-vlans/)
+(`make core-auth`). The [VLAN migration](/docs/changes/2026/0001-flat-network-to-vlans/)
 moved the site onto the segmented 10-space, and nothing in it touched this procedure.
 
 On 2026-03-26, the day after that migration closed, the runbook was compared against the
@@ -248,8 +249,8 @@ All five chunks landed together in one sitting on 2026-03-26, within a minute of
 | 07:42:36 | `9e0b967` | docs | Authority Transition runbook rewritten; this analysis published |
 
 The inventory commit also added one unrelated firewall rule, `trusted -> management`, as a lab
-convenience. That is the operator path the
-[2026-09-07 incident](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/) later deleted,
+convenience. That is the operator path the 2026-09-07 firewall incident,
+[INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/), later deleted,
 and which is now protected from deletion.
 
 As published, the analysis's summary table marked all ten gaps resolved, but gaps 1, 4 and 8

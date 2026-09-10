@@ -195,7 +195,7 @@ Expected sequence: `1.0.4` → `1.2.5` → `1.3.3` → `1.3.11`.
 
 Set the AP's **inform URL** to the controller so it can be discovered, then adopt it at
 `https://10.20.99.95:8043`. The full sequence is in
-[Omada device adoption](/docs/changes/2026/2026-03-21-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption).
+[Omada device adoption](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption).
 
 Remove the temporary address from the builder once the AP is reachable on the management
 segment:
@@ -222,7 +222,7 @@ rather than a task. Confirm which case you are in before hand-configuring anythi
 SSIDs map to the VLANs the trunk allows — `DVNTM-IOT` onto VLAN 30 for custom-firmware
 devices, and the trusted, vendor-IoT and guest SSIDs onto 10, 31 and 40. The authoritative
 list is `deevnet_vlans` in inventory and
-[Step 13](/docs/changes/2026/2026-03-21-flat-network-to-vlans/port-migration/#step-13-ap-ssid-configuration).
+[Step 13](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-13-ap-ssid-configuration).
 
 Once the AP's firmware has been updated and Omada can provision it, this becomes:
 
@@ -247,7 +247,7 @@ An IoT client on `DVNTM-IOT` should land in 10.20.30.0/24. A guest client should
 {{< hint info >}}
 **A client that associates but gets no lease is almost always the trunk**, not the SSID —
 the VLAN is not allowed on `gigabitEthernet 1/0/4`, or DHCP is not serving that segment. See
-[troubleshooting](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/#device-not-getting-dhcp-lease).
+[troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/#device-not-getting-dhcp-lease).
 {{< /hint >}}
 
 ---

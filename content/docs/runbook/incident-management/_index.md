@@ -32,8 +32,8 @@ set out in NIST's incident-handling guidance (SP 800-61):
 
 ## Writing one
 
-- **File name:** `content/docs/incidents/<YYYY>/<YYYY-MM-DD>-<short-slug>.md`, with weight
-  `YYYYMMDD`, so each year sorts chronologically.
+- **Number and file name:** the next unused `INC-NNNN`, global and never reused, like ADRs.
+  The file is `content/docs/incidents/<YYYY>/<NNNN>-<short-slug>.md`, with weight `NNNN`.
 - **Title:** the date and what broke, from the operator's point of view — not the fix.
 - **Add a row** to [Incident Records](/docs/incidents/) and to that year's page.
 - **Actions carry a status, and it is kept current.** A record whose actions are all "Open" is

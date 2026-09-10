@@ -2,6 +2,7 @@
 title: "Undo Procedure"
 weight: 7
 aliases:
+  - /docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/
   - /docs/migrations/2026-03-21-vlan-migration/undo/
 ---
 
@@ -133,7 +134,7 @@ Builder cutover, covering 5b–5d. The plan has no undo for 5a (interface assign
    ```
 
 If the builder cannot be reached at all, see
-[builder lost connectivity](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/#builder-lost-connectivity-during-step-5).
+[builder lost connectivity](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/#builder-lost-connectivity-during-step-5).
 
 ## Undo Step 4
 

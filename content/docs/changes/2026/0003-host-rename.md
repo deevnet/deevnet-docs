@@ -1,11 +1,11 @@
 ---
-title: "2026-09-05 — Host Rename (ADR-0008)"
-weight: 20260905
+title: "CHG-0003: Host Rename (ADR-0008)"
+weight: 3
 aliases:
   - /docs/runbook/host-rename/
 ---
 
-# 2026-09-05 — Host Rename (ADR-0008)
+# CHG-0003: Host Rename (ADR-0008)
 
 {{< hint info >}}
 **Retrospective change record.** This was rebuilt from the runbook page that tracked the rename
@@ -15,6 +15,7 @@ repos it touched. Times are local (UTC−4), from commit timestamps.
 
 | | |
 |---|---|
+| **Date** | 2026-09-05 |
 | **Change type** | Migration |
 | **Classification** | Disruptive |
 | **Status** | Complete. Executed 2026-09-05, 08:41–13:55; recorded done 2026-09-08. Four follow-ups open. |
@@ -101,7 +102,7 @@ three are resolved; they are recorded here because the reasoning still applies t
   described was never implemented, so renaming 17 hosts would have left 17 stale A records
   resolving to the same addresses, with ambiguous PTRs behind them. It is implemented now and
   gates both delete tasks — and it is the precedent
-  [`opnsense_firewall` lacked at the time](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/).
+  [`opnsense_firewall` lacked at the time](/docs/incidents/2026/0001-firewall-policy-deletion/).
 - **DHCP reconciles on MAC**, which a rename does not change, so reservations updated in place
   with no duplicates and no orphans. dnsmasq is a whole-file template and GRUB configs are
   keyed by MAC, so both regenerated cleanly.

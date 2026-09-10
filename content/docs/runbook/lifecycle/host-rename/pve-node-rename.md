@@ -16,7 +16,7 @@ needs this — and the node name cannot be changed by any supported path afterwa
 [last section](#do-not-create-this-problem-again) is how to avoid needing it at all.
 
 It was last run on 2026-09-05, on both hypervisors, as the final phase of the
-[host rename](/docs/changes/2026/2026-09-05-host-rename/).
+[host rename](/docs/changes/2026/0003-host-rename/).
 
 {{< hint danger >}}
 **A PVE node name is not renamable through any supported path.** There is no `pvecm rename`, no API

@@ -1,14 +1,16 @@
 ---
-title: "2026-09-07 — Firewall Policy Deleted, Total Connectivity Loss"
-weight: 20260907
+title: "INC-0001: Firewall Policy Deleted, Total Connectivity Loss"
+weight: 1
 aliases:
+  - /docs/incidents/2026/2026-09-07-firewall-policy-deletion/
   - /docs/runbook/rca/2026-09-07-firewall-policy-deletion/
 ---
 
-# 2026-09-07 — Firewall Policy Deleted, Total Connectivity Loss
+# INC-0001: Firewall Policy Deleted, Total Connectivity Loss
 
 | | |
 |---|---|
+| **Date** | 2026-09-07 |
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Core router `dv02cor002p01` (OPNsense); the `opnsense_firewall` role in `ansible-collection-deevnet.net` |
 | **Severity** | Total site outage; physical console access required to recover |

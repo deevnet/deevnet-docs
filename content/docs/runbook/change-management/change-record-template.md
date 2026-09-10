@@ -7,7 +7,7 @@ weight: 1
 
 The shape every [change record](/docs/changes/) takes. Copy the skeleton below into a new file,
 fill it in before the change runs, and complete **Outcome** after it has run.
-[2026-03-21 — Flat Network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) is a
+[CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) is a
 worked example of a multi-phase change.
 
 ---
@@ -16,11 +16,12 @@ worked example of a multi-phase change.
 
 | | |
 |---|---|
-| **Single-page change** | `content/docs/changes/<YYYY>/<YYYY-MM-DD>-<slug>.md` |
-| **Multi-phase change** | A folder `content/docs/changes/<YYYY>/<YYYY-MM-DD>-<slug>/`. `_index.md` is the record; numbered phase pages hold the procedure; `undo.md` holds the undo; optionally `troubleshooting.md` holds issues and follow-ups. Add `bookCollapseSection: true` to `_index.md`. |
-| **Title** | `YYYY-MM-DD — <What changed>`, from the site's point of view, e.g. "Flat Network → VLANs" |
-| **Date** | The day execution starts. While the change is still *Planned*, use the planned date, and move it if the date moves. |
-| **Weight** | `YYYYMMDD`, so records sort chronologically |
+| **Number** | The next unused `CHG-NNNN`, in the order records are opened. Global across years, never reused, and kept even if the change is abandoned. Check [Change Records](/docs/changes/) for the last one. |
+| **Single-page change** | `content/docs/changes/<YYYY>/<NNNN>-<slug>.md` |
+| **Multi-phase change** | A folder `content/docs/changes/<YYYY>/<NNNN>-<slug>/`. `_index.md` is the record; numbered phase pages hold the procedure; `undo.md` holds the undo; optionally `troubleshooting.md` holds issues and follow-ups. Add `bookCollapseSection: true` to `_index.md`. |
+| **Title** | `CHG-NNNN: <What changed>`, from the site's point of view, e.g. "CHG-0001: Flat Network → VLANs" |
+| **Date** | The header's Date row: the day execution starts. While the change is still *Planned*, use the planned date, and move it if the date moves. |
+| **Weight** | `NNNN`, so records sort by number, as ADRs do |
 | **Index** | Add a row to [Change Records](/docs/changes/) and to that year's page |
 
 ## Status
@@ -35,14 +36,15 @@ worth keeping.
 
 ````markdown
 ---
-title: "YYYY-MM-DD — <What changed>"
-weight: YYYYMMDD
+title: "CHG-NNNN: <What changed>"
+weight: NNNN
 ---
 
-# YYYY-MM-DD — <What changed>
+# CHG-NNNN: <What changed>
 
 | | |
 |---|---|
+| **Date** | YYYY-MM-DD — the day execution starts |
 | **Change type** | Migration · Upgrade · Configuration · Deployment · Decommission |
 | **Classification** | Routine · Structural · Disruptive |
 | **Status** | Planned · In progress · Complete · Rolled back · Abandoned |

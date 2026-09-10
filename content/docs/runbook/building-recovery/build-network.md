@@ -63,7 +63,7 @@ No automated install exists. Manual USB install required.
 
 ## Network Segmentation
 
-After the Core Router is installed and reachable, build the segmented VLAN network. The detailed procedure is the one the mobile site was migrated with, recorded in the [2026-03-21 — Flat Network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) change record. A greenfield build follows the same phases; that record's [Outcome](/docs/changes/2026/2026-03-21-flat-network-to-vlans/#outcome) lists where execution departed from the plan.
+After the Core Router is installed and reachable, build the segmented VLAN network. The detailed procedure is the one the mobile site was migrated with, recorded in the [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) change record. A greenfield build follows the same phases; that record's [Outcome](/docs/changes/2026/0001-flat-network-to-vlans/#outcome) lists where execution departed from the plan.
 
 The sequence for a greenfield build:
 
@@ -71,7 +71,7 @@ The sequence for a greenfield build:
 
 Create VLAN sub-interfaces on OPNsense and VLANs in the switch database. Non-disruptive.
 
-See [VLAN Foundation](/docs/changes/2026/2026-03-21-flat-network-to-vlans/vlan-foundation/) for detailed steps.
+See [VLAN Foundation](/docs/changes/2026/0001-flat-network-to-vlans/vlan-foundation/) for detailed steps.
 
 ```bash
 cd ~/home/ansible-collection-deevnet.net
@@ -84,13 +84,13 @@ make migration-switch-trunk      # Trunk uplink with tagged VLANs
 
 Move the builder from the flat/default network to the management VLAN. Highest-risk phase.
 
-See [Builder Cutover](/docs/changes/2026/2026-03-21-flat-network-to-vlans/builder-cutover/) for detailed steps, and [Undo](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-5) for backing it out.
+See [Builder Cutover](/docs/changes/2026/0001-flat-network-to-vlans/builder-cutover/) for detailed steps, and [Undo](/docs/changes/2026/0001-flat-network-to-vlans/undo/#undo-step-5) for backing it out.
 
 ### 3. Services and Routing
 
 Configure DHCP, firewall rules, and inter-VLAN routing.
 
-See [Services & Routing](/docs/changes/2026/2026-03-21-flat-network-to-vlans/services-and-routing/) for detailed steps.
+See [Services & Routing](/docs/changes/2026/0001-flat-network-to-vlans/services-and-routing/) for detailed steps.
 
 ```bash
 make migration-opnsense-dhcp       # Kea DHCP subnets and reservations
@@ -101,7 +101,7 @@ make migration-opnsense-firewall   # Zone-based firewall policy
 
 Move switch ports to their assigned VLANs and configure AP SSIDs.
 
-See [Port Migration & Wireless](/docs/changes/2026/2026-03-21-flat-network-to-vlans/port-migration/) for detailed steps.
+See [Port Migration & Wireless](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/) for detailed steps.
 
 ### 5. DNS, DHCP, and WoL Finalization
 
@@ -158,4 +158,4 @@ dig artifacts.mobile.deevnet.net
 
 Run the post-network verification checks:
 
-See [Post-Migration](/docs/changes/2026/2026-03-21-flat-network-to-vlans/post-migration/) for the full validation procedure, or proceed to [Verify Site](/docs/runbook/building-recovery/build-verification/) after the management plane is built.
+See [Post-Migration](/docs/changes/2026/0001-flat-network-to-vlans/post-migration/) for the full validation procedure, or proceed to [Verify Site](/docs/runbook/building-recovery/build-verification/) after the management plane is built.

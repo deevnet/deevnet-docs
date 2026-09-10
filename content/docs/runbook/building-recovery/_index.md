@@ -109,7 +109,7 @@ flowchart TD
 ### Reference
 
 - [Authority Transition](/docs/runbook/building-recovery/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
-- [2026-03-21 — Flat Network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
+- [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---
 

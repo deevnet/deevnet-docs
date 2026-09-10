@@ -277,7 +277,7 @@ rather than compressing an outlier.
 ### The builder is site `00`
 
 The documentation has said two things about the builder. The
-[authority transition gap analysis](/docs/changes/2026/2026-03-26-authority-transition-rework/#gap-analysis) describes one
+[authority transition gap analysis](/docs/changes/2026/0002-authority-transition-rework/#gap-analysis) describes one
 physical appliance that plugs into one site's management VLAN at a time, with its address per site
 defined in that site's inventory. The
 [home site roadmap](/docs/roadmap/infrastructure/home/builder/) describes a permanent, always-on
