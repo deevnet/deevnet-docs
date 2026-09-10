@@ -43,38 +43,38 @@ Cable the laptop into the access switch `dv02acc001p01` on a port that is an **a
 VLAN 99**. Which port that is matters — the switch does not put a spare port on the management
 segment by default.
 
-| Port | VLAN | Occupied by |
+| Port | VLAN | Use |
 |---|---|---|
+| `gigabitEthernet 1/0/2` | 99 access | **Free — this is the one to use.** Reserved for exactly this. |
 | `gigabitEthernet 1/0/15` | 99 access | `dv02hyp001p01` management |
 | `gigabitEthernet 1/0/16` | 99 access | `dv00bld001p01` — the builder, which runs the Omada controller |
 
 {{< hint warning >}}
-**There is no spare management port declared.** `switch_vlans` configures only the ports listed
-in `switch_ports` in `host_vars/dv02acc001p01.yml` and leaves every other port at the switch
-default — untagged VLAN 1, which is not in `deevnet_vlans` and is not routed. A laptop in a
-free port gets a link light and nothing else, which reads exactly like a dead switch.
+**Use 1/0/2, and do not improvise.** `switch_vlans` configures only the ports declared in
+`switch_ports` in `host_vars/dv02acc001p01.yml`, and leaves every other port at the switch
+default — untagged VLAN 1, which is not in `deevnet_vlans` and is not routed. A laptop in any
+other free port gets a link light and nothing else, which reads exactly like a dead switch.
 
-So do **not** improvise a port on the day. Either declare one in advance (below), or borrow
-`1/0/15` — never `1/0/16`, which would take the Omada controller off the network at the moment
-you need it.
+`1/0/2` is declared and held empty for this. Never borrow `1/0/16`: that is the builder, and
+taking it off the network removes the Omada controller at the moment you need it.
 {{< /hint >}}
 
-### Declare an operator port before you need it
-
-Add a dedicated port to `host_vars/dv02acc001p01.yml` under `switch_ports.access`, so the
-wired path exists the day the AP does not:
+The port is declared in `host_vars/dv02acc001p01.yml`, first in the access list so that it is
+configured before the run reaches `1/0/16` — the port the control node's own session runs over:
 
 ```yaml
     - interface: "gigabitEthernet 1/0/2"
       vlan_id: 99
-      description: "operator laptop - console recovery"
+      description: "operator laptop for console recovery"
 ```
 
-Apply it while the network is still healthy:
+If it ever needs reapplying, do it while the network is still healthy. The access-port commands
+are additive — they add VLAN membership and never remove it — so reapplying does not disturb
+the ports already in place:
 
 ```bash
 cd ansible-collection-deevnet.net
-ansible-playbook playbooks/switch-vlans.yml --limit dv02acc001p01
+ansible-playbook playbooks/switch-vlans.yml --limit dv02acc001p01 --tags access
 ```
 
 ### Address the laptop
