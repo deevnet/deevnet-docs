@@ -43,7 +43,7 @@ timeout 3 bash -c 'exec 3<>/dev/tcp/10.20.99.1/22'   # ssh
 | Gateway answers, 443 and 22 both refused | Firewall policy — the anti-lockout rules are gone. This page. |
 | Nothing answers, from any segment | Router down, or its LAN port. This page. |
 | Same-segment works, cross-segment does not | Zone policy. Still this page if the API is unreachable. |
-| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/console-recovery/access-switch/) or [troubleshooting](/docs/migrations/2026-03-21-vlan-migration/troubleshooting/). |
+| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/console-recovery/access-switch/) or [troubleshooting](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/). |
 
 {{< hint warning >}}
 **A gateway answering ICMP proves nothing about the policy.** The router replies on its own
@@ -118,12 +118,13 @@ Read the reporting tasks in the output rather than trusting `changed=0`, and see
 [Change Management](/docs/runbook/change-management/) first — `--check --diff` will not
 preview any of it.
 
-{{< hint warning >}}
-**Do not re-run `opnsense_firewall` to put the rules back.** Its reconcile deletes by
-subtraction with no floor, so a discovery that resolves nothing produces an empty desired set
-and removes the policy again. Restore rules by config restore until the guards in
-[RCA action 1–3](/docs/runbook/rca/2026-09-07-firewall-policy-deletion/#corrective-actions)
-have landed; this warning can be deleted when they have.
+{{< hint info >}}
+**`opnsense_firewall` is guarded since 2026-09-08.** The guards in
+[incident actions 1–5](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/#corrective-actions)
+have landed: it refuses a broken discovery, withholds deletions by default, protects the
+operator path, and applies behind a rollback savepoint. They were verified offline, not yet
+against this router, so treat its first real run here as a watched change with the console
+open.
 {{< /hint >}}
 
 ---
@@ -137,5 +138,5 @@ have landed; this warning can be deleted when they have.
 This procedure was written after 2026-09-07, when an `opnsense_firewall` run deleted every
 managed filter rule on this router — including both anti-lockout rules — and the mini
 DisplayPort cable was the only remaining way in. The
-[RCA](/docs/runbook/rca/2026-09-07-firewall-policy-deletion/) has the full analysis and the
-corrective actions still outstanding.
+[incident record](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/) has the full
+analysis and the actions taken.

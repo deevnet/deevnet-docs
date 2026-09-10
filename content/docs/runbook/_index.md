@@ -45,8 +45,8 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Console Recovery</h3>
     <p>Getting back into a device when the network cannot reach it — core router, hypervisors, access switch and AP.</p>
   </a>
-  <a class="section-card" href="rca/">
-    <h3>Incident RCAs</h3>
-    <p>Root cause analyses for infrastructure incidents — what broke, why, and what is still open.</p>
+  <a class="section-card" href="incident-management/">
+    <h3>Incident Management</h3>
+    <p>How an incident is recorded and followed through, and the incident record template.</p>
   </a>
 </div>

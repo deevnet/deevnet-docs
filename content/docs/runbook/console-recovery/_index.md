@@ -58,7 +58,7 @@ the management segment has no DHCP pool, so that laptop needs a hand-set address
 
 Take a config backup before a disruptive change to the router: **System → Configuration →
 Backups → Download**, as the
-[segmentation prerequisites](/docs/migrations/2026-03-21-vlan-migration/prerequisites/) already
+[segmentation prerequisites](/docs/changes/2026/2026-03-21-flat-network-to-vlans/prerequisites/) already
 require. OPNsense keeps its own history on the box, which covers a configuration mistake but
 not a failed disk, and there is no off-box backup automation in any collection.
 
@@ -67,5 +67,5 @@ For the switch and the AP there is nothing to back up — inventory is the backu
 ## Related
 
 - [Change Management](/docs/runbook/change-management/) — what actually validates a network change, and why `--check --diff` does not
-- [VLAN migration issues](/docs/migrations/2026-03-21-vlan-migration/troubleshooting/) — faults that are not lockouts, as met during segmentation
-- [Incident RCAs](/docs/runbook/rca/) — where these procedures came from
+- [Flat Network → VLANs: issues](/docs/changes/2026/2026-03-21-flat-network-to-vlans/troubleshooting/) — faults that are not lockouts, as met during segmentation
+- [Incident Records](/docs/incidents/) — where these procedures came from

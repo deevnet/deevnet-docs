@@ -1,12 +1,13 @@
 ---
-title: "2026-03-21 VLAN Migration"
-weight: 1
+title: "2026-03-21 — Flat Network → VLANs"
+weight: 20260321
 bookCollapseSection: true
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/
   - /docs/runbook/network-migration/
 ---
 
-# 2026-03-21 VLAN Migration
+# 2026-03-21 — Flat Network → VLANs
 
 {{< hint info >}}
 **Retrospective change record.** This was rebuilt after the fact from the runbook that drove
@@ -21,16 +22,19 @@ since been renamed `mobile`.
 
 | | |
 |---|---|
-| **Change** | Flat network to segmented VLANs, mobile site |
+| **Change type** | Migration |
+| **Classification** | Disruptive |
 | **Status** | Complete. Executed 2026-03-21 to 2026-03-24, closed 2026-03-25. |
+| **Site** | mobile |
 | **Systems** | Core router `dv02cor002p01` (OPNsense), access switch `dv02acc001p01` (SG2218), AP `dv02wap001p01` (EAP650-Outdoor), builder `dv00bld001p01` with the Omada controller, hypervisor `dv02hyp001p01` |
 | **Automation** | `ansible-collection-deevnet.net`, `make migration-*` targets, run against a target inventory `dvntm-new` |
 | **Risk** | High. The builder's own network path moves mid-change, and a console cable is required. |
-| **Also used as** | The network phase of a greenfield build — see [Build Network](/docs/runbook/building-recovery/build-network/) |
+| **Related incidents** | None |
+| **Related runbooks** | [Build Network](/docs/runbook/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/console-recovery/) |
 
 ---
 
-## Description
+## Summary
 
 The mobile site ran as one flat network on 192.168.10.x. Router management, hypervisors, IoT
 devices and guests shared a single broadcast domain and a single level of trust. This change
@@ -44,7 +48,9 @@ trunk tagging went in alongside the flat network. The switch was reachable on bo
 management addresses before the builder moved. The flat network was removed only after
 everything had moved across.
 
-## Goal: the end state
+## Goal
+
+The end state that counts as done:
 
 - **VLANs** 10, 20, 25, 30, 31, 35, 40, 50, 51, 52 and 99 exist on the core router and in the
   switch's VLAN database. Each routed segment has a `10.20.<vlan>.1` gateway on the router.
@@ -83,7 +89,16 @@ management address on the mobile site. **Out of scope:** the home site.
 
 ---
 
-## Plan
+## Prerequisites
+
+The plan required these before step 2 ([phase 1](prerequisites/) has the detail): the vault
+decrypted; the switch `running-config` saved; an OPNsense configuration backup downloaded;
+console access to the switch and the router; the builder cabled to `gi1/0/16`, never on
+wireless; the physical port map traced against `host_vars/dv02acc001p01.yml`; and a passing
+`make preflight`. The logs record only the last of these: preflight passed on 2026-03-21 at
+13:51.
+
+## Procedure
 
 {{< mermaid >}}
 flowchart TD
@@ -109,8 +124,18 @@ flowchart TD
 | [5. Port Migration & Wireless](port-migration/) | 10–13 | Each port as it moves; wireless until 13 |
 | [6. Post-Migration](post-migration/) | — | None |
 
-**Undo:** [Undo Procedure](undo/) backs the steps out in reverse order. Step 11 is where undo
-stops being practical.
+## Verification
+
+The plan's acceptance criteria were `make postcheck` passing on every host (see
+[post-migration](post-migration/)), which covers OPNsense VLANs, the switch database and trunk,
+device reachability, gateway IPs, and builder state; and a client on each SSID getting a lease
+on that SSID's segment and reaching the internet. [Outcome](#outcome) records what was actually
+checked.
+
+## Undo
+
+[Undo Procedure](undo/) backs the steps out in reverse order. Step 11 is where undo stops being
+practical, and it has no written undo.
 
 ---
 
@@ -151,7 +176,7 @@ handed out `10.20.40.50` (VLAN 40).
 - **Cross-VLAN routing:** the switch had no default route, so replies to other segments were
   dropped. Fixed with a default gateway, which inventory now declares.
 
-### Left open
+## Follow-ups
 
 The AP was forgotten from the controller on 2026-03-24 with a configuration reset, and has been
 pending since. The switch was never adopted. Both still run their 2023–2024 firmware. The rest

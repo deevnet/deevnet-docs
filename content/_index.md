@@ -61,9 +61,13 @@ A **home infrastructure** deployment supporting various functions:
     <h3>Operational Runbook</h3>
     <p>Step-by-step procedures for operating and maintaining infrastructure.</p>
   </a>
-  <a class="section-card" href="docs/migrations/">
-    <h3>Migrations</h3>
-    <p>Major site changes as dated change records — goal, procedure, undo, outcome.</p>
+  <a class="section-card" href="docs/changes/">
+    <h3>Change Records</h3>
+    <p>Significant changes, one dated record each — goal, procedure, undo, outcome.</p>
+  </a>
+  <a class="section-card" href="docs/incidents/">
+    <h3>Incident Records</h3>
+    <p>What broke, how it was found, why, and what was done so it does not happen again.</p>
   </a>
   <a class="section-card" href="docs/roadmap/">
     <h3>Roadmap</h3>

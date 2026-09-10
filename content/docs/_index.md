@@ -27,9 +27,13 @@ Implementation details live in their respective repositories. This repository de
     <h3>Operational Runbook</h3>
     <p>Provisioning, patching, security, inventory, and change management.</p>
   </a>
-  <a class="section-card" href="migrations/">
-    <h3>Migrations</h3>
-    <p>Major site changes as dated change records — goal, procedure, undo, outcome.</p>
+  <a class="section-card" href="changes/">
+    <h3>Change Records</h3>
+    <p>Significant changes, one dated record each — goal, procedure, undo, outcome.</p>
+  </a>
+  <a class="section-card" href="incidents/">
+    <h3>Incident Records</h3>
+    <p>What broke, how it was found, why, and what was done so it does not happen again.</p>
   </a>
   <a class="section-card" href="roadmap/">
     <h3>Roadmap</h3>
