@@ -47,7 +47,7 @@ three are resolved; they are recorded here because the reasoning still applies t
   described was never implemented, so renaming 17 hosts would have left 17 stale A records
   resolving to the same addresses, with ambiguous PTRs behind them. It is implemented now and
   gates both delete tasks — and it is the precedent
-  [`opnsense_firewall` still lacks](/docs/runbook/rca/2026-09-07-firewall-policy-deletion/).
+  [`opnsense_firewall` lacked at the time](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/).
 - **DHCP reconciles on MAC**, which a rename does not change, so reservations updated in place
   with no duplicates and no orphans. dnsmasq is a whole-file template and GRUB configs are
   keyed by MAC, so both regenerated cleanly.

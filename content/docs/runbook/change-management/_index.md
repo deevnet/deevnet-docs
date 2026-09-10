@@ -1,6 +1,7 @@
 ---
 title: "Change Management"
 weight: 6
+bookCollapseSection: true
 ---
 
 # Change Management & CI/CD
@@ -41,6 +42,34 @@ Automated testing and CI/CD exist to:
 | **Structural** | New roles, playbook changes | Full test run |
 | **Disruptive** | Network changes, storage migration | Staged rollout, backup |
 
+Classification sets how much validation a change needs. **Change type**, below, says what kind
+of change it is. A change has one of each.
+
+---
+
+## Change Types
+
+| Type | Means | Example |
+|------|-------|---------|
+| **Migration** | Moves a site, service or network from one design to another | [Flat network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) |
+| **Upgrade** | A new version of software or firmware on an existing system | Omada controller 6.1 → 6.3 |
+| **Configuration** | A settings change within the current design | Moving a switch port from access to trunk |
+| **Deployment** | A new system or service brought into service | The MQTT broker VM on IoT Backend |
+| **Decommission** | A system or service taken out of service | Dropping the VyOS roles |
+
+---
+
+## Change Records
+
+Every **disruptive** change gets a change record, started before it runs. Structural and
+routine changes may have one; otherwise their commit history is their record.
+
+Records are kept under [Change Records](/docs/changes/), dated by the day execution starts, and
+start from the [change record template](change-record-template/). The template is maintained
+here; each record is retained there. When a change goes wrong in a way that affects service,
+the incident gets its own record under [Incident Records](/docs/incidents/) — see
+[Incident Management](/docs/runbook/incident-management/).
+
 ---
 
 ## Validation Checklist
@@ -66,7 +95,7 @@ ways.
 The first is the dangerous one, because it is silent: a clean check run reads as "nothing to
 change". On 2026-09-07 it preceded the deletion of every firewall rule on the core router and
 a total loss of site connectivity — see
-[the RCA](/docs/runbook/rca/2026-09-07-firewall-policy-deletion/).
+[the incident record](/docs/incidents/2026/2026-09-07-firewall-policy-deletion/).
 
 **Validate a network change this way instead:**
 
@@ -75,8 +104,9 @@ a total loss of site connectivity — see
    `Report records that are no longer declared` and their equivalents name what will be added,
    changed and deleted, and they run *before* the writing tasks do.
 3. **Confirm the `*_delete_unmanaged` flag is at its default `false`**, so deletions are
-   reported and withheld rather than applied. `opnsense_dns` and `opnsense_dhcp` have this
-   guard; `opnsense_firewall` does not yet.
+   reported and withheld rather than applied. All three OPNsense roles have this guard:
+   `opnsense_dns`, `opnsense_dhcp`, and — since 2026-09-08 — `opnsense_firewall`
+   (`firewall_delete_unmanaged`).
 4. **Keep console access available** for any change to the core router or to the switch port
    carrying your management path. The automation host sits behind both, so a change that
    severs it also removes your ability to undo it —

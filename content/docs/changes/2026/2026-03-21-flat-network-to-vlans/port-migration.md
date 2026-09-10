@@ -16,7 +16,7 @@ Move remaining switch ports to their assigned VLANs, perform the management cuto
 Move all remaining switch ports to their assigned VLANs as defined in `host_vars/dv02acc001p01.yml`.
 
 {{< hint info >}}
-**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration ([Step 11](#step-11-management-cutover) / [Post-Migration](/docs/migrations/2026-03-21-vlan-migration/post-migration/)). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
+**DNS:** New 10.20.x.x addresses will not resolve via DNS until post-migration ([Step 11](#step-11-management-cutover) / [Post-Migration](/docs/changes/2026/2026-03-21-flat-network-to-vlans/post-migration/)). This is expected — Ansible uses inventory IPs directly. Use IP addresses for any manual verification during this step.
 {{< /hint >}}
 
 {{< hint warning >}}
@@ -33,7 +33,7 @@ make migration-switch-access-ports
 2. Each device gets correct VLAN IP via DHCP or static
 3. Spot-check: SSH to a management host, ping across VLANs (where firewall permits)
 
-**Undo:** [Undo Step 10](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-10)
+**Undo:** [Undo Step 10](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-10)
 
 ---
 
@@ -60,7 +60,7 @@ After all ports are migrated and verified:
    copy running-config startup-config
    ```
 
-2. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from [Step 5b](/docs/migrations/2026-03-21-vlan-migration/builder-cutover/#5b--add-vlan-99-management-ip-to-the-switch).
+2. **Switch management VLAN** — remove the old VLAN 1 management interface. The switch already has a VLAN 99 management IP (`10.20.99.10`) from [Step 5b](/docs/changes/2026/2026-03-21-flat-network-to-vlans/builder-cutover/#5b--add-vlan-99-management-ip-to-the-switch).
    ```
    configure
    no interface vlan 1
@@ -96,7 +96,7 @@ After all ports are migrated and verified:
    ```
 
 **Undo:** none written. This is where undo stops being practical; see
-[Undo Step 11](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-11).
+[Undo Step 11](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-11).
 
 ---
 
@@ -119,7 +119,7 @@ After management cutover, adopt the switch and AP into the Omada SDN controller.
 1. Both devices show as "Connected" in the Omada dashboard
 2. Switch and AP firmware/model info visible in Omada
 
-**Undo:** [Undo Step 12](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-12)
+**Undo:** [Undo Step 12](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-12)
 
 ---
 
@@ -161,4 +161,4 @@ make migration-omada-ssids
    - DVNTM-GUEST → `10.20.40.x`
 2. Internet access works from each SSID
 
-**Undo:** [Undo Step 13](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-13)
+**Undo:** [Undo Step 13](/docs/changes/2026/2026-03-21-flat-network-to-vlans/undo/#undo-step-13)
