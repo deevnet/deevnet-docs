@@ -41,6 +41,10 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Network Segmentation</h3>
     <p>VLAN segmentation procedures — foundation, DHCP, firewall, port assignment, wireless.</p>
   </a>
+  <a class="section-card" href="omada-controller/">
+    <h3>Omada Controller</h3>
+    <p>Upgrading the controller in place, and falling back to an earlier version from a data snapshot.</p>
+  </a>
   <a class="section-card" href="console-recovery/">
     <h3>Console Recovery</h3>
     <p>Getting back into a device when the network cannot reach it — core router, hypervisors, access switch and AP.</p>
