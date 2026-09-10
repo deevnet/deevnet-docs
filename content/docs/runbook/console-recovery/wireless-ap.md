@@ -46,8 +46,8 @@ segment by default.
 | Port | VLAN | Use |
 |---|---|---|
 | `gigabitEthernet 1/0/2` | 99 access | **Free — this is the one to use.** Reserved for exactly this. |
-| `gigabitEthernet 1/0/15` | 99 access | `dv02hyp001p01` management |
 | `gigabitEthernet 1/0/16` | 99 access | `dv00bld001p01` — the builder, which runs the Omada controller |
+| `gigabitEthernet 1/0/15` | trunk, native 99 | `dv02hyp001p01` — a trunk since the MQTT broker needed `iot_backend` (35). Not an access port. |
 
 {{< hint warning >}}
 **Use 1/0/2, and do not improvise.** `switch_vlans` configures only the ports declared in
@@ -55,8 +55,10 @@ segment by default.
 default — untagged VLAN 1, which is not in `deevnet_vlans` and is not routed. A laptop in any
 other free port gets a link light and nothing else, which reads exactly like a dead switch.
 
-`1/0/2` is declared and held empty for this. Never borrow `1/0/16`: that is the builder, and
-taking it off the network removes the Omada controller at the moment you need it.
+`1/0/2` is declared and held empty for this, and it is the **only** spare untagged-99 port on
+the switch. `1/0/15` stopped being an access port when the MQTT broker needed `iot_backend`,
+which leaves `1/0/16` as the only other one — and that is the builder. Borrowing it would take
+the Omada controller off the network at the moment you need it.
 {{< /hint >}}
 
 The port is declared in `host_vars/dv02acc001p01.yml`, first in the access list so that it is
