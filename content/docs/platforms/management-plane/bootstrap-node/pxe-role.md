@@ -80,7 +80,7 @@ sequenceDiagram
 
 | Component | Host | Implementation | Role |
 |-----------|------|----------------|------|
-| **DHCP** | Core Router (core-rt02) | Kea | Provides IP, next-server, boot-file-name |
+| **DHCP** | Core Router (dv02cor002p01) | Kea | Provides IP, next-server, boot-file-name |
 | **TFTP** | Bootstrap node | in.tftpd (systemd socket) | Serves bootloader, configs, kernel/initrd |
 | **Bootloader** | — | GRUB (grub2-mkimage) | Network-enabled UEFI bootloader |
 | **Artifacts** | Bootstrap node | nginx | Kickstart files, install trees, squashfs |
@@ -114,10 +114,10 @@ Boot File Name: grubx64.efi
 
 | Field | Example | Notes |
 |-------|---------|-------|
-| MAC Address | BC:24:11:2E:26:4E | Hardware address |
-| IP Address | 192.168.10.20 | Static reservation |
-| Hostname | vyos-rt01 | DNS hostname |
-| TFTP Server | 192.168.10.95 | Next-server for this host |
+| MAC Address | 02:DE:20:00:00:CB | Hardware address |
+| IP Address | 10.20.99.96 | Static reservation |
+| Hostname | dv02bld002v01 | DNS hostname |
+| TFTP Server | 10.20.99.95 | Next-server for this host |
 | Boot File | grubx64.efi | UEFI bootloader |
 
 ---
@@ -138,8 +138,10 @@ Port: 69/udp
 /srv/tftp/
 ├── grubx64.efi                    # Network-enabled GRUB (built by grub2-mkimage)
 ├── grub.cfg                       # Default menu (fallback)
-├── grub.cfg-BC:24:11:2E:26:4E     # MAC-specific: vyos-rt01
-├── grub.cfg-BC:24:11:F0:E4:68     # MAC-specific: provisioner-vm05
+├── grub.cfg-02:DE:20:00:00:CB     # MAC-specific: dv02bld002v01
+├── grub.cfg-02:de:20:00:00:cb     # ...and the lower-case variant
+├── grub.cfg-02-DE-20-00-00-CB     # ...and both again, hyphen-separated
+├── grub.cfg-02-de-20-00-00-cb     #    (firmware differs on which it asks for)
 ├── grub/
 │   ├── grub.cfg                   # Alternate location
 │   └── grub.cfg-*                 # MAC-specific configs
@@ -185,27 +187,23 @@ grub2-mkimage \
 
 Each host has a MAC-specific GRUB config that boots immediately without a menu:
 
-**Example: `/srv/tftp/grub.cfg-BC:24:11:2E:26:4E`** (vyos-rt01)
+**Example: `/srv/tftp/grub.cfg-02:DE:20:00:00:CB`** (dv02bld002v01)
 
 ```
-set timeout=0
+# GRUB2 MAC-specific Boot Configuration
+# Managed by Ansible - DO NOT EDIT MANUALLY
+# Host: dv02bld002v01
+# MAC: 02:de:20:00:00:cb
+
 set default=0
-
-menuentry "VyOS Rolling" {
-    linux /vyos/vmlinuz boot=live noautologin fetch=http://artifacts.mobile.deevnet.net/netboot/vyos/filesystem.squashfs
-    initrd /vyos/initrd.img
-}
-```
-
-**Example: `/srv/tftp/grub.cfg-BC:24:11:F0:E4:68`** (provisioner-vm05)
-
-```
 set timeout=0
-set default=0
 
-menuentry "Fedora 43 Server" {
-    linux /fedora/43/vmlinuz ip=dhcp rd.neednet=1 inst.repo=http://artifacts.mobile.deevnet.net/fedora/43/mirror inst.ks=http://artifacts.mobile.deevnet.net/kickstart/builder-node.ks
-    initrd /fedora/43/initrd.img
+menuentry "Fedora 44 Server" {
+    linux /fedora/44/vmlinuz \
+        ip=dhcp \
+        rd.neednet=1 \
+        inst.repo=http://artifacts.mobile.deevnet.net/fedora/44/mirror inst.stage2=http://artifacts.mobile.deevnet.net/fedora/44/mirror inst.ks=http://artifacts.mobile.deevnet.net/kickstart/builder-node-44.ks
+    initrd /fedora/44/initrd.img
 }
 ```
 
@@ -259,7 +257,7 @@ After adding DHCP reservation:
 
 ```bash
 # Via Core Router API
-curl -X POST "https://core-rt02/api/kea/service/reconfigure"
+curl -X POST "https://dv02cor002p01/api/kea/service/reconfigure"
 ```
 
 ---

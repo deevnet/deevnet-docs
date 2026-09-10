@@ -141,7 +141,7 @@ survey.
 
 | Hostname | VMID | MAC Address |
 |--------|------|-------------|
-| tenant-mgmt-vm01 (mobile) | 200 | `02:de:20:00:00:c8` |
+| dv02tdn001v01 (mobile) | 200 | `02:de:20:00:00:c8` |
 | — the same VMID in home | 200 | `02:de:10:00:00:c8` |
 | — VMID 201 in mobile | 201 | `02:de:20:00:00:c9` |
 
@@ -170,7 +170,7 @@ Example inventory layout. The hand-written file references the generated one, so
 an operator's prose and a machine's output never contend for the same file:
 
 ```yaml
-# host_vars/tenant-mgmt-vm01/vars.yml   (hand-written)
+# host_vars/dv02tdn001v01/vars.yml   (hand-written)
 infrastructure:
   form: vm
   interfaces:
@@ -182,7 +182,7 @@ mgmt_vm:
 ```
 
 ```yaml
-# host_vars/tenant-mgmt-vm01/identity.yml   (GENERATED - do not edit)
+# host_vars/dv02tdn001v01/identity.yml   (GENERATED - do not edit)
 deevnet_assigned_vmid: 200
 deevnet_assigned_mac: "02:de:20:00:00:c8"
 ```

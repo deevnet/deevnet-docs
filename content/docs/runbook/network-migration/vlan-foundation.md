@@ -40,7 +40,7 @@ make migration-switch-vlans
 
 **Verify:**
 ```
-ssh $SWITCH_USER@access-sw01
+ssh $SWITCH_USER@dv02acc001p01
 show vlan brief
 ```
 Confirm all VLANs (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99) appear with correct names.

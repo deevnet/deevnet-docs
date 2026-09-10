@@ -42,7 +42,7 @@ After all steps complete and connectivity is verified:
 
    Devices on VLAN 99 ports that still have old 192.168.10.x static IPs are on the same L2 segment as the builder but on a different subnet. Use a temporary secondary IP on the builder to reach them.
 
-   **Proxmox hypervisor (hv01) — `192.168.10.21` → `10.20.99.21`:**
+   **Proxmox hypervisor (dv02hyp001p01) — `192.168.10.21` → `10.20.99.21`:**
 
    From the builder:
    ```bash

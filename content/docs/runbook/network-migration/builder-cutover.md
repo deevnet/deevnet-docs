@@ -5,7 +5,7 @@ weight: 3
 
 # Builder Cutover to Management VLAN
 
-Move the builder (`provisioner-ph01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
+Move the builder (`dv00bld001p01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
 
 **Prerequisites:**
 - [Step 4](/docs/runbook/network-migration/vlan-foundation/#step-4-trunk-uplink-tagged-vlans) complete (trunk uplink carrying tagged VLANs)
@@ -120,5 +120,5 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95` o
 3. Re-run builder playbook with the current (dvntm) inventory to restore DHCP/original static config:
    ```bash
    cd ansible-collection-deevnet.builder
-   ansible-playbook playbooks/site.yml --limit provisioner-ph01
+   ansible-playbook playbooks/site.yml --limit dv00bld001p01
    ```

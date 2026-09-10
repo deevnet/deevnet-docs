@@ -77,8 +77,8 @@ The following `vault.yml` files exist across the inventory:
 | `mobile/group_vars/routers/vault.yml` | Router credentials (mobile) |
 | `mobile/group_vars/switches/vault.yml` | Switch credentials (mobile) |
 | `mobile/group_vars/network_controllers/vault.yml` | Omada controller credentials (mobile) |
-| `mobile/host_vars/hv01/vault.yml` | hv01 secrets (mobile) |
-| `mobile/host_vars/hv02/vault.yml` | hv02 secrets (mobile) |
+| `mobile/host_vars/dv02hyp001p01/vault.yml` | dv02hyp001p01 secrets (mobile) |
+| `mobile/host_vars/dv02hyp002p02/vault.yml` | dv02hyp002p02 secrets (mobile) |
 | `home/group_vars/all/vault.yml` | Site-wide secrets (home) |
 
 This list is descriptive, not a definition. `make vault` and `make unvault` discover their targets

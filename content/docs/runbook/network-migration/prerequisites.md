@@ -30,7 +30,7 @@ Migration logs (preflight, each migration step, postcheck) are automatically cap
 
 ## Builder Connectivity
 
-The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. The builder's `eth1` (transit interface, DHCP) provides upstream/WAN connectivity — WiFi is disabled (`ip: null`). Do **not** rely on wireless for management connectivity.
+The builder (`dv00bld001p01`) hosts the Omada SDN controller, artifact server, and PXE/TFTP services. It must remain reachable throughout the migration. The builder's `eth1` (transit interface, DHCP) provides upstream/WAN connectivity — WiFi is disabled (`ip: null`). Do **not** rely on wireless for management connectivity.
 
 - The builder **must** be connected via ethernet (`eth0`) to switch port `gi1/0/16`
 - `eth1` (transit) must be connected to an upstream network and receiving a DHCP address — this is the builder's only path to the internet
@@ -41,9 +41,9 @@ The builder (`provisioner-ph01`) hosts the Omada SDN controller, artifact server
 
 ## Physical Port Mapping
 
-Verify that every device is physically connected to its intended switch port before making any logical changes. The port-to-VLAN assignments in `host_vars/access-sw01.yml` assume specific physical cabling — if a device is on the wrong port, it will land in the wrong VLAN after migration.
+Verify that every device is physically connected to its intended switch port before making any logical changes. The port-to-VLAN assignments in `host_vars/dv02acc001p01.yml` assume specific physical cabling — if a device is on the wrong port, it will land in the wrong VLAN after migration.
 
-1. Open `host_vars/access-sw01.yml` and review the `switch_ports` mapping
+1. Open `host_vars/dv02acc001p01.yml` and review the `switch_ports` mapping
 2. Physically trace or label each cable at the switch to confirm it matches the intended port assignment
 3. Relocate any mis-cabled devices to their correct ports
 

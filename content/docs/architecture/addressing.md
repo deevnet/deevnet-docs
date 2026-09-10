@@ -77,11 +77,11 @@ The mobile site operates in two WAN modes depending on physical location:
 
 ### Travel Mode
 
-mobile operates behind `edge-rt01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
+mobile operates behind `dv02edg001p01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
 
-- `edge-rt01` WAN: DHCP from upstream
-- `edge-rt01` LAN: 192.168.8.0/24 (unchanged, travel-router-local)
-- All mobile traffic NATs through `edge-rt01`
+- `dv02edg001p01` WAN: DHCP from upstream
+- `dv02edg001p01` LAN: 192.168.8.0/24 (unchanged, travel-router-local)
+- All mobile traffic NATs through `dv02edg001p01`
 
 ### Home Dock Mode
 

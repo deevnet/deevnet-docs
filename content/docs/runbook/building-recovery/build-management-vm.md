@@ -53,8 +53,8 @@ In `host_vars/<host>/vars.yml`, alongside `infrastructure` and `env`:
 
 ```yaml
 mgmt_vm:
-  hypervisor: hv01
-  node: pve
+  hypervisor: dv02hyp001p01
+  node: dv02hyp001p01
   vmid: "{{ deevnet_assigned_vmid | default(0) }}"
   template_prefix: "fedora-server-"     # matched by prefix, newest wins - never a VMID
   storage: local-lvm-big-thin
@@ -144,7 +144,7 @@ no `next_server` field.
 
 ```bash
 cd ansible-collection-deevnet.builder
-ansible-playbook playbooks/site.yml --limit provisioner-ph01 --tags grub-mac
+ansible-playbook playbooks/site.yml --limit dv00bld001p01 --tags grub-mac
 ```
 
 Without an entry the client falls through to the interactive menu and its 30-second

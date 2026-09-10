@@ -45,9 +45,9 @@ The interface every tenant must satisfy to be rebuildable against the substrate.
 
 ## Build the tenant fabric (Phase 1) 🔄
 
-Stand up the single-member fabric on hv02.
+Stand up the single-member fabric on dv02hyp002p02.
 
-**No longer gated** — hv02 runs PVE 9.2.11 and serves `/cluster/sdn/fabrics`, so the underlay is
+**No longer gated** — dv02hyp002p02 runs PVE 9.2.11 and serves `/cluster/sdn/fabrics`, so the underlay is
 defined as code rather than as hand-maintained node state.
 
 - ✅ Substrate transport: `tenant_transit` (VLAN 50) and `tenant_underlay` (VLAN 51) in inventory;
@@ -55,7 +55,7 @@ defined as code rather than as hand-maintained node state.
   management.
 - ✅ Hypervisor attachment: the bridge is VLAN-aware and the transit and underlay sub-interfaces
   are up, driven from inventory by the `proxmox_node_network` role.
-- ✅ EVPN SDN as code: fabric, VTEP identity and controller applied on hv02 from
+- ✅ EVPN SDN as code: fabric, VTEP identity and controller applied on dv02hyp002p02 from
   `deevnet-tenant-factory`.
 - ✅ Hypervisor default route moved onto transit, so the data plane stops riding the management
   segment.
@@ -120,4 +120,4 @@ Prove the whole path with a real tenant.
 Not scheduled, not counted. Reached by **adding** members to the Phase 1 fabric, not rebuilding it
 — same SDN objects re-applied at cluster scope, underlay peers formed, a QDevice for quorum.
 Trajectory detail is in [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory).
-The management hypervisor (hv01) follows a separate path and does not join the tenant fabric.
+The management hypervisor (dv02hyp001p01) follows a separate path and does not join the tenant fabric.

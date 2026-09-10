@@ -59,7 +59,7 @@ Live as of 2026-09-04, found by reading the core router's reservations back and 
 - ⏳ Kea DHCP reservation `BC:24:11:F0:E4:68` → 10.20.99.90 (`provisioner-vm05`, host deleted)
 - ⏳ Unbound host override `provisioner-vm05.mobile.deevnet.net` → 10.20.99.90, which still resolves
 - ⏳ Four `grub.cfg-bc-24-11-f0-e4-68` files (case and path variants) in the TFTP root
-- ⏳ Kea DHCP reservation `BC:24:11:2E:26:4E` → **192.168.10.20**, hostname `vyos-rt01` — a survivor of the pre-VLAN flat network. Neither the address range nor the hostname exists in inventory any more; the host is `core-rt01` today. This one has outlived an entire addressing scheme, which is the clearest possible illustration of why additive-only reconciliation is a problem.
+- ⏳ Kea DHCP reservation `BC:24:11:2E:26:4E` → **192.168.10.20**, hostname `vyos-rt01` — a survivor of the pre-VLAN flat network. Neither the address range nor the hostname exists in inventory any more; the host is `dv02cor002p01` today. This one has outlived an entire addressing scheme, which is the clearest possible illustration of why additive-only reconciliation is a problem.
 
 Two further orphans, `BC:24:11:CE:51:EC` → 10.20.99.97 and `BC:24:11:DC:2A:24` → 10.20.99.96, are **not** deferrable drift: they hold the very addresses `provisioner-vm02` and `provisioner-vm03` are being rebuilt onto, under their old Proxmox-assigned MACs. They are removed as part of that rebuild rather than left for this project.
 
