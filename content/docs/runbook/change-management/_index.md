@@ -110,7 +110,7 @@ a total loss of site connectivity — see
 4. **Keep console access available** for any change to the core router or to the switch port
    carrying your management path. The automation host sits behind both, so a change that
    severs it also removes your ability to undo it —
-   [Console Recovery](/docs/runbook/console-recovery/) is what you follow if it does.
+   [Console Recovery](/docs/runbook/recovery/console-recovery/) is what you follow if it does.
 {{< /hint >}}
 
 ---

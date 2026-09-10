@@ -277,7 +277,7 @@ rather than compressing an outlier.
 ### The builder is site `00`
 
 The documentation has said two things about the builder. The
-[authority transition gap analysis](/docs/runbook/authority-transition-gap-analysis/) describes one
+[authority transition gap analysis](/docs/changes/2026/2026-03-26-authority-transition-rework/#gap-analysis) describes one
 physical appliance that plugs into one site's management VLAN at a time, with its address per site
 defined in that site's inventory. The
 [home site roadmap](/docs/roadmap/infrastructure/home/builder/) describes a permanent, always-on
@@ -506,7 +506,7 @@ Two things would need settling first, recorded so they are not rediscovered:
   uniqueness guard today — see the defects below — which would need fixing first rather than being
   treated as a footnote.
 
-[Inventory & Lifecycle Management](/docs/runbook/inventory-lifecycle/) already claims this
+[Inventory & Lifecycle Management](/docs/runbook/lifecycle/inventory-lifecycle/) already claims this
 territory: asset tracking is in its scope, and it carries a five-stage lifecycle table that nothing
 implements. That is where placement would land, not in a new home.
 
@@ -639,7 +639,7 @@ in — each step lands on its own, verified, before the next begins:
 - [Network Segmentation](/docs/standards/network-segmentation/) §1 and §3 lose their `-mgmt` and
   `-stor` interface-suffix rules, which this record supersedes — the suffix belongs to an interface
   that is not the primary, and §1's `hv01-mgmt` example says the opposite.
-- [Inventory & Lifecycle Management](/docs/runbook/inventory-lifecycle/) is where placement would
+- [Inventory & Lifecycle Management](/docs/runbook/lifecycle/inventory-lifecycle/) is where placement would
   be taken up if it ever is. It already has the scope and none of the data model.
 - Standing up the home site under the scheme first is the low-risk order: it has no hosts, so it
   proves the naming, the zone and the renamed directory before any of it reaches the running site.

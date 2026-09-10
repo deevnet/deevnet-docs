@@ -1,6 +1,8 @@
 ---
 title: "Inventory Lifecycle"
-weight: 5
+weight: 2
+aliases:
+  - /docs/runbook/inventory-lifecycle/
 ---
 
 # Inventory & Lifecycle Management

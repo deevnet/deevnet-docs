@@ -9,3 +9,4 @@ bookCollapseSection: true
 | Date | Change | Type | Site | Status |
 |---|---|---|---|---|
 | 2026-03-21 | [Flat Network → VLANs](2026-03-21-flat-network-to-vlans/) | Migration | mobile | Complete |
+| 2026-03-26 | [Authority Transition Rework](2026-03-26-authority-transition-rework/) | Configuration | mobile | Complete |

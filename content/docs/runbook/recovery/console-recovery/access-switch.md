@@ -1,6 +1,8 @@
 ---
 title: "Access Switch"
 weight: 3
+aliases:
+  - /docs/runbook/console-recovery/access-switch/
 ---
 
 # Access Switch
@@ -65,7 +67,7 @@ derived from inventory (10.20.99.10), and a factory-reset switch is not there ye
 
 Connect your laptop directly to a switch port and give yourself an address on the switch's
 default subnet — the same manoeuvre the
-[AP procedure](/docs/runbook/console-recovery/wireless-ap/) uses:
+[AP procedure](/docs/runbook/recovery/console-recovery/wireless-ap/) uses:
 
 ```bash
 sudo ip addr add 192.168.0.2/24 dev <iface>
@@ -131,7 +133,7 @@ ping -c1 10.20.99.1         # the router, through the restored trunk
 ping -c1 10.20.30.11        # a host on another segment
 ```
 
-Every VLAN in [the network reference](/docs/runbook/network-reference/) should be present,
+Every VLAN in [the network reference](/docs/runbook/network/network-reference/) should be present,
 and `gigabitEthernet 1/0/1` should be trunking with native VLAN 999.
 
 ---

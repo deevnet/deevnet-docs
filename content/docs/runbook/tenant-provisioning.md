@@ -1,6 +1,6 @@
 ---
 title: "Provisioning a Tenant"
-weight: 8
+weight: 10
 ---
 
 # Provisioning a Tenant

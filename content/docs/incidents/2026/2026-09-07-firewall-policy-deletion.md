@@ -224,7 +224,7 @@ Actions that stop this class of failure recurring, or make surviving it unnecess
 | 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | **Done** — `1bdba4a` |
 | 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | **Done** — `1bdba4a` |
 | 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/runbook/change-management/) | **Done** |
-| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/console-recovery/) | **Done** |
+| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/recovery/console-recovery/) | **Done** |
 
 Action 4 is the one that makes surviving the change unnecessary: it does not depend on the
 control host staying reachable.
@@ -263,5 +263,5 @@ family gives a usable dry run; the OPNsense one is worse only because it is quie
 
 - [Change Management](/docs/runbook/change-management/) — the validation checklist, and why
   `--check --diff` is not a dry run for the network roles
-- [Console Recovery → Core Router](/docs/runbook/console-recovery/core-router/) — the
+- [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/) — the
   procedure written because of this incident

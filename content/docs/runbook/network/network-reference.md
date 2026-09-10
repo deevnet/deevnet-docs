@@ -1,6 +1,8 @@
 ---
 title: "Network Reference"
 weight: 6
+aliases:
+  - /docs/runbook/network-reference/
 ---
 
 # Network Reference

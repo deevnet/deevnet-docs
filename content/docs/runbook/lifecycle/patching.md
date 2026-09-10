@@ -1,6 +1,8 @@
 ---
 title: "Patching"
-weight: 2
+weight: 1
+aliases:
+  - /docs/runbook/patching/
 ---
 
 # Patching

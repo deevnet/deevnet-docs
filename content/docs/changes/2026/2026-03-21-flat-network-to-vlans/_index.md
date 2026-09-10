@@ -29,8 +29,9 @@ since been renamed `mobile`.
 | **Systems** | Core router `dv02cor002p01` (OPNsense), access switch `dv02acc001p01` (SG2218), AP `dv02wap001p01` (EAP650-Outdoor), builder `dv00bld001p01` with the Omada controller, hypervisor `dv02hyp001p01` |
 | **Automation** | `ansible-collection-deevnet.net`, `make migration-*` targets, run against a target inventory `dvntm-new` |
 | **Risk** | High. The builder's own network path moves mid-change, and a console cable is required. |
+| **Related changes** | [2026-03-26 — Authority Transition Rework](/docs/changes/2026/2026-03-26-authority-transition-rework/), which repaired the authority transition playbooks this change left non-functional |
 | **Related incidents** | None |
-| **Related runbooks** | [Build Network](/docs/runbook/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/console-recovery/) |
+| **Related runbooks** | [Build Network](/docs/runbook/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/recovery/console-recovery/) |
 
 ---
 
@@ -70,7 +71,7 @@ The end state that counts as done:
 
 VLANs 50–52 were per-tenant segments at the time. On 2026-08-30 they were replaced by the tenant
 fabric's transport segments ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
-The [network reference](/docs/runbook/network-reference/) has the current table.
+The [network reference](/docs/runbook/network/network-reference/) has the current table.
 
 ## Scope
 
@@ -177,6 +178,11 @@ handed out `10.20.40.50` (VLAN 40).
   dropped. Fixed with a default gateway, which inventory now declares.
 
 ## Follow-ups
+
+**Knock-on effect.** The change left the authority transition playbooks non-functional on the new
+network. `bootstrap-auth` no longer enabled DHCP and would have handed out the wrong gateway.
+Nothing in this plan covered them. A review found it the day after the change closed, and it was
+fixed the same morning: [2026-03-26 — Authority Transition Rework](/docs/changes/2026/2026-03-26-authority-transition-rework/).
 
 The AP was forgotten from the controller on 2026-03-24 with a configuration reset, and has been
 pending since. The switch was never adopted. Both still run their 2023–2024 firmware. The rest

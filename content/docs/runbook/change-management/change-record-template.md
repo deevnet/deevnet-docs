@@ -51,6 +51,7 @@ weight: YYYYMMDD
 | **Systems** | Hosts and services touched, by inventory name |
 | **Automation** | Collection, playbooks or make targets, and the inventory they run against |
 | **Risk** | Low · Medium · High — and the one thing most likely to go wrong |
+| **Related changes** | None |
 | **Related incidents** | None |
 | **Related runbooks** | |
 

@@ -108,7 +108,7 @@ flowchart TD
 
 ### Reference
 
-- [Authority Transition](/docs/runbook/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
+- [Authority Transition](/docs/runbook/building-recovery/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
 - [2026-03-21 — Flat Network → VLANs](/docs/changes/2026/2026-03-21-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---
@@ -128,4 +128,4 @@ flowchart TD
 
 **Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Future Evaluations](/docs/platforms/evaluations/).
 
-**Post-Install Updates** - See [Patching](/docs/runbook/patching/) for day 2 considerations.
+**Post-Install Updates** - See [Patching](/docs/runbook/lifecycle/patching/) for day 2 considerations.

@@ -1,6 +1,8 @@
 ---
 title: "Wireless AP"
 weight: 4
+aliases:
+  - /docs/runbook/console-recovery/wireless-ap/
 ---
 
 # Wireless AP
@@ -110,7 +112,7 @@ show interface switchport gigabitEthernet 1/0/4
 ```
 
 Native VLAN 99 with 10, 30, 31, 40 and 99 allowed. If that is wrong, fix the switch — see
-[access switch](/docs/runbook/console-recovery/access-switch/) — and stop here.
+[access switch](/docs/runbook/recovery/console-recovery/access-switch/) — and stop here.
 
 ---
 

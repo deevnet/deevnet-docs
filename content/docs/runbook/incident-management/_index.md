@@ -1,6 +1,6 @@
 ---
 title: "Incident Management"
-weight: 10
+weight: 7
 bookCollapseSection: true
 ---
 
