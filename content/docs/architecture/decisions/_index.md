@@ -77,3 +77,7 @@ question is written down, not when it is answered.
   A fixed-width site code in every hostname, so the short name is unambiguous wherever
   it appears rather than only inside the inventory that loaded it; site zones renamed to say what
   the site is, and code `00` for the builder appliance that belongs to no site.
+- [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/) —
+  inventory is the only declaration of switch and AP configuration, and the Omada controller
+  applies it through its documented Open API; undocumented calls are a marked, version-pinned
+  fallback, and the CLI role becomes break-glass for adopted switches.

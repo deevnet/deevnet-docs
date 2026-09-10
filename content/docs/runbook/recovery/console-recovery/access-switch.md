@@ -107,6 +107,14 @@ This restores the VLAN database, the trunk ports and their native VLANs, the acc
 assignments, the hostname and the default gateway, and commits to flash via the
 `write memory` handler.
 
+{{< hint warning >}}
+**This is the standalone path.** Once the switch is adopted into the Omada controller
+(`switch_management: omada`), the controller applies this same inventory, and `switch-vlans.yml`
+refuses to run against the switch. It becomes break-glass: for when the controller cannot be used,
+after the switch has been returned to standalone, with `-e switch_vlans_break_glass=true`. See
+[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
+{{< /hint >}}
+
 {{< hint info >}}
 **`--check` is not useful here.** `ansible.netcommon.cli_command` accepts only `show`
 commands in check mode, so a dry run fails on every configuration line rather than previewing
