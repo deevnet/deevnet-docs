@@ -45,7 +45,7 @@ Reset only when the switch is unreachable by every route, or its configuration i
 | | |
 |---|---|
 | Device | `dv02acc001p01`, TP-Link Omada SG2218, hardware 1.20 |
-| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged — see [firmware upgrade](#firmware-upgrade) |
+| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged, upgrade planned under [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) — see [firmware upgrade](#firmware-upgrade) |
 | Managed address | 10.20.99.10, gateway 10.20.99.1 |
 | Uplink to router | `gigabitEthernet 1/0/1`, native VLAN 999 |
 | Builder port | `gigabitEthernet 1/0/16`, access VLAN 99 |
@@ -156,7 +156,7 @@ with — see [firmware upgrade](#firmware-upgrade).
 ## Firmware upgrade
 
 This is not a recovery step. It is a planned change, made while the switch is reachable and its
-configuration is intact. Nothing is reset, the configuration is kept, and the playbook does
+configuration is intact. The upgrade to 1.20.24 is planned as phase 2 of [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/). Nothing is reset, the configuration is kept, and the playbook does
 not need to run.
 
 | | |

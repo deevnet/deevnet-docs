@@ -29,6 +29,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0001 | 2026-03-21 | [Flat Network → VLANs](2026/0001-flat-network-to-vlans/) | Migration | mobile | Complete |
 | CHG-0002 | 2026-03-26 | [Authority Transition Rework](2026/0002-authority-transition-rework/) | Configuration | mobile | Complete |
 | CHG-0003 | 2026-09-05 | [Host Rename (ADR-0008)](2026/0003-host-rename/) | Migration | mobile | Complete |
+| CHG-0004 | 2026-09-10 | [Omada Controller and Network Firmware Upgrade](2026/0004-omada-controller-and-network-firmware/) | Upgrade | mobile | In progress |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
