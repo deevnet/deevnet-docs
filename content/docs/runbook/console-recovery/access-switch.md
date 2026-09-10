@@ -43,7 +43,7 @@ Reset only when the switch is unreachable by every route, or its configuration i
 | | |
 |---|---|
 | Device | `dv02acc001p01`, TP-Link Omada SG2218, hardware 1.20 |
-| Firmware | `1.20.1 Build 20240115` as of 2026-09-05; `1.20.24` staged — see [firmware upgrade](#firmware-upgrade) |
+| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged — see [firmware upgrade](#firmware-upgrade) |
 | Managed address | 10.20.99.10, gateway 10.20.99.1 |
 | Uplink to router | `gigabitEthernet 1/0/1`, native VLAN 999 |
 | Builder port | `gigabitEthernet 1/0/16`, access VLAN 99 |
@@ -160,7 +160,7 @@ not need to run.
 | | |
 |---|---|
 | Hardware | SG2218 **1.20**, per `show system-info`. A label reading V1.26 takes the same firmware. |
-| Running | `1.20.1 Build 20240115`, as of 2026-09-05 |
+| Running | `1.20.1 Build 20240115` in `image2.bin`, as of 2026-09-10. `image1.bin` holds the factory `1.1.3`. |
 | Target | `1.20.24 Build 20260509` |
 | Route | **One hop.** None of the eight V1.20 builds since declares a minimum prior version or is flagged irreversible. |
 | File | `http://artifacts.mobile.deevnet.net/firmware/sg2218/`, pinned in `artifacts_to_fetch` |
@@ -168,7 +168,8 @@ not need to run.
 Do this before the switch is adopted into Omada, not after. The controller-facing code is
 what changed most: 1.20.14 is the first build TP-Link align with controller 6.x, and 1.20.17
 fixed security vulnerabilities in the switch's interaction with the controller. 1.20.24
-recommends controller 6.2.0, and this site runs 6.1.
+recommends controller 6.2.0 or later; this site's controller has run 6.3.0.45 since
+2026-09-10.
 
 {{< hint danger >}}
 **The reboot takes down every wired path on the site, including the builder's.** The browser
@@ -192,6 +193,8 @@ ansible dv02acc001p01 -m ansible.netcommon.cli_command -a "command='show running
 
 The switch holds two images. `show image-info` shows which one boots and which is the backup.
 The upload is written into the backup slot, so whichever slot holds 1.20.1 now is the rollback.
+On 2026-09-10 that was `image2.bin`. The backup, `image1.bin`, held the factory `1.1.3`, which
+the upload replaces; nothing is lost with it.
 
 ### 2. Upload into the backup image
 
