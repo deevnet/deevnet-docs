@@ -1,9 +1,11 @@
 ---
-title: "Post-Migration"
+title: "6. Post-Migration"
 weight: 6
+aliases:
+  - /docs/runbook/network-migration/post-migration/
 ---
 
-# Post-Migration
+# 6. Post-Migration
 
 After all steps complete and connectivity is verified:
 

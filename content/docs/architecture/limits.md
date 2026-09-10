@@ -130,7 +130,7 @@ the rack leaves."*
 OPNsense keeps its own configuration history on the router, which covers a configuration
 mistake but not a failed disk. No collection carries off-box backup automation; the manual
 download step in the
-[segmentation prerequisites](/docs/runbook/network-migration/prerequisites/) is the whole of
+[segmentation prerequisites](/docs/migrations/2026-03-21-vlan-migration/prerequisites/) is the whole of
 the practice.
 
 ---

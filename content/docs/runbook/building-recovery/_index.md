@@ -109,7 +109,7 @@ flowchart TD
 ### Reference
 
 - [Authority Transition](/docs/runbook/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
-- [Network Segmentation](/docs/runbook/network-migration/) — Detailed VLAN, firewall, and DHCP procedures
+- [2026-03-21 VLAN Migration](/docs/migrations/2026-03-21-vlan-migration/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---
 
