@@ -91,7 +91,5 @@ Use this only if 6.2 fails too. It is the same restore, with tag `6.1`.
 
 ## History
 
-On 2026-09-10 the controller was upgraded in place from 6.1.0.19 to 6.3.0.45. The snapshot
-above was taken first, and 6.2.14.11 was staged and rehearsed as the fallback. That upgrade
-will be written up as a [change record](/docs/changes/) together with the network firmware
-change, and this note will move there.
+The 2026-09-10 upgrade from 6.1.0.19 to 6.3.0.45 — the snapshot above, and the 6.2.14.11
+rehearsal — is recorded as phase 1 of [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/).

@@ -52,7 +52,7 @@ of change it is. A change has one of each.
 | Type | Means | Example |
 |------|-------|---------|
 | **Migration** | Moves a site, service or network from one design to another | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) flat network → VLANs; [CHG-0003](/docs/changes/2026/0003-host-rename/) host rename |
-| **Upgrade** | A new version of software or firmware on an existing system | Omada controller 6.1 → 6.3 |
+| **Upgrade** | A new version of software or firmware on an existing system | [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) Omada controller and network firmware |
 | **Configuration** | A settings change within the current design | [CHG-0002](/docs/changes/2026/0002-authority-transition-rework/) authority transition rework; moving a switch port from access to trunk |
 | **Deployment** | A new system or service brought into service | The MQTT broker VM on IoT Backend |
 | **Decommission** | A system or service taken out of service | Dropping the VyOS roles |
