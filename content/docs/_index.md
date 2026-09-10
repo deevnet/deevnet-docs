@@ -27,6 +27,10 @@ Implementation details live in their respective repositories. This repository de
     <h3>Operational Runbook</h3>
     <p>Provisioning, patching, security, inventory, and change management.</p>
   </a>
+  <a class="section-card" href="migrations/">
+    <h3>Migrations</h3>
+    <p>Major site changes as dated change records — goal, procedure, undo, outcome.</p>
+  </a>
   <a class="section-card" href="roadmap/">
     <h3>Roadmap</h3>
     <p>Forward-looking project plans with progress tracking.</p>

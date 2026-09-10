@@ -1,14 +1,16 @@
 ---
-title: "Builder Cutover"
+title: "3. Builder Cutover"
 weight: 3
+aliases:
+  - /docs/runbook/network-migration/builder-cutover/
 ---
 
-# Builder Cutover to Management VLAN
+# 3. Builder Cutover
 
 Move the builder (`dv00bld001p01`) from the flat network to VLAN 99 with a static IP. This eliminates the DHCP dependency — the builder's eth0 is configured with a static address before its port moves to the new VLAN. After this step, the builder has routed access to all VLANs for the rest of the migration.
 
 **Prerequisites:**
-- [Step 4](/docs/runbook/network-migration/vlan-foundation/#step-4-trunk-uplink-tagged-vlans) complete (trunk uplink carrying tagged VLANs)
+- [Step 4](/docs/migrations/2026-03-21-vlan-migration/vlan-foundation/#step-4-trunk-uplink-tagged-vlans) complete (trunk uplink carrying tagged VLANs)
 
 ---
 
@@ -39,7 +41,7 @@ After this step, all VLAN gateways (including `10.20.99.1` for management) are a
 
 ## 5a2 — Temporary firewall rules for VLAN interfaces
 
-OPNsense default-denies all traffic on new OPT interfaces. This adds temporary pass-all rules via the firewall API so traffic flows during migration. [Step 9](/docs/runbook/network-migration/services-and-routing/#step-9-inter-vlan-firewall-rules) replaces these with proper zone-based policy.
+OPNsense default-denies all traffic on new OPT interfaces. This adds temporary pass-all rules via the firewall API so traffic flows during migration. [Step 9](/docs/migrations/2026-03-21-vlan-migration/services-and-routing/#step-9-inter-vlan-firewall-rules) replaces these with proper zone-based policy.
 
 {{< hint info >}}
 **Note:** This step runs AFTER the builder is on VLAN 99 and uses the VLAN 99 gateway IP (`10.20.99.1`) to reach OPNsense. If running during initial setup (builder still on VLAN 1), the playbook will need the `opnsense_api_url` overridden.
@@ -60,7 +62,7 @@ cd ansible-collection-deevnet.net
 make migration-switch-mgmt-ip
 ```
 
-The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in [Step 11](/docs/runbook/network-migration/port-migration/#step-11-management-cutover) after migration completes.
+The switch is now reachable at both `192.168.10.10` (VLAN 1) and `10.20.99.10` (VLAN 99). The VLAN 1 address is removed in [Step 11](/docs/migrations/2026-03-21-vlan-migration/port-migration/#step-11-management-cutover) after migration completes.
 
 ---
 
@@ -98,27 +100,6 @@ Once the port moves to VLAN 99, the builder becomes reachable at `10.20.99.95` o
 3. `ping 8.8.8.8` — internet access works
 4. Switch responds to SSH at new address: `ssh $SWITCH_USER@10.20.99.10`
 
-## Rollback
+## Undo
 
-1. Revert builder port to VLAN 1 via console (SG2218 General mode):
-   ```
-   configure
-   interface gigabitEthernet 1/0/16
-     switchport general allowed vlan 1 untagged
-     switchport pvid 1
-   exit
-   end
-   copy running-config startup-config
-   ```
-2. Remove VLAN 99 management IP from switch:
-   ```
-   configure
-   no interface vlan 99
-   end
-   copy running-config startup-config
-   ```
-3. Re-run builder playbook with the current (dvntm) inventory to restore DHCP/original static config:
-   ```bash
-   cd ansible-collection-deevnet.builder
-   ansible-playbook playbooks/site.yml --limit dv00bld001p01
-   ```
+See [Undo Step 5](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-5), which covers 5b–5d.

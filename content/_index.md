@@ -61,6 +61,10 @@ A **home infrastructure** deployment supporting various functions:
     <h3>Operational Runbook</h3>
     <p>Step-by-step procedures for operating and maintaining infrastructure.</p>
   </a>
+  <a class="section-card" href="docs/migrations/">
+    <h3>Migrations</h3>
+    <p>Major site changes as dated change records — goal, procedure, undo, outcome.</p>
+  </a>
   <a class="section-card" href="docs/roadmap/">
     <h3>Roadmap</h3>
     <p>Forward-looking project plans and progress tracking.</p>

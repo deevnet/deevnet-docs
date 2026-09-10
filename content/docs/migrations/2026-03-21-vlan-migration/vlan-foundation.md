@@ -1,9 +1,11 @@
 ---
-title: "VLAN Foundation"
+title: "2. VLAN Foundation"
 weight: 2
+aliases:
+  - /docs/runbook/network-migration/vlan-foundation/
 ---
 
-# VLAN Foundation
+# 2. VLAN Foundation
 
 Create the VLAN infrastructure on the router and switch. All steps in this phase are non-disruptive — no existing traffic is affected.
 
@@ -24,8 +26,7 @@ make migration-opnsense-vlans
 2. Confirm 11 VLANs created on the correct parent interface
 3. Each VLAN shows the correct tag (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99)
 
-**Rollback:**
-Delete VLAN interfaces via OPNsense GUI -> Interfaces -> Devices -> VLAN -> delete each entry.
+**Undo:** [Undo Step 2](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-2)
 
 ---
 
@@ -45,29 +46,13 @@ show vlan brief
 ```
 Confirm all VLANs (10, 20, 25, 30, 31, 35, 40, 50, 51, 52, 99) appear with correct names.
 
-**Rollback:**
-```
-configure
-no vlan 10
-no vlan 20
-no vlan 25
-no vlan 30
-no vlan 31
-no vlan 35
-no vlan 40
-no vlan 50
-no vlan 51
-no vlan 52
-no vlan 99
-end
-copy running-config startup-config
-```
+**Undo:** [Undo Step 3](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-3)
 
 ---
 
 ## Step 4: Trunk Uplink (Tagged VLANs)
 
-Add all VLANs as tagged members on the uplink port. The PVID stays at 1 (the router's untagged traffic continues on VLAN 1). The PVID cutover to blackhole (999) happens in [Step 9b](/docs/runbook/network-migration/services-and-routing/#step-9b-trunk-pvid-cutover-to-blackhole) — after OPNsense VLAN interfaces have IPs and the router is reachable via tagged VLANs.
+Add all VLANs as tagged members on the uplink port. The PVID stays at 1 (the router's untagged traffic continues on VLAN 1). The PVID cutover to blackhole (999) happens in [Step 9b](/docs/migrations/2026-03-21-vlan-migration/services-and-routing/#step-9b-trunk-pvid-cutover-to-blackhole) — after OPNsense VLAN interfaces have IPs and the router is reachable via tagged VLANs.
 
 **Run:**
 ```bash
@@ -84,12 +69,4 @@ show interface switchport gigabitEthernet 1/0/1
 
 Also verify you can still reach the router (`ping 192.168.10.1`) and the switch at `192.168.10.10`.
 
-**Rollback:**
-```
-configure
-interface gigabitEthernet 1/0/1
-  no switchport general allowed vlan 10,20,25,30,31,35,40,50,51,52,99,999
-exit
-end
-copy running-config startup-config
-```
+**Undo:** [Undo Step 4](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-4)

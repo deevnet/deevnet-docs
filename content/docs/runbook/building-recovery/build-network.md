@@ -63,7 +63,7 @@ No automated install exists. Manual USB install required.
 
 ## Network Segmentation
 
-After the Core Router is installed and reachable, build the segmented VLAN network. These procedures are documented in detail under [Network Segmentation](/docs/runbook/network-migration/).
+After the Core Router is installed and reachable, build the segmented VLAN network. The detailed procedure is the one the mobile site was migrated with, recorded in the [2026-03-21 VLAN Migration](/docs/migrations/2026-03-21-vlan-migration/) change record. A greenfield build follows the same phases; that record's [Outcome](/docs/migrations/2026-03-21-vlan-migration/#outcome) lists where execution departed from the plan.
 
 The sequence for a greenfield build:
 
@@ -71,7 +71,7 @@ The sequence for a greenfield build:
 
 Create VLAN sub-interfaces on OPNsense and VLANs in the switch database. Non-disruptive.
 
-See [VLAN Foundation](/docs/runbook/network-migration/vlan-foundation/) for detailed steps.
+See [VLAN Foundation](/docs/migrations/2026-03-21-vlan-migration/vlan-foundation/) for detailed steps.
 
 ```bash
 cd ~/home/ansible-collection-deevnet.net
@@ -84,13 +84,13 @@ make migration-switch-trunk      # Trunk uplink with tagged VLANs
 
 Move the builder from the flat/default network to the management VLAN. Highest-risk phase.
 
-See [Builder Cutover](/docs/runbook/network-migration/builder-cutover/) for detailed steps and rollback procedures.
+See [Builder Cutover](/docs/migrations/2026-03-21-vlan-migration/builder-cutover/) for detailed steps, and [Undo](/docs/migrations/2026-03-21-vlan-migration/undo/#undo-step-5) for backing it out.
 
 ### 3. Services and Routing
 
 Configure DHCP, firewall rules, and inter-VLAN routing.
 
-See [Services & Routing](/docs/runbook/network-migration/services-and-routing/) for detailed steps.
+See [Services & Routing](/docs/migrations/2026-03-21-vlan-migration/services-and-routing/) for detailed steps.
 
 ```bash
 make migration-opnsense-dhcp       # Kea DHCP subnets and reservations
@@ -101,7 +101,7 @@ make migration-opnsense-firewall   # Zone-based firewall policy
 
 Move switch ports to their assigned VLANs and configure AP SSIDs.
 
-See [Port Migration & Wireless](/docs/runbook/network-migration/port-migration/) for detailed steps.
+See [Port Migration & Wireless](/docs/migrations/2026-03-21-vlan-migration/port-migration/) for detailed steps.
 
 ### 5. DNS, DHCP, and WoL Finalization
 
@@ -158,4 +158,4 @@ dig artifacts.mobile.deevnet.net
 
 Run the post-network verification checks:
 
-See [Post-Migration](/docs/runbook/network-migration/post-migration/) for the full validation procedure, or proceed to [Verify Site](/docs/runbook/building-recovery/build-verification/) after the management plane is built.
+See [Post-Migration](/docs/migrations/2026-03-21-vlan-migration/post-migration/) for the full validation procedure, or proceed to [Verify Site](/docs/runbook/building-recovery/build-verification/) after the management plane is built.

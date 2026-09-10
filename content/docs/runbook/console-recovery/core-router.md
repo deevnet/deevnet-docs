@@ -43,7 +43,7 @@ timeout 3 bash -c 'exec 3<>/dev/tcp/10.20.99.1/22'   # ssh
 | Gateway answers, 443 and 22 both refused | Firewall policy — the anti-lockout rules are gone. This page. |
 | Nothing answers, from any segment | Router down, or its LAN port. This page. |
 | Same-segment works, cross-segment does not | Zone policy. Still this page if the API is unreachable. |
-| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/console-recovery/access-switch/) or [troubleshooting](/docs/runbook/network-migration/troubleshooting/). |
+| Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/console-recovery/access-switch/) or [troubleshooting](/docs/migrations/2026-03-21-vlan-migration/troubleshooting/). |
 
 {{< hint warning >}}
 **A gateway answering ICMP proves nothing about the policy.** The router replies on its own

@@ -37,10 +37,6 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
     <h3>Network Reference</h3>
     <p>VLAN assignments and network configuration details.</p>
   </a>
-  <a class="section-card" href="network-migration/">
-    <h3>Network Segmentation</h3>
-    <p>VLAN segmentation procedures — foundation, DHCP, firewall, port assignment, wireless.</p>
-  </a>
   <a class="section-card" href="omada-controller/">
     <h3>Omada Controller</h3>
     <p>Upgrading the controller in place, and falling back to an earlier version from a data snapshot.</p>

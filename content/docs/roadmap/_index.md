@@ -1,6 +1,6 @@
 ---
 title: "🗺️ Roadmap"
-weight: 5
+weight: 6
 bookCollapseSection: true
 ---
 
