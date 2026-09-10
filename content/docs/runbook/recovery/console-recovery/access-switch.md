@@ -78,12 +78,13 @@ sudo ip addr add 192.168.0.2/24 dev <iface>
 switches commonly return to `192.168.0.1/24`, but this varies by model and firmware. Once
 confirmed for this switch, record it in this table so the next person does not have to guess.
 
-**What a reset switch lets you in with depends on its firmware.** Up to 1.20.14 it is
-`admin`/`admin`, as the label says. From 1.20.17 TP-Link removed the default username and
-password, so expect first login to ask you to create an account instead — create it with
-`vault_switch_user` / `vault_switch_password` from `group_vars/switches`, since that is the
-account Ansible logs in with. From 1.20.4 standalone mode also starts with HTTP off: browse
-`https://`.
+**A reset switch returns to `admin`/`admin`**, per the label and TP-Link's current guides.
+Firmware 1.20.17's release note says it *"remove[s] default username and password"* from the
+initialization process. That most likely means first login forces a password change, not that
+the defaults are gone — confirm on the device after the upgrade. If you are asked to set
+credentials, use `vault_switch_user` / `vault_switch_password` from `group_vars/switches`, since
+that is the account Ansible logs in with. From 1.20.4, standalone mode also starts with HTTP off:
+browse `https://`.
 {{< /hint >}}
 
 In the switch's web UI or CLI, set just enough for Ansible to take over:

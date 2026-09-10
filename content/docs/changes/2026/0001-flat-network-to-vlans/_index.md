@@ -181,6 +181,10 @@ handed out `10.20.40.50` (VLAN 40).
 
 ## Follow-ups
 
+**Cleanup not done.** Post-migration step 4 — remove the old `192.168.10.0` LAN interface from
+OPNsense — did not happen. On 2026-09-10 the untagged `lan` (`re0`) still carried
+`192.168.10.1/23`, with Kea listening on it and no subnet for it.
+
 **Knock-on effect.** The change left the authority transition playbooks non-functional on the new
 network. `bootstrap-auth` no longer enabled DHCP and would have handed out the wrong gateway.
 Nothing in this plan covered them. A review found it the day after the change closed, and it was
