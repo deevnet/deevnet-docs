@@ -11,7 +11,7 @@ The access point provides **wireless connectivity** for mobile devices, laptops,
 
 {{< mermaid >}}
 graph LR
-    A[Access Switch<br>PoE + VLAN] <--> B[Access Point<br>Wi-Fi] <--> C[Wireless Clients]
+    A[Access Switch<br>VLAN trunk] <--> B[Access Point<br>Wi-Fi] <--> C[Wireless Clients]
 {{< /mermaid >}}
 
 ---
@@ -38,7 +38,7 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 | **Speed** | AX3000 (574 + 2402 Mbps) |
 | **Antennas** | 2x2 internal (2.4GHz), 2x2 internal (5GHz) |
 | **Ethernet** | 1x Gigabit RJ45 |
-| **Power** | 802.3at PoE (12.3W typical) |
+| **Power** | 802.3at PoE (12.3W typical), from the injector supplied with the AP — the SG2218 has no PoE |
 | **Weatherproofing** | IP67 |
 | **Operating Temp** | -30°C to 70°C |
 | **Mounting** | Wall/pole mount |

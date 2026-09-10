@@ -35,6 +35,7 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 | **Model** | TP-Link Omada SG2218 |
 | **Ports** | 16x Gigabit RJ45 |
 | **Uplinks** | 2x SFP (1Gbps) |
+| **PoE** | None — the AP runs from its own injector |
 | **Switching Capacity** | 36 Gbps |
 | **MAC Table** | 8K entries |
 | **Jumbo Frames** | 9216 bytes |
