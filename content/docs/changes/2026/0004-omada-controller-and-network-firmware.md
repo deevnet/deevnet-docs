@@ -209,8 +209,8 @@ Not yet run.
 ## Follow-ups
 
 - [ ] **Schedule phases 2 and 3**, in one window, with the operator on site.
-- [ ] **Decide who owns the switch's configuration** — Ansible, as today, or the controller —
-  before adopting it. That decision belongs to the adoption change, not this one.
+- [x] **Decided who owns the switch's configuration:** inventory owns it, and the controller
+  applies it through its Open API — [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/). Adoption follows that record's order.
 - [ ] **Adopt the AP and move the SSIDs to controller provisioning** (`make migration-omada-ssids`),
   retiring CHG-0001's hand-configured SSIDs. A separate change.
 - [ ] **Take a fresh controller snapshot before the adoption work.** Today's only snapshot
