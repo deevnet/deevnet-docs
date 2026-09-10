@@ -2,6 +2,7 @@
 title: "Issues & Follow-ups"
 weight: 8
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/troubleshooting/
   - /docs/runbook/network-migration/troubleshooting/
 ---
 

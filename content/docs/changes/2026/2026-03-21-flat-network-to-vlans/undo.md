@@ -1,6 +1,8 @@
 ---
 title: "Undo Procedure"
 weight: 7
+aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/undo/
 ---
 
 # Undo Procedure

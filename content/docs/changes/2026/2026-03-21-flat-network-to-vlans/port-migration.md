@@ -2,6 +2,7 @@
 title: "5. Port Migration & Wireless"
 weight: 5
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/port-migration/
   - /docs/runbook/network-migration/port-migration/
 ---
 

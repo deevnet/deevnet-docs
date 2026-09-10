@@ -2,6 +2,7 @@
 title: "3. Builder Cutover"
 weight: 3
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/builder-cutover/
   - /docs/runbook/network-migration/builder-cutover/
 ---
 

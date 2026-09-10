@@ -2,6 +2,7 @@
 title: "1. Prerequisites & Preflight"
 weight: 1
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/prerequisites/
   - /docs/runbook/network-migration/prerequisites/
 ---
 

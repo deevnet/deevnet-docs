@@ -2,6 +2,7 @@
 title: "2. VLAN Foundation"
 weight: 2
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/vlan-foundation/
   - /docs/runbook/network-migration/vlan-foundation/
 ---
 

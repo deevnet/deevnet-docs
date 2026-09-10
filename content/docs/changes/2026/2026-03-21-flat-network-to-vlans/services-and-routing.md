@@ -2,6 +2,7 @@
 title: "4. Services & Routing"
 weight: 4
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/services-and-routing/
   - /docs/runbook/network-migration/services-and-routing/
 ---
 

@@ -3,6 +3,7 @@ title: "2026-03-21 — Flat Network → VLANs"
 weight: 20260321
 bookCollapseSection: true
 aliases:
+  - /docs/migrations/2026-03-21-vlan-migration/
   - /docs/runbook/network-migration/
 ---
 
