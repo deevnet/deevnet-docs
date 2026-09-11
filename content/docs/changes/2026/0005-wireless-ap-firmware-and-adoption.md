@@ -76,7 +76,7 @@ home site.
 | Adoption replaces the AP's configuration with the controller's, so wireless is off until the controller's SSIDs arrive | Phase 4 | The networks and SSIDs are provisioned in the controller **before** adoption (phase 1) |
 | The AP moves address when the controller takes it over | Phase 4 | The trunk it sits on is native 99, so management stays untagged on 99. OPNsense already reserves `40:ed:00:6f:f9:d4` → `10.20.99.9`, so even a DHCP AP lands on its own address. Phase 5 sets it statically as well. |
 | Adoption asks for the AP's standalone credentials, and the vault has none | Phase 4 | Recorded in the vault before the window (prerequisite) |
-| The controller upgrades firmware on its own after adoption | Phase 4 | `autoUpgrade` is off at site level (checked 2026-09-10) |
+| The controller upgrades firmware on its own after adoption | Phase 4 | `autoUpgrade` off at site level. Checked on 2026-09-10, but the controller has been reset since, so it is checked again (prerequisite) |
 | Something on 6.3 goes wrong with devices adopted | After | A fresh controller snapshot is taken just before adoption |
 
 ## Prerequisites
@@ -84,11 +84,21 @@ home site.
 - [x] AP firmware 1.2.5, 1.3.3 and 1.3.11 mirrored and pinned by sha256; all three matched on
   2026-09-10.
 - [x] Controller on 6.3.0.45 ([CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)).
+  Reset to a fresh install on 2026-09-11; see the baseline.
+- [x] **Owner account** on the reset controller, created in the setup wizard on 2026-09-11 and
+  recorded in `group_vars/network_controllers/vault.yml` as `vault_omada_owner_user` /
+  `vault_omada_owner_password`.
 - [ ] **Open API client** created by the Owner in the web UI (Global View → Settings → Platform
   Integration → Open API), with its id and secret in `group_vars/network_controllers/vault.yml`
   as `vault_omada_openapi_client_id` / `vault_omada_openapi_client_secret`.
 - [ ] **The AP's current standalone login** in the same vault, as `vault_wap_standalone_user` /
-  `vault_wap_standalone_password`.
+  `vault_wap_standalone_password`. **Not known.** On 2026-09-11 an adoption from the reset
+  controller was refused on the AP's credentials (the controller log reads `adopt info is
+  wrong`). If the login can't be recovered, the way on is a factory reset by the
+  [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) path, which replaces
+  phase 2's in-place hops with that page's reset-first route. Not yet decided.
+- [ ] **Site `autoUpgrade` off** on the reset controller. The 2026-09-10 check was made on the
+  controller that has since been wiped.
 - [ ] `playbooks/omada-wireless.yml` run in plan mode, and its report read.
 - [ ] Laptop on `gi1/0/2`, taking an address from `10.20.99.200–230`, with the three `.bin` files
   already downloaded to it.
@@ -98,9 +108,9 @@ home site.
 
 | | |
 |---|---|
-| AP | `1.0.4 Build 20230421`; answers at `https://10.20.99.9`; pending in the controller, not adopted |
+| AP | `1.0.4 Build 20230421`; answers at `https://10.20.99.9`. Discovered by the reset controller, not adopted; the 2026-09-11 adoption attempt was refused on the AP's credentials. |
 | AP address | OPNsense reserves `40:ed:00:6f:f9:d4` → `10.20.99.9` |
-| Controller | `6.3.0.45`; site `autoUpgrade` off. Networks exist on VLANs 1, 10, 30, 31, 40 and 99, created in March by the migration playbook. |
+| Controller | `6.3.0.45`. **Reset to a fresh install on 2026-09-11**: the Owner login had been lost, and nothing on the controller was worth keeping. The old data and logs are kept on the host under `/opt/omada-controller-backup/pre-reset-2026-09-11/`. The new Owner is cloud-registered (`registeredRoot: true`). `a_autoprov` has not been recreated; this change doesn't need it. The March networks went with the reset, so phase 1 creates all four wireless networks. |
 | Access switch | Standalone. `gi1/0/4` (the AP) is a trunk: native 99, allowed 10, 30, 31, 40, 99. `gi1/0/2` (the operator port) is untagged VLAN 99. |
 
 ---
