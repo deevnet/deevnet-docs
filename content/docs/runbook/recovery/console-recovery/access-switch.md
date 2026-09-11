@@ -24,11 +24,13 @@ time set aside — not as a quick thing to try.
 
 ## Try this first
 
-If the switch still responds on a console cable, fixing the specific fault is faster and far
-less disruptive than a reset. The usual culprit after a trunk change is a native VLAN
-mismatch on the uplink — see
-[troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/#lost-switch-access-after-trunk-configuration),
-which covers reverting a port from the console.
+**The SG2218 has no console port** — only LEDs, the reset button, RJ45 ports and SFP slots, per
+its [installation guide](https://static.tp-link.com/upload/manual/2023/202305/20230511/7106510303_TL-SG2218(UN)_IG.pdf).
+So the question is whether it still answers on its management address from anywhere: the
+builder, or a laptop on the operator port `gi1/0/2`. If it does, fixing the specific fault over
+the network is faster and far less disruptive than a reset. The usual culprit after a trunk
+change is a native VLAN mismatch on the uplink — see
+[troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/#lost-switch-access-after-trunk-configuration).
 
 Reset only when the switch is unreachable by every route, or its configuration is unknown.
 
@@ -45,7 +47,7 @@ Reset only when the switch is unreachable by every route, or its configuration i
 | | |
 |---|---|
 | Device | `dv02acc001p01`, TP-Link Omada SG2218, hardware 1.20 |
-| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged, upgrade planned under [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) — see [firmware upgrade](#firmware-upgrade) |
+| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged, upgrade planned under [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — see [firmware upgrade](#firmware-upgrade) |
 | Managed address | 10.20.99.10, gateway 10.20.99.1 |
 | Uplink to router | `gigabitEthernet 1/0/1`, native VLAN 999 |
 | Builder port | `gigabitEthernet 1/0/16`, access VLAN 99 |
@@ -165,7 +167,7 @@ with — see [firmware upgrade](#firmware-upgrade).
 ## Firmware upgrade
 
 This is not a recovery step. It is a planned change, made while the switch is reachable and its
-configuration is intact. The upgrade to 1.20.24 is planned as phase 2 of [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/). Nothing is reset, the configuration is kept, and the playbook does
+configuration is intact. The upgrade to 1.20.24 is planned as [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/). Nothing is reset, the configuration is kept, and the playbook does
 not need to run.
 
 | | |
@@ -186,8 +188,9 @@ recommends controller 6.2.0 or later; this site's controller has run 6.3.0.45 si
 **The reboot takes down every wired path on the site, including the builder's.** The browser
 you uploaded from, Ansible, the Omada controller and the route to every segment all go with it
 until the switch is back. The hypervisors are not clustered, so nothing fences: guests keep
-running, just unreachable. The AP loses its uplink. Set time aside, and have the console cable
-to hand.
+running, just unreachable. The AP loses its uplink. Set time aside. The switch has no console
+port, so the way back from a bad boot is the other image slot ([Rollback](#rollback)), or the
+reset button and a laptop on a static `192.168.0.2/24`.
 {{< /hint >}}
 
 ### 1. Record where it starts

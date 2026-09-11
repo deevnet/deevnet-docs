@@ -191,6 +191,7 @@ Nothing in this plan covered them. A review found it the day after the change cl
 fixed the same morning: [CHG-0002: Authority Transition Rework](/docs/changes/2026/0002-authority-transition-rework/).
 
 The AP was forgotten from the controller on 2026-03-24 with a configuration reset, and has been
-pending since. The switch was never adopted. Both still run their 2023–2024 firmware; their
-upgrade is planned under [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/). The rest
+pending since. The switch was never adopted. Both still run their 2023–2024 firmware. The AP's
+upgrade and adoption are planned as [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/), and the switch's firmware as
+[CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/). The rest
 of the automation backlog is in [Issues & Follow-ups](troubleshooting/).
