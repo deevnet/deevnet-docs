@@ -92,4 +92,4 @@ Use this only if 6.2 fails too. It is the same restore, with tag `6.1`.
 ## History
 
 The 2026-09-10 upgrade from 6.1.0.19 to 6.3.0.45 — the snapshot above, and the 6.2.14.11
-rehearsal — is recorded as phase 1 of [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/).
+rehearsal — is recorded in [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/).

@@ -31,7 +31,7 @@ Step-by-step procedures for operating and maintaining Deevnet infrastructure.
   </a>
   <a class="section-card" href="network/">
     <h3>Network</h3>
-    <p>VLAN and addressing reference, and operating the Omada controller.</p>
+    <p>Important URLs — every management UI by name and IP — plus VLAN and addressing reference.</p>
   </a>
   <a class="section-card" href="recovery/">
     <h3>Recovery</h3>

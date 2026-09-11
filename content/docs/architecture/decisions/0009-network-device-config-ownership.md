@@ -11,7 +11,7 @@ weight: 9
 | **Date** | 2026-09-10 |
 | **Accepted** | 2026-09-10 |
 | **Scope** | Who owns, and who applies, the configuration of controller-managed network devices — the access switch and the AP — and how automation talks to the Omada controller |
-| **Related** | [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) — brings the controller and firmware current, so the devices can be adopted; [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — the guards any reconciling role now carries |
+| **Related** | [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — brings the controller current; [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — the AP, the first device adopted under this record; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch's firmware; [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — the guards any reconciling role now carries |
 
 ---
 
@@ -28,7 +28,7 @@ The mobile site's network devices are configured three different ways today:
 - **The Omada controller** holds hand-grown, partial state: six networks created by a migration
   playbook in March, and nothing else. It has never adopted the switch.
 
-[CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) brings the controller
+[CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) brings the controller
 and both devices' firmware current, so that Omada can manage them. That raises the question this
 record settles. Adopting a device hands its configuration to the controller, so something has to
 own that configuration: inventory, or the controller.
@@ -196,4 +196,4 @@ was written to the controller.
 | Has a write been tested? | Not yet. The PoC's apply mode — create, read back, compare, delete — waits for the Open API client. |
 | What address does a reset switch take? | A DHCP lease if one is offered, otherwise `192.168.0.1` ([SG2218 installation guide](https://static.tp-link.com/upload/manual/2023/202305/20230511/7106510303_TL-SG2218(UN)_IG.pdf) §4.2). Adoption needs the switch and the controller in the same subnet (§4.3) — and the same VLAN ([adoption guide](https://support.omadanetworks.com/us/document/122955)). |
 | Who would answer that DHCP request here? | After a reset, every port is untagged VLAN 1, so the request reaches the builder and OPNsense's untagged `lan`. **OPNsense does not answer**: Kea listens on `lan`, but `lan` still carries the pre-migration `192.168.10.1/23` and Kea has no subnet for it. **The builder answers only in bootstrap-authoritative mode**, where its dnsmasq holds the switch's reservation (`5c:62:8b:0c:40:ec` → `10.20.99.10`, from inventory). |
-| What credentials does adoption need? | The defaults. TP-Link's adoption guide (updated 2026-09-10) and forgot-password guide (updated 2026-08-24) both give `admin`/`admin` for switches after a reset, and the controller's site Device Account (`admin` here) takes over on adoption. Switch firmware 1.20.17's note — *"remove default username and password"* — most likely means a forced change at first login, which the installation guide already mentions *"for certain devices"*. It is confirmed on the device itself after CHG-0004 phase 2. |
+| What credentials does adoption need? | The defaults. TP-Link's adoption guide (updated 2026-09-10) and forgot-password guide (updated 2026-08-24) both give `admin`/`admin` for switches after a reset, and the controller's site Device Account (`admin` here) takes over on adoption. Switch firmware 1.20.17's note — *"remove default username and password"* — most likely means a forced change at first login, which the installation guide already mentions *"for certain devices"*. It can only be confirmed on the device when the switch is reset, which its adoption will do; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) carries the follow-up. |

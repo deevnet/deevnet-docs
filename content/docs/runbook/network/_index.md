@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 Reference and day-2 procedures for the site network.
 
+- [Important URLs](important-urls/) — every management interface and service endpoint, by DNS name and by IP
 - [Network Reference](network-reference/) — VLAN assignments, subnets, gateways and DHCP ranges for each site
 
 Building the network from scratch is part of [Building Infrastructure](/docs/runbook/building-recovery/build-network/).

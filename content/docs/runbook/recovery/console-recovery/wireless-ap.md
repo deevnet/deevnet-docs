@@ -139,8 +139,8 @@ controller's, and a controller several years newer than the AP's firmware is the
 that mis-provisions VLAN-tagged SSIDs — the problem [step 6](#6-reapply-the-ssids) exists to
 work around. Arriving at adoption on current firmware is what removes it.
 
-Outside a recovery, `dv02wap001p01`'s upgrade is planned as phase 3 of [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/): the
-same chain, applied in place without a reset.
+Outside a recovery, `dv02wap001p01`'s upgrade is planned as phase 2 of [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/): the
+same chain, applied in place without a reset, ahead of adopting the AP.
 
 {{< hint danger >}}
 **This is a chain, not a step, and one hop is irreversible.** Every build since 1.2.x declares

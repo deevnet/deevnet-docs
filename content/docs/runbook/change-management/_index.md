@@ -52,7 +52,7 @@ of change it is. A change has one of each.
 | Type | Means | Example |
 |------|-------|---------|
 | **Migration** | Moves a site, service or network from one design to another | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) flat network → VLANs; [CHG-0003](/docs/changes/2026/0003-host-rename/) host rename |
-| **Upgrade** | A new version of software or firmware on an existing system | [CHG-0004](/docs/changes/2026/0004-omada-controller-and-network-firmware/) Omada controller and network firmware |
+| **Upgrade** | A new version of software or firmware on an existing system | [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) Omada controller 6.1 → 6.3; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) switch firmware |
 | **Configuration** | A settings change within the current design | [CHG-0002](/docs/changes/2026/0002-authority-transition-rework/) authority transition rework; moving a switch port from access to trunk |
 | **Deployment** | A new system or service brought into service | The MQTT broker VM on IoT Backend |
 | **Decommission** | A system or service taken out of service | Dropping the VyOS roles |
@@ -107,8 +107,9 @@ a total loss of site connectivity — see
    reported and withheld rather than applied. All three OPNsense roles have this guard:
    `opnsense_dns`, `opnsense_dhcp`, and — since 2026-09-08 — `opnsense_firewall`
    (`firewall_delete_unmanaged`).
-4. **Keep console access available** for any change to the core router or to the switch port
-   carrying your management path. The automation host sits behind both, so a change that
+4. **Keep out-of-band access available** for any change to the core router or to the switch port
+   carrying your management path — the router's console, and for the switch, which has no
+   console port, the reset button and a laptop. The automation host sits behind both, so a change that
    severs it also removes your ability to undo it —
    [Console Recovery](/docs/runbook/recovery/console-recovery/) is what you follow if it does.
 {{< /hint >}}
