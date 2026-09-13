@@ -81,3 +81,11 @@ question is written down, not when it is answered.
   inventory is the only declaration of switch and AP configuration, and the Omada controller
   applies it through its documented Open API; undocumented calls are a marked, version-pinned
   fallback, and the CLI role becomes break-glass for adopted switches.
+- [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) —
+  *Proposed.* A tenant may depend on the substrate, but the substrate must not come to contain the
+  tenant: platform services are bound to a tenant once at onboarding, and nothing that recurs needs a
+  substrate commit; extends ADR-0004 §5 from DNS to every platform service.
+- [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) —
+  *Proposed.* A physical device belongs to the application that gives it purpose, joins the access
+  network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
+  platform services; device secrets and signing keys never enter the substrate vault.
