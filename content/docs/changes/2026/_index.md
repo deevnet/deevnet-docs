@@ -14,3 +14,4 @@ bookCollapseSection: true
 | CHG-0004 | 2026-09-10 | [Omada Controller Upgrade](0004-omada-controller-upgrade/) | Upgrade | mobile | Complete |
 | CHG-0005 | — | [Wireless AP Firmware and Omada Adoption](0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Planned |
 | CHG-0006 | — | [Access Switch Firmware Upgrade](0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Planned |
+| CHG-0007 | — | [Core Router Zone Policy, First Application](0007-core-router-zone-policy/) | Configuration | mobile | Planned |

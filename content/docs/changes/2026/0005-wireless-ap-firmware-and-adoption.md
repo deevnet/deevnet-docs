@@ -99,6 +99,15 @@ home site.
   phase 2's in-place hops with that page's reset-first route. Not yet decided.
 - [ ] **Site `autoUpgrade` off** on the reset controller. The 2026-09-10 check was made on the
   controller that has since been wiped.
+- [ ] **Wi-Fi keys and client isolation for `DVNTM-IOT` decided** (added 2026-09-13):
+  - a shared key or per-device PPSK keys mapped to VLAN 30
+  - how IoT clients are kept apart. Omada's Guest Network setting also blocks private address
+    ranges, so it can't be used for devices that reach the broker.
+
+  These are open questions 3 and 4 of
+  [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/). They come first
+  because `omada-wireless.yml` creates SSIDs and never rewrites one: whatever phase 1 creates is
+  what stays.
 - [ ] `playbooks/omada-wireless.yml` run in plan mode, and its report read.
 - [ ] Laptop on `gi1/0/2`, taking an address from `10.20.99.200–230`, with the three `.bin` files
   already downloaded to it.

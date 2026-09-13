@@ -217,6 +217,28 @@ As recorded at the time, updated only where a later commit settles them:
   inter-VLAN reachability: scheduled, with the console open, the savepoint armed, and the drift
   audit read first.
 
+Added 2026-09-13. The three items above are planned as
+[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/). Two more were found while planning it:
+
+- **The role can't audit without writing.** There is no plan mode: a run with drift calls
+  `addRule`/`setRule` and fires the apply handler, so the drift audit described above would itself
+  be the first application. Reading the role also turned up faults in the guards from actions 4
+  and 5:
+  - `addRule`/`setRule` accept any HTTP 200, but OPNsense reports a rejected rule as 200 with
+    `"result":"failed"`.
+  - Required fields are sent as empty strings.
+  - The reachability check registers with `failed_when: false`, so every result is `failed: false`
+    and `cancelRollback` is always sent.
+  - When no savepoint revision is issued, the role prints a message and does a plain apply.
+  - `firewall_savepoint_timeout` is never sent to the router.
+  
+  These are CHG-0007's prerequisites.
+- **Two statements in this record read as a contradiction.** The summary says the runs deleted
+  "18 zone policies"; the item above says the 18-rule policy "has still never been applied." Both
+  may be true, for instance rules created before the flat-network migration finished and never
+  applied since. The record doesn't say which. CHG-0007's drift audit should establish what the
+  router actually held.
+
 ## Preventive actions
 
 Actions that stop this class of failure recurring, or make surviving it unnecessary.
