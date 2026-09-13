@@ -146,9 +146,12 @@ All Deevnet repositories are checked out to a standard location:
 ```
 ~/home/
 ├── ansible-collection-deevnet.builder/   # Provisioning roles
+├── ansible-collection-deevnet.mgmt/      # Management plane and centralized services
 ├── ansible-collection-deevnet.net/       # Network device configuration
 ├── ansible-inventory-deevnet/            # Host inventory (home, mobile)
 ├── deevnet-image-factory/                # Packer image builds
+├── deevnet-tenant-factory/               # Tenant fabric, module and registry
+├── deevnet-tenant-tdemo/                 # The demo tenant
 └── deevnet-docs/                         # This documentation (submodule)
 ```
 

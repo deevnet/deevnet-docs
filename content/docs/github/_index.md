@@ -33,6 +33,10 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
     <h3>tenant-factory</h3>
     <p>The tenant fabric, the reusable tenant module, and the index registry. Substrate side — tenants themselves live elsewhere.</p>
   </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-tenant-tdemo">
+    <h3>tenant-tdemo</h3>
+    <p>The <code>tdemo</code> tenant as Terraform — the demonstration tenant built from the tenant factory's reference implementation.</p>
+  </a>
   <a class="section-card" href="https://github.com/deevnet/deevnet-docs">
     <h3>deevnet-docs</h3>
     <p>This documentation site.</p>
@@ -51,6 +55,7 @@ home/
 ├── ansible-inventory-deevnet/
 ├── deevnet-image-factory/
 ├── deevnet-tenant-factory/
+├── deevnet-tenant-tdemo/           the demo tenant
 ├── deevnet-tenant-<name>/          one per tenant
 └── deevnet-docs/
 ```
@@ -80,6 +85,8 @@ git clone git@github.com:deevnet/ansible-collection-deevnet.mgmt.git
 git clone git@github.com:deevnet/ansible-collection-deevnet.net.git
 git clone git@github.com:deevnet/ansible-inventory-deevnet.git
 git clone git@github.com:deevnet/deevnet-image-factory.git
+git clone git@github.com:deevnet/deevnet-tenant-factory.git
+git clone git@github.com:deevnet/deevnet-tenant-tdemo.git
 git clone git@github.com:deevnet/deevnet-docs.git
 ```
 
