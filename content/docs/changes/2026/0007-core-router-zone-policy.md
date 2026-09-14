@@ -10,7 +10,7 @@ weight: 7
 | **Date** | Not yet scheduled |
 | **Change type** | Configuration |
 | **Classification** | Disruptive — it changes what every segment on site can reach, the operator's own path included |
-| **Status** | **Planned**, after the `opnsense_firewall` fixes and the mobile reachability targets (see [Prerequisites](#prerequisites)). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). |
+| **Status** | **Planned**, after the `opnsense_firewall` fixes and the mobile reachability targets (see [Prerequisites](#prerequisites)). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
 | **Window** | To be scheduled, with the operator at the rack and the router's console connected |
 | **Site** | mobile |
 | **Systems** | Core router `dv02cor002p01` (OPNsense 26.7.3); control host `dv00bld001p01` |
@@ -102,7 +102,9 @@ as `any`, not as empty strings.
   `!10.20.0.0/16`.
 - Any other rule not prefixed `ansible:`.
 
-## Decision needed before phase 2: removing the allow-all rules
+## Decision: removing the allow-all rules
+
+**Decided 2026-09-14: Option A.** This records the plan for the run. Nothing has been run.
 
 The declared policy only takes effect once the allow-all rules are gone. Applied alongside them, it
 changes nothing: they pass everything first.
@@ -113,12 +115,24 @@ so with `firewall_delete_unmanaged: false`, a prerequisite of this change, they 
 
 | Option | How | Trade-off |
 |---|---|---|
-| **A — Delete through the role, for this run only** | Run phase 2 with `-e firewall_delete_unmanaged=true`, **only after** phase 1's would-delete list is exactly the 25 rules above and the protected set is intact | The deletes land in the same apply as the adds, **behind the savepoint**, so a severed path reverts them too. Deletion stays off by default for every later run. |
-| **B — Delete by hand after the apply** | Apply the policy with deletion off, verify, then delete the 25 rules in Firewall → Automation → Filter and apply again | The first apply changes nothing observable, so phase 3 can't tell a working policy from an inert one until the second apply. The hand apply has no savepoint. |
+| **A — Delete through the role, for this run only** *(chosen)* | Run phase 2 with `-e firewall_delete_unmanaged=true`, **only after** phase 1's would-delete list is exactly the 25 rules above and the protected set is intact | The deletes land in the same apply as the adds, **behind the savepoint**, so a severed path reverts them too. Deletion stays off by default for every later run. |
+| **B — Delete by hand after the apply** *(not chosen)* | Apply the policy with deletion off, verify, then delete the 25 rules in Firewall → Automation → Filter and apply again | The first apply changes nothing observable, so phase 3 can't tell a working policy from an inert one until the second apply. The hand apply has no savepoint. |
 
-**Recommended: A.** Its only risk is deleting something unintended, and phase 1's list rules that
-out before anything is written. The two rules outside automation are removed by hand under either
-option, last, with the console open, because the role can't reach them.
+**Why A.** Its only risk is deleting something unintended, and phase 1's list rules that out before
+anything is written. B's first apply proves nothing, and its second apply has no savepoint.
+
+**What Option A commits this change to:**
+- **Phase 1 is the gate.** Its would-delete list must be exactly the 25 `temp-allow-all` and
+  `test-rule` entries in [Pre-change state](#pre-change-state-read-2026-09-14), and must include
+  none of `firewall_protected_descriptions`. If it lists anything else, phase 2 does not run with
+  deletion on. Stop and record it under Outcome.
+- **Deletion is enabled only on the phase 2 command line**, as `-e firewall_delete_unmanaged=true`.
+  It is never set in inventory, so every later run of the role is back to reporting and leaving
+  undeclared rules in place.
+- **Phase 2's output is checked against phase 1's list.** The rules the run deleted must be the same
+  25.
+- **The two rules outside automation are still removed by hand**, as phase 2's last step, with the
+  console open, because the role can't reach them.
 
 ## Risk and impact
 
@@ -129,12 +143,12 @@ option, last, with the console open, because the role can't reach them.
 | The router rejects a rule and the run reports success | Phases 1–2 | Prerequisite fix: `addRule`/`setRule` must check the API's `result`, not only HTTP 200 |
 | Removing the conntrack pass rules breaks DNS to each zone's gateway, which no zone rule covers | Phase 2 | Prerequisite fix: explicit per-zone gateway-service rules. DNS checked from each zone in phase 3. |
 | **DHCP clients lose their leases once allow-all goes: nothing lets a VLAN client reach the gateway's DHCP server** | Phase 2 | Gateway-service rules cover DHCP as well as DNS (prerequisite). A lease is checked from each DHCP zone in phase 3. |
-| **The policy is applied but the allow-all rules stay, so nothing is enforced and phase 3's allow tests all pass** | Phase 2 | [Decision above](#decision-needed-before-phase-2-removing-the-allow-all-rules). Phase 3's **deny** rows are what prove enforcement. |
+| **The policy is applied but the allow-all rules stay, so nothing is enforced and phase 3's allow tests all pass** | Phase 2 | Option A ([Decision](#decision-removing-the-allow-all-rules)): the role deletes them in the same apply, behind the savepoint. Phase 3's **deny** rows are what prove enforcement. |
 | **A reachability target is down for reasons unrelated to the policy, and the rollback reverts a correct apply** | Phase 2 | Every target must answer *before* phase 2. On 2026-09-14 the broker `10.20.35.20` didn't answer at all, so it is not a target until it does. |
 | **Removing "temp: allow all VLAN 99" takes away a management path the declared rules don't replace** | Phase 2, last step | Removed last, after the automation apply is verified, with the console open. Router 443/22 and the management → zone paths re-checked afterwards. |
 | **A tenant workload reaches a tenant-facing service on management directly and is cut off.** Tenant DNS `10.20.99.30` and the state store `10.20.99.31` sit on management, and no `tenant_transit -> management` rule is declared. | Phase 2 | Phase 1 records whether any tenant workload is live and talks to either directly. Tenant Terraform runs from management and isn't affected. |
 | The live rule set differs from what the restore is assumed to hold | Phase 1 | Plan mode reports adds, updates (field by field) and would-deletes before anything is written, and is compared with [Pre-change state](#pre-change-state-read-2026-09-14) |
-| Unmanaged rules are deleted | All | `firewall_delete_unmanaged: false`, the default, confirmed in the prerequisites. Enabled for phase 2 only under Option A, after phase 1's list is checked. |
+| Unmanaged rules are deleted | All | `firewall_delete_unmanaged: false`, the default, confirmed in the prerequisites. Under Option A it is enabled on the phase 2 command line only, and only after phase 1's would-delete list matches the 25 rules exactly. The protected set is never deleted. |
 | The apply lands late in a longer play | Phase 2 | Firewall-only playbook. `opnsense.yml` has no `flush_handlers`, so there the apply runs after DNS and DHCP. |
 
 ## Prerequisites
@@ -151,9 +165,13 @@ option, last, with the console open, because the role can't reach them.
     `firewall_savepoint_timeout` implemented or removed
   - [ ] per-interface conntrack pass rules replaced by per-zone gateway-service rules, **covering
     DHCP as well as DNS**
+  - [ ] the `migration-opnsense-firewall` Makefile target passes extra variables through (for
+    example `EXTRA_ARGS`). Phase 2 needs this for Option A's one-run
+    `-e firewall_delete_unmanaged=true` and the apply switch, and today the target appends none.
 - [ ] **Mobile `firewall_reachability_targets`** in `ansible-inventory-deevnet`, beyond the router's
   own 443 and 22. **Each target must answer before phase 2.** The broker didn't on 2026-09-14.
-- [ ] **The allow-all removal decided** ([Decision](#decision-needed-before-phase-2-removing-the-allow-all-rules)).
+- [x] **The allow-all removal decided:** Option A, on 2026-09-14
+  ([Decision](#decision-removing-the-allow-all-rules)).
 - [ ] **The MQTT broker answering**, or its rows dropped from [Verification](#verification) and
   recorded under Outcome.
 - [ ] **Config backup downloaded** from **System → Configuration → Backups → Download** and kept
@@ -162,7 +180,8 @@ option, last, with the console open, because the role can't reach them.
   affected network.
 - [ ] **Vault decrypted before walking over**, including the router's root password in
   `mobile/group_vars/routers/vault.yml`.
-- [ ] `firewall_delete_unmanaged` confirmed `false` in the rendered variables.
+- [ ] `firewall_delete_unmanaged` confirmed `false` in the rendered variables, so phase 1 and every
+  run after this change delete nothing. Option A overrides it on the phase 2 command line only.
 - [ ] Test clients ready: one each on `DVNTM-GUEST` and `DVNTM-IOTV`, and one on `DVNTM`.
 
 ---
@@ -190,9 +209,12 @@ The variable that switches plan mode off is named by the role fix. Record it her
    - every add, update (with its differing fields) and would-delete
    - any rule the router holds that inventory doesn't declare
 3. **Compare with [Pre-change state](#pre-change-state-read-2026-09-14).** The would-delete list
-   should be exactly the 25 `temp-allow-all` and `test-rule` entries. Confirm the two rules outside
-   automation are still the only others. INC-0001's first two open items were settled from the
-   2026-09-14 read; this only confirms nothing has changed since.
+   should be exactly the 25 `temp-allow-all` and `test-rule` entries, with none of
+   `firewall_protected_descriptions` in it. **This list is Option A's gate**
+   ([Decision](#decision-removing-the-allow-all-rules)): if it lists anything else, phase 2 does not
+   run with deletion on. Confirm the two rules outside automation are still the only others.
+   INC-0001's first two open items were settled from the 2026-09-14 read; this only confirms nothing
+   has changed since.
 4. Record whether any tenant workload is live and reaches `10.20.99.30` or `10.20.99.31` directly
    (see [Risk](#risk-and-impact)).
 5. **Stop if the report contains anything unexplained.** The apply is a separate decision.
@@ -206,14 +228,23 @@ With the console connected and the phase 1 report read, apply the declared set b
 **Run:**
 
 ```bash
-make migration-opnsense-firewall     # with the role's apply switch on, as named by the fix,
-                                     # and deletion as decided above
+# Option A: deletion on for this one run, on the command line only - never in inventory.
+# The apply switch is named by the role fix; record it here when that merges.
+make migration-opnsense-firewall EXTRA_ARGS="-e <apply switch>=true -e firewall_delete_unmanaged=true"
 ```
+
+**The Makefile target doesn't pass extra variables today.** As of 2026-09-14 it runs
+`ansible-playbook playbooks/migration/07-opnsense-firewall.yml -i "$(MIGRATION_INV)"`, logging
+through `tee`, with nothing appended. The `EXTRA_ARGS` passthrough above is a prerequisite
+([Prerequisites](#prerequisites)), so the run keeps the target's timestamped log. The two `-e`
+values are what matter.
 
 **Verify:**
 
 1. The run shows:
    - a savepoint revision issued
+   - the adds, and **deletes that are exactly phase 1's would-delete list** (the 25 rules). Any other
+     delete means stop: don't cancel the rollback, and let the router revert.
    - the apply to that revision
    - every reachability target answering
    - `cancelRollback` sent
@@ -290,5 +321,6 @@ Not yet run. The pre-change state was read on 2026-09-14 and is recorded
 - [ ] Decide which reachability targets stay permanent in inventory, and which were only for this
   change.
 - [ ] Decide where tenant-facing services live. Tenant DNS and the state store sit on management,
-  reachable from tenant workloads today only because of allow-all. The proposed ADR-0012 (IoT
-  platform API, under review) places its API on the platform segment for this reason.
+  reachable from tenant workloads today only because of allow-all.
+  [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) (Proposed) places its API on the
+  platform segment for this reason.
