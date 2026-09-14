@@ -11,6 +11,7 @@ weight: 10
 | **Date** | 2026-09-13 |
 | **Scope** | What makes a substrate-run service safe for a tenant to depend on, and where issuing a tenant something ends and becoming part of it begins |
 | **Extends** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/) §5, which drew the onboarding-versus-recurring line for DNS only |
+| **Extended by** | [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) — how §3 is met when the backing service can't confine a tenant itself *(Proposed)* |
 | **Related** | [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) |
 
 ---
@@ -202,6 +203,10 @@ Config Page Modify"*, the same one that creates SSIDs and ACLs. A credential iss
 for its devices' keys could therefore rewrite the site's wireless configuration. Under §3, device
 keys are not self-service until something in front of the controller confines them. Whether a
 custom controller role can narrow the grant has not been checked.
+
+[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) proposes the mechanism for both: a
+Deevnet API that holds the backing credentials and confines each tenant, consumed through a
+Terraform provider.
 
 **Services get heavier.** A service with a scoped interface is more machinery than an inventory
 file. The alternative is cheaper per change and more expensive in aggregate, and its cost stays

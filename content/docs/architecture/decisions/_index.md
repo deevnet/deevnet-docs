@@ -89,3 +89,8 @@ question is written down, not when it is answered.
   *Proposed.* A physical device belongs to the application that gives it purpose, joins the access
   network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
   platform services; device secrets and signing keys never enter the substrate vault.
+- [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) —
+  *Proposed.* Where a backing service can't confine a tenant, as with the broker and the Wi-Fi
+  controller, the substrate runs an API that holds its credentials and scopes every call to one
+  tenant, and tenants use it through a Deevnet Terraform provider; v1 is a device registry, a
+  Wi-Fi key binding and a broker account binding; extends ADR-0010 §3.
