@@ -28,4 +28,4 @@ in the runbook under [Incident Management](/docs/runbook/incident-management/).
 
 | ID | Date | Incident | Site | Root cause | Actions |
 |----|------|----------|------|-----------|---------|
-| INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Done; 3 open items |
+| INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Done; 3 open items, planned as [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) |
