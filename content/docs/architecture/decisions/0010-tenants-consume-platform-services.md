@@ -195,6 +195,14 @@ be limited to its own topic prefix
 be self-service as it stands. How it becomes so is an open question of
 [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/).
 
+The Wi-Fi controller is a second example, found on 2026-09-14. Its documented API can add and
+revoke a per-device key, with the device's VLAN, one key at a time. That is the shape a platform
+service needs. But every such write lists the permission *"Site Settings Manager Modify | Network
+Config Page Modify"*, the same one that creates SSIDs and ACLs. A credential issued to one owner
+for its devices' keys could therefore rewrite the site's wireless configuration. Under §3, device
+keys are not self-service until something in front of the controller confines them. Whether a
+custom controller role can narrow the grant has not been checked.
+
 **Services get heavier.** A service with a scoped interface is more machinery than an inventory
 file. The alternative is cheaper per change and more expensive in aggregate, and its cost stays
 hidden until a substrate rebuild has to carry tenant content it should never have held.
@@ -209,6 +217,13 @@ changed, and none of the substrate's services has one yet.
 
 - **Proposed.** Nothing is implemented by this record.
 - **DNS and state already conform** (ADR-0004, ADR-0007). **The MQTT broker does not.**
+- **Validated read-only on 2026-09-14**, as recorded in
+  [ADR-0011 → Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14):
+  - **The broker.** `dv02mqt001v01` doesn't answer: it isn't in DNS, doesn't reply to ping, and its
+    MQTT ports are closed. So none of the scoping candidates for making it self-service could be
+    tried against it.
+  - **The Wi-Fi controller.** It offers per-device keys (PPSK) through its documented API, but only
+    under site-wide network permissions. It is a second service with no tenant scope.
 - The record is opened alongside
   [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/), which applies it
   to physical devices.
