@@ -12,7 +12,7 @@ weight: 11
 | **Validated** | 2026-09-14, read-only, before acceptance. See [Validation](#validation-2026-09-14) |
 | **Scope** | Who owns a physical device an application uses, what the platform knows about it, which network it joins, and how it reaches the services it needs |
 | **Depends on** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) |
-| **Related** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/) |
+| **Related** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) |
 
 ---
 
@@ -225,6 +225,10 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      1883, 8883 and 22 closed, while the core router passes everything. The question is still open,
      and a broker has to be up before any candidate can be tested
      ([The broker](#the-broker-is-not-reachable)).
+   - **Proposed answer:** [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/). Owners
+     register devices through a Deevnet API and Terraform provider that confine them to their own
+     topic prefix. The broker behind it, decided in ADR-0012's review, is VerneMQ, which asks the
+     API on every connect, subscribe and publish (ADR-0012 §8).
 2. **Does an owner's device still need a substrate host record?**
    - [Naming](/docs/standards/naming/) defines a host by a deterministic MAC-to-IP mapping, and
      `dv02bgw001e01` has a DHCP reservation, an A record and CNAMEs.
@@ -256,6 +260,9 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
        handed to an owner as self-service. They would have to be issued by a platform service in
        front of the controller, or by the substrate, which is a recurring substrate act. Whether a
        custom controller role can narrow this wasn't checked.
+   - **Proposed answer:** [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/).
+     Per-device keys are issued through the Deevnet API, which holds the controller credential and
+     always binds a key to the device's trust-class VLAN.
 4. **How are clients isolated on the IoT SSID?**
    - Omada's per-SSID isolation is its Guest Network setting, which also blocks all private address
      ranges ([Omada](https://support.omadanetworks.com/us/document/12928/)). It can't be used for
