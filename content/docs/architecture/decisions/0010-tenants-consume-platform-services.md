@@ -138,13 +138,18 @@ A platform service:
 
 Onboarding may. Nothing that recurs may.
 
-| Tenant action | Needs a substrate commit today? | Conforms? |
-|---|---|---|
-| Add, change or remove a DNS record | No, RFC 2136 with the tenant's key | Yes |
-| Rebuild or destroy the tenant | No, `terraform apply` in its repository | Yes |
-| Keep Terraform state | No, the offered store or its own | Yes |
-| Register a device with the MQTT broker | Yes, vault, inventory and the `mosquitto` role | **No** |
-| Grant a device access to a topic | Yes, `mqtt_acls` in inventory | **No** |
+| Tenant action | Needs a substrate commit today? | Conforms? | Proposed remedy |
+|---|---|---|---|
+| Add, change or remove a DNS record | No, RFC 2136 with the tenant's key | Yes | — |
+| Rebuild or destroy the tenant | No, `terraform apply` in its repository | Yes | — |
+| Keep Terraform state | No, the offered store or its own | Yes | — |
+| Register a device with the MQTT broker | Yes, vault, inventory and the `mosquitto` role | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, §8: a `deevnet_iot_broker_account` in the tenant's Terraform; the broker asks the API to check the password |
+| Grant a device access to a topic | Yes, `mqtt_acls` in inventory | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, §8: the same account's permissions, confined by the API to the tenant's topic prefix |
+| Give a device its own Wi-Fi key | Yes. There is no per-device key today, only one shared key per segment in the substrate vault (`deevnet_wifi_psk`), so a per-device key would be a vault and inventory act. Added for [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) open question 3. | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3: a `deevnet_iot_wifi_key`, always on the device's trust-class VLAN |
+
+**The remedies are proposed, not built.** ADR-0012 is Proposed, so the rows marked **No** stay
+**No** until it is built. They change once registering a device, granting its topics and giving it
+a Wi-Fi key are each a `terraform apply` in the tenant's repository.
 
 ### 3. Scope is enforced by the service
 
