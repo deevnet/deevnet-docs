@@ -93,4 +93,6 @@ question is written down, not when it is answered.
   *Proposed.* Where a backing service can't confine a tenant, as with the broker and the Wi-Fi
   controller, the substrate runs an API that holds its credentials and scopes every call to one
   tenant, and tenants use it through a Deevnet Terraform provider; v1 is a device registry, a
-  Wi-Fi key binding and a broker account binding; extends ADR-0010 §3.
+  Wi-Fi key binding and a broker account binding; extends ADR-0010 §3. Reviewed 2026-09-14:
+  VerneMQ asks the API, device secrets are restored from tenant state, providers come from an
+  offline mirror, and tenant credentials are issued age-encrypted per consumer.

@@ -227,7 +227,8 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      ([The broker](#the-broker-is-not-reachable)).
    - **Proposed answer:** [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/). Owners
      register devices through a Deevnet API and Terraform provider that confine them to their own
-     topic prefix. The broker behind it is ADR-0012's own open question.
+     topic prefix. The broker behind it, decided in ADR-0012's review, is VerneMQ, which asks the
+     API on every connect, subscribe and publish (ADR-0012 §8).
 2. **Does an owner's device still need a substrate host record?**
    - [Naming](/docs/standards/naming/) defines a host by a deterministic MAC-to-IP mapping, and
      `dv02bgw001e01` has a DHCP reservation, an A record and CNAMEs.
