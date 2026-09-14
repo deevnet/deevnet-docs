@@ -14,7 +14,7 @@ aliases:
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Core router `dv02cor002p01` (OPNsense); the `opnsense_firewall` role in `ansible-collection-deevnet.net` |
 | **Severity** | Total site outage; physical console access required to recover |
-| **Status** | Root cause confirmed. Service restored from config backup. Corrective and preventive actions 1–8 done as of 2026-09-08. Three open items remain. |
+| **Status** | Root cause confirmed. Service restored from config backup. Corrective and preventive actions 1–8 done as of 2026-09-08. Of five open items, two were settled on 2026-09-14 and one narrowed; three remain, planned as [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/). |
 | **Times** | UTC (local is UTC−4), as recorded in the session transcript |
 
 {{< hint warning >}}
@@ -238,6 +238,45 @@ Added 2026-09-13. The three items above are planned as
   may be true, for instance rules created before the flat-network migration finished and never
   applied since. The record doesn't say which. CHG-0007's drift audit should establish what the
   router actually held.
+
+Added 2026-09-14. The router's rules were read through its API, read-only, from `dv00bld001p01`.
+The full listing is in
+[CHG-0007 → Pre-change state](/docs/changes/2026/0007-core-router-zone-policy/#pre-change-state-read-2026-09-14),
+and the read is described in
+[ADR-0011 → Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#the-core-router-enforces-no-segment-boundary).
+
+- **Audit what the restore put back: settled.** The restore put back **allow-all**, not the declared
+  policy:
+  - **25 automation rules.** `ansible:temp-allow-all-optN` passes `any` → `any` on every VLAN
+    interface, each rule present twice, including two pairs for the no-longer-assigned `opt11` and
+    `opt12`. There is also one `ansible:test-rule`.
+  - **Two allow rules outside the automation API:** *"temp: allow all VLAN 99"* on management, and a
+    Trusted pass to `10.20.99.0`.
+  - **No zone policy rule is present.** Every segment reaches every other.
+- **Conntrack rules: settled for the router.** None of the 25 rules is a conntrack rule, and every
+  one carries the router's default state type, *keep*. There is nothing on the router to remove,
+  and the rules the role would have created are replaced in CHG-0007 by per-zone gateway-service
+  rules.
+  - **A gap the old rules were hiding:** the router's automatic rules include nothing that lets a
+    VLAN client reach its gateway's DHCP server. Those rules must cover DHCP as well as DNS.
+    *Observed on the rule listing, not from vendor documentation.*
+- **The contradiction: narrowed, not settled.** The router today holds no zone policy rule, only the
+  temp allow-all set. The backup's vintage is unknown, so today's state can't prove what the runs on
+  2026-09-07 deleted. *Inference, not evidence:*
+  - The summary's "18 zone policies" most likely describes the role's **declared** set rather than
+    rules present on the router.
+  - What the runs deleted was most likely the `ansible:temp-allow-all` set. Removing those alone
+    would produce the recorded impact: default deny on every segment, and no path to the router.
+  - The hand-made "temp: allow all VLAN 99" rule would have kept management's path open had it
+    existed then. So it most likely arrived with, or after, the restore.
+- **Found in passing, for the role fix:** the router defaults an omitted `protocol`, `source_net` or
+  `destination_net` to `any`, and reads existing rules back as `any`. Sending empty strings, as in the
+  2026-09-13 item above, is wrong.
+
+Still open, all planned as CHG-0007:
+- the policy's first application
+- the role faults listed above
+- the narrowed contradiction
 
 ## Preventive actions
 
