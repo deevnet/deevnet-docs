@@ -55,6 +55,14 @@ A fourth concern was hiding inside the second:
 **Pumpkin.** An ESP32 with no networking at all, and no tenant. It is an application with a device
 and nothing to attach.
 
+**The Raspberry Pis.** `dv02rpi001p01` to `dv02rpi004p01` are substrate-inventoried hosts on the
+IoT segment (`10.20.30.11`–`.14`). All four are hardwired Ethernet, and the switch declares
+`dv02rpi001p01` and `dv02rpi002p01` as access ports in VLAN 30.
+- **They count as substrate for now** (operator decision, 2026-09-14).
+- That classification is interim. The ownership test below has **not** been applied to them.
+- They matter to this record because they share VLAN 30's Layer 2 with application-owned devices
+  (Open question 4).
+
 ### The ownership test
 
 > *Would this device have a reason to exist if its application disappeared?*
@@ -285,7 +293,21 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      - **So the earlier line "It can't be used for devices that must reach a broker" is likely too
        strong.** Guest Network *alone* can't, but with an ACL permit it may. The device test settles
        it.
-5. **Two questions for records of their own**, numbered when opened:
+   - **Wired devices have no isolation mechanism at all.** The hardwired Pis (What exists) share
+     VLAN 30 with wireless devices. AP isolation covers only wireless clients, and the standalone
+     switch declares no port isolation.
+   - **The standard doesn't require isolation inside a segment.**
+     [Network Segmentation](/docs/standards/network-segmentation/) §8 isolates IoT from management
+     and limits inbound access, but says nothing about devices within the segment. Option C already
+     accepts that *"isolation between them depends on the services and the AP."*
+   - **Decided 2026-09-14 (operator): best effort, credentials first.**
+     - Owners are kept apart above Layer 3, by per-device credentials and per-owner service scopes
+       (§3). That is the control.
+     - Wireless clients get AP isolation where the equipment can provide it: Guest Network plus an
+       EAP ACL permit, **only if the device test shows it works**.
+     - **Wired devices on VLAN 30 stay unisolated, and that is accepted for now.**
+     - Isolating wired devices, for example with switch port isolation once the switch is adopted,
+       would be a separate decision., numbered when opened:
    - **How a device reaches a service a tenant exposes directly.** This is tenant ingress, which
      ADR-0003 does not provide.
    - **The firmware supply chain:**
@@ -441,8 +463,16 @@ the four production SSIDs:
    - two clients can't reach each other
    - both reach the broker
    - record whether the gateway's DNS and DHCP answer without their own permit
-3. Record the WPA versions the controller offers for the PPSK SSID.
-4. Remove the test SSID, profile and ACL.
+3. **Record whether PPSK and Guest Network can be enabled on the same SSID at all.** The isolation
+   route in Open question 4 needs both on the IoT SSID. If the controller or AP refuses the
+   combination, record it: per-device keys and AP isolation then can't coexist on one SSID, and
+   Open question 4's decision needs revisiting.
+4. **Record whether a wired device and a wireless test client on VLAN 30 reach each other.** Use a
+   hardwired Pi such as `dv02rpi001p01` (`10.20.30.11`). They are expected to, because AP isolation
+   covers wireless clients only. The test confirms that the wired gap accepted in Open question 4 is
+   the gap that actually exists.
+5. Record the WPA versions the controller offers for the PPSK SSID.
+6. Remove the test SSID, profile and ACL.
 
 ---
 
@@ -475,6 +505,14 @@ the pumpkin, is not enrolled anywhere.
 **Descriptive pages change only on acceptance.** The tenant segments and IoT inhabitants in
 [Network Segmentation](/docs/architecture/network-segmentation/), the Raspberry Pi row in Tenant
 Compute, and the tenant contract are left as they are while this record is Proposed.
+
+**The segmentation standard changes on acceptance too.**
+[Network Segmentation](/docs/standards/network-segmentation/) §8 defines the IoT segment as holding
+devices whose firmware is *"built, managed, and updated through the Deevnet automation pipeline."*
+Under §4 of this record, firmware is built and released by its owner, from its owner's repository.
+That contradicts the standard's definition. What the standard should say instead is controlled
+firmware whose owner is known, the attachment rule in §3. Because standards are authoritative, the
+standard is corrected when this record is accepted, not before.
 
 ---
 

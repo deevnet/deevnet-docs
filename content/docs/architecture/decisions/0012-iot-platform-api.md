@@ -267,6 +267,15 @@ construction, but it reverses "the API generates" and wasn't chosen.
 - **ADR-0009 still holds for site structure.** Inventory remains the only declaration of site
   structure: networks, SSIDs, AP settings, and **one PPSK profile per trust class**. The controller
   applies that inventory, as ADR-0009 decided.
+- **Each trust class keeps its own SSID, carrying one VLAN.**
+  - `DVNTM-IOT` carries VLAN 30 only, and `DVNTM-IOTV` carries VLAN 31 only. Each SSID has its own
+    PPSK profile.
+  - The API binds every key in a profile to that SSID's single VLAN.
+  - One SSID spanning several trust-class VLANs is avoided on purpose. The controller's spec warns
+    that *"If a device does not support multiple VLANs, the smallest VLAN you configured will be
+    applied to the SSID"*
+    ([ADR-0011 → Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#wireless-per-key-vlans-ppsk)).
+    On such an AP, a key meant for IoT Vendor would silently land on IoT.
 - **The carve-out: keys inside those profiles are tenant content**, written by this API, not by
   inventory.
 - **The existing guard already fits.** ADR-0009's automation never deletes objects inventory
@@ -488,6 +497,16 @@ current, in a smaller project with a slower release cadence than EMQX.
 services, tenant DNS and state, sit on the management segment. Tenants reach them only because the
 core router currently passes everything (ADR-0011 → Validation). This record doesn't move them, but
 it shouldn't repeat that.
+
+**Moving the IoT SSIDs from a shared key to per-device keys needs its own change record.**
+- **Today:** the IoT SSIDs are WPA-Personal on one shared key per segment (`deevnet_wifi_psk`).
+- **What won't do it:** `omada-wireless.yml`, which creates them from inventory, doesn't rewrite
+  existing objects. Its header says *"existing objects that differ are reported, not rewritten."*
+- **What's at stake:** devices already on the shared key keep working only while that key is
+  accepted. The Ma Bell gateway's key is in NVS, written over USB.
+- **Two ways through:** re-provision every device onto its own key once, or run the shared-key SSID
+  beside the PPSK SSID until each device has moved.
+- **When:** that change record depends on the ADR-0011 device test, so it follows CHG-0005.
 
 **It depends on data-plane work that isn't done.** As of 2026-09-14:
 - the broker doesn't answer
