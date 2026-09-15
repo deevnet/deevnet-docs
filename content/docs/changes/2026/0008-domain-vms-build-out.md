@@ -401,7 +401,6 @@ Step 2's apply.
 | 04:13:17 | Step 2, DNS | `dns.yml -e dns_delete_unmanaged=true`: `changed=6`, `failed=0`. |
 | 04:13:37 | Step 2, DHCP | `dhcp.yml -e dhcp_delete_unmanaged=true`: `changed=2`, `failed=0`. |
 | 04:14 | Step 2 verify | Both re-previews show no undeclared records. `dv02tdn001v01` and `dv02tst001v01` no longer resolve. `tdns` resolves to 10.20.25.21, `tfstate` and `api` to 10.20.25.20, `omada` to 10.20.99.40. The core router, `dv02hyp001p01` and `artifacts` still resolve. A read of the router's reservations through its API shows 13 entries, each matching inventory, and neither `…C8` nor `…C9`. |
-
 | 21:03–21:05 | Step 5 | Builder `site.yml --limit dv00bld001p01 --tags container-images`: `changed=3`, `failed=0`. Staged `postgres/postgres-17.11.tar` (461 MB). `deevnet-api/deevnet-api-v0.1.0.tar` was already staged on 2026-09-14. |
 | 21:05 | Step 6, identity | `make vm-identity-assign` allocated idn 200 (`…c8`), prv 201 (`…c9`), nms 204 (`…cc`), msg 205 (`…cd`), sob 206 (`…ce`) and tob 207 (`…cf`). The `make vm-identity` audit afterwards shows eight declared VMIDs, all unique, every MAC matching its VMID, and 208 next free. |
 | 21:06 | Step 6, previews | DHCP: add 2 (`dv02nms001v01` `…CC` → 10.20.99.40, `dv02sob001v01` `…CE` → 10.20.99.41). The four static-address VMs' MACs are on the remove list, but none holds a reservation, so nothing would be deleted. No undeclared records. DNS: nothing to add, and `dig` shows all six hosts and the `omada`, `tdns`, `tfstate` and `api` aliases already correct. |
