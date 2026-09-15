@@ -10,7 +10,7 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Steps 1–2 and 5–6 are done, and so is Step 7 for `dv02nms001v01` and `dv02sob001v01`, all on 2026-09-15. Both VMs need a reboot after their first-boot package upgrade. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Step 7 wait on those. |
+| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`. Step 9, the controller's manual floor, is next. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
 | **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
@@ -408,6 +408,9 @@ Step 2's apply.
 | 21:13:28–21:15:46 | Step 7 (`nms`, `sob`) | `site.yml --tags vms --limit dv02nms001v01,dv02sob001v01`: both hosts `changed=3`, `failed=0`. Both were cloned from `fedora-server-44-1.7`. `proxmox_vm` confirmed each net0 MAC (`…cc`, `…ce`), start-on-boot, and that each guest came up on its reserved address (10.20.99.40, .41). |
 | after 21:16 | Step 7 verify | Both VMs answer SSH by name. Each shows the inventory hostname, the declared MAC and address on `eth0`, and a default route via 10.20.99.1 from DHCP. The resolver's upstream is 10.20.99.1 with search domain `mobile.deevnet.net`, and `artifacts` and `omada` resolve. Each has a 30 GB root, passwordless sudo, and no failed units. |
 | 21:20:26 and 21:23:22 | Step 7, first boot | cloud-init finished on `sob` (297 s after boot) and `nms` (473 s) with `errors: []`. It reports `degraded done` only for two deprecation warnings about a string `user` key in the user data Proxmox generates. Its final stage ran `dnf -y upgrade`: 14 packages installed, 203 upgraded, 628 MiB downloaded. Both VMs still run kernel 6.19.10 with 7.2.5 installed, and `dnf needs-restarting -r` says a reboot is required. |
+| 21:30:54–21:31:17 | Step 7, reboot | `nms` and `sob` rebooted with the operator's go-ahead and answered SSH again 23 s later. Both now run kernel 7.2.5, and `dnf needs-restarting -r` no longer asks for a reboot. Addresses and MACs are unchanged, no units have failed, and cloud-init reports `done`. |
+| 21:33:48–21:35:15 | Step 8 (`nms`) | `site.yml --skip-tags vms --limit dv02nms001v01`: `changed=13`, `failed=0`. `--list-hosts` had confirmed that only the Omada controller play matched. `podman_service` pushed and loaded the 945 MB image, created `omada-controller` on host networking, enabled its unit and opened the declared firewalld ports. Both readiness waits passed with no retries. |
+| after 21:35 | Step 8 verify | The unit is active and enabled, and the container reports `healthy` with 0 restarts. From the Builder, `https://omada.mobile.deevnet.net:8043/api/info` returns 6.3.0.45 with `configured: false`, and `:8088` redirects to `:8043`. Memory: 1.8 GiB of 3.9 GiB used, no swap; the container uses 1.36 GB. The 12 error-priority journal lines are stderr noise: a `useradd` UID note, `tail` waiting for `server.log`, and JVM deprecation warnings. MongoDB listens on 127.0.0.1:27217 only. The Builder's controller is untouched (`configured: true`). |
 
 ### Departures from the plan
 
@@ -448,10 +451,28 @@ Step 2's apply.
   - a failure on a site without internet access
 
   The VMs weren't rebooted as part of Step 7.
+- **The controller role's firewall port list doesn't match 6.3.0.45.** The list was carried over
+  from the Builder's role. Omada's port reference, *"Which Ports do Omada SDN Controller and Omada
+  Discovery Utility Use (above Controller 5.0.15)"* (updated 08-28-2026), is the source for what
+  follows.
+  - **Listening but blocked.** The controller listens on TCP 29815, 29816, 29817 and 8044, and on
+    UDP 19810. firewalld opens none of them. The reference lists the first three as TCP:
+    - 29815: *"Starting from v5.9, Omada Controller receives Device Info, Packet Capture Files."*
+    - 29816: *"Starting from v5.9, Omada Controller establishes the remote control terminal
+      session."*
+    - 29817: *"To ensure proper communication between devices and the Controller."*
+
+    8044 isn't in the reference; the controller's `omada.properties` names it
+    `upgrade.es.https.port`. UDP 19810 is OLT discovery, and this site has no OLT.
+  - **Open but unused.** firewalld opens UDP 29814, which the reference lists as TCP only, and TCP
+    27002, which isn't in the reference and nothing binds.
+
+  Nothing is adopted yet, so nothing is affected today. It matters before CHG-0005 adopts the AP.
 
 ## Follow-ups
 
-- [ ] Reboot `dv02nms001v01` and `dv02sob001v01` onto the upgraded kernel before Step 8 (found in Step 7)
+- [x] Reboot `dv02nms001v01` and `dv02sob001v01` onto the upgraded kernel before Step 8 (found in Step 7; done 21:31Z)
+- [ ] `omada_controller`, in both `deevnet.mgmt` and `deevnet.builder`: align the firewalld port lists with Omada's port reference for the running version. Add TCP 29815–29817, decide on 8044, and drop UDP 29814 and TCP 27002. Do it before CHG-0005 adopts the AP (found in Step 8).
 - [ ] `proxmox_vm`: decide on first-boot upgrades. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
 - [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
 - [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
