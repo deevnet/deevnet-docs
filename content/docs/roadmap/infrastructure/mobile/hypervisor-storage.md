@@ -43,13 +43,13 @@ Read on the node on 2026-09-14 with `lsblk`, `vgs` and `lvs`.
 | Disk | Size | Volume group | Contents |
 |---|---|---|---|
 | OS disk | 476.9G | `pve` (installer) | root 96G, swap 8G, thin pool `data` 348.8G (`local-lvm`), 16G free. Holds VM 100's disk. |
-| Data disk | 1.8T, one partition | `vgbigdata` | thin pool `bigthin` 1.07T (`local-lvm-big-thin`): the Fedora template and the provisioner VMs. Thick LVs for VM 104. 442.86G free. |
+| Data disk | 1.8T, one partition | `vgbigdata` | thin pool `bigthin` 1.07T (`local-lvm-big-thin`): the Fedora template and the provisioner VMs. Thick LVs for VM 104 (`local-lvm-big`, an `lvm` storage on the same volume group). 442.86G free. |
 
 Things this layout does not explain:
 - **Two thin pools.** The installer's `local-lvm` on the OS disk is nearly unused, while management
   VMs go to the data disk.
-- **Mixed provisioning.** VM 104 uses thick volumes directly in `vgbigdata`, beside a thin pool in
-  the same volume group.
+- **Mixed provisioning.** VM 104 uses thick volumes directly in `vgbigdata` (storage
+  `local-lvm-big`), beside a thin pool in the same volume group.
 - **The name.** `local-lvm-big-thin` suggests the installer's local storage, but it lives on
   another disk.
 - **Different pools per node.** `dv02hyp002p02` uses `local-lvm`, so the image factory needs a

@@ -42,7 +42,7 @@ A node's disks have different owners, and a rebuild treats them differently.
 | Disk (`dv02hyp001p01`) | Holds | On an OS reinstall |
 |---|---|---|
 | OS disk, 476.9G | Proxmox, `/etc/pve` (storage entries, guest definitions, API tokens), `local-lvm` | Wiped |
-| Data disk, 1.8T, volume group `vgbigdata` | Thin pool `bigthin` (`local-lvm-big-thin`): the template and the management VMs' disks | Untouched, if the installer is pinned to the OS disk |
+| Data disk, 1.8T, volume group `vgbigdata` | Thin pool `bigthin` (`local-lvm-big-thin`): the template and the management VMs' disks. Thick volumes (`local-lvm-big`): VM 104 | Untouched, if the installer is pinned to the OS disk |
 
 - **If only the OS disk is lost,** the VM disks survive, but their definitions in `/etc/pve` do
   not. Management VMs are rebuilt from code (Step 9). Their old volumes remain on the data disk
@@ -55,7 +55,7 @@ A node's disks have different owners, and a rebuild treats them differently.
 {{< hint danger >}}
 **Pin the install disk.** Unpinned, the Proxmox installer takes the first disk it finds, and on a
 node with a data disk that can be the data disk. The ISO built in Step 2 selects the disk by the
-serial recorded in `proxmox_install_disk_serial`, and the build warns when none is given.
+`proxmox_install_disk_serial` recorded in inventory, and the build warns when none is given.
 {{< /hint >}}
 
 ## Step 2: Build the install ISO
@@ -67,7 +67,7 @@ make proxmox-pve-iso-container          # once
 make proxmox-pve-iso-ext4 \
     PVE_ISO_VERSION=8.4-1 \
     PVE_HOSTNAME=dv02hyp001p01.mobile.deevnet.net \
-    PVE_DISK_SERIAL='<proxmox_install_disk_serial>' \
+    PVE_DISK_SERIAL='SAMSUNG_SSD_PM871b_M.2_2280_512GB_S3TZNB0K409229' \
     PVE_ROOT_PASSWORD_HASH="$(openssl passwd -6)"
 ```
 
@@ -77,7 +77,10 @@ make proxmox-pve-iso-ext4 \
   volume group, and the installer's default root and `data` sizes.
 - **The hostname must be the inventory name.** A Proxmox node is not safely renamable afterwards.
 
-To list the serials the installer sees, run
+**Which serial string to use.** `PVE_DISK_SERIAL` is the disk's udev `ID_SERIAL`, and for a SATA disk
+that is model plus serial. It's the `/dev/disk/by-id/ata-…` name with the `ata-` prefix dropped.
+`lsblk`'s SERIAL column, `S3TZNB0K409229` here, is the short form and does not match. Proxmox's
+example filter is `ID_SERIAL='KIOXIA_KCMYXVUG1T60*'`. To list what the installer sees, run
 `proxmox-auto-install-assistant device-info -t disk` inside the container.
 
 ## Step 3: Install
@@ -129,28 +132,41 @@ The `hypervisors` play runs two roles:
     given `-e proxmox_node_storage_allow_create=true`. Even then it creates one only on a device
     with no existing signature. The partition the device path names must already exist.
 
-**Verify:** `pvesm status` lists `local-lvm-big-thin` as active.
+**Verify:** `pvesm status` lists `local-lvm-big-thin` and `local-lvm-big` as active.
 
 ## Step 7: API token (manual)
 
-Automation authenticates to the Proxmox API with a token recorded in the node's vault as
-`vault_proxmox_token_id` and `vault_proxmox_token_secret`.
+Automation authenticates to the Proxmox API as the token `terraform-prov@pve!tf-prov-token`,
+recorded in the node's vault as `vault_proxmox_token_id` and `vault_proxmox_token_secret`.
 
-- Its value can't be recovered from a lost node, so a rebuild issues a new one.
-- Proxmox's docs say the value *"is only displayed/returned once when the token is generated"*.
+**State as read on 2026-09-14:**
+- It is the only API token on `dv02hyp001p01`, with privilege separation on (`privsep 1`).
+- `Administrator` at `/` is granted to both the user and the token.
 
-As root on the node, for the user and token id named in `vault_proxmox_token_id`:
+**What a rebuild has to do:**
+- **Issue a new token.** Its value can't be recovered from a lost node: Proxmox shows it *"only
+  displayed/returned once when the token is generated"*.
+- **Grant both ACLs.** With privilege separation, *"effective permissions are calculated by
+  intersecting user and token permissions"*. A token granted a role while its user has none can
+  do nothing.
+
+As root on the node:
 
 ```bash
-pveum user add <user>@pve
-pveum user token add <user>@pve <tokenid>          # privilege separation is on by default
-pveum acl modify / --roles Administrator --tokens '<user>@pve!<tokenid>'
+pveum user add terraform-prov@pve
+pveum user token add terraform-prov@pve tf-prov-token      # privilege separation on by default
+pveum acl modify / --roles Administrator --users terraform-prov@pve
+pveum acl modify / --roles Administrator --tokens 'terraform-prov@pve!tf-prov-token'
 ```
 
-Put the printed value into `host_vars/<node>/vault.yml` straight away, then run `make vault`.
+Put the printed value into `host_vars/dv02hyp001p01/vault.yml` as `vault_proxmox_token_secret`
+straight away, then run `make vault`.
 
-- **This matches how the token is granted today:** `Administrator` at `/`.
-- **The token is broader than automation needs.** Narrowing it is a separate follow-up.
+**Not recreated:** the node also has a user `packer-prov@pve` with `Administrator` at `/` and no
+token. The image factory's Packer builds use the vault token above.
+
+**Follow-up:** both the `terraform-prov` name and `Administrator` at `/` predate the rule that the
+management plane is Ansible-only. Narrowing the token is a separate change.
 
 ## Step 8: VLAN-aware bridge
 
