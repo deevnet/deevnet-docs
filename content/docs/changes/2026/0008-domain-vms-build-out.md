@@ -14,7 +14,7 @@ weight: 8
 | **Window** | To be scheduled, with the operator at the rack and the access switch's console connected for Step 3 |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
-| **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
+| **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`, `proxmox-node-network.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. The step most likely to go wrong is the switch trunk re-apply, which rewrites every trunk on the switch, including the ports the control host and the management hypervisor sit behind. |
 | **Related decisions** | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) — the domain VMs this builds, and §6's fold-in of tenant DNS and state, which this record carries out; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) — the API whose shell is deployed; [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) — the controller's manual floor |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — waits for the network management VM this builds; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy these VMs are placed to survive |
@@ -59,7 +59,7 @@ enforces the policy.
 
 **The Builder's controller becomes a cold fallback.** Its role stays in `deevnet.builder`, and its
 play now excludes management-plane hosts. The Builder leaves `network_controllers` in the inventory
-change itself, not after verification: it keeps running untouched until Step 9 stops it.
+change itself, not after verification: it keeps running untouched until Step 10 stops it.
 
 ## Goal
 
@@ -79,6 +79,7 @@ change itself, not after verification: it keeps running untouched until Step 9 s
 **In scope:**
 - inventory and router records for the three retired hosts
 - VLAN 25 on the management hypervisor's trunk
+- making the management hypervisor's bridge VLAN-aware
 - staging the PostgreSQL and API images
 - identity, addressing and DNS for the six VMs
 - creating them
@@ -101,8 +102,8 @@ change itself, not after verification: it keeps running untouched until Step 9 s
 |---|---|---|
 | The trunk re-apply cuts the control host's or the hypervisor's path | `dv02acc001p01`, all four trunks | Only one tagged VLAN is added; native 99 is unchanged. Console at the rack. Baseline captured first. |
 | The router prune deletes more than the retired records | Core router Unbound and Kea | Both roles report what they would remove without removing it. The apply runs only when that report lists exactly the retired records (Step 2). |
-| A reused VMID lands on a stale reservation | Kea | The allocator gives the lowest free VMID, so 200, 201 and 204 come back. Their reservations are pruned in Step 2, before identity is allocated in Step 5. |
-| The Platform and IoT Backend VMs have no network | `vmbr0` on `dv02hyp001p01` | Its VLAN awareness was set by hand and is not in code. Checked in Step 1. |
+| A reused VMID lands on a stale reservation | Kea | The allocator gives the lowest free VMID, so 200, 201 and 204 come back. Their reservations are pruned in Step 2, before identity is allocated in Step 6. |
+| Making the bridge VLAN-aware cuts the hypervisor's management | `vmbr0` on `dv02hyp001p01`, its only NIC | Management stays untagged on native VLAN 99; the role changes the bridge only, with no sub-interfaces and no routing. Console at the node. |
 | The hypervisor runs out of memory | `dv02hyp001p01` (32 GB) | The six VMs declare 16 GB. Headroom is checked in Step 1, including the two VMs not in inventory. |
 | eds loses its DNS key or state credential | PowerDNS, MinIO | Both are imported from the vault, not generated, so a rebuild restores them. |
 
@@ -112,7 +113,7 @@ change itself, not after verification: it keeps running untouched until Step 9 s
 - [ ] The branches for this change are merged, or checked out on the control host: inventory,
       `deevnet.mgmt`, `deevnet.builder`, `deevnet-tenant-factory`, `deevnet-provisioning-api`
 - [ ] Vault decrypted, including `mobile/group_vars/deevnet_api/vault.yml`
-- [ ] Console access to `dv02acc001p01`, for Step 3
+- [ ] Console access to `dv02acc001p01`, for Step 3, and to `dv02hyp001p01`, for Step 4
 - [ ] Each collection installed: `make install-dev` in each. The commands below run from the
       collection's directory with
       `export ANSIBLE_COLLECTIONS_PATH=./.ansible/collections:$HOME/.ansible/collections`.
@@ -134,7 +135,9 @@ cd ansible-collection-deevnet.mgmt && make vm-identity
 
 1. VMIDs 200, 201 and 204 are gone, and a `fedora-server-*` template is listed.
 2. At least 16 GB of memory is free.
-3. `vmbr0` has `bridge-vlan-aware yes`, and its `bridge-vids` include 25 and 35.
+3. `vmbr0`'s stanza in `/etc/network/interfaces` has no `bridge-vlan-aware` line. Read on
+   2026-09-14: `bridge-ports enp0s31f6`, `bridge-stp off`, `bridge-fd 0`, nothing else. Step 4
+   changes that.
 4. `make vm-identity` reports the six new hosts as unallocated, and no collision.
 
 **Undo:** Nothing to undo.
@@ -203,7 +206,34 @@ ansible-playbook playbooks/switch-vlans.yml --tags trunk
 
 **Undo:** [Undo Step 3](#undo-step-3)
 
-### Step 4: Stage the images
+### Step 4: Make the management hypervisor's bridge VLAN-aware
+
+`vmbr0` on `dv02hyp001p01` is a plain bridge, so the tagged NICs of the Platform and IoT Backend
+VMs have no VLAN-aware bridge to join. This step sets it to the configuration Proxmox documents
+and `dv02hyp002p02` already runs: `bridge-vlan-aware yes`, `bridge-vids 2-4094`. It is declared
+in `host_vars/dv02hyp001p01/vars.yml` as `proxmox_node_network`, bridge only. There are no VLAN
+sub-interfaces, and management keeps its untagged address and default route.
+
+This touches the node's only NIC, so run it with the console available. Proxmox's documentation
+does not say whether the change takes effect live.
+
+**Run:**
+
+```bash
+cd ansible-collection-deevnet.net
+ansible-playbook playbooks/proxmox-node-network.yml --tags interfaces -e target=dv02hyp001p01 --check
+ansible-playbook playbooks/proxmox-node-network.yml --tags interfaces -e target=dv02hyp001p01
+```
+
+**Verify:**
+
+1. `dv02hyp001p01` (10.20.99.21) still answers, and so does `dv02bld001v01` on it.
+2. On the node, `cat /sys/class/net/vmbr0/bridge/vlan_filtering` prints `1`, and
+   `/etc/network/interfaces` shows `bridge-vlan-aware yes` and `bridge-vids 2-4094` under `vmbr0`.
+
+**Undo:** [Undo Step 4](#undo-step-4)
+
+### Step 5: Stage the images
 
 These writes are local to the control host.
 
@@ -222,7 +252,7 @@ cd ../deevnet-provisioning-api && make stage   # tag v0.1.0 checked out
 
 **Undo:** Nothing to undo; the tarballs are inert.
 
-### Step 5: Allocate identity, then publish addresses and names
+### Step 6: Allocate identity, then publish addresses and names
 
 **Run:**
 
@@ -242,7 +272,7 @@ ansible-playbook playbooks/dns.yml --check --diff && ansible-playbook playbooks/
 
 **Undo:** Remove the `identity.yml` files, then rerun Step 2's apply.
 
-### Step 6: Create the VMs
+### Step 7: Create the VMs
 
 **Run:**
 
@@ -258,9 +288,9 @@ ansible-playbook playbooks/site.yml --tags vms --limit 'management_plane:!dv02bl
 3. Each VM answers `ssh a_autoprov@<host>.mobile.deevnet.net`.
 4. `ip route` on each VM shows its segment's gateway.
 
-**Undo:** [Undo Step 6](#undo-step-6)
+**Undo:** [Undo Step 7](#undo-step-7)
 
-### Step 7: Configure the services
+### Step 8: Configure the services
 
 **Run:**
 
@@ -286,9 +316,9 @@ The `tenant-dns` run moves the core router's eds forwarding rows from 10.20.99.3
 5. `https://omada.mobile.deevnet.net:8043` loads the controller's setup wizard.
 
 **Undo:** Stop and disable the service units on the VM (`pdns-auth`, `minio`, `deevnet-api`,
-`deevnet-api-db`, `omada-controller`). The VMs themselves are undone by Step 6's undo.
+`deevnet-api-db`, `omada-controller`). The VMs themselves are undone by Step 7's undo.
 
-### Step 8: The controller's manual floor
+### Step 9: The controller's manual floor
 
 This is manual, per [ADR-0009 §5](/docs/architecture/decisions/0009-network-device-config-ownership/).
 
@@ -306,9 +336,9 @@ This is manual, per [ADR-0009 §5](/docs/architecture/decisions/0009-network-dev
 reads.
 
 **Undo:** Reset the controller: stop `omada-controller`, clear `/opt/omada-controller/data`, and
-rerun Step 7 for `dv02nms001v01`.
+rerun Step 8 for `dv02nms001v01`.
 
-### Step 9: Stop the Builder's controller
+### Step 10: Stop the Builder's controller
 
 **Run** on `dv00bld001p01`:
 
@@ -350,7 +380,13 @@ recreates the records and reservations. They point at VMs that no longer exist.
 Set `allowed_vlans` back to `[35, 99]`, and rerun `switch-vlans.yml --tags trunk`. If the run cuts
 the path, restore the baseline from the console.
 
-### Undo Step 6
+### Undo Step 4
+
+Remove the `proxmox_node_network` block, and set the bridge back through the API or the node's
+network page: VLAN aware off. If management was lost, restore the stanza read in Step 1 from
+the console, then run `ifreload -a`.
+
+### Undo Step 7
 
 `qm stop <vmid> && qm destroy <vmid>` for each new VM. Then remove its `identity.yml` and rerun
 Step 2's apply.
@@ -384,4 +420,4 @@ Step 2's apply.
       hypervisor page, Important URLs, the VM identity and MAC naming worked examples, and the
       Omada recovery and upgrade runbooks
 - [ ] ADR-0013: status Accepted; record the answer to open question 1 (the Builder's controller
-      is a cold fallback) and open question 2 (as decided in Step 8)
+      is a cold fallback) and open question 2 (as decided in Step 9)
