@@ -7,7 +7,8 @@ weight: 11
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-15, once its four open questions were answered. Questions 1–3 were settled by the operator on 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9's controller work made the platform side real); question 4 was settled on 2026-09-14. |
 | **Date** | 2026-09-13 |
 | **Validated** | 2026-09-14, read-only, before acceptance. See [Validation](#validation-2026-09-14) |
 | **Scope** | Who owns a physical device an application uses, what the platform knows about it, which network it joins, and how it reaches the services it needs |
@@ -233,16 +234,28 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      1883, 8883 and 22 closed, while the core router passes everything. The question is still open,
      and a broker has to be up before any candidate can be tested
      ([The broker](#the-broker-is-not-reachable)).
-   - **Proposed answer:** [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/). Owners
-     register devices through a Deevnet API and Terraform provider that confine them to their own
-     topic prefix. The broker behind it, decided in ADR-0012's review, is VerneMQ, which asks the
+   - **Decided 2026-09-15 (operator): [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/)
+     is the answer.** Owners register devices through the Deevnet API and its Terraform provider,
+     which confine them to their own topic prefix. The broker behind it is VerneMQ, which asks the
      API on every connect, subscribe and publish (ADR-0012 §8).
+     - **Nothing is tested end to end yet**, because the broker is not built. The API shell is
+       deployed (CHG-0008), and the broker is a later change.
 2. **Does an owner's device still need a substrate host record?**
    - [Naming](/docs/standards/naming/) defines a host by a deterministic MAC-to-IP mapping, and
      `dv02bgw001e01` has a DHCP reservation, an A record and CNAMEs.
    - A device identified by its credential rather than its address could lease from the IoT pool
      and be named in its owner's own zone under ADR-0004.
    - **Found 2026-09-14:** no new evidence. Nothing tested bears on it.
+   - **Decided 2026-09-15 (operator): no substrate host record.** An application-owned device
+     leases from the IoT pool and is named in its owner's own zone
+     ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+     - **Why:** identity is the device's credential, not its address, which is the same reasoning
+       as question 4. Device churn then never becomes a substrate commit
+       ([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
+     - **Substrate-owned devices are unaffected.** The hardwired Pis and `dv02bgw001e01` keep their
+       reservations and records, because they are substrate hosts.
+     - This also settles [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/)'s open
+       question 3.
 3. **Shared or per-device Wi-Fi keys?**
    - A shared key per segment means one lost device exposes the key for every device on it, and
      rotation means a USB visit to every NVS-provisioned device.
@@ -268,9 +281,14 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
        handed to an owner as self-service. They would have to be issued by a platform service in
        front of the controller, or by the substrate, which is a recurring substrate act. Whether a
        custom controller role can narrow this wasn't checked.
-   - **Proposed answer:** [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/).
-     Per-device keys are issued through the Deevnet API, which holds the controller credential and
-     always binds a key to the device's trust-class VLAN.
+   - **Decided 2026-09-15 (operator): per-device PPSK keys, issued through the Deevnet API.** The
+     API holds the controller credential and always binds a key to the device's trust-class VLAN.
+     - **Until the API can issue keys**, substrate automation issues them, because a PPSK write
+       needs the same controller permission as changing the site's wireless configuration. That is
+       a recurring substrate act, and it is accepted as temporary rather than designed in.
+     - **Still to prove on the device:** PPSK on this AP, and which WPA versions it allows. Both
+       are untested, and [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)
+       carries the test. A shared key stays the fallback if the AP refuses PPSK.
 4. **How are clients isolated on the IoT SSID?**
    - Omada's per-SSID isolation is its Guest Network setting, which also blocks all private address
      ranges ([Omada](https://support.omadanetworks.com/us/document/12928/)). It can't be used for

@@ -779,9 +779,11 @@ An API over a data plane that doesn't enforce anything confines nothing that mat
    API, as a container in the provisioning VM on the management hypervisor (§7). How it's backed up is deferred.
    Since §5, a backup is a convenience that avoids a round of tenant applies, not what keeps
    devices online.
-3. **How does a registry entry relate to ADR-0011 open question 2?** A device could still have a
-   substrate host record, or lease from the IoT pool and be named in its owner's zone. The provider
-   could compose with the existing `hashicorp/dns` path rather than wrap DNS.
+3. **How does a registry entry relate to ADR-0011 open question 2?** **Answered 2026-09-15.**
+   ADR-0011 question 2 was decided: an application-owned device takes no substrate host record. It
+   leases from the IoT pool and is named in its owner's own zone, so a registry entry is the
+   device's identity and the provider composes with the existing `hashicorp/dns` path rather than
+   wrapping DNS.
 4. **Where is topic confinement enforced?** The API can refuse to write an ACL outside the
    tenant's prefix, or write `modifiers` that rewrite topics into it (VerneMQ's database ACLs
    support both), or both.
@@ -823,9 +825,8 @@ prove.
 - Reviewed on 2026-09-14. Four of the original eight open questions were decided (§4, §5, §7, §8,
   §9), and four remained.
 - Revised the same day: §8 makes the API provisioning-only, which adds Open questions 5 and 6.
-- Open questions 2, 5 and 6 were answered the same day (§7, ADR-0013). Questions 1, 3 and 4 are
-  deferred to a later iteration.
+- Open questions 2, 5 and 6 were answered the same day (§7, ADR-0013). Question 3 was answered on
+  2026-09-15, with ADR-0011 question 2. Questions 1 and 4 are deferred to a later iteration.
 - **Acceptance waits on:**
-  - ADR-0010 and ADR-0011
-  - Open question 3, which ties to ADR-0011 open question 2
+  - ADR-0010 (ADR-0011 was accepted on 2026-09-15)
   - the data-plane changes above: CHG-0005 and CHG-0007
