@@ -10,7 +10,7 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9's manual floor is done: the wizard, a local Owner, the automation account and the Open API client. Step 10 stopped the Builder's controller at 23:14Z, and Step 3 carried VLAN 25 to the management hypervisor's port at 23:28Z with the operator at the rack. Step 4, the hv01 bridge, is next, and the four remaining VMs follow it. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
+| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9's manual floor is done: the wizard, a local Owner, the automation account and the Open API client. Step 10 stopped the Builder's controller at 23:14Z, and Step 3 carried VLAN 25 to the management hypervisor's port at 23:28Z with the operator at the rack. Step 4 made the hv01 bridge VLAN-aware at 23:38Z. The four remaining VMs and their services are next, and can be done remotely. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
 | **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
@@ -420,6 +420,9 @@ Step 2's apply.
 | 23:16:46 | Step 10, tidy-up | The unit was left `failed` because `podman start -a` exits 143 on SIGTERM, which systemd counts as a failure. `systemctl reset-failed omada-controller` cleared it: the unit is now `inactive` and `disabled`, and the Builder reports no failed units. |
 | 23:27:46–23:28:20 | Step 3 | `switch-vlans.yml --tags trunk`, with the operator at the rack and reaching the site through the edge router rather than the AP. It rewrote all four trunks as expected: `gi1/0/1` uplink (all VLANs tagged, native 999), `gi1/0/4` AP (10, 30, 31, 40 tagged, native 99), `gi1/0/13` tenant hypervisor (50, 51 tagged, native 99) and `gi1/0/15` management hypervisor (**25, 35 tagged**, native 99). `failed=0`. |
 | after 23:28 | Step 3 verify | Read back from the switch: `gi1/0/15` shows `allowed vlan 99 untagged`, `25,35 tagged`, `pvid 99`, and its VLAN membership lists 25 `platform` and 35 `iot_backend` tagged with 99 `management` untagged. The switch, `dv02hyp001p01`, `dv02nms001v01` and the core router all answer, and the controller's API still responds. |
+| 23:33:59 | Step 4 preflight | hv01 runs Proxmox 8.4.21, kernel 6.8.12, and `vmbr0` was a plain bridge (`vlan_filtering` 0). A VLAN-aware bridge needs no PVE 9 feature, so the pending hypervisor uplift doesn't block this. A check-mode run passed its assertions, read the node's three interfaces and would create no VLAN sub-interfaces. |
+| 23:38:36–23:38:38 | Step 4 | `proxmox-node-network.yml --tags interfaces -e target=dv02hyp001p01`: `changed=1`, `failed=0`. `vmbr0` is VLAN-aware with VIDs 2–4094, `vlan_filtering` is 1, and hv01, `nms`, `sob`, `dv02bld001v01`, the switch, the router and the controller API all answered afterwards, with every guest still running. |
+| 23:41:23 | Step 4 correction | The update left the bridge recorded as `method: manual`, because the role's PUT replaces the interface definition and sent no address. The stanza kept its `address` and `gateway` lines and the node never lost its address, but `dv02hyp002p02`'s equivalent bridge reads `static`. A PUT including the address and gateway restored `inet static`, with VLAN awareness unchanged and everything still reachable. The role is fixed in [deevnet.net #19](https://github.com/deevnet/ansible-collection-deevnet.net/pull/19). |
 
 ### Departures from the plan
 
@@ -477,6 +480,17 @@ Step 2's apply.
     27002, which isn't in the reference and nothing binds.
 
   Nothing is adopted yet, so nothing is affected today. It matters before CHG-0005 adopts the AP.
+- **Making the bridge VLAN-aware dropped its address from Proxmox's record.** `proxmox_node_network`
+  PUTs only the bridge fields, and a PUT replaces the interface definition, so PVE rewrote
+  `vmbr0`'s method from `static` to `manual`.
+  - **Effect:** none observed. The `address` and `gateway` lines stayed in
+    `/etc/network/interfaces`, ifupdown2 read them, and hv01 kept its address, its route and its
+    guests.
+  - **Why it still mattered:** hv01 has one NIC, and a method that no longer claims its address is
+    not a state to leave a node in.
+  - **Repair:** a PUT carrying the address and gateway restored `inet static` at 23:41:23, with
+    VLAN awareness unchanged. The role now carries `cidr` and `gateway` through
+    ([deevnet.net #19](https://github.com/deevnet/ansible-collection-deevnet.net/pull/19)).
 - **Re-running Step 8 took two data directories away from the controller.**
   - **Cause:** `omada_controller` forced `root:root 0755` on its data directories on every run.
     The image's entrypoint (`fix_permissions`) gives `data` and `logs` to its `omada` account
