@@ -94,5 +94,12 @@ question is written down, not when it is answered.
   controller, the substrate runs an API that holds its credentials and scopes every call to one
   tenant, and tenants use it through a Deevnet Terraform provider; v1 is a device registry, a
   Wi-Fi key binding and a broker account binding; extends ADR-0010 §3. Reviewed 2026-09-14:
-  VerneMQ asks the API, device secrets are restored from tenant state, providers come from an
-  offline mirror, and tenant credentials are issued age-encrypted per consumer.
+  the API only provisions and the broker reads its own auth database, device secrets are restored
+  from tenant state, providers come from an offline mirror, and tenant credentials are issued
+  age-encrypted per consumer.
+- [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) —
+  *Proposed.* Services on the management hypervisor run as containers on VMs grouped by domain —
+  network management, substrate and tenant observability, provisioning, identity, and device
+  messaging — each on exactly one network segment, so no VM bridges two zones; the Omada controller
+  moves off the roaming Builder into the network management VM, and tenant DNS and state fold into
+  the identity and provisioning VMs; extends ADR-0009.
