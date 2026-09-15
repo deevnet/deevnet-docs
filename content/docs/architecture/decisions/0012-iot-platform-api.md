@@ -9,7 +9,7 @@ weight: 12
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-14 |
-| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. |
+| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). |
 | **Scope** | How a tenant reaches an IoT platform service whose own interface can't confine it to its scope, and what the substrate builds so it can |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §1 and §3, which require a scoped service but don't say how one is built when the backing software can't scope itself |
 | **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (per-device Wi-Fi keys) |
@@ -76,117 +76,136 @@ The goal is IoT platform services in the manner of a public IoT platform. The pl
 the facilities for connecting, identifying and serving devices. The owner writes the firmware,
 owns the devices and their keys, and declares what it wants in its own Terraform.
 
-### How a tenant, its devices and platform services connect
+### How devices, tenants and platform services connect at runtime
 
-A tenant and its devices reach the platform by **different paths**. The tenant is never reached
-*through* an IoT VLAN:
+At runtime, devices, tenants and platform services meet on the site network, and they reach it by
+**different paths**. The tenant is never reached *through* an IoT VLAN. The Deevnet API isn't part
+of this picture: it only provisions (§1).
 
 {{< graphviz >}}
-digraph paths {
+digraph runtime {
     graph [
         rankdir=TB,
-        splines=ortho,
-        nodesep=0.5,
-        ranksep=0.45,
+        splines=polyline,
+        nodesep=0.4,
+        ranksep=0.5,
         fontname="Helvetica",
         fontsize=12,
         bgcolor="#e0e0e0",
         pad=0.2,
         newrank=true,
-        size="6.5,12",
+        size="6.5,14",
         labelloc=b,
-        label="IoT Vendor (VLAN 31): outbound internet only, nothing internal.\nNo path between a tenant and a device, in either direction:\nboth dial out and meet at the broker."
+        label="Devices and tenants never connect to each other: both dial out and meet at the broker.\nIoT Vendor (VLAN 31): outbound internet only, nothing internal.\nThe Deevnet API is not in this path. It only provisions (section 1)."
     ]
     node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica", fontsize=11, margin="0.15,0.06"]
     edge [arrowsize=0.7, fontname="Helvetica", fontsize=10]
 
-    subgraph cluster_fabric {
-        label="Tenant fabric\none VRF per tenant"
-        style=filled
-        labelloc=t
-        fillcolor="#fff3cd"
-
-        TenantA [label="tenant A"]
-        TenantB [label="tenant B"]
-        ExitNode [label="exit node\n(SNAT)"]
-    }
-
+    // Clients at the top: application-owned devices (amber) and a hardwired
+    // substrate Pi (blue), all on the IoT segment.
     subgraph cluster_devices {
-        label="Tenant devices\napplication-owned"
-        style=filled
+        label="IoT, VLAN 30\nshared Layer 2"
         labelloc=t
-        fillcolor="#fff3cd"
+        style=filled
+        fillcolor="#f7f7f7"
 
-        DeviceA [label="device\n(tenant A)"]
-        DeviceB [label="device\n(tenant B)"]
+        DeviceA [label="wireless device\n(tenant A)", fillcolor="#fff3cd"]
+        DeviceB [label="wireless device\n(tenant B)", fillcolor="#fff3cd"]
+        Pi [label="wired Pi\n(substrate)", fillcolor="#e0f0ff"]
     }
 
-    Transit [label="tenant transit\nVLAN 50", fillcolor="#e0f0ff"]
-    IoT30 [label="IoT, VLAN 30\nshared Layer 2", fillcolor="#e0f0ff"]
+    AP [label="Wi-Fi AP dv02wap001p01\nSSID DVNTM-IOT -> VLAN 30", fillcolor="#e0f0ff"]
+    Switch [label="access switch dv02acc001p01\nAP port: trunk 10, 30, 31, 40, 99\nPi port: access, VLAN 30", fillcolor="#e0f0ff"]
 
     subgraph cluster_router {
-        label="Core router\nzone policy (CHG-0007)"
-        style=filled
+        label="Core router\nroutes between VLANs"
         labelloc=t
-        labeljust=r
-        fillcolor="#e0f0ff"
-
-        // Holds the label's corner clear: edges enter the two rules from
-        // above, so the right-justified label sits over this spacer instead.
-        RouterSpacer [label="", style=invis, width=1.9]
-
-        RuleTenant [label="tenant_transit ->\nplatform, iot_backend", fontname="Courier", fontsize=10]
-        RuleIoT [label="iot ->\niot_backend", fontname="Courier", fontsize=10]
-    }
-
-    subgraph cluster_services {
-        label="Shared services\nthe broker's auth hooks call the API (dashed)"
         style=filled
-        labelloc=b
         fillcolor="#e0f0ff"
 
-        API [label="Platform (VLAN 25)\nDeevnet API"]
-        Broker [label="IoT Backend (VLAN 35)\nbroker (VerneMQ)"]
+        Rules [label="zone policy (CHG-0007)\niot -> iot_backend\ntenant_transit -> iot_backend\niot_backend -> platform", fontname="Courier", fontsize=10]
     }
 
-    // Rows, top to bottom. Left to right within a row: tenant A, tenant B,
-    // then their devices; the tenant rule and Platform on the left.
-    { rank=same; TenantA; TenantB; DeviceA; DeviceB }
-    { rank=same; ExitNode; IoT30 }
-    { rank=same; RuleTenant; RuleIoT; RouterSpacer }
-    { rank=same; API; Broker }
-    TenantA -> TenantB [style=invis]
-    TenantB -> DeviceA [style=invis]
+    // The backend, side by side: shared services and the tenant fabric.
+    // Labels sit at the bottom, because links arrive from the switch above.
+    subgraph cluster_hv01 {
+        label="management hypervisor\ndv02hyp001p01"
+        labelloc=b
+        style=filled
+        fillcolor="#e0f0ff"
+
+        Broker [label="IoT Backend, VLAN 35\nbroker (VerneMQ)"]
+    }
+
+    subgraph cluster_platform {
+        label="Platform, VLAN 25\nhost not yet placed"
+        labelloc=b
+        style=filled
+        fillcolor="#e0f0ff"
+
+        AuthDB [label="broker auth database\n(vmq_diversity)\nread at connect (dashed)"]
+    }
+
+    subgraph cluster_hv02 {
+        label="tenant hypervisor dv02hyp002p02\ntenant fabric, one VRF per tenant"
+        labelloc=b
+        style=filled
+        fillcolor="#fff3cd"
+
+        Exit [label="exit node (SNAT)\ntenant transit, VLAN 50"]
+        TenantA [label="tenant A VRF"]
+        TenantB [label="tenant B VRF"]
+    }
+
+    { rank=same; DeviceA; DeviceB; Pi }
+    { rank=same; Switch; Rules }
+    { rank=same; Broker; AuthDB; Exit }
+    { rank=same; TenantA; TenantB }
     DeviceA -> DeviceB [style=invis]
-    RuleTenant -> RuleIoT [style=invis]
-    RuleIoT -> RouterSpacer [style=invis]
-    API -> Broker [style=invis]
+    DeviceB -> Pi [style=invis]
+    AuthDB -> Exit [style=invis]
+    TenantA -> TenantB [style=invis]
 
-    TenantA -> ExitNode
-    TenantB -> ExitNode
-    ExitNode -> Transit
-    Transit -> RuleTenant
-    RuleTenant -> API
-    RuleTenant -> Broker
+    // Access: devices into the AP and switch.
+    DeviceA -> AP
+    DeviceB -> AP
+    AP -> Switch
+    Pi -> Switch
 
-    DeviceA -> IoT30
-    DeviceB -> IoT30
-    IoT30 -> RuleIoT
-    RuleIoT -> Broker
+    // The switch's uplink to the router, and its links to the backend hosts.
+    Switch -> Rules [dir=none]
+    Switch -> Broker [dir=none]
+    Switch -> AuthDB [dir=none]
+    Switch -> Exit [dir=none]
 
-    Broker -> API [style=dashed, constraint=false]
+    // Tenant workloads leave their VRF through the exit node.
+    Exit -> TenantA [dir=back]
+    Exit -> TenantB [dir=back]
+
+    // The broker's only runtime dependency beyond the network.
+    Broker -> AuthDB [style=dashed, constraint=false]
 }
 {{< /graphviz >}}
 
-**The three paths.**
-- **Tenant workloads** leave their VRF through the fabric's exit node, SNATed onto the **tenant
-  transit** VLAN (50), and reach Platform and IoT Backend over `tenant_transit -> platform` and
-  `tenant_transit -> iot_backend`
-  ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) Seam 1,
-  [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
-- **Devices** attach to the access VLAN of their trust class
+**The paths.** The switch port assignments are in `mobile/host_vars/dv02acc001p01.yml`.
+- **Devices** reach the network in one of two ways:
+  - through the Wi-Fi AP `dv02wap001p01`, whose switch port trunks VLANs 10, 30, 31, 40 and 99
+  - through an access port in VLAN 30, for hardwired hosts such as the Pis
+
+  They attach to the access VLAN of their trust class
   ([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) §3), not their
   tenant's, and reach the broker over `iot -> iot_backend`.
+- **Tenant workloads** run on the tenant hypervisor `dv02hyp002p02` (trunk 50, 51, 99). They leave
+  their VRF through the fabric's exit node, SNATed onto the **tenant transit** VLAN (50), and reach
+  Platform and IoT Backend over `tenant_transit -> platform` and `tenant_transit -> iot_backend`
+  ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) Seam 1,
+  [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
+- **The shared services sit beside the tenant fabric, in the backend.**
+  - The broker runs on the management hypervisor `dv02hyp001p01` (trunk 35, 99), on IoT Backend.
+  - Its auth database lives on Platform (VLAN 25), and the broker reads it at connect over
+    `iot_backend -> platform` (§8).
+  - VLAN 25 isn't trunked to any hypervisor yet, so where Platform's services run is still to be
+    placed (§7).
 - **There is no path between a tenant and a device.** Tenants have no inbound path (ADR-0003), and
   device-to-tenant ingress is a future record (ADR-0011 open question 5). The broker is where they
   meet, and both sides dial out to it.
@@ -207,6 +226,8 @@ digraph paths {
   there is best effort, with credentials first (ADR-0011 open question 4).
 - **IoT Vendor devices use no internal service.** *"IoT vendor segment MUST be fully isolated from
   all internal segments"* (standard §7), so they get a Wi-Fi key and nothing else (§3).
+- **The Deevnet API is not in the runtime path.** Devices, the AP and the broker never call it. An
+  API outage stops provisioning, not devices (§1, §8).
 - **None of this is enforced yet.** The core router passes all traffic between segments until
   [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) applies the zone policy.
 
@@ -267,70 +288,96 @@ directly for work that isn't declarative.
 
 **Option D.**
 
-### 1. Two planes; the tenant sees only the control plane
+### 1. The API provisions; it is never in a device's path
 
 {{< graphviz >}}
-digraph layers {
+digraph provisioning {
     graph [
         rankdir=TB,
-        splines=spline,
-        nodesep=0.35,
-        ranksep=0.6,
+        splines=ortho,
+        nodesep=0.45,
+        ranksep=0.55,
         fontname="Helvetica",
         fontsize=12,
         bgcolor="#e0e0e0",
         pad=0.2,
-        compound=true,
-        labelloc=t,
-        label="Deevnet IoT platform services"
+        newrank=true,
+        size="6.5,14",
+        labelloc=b,
+        label="Solid: written at provisioning time.  Dashed: secrets returned to the tenant.\nDotted: what the broker reads at runtime, shown for context. The API is never in a device's path."
     ]
     node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica", fontsize=11, margin="0.15,0.06"]
     edge [arrowsize=0.7, fontname="Helvetica", fontsize=10]
 
-    subgraph cluster_control {
-        label="Control plane\nDeevnet API + Terraform provider"
-        style=filled
-        fillcolor="#e0f0ff"
-
-        V1 [label="v1\ndevice registry\nWi-Fi key binding\nbroker account binding"]
-        Later [label="later, each its own record\nidentity/PKI, policy\nfirmware release hosting\nOTA/jobs, observability", style="rounded,dashed,filled"]
-    }
-
-    subgraph cluster_data {
-        label="Data plane\nsubstrate implementations, never tenant-facing"
-        style=filled
-        fillcolor="#e0f0ff"
-
-        WiFi [label="Wi-Fi controller\n+ IoT VLANs"]
-        Broker [label="MQTT broker\n(VerneMQ)"]
-        DNS [label="DNS / DHCP"]
-        Artifacts [label="artifacts"]
-    }
-
-    Devices [label="application-owned\nedge devices", fillcolor="#fff3cd"]
-
     subgraph cluster_tenant {
-        label="Tenant / application"
+        label="Tenant repository"
+        labelloc=t
         style=filled
         fillcolor="#fff3cd"
 
-        Firmware [label="firmware\nsigning keys"]
-        Backend [label="backend services"]
-        Terraform [label="Terraform\ndesired state and\ndevice secrets"]
+        Creds [label="credentials file (age)\nissued at onboarding (section 9)"]
+        TF [label="tenant Terraform\nBuilder, laptop or CI"]
+        Provider [label="provider\ndeevnet/deevnet"]
+        State [label="tenant state\nauthoritative device secrets"]
     }
 
-    // Every structural edge points down the page, so the ranks stack as
-    // control -> data -> devices -> tenant. dir=back draws the arrowhead
-    // where the relationship actually points.
-    V1 -> Broker [ltail=cluster_control, lhead=cluster_data, label="  holds the backing credentials\l  confines every call to one tenant\l  answers the broker's auth hooks (section 8)\l"]
-    Broker -> Devices [ltail=cluster_data, dir=back, label="  devices use data-plane\l  services only\l"]
-    Devices -> Backend [lhead=cluster_tenant, dir=back, label="  owned by the application\l"]
+    subgraph cluster_control {
+        label="Control plane: provisioning only\nPlatform, VLAN 25"
+        labelloc=b
+        style=filled
+        fillcolor="#e0f0ff"
+
+        API [label="Deevnet API\nv1: device registry, Wi-Fi key,\nbroker account"]
+        APIDB [label="API database\nregistry, hosted tenant state"]
+        Later [label="later layers, each its own record\nidentity/PKI, policy, firmware hosting,\nOTA/jobs, observability", style="rounded,dashed,filled"]
+    }
+
+    Controller [label="Omada controller\ndv00bld001p01, management\nwrites: PPSK key on the\ntrust-class VLAN", fillcolor="#e0f0ff"]
+    AuthDB [label="broker auth database\nPlatform, VLAN 25\nwrites: account + ACL (bcrypt)", fillcolor="#e0f0ff"]
+    AP [label="Wi-Fi AP\ndv02wap001p01", fillcolor="#e0f0ff"]
+    Broker [label="broker (VerneMQ)\nIoT Backend, VLAN 35", fillcolor="#e0f0ff"]
+
+    { rank=same; TF; Creds }
+    { rank=same; Provider; State }
+    { rank=same; API; APIDB; Later }
+    { rank=same; Controller; AuthDB }
+    { rank=same; AP; Broker }
+    TF -> Creds [style=invis]
+    Provider -> State [style=invis]
+    API -> APIDB [style=invis]
+    APIDB -> Later [style=invis]
+    Controller -> AuthDB [style=invis]
+    AP -> Broker [style=invis]
+
+    // Provisioning: the tenant declares, the provider calls the API.
+    TF -> Provider
+    Provider -> API
+    API -> APIDB [constraint=false]
+
+    // The API writes into the backing services.
+    API -> Controller
+    API -> AuthDB
+    Controller -> AP
+
+    // Secrets come back into the tenant's own state.
+    API -> State [style=dashed, constraint=false]
+
+    // Runtime, for context only: the broker reads its auth database.
+    Broker -> AuthDB [style=dotted, dir=back]
 }
 {{< /graphviz >}}
 
 - **The API is the only tenant-facing control surface for IoT services.** The Omada controller and
-  the broker's administrative interface are implementations behind it. No tenant holds their
-  credentials.
+  the broker's auth database are implementations behind it. No tenant holds their credentials.
+- **It provisions, and nothing else.** A tenant's `terraform apply` is the only thing that calls it.
+  It writes:
+  - a Wi-Fi key to the Omada controller, which pushes it to the AP
+  - a device account and its ACL to the broker's auth database
+
+  After that, the AP authenticates the device itself, and the broker reads its own database (§8).
+  No device, AP or broker calls the API at runtime.
+- **Secrets come back to the tenant.** The keys and passwords the API generates return to the
+  tenant's state, which holds the authoritative copy (§4, §5).
 - **Devices never call the control plane.** They connect to Wi-Fi and the broker as they do today.
 
 ### 2. Scope is enforced by the API, and issued once
@@ -341,7 +388,7 @@ digraph layers {
 - **Every object belongs to exactly one tenant.** The API refuses any read or write outside the
   calling tenant's objects.
 - **The backing credentials are the API's alone**, held by the substrate: the Omada Open API client,
-  and the broker's hooks answered by the API (§8).
+  and write access to the broker's auth database (§8).
 
 This is how ADR-0010 §3 is met for a service whose own interface can't meet it. The confinement is
 a control enforced by the API, not a convention, because the tenant never holds a credential that
@@ -393,7 +440,8 @@ Terraform resources at all.
   its prefix in the offered store, or its own backend). The owner provisions them onto the device.
 - **The tenant's state is the authoritative copy.** The API's copies are working copies, restorable
   from the tenant's state (§5).
-  - For the broker, the API keeps only what authentication needs: a password hash.
+  - For the broker, only what authentication needs is kept: a bcrypt hash, in the broker's auth
+    database (§8).
   - A PPSK key is stored by the controller in usable form because the AP needs it. That is a
     property of the protocol, not a copy kept for the substrate's use.
 - **Secrets are sensitive values in state, not write-only.** Terraform 1.11's write-only arguments
@@ -421,8 +469,8 @@ construction, but it reverses "the API generates" and wasn't chosen.
     already in state**. Terraform doesn't get to plan a fresh create with a new secret.
   - The device reconnects with the key and password it already holds.
   - Both backing services accept a supplied secret. Omada's add-key operation takes
-    `ppskList[].psk` (*"Password, should contain 8 to 63 visible ASCII characters."*), and the broker
-    checks passwords through the API (§8), which re-hashes the restored one.
+    `ppskList[].psk` (*"Password, should contain 8 to 63 visible ASCII characters."*). For the
+    broker, the API writes the restored password's bcrypt hash back into its auth database (§8).
 - **This departs from the framework's documented pattern, on purpose.** The Terraform Plugin
   Framework tells a provider whose remote object is gone to *"call the response state
   `RemoveResource()` method, and return early"*, after which *"the next Terraform plan will
@@ -463,8 +511,19 @@ construction, but it reverses "the API generates" and wasn't chosen.
 - The API runs as a substrate platform service on the platform segment.
 - Tenants reach it over `tenant_transit -> platform`, which the declared zone policy already allows.
 - Operators reach it from management.
-- Nothing on the IoT segments needs a path to it. The broker's auth hooks call the API from
-  IoT Backend, over `iot_backend -> platform`, which is also declared.
+- **Nothing on the IoT segments needs a path to it.** Devices never call it, and neither does the
+  broker.
+- **The broker's auth database sits on Platform too.** The API writes it within its own segment, and
+  the broker reads it over `iot_backend -> platform`, which is already declared (§8).
+- **One path the API needs is not declared.**
+  - The API writes Wi-Fi keys through the Omada controller, which runs on the Builder
+    `dv00bld001p01` on management.
+  - The zone policy has no `platform -> management` rule.
+  - So building this needs that rule, limited to the controller's port, or a different placement
+    for the controller (Open question 6).
+- **Platform isn't on any hypervisor yet.** VLAN 25 is trunked to neither `dv02hyp001p01` (35, 99)
+  nor `dv02hyp002p02` (50, 51, 99). Hosting the API and its databases is therefore a one-time
+  substrate placement at build.
 
 **The requirements set in review:**
 - **Private now, public later.** Going public must be a switch, not a rewrite.
@@ -522,18 +581,22 @@ construction, but it reverses "the API generates" and wasn't chosen.
 **The provider is versioned like the tenant module.** Tenants pin it and commit the lock file, as
 they already do for `bpg/proxmox` and `hashicorp/dns`.
 
-### 8. The broker is VerneMQ, built from source, and it asks the API
+### 8. The broker is VerneMQ, built from source, and it reads its own auth database
 
-*Decided in review, 2026-09-14.*
+*Decided in review, 2026-09-14; revised the same day to make the API provisioning-only.*
 
 **The requirements set in review:**
 - **Devices authenticate with a username and password**, over TLS. That is how the LP stand works
   today, and it keeps identity and PKI a later layer.
-- **The broker asks the API (pull), rather than the API writing into the broker (push).** On
-  connect, subscribe and publish, the broker calls the API. The broker then holds no tenant state,
-  there is one source of truth, and a rebuild restores only the API.
-- **A brief outage is acceptable.** While the API is down, reconnecting devices may fail. A single
-  API instance is fine for v1.
+- **The API is provisioning-only.** When a tenant provisions, the API writes each device's account
+  and ACL into the broker's own auth database. The broker authenticates from that database at
+  connect, and never calls the API.
+- **This was revised the same day.**
+  - **What was chosen first:** the pull model, in which the broker asks the API on every connect,
+    subscribe and publish, with a brief API outage accepted.
+  - **Why it changed:** drawing runtime and provisioning as separate flows showed that the pull
+    model put the API in every device's path.
+  - **The result:** an API outage now stops provisioning, never devices.
 - **Design for growth.** v1 is one node, but the broker must be able to cluster later.
 
 **Why VerneMQ.**
@@ -541,19 +604,18 @@ they already do for `bpg/proxmox` and `hashicorp/dns`.
   broker"*. It states *"The VerneMQ mission is active & the project maintained"*
   ([GitHub](https://github.com/vernemq/vernemq)). The current release is 2.2.0, published
   2026-08-09, following 2.1.1 on 2025-07-14 (GitHub releases API).
-- **Its webhooks are the pull model, natively**
-  ([VerneMQ webhooks](https://docs.vernemq.com/plugin-development/webhookplugins)):
-  - `auth_on_register`, `auth_on_subscribe` and `auth_on_publish`, with MQTT 5 variants
-  - the register call carries `username` and `password`, so the API verifies the password itself
-  - the endpoint allows with `{"result": "ok"}` and denies with `{"result": {"error": "not_allowed"}}`
-  - subscribe and publish responses can rewrite topics, which is one way to enforce the tenant
+- **It authenticates from a database, natively**
+  ([VerneMQ database auth](https://docs.vernemq.com/configuring-vernemq/db-auth)):
+  - *"The database drivers are handled using the `vmq_diversity` plugin"*
+  - supported databases: PostgreSQL, MySQL, MongoDB, Redis and CockroachDB
+  - passwords are bcrypt for PostgreSQL, MongoDB and Redis
+  - ACLs are JSON pattern objects with optional `modifiers`, which is one way to enforce the tenant
     prefix (Open question 4)
-  - HTTPS to the endpoint is supported (`vmq_webhooks.cafile`, `.certfile`, `.keyfile`,
-    `.verify_peer`)
-- **It covers the brief-outage tolerance.** Decisions are cached when the API returns
-  *"`cache-control: max-age=AgeInSeconds`"*.
-- **Caveat on the cache.** Entries *"are currently not actively disposed after expiry"*, so memory
-  use under churn is something to watch.
+- **Lookups happen once per connection.** *"The database integrations will cache the ACLs when the
+  client connects avoiding expensive database lookups for each publish or subscribe message. The
+  cache entries are evicted when the client disconnects."*
+- **The database is now the broker's runtime dependency, in place of the API.** Which database it
+  is, and whether it's the API's own, is Open question 5.
 - **Built from source, not from the official images.** *"To use the provided docker images the
   VerneMQ EULA must be accepted"*
   ([VerneMQ Docker](https://docs.vernemq.com/installing-vernemq/docker)). The 2.2.0 release notes put
@@ -565,7 +627,7 @@ they already do for `bpg/proxmox` and `hashicorp/dns`.
 | Broker | Why not |
 |---|---|
 | **EMQX** | A strong fit technically: HTTP authentication with per-client ACLs, and HTTP authorization. But from 5.9 it is under the Business Source License. EMQ's FAQ: *"You may run single-node (any size) instances of EMQX in production for free, as long as you do not offer EMQX itself 'as‑a‑service'"*, and *"You cannot connect multiple nodes into a cluster (clustering requires a commercial license)"* ([EMQX licensing FAQ](https://www.emqx.com/en/content/license-faq)). That fails the growth requirement. Its last Apache-licensed line, 5.8, reached end of life on *"February 28, 2026"*, after which EMQ *"will no longer provide … bug fixes, security patches"* ([EMQ notice](https://www.emqx.com/en/news/a-notice-on-the-emqx-5-8-open-source-version)). |
-| **Mosquitto** (today's broker) | No maintained way to ask an external API: the third-party `mosquitto-go-auth` plugin was archived by its maintainer in June 2025, per its package page. The pull model would mean writing our own plugin on the hooks Mosquitto 2.1 added (2026-02-05). Clustering and high availability are sold by Cedalo as Pro Mosquitto features, not open-source ones. |
+| **Mosquitto** (today's broker) | Its dynamic security plugin changes clients and permissions at runtime, so it could hold accounts the API writes, and provisioning-only doesn't rule it out. Growth does: clustering and high availability are sold by Cedalo as Pro Mosquitto features, not open-source ones. Under the earlier pull model it was also rejected because the third-party `mosquitto-go-auth` plugin was archived in June 2025, per its package page; that reason no longer applies. |
 
 **The existing `mosquitto` role and `dv02mqt001v01` are superseded once this is built.** The broker
 doesn't answer today anyway (ADR-0011 → Validation).
@@ -632,13 +694,15 @@ granting it topics and a Wi-Fi key, become `terraform apply` in the tenant's rep
 they stay recorded debt.
 
 **The substrate gains a privileged service.** The API holds credentials that can rewrite the
-site's wireless configuration, and it decides every broker connection. Its authentication, audit
-log and availability are platform responsibilities. A compromised API is a site-wide compromise of
-those services.
+site's wireless configuration, and write access to every broker account. Its authentication and
+audit log are platform responsibilities. A compromised API is a site-wide compromise of those
+services.
 
-**The API is in the broker's connection path.** Under the pull model (§8), an API outage stops
-reconnecting devices once cached decisions expire. That was accepted for v1 in review. An HA API is
-the remedy if it stops being acceptable.
+**The broker's auth database is in the connection path; the API is not** (§8).
+- **An API outage** stops provisioning, never devices.
+- **The auth database carries that weight instead.** While it's down, devices already connected are
+  expected to keep their cached ACLs, but new connections can't authenticate until it's back. See
+  [To confirm when building](#to-confirm-when-building).
 
 **The platform gets a record of what changed.** ADR-0010 noted that a service tenants change
 without commits needs its own record, and that none had one. The API's audit log is that record
@@ -705,8 +769,14 @@ An API over a data plane that doesn't enforce anything confines nothing that mat
 3. **How does a registry entry relate to ADR-0011 open question 2?** A device could still have a
    substrate host record, or lease from the IoT pool and be named in its owner's zone. The provider
    could compose with the existing `hashicorp/dns` path rather than wrap DNS.
-4. **Where is topic confinement enforced?** The API can deny out-of-prefix topics in its hook
-   responses, or rewrite them into the tenant's prefix (VerneMQ's modifiers allow either), or both.
+4. **Where is topic confinement enforced?** The API can refuse to write an ACL outside the
+   tenant's prefix, or write `modifiers` that rewrite topics into it (VerneMQ's database ACLs
+   support both), or both.
+5. **Is the broker's auth database the API's own database, or a separate one?** Either way, the
+   broker gets a read-only credential, and only the API writes it.
+6. **How does the API reach the Omada controller?** The controller runs on the Builder, on
+   management, and no `platform -> management` rule is declared (§7). The options are a narrow rule
+   for the controller's port, or placing the controller where Platform can already reach it.
 
 ## To confirm when building
 
@@ -717,8 +787,10 @@ prove.
   committed lock file (§7).
 - **The restore path works end to end** (§5). Delete an object at the API, apply, and confirm the
   device reconnects with its existing secret.
-- **VerneMQ builds from source on the Builder** into a stageable image, and its webhook cache stays
-  bounded under reconnect churn (§8).
+- **VerneMQ builds from source on the Builder** into a stageable image that includes
+  `vmq_diversity` and the chosen database driver (§8).
+- **Devices that are already connected keep working through an auth-database outage**, on their
+  cached ACLs, and new connections are refused rather than let in (§8, Consequences).
 - **The public registry namespace comes out as `deevnet`** before the provider is first published
   (§7).
 - **A self-hosted CI runner decrypts the credentials file with its own key**, and reaches the API
@@ -732,7 +804,8 @@ prove.
 - The broker accounts and topic permissions remain in substrate inventory as ADR-0010 debt. No
   Wi-Fi keys are per device, and tenants still read their keys from the substrate vault.
 - Reviewed on 2026-09-14. Four of the original eight open questions were decided (§4, §5, §7, §8,
-  §9), and four remain.
+  §9), and four remained.
+- Revised the same day: §8 makes the API provisioning-only, which adds Open questions 5 and 6.
 - **Acceptance waits on:**
   - ADR-0010 and ADR-0011
   - Open question 3, which ties to ADR-0011 open question 2
