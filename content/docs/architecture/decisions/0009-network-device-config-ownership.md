@@ -11,7 +11,7 @@ weight: 9
 | **Date** | 2026-09-10 |
 | **Accepted** | 2026-09-10 |
 | **Scope** | Who owns, and who applies, the configuration of controller-managed network devices — the access switch and the AP — and how automation talks to the Omada controller |
-| **Extended by** | [ADR-0013: Management-Hypervisor Services Run as Containers on Per-Segment VMs](/docs/architecture/decisions/0013-management-services-per-segment-vms/) — where the controller runs (a container in the management services VM), and the order a rebuild uses it in *(Proposed)* |
+| **Extended by** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) — where the controller runs (a container in the network management VM, `nms`), and the order a rebuild uses it in *(Proposed)* |
 | **Related** | [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — brings the controller current; [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — the AP, the first device adopted under this record; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch's firmware; [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — the guards any reconciling role now carries |
 
 ---

@@ -97,8 +97,9 @@ question is written down, not when it is answered.
   the API only provisions and the broker reads its own auth database, device secrets are restored
   from tenant state, providers come from an offline mirror, and tenant credentials are issued
   age-encrypted per consumer.
-- [ADR-0013: Management-Hypervisor Services Run as Containers on Per-Segment VMs](/docs/architecture/decisions/0013-management-services-per-segment-vms/) —
-  *Proposed.* Services on the management hypervisor run as containers on one services VM per
-  network segment (management, Platform, IoT Backend), so no VM bridges two zones; the Omada
-  controller moves off the roaming Builder into the management services VM, and tenant DNS and state
-  are to fold into the Platform services VM; extends ADR-0009.
+- [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) —
+  *Proposed.* Services on the management hypervisor run as containers on VMs grouped by domain —
+  network management, substrate and tenant observability, provisioning, identity, and device
+  messaging — each on exactly one network segment, so no VM bridges two zones; the Omada controller
+  moves off the roaming Builder into the network management VM, and tenant DNS and state fold into
+  the identity and provisioning VMs; extends ADR-0009.
