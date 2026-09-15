@@ -10,8 +10,8 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Steps 1–2 done on 2026-09-15. Step 3 (switch trunk) waits for the operator at the rack. |
-| **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for the window. Step 3 onward needs the operator at the rack, with the access switch's console connected. |
+| **Status** | **In progress**. Steps 1–2 and 5–6 done on 2026-09-15. Steps 3–4 (switch trunk, hv01 bridge) wait for someone at the rack; Step 7 can start with the two management-segment VMs. |
+| **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
 | **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`, `proxmox-node-network.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
@@ -402,6 +402,11 @@ Step 2's apply.
 | 04:13:37 | Step 2, DHCP | `dhcp.yml -e dhcp_delete_unmanaged=true`: `changed=2`, `failed=0`. |
 | 04:14 | Step 2 verify | Both re-previews show no undeclared records. `dv02tdn001v01` and `dv02tst001v01` no longer resolve. `tdns` resolves to 10.20.25.21, `tfstate` and `api` to 10.20.25.20, `omada` to 10.20.99.40. The core router, `dv02hyp001p01` and `artifacts` still resolve. A read of the router's reservations through its API shows 13 entries, each matching inventory, and neither `…C8` nor `…C9`. |
 
+| 21:03–21:05 | Step 5 | Builder `site.yml --limit dv00bld001p01 --tags container-images`: `changed=3`, `failed=0`. Staged `postgres/postgres-17.11.tar` (461 MB). `deevnet-api/deevnet-api-v0.1.0.tar` was already staged on 2026-09-14. |
+| 21:05 | Step 6, identity | `make vm-identity-assign` allocated idn 200 (`…c8`), prv 201 (`…c9`), nms 204 (`…cc`), msg 205 (`…cd`), sob 206 (`…ce`) and tob 207 (`…cf`). The `make vm-identity` audit afterwards shows eight declared VMIDs, all unique, every MAC matching its VMID, and 208 next free. |
+| 21:06 | Step 6, previews | DHCP: add 2 (`dv02nms001v01` `…CC` → 10.20.99.40, `dv02sob001v01` `…CE` → 10.20.99.41). The four static-address VMs' MACs are on the remove list, but none holds a reservation, so nothing would be deleted. No undeclared records. DNS: nothing to add, and `dig` shows all six hosts and the `omada`, `tdns`, `tfstate` and `api` aliases already correct. |
+| 21:07:42 | Step 6, DHCP | `dhcp.yml`: `changed=2`, `failed=0`. A read of the router's reservations through its API shows 15 entries: the 13 existing ones unchanged, plus `…CC` → 10.20.99.40 and `…CE` → 10.20.99.41. The re-preview has nothing to add and no undeclared records. |
+
 ### Departures from the plan
 
 - **Step 2 also did work planned for Steps 6 and 8.** The DNS run applies the whole role, not only the prune. So it also:
@@ -420,6 +425,15 @@ Step 2's apply.
   - the task is `changed_when: true`
 
   The API read above confirms nothing moved.
+- **Steps 5 and 6 ran before Steps 3 and 4.** The operator was remote, reaching the Builder through
+  its WAN port. Steps 3 and 4 can cut the Builder's management path and need hands at the hardware,
+  while Steps 5 and 6 touch only the Builder and the router's API. Neither depends on VLAN 25 or the
+  bridge.
+- **Step 6's DNS run was skipped.** Step 2's DNS run had already published every record Step 6
+  would write. The check-mode preview had nothing to add, the override update only fires on an
+  address change, and `dig` through the router confirmed every name.
+- **The Step 6 DHCP run again rewrote the 13 existing reservations** with unchanged values: the same
+  `opnsense_dhcp` defect as in Step 2, already a follow-up.
 
 ## Follow-ups
 
