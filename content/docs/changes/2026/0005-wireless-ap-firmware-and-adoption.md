@@ -10,7 +10,7 @@ weight: 5
 | **Date** | Not yet scheduled |
 | **Change type** | Migration — the AP moves from standalone to controller-managed |
 | **Classification** | Disruptive — wireless is down during each firmware hop and during adoption, and one hop cannot be undone |
-| **Status** | **Planned**, waiting on the network management VM (`nms`) and its controller container ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)): the AP is adopted straight into the controller's official home |
+| **Status** | **Planned**. The network management VM and its controller exist as of 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Steps 7–9), and the AP is adopted straight into it. What remains is the AP's credentials decision, site `autoUpgrade`, and the Wi-Fi key and isolation decisions. |
 | **Window** | To be scheduled. Operator on site, with a laptop on the operator port `gi1/0/2`. |
 | **Site** | mobile |
 | **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, moving from `dv00bld001p01` to a container in the network management VM `dv02nms001v01` on `dv02hyp001p01` ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). **Not** the access switch. |
@@ -92,18 +92,23 @@ home site.
   2026-09-10.
 - [x] Controller on 6.3.0.45 ([CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)).
   Reset to a fresh install on 2026-09-11; see the baseline.
-- [x] **Owner account** on the reset controller, created in the setup wizard on 2026-09-11 and
-  recorded in `group_vars/network_controllers/vault.yml` as `vault_omada_owner_user` /
-  `vault_omada_owner_password`.
-- [ ] **Open API client** created by the Owner in the web UI (Global View → Settings → Platform
+- [x] **Owner account**, now on `dv02nms001v01`: created in that controller's setup wizard on
+  2026-09-15 (CHG-0008 Step 9) and recorded in `group_vars/network_controllers/vault.yml` as
+  `vault_omada_owner_user` / `vault_omada_owner_password`. It is a **local** Owner, not
+  cloud-registered. The vault holds one controller's credentials, so the Builder controller's
+  Owner is no longer recorded there.
+- [x] **Open API client** created by the Owner in the web UI (Global View → Settings → Platform
   Integration → Open API), with its id and secret in `group_vars/network_controllers/vault.yml`
-  as `vault_omada_openapi_client_id` / `vault_omada_openapi_client_secret`.
+  as `vault_omada_openapi_client_id` / `vault_omada_openapi_client_secret`. Done on
+  `dv02nms001v01` on 2026-09-15 and verified: a client-credentials request returned a bearer token
+  and listed the site.
 - [ ] **The AP's current standalone login** in the same vault, as `vault_wap_standalone_user` /
   `vault_wap_standalone_password`. **Not known.** On 2026-09-11 an adoption from the reset
   controller was refused on the AP's credentials (the controller log reads `adopt info is
   wrong`). If the login can't be recovered, the way on is a factory reset by the
   [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) path, which replaces
-  phase 2's in-place hops with that page's reset-first route. Not yet decided.
+  phase 2's in-place hops with that page's reset-first route. **Still not known on 2026-09-15**, so
+  the reset-first route is the expected path; confirmed when the window is scheduled.
 - [ ] **Site `autoUpgrade` off** on the reset controller. The 2026-09-10 check was made on the
   controller that has since been wiped.
 - [ ] **Wi-Fi keys and client isolation for `DVNTM-IOT` decided** (added 2026-09-13):
@@ -126,7 +131,7 @@ home site.
 |---|---|
 | AP | `1.0.4 Build 20230421`; answers at `https://10.20.99.9`. Discovered by the reset controller, not adopted; the 2026-09-11 adoption attempt was refused on the AP's credentials. |
 | AP address | OPNsense reserves `40:ed:00:6f:f9:d4` → `10.20.99.9` |
-| Controller | `6.3.0.45`. **Reset to a fresh install on 2026-09-11**: the Owner login had been lost, and nothing on the controller was worth keeping. The old data and logs are kept on the host under `/opt/omada-controller-backup/pre-reset-2026-09-11/`. The new Owner is cloud-registered (`registeredRoot: true`). `a_autoprov` has not been recreated; this change doesn't need it. The March networks went with the reset, so phase 1 creates all four wireless networks. |
+| Controller | Now `dv02nms001v01`'s container, `6.3.0.45`, set up on 2026-09-15 with a local Owner, the `a_autoprov` automation account and an Open API client (CHG-0008 Steps 8–9). The Builder's controller below is the cold fallback. `6.3.0.45`. **Reset to a fresh install on 2026-09-11**: the Owner login had been lost, and nothing on the controller was worth keeping. The old data and logs are kept on the host under `/opt/omada-controller-backup/pre-reset-2026-09-11/`. The new Owner is cloud-registered (`registeredRoot: true`). `a_autoprov` has not been recreated; this change doesn't need it. The March networks went with the reset, so phase 1 creates all four wireless networks. |
 | Access switch | Standalone. `gi1/0/4` (the AP) is a trunk: native 99, allowed 10, 30, 31, 40, 99. `gi1/0/2` (the operator port) is untagged VLAN 99. |
 
 ---

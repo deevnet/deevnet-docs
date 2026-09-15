@@ -292,9 +292,13 @@ ADR-0011, which needs the AP adopted.
 
 1. **What happens to the Builder's `omada_controller` role?** Retire it, or keep it as a recovery
    fallback for when the management hypervisor is down.
-2. **How is the new controller's Owner account registered?** The Builder's controller has a
-   cloud-registered Owner (`registeredRoot: true`, CHG-0005 baseline). Whether the new one repeats
-   that is a choice for its setup.
+2. **How is the new controller's Owner account registered?** **Answered on 2026-09-15**
+   ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9): a **local** Owner, not
+   cloud-registered.
+   - **`registeredRoot: true` does not mean cloud-registered.** The new controller reports it with
+     a local Owner, exactly as the Builder's does. The reading of that field in this question and
+     in CHG-0005's baseline was wrong. *This is inference from the two controllers, not a vendor
+     statement.*
 
 ---
 

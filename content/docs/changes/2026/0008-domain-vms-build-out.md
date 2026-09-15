@@ -10,7 +10,7 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9, the controller's manual floor, is next. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
+| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9's manual floor is done: the wizard, a local Owner, the automation account and the Open API client. Step 10, stopping the Builder's controller, is next. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
 | **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
@@ -413,6 +413,9 @@ Step 2's apply.
 | after 21:35 | Step 8 verify | The unit is active and enabled, and the container reports `healthy` with 0 restarts. From the Builder, `https://omada.mobile.deevnet.net:8043/api/info` returns 6.3.0.45 with `configured: false`, and `:8088` redirects to `:8043`. Memory: 1.8 GiB of 3.9 GiB used, no swap; the container uses 1.36 GB. The 12 error-priority journal lines are stderr noise: a `useradd` UID note, `tail` waiting for `server.log`, and JVM deprecation warnings. MongoDB listens on 127.0.0.1:27217 only. The Builder's controller is untouched (`configured: true`). |
 | 22:05:18–22:05:37 | Step 8, firewall fix | Re-ran `site.yml --skip-tags vms --limit dv02nms001v01` with the corrected `omada_controller` (mgmt #15): `failed=0`. It opened 29815–29817/tcp and closed 29814/udp and 27002/tcp, in both the running and the permanent configuration. From the Builder, 29815–29817 answer and 27002 does not. The container wasn't restarted, and `/api/info` still answers. |
 | 22:07:30 | Step 8, ownership restored | The same run had reset `/opt/omada-controller/data` and `/logs` to `root:root` (see Departures). A non-recursive `chown` set both back to `508:508`, with no restart. The `omada` account can create files in `logs` again. No permission errors had been logged. |
+| 22:22:19–22:22:39 | Step 8, re-run | With the corrected role merged (mgmt #16), `site.yml --skip-tags vms --limit dv02nms001v01` reported `changed=0`: the data-directory task is `ok` for all four directories. The before and after snapshots are identical - `data` and `logs` still `508:508`, `work` still root, the same firewall ports, the container not restarted - and `/api/info` still answers. |
+| 22:47:32–22:47:37 | Step 9, automation account | `omada-automation-user.yml` (deevnet.builder) against `dv02nms001v01`: `changed=1`, `failed=0`. It logged in as the Owner from the vault, found no existing automation account, created `a_autoprov`, verified that it authenticates and can read its site (`Omada Network_F2774E`), and then wrote its new password into `group_vars/network_controllers/vault.yml`. |
+| after 22:50 | Step 9, Open API client | Created by the operator in the controller's UI and recorded in the same vault. Verified read-only from the Builder: a client-credentials request returned a bearer token valid for 7200 s, and listing sites through the Open API returned the one site. |
 
 ### Departures from the plan
 
@@ -483,7 +486,8 @@ Step 2's apply.
 
 - [x] Reboot `dv02nms001v01` and `dv02sob001v01` onto the upgraded kernel before Step 8 (found in Step 7; done 21:31Z)
 - [x] `omada_controller`, in both `deevnet.mgmt` and `deevnet.builder`: align the firewalld port lists with Omada's port reference for the running version (found in Step 8). Done in mgmt #15 and builder #16, applied to `dv02nms001v01` at 22:05Z; 8044 left closed.
-- [ ] After mgmt #16 merges, re-run Step 8 on `dv02nms001v01` and confirm the data-directory task reports no change (found in Step 8)
+- [x] After mgmt #16 merges, re-run Step 8 on `dv02nms001v01` and confirm the data-directory task reports no change (found in Step 8; done 22:22Z, `changed=0`)
+- [ ] The vault holds one controller's credentials - Owner, automation account and Open API client. The Builder fallback controller's own credentials are now only in the vault file's git history. Decide whether that is acceptable for a fallback whose database is derived state (found in Step 9).
 - [ ] `proxmox_vm`: decide on first-boot upgrades. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
 - [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
 - [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
