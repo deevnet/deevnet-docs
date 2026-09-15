@@ -81,22 +81,91 @@ owns the devices and their keys, and declares what it wants in its own Terraform
 A tenant and its devices reach the platform by **different paths**. The tenant is never reached
 *through* an IoT VLAN:
 
-```
-  TENANT FABRIC                 CORE ROUTER             SHARED SERVICES
-  one VRF per tenant            zone policy (CHG-0007)
+{{< graphviz >}}
+digraph paths {
+    graph [
+        rankdir=LR,
+        splines=ortho,
+        nodesep=0.45,
+        ranksep=0.7,
+        fontname="Helvetica",
+        fontsize=12,
+        bgcolor="#e0e0e0",
+        pad=0.2,
+        newrank=true,
+        labelloc=b,
+        label="IoT Vendor (VLAN 31): outbound internet only, nothing internal.\nNo path between a tenant and a device, in either direction: both dial out and meet at the broker."
+    ]
+    node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica", fontsize=11, margin="0.15,0.06"]
+    edge [arrowsize=0.7, fontname="Helvetica", fontsize=10]
 
-  tenant A ─┐  exit node   tenant      ┌────────────►  Platform (25): Deevnet API
-            ├─► (SNAT) ──► transit ────┤                 ▲  broker's auth hooks call the API
-  tenant B ─┘              VLAN 50     └────────────►  IoT Backend (35): broker
-                                                         ▲
-  ACCESS NETWORK                                         │
-  device, tenant A ─┐                                    │
-                    ├─► IoT, VLAN 30 ────────────────────┘
-  device, tenant B ─┘   (shared Layer 2)
+    subgraph cluster_fabric {
+        label="Tenant fabric\none VRF per tenant"
+        style=filled
+        fillcolor="#fff3cd"
 
-  IoT Vendor, VLAN 31: outbound internet only, nothing internal
-  tenant ↔ device: no path either way; both dial out to the broker
-```
+        TenantA [label="tenant A"]
+        TenantB [label="tenant B"]
+        ExitNode [label="exit node\n(SNAT)"]
+    }
+
+    subgraph cluster_devices {
+        label="Tenant devices\napplication-owned"
+        style=filled
+        fillcolor="#fff3cd"
+
+        DeviceA [label="device\n(tenant A)"]
+        DeviceB [label="device\n(tenant B)"]
+    }
+
+    Transit [label="tenant transit\nVLAN 50", fillcolor="#e0f0ff"]
+    IoT30 [label="IoT, VLAN 30\nshared Layer 2", fillcolor="#e0f0ff"]
+
+    subgraph cluster_router {
+        label="Core router\nzone policy (CHG-0007)"
+        style=filled
+        fillcolor="#e0f0ff"
+
+        RuleTenant [label="tenant_transit ->\nplatform, iot_backend", fontname="Courier", fontsize=10]
+        RuleIoT [label="iot ->\niot_backend", fontname="Courier", fontsize=10]
+    }
+
+    subgraph cluster_services {
+        label="Shared services"
+        style=filled
+        fillcolor="#e0f0ff"
+
+        API [label="Platform (VLAN 25)\nDeevnet API"]
+        Broker [label="IoT Backend (VLAN 35)\nbroker (VerneMQ)"]
+    }
+
+    // Top-to-bottom order within each column: A above B, tenants above devices,
+    // Platform above IoT Backend.
+    { rank=same; TenantA; TenantB; DeviceA; DeviceB }
+    { rank=same; ExitNode; IoT30 }
+    { rank=same; RuleTenant; RuleIoT }
+    { rank=same; API; Broker }
+    TenantB -> TenantA [style=invis]
+    TenantA -> DeviceB [style=invis]
+    DeviceB -> DeviceA [style=invis]
+    RuleTenant -> RuleIoT [style=invis]
+    API -> Broker [style=invis]
+
+    TenantA -> ExitNode
+    TenantB -> ExitNode
+    ExitNode -> Transit
+    Transit -> RuleTenant
+    RuleTenant -> API
+    RuleTenant -> Broker
+
+    DeviceA -> IoT30
+    DeviceB -> IoT30
+    IoT30 -> RuleIoT
+    RuleIoT -> Broker
+
+    Broker -> API [style=dashed, constraint=false, xlabel="auth hooks  "]
+}
+{{< /graphviz >}}
 
 **The three paths.**
 - **Tenant workloads** leave their VRF through the fabric's exit node, SNATed onto the **tenant
@@ -189,37 +258,64 @@ directly for work that isn't declarative.
 
 ### 1. Two planes; the tenant sees only the control plane
 
-```
-                      DEEVNET IoT PLATFORM SERVICES
- ┌───────────────────────────────────────────────────────────────┐
- │ CONTROL PLANE        Deevnet API  ·  Terraform provider       │
- │                                                               │
- │  v1:     device registry · Wi-Fi key binding ·                │
- │          broker account binding                               │
- │  later:  identity/PKI · policy · firmware release hosting ·   │
- │          OTA/jobs · observability      (each its own record)  │
- └───────────────────────────────┬───────────────────────────────┘
-                                 │ holds the backing credentials;
-                                 │ confines every call to one tenant;
-                                 │ answers the broker's auth hooks (§8)
- ┌───────────────────────────────┴───────────────────────────────┐
- │ DATA PLANE           substrate implementations, never         │
- │                      tenant-facing                            │
- │                                                               │
- │  Wi-Fi controller + IoT VLANs · MQTT broker (VerneMQ) ·       │
- │  DNS/DHCP · artifacts                                         │
- └───────────────────────────────┬───────────────────────────────┘
-                                 │ devices use data-plane services
-                                 │ only
-                    application-owned edge devices
-                                 │
- ┌───────────────────────────────┴───────────────────────────────┐
- │ TENANT / APPLICATION                                          │
- │                                                               │
- │  firmware · signing keys · backend services ·                 │
- │  Terraform (desired state and device secrets)                 │
- └───────────────────────────────────────────────────────────────┘
-```
+{{< graphviz >}}
+digraph layers {
+    graph [
+        rankdir=TB,
+        splines=spline,
+        nodesep=0.35,
+        ranksep=0.6,
+        fontname="Helvetica",
+        fontsize=12,
+        bgcolor="#e0e0e0",
+        pad=0.2,
+        compound=true,
+        labelloc=t,
+        label="Deevnet IoT platform services"
+    ]
+    node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica", fontsize=11, margin="0.15,0.06"]
+    edge [arrowsize=0.7, fontname="Helvetica", fontsize=10]
+
+    subgraph cluster_control {
+        label="Control plane\nDeevnet API + Terraform provider"
+        style=filled
+        fillcolor="#e0f0ff"
+
+        V1 [label="v1\ndevice registry\nWi-Fi key binding\nbroker account binding"]
+        Later [label="later, each its own record\nidentity/PKI, policy\nfirmware release hosting\nOTA/jobs, observability", style="rounded,dashed,filled"]
+    }
+
+    subgraph cluster_data {
+        label="Data plane\nsubstrate implementations, never tenant-facing"
+        style=filled
+        fillcolor="#e0f0ff"
+
+        WiFi [label="Wi-Fi controller\n+ IoT VLANs"]
+        Broker [label="MQTT broker\n(VerneMQ)"]
+        DNS [label="DNS / DHCP"]
+        Artifacts [label="artifacts"]
+    }
+
+    Devices [label="application-owned\nedge devices", fillcolor="#fff3cd"]
+
+    subgraph cluster_tenant {
+        label="Tenant / application"
+        style=filled
+        fillcolor="#fff3cd"
+
+        Firmware [label="firmware\nsigning keys"]
+        Backend [label="backend services"]
+        Terraform [label="Terraform\ndesired state and\ndevice secrets"]
+    }
+
+    // Every structural edge points down the page, so the ranks stack as
+    // control -> data -> devices -> tenant. dir=back draws the arrowhead
+    // where the relationship actually points.
+    V1 -> Broker [ltail=cluster_control, lhead=cluster_data, label="  holds the backing credentials\l  confines every call to one tenant\l  answers the broker's auth hooks (section 8)\l"]
+    Broker -> Devices [ltail=cluster_data, dir=back, label="  devices use data-plane\l  services only\l"]
+    Devices -> Backend [lhead=cluster_tenant, dir=back, label="  owned by the application\l"]
+}
+{{< /graphviz >}}
 
 - **The API is the only tenant-facing control surface for IoT services.** The Omada controller and
   the broker's administrative interface are implementations behind it. No tenant holds their
