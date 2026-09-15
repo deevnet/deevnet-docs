@@ -11,16 +11,21 @@
 
 <script>
 (function() {
-  const containers = document.querySelectorAll('.graphviz-diagram');
-  containers.forEach(container => {
+  // This script is emitted once per diagram, and each copy scans every
+  // diagram on the page. Rendering is asynchronous, so a later copy used to
+  // find the first diagram still without an SVG and render it a second time.
+  // Claim each container synchronously, before the render is scheduled, so
+  // every diagram is rendered exactly once.
+  document.querySelectorAll('.graphviz-diagram').forEach(container => {
+    if (container.dataset.graphviz) return;
     const script = container.querySelector('script[type="text/graphviz"]');
-    if (script && !container.querySelector('svg')) {
-      Viz.instance().then(viz => {
-        const svg = viz.renderSVGElement(script.textContent);
-        container.appendChild(svg);
-        script.remove();
-      });
-    }
+    if (!script) return;
+    container.dataset.graphviz = 'rendering';
+    Viz.instance().then(viz => {
+      container.appendChild(viz.renderSVGElement(script.textContent));
+      script.remove();
+      container.dataset.graphviz = 'rendered';
+    });
   });
 })();
 </script>
