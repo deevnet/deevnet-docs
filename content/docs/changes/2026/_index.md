@@ -15,4 +15,4 @@ bookCollapseSection: true
 | CHG-0005 | — | [Wireless AP Firmware and Omada Adoption](0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Planned |
 | CHG-0006 | — | [Access Switch Firmware Upgrade](0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Planned |
 | CHG-0007 | — | [Core Router Zone Policy, First Application](0007-core-router-zone-policy/) | Configuration | mobile | Planned |
-| CHG-0008 | — | [Management Domain VMs, First Build](0008-domain-vms-build-out/) | Deployment | mobile | Planned |
+| CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](0008-domain-vms-build-out/) | Deployment | mobile | In progress |

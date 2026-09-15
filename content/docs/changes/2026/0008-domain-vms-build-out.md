@@ -7,11 +7,11 @@ weight: 8
 
 | | |
 |---|---|
-| **Date** | Not yet scheduled |
+| **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **Planned** |
-| **Window** | To be scheduled, with the operator at the rack and the access switch's console connected for Step 3 |
+| **Status** | **In progress**. Steps 1–2 done on 2026-09-15. Step 3 (switch trunk) waits for the operator at the rack. |
+| **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for the window. Step 3 onward needs the operator at the rack, with the access switch's console connected. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
 | **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`, `proxmox-node-network.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
@@ -393,18 +393,37 @@ Step 2's apply.
 
 ## Outcome
 
-*Completed after the change has run.*
-
-| When | Steps | What happened |
+| When (UTC) | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-14 | Step 1 (part) | The operator read `dv02hyp001p01`: 24 GB of memory available. `vmbr0` is **not** VLAN-aware, so Step 4 was added before any device change. |
+| 2026-09-15, before 04:13 | Step 1 | `make vm-identity`: both hypervisors answered. VMIDs 200, 201 and 204 are free, and the template `fedora-server-44-1.7` (115) is present. The six new VMs are awaiting allocation, and no collision was reported. The next free VMID is 200 (`02:de:20:00:00:c8`). |
+| 04:12 | Step 2 preview | Gate met exactly. DNS: overrides `dv02tdn001v01` and `dv02tst001v01`, no aliases. DHCP: `dv02tdn001v01` (`02:DE:20:00:00:C8`) and `dv02tst001v01` (`02:DE:20:00:00:C9`). |
+| 04:13:17 | Step 2, DNS | `dns.yml -e dns_delete_unmanaged=true`: `changed=6`, `failed=0`. |
+| 04:13:37 | Step 2, DHCP | `dhcp.yml -e dhcp_delete_unmanaged=true`: `changed=2`, `failed=0`. |
+| 04:14 | Step 2 verify | Both re-previews show no undeclared records. `dv02tdn001v01` and `dv02tst001v01` no longer resolve. `tdns` resolves to 10.20.25.21, `tfstate` and `api` to 10.20.25.20, `omada` to 10.20.99.40. The core router, `dv02hyp001p01` and `artifacts` still resolve. A read of the router's reservations through its API shows 13 entries, each matching inventory, and neither `…C8` nor `…C9`. |
 
 ### Departures from the plan
 
--
+- **Step 2 also did work planned for Steps 6 and 8.** The DNS run applies the whole role, not only the prune. So it also:
+  - added host overrides for the six new VMs
+  - added the `omada` and `api` aliases
+  - moved `tdns` and `tfstate` to the new hosts
+  - added the core router's forwarding rows for the eds tenant zones (`eds.mobile.deevnet.net`,
+    `129.20.10.in-addr.arpa`), pointing at `dv02idn001v01` (10.20.25.21)
+
+  Queries for those zones through the router time out until the identity VM is built in Step 7.
+  eds has never applied its Terraform, so nothing depends on them.
+- **The DHCP run rewrote all 13 existing reservations with the values they already had.** This is
+  a defect in `opnsense_dhcp`, not a change:
+  - its update set is every declared reservation whose MAC already exists, with no field
+    comparison
+  - the task is `changed_when: true`
+
+  The API read above confirms nothing moved.
 
 ## Follow-ups
 
+- [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
 - [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
       `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/0012-iot-platform-api/))
 - [ ] Observability tooling for `dv02sob001v01` and `dv02tob001v01`
