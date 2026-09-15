@@ -14,7 +14,7 @@ weight: 8
 | **Window** | To be scheduled, with the operator at the rack and the access switch's console connected for Step 3 |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
-| **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new `deevnet-api` repository; all against `ansible-inventory-deevnet/mobile` |
+| **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. The step most likely to go wrong is the switch trunk re-apply, which rewrites every trunk on the switch, including the ports the control host and the management hypervisor sit behind. |
 | **Related decisions** | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) — the domain VMs this builds, and §6's fold-in of tenant DNS and state, which this record carries out; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) — the API whose shell is deployed; [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) — the controller's manual floor |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — waits for the network management VM this builds; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy these VMs are placed to survive |
@@ -110,7 +110,7 @@ change itself, not after verification: it keeps running untouched until Step 9 s
 
 - [ ] The old VMs (VMIDs 200, 201, 204) are deleted from `dv02hyp001p01`
 - [ ] The branches for this change are merged, or checked out on the control host: inventory,
-      `deevnet.mgmt`, `deevnet.builder`, `deevnet-tenant-factory`, `deevnet-api`
+      `deevnet.mgmt`, `deevnet.builder`, `deevnet-tenant-factory`, `deevnet-provisioning-api`
 - [ ] Vault decrypted, including `mobile/group_vars/deevnet_api/vault.yml`
 - [ ] Console access to `dv02acc001p01`, for Step 3
 - [ ] Each collection installed: `make install-dev` in each. The commands below run from the
@@ -212,7 +212,7 @@ These writes are local to the control host.
 ```bash
 cd ansible-collection-deevnet.builder
 ansible-playbook playbooks/site.yml --limit dv00bld001p01 --tags container-images
-cd ../deevnet-api && make stage        # tag v0.1.0 checked out
+cd ../deevnet-provisioning-api && make stage   # tag v0.1.0 checked out
 ```
 
 **Verify:**
