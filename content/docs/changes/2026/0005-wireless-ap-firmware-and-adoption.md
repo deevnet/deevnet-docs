@@ -10,10 +10,10 @@ weight: 5
 | **Date** | Not yet scheduled |
 | **Change type** | Migration — the AP moves from standalone to controller-managed |
 | **Classification** | Disruptive — wireless is down during each firmware hop and during adoption, and one hop cannot be undone |
-| **Status** | **Planned** |
+| **Status** | **Planned**, waiting on the management services VM and its controller container ([ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/)): the AP is adopted straight into the controller's official home |
 | **Window** | To be scheduled. Operator on site, with a laptop on the operator port `gi1/0/2`. |
 | **Site** | mobile |
-| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller on `dv00bld001p01`. **Not** the access switch. |
+| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, moving from `dv00bld001p01` to a container in the management services VM on `dv02hyp001p01` ([ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/)). **Not** the access switch. |
 | **Automation** | Firmware mirrored by inventory #22. Networks, SSIDs and AP settings by `ansible-collection-deevnet.net` `playbooks/omada-wireless.yml`, through the documented Open API ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)). |
 | **Risk** | High. The AP's 1.3.3 hop cannot be undone, and adoption replaces the AP's own configuration with the controller's. |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the hand-set SSIDs this retires; [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — the controller upgrade this was split from; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch, deliberately separate |
@@ -81,6 +81,13 @@ home site.
 
 ## Prerequisites
 
+- [ ] **The management services VM exists** on `dv02hyp001p01`, running the controller container, per
+  [ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/) (added
+  2026-09-14). This change adopts the AP into that controller, not the one on the Builder, so the AP
+  is adopted once.
+  - The items below that name the controller (the Owner account, the Open API client, site
+    `autoUpgrade`) were done or planned on the Builder's controller.
+  - They are repeated on the new controller before this change runs.
 - [x] AP firmware 1.2.5, 1.3.3 and 1.3.11 mirrored and pinned by sha256; all three matched on
   2026-09-10.
 - [x] Controller on 6.3.0.45 ([CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)).

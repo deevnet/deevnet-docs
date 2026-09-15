@@ -9,11 +9,11 @@ weight: 12
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-14 |
-| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). |
+| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/)). |
 | **Scope** | How a tenant reaches an IoT platform service whose own interface can't confine it to its scope, and what the substrate builds so it can |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §1 and §3, which require a scoped service but don't say how one is built when the backing software can't scope itself |
 | **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (per-device Wi-Fi keys) |
-| **Related** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/) |
+| **Related** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/), [ADR-0013: Management-Hypervisor Services Run as Containers on Per-Segment VMs](/docs/architecture/decisions/0013-management-services-per-segment-vms/) |
 
 ---
 
@@ -123,27 +123,19 @@ digraph runtime {
         style=filled
         fillcolor="#e0f0ff"
 
-        Rules [label="zone policy (CHG-0007)\niot -> iot_backend\ntenant_transit -> iot_backend\niot_backend -> platform", fontname="Courier", fontsize=10]
+        Rules [label="zone policy (CHG-0007)\niot -> iot_backend\ntenant_transit -> iot_backend", fontname="Courier", fontsize=10]
     }
 
     // The backend, side by side: shared services and the tenant fabric.
     // Labels sit at the bottom, because links arrive from the switch above.
     subgraph cluster_hv01 {
-        label="management hypervisor\ndv02hyp001p01"
+        label="management hypervisor dv02hyp001p01\nIoT Backend services VM, VLAN 35"
         labelloc=b
         style=filled
         fillcolor="#e0f0ff"
 
-        Broker [label="IoT Backend, VLAN 35\nbroker (VerneMQ)"]
-    }
-
-    subgraph cluster_platform {
-        label="Platform, VLAN 25\nhost not yet placed"
-        labelloc=b
-        style=filled
-        fillcolor="#e0f0ff"
-
-        AuthDB [label="broker auth database\n(vmq_diversity)\nread at connect (dashed)"]
+        Broker [label="broker container\n(VerneMQ)"]
+        AuthDB [label="broker auth database\ncontainer beside the broker\nread at connect (dashed)"]
     }
 
     subgraph cluster_hv02 {
@@ -175,14 +167,13 @@ digraph runtime {
     // The switch's uplink to the router, and its links to the backend hosts.
     Switch -> Rules [dir=none]
     Switch -> Broker [dir=none]
-    Switch -> AuthDB [dir=none]
     Switch -> Exit [dir=none]
 
     // Tenant workloads leave their VRF through the exit node.
     Exit -> TenantA [dir=back]
     Exit -> TenantB [dir=back]
 
-    // The broker's only runtime dependency beyond the network.
+    // The broker's only runtime dependency sits in the same VM.
     Broker -> AuthDB [style=dashed, constraint=false]
 }
 {{< /graphviz >}}
@@ -200,12 +191,12 @@ digraph runtime {
   Platform and IoT Backend over `tenant_transit -> platform` and `tenant_transit -> iot_backend`
   ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) Seam 1,
   [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
-- **The shared services sit beside the tenant fabric, in the backend.**
-  - The broker runs on the management hypervisor `dv02hyp001p01` (trunk 35, 99), on IoT Backend.
-  - Its auth database lives on Platform (VLAN 25), and the broker reads it at connect over
-    `iot_backend -> platform` (§8).
-  - VLAN 25 isn't trunked to any hypervisor yet, so where Platform's services run is still to be
-    placed (§7).
+- **The shared services sit beside the tenant fabric in the backend**, on the management hypervisor
+  `dv02hyp001p01`.
+  - The broker runs as a container in the IoT Backend services VM (VLAN 35). Its auth database runs
+    in a container beside it, and the broker reads it at connect (§7, §8).
+  - The Deevnet API runs in the Platform services VM (VLAN 25), but nothing at runtime calls it
+    (§1).
 - **There is no path between a tenant and a device.** Tenants have no inbound path (ADR-0003), and
   device-to-tenant ingress is a future record (ADR-0011 open question 5). The broker is where they
   meet, and both sides dial out to it.
@@ -322,7 +313,7 @@ digraph provisioning {
     }
 
     subgraph cluster_control {
-        label="Control plane: provisioning only\nPlatform, VLAN 25"
+        label="Platform services VM, dv02hyp001p01 (VLAN 25)\nDeevnet API containers: provisioning only"
         labelloc=b
         style=filled
         fillcolor="#e0f0ff"
@@ -332,10 +323,10 @@ digraph provisioning {
         Later [label="later layers, each its own record\nidentity/PKI, policy, firmware hosting,\nOTA/jobs, observability", style="rounded,dashed,filled"]
     }
 
-    Controller [label="Omada controller\ndv00bld001p01, management\nwrites: PPSK key on the\ntrust-class VLAN", fillcolor="#e0f0ff"]
-    AuthDB [label="broker auth database\nPlatform, VLAN 25\nwrites: account + ACL (bcrypt)", fillcolor="#e0f0ff"]
+    Controller [label="Omada controller container\nmanagement services VM (ADR-0013)\nwrites: PPSK key on the trust-class VLAN\nvia platform -> management, one port", fillcolor="#e0f0ff"]
+    AuthDB [label="broker auth database container\nIoT Backend services VM (VLAN 35)\nwrites: account + ACL (bcrypt)\nvia platform -> iot_backend, one port", fillcolor="#e0f0ff"]
     AP [label="Wi-Fi AP\ndv02wap001p01", fillcolor="#e0f0ff"]
-    Broker [label="broker (VerneMQ)\nIoT Backend, VLAN 35", fillcolor="#e0f0ff"]
+    Broker [label="broker container (VerneMQ)\nsame VM", fillcolor="#e0f0ff"]
 
     { rank=same; TF; Creds }
     { rank=same; Provider; State }
@@ -508,22 +499,33 @@ construction, but it reverses "the API generates" and wasn't chosen.
 *Distribution decided in review, 2026-09-14.*
 
 **Placement.**
-- The API runs as a substrate platform service on the platform segment.
-- Tenants reach it over `tenant_transit -> platform`, which the declared zone policy already allows.
-- Operators reach it from management.
+*Placement decided 2026-09-14 (Open questions 2, 5 and 6), following the per-segment services VMs
+of [ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/).*
+
+- **The API and its database run as containers in the Platform services VM**, on the management
+  hypervisor `dv02hyp001p01`, on Platform (VLAN 25).
+  - **Not on management.** Tenants must reach the API, and the segmentation standard says
+    *"Tenant networks MUST NOT have direct access to the management segment"*
+    ([Network Segmentation](/docs/standards/network-segmentation/) §4).
+  - **Not in the same VM as the controller.** They serve different segments. ADR-0013 gives each
+    segment its own services VM, so no VM bridges two zones.
+  - **hv01's switch port gains VLAN 25.** It carries 35 and 99 today, and adding 25 is the same
+    one-time change that added 35 for the broker (`mobile/host_vars/dv02acc001p01.yml`).
+- **Tenants reach it** over `tenant_transit -> platform`, which the declared zone policy already
+  allows. Operators reach it from management.
 - **Nothing on the IoT segments needs a path to it.** Devices never call it, and neither does the
   broker.
-- **The broker's auth database sits on Platform too.** The API writes it within its own segment, and
-  the broker reads it over `iot_backend -> platform`, which is already declared (§8).
-- **One path the API needs is not declared.**
-  - The API writes Wi-Fi keys through the Omada controller, which runs on the Builder
-    `dv00bld001p01` on management.
-  - The zone policy has no `platform -> management` rule.
-  - So building this needs that rule, limited to the controller's port, or a different placement
-    for the controller (Open question 6).
-- **Platform isn't on any hypervisor yet.** VLAN 25 is trunked to neither `dv02hyp001p01` (35, 99)
-  nor `dv02hyp002p02` (50, 51, 99). Hosting the API and its databases is therefore a one-time
-  substrate placement at build.
+- **The broker's auth database runs beside the broker, in the IoT Backend services VM.**
+  - It fate-shares with the broker, so patching or losing the Platform services VM never affects
+    devices.
+  - It is a separate database from the API's own.
+  - The API writes it over a narrow `platform -> iot_backend` rule: from the Platform services VM
+    to the database port, and nothing else.
+- **The Omada controller runs as a container in the management services VM**, on management
+  ([ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/)). The API
+  reaches it over a narrow `platform -> management` rule: from the Platform services VM to the
+  controller's Open API port, and nothing else.
+- **Both narrow rules are declared when the API is built.** Neither exists today.
 
 **The requirements set in review:**
 - **Private now, public later.** Going public must be a switch, not a rewrite.
@@ -614,8 +616,8 @@ they already do for `bpg/proxmox` and `hashicorp/dns`.
 - **Lookups happen once per connection.** *"The database integrations will cache the ACLs when the
   client connects avoiding expensive database lookups for each publish or subscribe message. The
   cache entries are evicted when the client disconnects."*
-- **The database is now the broker's runtime dependency, in place of the API.** Which database it
-  is, and whether it's the API's own, is Open question 5.
+- **The database is now the broker's runtime dependency, in place of the API.** It runs beside the
+  broker in the IoT Backend services VM, separate from the API's own database (§7).
 - **Built from source, not from the official images.** *"To use the provided docker images the
   VerneMQ EULA must be accepted"*
   ([VerneMQ Docker](https://docs.vernemq.com/installing-vernemq/docker)). The 2.2.0 release notes put
@@ -703,6 +705,8 @@ services.
 - **The auth database carries that weight instead.** While it's down, devices already connected are
   expected to keep their cached ACLs, but new connections can't authenticate until it's back. See
   [To confirm when building](#to-confirm-when-building).
+- **It fate-shares with the broker.** It runs in the IoT Backend services VM with the broker, so
+  maintenance on the Platform services VM never takes it down (§7).
 
 **The platform gets a record of what changed.** ADR-0010 noted that a service tenants change
 without commits needs its own record, and that none had one. The API's audit log is that record
@@ -744,6 +748,13 @@ it shouldn't repeat that.
   beside the PPSK SSID until each device has moved.
 - **When:** that change record depends on the ADR-0011 device test, so it follows CHG-0005.
 
+**Two narrow zone rules are added when the API is built** (§7):
+- `platform -> management`: the Platform services VM to the Omada controller's Open API port
+- `platform -> iot_backend`: the Platform services VM to the broker's auth database port
+
+They are the only paths the API needs beyond the declared policy, and each is limited to one host
+and one port.
+
 **It depends on data-plane work that isn't done.** As of 2026-09-14:
 - the broker doesn't answer
 - PPSK is untested on the AP, pending [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)
@@ -752,6 +763,8 @@ it shouldn't repeat that.
 An API over a data plane that doesn't enforce anything confines nothing that matters.
 
 **Building it is real work:**
+- the Platform and management services VMs on `dv02hyp001p01`, and VLAN 25 on that hypervisor's
+  switch port ([ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/))
 - the API service
 - a provider on the Terraform Plugin Framework in Go (the Builder already provides Go)
 - a VerneMQ build
@@ -764,19 +777,25 @@ An API over a data plane that doesn't enforce anything confines nothing that mat
 
 1. **Can a custom Omada role narrow the API's own controller credential?** This is defence in depth
    for §2, not tenant scoping. It wasn't checked.
-2. **Where does the API's database live, and how is it backed up?** Since §5, a backup is a
-   convenience that avoids a round of tenant applies, not what keeps devices online.
+2. **Where does the API's database live, and how is it backed up?** *Answered 2026-09-14:* with the
+   API, as a container in the Platform services VM on the management hypervisor (§7). How it's backed up is deferred.
+   Since §5, a backup is a convenience that avoids a round of tenant applies, not what keeps
+   devices online.
 3. **How does a registry entry relate to ADR-0011 open question 2?** A device could still have a
    substrate host record, or lease from the IoT pool and be named in its owner's zone. The provider
    could compose with the existing `hashicorp/dns` path rather than wrap DNS.
 4. **Where is topic confinement enforced?** The API can refuse to write an ACL outside the
    tenant's prefix, or write `modifiers` that rewrite topics into it (VerneMQ's database ACLs
    support both), or both.
-5. **Is the broker's auth database the API's own database, or a separate one?** Either way, the
-   broker gets a read-only credential, and only the API writes it.
-6. **How does the API reach the Omada controller?** The controller runs on the Builder, on
-   management, and no `platform -> management` rule is declared (§7). The options are a narrow rule
-   for the controller's port, or placing the controller where Platform can already reach it.
+5. **Is the broker's auth database the API's own database, or a separate one?** *Answered
+   2026-09-14:* a separate one, beside the broker in the IoT Backend services VM, so it
+   fate-shares with the broker rather than with the API (§7). Only the API writes it, and the broker's credential is
+   read-only.
+6. **How does the API reach the Omada controller?** *Answered 2026-09-14:* the controller's official
+   home becomes a container in the management services VM on the management hypervisor
+   ([ADR-0013](/docs/architecture/decisions/0013-management-services-per-segment-vms/)), and the API
+   reaches it over a narrow `platform -> management` rule, from the Platform services VM to the
+   controller's Open API port only (§7).
 
 ## To confirm when building
 
@@ -806,6 +825,8 @@ prove.
 - Reviewed on 2026-09-14. Four of the original eight open questions were decided (§4, §5, §7, §8,
   §9), and four remained.
 - Revised the same day: §8 makes the API provisioning-only, which adds Open questions 5 and 6.
+- Open questions 2, 5 and 6 were answered the same day (§7, ADR-0013). Questions 1, 3 and 4 are
+  deferred to a later iteration.
 - **Acceptance waits on:**
   - ADR-0010 and ADR-0011
   - Open question 3, which ties to ADR-0011 open question 2
