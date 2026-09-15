@@ -10,7 +10,7 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Steps 1–2 and 5–6 done on 2026-09-15. Steps 3–4 (switch trunk, hv01 bridge) wait for someone at the rack; Step 7 can start with the two management-segment VMs. |
+| **Status** | **In progress**. Steps 1–2 and 5–6 are done, and so is Step 7 for `dv02nms001v01` and `dv02sob001v01`, all on 2026-09-15. Both VMs need a reboot after their first-boot package upgrade. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Step 7 wait on those. |
 | **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
@@ -405,6 +405,9 @@ Step 2's apply.
 | 21:05 | Step 6, identity | `make vm-identity-assign` allocated idn 200 (`…c8`), prv 201 (`…c9`), nms 204 (`…cc`), msg 205 (`…cd`), sob 206 (`…ce`) and tob 207 (`…cf`). The `make vm-identity` audit afterwards shows eight declared VMIDs, all unique, every MAC matching its VMID, and 208 next free. |
 | 21:06 | Step 6, previews | DHCP: add 2 (`dv02nms001v01` `…CC` → 10.20.99.40, `dv02sob001v01` `…CE` → 10.20.99.41). The four static-address VMs' MACs are on the remove list, but none holds a reservation, so nothing would be deleted. No undeclared records. DNS: nothing to add, and `dig` shows all six hosts and the `omada`, `tdns`, `tfstate` and `api` aliases already correct. |
 | 21:07:42 | Step 6, DHCP | `dhcp.yml`: `changed=2`, `failed=0`. A read of the router's reservations through its API shows 15 entries: the 13 existing ones unchanged, plus `…CC` → 10.20.99.40 and `…CE` → 10.20.99.41. The re-preview has nothing to add and no undeclared records. |
+| 21:13:28–21:15:46 | Step 7 (`nms`, `sob`) | `site.yml --tags vms --limit dv02nms001v01,dv02sob001v01`: both hosts `changed=3`, `failed=0`. Both were cloned from `fedora-server-44-1.7`. `proxmox_vm` confirmed each net0 MAC (`…cc`, `…ce`), start-on-boot, and that each guest came up on its reserved address (10.20.99.40, .41). |
+| after 21:16 | Step 7 verify | Both VMs answer SSH by name. Each shows the inventory hostname, the declared MAC and address on `eth0`, and a default route via 10.20.99.1 from DHCP. The resolver's upstream is 10.20.99.1 with search domain `mobile.deevnet.net`, and `artifacts` and `omada` resolve. Each has a 30 GB root, passwordless sudo, and no failed units. |
+| 21:20:26 and 21:23:22 | Step 7, first boot | cloud-init finished on `sob` (297 s after boot) and `nms` (473 s) with `errors: []`. It reports `degraded done` only for two deprecation warnings about a string `user` key in the user data Proxmox generates. Its final stage ran `dnf -y upgrade`: 14 packages installed, 203 upgraded, 628 MiB downloaded. Both VMs still run kernel 6.19.10 with 7.2.5 installed, and `dnf needs-restarting -r` says a reboot is required. |
 
 ### Departures from the plan
 
@@ -433,9 +436,23 @@ Step 2's apply.
   address change, and `dig` through the router confirmed every name.
 - **The Step 6 DHCP run again rewrote the 13 existing reservations** with unchanged values: the same
   `opnsense_dhcp` defect as in Step 2, already a follow-up.
+- **Step 7 ran for the two management-segment VMs only.** `dv02prv001v01`, `dv02idn001v01` and
+  `dv02tob001v01` (Platform) and `dv02msg001v01` (IoT Backend) need VLANs 25 and 35 on the hv01
+  trunk and a VLAN-aware bridge first, which are Steps 3 and 4.
+- **Every new VM upgrades itself on first boot.** Proxmox's `ciupgrade` option defaults to on:
+  *"cloud-init: do an automatic package upgrade after the first boot."* (`qm` manual,
+  `default = 1`). `proxmox_vm` doesn't set it. From the Fedora 44 1.7 template, that meant:
+  - a 628 MiB download from the internet
+  - several extra minutes on every build
+  - a VM that needs a reboot
+  - a failure on a site without internet access
+
+  The VMs weren't rebooted as part of Step 7.
 
 ## Follow-ups
 
+- [ ] Reboot `dv02nms001v01` and `dv02sob001v01` onto the upgraded kernel before Step 8 (found in Step 7)
+- [ ] `proxmox_vm`: decide on first-boot upgrades. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
 - [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
 - [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
       `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/0012-iot-platform-api/))
