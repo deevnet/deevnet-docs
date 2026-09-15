@@ -76,6 +76,60 @@ The goal is IoT platform services in the manner of a public IoT platform. The pl
 the facilities for connecting, identifying and serving devices. The owner writes the firmware,
 owns the devices and their keys, and declares what it wants in its own Terraform.
 
+### How a tenant, its devices and platform services connect
+
+A tenant and its devices reach the platform by **different paths**. The tenant is never reached
+*through* an IoT VLAN:
+
+```
+  TENANT FABRIC                 CORE ROUTER             SHARED SERVICES
+  one VRF per tenant            zone policy (CHG-0007)
+
+  tenant A ─┐  exit node   tenant      ┌────────────►  Platform (25): Deevnet API
+            ├─► (SNAT) ──► transit ────┤                 ▲  broker's auth hooks call the API
+  tenant B ─┘              VLAN 50     └────────────►  IoT Backend (35): broker
+                                                         ▲
+  ACCESS NETWORK                                         │
+  device, tenant A ─┐                                    │
+                    ├─► IoT, VLAN 30 ────────────────────┘
+  device, tenant B ─┘   (shared Layer 2)
+
+  IoT Vendor, VLAN 31: outbound internet only, nothing internal
+  tenant ↔ device: no path either way; both dial out to the broker
+```
+
+**The three paths.**
+- **Tenant workloads** leave their VRF through the fabric's exit node, SNATed onto the **tenant
+  transit** VLAN (50), and reach Platform and IoT Backend over `tenant_transit -> platform` and
+  `tenant_transit -> iot_backend`
+  ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) Seam 1,
+  [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
+- **Devices** attach to the access VLAN of their trust class
+  ([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) §3), not their
+  tenant's, and reach the broker over `iot -> iot_backend`.
+- **There is no path between a tenant and a device.** Tenants have no inbound path (ADR-0003), and
+  device-to-tenant ingress is a future record (ADR-0011 open question 5). The broker is where they
+  meet, and both sides dial out to it.
+
+**What follows from the paths.**
+- **Tenants can't see each other.** Isolation is enforced inside the fabric, one VRF per tenant:
+  *"Tenant networks MUST be isolated from each other by default"*
+  ([Network Segmentation](/docs/standards/network-segmentation/) §4).
+- **The router can't tell tenants apart.** Their traffic arrives SNATed on one transit network, and
+  the site's firewall policy says so: *"the core router sees only SNATed transit traffic, so it
+  could not distinguish one tenant from another even if it wanted to"*
+  (`mobile/group_vars/all/firewall.yml`).
+- **A tenant can reach whole segments, but uses only what its credentials allow.** The zone rules
+  open Platform and IoT Backend to every tenant. What a tenant can actually *do* there is set by
+  what it holds: its TSIG key, its state key, its IoT API token. That is why this record scopes
+  tenants by credential, in the API (§2).
+- **Tenants' devices are not isolated from each other.** They share VLAN 30's Layer 2. Isolation
+  there is best effort, with credentials first (ADR-0011 open question 4).
+- **IoT Vendor devices use no internal service.** *"IoT vendor segment MUST be fully isolated from
+  all internal segments"* (standard §7), so they get a Wi-Fi key and nothing else (§3).
+- **None of this is enforced yet.** The core router passes all traffic between segments until
+  [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) applies the zone policy.
+
 ---
 
 ## Options considered
@@ -194,7 +248,18 @@ v1 covers exactly the actions that fail ADR-0010's test. Resource names below ar
 |---|---|---|
 | `deevnet_iot_device` | A registry entry: name, trust class (`iot` or `iot_vendor`), optional MAC | The calling tenant |
 | `deevnet_iot_wifi_key` | A per-device PPSK key | **The VLAN of the device's trust class.** The tenant can't choose a VLAN, so no tenant network ever reaches the air (ADR-0011 Option B stays rejected). |
-| `deevnet_iot_broker_account` | An MQTT account for the device, with its topic permissions | Topics under the tenant's prefix, `<tenant>/…`. The existing ACLs already follow this: `eds/lightstand/…`. |
+| `deevnet_iot_broker_account` | An MQTT account for the device, with its topic permissions | Topics under the tenant's prefix, `<tenant>/…`. The existing ACLs already follow this: `eds/lightstand/…`. **Devices of trust class `iot` only.** |
+
+**IoT Vendor devices get no broker account.**
+- **The standard forbids the path.** It says *"IoT vendor segment MUST be fully isolated from all
+  internal segments"* and *"MUST NOT access management, storage, tenant, or platform segments"*
+  ([Network Segmentation](/docs/standards/network-segmentation/) §7). The zone policy declares no
+  `iot_vendor -> iot_backend` rule.
+- **So the account would be useless.** A broker account for a vendor device could never be used,
+  and issuing one would imply a path the segment is defined not to have.
+- **What the API does instead:** it refuses `deevnet_iot_broker_account` for a device whose trust
+  class is `iot_vendor`. Such a device gets a `deevnet_iot_wifi_key` on VLAN 31, and outbound
+  internet only.
 
 The `deevnet_` prefix is not just a naming choice. *"Terraform uses a resource type's name to
 determine which provider to use. By convention, resource type names start with their provider's
