@@ -80,8 +80,10 @@ Both management hypervisors run Proxmox VE.
 
 ### Automation Capability
 
-- **Installation**: Manual ISO install (no PXE support for Proxmox)
-- **Post-install**: Ansible configuration via `deevnet.builder` collection
+- **Installation**: Unattended ISO install from `deevnet-image-factory` (embedded answer file,
+  install disk pinned by serial), then two bootstrap scripts rendered from inventory
+- **Post-install**: Ansible: `deevnet.builder` (`proxmox_node_base`, `proxmox_node_storage`) and
+  `deevnet.net` (`proxmox_node_network`, bridge only on this node)
 - **VM provisioning**: Ansible-only (no Terraform for management plane)
 - **Templates**: Packer-built Fedora templates stored locally
 
@@ -183,10 +185,13 @@ For a two-node lab environment:
 
 ## Provisioning Workflow
 
-1. **Manual Proxmox install**: ISO boot, installer wizard
-2. **Ansible post-config**: Apply `deevnet.builder` roles
-3. **Template import**: Upload Packer-built templates
-4. **VM creation**: Clone from templates via Ansible
+1. **Unattended install** from the image factory's ISO
+2. **Bootstrap**: the node's `netconfig` script at the console, then its `configure` script
+3. **Ansible post-config**: node baseline, data-disk storage, API token (manual), VLAN-aware bridge
+4. **Template build**: Packer, straight onto the node
+5. **VM creation**: identity allocated, then cloned from the template via Ansible
+
+The full procedure is [Build Management Plane](/docs/runbook/building-recovery/build-management-plane/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.
 
