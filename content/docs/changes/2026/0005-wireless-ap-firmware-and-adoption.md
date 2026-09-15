@@ -111,15 +111,17 @@ home site.
   the reset-first route is the expected path; confirmed when the window is scheduled.
 - [ ] **Site `autoUpgrade` off** on the reset controller. The 2026-09-10 check was made on the
   controller that has since been wiped.
-- [ ] **Wi-Fi keys and client isolation for `DVNTM-IOT` decided** (added 2026-09-13):
-  - a shared key or per-device PPSK keys mapped to VLAN 30
-  - how IoT clients are kept apart. Omada's Guest Network setting also blocks private address
-    ranges, so it can't be used for devices that reach the broker.
-
-  These are open questions 3 and 4 of
-  [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/). They come first
+- [x] **Wi-Fi keys and client isolation for `DVNTM-IOT` decided.** Both are now settled in
+  [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/), which matters
   because `omada-wireless.yml` creates SSIDs and never rewrites one: whatever phase 1 creates is
   what stays.
+  - **Keys (question 3, decided 2026-09-15):** per-device PPSK keys, each bound to the device's
+    trust-class VLAN, issued through the Deevnet API. Substrate automation issues them until the
+    API can. **This change still has to prove PPSK works on this AP**, including its WPA version;
+    a shared key is the fallback if it does not.
+  - **Isolation (question 4, decided 2026-09-14):** best effort, credentials first. Wireless
+    clients get Guest Network plus an EAP ACL permit for the broker **only if the device test shows
+    it works**; wired devices on VLAN 30 stay unisolated.
 - [ ] `playbooks/omada-wireless.yml` run in plan mode, and its report read.
 - [ ] Laptop on `gi1/0/2`, taking an address from `10.20.99.200–230`, with the three `.bin` files
   already downloaded to it.
