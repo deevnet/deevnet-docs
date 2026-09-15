@@ -133,11 +133,20 @@ The role is a three-letter mnemonic and is **mandatory** — there is no unprefi
 | Code | Class | | Code | Class |
 |---|---|---|---|---|
 | `hyp` | Hypervisor | | `bld` | Builder |
-| `cor` | Core router | | `tdn` | Tenant DNS |
-| `edg` | Edge router | | `tst` | Tenant state |
-| `acc` | Access switch | | `bgw` | Bell gateway |
-| `wap` | Wireless AP | | `rpi` | Raspberry Pi |
-| `mqt` | MQTT broker | | | |
+| `cor` | Core router | | `bgw` | Bell gateway |
+| `edg` | Edge router | | `rpi` | Raspberry Pi |
+| `acc` | Access switch | | `nms` | Network management |
+| `wap` | Wireless AP | | `sob` | Substrate observability |
+| `prv` | Provisioning | | `tob` | Tenant observability |
+| `idn` | Identity | | `msg` | Device messaging |
+
+The domain-VM codes (`nms`, `sob`, `tob`, `prv`, `idn`, `msg`) name what a VM's containers are
+for, not which product runs in them
+([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)).
+
+**Retired, never reused:** `tdn` (Tenant DNS, folded into `idn`), `tst` (Tenant state, folded into
+`prv`) and `mqt` (MQTT broker, folded into `msg`), by
+[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/).
 
 Mnemonics are allocated deliberately, like tenant indices. A new class MUST have its code added
 here in the same change that introduces the host.
