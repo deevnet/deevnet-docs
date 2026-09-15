@@ -67,7 +67,6 @@ The naming standard gives every host a three-letter role mnemonic
 - Mnemonics are *"allocated deliberately"*.
 - *"A new class MUST have its code added here in the same change that introduces the host."*
 
-
 ### Where the Omada controller runs today, and why that has to change
 
 - **It runs on the Builder, `dv00bld001p01`**, the only host in the inventory's `network_controllers`
