@@ -84,17 +84,18 @@ A tenant and its devices reach the platform by **different paths**. The tenant i
 {{< graphviz >}}
 digraph paths {
     graph [
-        rankdir=LR,
+        rankdir=TB,
         splines=ortho,
-        nodesep=0.45,
-        ranksep=0.7,
+        nodesep=0.5,
+        ranksep=0.45,
         fontname="Helvetica",
         fontsize=12,
         bgcolor="#e0e0e0",
         pad=0.2,
         newrank=true,
+        size="6.5,12",
         labelloc=b,
-        label="IoT Vendor (VLAN 31): outbound internet only, nothing internal.\nNo path between a tenant and a device, in either direction: both dial out and meet at the broker."
+        label="IoT Vendor (VLAN 31): outbound internet only, nothing internal.\nNo path between a tenant and a device, in either direction:\nboth dial out and meet at the broker."
     ]
     node [shape=box, style="rounded,filled", fillcolor=white, fontname="Helvetica", fontsize=11, margin="0.15,0.06"]
     edge [arrowsize=0.7, fontname="Helvetica", fontsize=10]
@@ -102,6 +103,7 @@ digraph paths {
     subgraph cluster_fabric {
         label="Tenant fabric\none VRF per tenant"
         style=filled
+        labelloc=t
         fillcolor="#fff3cd"
 
         TenantA [label="tenant A"]
@@ -112,6 +114,7 @@ digraph paths {
     subgraph cluster_devices {
         label="Tenant devices\napplication-owned"
         style=filled
+        labelloc=t
         fillcolor="#fff3cd"
 
         DeviceA [label="device\n(tenant A)"]
@@ -124,31 +127,39 @@ digraph paths {
     subgraph cluster_router {
         label="Core router\nzone policy (CHG-0007)"
         style=filled
+        labelloc=t
+        labeljust=r
         fillcolor="#e0f0ff"
+
+        // Holds the label's corner clear: edges enter the two rules from
+        // above, so the right-justified label sits over this spacer instead.
+        RouterSpacer [label="", style=invis, width=1.9]
 
         RuleTenant [label="tenant_transit ->\nplatform, iot_backend", fontname="Courier", fontsize=10]
         RuleIoT [label="iot ->\niot_backend", fontname="Courier", fontsize=10]
     }
 
     subgraph cluster_services {
-        label="Shared services"
+        label="Shared services\nthe broker's auth hooks call the API (dashed)"
         style=filled
+        labelloc=b
         fillcolor="#e0f0ff"
 
         API [label="Platform (VLAN 25)\nDeevnet API"]
         Broker [label="IoT Backend (VLAN 35)\nbroker (VerneMQ)"]
     }
 
-    // Top-to-bottom order within each column: A above B, tenants above devices,
-    // Platform above IoT Backend.
+    // Rows, top to bottom. Left to right within a row: tenant A, tenant B,
+    // then their devices; the tenant rule and Platform on the left.
     { rank=same; TenantA; TenantB; DeviceA; DeviceB }
     { rank=same; ExitNode; IoT30 }
-    { rank=same; RuleTenant; RuleIoT }
+    { rank=same; RuleTenant; RuleIoT; RouterSpacer }
     { rank=same; API; Broker }
-    TenantB -> TenantA [style=invis]
-    TenantA -> DeviceB [style=invis]
-    DeviceB -> DeviceA [style=invis]
+    TenantA -> TenantB [style=invis]
+    TenantB -> DeviceA [style=invis]
+    DeviceA -> DeviceB [style=invis]
     RuleTenant -> RuleIoT [style=invis]
+    RuleIoT -> RouterSpacer [style=invis]
     API -> Broker [style=invis]
 
     TenantA -> ExitNode
@@ -163,7 +174,7 @@ digraph paths {
     IoT30 -> RuleIoT
     RuleIoT -> Broker
 
-    Broker -> API [style=dashed, constraint=false, xlabel="auth hooks  "]
+    Broker -> API [style=dashed, constraint=false]
 }
 {{< /graphviz >}}
 

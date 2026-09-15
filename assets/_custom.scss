@@ -303,3 +303,22 @@
     }
   }
 }
+
+// -----------------------------------------------------------------------------
+// Graphviz Diagrams — keep them inside the text column
+// -----------------------------------------------------------------------------
+//
+// Viz.js emits the SVG at its natural size in points, which can be wider than
+// the column and spill under the table of contents. Cap it at the column width
+// and let the viewBox scale it down in proportion.
+
+.graphviz-diagram {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
