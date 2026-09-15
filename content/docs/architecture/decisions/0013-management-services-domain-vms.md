@@ -66,7 +66,7 @@ The naming standard gives every host a three-letter role mnemonic
 ([Naming](/docs/standards/naming/) §3.4):
 - Mnemonics are *"allocated deliberately"*.
 - *"A new class MUST have its code added here in the same change that introduces the host."*
-- The sequence *"distinguishes instances of the same role at the same site"* (§3.5).
+
 
 ### Where the Omada controller runs today, and why that has to change
 
@@ -156,10 +156,10 @@ All run on `dv02hyp001p01`. Host names are proposed (§4).
 | Host | Domain | Segment | Containers | Serves |
 |---|---|---|---|---|
 | `dv02nms001v01` | **Network management** | management (VLAN 99) | the Omada controller; later network monitoring and config backup | the substrate |
-| `dv02obs001v01` | **Substrate observability** | management (VLAN 99) | substrate logs and metrics | the substrate |
+| `dv02sob001v01` | **Substrate observability** | management (VLAN 99) | substrate logs and metrics | the substrate |
 | `dv02prv001v01` | **Provisioning** | Platform (VLAN 25) | the Deevnet API and its database (ADR-0012); the tenant state store, folded in (§6) | tenants |
 | `dv02idn001v01` | **Identity** | Platform (VLAN 25) | tenant DNS, folded in (§6); later an LDAP or Active Directory–compatible directory | tenants, and operators, since management can reach Platform |
-| `dv02obs002v01` | **Tenant observability** | Platform (VLAN 25) | tenant-shared logs and metrics | tenants |
+| `dv02tob001v01` | **Tenant observability** | Platform (VLAN 25) | tenant-shared logs and metrics | tenants |
 | `dv02msg001v01` | **Device messaging** | IoT Backend (VLAN 35) | the VerneMQ broker and its auth database (ADR-0012); later other device rendezvous services | devices |
 
 - **Provisioning** holds what a tenant's `terraform apply` talks to: the API that registers devices,
@@ -186,23 +186,24 @@ All run on `dv02hyp001p01`. Host names are proposed (§4).
 
 ### 4. Naming
 
-- **New role mnemonics:** `nms` (network management), `obs` (observability), `prv` (provisioning),
-  `idn` (identity) and `msg` (device messaging).
+- **New role mnemonics:** `nms` (network management), `sob` (substrate observability), `tob` (tenant
+  observability), `prv` (provisioning), `idn` (identity) and `msg` (device messaging).
 - **Each code joins the naming standard's §3.4 table in the change that introduces its host**, as
   the standard requires, not in this record.
-- **The two observability VMs share the role `obs`** and are told apart by sequence: `001` for the
-  substrate on management, and `002` for tenants on Platform.
+- **The two observability VMs get separate roles:** `sob` for the substrate on management, and `tob`
+  for tenants on Platform. They serve different audiences on different segments, so they are
+  different classes of host, not two instances of one. The `t` prefix follows `tdn` and `tst`.
 - **Retired codes:** `tdn`, `tst` and `mqt` retire when their services fold into `idn`, `prv` and
   `msg`.
 
 ### 5. Observability comes in two flavours
 
-- **Substrate observability (`obs001`) sits on management.** IoT Backend can't reach management
+- **Substrate observability (`sob`) sits on management.** IoT Backend can't reach management
   (§9), and no rule lets Platform reach it. So it **collects by pull** from Platform and IoT
   Backend, over `management -> platform` and `management -> iot_backend`, both already declared.
   Hosts on management can push to it. *This follows from the zone policy; the collection tooling is
   not yet chosen.*
-- **Tenant observability (`obs002`) sits on Platform.** Tenants reach it over
+- **Tenant observability (`tob`) sits on Platform.** Tenants reach it over
   `tenant_transit -> platform`, which is already declared.
 
 ### 6. Tenant DNS and the tenant state store fold in
