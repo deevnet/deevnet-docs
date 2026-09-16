@@ -56,7 +56,8 @@ realization and the single-node-to-cluster trajectory.
 ## Perimeter handoff
 
 The tenant fabric hands off to the core router at a **perimeter transit boundary**. The core
-router does not route between individual tenants and does not serve tenant DHCP; it sees only the
+router keeps no VLAN interface per tenant, does not route between individual tenants, and does not
+serve tenant DHCP; it sees only the
 **transit network** and provides perimeter services on it:
 
 | Function | Owned by |
@@ -122,7 +123,7 @@ Cross-tenant communication requires explicit rules:
 Tenants may need access to substrate-level shared services. Access is granted at the perimeter,
 from the tenant transit network to services on the **platform segment**. Tenants never reach the
 management segment directly. See
-[Shared Tenant Services](/docs/architecture/substrate/management-plane/shared-tenant-services/).
+[Shared Tenant Services](/docs/architecture/tenant/shared-services/).
 
 | Service | Access Pattern |
 |---------|----------------|
