@@ -103,3 +103,8 @@ question is written down, not when it is answered.
   messaging — each on exactly one network segment, so no VM bridges two zones; the Omada controller
   moves off the roaming Builder into the network management VM, and tenant DNS and state fold into
   the identity and provisioning VMs; extends ADR-0009.
+- [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) —
+  *Proposed.* Once device secrets live in tenant state, that state is data that can't be
+  re-derived. The store's data moves to a data disk and is copied on every write to separate on-site
+  hardware, and the API's database is backed up on a schedule. It closes ADR-0012 §5's re-flash
+  exception, which ADR-0013 had made a single-VM event. Extends ADR-0007 and ADR-0013.
