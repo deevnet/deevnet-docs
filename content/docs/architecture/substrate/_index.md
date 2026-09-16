@@ -18,42 +18,42 @@ For site definitions (home, mobile) and the independence model, see [Architectur
 block-beta
     columns 2
     hdr["Substrate Infrastructure"]:2
-    core["Core Services"]:1 cored["Network · Compute · Storage¹"]:1
-    ext["Extended Services"]:1 extd["Observability · Automation · Access"]:1
+    net["Network"]:1 netd["Routing · Firewall · DNS · DHCP · NAT · Switching · Wireless"]:1
+    cmp["Compute · Storage¹"]:1 cmpd["Hypervisors · Persistent storage"]:1
+    mcp["Management / Control Plane"]:1 mcpd["Substrate Services · Shared Tenant Services"]:1
 {{< /mermaid >}}
 
-¹ Storage is a planned future addition to core services.
+¹ Shared storage is a planned future addition.
 
-### Core Services
+### Network
 
-The foundational infrastructure that must survive loss of all other tiers:
+Connectivity, segmentation, and the foundational network services. Nothing else in the substrate
+has to be running for these to work:
+- **Routing and gateway**: NAT, inter-segment routing, upstream connectivity
+- **Firewall**: segment isolation and egress policy
+- **DNS**: authoritative resolution for the substrate zone
+- **DHCP**: static mappings for known hosts, dynamic pools per segment
+- **Switching and wireless**: VLAN trunking and wireless access
 
-**Network** — Connectivity, segmentation, and foundational network services:
-- **Routing and gateway** — NAT, inter-segment routing, upstream connectivity
-- **Firewall** — Segment isolation and egress policy
-- **DNS** — Authoritative resolution for the substrate zone
-- **DHCP** — Static mappings for known hosts, dynamic pools per segment
-- **Switching and wireless** — VLAN trunking and wireless access
-
-**Compute** — Virtualization hosts for management-plane and tenant workloads:
-- Extended services (observability, automation, access)
-- Tenant application VMs
-
-**Storage**¹ — Shared and persistent storage for substrate consumers.
-
-See [Networking](networking/) for substrate networking services (DNS, DHCP, firewall, VLAN routing, switching).
+See [Networking](networking/) for substrate networking services.
 See [Network Segmentation](/docs/architecture/network-segmentation/) for the segment model and trust hierarchy.
-See [Core Services](management-plane/core-services/) for core platform details.
 
-### Extended Services
+### Compute and Storage
 
-Additive services providing observability, automation, and access — runs on the management hypervisor:
-- Centralized logging and metrics
-- Automation runners and CI/CD
-- Jump hosts and access tooling
+**Compute** is the virtualization hosts: a management hypervisor for the management / control
+plane, and tenant hypervisors for tenant workloads. See [Compute](compute/).
 
-See [Management Plane](management-plane/) for how these services are provisioned and managed.
-See [Extended Services](management-plane/extended-services/) for extended management services.
+**Storage**¹ is shared and persistent storage for substrate consumers. See [Storage](storage/).
+
+### Management / Control Plane
+
+The services the substrate runs on its management hypervisor, for two audiences:
+- **Substrate Services**, for the substrate itself: network device management and substrate
+  observability
+- **Shared Tenant Services**, for tenants and their devices: provisioning, identity (tenant DNS),
+  tenant observability and device messaging
+
+See [Management / Control Plane](management-plane/) for the model, and how tenants consume it.
 
 ---
 
@@ -63,4 +63,4 @@ See [Extended Services](management-plane/extended-services/) for extended manage
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
 - [Naming and Addressing](naming-and-addressing/) — How hosts and workloads get addresses and names, and where DNS authority changes hands
-- [Management Plane](management-plane/) — Management plane overview, core and extended services
+- [Management / Control Plane](management-plane/) — Substrate services and shared tenant services

@@ -195,5 +195,5 @@ with no generated file.
 ## Related Standards
 
 - [MAC Address Format](/docs/standards/mac-address-format/) - Formatting rules (lowercase, colons)
-- [Extended Services](/docs/architecture/substrate/management-plane/extended-services/) -
-  Extended management services architecture and network identity
+- [Management / Control Plane](/docs/architecture/substrate/management-plane/#network-identity) -
+  Network identity of management / control plane hosts

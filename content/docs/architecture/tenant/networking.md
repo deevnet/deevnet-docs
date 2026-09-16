@@ -120,14 +120,17 @@ Cross-tenant communication requires explicit rules:
 ## Access to Shared Services
 
 Tenants may need access to substrate-level shared services. Access is granted at the perimeter,
-from the tenant transit network to specific management-segment services:
+from the tenant transit network to services on the **platform segment**. Tenants never reach the
+management segment directly. See
+[Shared Tenant Services](/docs/architecture/substrate/management-plane/shared-tenant-services/).
 
 | Service | Access Pattern |
 |---------|----------------|
-| **DNS** | Tenants → substrate DNS |
+| **DNS** | Tenants → substrate DNS, and their own zone on the tenant DNS service |
 | **Internet** | Tenants → core router NAT (outbound only) |
 | **Artifacts** | Tenants → artifact server (during provisioning) |
-| **Observability** | Tenants → management plane (logs, metrics) |
+| **Provisioning** | Tenants → state store and platform API |
+| **Observability** | Tenants → tenant observability (logs, metrics) |
 
 ---
 

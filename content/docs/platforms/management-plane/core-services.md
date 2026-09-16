@@ -5,7 +5,7 @@ weight: 3
 
 # Core Services Implementation
 
-How each site implements the DNS authority model defined in [Core Services Architecture](/docs/architecture/substrate/management-plane/core-services/).
+How each site implements the DNS authority model defined in [Builder → Authority Transition](/docs/architecture/builder/#authority-transition).
 
 ---
 

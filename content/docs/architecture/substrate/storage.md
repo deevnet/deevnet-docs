@@ -11,7 +11,7 @@ Defines the shared and persistent storage model for Deevnet sites.
 
 ## Status
 
-**Shared** storage is a **planned future addition** to core services. This document will be expanded as the storage architecture is defined.
+**Shared** storage is a **planned future addition** to the substrate. This document will be expanded as the storage architecture is defined.
 
 ---
 
