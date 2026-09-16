@@ -1,6 +1,6 @@
 ---
 title: "Network Segmentation"
-weight: 3
+weight: 4
 ---
 
 # Network Segmentation

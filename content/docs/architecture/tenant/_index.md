@@ -1,6 +1,6 @@
 ---
 title: "Tenant"
-weight: 6
+weight: 3
 bookCollapseSection: true
 ---
 

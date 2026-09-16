@@ -125,7 +125,7 @@ are addressed by cloud-init from the tenant fabric — see
 [Tenant Fabric](/docs/platforms/tenant-compute/tenant-hypervisors/tenant-fabric/).
 
 `10.20.99.79` sits in the `.70-.79` experimental/lab range of the
-[addressing plan](/docs/architecture/addressing/), clear of both the `.2-.49`
+[addressing plan](/docs/architecture/naming-and-addressing/#host-addressing-ranges), clear of both the `.2-.49`
 static infrastructure range and the `.200-.230` DHCP pool. Override with
 `build_ip`, or set `build_use_dhcp=true` to go back to a lease.
 

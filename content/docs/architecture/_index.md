@@ -118,18 +118,18 @@ The **builder** is a small server that can be connected to either site to create
 
 The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. See [Substrate](substrate/) for infrastructure layers and authority modes.
 
+### Tenant
+
+A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
+
 ### Network Segmentation
 
 The network segmentation model that divides each substrate into isolated broadcast domains, enforcing trust boundaries and traffic separation at the network layer. See [Network Segmentation](network-segmentation/) for segment types, trust hierarchy, default routing policy, and authority mode transitions.
 
-### Addressing
+### Naming and Addressing
 
-The IP addressing convention for Deevnet sites. See [Addressing](addressing/) for VLAN-based subnets, host ranges, gateway conventions, and WAN operation modes.
+How each site is addressed, and how hosts and tenant workloads get their addresses and names. See [Naming and Addressing](naming-and-addressing/) for the site address plan, WAN operation modes, the chain from declared identity to address and name, and the two naming authorities.
 
 ### Limits
 
 What the hardware underneath the architecture cannot do — no out-of-band management, nothing clustered, local storage, and a single instance of every network device. Deevnet is designed to be rebuilt quickly rather than to stay up through a failure. See [Limits](limits/) for each constraint, what compensates for it, and what lifting it would take.
-
-### Tenant
-
-A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.

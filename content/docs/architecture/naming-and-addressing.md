@@ -1,18 +1,118 @@
 ---
 title: "Naming and Addressing"
-weight: 4
+weight: 5
+aliases:
+  - /docs/architecture/addressing/
+  - /docs/architecture/substrate/naming-and-addressing/
 ---
 
 # Naming and Addressing
 
-How a thing on this estate gets an address, and how it gets a name.
+How a site is addressed, how each thing on it gets an address, and how it gets a name.
 
-Both answers are deliberately boring for the substrate and deliberately different for tenants. This
-page explains the chain, where authority changes hands, and what each half is allowed to write.
+The plan is fixed per site. How a thing gets an address and a name from that plan is deliberately
+boring for the substrate and deliberately different for tenants. This page sets out the plan, then
+the chain from declaration to address and name, where authority changes hands, and what each side
+is allowed to write.
 
 ---
 
-## The substrate chain
+## The Site Address Plan
+
+### Site Blocks
+
+Each site is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
+
+| Site | Address Block |
+|------|---------------|
+| **home** | 10.10.0.0/16 |
+| **mobile** | 10.20.0.0/16 |
+
+The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
+
+- The second octet identifies the site
+- The third octet matches the VLAN ID for that segment
+- Each segment subnet is a /24 within the site's /16
+
+This creates a predictable, self-documenting address scheme where any IP immediately reveals which site and segment it belongs to.
+
+#### Splitting the Site Block
+
+The pattern above describes **substrate segments**, where the third octet is a VLAN ID. Tenant
+overlays are not VLANs, so they cannot be described by it. Each site's `/16` is therefore split,
+per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
+
+| Block (mobile) | Purpose |
+|---------------|---------|
+| `10.20.0.0/17` | Substrate segments — third octet = VLAN ID, as above |
+| `10.20.128.0/18` | Tenant overlay subnets — `10.20.{128+n}.0/24` for tenant index `n` |
+| `10.20.255.0/24` | Tenant fabric loopbacks / VTEP identity |
+
+home mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
+exactly **one aggregate per site** to route — which matters in home dock mode, where home already
+routes `10.20.0.0/16` to mobile and that route keeps covering tenants unchanged.
+
+So the third octet also tells you which side of the line an address is on: below `128` is a
+substrate segment, `128` and above is a tenant overlay.
+
+### Reserved VLAN Ranges
+
+| VLAN Range | Purpose |
+|------------|---------|
+| 10-40 | Core segment types (trusted, storage, platform, IoT, guest) |
+| 50-59 | Tenant fabric transport (transit, underlay) — *not* a network per tenant |
+| 60-69 | Reserved for future segment types |
+| 70-79 | Experimental/lab segments |
+| 99 | Management |
+
+### Gateway Convention
+
+Each subnet uses `.1` as the gateway address:
+
+- `10.10.30.1` — home IoT segment gateway
+- `10.20.99.1` — mobile management segment gateway
+
+### Host Addressing Ranges
+
+| Range | Purpose |
+|-------|---------|
+| .1 | Gateway (core router VLAN interface) |
+| .2-.49 | Static infrastructure hosts |
+| .50-.59 | Tenant-reserved addresses |
+| .60-.69 | Reserved for future use |
+| .70-.79 | Experimental/lab use — `.79` is the transient image-build address (see [tenant hypervisors](/docs/platforms/tenant-compute/tenant-hypervisors/)) |
+| .100-.200 | DHCP dynamic pools (where applicable) |
+
+Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive static assignments in the low range. DHCP pools are used for segments with dynamic devices (trusted, IoT, guest).
+
+---
+
+## WAN Operation Modes
+
+The mobile site operates in two WAN modes depending on physical location:
+
+### Travel Mode
+
+mobile operates behind `dv02edg001p01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
+
+- `dv02edg001p01` WAN: DHCP from upstream
+- `dv02edg001p01` LAN: 192.168.8.0/24 (unchanged, travel-router-local)
+- All mobile traffic NATs through `dv02edg001p01`
+
+### Home Dock Mode
+
+When mobile is co-located with home, the mobile WAN connects to home's trusted segment:
+
+- mobile WAN IP: assigned from 10.10.10.0/24 (home trusted)
+- home routes 10.20.0.0/16 to mobile's WAN IP
+- NAT is disabled on mobile's WAN — traffic flows with clean source IPs
+- Both sites can communicate with full visibility
+
+This allows mobile devices to be reachable from home without double-NAT, while mobile retains its own addressing and can undock at any time.
+
+---
+
+## How a Substrate Host Gets Its Address and Name
 
 Nothing on the substrate picks its own address, and nothing invents its own name. A single declared
 identity produces both:
@@ -38,7 +138,7 @@ The consequence is that **a host's address is a fact about its declaration, not 
 booted in**. Rebuild it, and it comes back on the same address with the same name, because nothing
 along that chain was decided at runtime.
 
-### Reservations, not static configuration
+### Reservations, Not Static Configuration
 
 Substrate hosts are addressed by **reservation**: they ask for an address, and the address service
 always gives them the same one because it recognises their hardware address. They are not configured
@@ -54,7 +154,7 @@ its declaration does not get its reserved address. It gets whatever the dynamic 
 which is a working address that no name points at — a failure that looks like success until
 something tries to reach the host by name.
 
-### Segments differ
+### Segments Differ
 
 Not every segment is reservation-only. Segments carrying transient devices have dynamic pools;
 management and platform segments do not, because everything on them is declared. Where a pool and
@@ -63,7 +163,7 @@ cannot collide.
 
 ---
 
-## Tenants address themselves
+## Tenants Address Themselves
 
 Tenant workloads do **not** use the substrate's address service, and the reason is structural
 rather than preferential: a tenant's network is an overlay owned by the tenant compute domain
@@ -86,7 +186,7 @@ to the overlay purely for symmetry.
 
 ---
 
-## Two naming authorities
+## Two Naming Authorities
 
 Names split along the same seam as
 [the tenant contract](/docs/architecture/tenant/): the substrate names the things it runs, and a
@@ -115,7 +215,7 @@ conflict rather than managing it.
 
 ---
 
-## How a query reaches a tenant name
+## How a Query Reaches a Tenant Name
 
 This is the part worth being precise about, because the common shorthand is misleading.
 
@@ -134,7 +234,7 @@ sequenceDiagram
     R->>C: answer
 {{< /mermaid >}}
 
-### Forwarding is not referral
+### Forwarding Is Not Referral
 
 The resolver is configured with a rule of the form *"for this zone, ask that server"*. It is **not**
 following a delegation: no parent zone contains a referral to the tenant's servers, and the
@@ -160,7 +260,7 @@ inaccurate as a description of mechanism, and the difference is where the surpri
 
 ---
 
-## Two write paths
+## Two Write Paths
 
 The same split appears in how records get written.
 
@@ -184,7 +284,7 @@ credential. The namespace boundary is enforced; the boundary *within* a zone is 
 
 ---
 
-## Reverse names
+## Reverse Names
 
 Reverse lookup follows the same shape. Each tenant gets a reverse zone alongside its forward zone,
 derived from the same tenant index, forwarded the same way, and populated — or not — by the tenant.
@@ -192,7 +292,7 @@ Substrate reverse records are generated from inventory with everything else.
 
 ---
 
-## What this arrangement guarantees
+## What This Arrangement Guarantees
 
 - **A rebuilt host returns to its own address and name**, because both derive from a declaration
   rather than from anything that happened at runtime.

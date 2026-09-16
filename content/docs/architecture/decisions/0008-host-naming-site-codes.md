@@ -625,7 +625,7 @@ in — each step lands on its own, verified, before the next begins:
   §3.3's rules on when a role is optional no longer apply, because the mnemonic is mandatory and
   fixed width; and §6.1's combined-inventory option stops being a trap. Every example in the
   document changes.
-- The site tables in [Addressing](/docs/architecture/addressing/) and the
+- The site tables in [Addressing](/docs/architecture/naming-and-addressing/) and the
   [Architecture index](/docs/architecture/), and the site names in
   [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/), follow.
 - The tenant registry's zone pattern `<tenant>.<site>.deevnet.net` resolves to
