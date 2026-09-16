@@ -47,7 +47,7 @@ Reset only when the switch is unreachable by every route, or its configuration i
 | | |
 |---|---|
 | Device | `dv02acc001p01`, TP-Link Omada SG2218, hardware 1.20 |
-| Firmware | `1.20.1 Build 20240115` as of 2026-09-10; `1.20.24` staged, upgrade planned under [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — see [firmware upgrade](#firmware-upgrade) |
+| Firmware | `1.20.24 Build 20260509` since 2026-09-16 ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)), in `image1.bin`; `1.20.1` kept in `image2.bin`. See [firmware upgrade](#firmware-upgrade). |
 | Managed address | 10.20.99.10, gateway 10.20.99.1 |
 | Uplink to router | `gigabitEthernet 1/0/1`, native VLAN 999 |
 | Builder port | `gigabitEthernet 1/0/16`, access VLAN 99 |
@@ -167,13 +167,13 @@ with — see [firmware upgrade](#firmware-upgrade).
 ## Firmware upgrade
 
 This is not a recovery step. It is a planned change, made while the switch is reachable and its
-configuration is intact. The upgrade to 1.20.24 is planned as [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/). Nothing is reset, the configuration is kept, and the playbook does
+configuration is intact. The upgrade to 1.20.24 was done under [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) on 2026-09-16. Nothing is reset, the configuration is kept, and the playbook does
 not need to run.
 
 | | |
 |---|---|
 | Hardware | SG2218 **1.20**, per `show system-info`. A label reading V1.26 takes the same firmware. |
-| Running | `1.20.1 Build 20240115` in `image2.bin`, as of 2026-09-10. `image1.bin` holds the factory `1.1.3`. |
+| Running | `1.20.24 Build 20260509` in `image1.bin`, since 2026-09-16. `image2.bin` holds `1.20.1`, the rollback. Before that, 1.20.1 booted from `image2.bin` and `image1.bin` held the factory `1.1.3`. |
 | Target | `1.20.24 Build 20260509` |
 | Route | **One hop.** None of the eight V1.20 builds since declares a minimum prior version or is flagged irreversible. |
 | File | `http://artifacts.mobile.deevnet.net/firmware/sg2218/`, pinned in `artifacts_to_fetch` |
@@ -222,6 +222,11 @@ backup image after upgrading is completed" unchecked**. With it unchecked, the u
 backup image and the switch keeps running 1.20.1. A failed write then costs nothing, and the
 outage happens when you choose rather than as a side effect of the upload. The write takes
 several minutes; leave the switch alone while it runs.
+
+If the box is checked by mistake, nothing is lost, but the outage starts as soon as the write
+finishes. On 2026-09-16 the switch then rebooted into the new image and made it the **Next
+Startup Image** as well, so step 3 was already done. Confirm that with `show image-info` rather
+than assuming it.
 
 ### 3. Boot from it
 
