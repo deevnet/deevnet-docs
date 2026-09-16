@@ -128,8 +128,9 @@ bridged or routed into the tenant's VRF.
     controller network, an SSID or PPSK entry, and node-local bridge state that SDN does not manage.
   - There is no documented Proxmox path into an EVPN VNet, and no DHCP there.
   - Devices inside a tenant are unreachable from management for diagnosis or recovery.
-  - PPSK is WPA/WPA2 only. *As validated on 2026-09-14, none of the sources checked states which WPA
-    versions PPSK supports ([Open question 3](#open-questions)). This remains unconfirmed.*
+  - PPSK is WPA/WPA2 only. *(On 2026-09-14 no source stated the WPA version; a device test on
+    2026-09-15 settled it — PPSK is WPA2 under the hood on the site's AP, see
+    [Open question 3](#open-questions).)*
   - Its keys would live in the controller's database, which ADR-0009 calls derived state.
   - With a single stored list of keys, a bad reconcile takes every device off the network at once.
     Each NVS-provisioned device then needs a USB visit.
@@ -260,7 +261,7 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
    - A shared key per segment means one lost device exposes the key for every device on it, and
      rotation means a USB visit to every NVS-provisioned device.
    - Per-device PPSK keys, all mapped to the segment's own VLAN, give per-device revocation without
-     per-tenant VLANs. They are WPA2-only. *(Unconfirmed as of 2026-09-14; see below.)*
+     per-tenant VLANs. *(Proven on the AP 2026-09-15; see below.)*
    - PPSK profile endpoints appear in TP-Link's published Open API specification, but coverage on
      the site's controller (6.3.0.45) is unverified, and ADR-0009 requires the documented API.
    - **Found 2026-09-14:**
@@ -286,9 +287,14 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      - **Until the API can issue keys**, substrate automation issues them, because a PPSK write
        needs the same controller permission as changing the site's wireless configuration. That is
        a recurring substrate act, and it is accepted as temporary rather than designed in.
-     - **Still to prove on the device:** PPSK on this AP, and which WPA versions it allows. Both
-       are untested, and [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)
-       carries the test. A shared key stays the fallback if the AP refuses PPSK.
+     - **Proven on the device, 2026-09-15 ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6).**
+       On the EAP650-Outdoor at firmware 1.3.11, a PPSK-without-RADIUS profile with two keys bound
+       to VLAN 30 and VLAN 31 was created through the documented Open API; a client joined with
+       each key in turn and landed on the matching subnet (10.20.30.x, then 10.20.31.x). **The key
+       decides the VLAN on this AP.** The shared-key fallback is no longer needed. Two API details
+       the test settled: PPSK is WPA2 under the hood (a `security: 4` SSID also requires the
+       `pskSetting` encryption block, not only `ppskSetting`), and a per-key VLAN needs no
+       controller network object — it is raw 802.1Q tagging that OPNsense serves DHCP for.
 4. **How are clients isolated on the IoT SSID?**
    - Omada's per-SSID isolation is its Guest Network setting, which also blocks all private address
      ranges ([Omada](https://support.omadanetworks.com/us/document/12928/)). It can't be used for

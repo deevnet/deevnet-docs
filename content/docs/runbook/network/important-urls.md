@@ -24,8 +24,9 @@ where the Notes say otherwise.
 | Service | By name | By IP | Notes |
 |---|---|---|---|
 | **OPNsense** (core router) | `https://dv02cor002p01.mobile.deevnet.net` | `https://10.20.99.1` | Also `dns.`, `dhcp.`, `gateway.`. Automation uses an API key (`vault_opnsense_api_key`); no web UI login is kept in the vault. |
-| **Omada controller** | `https://dv00bld001p01.mobile.deevnet.net:8043/independent/index.html#login` | `https://10.20.99.95:8043/independent/index.html#login` | 6.3 moved the login from `/login`. The Owner login is `vault_omada_owner_*`; automation uses `vault_omada_admin_*`. |
-| Omada API docs | `https://dv00bld001p01.mobile.deevnet.net:8043/swagger-ui/index.html` | `https://10.20.99.95:8043/swagger-ui/index.html` | The spec the running controller publishes: `/v3/api-docs/00%20All` ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)) |
+| **Omada controller** | `https://omada.mobile.deevnet.net:8043/independent/index.html#login` | `https://10.20.99.40:8043/independent/index.html#login` | On `dv02nms001v01` ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). 6.3 moved the login from `/login`. The Owner login is `vault_omada_owner_*`; automation uses `vault_omada_admin_*` and the Open API client `vault_omada_openapi_client_*`. |
+| Omada API docs | `https://omada.mobile.deevnet.net:8043/swagger-ui/index.html` | `https://10.20.99.40:8043/swagger-ui/index.html` | The spec the running controller publishes: `/v3/api-docs/00%20All` ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)) |
+| Omada controller — cold spare | `https://dv00bld001p01.mobile.deevnet.net:8043/` | `https://10.20.99.95:8043/` | On the builder. **Deliberately stopped and disabled** (`omada-controller.service`), data kept. Nothing is adopted into it. Do not start it as a substitute — a second controller is something a device can adopt into by mistake. |
 | **Access switch** | `https://dv02acc001p01.mobile.deevnet.net` | `https://10.20.99.10` | Login `vault_switch_*`. A factory-reset switch is at `192.168.0.1` if nothing hands it an address. |
 | **Wireless AP** | `https://dv02wap001p01.mobile.deevnet.net` | `https://10.20.99.9` | Standalone web UI while not adopted. A factory-reset AP is at `192.168.0.254`. |
 | Travel router | `http://dv02edg001p01.mobile.deevnet.net` | `http://192.168.8.1` | The WAN side, not on a site VLAN |
@@ -53,7 +54,7 @@ Reach these by SSH as `a_autoprov`.
 
 | Host | By name | By IP | What it is |
 |---|---|---|---|
-| Builder (roaming) | `dv00bld001p01.mobile.deevnet.net` | `10.20.99.95` | Control node: Ansible, the Omada controller, the artifact server |
+| Builder (roaming) | `dv00bld001p01.mobile.deevnet.net` | `10.20.99.95` | Control node: Ansible and the artifact server. Also holds the stopped cold-spare Omada controller. |
 | Provisioner VMs | `dv02bld001v01…`, `dv02bld002v01…` | `10.20.99.97`, `10.20.99.96` | Management-plane build VMs |
 | SDR Pi | `dv02rpi001p01.mobile.deevnet.net` (also `sdr.`) | `10.20.30.11` | IoT; no HTTP answered on 2026-09-11 |
 | Bell gateway | `dv02bgw001e01.mobile.deevnet.net` (also `mabell.`, `bellgw.`) | `10.20.30.50` | IoT (ESP32); no HTTP answered on 2026-09-11 |

@@ -31,8 +31,26 @@ not a footnote.
 | Device | `dv02wap001p01`, TP-Link EAP650-Outdoor |
 | Managed address | 10.20.99.9, gateway 10.20.99.1 |
 | Switch port | `gigabitEthernet 1/0/4` — trunk, native VLAN 99, allowed 10, 30, 31, 40, 99 |
-| Controller | Omada, at `https://10.20.99.95:8043` on `dv00bld001p01` |
-| Factory address | `192.168.0.254`, `admin`/`admin` — static, **not** DHCP |
+| Controller | Omada, at `https://10.20.99.40:8043` on `dv02nms001v01` |
+| Factory / reset address | `10.20.99.9` via DHCP reservation — see below; `192.168.0.254` only as fallback |
+
+{{< hint info >}}
+**A reset AP comes back on `10.20.99.9`, because it does DHCP.** A factory-default
+EAP650-Outdoor requests DHCP first and only falls back to a static `192.168.0.254` if nothing
+answers. OPNsense reserves `40:ED:00:6F:F9:D4 → 10.20.99.9`, so once the reset AP finishes
+booting and brings up its DHCP client, Kea hands it that reserved address — its normal managed
+address, reached directly, no re-addressing needed. *(Confirmed on the CHG-0005 reset,
+2026-09-15: the AP came up `firstLogin: true` on `10.20.99.9` with an active Kea lease.)*
+
+Two wrinkles to expect during the reset:
+- **Mid-boot it may briefly sit on `192.168.0.254`** (serving only a `boot` splash page) before
+  its DHCP client is up. That is transient; wait for it to finish and it moves to `10.20.99.9`.
+- **A factory-default AP serves HTTP, not HTTPS**, until first login is completed; after first
+  login it is back on HTTPS.
+
+Only if DHCP does not answer will it stay on `192.168.0.254`, which the management segment does
+not route — then give the builder a temporary `192.168.0.1/24` on `enp4s0` to reach it.
+{{< /hint >}}
 
 ---
 
@@ -49,7 +67,7 @@ segment by default.
 | Port | VLAN | Use |
 |---|---|---|
 | `gigabitEthernet 1/0/2` | 99 access | **Free — this is the one to use.** Reserved for exactly this. |
-| `gigabitEthernet 1/0/16` | 99 access | `dv00bld001p01` — the builder, which runs the Omada controller |
+| `gigabitEthernet 1/0/16` | 99 access | `dv00bld001p01` — the builder, which runs Ansible and the artifact server |
 | `gigabitEthernet 1/0/15` | trunk, native 99 | `dv02hyp001p01` — a trunk since the MQTT broker needed `iot_backend` (35). Not an access port. |
 
 {{< hint warning >}}
@@ -61,7 +79,7 @@ other free port gets a link light and nothing else, which reads exactly like a d
 `1/0/2` is declared and held empty for this, and it is the **only** spare untagged-99 port on
 the switch. `1/0/15` stopped being an access port when the MQTT broker needed `iot_backend`,
 which leaves `1/0/16` as the only other one — and that is the builder. Borrowing it would take
-the Omada controller off the network at the moment you need it.
+Ansible and the artifact server off the network at the moment you need them.
 {{< /hint >}}
 
 The port is declared in `host_vars/dv02acc001p01.yml`, first in the access list so that it is
@@ -97,7 +115,7 @@ not the AP:
 
 ```bash
 ping -c2 10.20.99.1          # core router
-curl -k https://10.20.99.95:8043   # Omada controller on the builder
+curl -k https://10.20.99.40:8043/api/info   # Omada controller on dv02nms001v01
 ```
 
 ---
@@ -120,15 +138,27 @@ Native VLAN 99 with 10, 30, 31, 40 and 99 allowed. If that is wrong, fix the swi
 
 Press and hold the reset button until the AP restarts.
 
-A factory-reset EAP does **not** take a DHCP lease. It comes up on a static
-`192.168.0.254/24`, which is why a laptop or a temporary address on the builder is needed to
-reach it:
+Confirm the reset took, then find the AP. The reset wipes the managed address, so it briefly
+drops off `10.20.99.9`, then **comes back on `10.20.99.9` via its DHCP reservation** once it has
+finished booting. Watch for it to drop and return:
 
 ```bash
-sudo ip addr add 192.168.0.1/24 dev enp4s0
+# during the reset 10.20.99.9 goes dark for ~1 min, then returns as a DHCP lease
+ping -c2 10.20.99.9
 ```
 
-Then browse to `http://192.168.0.254` with `admin`/`admin`.
+If it does not come back on `10.20.99.9` (no DHCP answer), it is on the static fallback
+`192.168.0.254`, which the management segment does not route — give the builder a temporary
+address in that subnet, on the same broadcast domain (untagged VLAN 99):
+
+```bash
+sudo ip addr add 192.168.0.1/24 dev enp4s0      # remove it once the AP is adopted
+```
+
+A factory-default AP serves **HTTP** and forces a first-login account. Log in with
+`admin`/`admin`, set the admin account, and **record it in the vault as
+`vault_wap_standalone_user` / `vault_wap_standalone_password`** in
+`group_vars/network_controllers/vault.yml` — adoption asks for it.
 
 ---
 
@@ -171,20 +201,26 @@ Take the `.bin`, not the `.zip` — the AP's web UI wants the payload, and the e
 
 ### Reaching the AP to upload
 
-A reset AP is on `192.168.0.254`, which the management segment does not route. The builder can
-see both — it has 10.20.99.95 and the temporary address from step 3 — so forward a port through
-it rather than re-addressing the laptop:
+The builder can see the AP on either address and is itself the artifact server, so forward both
+through it in one go rather than re-addressing the machine running the browser:
 
 ```bash
-ssh -L 8443:192.168.0.254:443 cdeever@10.20.99.95
+# AP on its DHCP reservation (the normal case):
+ssh -L 8443:10.20.99.9:443 -L 8080:10.20.99.95:80 cdeever@10.20.99.95
+# AP on the static fallback (needs the builder's 192.168.0.1/24 from step 3):
+ssh -L 8443:192.168.0.254:443 -L 8080:10.20.99.95:80 cdeever@10.20.99.95
 ```
 
-Then browse `https://localhost:8443` and upload under **System → Firmware Update**. Download
-the `.bin` to the machine running the browser first; the AP has no route to the artifact server.
+Forward `:80` rather than `:443` for a freshly reset AP that has not completed first login.
+
+Then browse `https://localhost:8443` and upload under **System → Firmware Update**, taking the
+files from `http://localhost:8080/firmware/eap650-outdoor/`. Download each `.bin` to the machine
+running the browser first; the AP has no route to the artifact server, so the upload comes off
+the browser's own disk.
 
 ### Between each hop
 
-The AP reboots and returns to `192.168.0.254`. Confirm the version actually moved before
+The AP reboots and returns to whichever address it was on. Confirm the version actually moved before
 starting the next one — a failed flash that silently keeps the old image turns the next hop
 into a rejected upload rather than a bricked AP, but only if you notice:
 
@@ -196,8 +232,10 @@ Expected sequence: `1.0.4` → `1.2.5` → `1.3.3` → `1.3.11`.
 
 ## 5. Re-adopt into Omada
 
-Set the AP's **inform URL** to the controller so it can be discovered, then adopt it at
-`https://10.20.99.95:8043`. The full sequence is in
+The AP and the controller both sit on VLAN 99, so Omada's L2 discovery normally finds it with
+no inform URL set. If it does not appear, set the AP's **inform URL** to `https://10.20.99.40`
+— **not** the builder, whose controller is a deliberately stopped cold spare. Then adopt it at
+`https://10.20.99.40:8043`. The full sequence is in
 [Omada device adoption](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-12-omada-device-adoption).
 
 Remove the temporary address from the builder once the AP is reachable on the management
