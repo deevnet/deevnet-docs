@@ -7,7 +7,8 @@ weight: 13
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-16, once [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) built all six domain VMs and moved the controller, tenant DNS and the tenant state store onto them |
 | **Date** | 2026-09-14 |
 | **Scope** | How services on the management hypervisor are grouped into VMs and named, where the site's Omada controller officially runs, and the order a rebuild uses them in |
 | **Extends** | [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/), which decided that the controller is the actuator for switch and AP configuration, but not where it runs |
@@ -290,8 +291,12 @@ ADR-0011, which needs the AP adopted.
 
 ## Open questions
 
-1. **What happens to the Builder's `omada_controller` role?** Retire it, or keep it as a recovery
-   fallback for when the management hypervisor is down.
+1. **What happens to the Builder's `omada_controller` role?** **Answered on 2026-09-15: kept as a
+   cold fallback.** The role stays in `deevnet.builder`, and its play excludes management-plane
+   hosts so it can never land on the network management VM. The Builder left `network_controllers`
+   when the inventory changed, and its container was stopped and disabled in
+   [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 10 with its data kept. Putting
+   the Builder back in the group is what a recovery would do.
 2. **How is the new controller's Owner account registered?** **Answered on 2026-09-15**
    ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9): a **local** Owner, not
    cloud-registered.
