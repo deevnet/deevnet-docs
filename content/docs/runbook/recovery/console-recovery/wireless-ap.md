@@ -102,8 +102,11 @@ ansible-playbook playbooks/switch-vlans.yml --limit dv02acc001p01 --tags access
 
 ### Address the laptop
 
-VLAN 99 is **static only** — there is no DHCP pool on the management segment, so a wired laptop
-will not lease an address. Set one by hand from outside the reserved range:
+OPNsense runs Kea DHCP on VLAN 99. Inventory declares a pool of `10.20.99.200–230` on it
+(`group_vars/all/vlans.yml`, marked temporary), and the `opnsense_dhcp` role creates the subnet
+from that. Infrastructure on the segment gets static addresses or reservations. A wired laptop
+should therefore get a lease. If it doesn't, set an address by hand from outside the pool and the
+reserved addresses:
 
 ```bash
 sudo ip addr add 10.20.99.50/24 dev <iface>
