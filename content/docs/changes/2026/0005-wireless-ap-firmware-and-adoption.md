@@ -7,13 +7,13 @@ weight: 5
 
 | | |
 |---|---|
-| **Date** | Not yet scheduled |
+| **Date** | 2026-09-15 |
 | **Change type** | Migration — the AP moves from standalone to controller-managed |
 | **Classification** | Disruptive — wireless is down during each firmware hop and during adoption, and one hop cannot be undone |
 | **Status** | **Complete, 2026-09-15.** The AP runs 1.3.11, is adopted and Connected, and serves the three controller-provisioned SSIDs; `DVNTM` was verified on a client landing on 10.20.10.x. PPSK with per-key VLAN binding was **proven on the AP** (phase 6) and then torn down, leaving `DVNTM-IOT` for a follow-up that provisions per-device keys from inventory. |
-| **Window** | To be scheduled. Operator on site, with a laptop on the operator port `gi1/0/2`. |
+| **Window** | 2026-09-15, one operator window. Operator on site at the AP; the AP was reached and adopted through the builder on VLAN 99, so no laptop on `gi1/0/2` was needed. |
 | **Site** | mobile |
-| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, moving from `dv00bld001p01` to a container in the network management VM `dv02nms001v01` on `dv02hyp001p01` ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). **Not** the access switch. |
+| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, now a container in the network management VM `dv02nms001v01` on `dv02hyp001p01` (moved off `dv00bld001p01`) ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). **Not** the access switch. |
 | **Automation** | Firmware mirrored by inventory #22. Networks, SSIDs and AP settings by `ansible-collection-deevnet.net` `playbooks/omada-wireless.yml`, through the documented Open API ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)). |
 | **Risk** | High. The AP's 1.3.3 hop cannot be undone, and adoption replaces the AP's own configuration with the controller's. |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the hand-set SSIDs this retires; [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — the controller upgrade this was split from; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch, deliberately separate |
@@ -24,13 +24,13 @@ weight: 5
 
 ## Summary
 
-The AP runs firmware 1.0.4, from April 2023. Omada could not push VLAN-tagged SSIDs to it, so
+The AP ran firmware 1.0.4, from April 2023. Omada could not push VLAN-tagged SSIDs to it, so
 [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) left the four SSIDs configured by
-hand in the AP's own web UI. That is the one piece of the site's network configuration that
-lives nowhere but on the device.
+hand in the AP's own web UI — the one piece of the site's network configuration that lived
+nowhere but on the device.
 
-This change takes the AP to 1.3.11, adopts it into the controller, which runs 6.3.0.45 since
-[CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/), and has the controller provision
+This change took the AP to 1.3.11, adopted it into the controller (on 6.3.0.45 since
+[CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)), and had the controller provision
 the SSIDs from inventory through its documented Open API, per
 [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
 
