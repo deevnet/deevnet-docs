@@ -310,6 +310,15 @@ ADR-0011, which needs the AP adopted.
 
 ## Current state
 
-- **Proposed.** Nothing is built.
-- The controller still runs on the Builder, with no devices adopted.
-- Tenant DNS, tenant state and the MQTT broker are still one VM each on `dv02hyp001p01`.
+- **Accepted on 2026-09-16.** [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) built all
+  six domain VMs on `dv02hyp001p01`.
+- **The Omada controller runs in `dv02nms001v01`.** The AP is adopted into it
+  ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)); the switch is not yet
+  ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold). The Builder's controller
+  is stopped and kept as a cold fallback (Open question 1).
+- **Tenant DNS runs in `dv02idn001v01`, and the tenant state store and the Deevnet API shell with its
+  database run in `dv02prv001v01`** (§6).
+- **`dv02msg001v01`, `dv02sob001v01` and `dv02tob001v01` are built with nothing running yet.**
+- **`dv02tdn001v01`, `dv02tst001v01` and `dv02mqt001v01` are retired.**
+- The provisioning VM keeps its data on its OS disk with no off-host copy; that is
+  [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) *(Proposed)*.

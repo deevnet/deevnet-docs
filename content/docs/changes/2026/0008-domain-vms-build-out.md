@@ -533,5 +533,5 @@ The change is complete; these are carried separately.
 - [ ] Update the pages that describe current state: tenant DNS platform page, management
       hypervisor page, Important URLs, the VM identity and MAC naming worked examples, and the
       Omada recovery and upgrade runbooks
-- [ ] ADR-0013: status Accepted; record the answer to open question 1 (the Builder's controller
+- [x] ADR-0013: status Accepted; record the answer to open question 1 (the Builder's controller
       is a cold fallback) and open question 2 (as decided in Step 9)

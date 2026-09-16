@@ -86,7 +86,7 @@ question is written down, not when it is answered.
   tenant: platform services are bound to a tenant once at onboarding, and nothing that recurs needs a
   substrate commit; extends ADR-0004 §5 from DNS to every platform service.
 - [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) —
-  *Proposed.* A physical device belongs to the application that gives it purpose, joins the access
+  A physical device belongs to the application that gives it purpose, joins the access
   network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
   platform services; device secrets and signing keys never enter the substrate vault.
 - [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) —
@@ -98,7 +98,7 @@ question is written down, not when it is answered.
   from tenant state, providers come from an offline mirror, and tenant credentials are issued
   age-encrypted per consumer.
 - [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) —
-  *Proposed.* Services on the management hypervisor run as containers on VMs grouped by domain —
+  Services on the management hypervisor run as containers on VMs grouped by domain —
   network management, substrate and tenant observability, provisioning, identity, and device
   messaging — each on exactly one network segment, so no VM bridges two zones; the Omada controller
   moves off the roaming Builder into the network management VM, and tenant DNS and state fold into
