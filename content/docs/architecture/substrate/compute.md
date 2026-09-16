@@ -11,10 +11,10 @@ Defines the virtualization and compute model for Deevnet sites.
 
 ## Overview
 
-Compute infrastructure provides virtualization hosts for the management / control plane and for tenant workloads. Hypervisors run within the substrate and host:
+Compute infrastructure provides virtualization hosts for the management / control plane and for the workloads that run on the substrate. Hypervisors run within the substrate and host:
 
-- **Management / control plane VMs**: one per domain, holding substrate services or shared tenant services
-- **Tenant application VMs**: workloads deployed by tenants
+- **Management / control plane VMs**: one per domain
+- **Workload VMs**: what runs on the substrate, described in [Tenant](/docs/architecture/tenant/)
 
 ---
 
@@ -25,12 +25,12 @@ Each site includes one or more hypervisors that provide the virtualization layer
 | Role | Purpose |
 |------|---------|
 | Management hypervisor | Hosts the [management / control plane](/docs/architecture/substrate/management-plane/) domain VMs |
-| Tenant hypervisor | Hosts tenant application VMs |
+| Workload hypervisor | Hosts workload VMs |
 
 ---
 
 ## Architectural Properties
 
 - Compute hosts are **stateless** — they can be reprovisioned from scratch via the builder
-- VM placement is determined by role (management vs. tenant), not by manual assignment
+- VM placement is determined by role (management vs. workload), not by manual assignment
 - All compute hosts receive static IP assignments in the management segment

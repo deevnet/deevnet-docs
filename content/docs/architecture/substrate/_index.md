@@ -20,7 +20,7 @@ block-beta
     hdr["Substrate Infrastructure"]:2
     net["Network"]:1 netd["Routing · Firewall · DNS · DHCP · NAT · Switching · Wireless"]:1
     cmp["Compute · Storage¹"]:1 cmpd["Hypervisors · Persistent storage"]:1
-    mcp["Management / Control Plane"]:1 mcpd["Substrate Services · Shared Tenant Services"]:1
+    mcp["Management / Control Plane"]:1 mcpd["Network management · Observability"]:1
 {{< /mermaid >}}
 
 ¹ Shared storage is a planned future addition.
@@ -41,19 +41,15 @@ See [Network Segmentation](/docs/architecture/network-segmentation/) for the seg
 ### Compute and Storage
 
 **Compute** is the virtualization hosts: a management hypervisor for the management / control
-plane, and tenant hypervisors for tenant workloads. See [Compute](compute/).
+plane, and workload hypervisors for what runs on the substrate. See [Compute](compute/).
 
 **Storage**¹ is shared and persistent storage for substrate consumers. See [Storage](storage/).
 
 ### Management / Control Plane
 
-The services the substrate runs on its management hypervisor, for two audiences:
-- **Substrate Services**, for the substrate itself: network device management and substrate
-  observability
-- **Shared Tenant Services**, for tenants and their devices: provisioning, identity (tenant DNS),
-  tenant observability and device messaging
-
-See [Management / Control Plane](management-plane/) for the model, and how tenants consume it.
+The services the substrate runs on its management hypervisor to manage and observe itself:
+network device management and substrate observability. See
+[Management / Control Plane](management-plane/).
 
 ---
 
@@ -62,4 +58,4 @@ See [Management / Control Plane](management-plane/) for the model, and how tenan
 - [Networking](networking/) — Networking services: DNS, DHCP, firewall, VLAN routing, switching
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
-- [Management / Control Plane](management-plane/) — Substrate services and shared tenant services
+- [Management / Control Plane](management-plane/) — How the substrate manages and observes itself

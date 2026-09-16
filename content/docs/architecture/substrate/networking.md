@@ -46,8 +46,8 @@ The firewall enforces zone-based policy with each segment mapped to a firewall z
 | MGMT | Permissive outbound to all zones; restricted inbound |
 | TRUSTED | Broad outbound access; restricted inbound |
 | STOR | Highly restricted — only designated management and compute hosts |
-| PLATFORM | Accepts inbound from management, trusted, tenant, and IoT backend |
-| TENANT | Perimeter for the tenant **transit network**; NAT, internet egress, and tenant↔management policy — see note below |
+| PLATFORM | Accepts inbound from management, trusted, workload transit, and IoT backend |
+| TENANT | Perimeter for a **transit network** of workloads behind it; NAT, internet egress, and policy toward other zones — see note below |
 | IOT | Outbound allowed; inbound restricted to IoT backend |
 | IOT_VENDOR | Outbound internet only; no internal access |
 | IOT_BACKEND | Accepts from IoT zone; outbound to platform |
@@ -55,13 +55,9 @@ The firewall enforces zone-based policy with each segment mapped to a firewall z
 
 The default policy is **deny all** — traffic between zones is blocked unless explicitly allowed.
 
-> **Tenant networking is owned by the tenant fabric, not the core router.**
-> Per [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/), each tenant's subnet,
-> gateway, routing, isolation, and DHCP live in the tenant compute domain. The core router does
-> **not** maintain a VLAN interface or DHCP scope per tenant. It sees only the aggregate tenant
-> **transit network** and acts as the perimeter for it — outbound NAT, internet egress, and
-> tenant↔management policy. The per-segment services below (VLAN routing, DHCP) apply to
-> substrate segments, not to individual tenants.
+The TENANT zone is a **perimeter only**. The networks behind its transit network are not substrate
+segments, so the per-segment services below (VLAN routing, DHCP) don't apply to them. What sits
+behind it is described in [Tenant Networking](/docs/architecture/tenant/networking/).
 
 ---
 
@@ -71,12 +67,11 @@ The core router resolves for the substrate:
 
 - Answers for the substrate zone (e.g. `mobile.deevnet.net`) from records generated out of inventory
 - Forwards external queries to upstream resolvers
-- Forwards each tenant zone to the tenant authoritative service, so tenant records never enter the
-  resolver's own configuration
+- Forwards zones it doesn't hold to the authoritative service that does, so their records never
+  enter the resolver's own configuration
 
-Substrate names and tenant names are held by two different authorities that meet at that forward.
-The full model — including why forwarding a zone is not the same as delegating it, and what that
-changes — is in [Naming and Addressing](/docs/architecture/naming-and-addressing/).
+The full naming model, including why forwarding a zone is not the same as delegating it, is in
+[Naming and Addressing](/docs/architecture/naming-and-addressing/).
 
 ---
 
@@ -90,8 +85,7 @@ Each segment has its own DHCP configuration on the core router:
   reserved range so the two cannot collide
 - **No dynamic pool** on the platform segment — everything on it is declared
 
-Tenant workloads are not addressed from here at all; their overlay has no leasing service, so they
-are addressed from tenant code at creation. See
+Networks behind the TENANT perimeter are not addressed from here. See
 [Naming and Addressing](/docs/architecture/naming-and-addressing/).
 
 ---

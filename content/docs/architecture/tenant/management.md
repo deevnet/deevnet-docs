@@ -1,6 +1,6 @@
 ---
 title: "Management"
-weight: 2
+weight: 3
 ---
 
 # Tenant Management
@@ -111,7 +111,7 @@ Tenant management is distinct from substrate management:
 | **Lifecycle** | Rare changes, high stability | Frequent changes, agile |
 | **Authority** | Platform admins only | May delegate to tenant admins |
 
-The substrate's [Shared Tenant Services](/docs/architecture/substrate/management-plane/shared-tenant-services/)
+The substrate's [Shared Tenant Services](/docs/architecture/tenant/shared-services/)
 provide what tenants consume (DNS zone, state store, observability), and the core network provides
 the perimeter for tenant egress. Tenant DHCP and addressing are owned by the tenant fabric, not the substrate.
 

@@ -1,6 +1,6 @@
 ---
 title: "Building"
-weight: 3
+weight: 4
 ---
 
 # Tenant Building
@@ -117,6 +117,14 @@ Tenant VMs clone from Proxmox templates:
 
 Templates are built by the [Image Factory](/docs/platforms/) and stored
 on the tenant hypervisor.
+
+### Data Disks
+
+A tenant VM's data disk is part of the tenant's own Terraform, alongside the VM it attaches to.
+That keeps the split visible in the tenant's code: the substrate supplies an image with a small OS
+disk, and the tenant declares whatever capacity its workload actually needs. Anything worth keeping
+belongs on the data disk, never the OS disk, which is replaced whenever the image is rebuilt
+([Substrate Storage](/docs/architecture/substrate/storage/)).
 
 ---
 

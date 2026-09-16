@@ -133,5 +133,6 @@ changing the substrate. The contract itself is being formalized — see the
 ## Child Documents
 
 - [Networking](/docs/architecture/tenant/networking/) — Tenant network isolation via the overlay fabric
+- [Shared Tenant Services](/docs/architecture/tenant/shared-services/) — Substrate-run services tenants consume, and the rules for consuming them
 - [Management](/docs/architecture/tenant/management/) — Tenant lifecycle and observability
 - [Building](/docs/architecture/tenant/building/) — Tenant provisioning as code

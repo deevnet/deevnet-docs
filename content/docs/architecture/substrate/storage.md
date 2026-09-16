@@ -17,7 +17,7 @@ Defines the shared and persistent storage model for Deevnet sites.
 
 ## Intent
 
-Shared storage will provide persistent volumes for substrate consumers — both management-plane services and tenant workloads — independent of any single compute host.
+Shared storage will provide persistent volumes for substrate consumers — both the management / control plane and the workloads that run on the substrate — independent of any single compute host.
 
 ---
 
@@ -55,9 +55,3 @@ Because the OS disk is replaced on every image rebuild, anything worth keeping b
 else: on a data disk, or on shared storage. This is the same stateless principle the substrate
 applies to hosts — the image is a build artifact, and a VM must be reconstructible from its
 declaration plus its data, never from the accumulated contents of its root filesystem.
-
-For tenants, the data disk is part of the tenant's own Terraform, alongside the VM it attaches to.
-That keeps the split visible in the tenant's code: the substrate supplies an image with a small OS
-disk, and the tenant declares whatever capacity its workload actually needs. See the
-[Tenant Contract](/docs/architecture/tenant/) and
-[Building Tenants](/docs/architecture/tenant/building/).
