@@ -10,7 +10,7 @@ weight: 8
 | **Date** | 2026-09-15 |
 | **Change type** | Deployment · Decommission |
 | **Classification** | Structural. It replaces every VM on the management hypervisor except the provisioners, and re-applies the access switch's trunks. |
-| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9's manual floor is done: the wizard, a local Owner, the automation account and the Open API client. Step 10 stopped the Builder's controller at 23:14Z, and Step 3 carried VLAN 25 to the management hypervisor's port at 23:28Z with the operator at the rack. Step 4 made the hv01 bridge VLAN-aware at 23:38Z, and Step 7 finished at 00:07Z with the four Platform and IoT Backend VMs built, verified and rebooted. Step 8's services on `dv02idn001v01` and `dv02prv001v01` are next, and can be done remotely. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
+| **Status** | **In progress**. Done on 2026-09-15: Steps 1–2 and 5–6; Step 7 for `dv02nms001v01` and `dv02sob001v01`, both rebooted after their first-boot upgrade; Step 8 for the Omada controller on `dv02nms001v01`, with its firewall ports corrected at 22:05Z. Step 9's manual floor is done: the wizard, a local Owner, the automation account and the Open API client. Step 10 stopped the Builder's controller at 23:14Z, and Step 3 carried VLAN 25 to the management hypervisor's port at 23:28Z with the operator at the rack. Step 4 made the hv01 bridge VLAN-aware at 23:38Z, and Step 7 finished at 00:07Z with the four Platform and IoT Backend VMs built, verified and rebooted. Step 8 put PowerDNS on `dv02idn001v01` at 00:09Z, and the eds tenant zones answer again. MinIO and the Deevnet API on `dv02prv001v01` are what remain. Steps 3–4 wait for someone at the rack, and the Platform and IoT Backend VMs in Steps 7–8 wait on those. |
 | **Window** | Started 2026-09-15 about 04:10Z, vault decrypted for each working window. Steps 3 and 4 need hands at the hardware. The SG2218 has no console port, so recovery is a laptop on `gi1/0/2` or the reset button; `dv02hyp001p01` needs its monitor and keyboard. |
 | **Site** | mobile |
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
@@ -426,6 +426,8 @@ Step 2's apply.
 | 23:50:27–23:54:32 | Step 7 (the four remaining VMs) | `site.yml --tags vms --limit dv02idn001v01,dv02prv001v01,dv02tob001v01,dv02msg001v01`: all four `changed=3`, `failed=0`, cloned from `fedora-server-44-1.7`. `proxmox_vm` confirmed each MAC, `onboot`, and that each guest came up on its declared address: `idn` 10.20.25.21, `prv` 10.20.25.20, `tob` 10.20.25.22 and `msg` 10.20.35.20. This is the first traffic to use Steps 3 and 4. |
 | after 23:55 | Step 7 verify | From the Proxmox API, `net0` carries `tag=25` for `idn`, `prv` and `tob` and `tag=35` for `msg`, with `nms` and `sob` untagged on management as intended. Inside each guest: the inventory hostname, the declared MAC and address, its segment's gateway as route and resolver, working name resolution, a 30 GB root and no failed units. Their first-boot upgrades ran long enough that two of them were briefly too busy to answer a shell. |
 | 00:06:09–00:06:44 | Step 7 reboot | All four rebooted with the operator's go-ahead and answered SSH again about 35 s later, on kernel 7.2.5, with no reboot pending, unchanged addresses and MACs, no failed units and cloud-init `done`. |
+| 00:08:19–00:09:32 | Step 8, PowerDNS on `idn` | `site.yml --skip-tags vms --limit dv02idn001v01`: `changed=32`, `failed=0`. It freed port 53 from the resolved stub, set the SELinux contexts, wrote `pdns.conf`, pushed and loaded the image from the Builder, seeded the SQLite schema out of that image, started the container under systemd, then created the eds zones, imported and bound its TSIG key, restricted dynamic update to the management subnet and reconciled the apex. |
+| after 00:10 | Step 8 verify, DNS | On `idn`: the service is active and enabled, the container is up with no restarts on host networking, 53/tcp and 53/udp listen and are open in firewalld, both eds zones exist with the `eds` key bound to each, and no units have failed. Resolution: `eds.mobile.deevnet.net` and `129.20.10.in-addr.arpa` answer authoritatively at 10.20.25.21 and resolve `NOERROR` through the core router, with the apex SOA and NS pointing at `dv02idn001v01` rather than PowerDNS's placeholder. `tdns`, `artifacts` and `omada` still resolve. |
 
 ### Departures from the plan
 
@@ -436,8 +438,9 @@ Step 2's apply.
   - added the core router's forwarding rows for the eds tenant zones (`eds.mobile.deevnet.net`,
     `129.20.10.in-addr.arpa`), pointing at `dv02idn001v01` (10.20.25.21)
 
-  Queries for those zones through the router time out until the identity VM is built in Step 7.
-  eds has never applied its Terraform, so nothing depends on them.
+  Queries for those zones through the router timed out until the identity VM existed. **Resolved at
+  00:10Z**, once PowerDNS came up on `dv02idn001v01`: both zones now answer through the router. eds
+  had never applied its Terraform, so nothing depended on them in the meantime.
 - **The DHCP run rewrote all 13 existing reservations with the values they already had.** This is
   a defect in `opnsense_dhcp`, not a change:
   - its update set is every declared reservation whose MAC already exists, with no field
