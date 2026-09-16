@@ -28,4 +28,5 @@ in the runbook under [Incident Management](/docs/runbook/incident-management/).
 
 | ID | Date | Incident | Site | Root cause | Actions |
 |----|------|----------|------|-----------|---------|
-| INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Done; 3 open items, planned as [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) |
+| INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Actions 1–8 done; 3 of 5 open items remain, planned as [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) |
+| INC-0002 | 2026-09-15 | [Controller VM Silent — Running but Off the Network](2026/0002-controller-vm-network-hang/) | mobile | Not established; restored by a guest reboot | 4 open |
