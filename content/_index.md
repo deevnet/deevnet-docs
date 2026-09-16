@@ -17,12 +17,19 @@ type: docs
 
 <img src="20260210_160235.jpg" alt="Deevnet Mobile kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
-A **portable lab** that packs into a toolkit. Includes:
+**A cloud you can carry.** Set it up on-premise, anywhere, and get:
 
-- Network infrastructure (router, switch, wireless AP)
-- Compute nodes (Proxmox hypervisors, Raspberry Pis)
-- Breadboards and components for embedded device prototyping
-- Full on-premise network that can be set up anywhere
+- **Portable network addressing.** Its address space and DNS zone travel with the case: the same
+  addresses and names on the road or docked at home, with no renumbering.
+- **IoT as a Service.** Per-device Wi-Fi keys, scoped MQTT accounts and a device registry, all from
+  Terraform. *(in&nbsp;development)*
+- **Self-service tenants.** Isolated networks, DNS zones and state storage, from the tenant's own
+  code.
+- **Works offline.** Builds and rebuilds itself from code, with no internet needed.
+- **A bench for its devices.** Prototype embedded hardware right beside the platform.
+
+<small>In the case: router, switch, wireless AP, Proxmox hypervisors, Raspberry Pis, and
+breadboards and components.</small>
 
 
 <--->
