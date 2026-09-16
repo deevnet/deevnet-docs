@@ -64,6 +64,7 @@ digraph architecture {
             // today, could grow into a cluster)
             subgraph cluster_mgmt {
                 label="Management / Control Plane"
+                labelloc=b
                 style=filled
                 fillcolor="#fff3cd"
 
@@ -73,6 +74,7 @@ digraph architecture {
 
             subgraph cluster_tenant {
                 label="Tenant"
+                labelloc=b
                 style=filled
                 fillcolor="#fff3cd"
 
