@@ -96,7 +96,7 @@ A **site** is an independent infrastructure deployment with its own IP address s
 
 ### Builder
 
-The **builder** is the out-of-band provisioning function that creates substrates from scratch. Self-contained, portable, and air-gapped capable, it provisions whichever site it's connected to — then hands off authority to production infrastructure. See [Builder](builder/) for the provisioning model, authority transitions, and design principles.
+The **builder** is a small server that can be connected to either site to create its substrate from scratch. Self-contained, portable, and air-gapped capable, it provisions the site and then hands off authority to production infrastructure. See [Builder](builder/) for the provisioning model, authority transitions, and design principles.
 
 ### Substrate
 
