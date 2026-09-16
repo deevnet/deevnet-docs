@@ -29,7 +29,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 > a tenant is an EVPN/VXLAN overlay owned by the tenant hypervisor's fabric, addressed from
 > `10.20.128.0/18` by fabric IPAM. The two VLANs above are the fabric's *transport*: transit to
 > the perimeter, and the VTEP underlay. Creating a tenant changes neither.
-| Management | 99 | 10.20.99.0/24 | 10.20.99.1 | Static only |
+| Management | 99 | 10.20.99.0/24 | 10.20.99.1 | .200-.230 (temporary; infrastructure is static or reserved) |
 | Blackhole | 999 | — | — | None (unrouted) |
 
 ---

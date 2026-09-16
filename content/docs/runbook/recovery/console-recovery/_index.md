@@ -42,7 +42,8 @@ network by hand.
 The AP adds one more, and it is the one that catches people out: **it is the path you would
 normally use to reach everything else here.** Wireless management dies with it, so its
 recovery begins by cabling into the access switch rather than by touching the AP at all — and
-the management segment has no DHCP pool, so that laptop needs a hand-set address. Port
+the laptop leases an address from the management segment's DHCP pool, or takes a hand-set one if
+the pool is gone. Port
 `gigabitEthernet 1/0/2` on the access switch is declared and held empty for this; see
 [Wireless AP step 1](/docs/runbook/recovery/console-recovery/wireless-ap/).
 

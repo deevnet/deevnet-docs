@@ -18,7 +18,7 @@ weight: 6
 | **Risk** | High. The switch reboot takes the builder, the controller and Ansible offline with everything else. |
 | **Related changes** | [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — this was its phase 2 until 2026-09-11 |
 | **Related incidents** | None |
-| **Related runbooks** | [Access Switch → Firmware upgrade](/docs/runbook/recovery/console-recovery/access-switch/#firmware-upgrade); [Important URLs](/docs/runbook/network/important-urls/) |
+| **Related runbooks** | [Access Switch → Firmware upgrade](/docs/runbook/recovery/console-recovery/access-switch/#firmware-upgrade); [Operator Access](/docs/runbook/network/operator-access/); [Important URLs](/docs/runbook/network/important-urls/) |
 
 ---
 
@@ -57,7 +57,16 @@ configuration change.
 ## Prerequisites
 
 - [x] Firmware 1.20.24 mirrored and pinned by sha256; it matched on 2026-09-10.
-- [ ] Operator on site, with the laptop on `gi1/0/2` and the `.bin` downloaded to it beforehand.
+- [ ] Operator on site, connected to the builder through the travel router rather than the switch,
+  per [Operator Access](/docs/runbook/network/operator-access/). The SSH session survives the reboot,
+  and its tunnel carries the switch's web UI (`https://localhost:8443`) for the upload.
+  **Backup:** a laptop on the operator port `gi1/0/2`
+  ([Operator Access → Backup](/docs/runbook/network/operator-access/#backup-the-operator-port)).
+  That path goes through the switch, so it's fine for the backup and the upload, but it drops at
+  the reboot along with everything else.
+- [ ] The `.bin` downloaded to the laptop beforehand, with sha256
+  `a01034c5409bd14c9066db857d192807bdfe85788472ed12bb5778159c7a4e0d`. That is the file inside the
+  pinned zip, checked on 2026-09-16.
 - [ ] Vault decrypted, so Ansible can verify the switch before and after.
 - [ ] `show system-info`, `show image-info` and the running config captured on the day.
 
@@ -77,11 +86,55 @@ configuration change.
 Follow [Access Switch → Firmware upgrade](/docs/runbook/recovery/console-recovery/access-switch/#firmware-upgrade):
 
 1. **Record where it starts** — capture system info, image info and the running config.
-2. **Upload into the backup image** from `https://10.20.99.10` — the `.bin`, with the auto-reboot
-   box **unchecked**.
+2. **Upload into the backup image** from `https://10.20.99.10` (`https://localhost:8443` through the
+   tunnel) — the `.bin`, with the auto-reboot box **unchecked**.
 3. **Boot from it** — set the next startup image, then reboot at a moment of the operator's
-   choosing.
+   choosing. Before the reboot, read
+   [Keeping the builder online](#keeping-the-builder-online-during-the-reboot).
 4. **Verify** — see below.
+
+### Keeping the builder online during the reboot
+
+The builder has two uplinks. Only one of them goes through the switch.
+
+| Interface | Address | Path | Role today |
+|---|---|---|---|
+| `enp4s0` | `10.20.99.95/24`, static | Switch `gi1/0/16` → OPNsense `10.20.99.1` | Preferred default route and preferred DNS (`ipv4.dns-priority 10`) |
+| `enp1s0` | `192.168.8.x`, DHCP | Travel router `dv02edg001p01` at `192.168.8.1`, not through the switch | Second default route (higher metric); DNS `192.168.8.1`, not used while `enp4s0` is up |
+
+On 2026-09-16, `enp1s0` was checked on its own: it pings `1.1.1.1`, reaches
+`https://api.anthropic.com` over HTTPS, and `192.168.8.1` resolves public names. An operator
+session to the builder over the travel router's wireless doesn't touch the switch, so it
+survives the reboot. See [Operator Access](/docs/runbook/network/operator-access/).
+
+**What should happen:** when the switch reboots, `enp4s0` loses its link. After a few seconds,
+NetworkManager takes that connection down and removes its default route and its DNS server. New
+connections from the builder then go out through `enp1s0`. Connections that were open when the
+link dropped are lost. When the switch returns, `enp4s0` connects again on its own (autoconnect
+is on) and takes over as the preferred path. This is expected behaviour, not tested: it wasn't
+tested because the builder serves artifacts on `enp4s0`.
+
+**Check it during the outage:**
+
+```bash
+ip route get 1.1.1.1              # expect: via 192.168.8.1 dev enp1s0
+resolvectl status | grep -E 'Link|Current DNS|Default Route'   # expect enp1s0 as the default route
+getent hosts api.anthropic.com    # public names still resolve
+```
+
+**If it doesn't fall back** (the route still points at `enp4s0`, or names don't resolve), force
+it:
+
+```bash
+sudo nmcli con down enp4s0        # routes and DNS move to enp1s0
+# ... wait until the switch has booted ...
+sudo nmcli con up enp4s0          # the switch path is preferred again
+ping 10.20.99.10
+```
+
+`enp4s0` is also the builder's only route to the switch and every site VLAN. While it's down,
+`ping 10.20.99.10` can't tell you the switch is back. Watch the switch's LEDs, or retry
+`nmcli con up enp4s0` until it succeeds, then ping. Bring it back up before verifying.
 
 ## Verification
 

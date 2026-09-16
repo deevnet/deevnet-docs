@@ -12,7 +12,9 @@ Every management interface and service endpoint on the mobile site, by DNS name 
 - **Use the IP** when DNS is the thing that is broken, or when you are not using the site's
   resolver.
 - **Where to reach them from:** the management segment (VLAN 99) — the builder, or a laptop on
-  the operator port `gi1/0/2`, which gets an address from `10.20.99.200–230`.
+  the operator port `gi1/0/2`, which gets an address from `10.20.99.200–230`. From the travel
+  router's network, tunnel through the builder instead: see
+  [Operator Access](/docs/runbook/network/operator-access/).
 
 **Checked 2026-09-11 from the builder:** every URL below answered, by name and by IP, except
 where the Notes say otherwise.
