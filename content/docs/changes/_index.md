@@ -30,8 +30,8 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0002 | 2026-03-26 | [Authority Transition Rework](2026/0002-authority-transition-rework/) | Configuration | mobile | Complete |
 | CHG-0003 | 2026-09-05 | [Host Rename (ADR-0008)](2026/0003-host-rename/) | Migration | mobile | Complete |
 | CHG-0004 | 2026-09-10 | [Omada Controller Upgrade](2026/0004-omada-controller-upgrade/) | Upgrade | mobile | Complete |
-| CHG-0005 | — | [Wireless AP Firmware and Omada Adoption](2026/0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Planned |
-| CHG-0006 | — | [Access Switch Firmware Upgrade](2026/0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Planned |
+| CHG-0005 | 2026-09-15 | [Wireless AP Firmware and Omada Adoption](2026/0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Complete |
+| CHG-0006 | 2026-09-16 | [Access Switch Firmware Upgrade](2026/0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Complete |
 | CHG-0007 | — | [Core Router Zone Policy, First Application](2026/0007-core-router-zone-policy/) | Configuration | mobile | Planned |
 | CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](2026/0008-domain-vms-build-out/) | Deployment | mobile | Complete |
 
