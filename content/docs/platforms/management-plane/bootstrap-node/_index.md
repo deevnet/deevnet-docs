@@ -13,7 +13,7 @@ The bootstrap node is the **management plane** for standing up a Deevnet site. I
 Goals:
 - **Self-contained** — All automation, artifacts, and services on one device
 - **Portable** — Move between sites (mobile, home) as needed
-- **Out-of-band** — Can operate independently of the site network
+- **Independent** — Can operate independently of the site network
 - **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
 - **Disposable authority** — Hands off control to Core Router once the site is running
 
