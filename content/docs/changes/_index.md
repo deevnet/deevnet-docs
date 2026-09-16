@@ -33,7 +33,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0005 | — | [Wireless AP Firmware and Omada Adoption](2026/0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Planned |
 | CHG-0006 | — | [Access Switch Firmware Upgrade](2026/0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Planned |
 | CHG-0007 | — | [Core Router Zone Policy, First Application](2026/0007-core-router-zone-policy/) | Configuration | mobile | Planned |
-| CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](2026/0008-domain-vms-build-out/) | Deployment | mobile | In progress |
+| CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](2026/0008-domain-vms-build-out/) | Deployment | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
