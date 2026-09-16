@@ -9,7 +9,7 @@ aliases:
 
 Procedures for transitioning DNS/DHCP authority between the builder and production network infrastructure.
 
-For the architectural model, see [Core Services Architecture](/docs/architecture/substrate/management-plane/core-services/).
+For the architectural model, see [Builder → Authority Transition](/docs/architecture/builder/#authority-transition).
 
 {{< hint info >}}
 **Build context:** During a greenfield build, these transitions happen as part of the [Building Infrastructure](/docs/runbook/building-recovery/) sequence — [Configure PXE](/docs/runbook/building-recovery/build-sequence/) enters bootstrap-authoritative mode, and [Build Network](/docs/runbook/building-recovery/build-network/) transitions to core-authoritative mode. This page is the standalone reference for both directions.

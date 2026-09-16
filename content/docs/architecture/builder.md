@@ -73,6 +73,11 @@ The builder participates in explicit authority transitions:
 
 The transition is explicit and deliberate—never automatic.
 
+Records are defined in both the builder's configuration and the Core Router's, but only one
+authority is active at a time. The builder's DNS/DHCP is disabled in production, and the Core Router
+does not exist (or is being rebuilt) during bootstrap. This is intentional duplication with
+exclusive activation, not conflicting truth.
+
 ---
 
 ## Multi-Homing Without Identity Confusion
