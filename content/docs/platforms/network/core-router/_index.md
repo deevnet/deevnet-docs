@@ -160,7 +160,7 @@ Changes land in the saved configuration only; the running resolver is not update
 
 Because these are forwards rather than referrals, the resolver never consults the tenant zone's own
 apex records — see
-[Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/) for what that changes.
+[Naming and Addressing](/docs/architecture/naming-and-addressing/) for what that changes.
 
 ### DHCP: Kea
 

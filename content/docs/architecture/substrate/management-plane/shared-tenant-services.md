@@ -60,7 +60,7 @@ Provisioning holds what a tenant's `apply` talks to.
 - **Each tenant gets a delegated zone** under the site zone, and writes its own records into it.
   The core network's resolver forwards the zone to this service, so tenant records never enter the
   resolver's own configuration
-  ([Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/)).
+  ([Naming and Addressing](/docs/architecture/naming-and-addressing/)).
 - **A per-zone key confines each tenant** to its own zone.
 
 ### 2.3 Tenant observability

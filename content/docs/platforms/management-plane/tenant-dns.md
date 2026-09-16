@@ -8,7 +8,7 @@ weight: 3
 The authoritative service behind
 [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/). For the model — who owns
 what, and why forwarding a zone is not delegating it — see
-[Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/). This page is the
+[Naming and Addressing](/docs/architecture/naming-and-addressing/). This page is the
 implementation: what runs, and the specifics that are not guessable from the design.
 
 ---

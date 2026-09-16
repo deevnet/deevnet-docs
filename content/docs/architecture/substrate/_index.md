@@ -62,5 +62,4 @@ See [Management / Control Plane](management-plane/) for the model, and how tenan
 - [Networking](networking/) — Networking services: DNS, DHCP, firewall, VLAN routing, switching
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
-- [Naming and Addressing](naming-and-addressing/) — How hosts and workloads get addresses and names, and where DNS authority changes hands
 - [Management / Control Plane](management-plane/) — Substrate services and shared tenant services

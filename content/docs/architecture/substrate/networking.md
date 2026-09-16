@@ -76,7 +76,7 @@ The core router resolves for the substrate:
 
 Substrate names and tenant names are held by two different authorities that meet at that forward.
 The full model — including why forwarding a zone is not the same as delegating it, and what that
-changes — is in [Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/).
+changes — is in [Naming and Addressing](/docs/architecture/naming-and-addressing/).
 
 ---
 
@@ -92,7 +92,7 @@ Each segment has its own DHCP configuration on the core router:
 
 Tenant workloads are not addressed from here at all; their overlay has no leasing service, so they
 are addressed from tenant code at creation. See
-[Naming and Addressing](/docs/architecture/substrate/naming-and-addressing/).
+[Naming and Addressing](/docs/architecture/naming-and-addressing/).
 
 ---
 
