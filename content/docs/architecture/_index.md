@@ -56,10 +56,20 @@ digraph architecture {
             style=filled
             fillcolor="#e0f0ff"
 
-            CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=2.5]
+            CoreRouter [label="Core Router\nDNS, DHCP, Firewall", width=3.2]
             WirelessAP [label="Wireless AP", width=1.0]
-            AccessSwitch [label="Access Switch", width=4.5]
-            MgmtHV [label="Extended\nServices", width=2.2]
+            AccessSwitch [label="Access Switch", width=6.0]
+
+            // Yellow boxes are virtual: each is a hypervisor (standalone
+            // today, could grow into a cluster)
+            subgraph cluster_mgmt {
+                label="Management / Control Plane"
+                style=filled
+                fillcolor="#fff3cd"
+
+                SubstrateSvc [label="Substrate\nServices"]
+                SharedTenantSvc [label="Shared Tenant\nServices"]
+            }
 
             subgraph cluster_tenant {
                 label="Tenant"
@@ -67,13 +77,15 @@ digraph architecture {
                 fillcolor="#fff3cd"
 
                 TenantHV [label="Tenant\nCompute"]
-                PiCompute [label="Pi Compute\nEdge / IoT"]
             }
+
+            PiCompute [label="Pi Compute\nEdge / IoT"]
         }
 
         CoreRouter -> WirelessAP
         CoreRouter -> AccessSwitch
-        AccessSwitch -> MgmtHV
+        AccessSwitch -> SubstrateSvc
+        AccessSwitch -> SharedTenantSvc
         AccessSwitch -> TenantHV
         AccessSwitch -> PiCompute
     }
@@ -82,6 +94,8 @@ digraph architecture {
     Builder -> AccessSwitch
 }
 {{< /graphviz >}}
+
+Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster.
 
 The platform is organized around three architectural boundaries — **sites**, **substrates**, and **tenants** — that separate infrastructure from workloads. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
 
