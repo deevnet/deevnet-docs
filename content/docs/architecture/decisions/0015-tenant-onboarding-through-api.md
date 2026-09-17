@@ -322,6 +322,17 @@ PowerDNS and the state store are on Platform with the API, so they need no rule.
 ## Current state
 
 - **Proposed.**
-- The API has a tenant slice on a branch: the registry, allocation, the PowerDNS, resolver, state
-  store and fabric backends, and the create, read and delete calls.
-- Nothing is deployed. `deevnet_tenants` still drives onboarding.
+- **Built, not deployed** (2026-09-17). The pull requests are open for review:
+  - `deevnet-provisioning-api` #1: the registry, allocation, the four backends, and the create,
+    restore, reconcile, delete and egress calls
+  - `ansible-collection-deevnet.mgmt` #20: PowerDNS's HTTP API, the API's MinIO admin user, and the
+    API's tenant configuration, all off until their vault values exist
+  - `ansible-inventory-deevnet` #35: the site values
+- **Proven against real software:**
+  - PostgreSQL 17.11, pdns-auth 4.9.17 and the site's MinIO release in containers on the Builder
+  - read-only calls to the core router and to hv02's SDN
+  - a drill that lost the database twice: once a restore was reissued a new index because another
+    tenant took the old one, once it kept its own
+- **Not yet proven:** a resolver write against the real router.
+- `deevnet_tenants` still drives onboarding. The provider, the egress agent and the tdemo and eds
+  cutover come next.
