@@ -5,6 +5,16 @@ weight: 10
 
 # Provisioning a Tenant
 
+{{< hint warning >}}
+**This describes the flow before the Deevnet API.**
+[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) (proposed) moves every
+per-tenant object behind the API: a tenant is admitted, then declares itself, its workloads and its
+names through the `deevnet/deevnet` provider, holding no Proxmox credential and no index. This page
+is how it works until that is deployed. The factory repository is now
+[`deevnet-tenant-fabric`](https://github.com/deevnet/deevnet-tenant-fabric) and keeps only the
+fabric; the tenant module remains available by its tags.
+{{< /hint >}}
+
 How to create, verify and destroy a tenant on the mobile substrate.
 
 This is the operational procedure. The *why* is
@@ -40,7 +50,7 @@ and the key to write it with, and never writes a record on your behalf.
 **Two clones**, because onboarding and the tenant lifecycle live in different places
 ([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)):
 
-- [`deevnet-tenant-factory`](https://github.com/deevnet/deevnet-tenant-factory) — to allocate the
+- [`deevnet-tenant-fabric`](https://github.com/deevnet/deevnet-tenant-fabric) (the repository this step still uses, renamed) — to allocate the
   index, copy the reference implementation, and issue the fabric attachment. Substrate side.
 - `deevnet-tenant-<name>` — the tenant's own repository, which is where every apply happens.
 

@@ -156,7 +156,7 @@ another host's `mgmt_vm` block.
 |------|------|
 | `ansible-inventory-deevnet` | `proxmox_node` on the hypervisor; `mgmt_vm.node` on every guest it hosts |
 | `deevnet-image-factory` | `PVE1_NODE` / `PVE2_NODE` in the `Makefile` |
-| `deevnet-tenant-factory` | the fabric's `proxmox_node` default in `variables.tf` |
+| `deevnet-tenant-fabric` | the fabric's `proxmox_node` default in `variables.tf` |
 
 {{< hint warning >}}
 **A stale Terraform node name fails silently.** `TF_VAR_proxmox_node` from the rendered env file

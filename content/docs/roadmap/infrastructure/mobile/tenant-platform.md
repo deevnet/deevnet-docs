@@ -56,7 +56,7 @@ defined as code rather than as hand-maintained node state.
 - ✅ Hypervisor attachment: the bridge is VLAN-aware and the transit and underlay sub-interfaces
   are up, driven from inventory by the `proxmox_node_network` role.
 - ✅ EVPN SDN as code: fabric, VTEP identity and controller applied on dv02hyp002p02 from
-  `deevnet-tenant-factory`.
+  `deevnet-tenant-fabric`.
 - ✅ Hypervisor default route moved onto transit, so the data plane stops riding the management
   segment.
 - ✅ Tenant egress through the perimeter: transit forwarding and a default route inside each

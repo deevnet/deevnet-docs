@@ -5,6 +5,16 @@ weight: 4
 
 # Tenant Building
 
+{{< hint warning >}}
+**This describes the flow before the Deevnet API.**
+[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) (proposed) moves every
+per-tenant object behind the API: a tenant is admitted, then declares itself, its workloads and its
+names through the `deevnet/deevnet` provider, holding no Proxmox credential and no index. This page
+is how it works until that is deployed. The factory repository is now
+[`deevnet-tenant-fabric`](https://github.com/deevnet/deevnet-tenant-fabric) and keeps only the
+fabric; the tenant module remains available by its tags.
+{{< /hint >}}
+
 Defines the provisioning model for tenant workloads.
 
 ---
