@@ -180,6 +180,13 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
   this one re-applied.
 - **Secrets are restored, not regenerated**, so the tenant's DNS updates and state access keep
   working with the keys it already holds.
+- **A reverse zone that changes hands is emptied.**
+  - The reverse zone follows the index, so the tenant given a reissued index inherits its
+    predecessor's zone.
+  - When the zone is bound to another tenant's key, the API clears everything but the apex SOA and
+    NS before binding it to the new key.
+  - This was found in the drill on 2026-09-17, where the new tenant's reverse zone still held the
+    previous tenant's PTR records.
 
 ### 6. The credentials the API holds, and what each can do
 
