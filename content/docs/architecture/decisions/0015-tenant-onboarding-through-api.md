@@ -325,7 +325,7 @@ resource.
   - the fabric: openfabric underlay and EVPN controller, in the factory's `fabric/`
   - the node network: transit, underlay and forwarding, in `proxmox_node_network`
   - egress (§7)
-- **`deevnet-tenant-factory` is reduced to its fabric** and renamed to say so. Retired:
+- **`deevnet-tenant-factory` is reduced to its fabric** and renamed `deevnet-tenant-fabric`. Retired:
   - `modules/tenant` and its tags
   - `examples/tenant`
   - `TENANTS.md`

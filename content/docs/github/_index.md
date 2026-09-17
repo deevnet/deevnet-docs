@@ -29,8 +29,8 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
     <h3>image-factory</h3>
     <p>Packer builds for Raspberry Pi and Proxmox templates.</p>
   </a>
-  <a class="section-card" href="https://github.com/deevnet/deevnet-tenant-factory">
-    <h3>tenant-factory</h3>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-tenant-fabric">
+    <h3>tenant-fabric</h3>
     <p>The tenant fabric, the reusable tenant module, and the index registry. Substrate side — tenants themselves live elsewhere.</p>
   </a>
   <a class="section-card" href="https://github.com/deevnet/deevnet-tenant-tdemo">
@@ -54,7 +54,7 @@ home/
 ├── ansible-collection-deevnet.net/
 ├── ansible-inventory-deevnet/
 ├── deevnet-image-factory/
-├── deevnet-tenant-factory/
+├── deevnet-tenant-fabric/
 ├── deevnet-tenant-tdemo/           the demo tenant
 ├── deevnet-tenant-<name>/          one per tenant
 └── deevnet-docs/
@@ -85,7 +85,7 @@ git clone git@github.com:deevnet/ansible-collection-deevnet.mgmt.git
 git clone git@github.com:deevnet/ansible-collection-deevnet.net.git
 git clone git@github.com:deevnet/ansible-inventory-deevnet.git
 git clone git@github.com:deevnet/deevnet-image-factory.git
-git clone git@github.com:deevnet/deevnet-tenant-factory.git
+git clone git@github.com:deevnet/deevnet-tenant-fabric.git
 git clone git@github.com:deevnet/deevnet-tenant-tdemo.git
 git clone git@github.com:deevnet/deevnet-docs.git
 ```

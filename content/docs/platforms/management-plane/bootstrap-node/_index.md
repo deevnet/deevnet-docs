@@ -150,7 +150,7 @@ All Deevnet repositories are checked out to a standard location:
 ├── ansible-collection-deevnet.net/       # Network device configuration
 ├── ansible-inventory-deevnet/            # Host inventory (home, mobile)
 ├── deevnet-image-factory/                # Packer image builds
-├── deevnet-tenant-factory/               # Tenant fabric, module and registry
+├── deevnet-tenant-fabric/                # Tenant EVPN fabric (hypervisor readiness)
 ├── deevnet-tenant-tdemo/                 # The demo tenant
 └── deevnet-docs/                         # This documentation (submodule)
 ```
