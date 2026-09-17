@@ -7,14 +7,14 @@ weight: 10
 
 | | |
 |---|---|
-| **Date** | Not yet scheduled |
+| **Date** | 2026-09-17 |
 | **Change type** | Build-out and migration — OpenBao and the tenant API are deployed, and tenants stop being built from inventory |
 | **Classification** | Disruptive in one step only: the tenant DNS server restarts when its HTTP API is turned on. Everything else adds services or changes objects nothing depends on yet. |
-| **Status** | **Planned.** Every piece is merged and nothing is deployed. The secrets are generated and in the working tree's vault files, awaiting `make vault`; only OpenBao's Ansible AppRole is outstanding, and step 3 produces it. |
+| **Status** | **Steps 1–10 complete.** OpenBao, the PowerDNS API, the API and the egress agent are deployed, and **tdemo and eds are both live and built entirely through the API**. Step 11 — retiring the per-tenant loops from the roles — is outstanding, and is where `deevnet_tenants` finally goes. |
 | **Window** | No operator on site needed: every step is a control-node run or an API call. The one restart affects tenant name resolution for seconds, and no tenant is live. |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao, tenant DNS), `dv02prv001v01` (the API, its database, the state store), `dv02hyp002p02` (the tenant hypervisor and exit node), `dv02cor002p01` (the resolver's delegations) |
-| **Automation** | `deevnet.mgmt` `openbao`, `powerdns`, `minio`, `deevnet_api`; `deevnet.net` `tenant_egress_agent`; `deevnet-provisioning-api` v0.2.0; `terraform-provider-deevnet` v0.1.0; the tenant repositories `deevnet-tenant-tdemo` and `eds` |
+| **Automation** | `deevnet.mgmt` `openbao`, `powerdns`, `minio`, `deevnet_api`; `deevnet.net` `tenant_egress_agent`; `deevnet-provisioning-api` **v0.2.3** (v0.2.0 as planned, then three defects the run found); `terraform-provider-deevnet` v0.1.0; the tenant repositories `deevnet-tenant-tdemo` and `eds` |
 | **Risk** | Medium. OpenBao becomes a service everything else needs to start, and its seal key is the root of the whole arrangement. The API gains write access to tenant DNS, the resolver, the state store and the tenant hypervisor. |
 | **Related decisions** | [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) — what the API builds and what a tenant holds; [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) — where the credentials live; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5 and §9; [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) — built the VMs this deploys into, and created eds's zones, key and state credential; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy this adds two rules to, still unapplied |
@@ -178,7 +178,10 @@ container its AppRole, and restarts it.
   plain HTTP is refused.
 - `/version` reports `v0.2.0`.
 - `GET /v1/tenants` with the operator token → `{"tenants":[]}`.
-- The container's env file holds no backend credential, only `OPENBAO_*`.
+- The container's env file holds **no backend credential**: no PowerDNS key, no router key, no
+  state-store secret, no Proxmox token, no token MAC key. Those five are in OpenBao KV. It does hold
+  four credentials that are not backends' — the AppRole that fetches the rest, the database URL, the
+  operator token and the egress agent's token.
 
 **Back:** unset `deevnet_api_site` and re-run: the API goes back to answering 501 on `/v1`.
 
@@ -253,6 +256,79 @@ Once eds runs from the API:
 
 Each is its own pull request, after both tenants are proven.
 
+## What the run found
+
+Ten of the eleven steps ran on 2026-09-17. Nine defects surfaced, all of them only findable by
+running it: six were in code that had never met the real thing, and three were in claims the
+documents made about it.
+
+**The API could not start.** It wanted six workload settings — VMID base, MAC namespace, template
+prefix, storage, disk and cloud-init user — that the workload slice (ADR-0015 §12) needs and the
+`deevnet_api` role never wired. The values are the ones already in use, and the MAC namespace is the
+site fact the `vm_identity` allocator uses, so tenant and substrate VMs cannot mint the same address.
+VM 2040 carries `02:de:20:00:07:f8`, and `0x07f8` is 2040.
+
+**Its database could not read its own files.** `PGDATA` was created root-owned on the claim that the
+postgres entrypoint hands it over on first init. It does not: it re-execs as postgres *before* it
+chowns, and swallows the failure. The server could not open `global/pg_filenode.map`, which presents
+as `database: unreachable` rather than as a permission problem.
+
+**Ansible's AppRole was unreachable from the API host.** It is kept with OpenBao's other bootstrap
+secrets in `group_vars/openbao`, and the provisioning VM is not in that group. It is now read from
+the OpenBao host, the way the router's API key is read from the router.
+
+**The first apply spent its token and then failed.** A tenant's first apply is configured with the
+single-use enrollment token; creating the tenant spends it, and the provider kept using it, so the
+workload that followed got `401`. The tenant's own token comes back in that create response and now
+carries every later call in the run.
+
+**A name beside a workload claimed the workload's reverse record.** Every published record wrote a
+PTR with `REPLACE`, so `10.20.129.10` resolved back to `service.tdemo` instead of `app.tdemo`, and
+removing the alias would have taken the workload's PTR with it. A workload owns its address and
+publishes the PTR; a name a tenant adds beside it is forward only.
+
+**A tenant could not restore itself, twice over.** The registry-loss drill found both halves:
+
+1. **The API answered `401`.** A tenant token verifies by its MAC without the registry — the whole
+   point of a token that outlives the database (ADR-0015 §5) — and then the handler admitted only a
+   *registered* tenant. An unregistered tenant now gets the same `404` as a tenant asking about a
+   name that is not its own.
+2. **The provider reported "no changes" while the tenant was gone.** `Read` set `present: false` as
+   designed, but every issued attribute keeps its state value in a plan, so nothing differed and the
+   restore never ran. This was the worst of the nine: an apply that claims a match while the
+   substrate holds nothing.
+
+**The audit log credited the operator with everything**, because the actor was a constant. It was
+attributing tdemo's own restore and workloads to the operator, and names a tenant published were not
+audited at all.
+
+**Two claims in these documents were wrong.** The API's env file does hold four credentials, not
+one — corrected in step 6 above. And the zone policy matrix could not express a rule narrowed to a
+host and port at all, which step 7 needed; the role learned to.
+
+## Field notes
+
+**Destroying a tenant revokes the credential its state backend is using.** The teardown drill
+completed on the substrate and then Terraform could not write its state back: the state-store user
+had just been deleted along with the tenant. The stale lock object had to be removed by hand. A
+decommission migrates to local state first, and a tenant that is being rebuilt starts from local
+state too.
+
+**tdemo took index 1 and eds took index 2**, which is the reverse of what inventory had recorded.
+eds's forward zone was adopted; the reverse zone for index 1 had been bound to eds's TSIG key by
+CHG-0008, and the API rebound it to tdemo and purged the stale records, which is what
+`purgeIfHandedOver` exists for. **Until step 11 runs, do not run the `powerdns`, `minio` or
+`opnsense_dns` plays for tenants**: inventory still says eds is index 1 and the roles would fight the
+API over the same objects.
+
+**The Builder's second artifact server fails `--tags container-images`.** `dv02bld001v01` is declared
+an artifact server but has never had the role run, so nginx is absent and the image tasks fail
+chowning to a user that does not exist. The Builder itself staged both images; this host is a
+follow-up, not part of this change.
+
+**hv02 carries the tenant SNAT rule twice.** Identical duplicates, harmless, presumably from repeated
+SDN applies. Noted rather than fixed.
+
 ## Rollback, as a whole
 
 Nothing here replaces a working service: OpenBao and the API are new, and the tenants they build did
@@ -265,8 +341,16 @@ substrate is where CHG-0008 left it.
 - **ADR-0014:** the API's database now holds tenant secrets and the registry, and OpenBao's storage
   is secrets too. Both sit on VMs with no off-host copy.
 - **CHG-0007:** applying the zone policy, with step 7's two rules in it.
+- **Step 11**, the one step of this change left: retiring the per-tenant loops from the `powerdns`,
+  `minio` and `opnsense_dns` roles, which is what finally empties `deevnet_tenants`. Until then those
+  plays and the API disagree about eds's index.
 - **The provider mirror** (ADR-0012 §7), so a tenant's `terraform init` works offline instead of
-  needing a locally built provider.
+  needing a locally built provider. Until it exists the tenants' lock files cannot be committed,
+  because the only source is a locally built binary whose checksum is nobody else's.
+- **`dv02bld001v01` as an artifact server**, or removed from the group: `--tags container-images`
+  fails there for want of nginx's user.
+- **The duplicate tenant SNAT rule** on hv02.
+- **A Raft snapshot restored onto a fresh VM**, which ADR-0016 still lists as unconfirmed.
 - **age-encrypted credential delivery** (ADR-0012 §9) for the enrollment token.
 - **The broker** (ADR-0012 §8), and then the IoT resources.
 - **Accept ADR-0010, ADR-0012, ADR-0014, ADR-0015 and ADR-0016** once this has run.
