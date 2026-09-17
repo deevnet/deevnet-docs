@@ -96,7 +96,8 @@ question is written down, not when it is answered.
   Wi-Fi key binding and a broker account binding; extends ADR-0010 §3. Reviewed 2026-09-14:
   the API only provisions and the broker reads its own auth database, device secrets are restored
   from tenant state, providers come from an offline mirror, and tenant credentials are issued
-  age-encrypted per consumer.
+  age-encrypted per consumer. Revised 2026-09-16: tenant workloads get broker accounts too, and
+  the API confines topics by writing the tenant's prefix itself.
 - [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) —
   Services on the management hypervisor run as containers on VMs grouped by domain —
   network management, substrate and tenant observability, provisioning, identity, and device
