@@ -125,6 +125,14 @@ talk to the secrets manager in the scope decided here (§8).
   unseals on every start with no operator.
 - **ansible-vault stays the root of trust** for what OpenBao can't hold about itself: the seal key,
   the recovery key shares and the initial root token.
+- **Its password is held by a person, not by a file on the control node.** That is deliberate, and it
+  is the one link in the chain that automation cannot follow. The vault password unlocks the seal key,
+  the seal key unlocks OpenBao, and OpenBao holds every runtime credential on the site — so a password
+  file on the Builder would make shell access to the Builder equivalent to holding every secret here,
+  including for anything running there on an operator's behalf. The cost is that a change needing
+  vaulted values cannot run unattended, and that cost is accepted: see
+  [Vault Operations](/docs/runbook/building-recovery/vault-operations/) for the practice that makes a
+  short decrypted window safe.
 - **The root token is not kept in use.** After bootstrap, Ansible works through its own AppRole, and
   the root token is revoked. A new root is generated with the recovery keys when needed.
 

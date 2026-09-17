@@ -125,6 +125,15 @@ by the very condition it exists for. An unreadable secret now reads as empty and
   resupplied by an explicit call, because nothing in a plan differs when a stored secret is empty —
   the provider never sees it. A `secrets_stored` flag on the tenant read, with the provider planning
   an update when it is false, would make the recovery in ADR-0016 §6 automatic instead of manual.
-- **A vault password file** would have let the whole rebuild run without decrypting the repository at
-  all, which is the condition that made the loss possible. It trades one exposure for another and was
-  declined once; worth revisiting now that the cost of the alternative is known.
+- **A rebuild drill, on a schedule.** The three defects above were found because the rebuild exercised
+  a path nothing had ever exercised — not because the credentials were lost. Running it deliberately
+  gets the same finding without the loss, and ADR-0016 already wants a Raft snapshot restored onto a
+  fresh VM confirmed, which is the same exercise. All three of these would have surfaced in it.
+
+**Closed, not open: a vault password file.** It would have let this rebuild run without decrypting the
+repository at all, which is the condition that made the loss possible. It is **declined on purpose**
+(ADR-0016 §2): the vault password unlocks the seal key, the seal key unlocks OpenBao, and OpenBao holds
+every runtime credential on the site, so putting that password in a file on the control node would make
+shell access to the Builder equivalent to holding every secret here. A human holding it is the one link
+automation cannot follow, and that is worth more than an unattended run. The mitigation is a short
+decrypted window and immediate lock-in, not a stored password.
