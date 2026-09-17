@@ -524,12 +524,17 @@ The change is complete; these are carried separately.
 - [ ] Observability tooling for `dv02sob001v01` and `dv02tob001v01`
 - [ ] API functionality, and the `platform -> management` rule to the controller's Open API port
       ([ADR-0013 §10](/docs/architecture/decisions/0013-management-services-domain-vms/))
-- [ ] Review `powerdns_dnsupdate_from`, which still admits only the management subnet, now that
-      the server sits on Platform
+- [x] Review `powerdns_dnsupdate_from`, which still admits only the management subnet, now that
+      the server sits on Platform. Done: mgmt #19 admits management, trusted and tenant_transit,
+      applied to `dv02idn001v01` on 2026-09-17 (`--tags tenant-dns`, `changed=3`). The eds zones read
+      back `ALLOW-DNSUPDATE-FROM = 10.20.99.0/24, 10.20.10.0/24, 10.20.50.0/24`, and an update signed
+      with eds's key from the Builder added and removed a TXT record.
 - [ ] `deevnet-tenant-tdemo` still names `tfstate.mobile.deevnet.net` and 10.20.99.30. The tenant
-      is destroyed; update or archive the repository.
-- [ ] `deevnet-tenant-factory` `TENANTS.md` shows index 1 as free, but the inventory gives it to
-      eds
+      is destroyed; update or archive the repository. **Not archived:** a do-not-apply banner went in
+      (tdemo #3), and [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) makes
+      tdemo the reference tenant, rewritten to create itself through the API.
+- [x] `deevnet-tenant-factory` `TENANTS.md` shows index 1 as free, but the inventory gives it to
+      eds. Done in factory #13; ADR-0015 retires the file at cutover.
 - [ ] Update the pages that describe current state: tenant DNS platform page, management
       hypervisor page, Important URLs, the VM identity and MAC naming worked examples, and the
       Omada recovery and upgrade runbooks
