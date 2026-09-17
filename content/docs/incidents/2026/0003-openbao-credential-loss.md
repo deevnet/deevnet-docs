@@ -125,10 +125,18 @@ by the very condition it exists for. An unreadable secret now reads as empty and
   resupplied by an explicit call, because nothing in a plan differs when a stored secret is empty —
   the provider never sees it. A `secrets_stored` flag on the tenant read, with the provider planning
   an update when it is false, would make the recovery in ADR-0016 §6 automatic instead of manual.
-- **A rebuild drill, on a schedule.** The three defects above were found because the rebuild exercised
-  a path nothing had ever exercised — not because the credentials were lost. Running it deliberately
-  gets the same finding without the loss, and ADR-0016 already wants a Raft snapshot restored onto a
-  fresh VM confirmed, which is the same exercise. All three of these would have surfaced in it.
+- **Two drills, on a schedule, and they are not the same exercise.** The three defects above were found
+  because the rebuild produced **keys the site had never seen before** — not because the credentials
+  were lost, and not because data was restored.
+  - **A snapshot restore** (ADR-0014, and ADR-0016's last unconfirmed claim) proves the data survives:
+    a Raft snapshot onto a fresh instance with the same seal key gives back KV, Transit and PKI
+    *identically*. It would **not** have found any of the three defects above, because nothing's key or
+    issuer changes.
+  - **A key change** is what finds them, and it needs no wipe. Both halves are one reversible API call
+    each: rotate the PKI root and make the new issuer default, which must make the `deevnet_api` role
+    reissue; and rotate the Transit key and raise `min_decryption_version`, which must make the stored
+    tenant secrets unreadable and force a resupply. Set the default issuer and
+    `min_decryption_version` back and the site is as it was.
 
 **Closed, not open: a vault password file.** It would have let this rebuild run without decrypting the
 repository at all, which is the condition that made the loss possible. It is **declined on purpose**
