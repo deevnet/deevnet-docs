@@ -14,7 +14,7 @@ weight: 10
 | **Window** | No operator on site needed: every step is a control-node run or an API call. The one restart affects tenant name resolution for seconds, and no tenant is live. |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao, tenant DNS), `dv02prv001v01` (the API, its database, the state store), `dv02hyp002p02` (the tenant hypervisor and exit node), `dv02cor002p01` (the resolver's delegations) |
-| **Automation** | `deevnet.mgmt` `openbao`, `powerdns`, `minio`, `deevnet_api`; `deevnet.net` `tenant_egress_agent`; `deevnet-provisioning-api` **v0.2.3** (v0.2.0 as planned, then three defects the run found); `terraform-provider-deevnet` v0.1.0; the tenant repositories `deevnet-tenant-tdemo` and `eds` |
+| **Automation** | `deevnet.mgmt` `openbao`, `powerdns`, `minio`, `deevnet_api`; `deevnet.net` `tenant_egress_agent`; `deevnet-provisioning-api` **v0.2.4** (v0.2.0 as planned, then four defects the run and the rebuild found); `terraform-provider-deevnet` v0.1.0; the tenant repositories `deevnet-tenant-tdemo` and `eds` |
 | **Risk** | Medium. OpenBao becomes a service everything else needs to start, and its seal key is the root of the whole arrangement. The API gains write access to tenant DNS, the resolver, the state store and the tenant hypervisor. |
 | **Related decisions** | [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) — what the API builds and what a tenant holds; [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) — where the credentials live; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5 and §9; [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) — built the VMs this deploys into, and created eds's zones, key and state credential; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy this adds two rules to, still unapplied |
@@ -141,7 +141,9 @@ Ansible its own AppRole and **revokes the root token**.
 
 **Verify:**
 - `.openbao/dv02idn001v01-init.json` on the control node holds the recovery key and Ansible's
-  AppRole. Move both into the vault, then delete the file.
+  AppRole. Move all three into the vault, then **`make vault`, commit and push** — and only then
+  delete the file. These values exist nowhere else, and losing them means rebuilding OpenBao
+  ([INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/)).
 - `.openbao/site-ca.pem` exists.
 - Re-run the play: `changed=0`.
 - Restart the VM, or the container, and confirm OpenBao comes back **unsealed**.
@@ -328,6 +330,19 @@ follow-up, not part of this change.
 
 **hv02 carries the tenant SNAT rule twice.** Identical duplicates, harmless, presumably from repeated
 SDN applies. Noted rather than fixed.
+
+## What went wrong afterwards
+
+Step 3's own instruction — move the values into the vault, then delete the init file — was followed
+while the inventory was decrypted, and a `git reset --hard` run eight minutes later during the pull
+request merges discarded the plaintext. OpenBao's recovery key and Ansible's AppRole were
+unrecoverable, and the instance had to be rebuilt.
+[INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/) has the detail, the routes that were
+ruled out, and the three latent defects the rebuild exposed.
+
+**Step 3's verification is amended accordingly:** encrypting, committing and **pushing** the values is
+part of that step, and the init file is deleted only afterwards. See
+[Vault Operations](/docs/runbook/building-recovery/vault-operations/).
 
 ## Rollback, as a whole
 
