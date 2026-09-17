@@ -1,18 +1,19 @@
 ---
-title: "ADR-0015: Tenant Onboarding Through the Deevnet API"
+title: "ADR-0015: Tenants Are Built Through the Deevnet API"
 weight: 15
 ---
 
-# ADR-0015: Tenants Are Onboarded Through the Deevnet API
+# ADR-0015: Tenants Are Built Through the Deevnet API
 
 |  |  |
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-17 |
-| **Scope** | Who allocates a tenant's index, who creates what a tenant is issued at onboarding, and where the record of tenants lives |
+| **Revised** | 2026-09-17, before review. First written as onboarding only; widened so that everything that builds a tenant (its network, workloads and DNS records) is behind the API and tenants hold no substrate credential (§11–§14). Admission by enrollment token (§10). Secrets handling moved to [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/). |
+| **Scope** | Who allocates a tenant's index, who builds a tenant's network, workloads and names, what a tenant holds, and where the record of tenants lives |
 | **Extends** | [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), whose API and provider become the way every tenant is created, not only the way it registers devices |
-| **Supersedes, in part** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), where it says allocation is recorded in `TENANTS.md` (the numbering itself stands); [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/) §2 (the attachment rendered into the repository) and §3 (the reference implementation that cannot be applied) |
-| **Related** | [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0005: Tenant Zone Apex Ownership](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) |
+| **Supersedes, in part** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), where it says allocation is recorded in `TENANTS.md` (the numbering itself stands); [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/) §1 (the module consumed by tag), §2 (the attachment rendered into the repository) and §3 (the reference implementation that cannot be applied). A tenant still lives in its own repository. |
+| **Related** | [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0005: Tenant Zone Apex Ownership](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/) |
 
 ---
 
@@ -52,6 +53,18 @@ Three copies of one allocation drifted. On 2026-09-16:
 The only way to keep tdemo safe was to retire it. That is backwards: the tenant that shows how
 tenants are built is the one that should always be applicable.
 
+### Tenant Terraform holds a hypervisor credential
+
+The tenant half applies `deevnet-tenant-factory/modules/tenant` with the `bpg/proxmox` provider.
+That module creates:
+- the tenant's SDN zone, VNets and subnet, and applies SDN
+- its VMs, cloned from the template
+- its DNS records, with the `hashicorp/dns` provider
+
+So a tenant's operator runs Terraform with a Proxmox token that can create zones and VMs on the
+tenant hypervisor. The tenant repositories render it from the substrate vault through the image
+factory's credential target. Whoever can apply a tenant can change the hypervisor under every tenant.
+
 ### The recurring test passes, and the result is still wrong
 
 ADR-0010's test is *"does a recurring tenant action need a substrate commit?"* Onboarding happens
@@ -87,11 +100,11 @@ onboarding is the same shape:
 - **Verdict:** Rejected. It fixes the collision, but it leaves the onboarding a tenant can't do for
   itself.
 
-### B — The Deevnet API creates tenants
+### B — The Deevnet API builds tenants
 
 The API holds the registry in its database. A single `create tenant` call does every step in the
-table. The provider exposes it as a resource, and the index, keys and attachment come back into the
-tenant's state.
+table and builds the tenant's network. Workloads and extra names are further API resources. The
+provider exposes all of it, and tenant Terraform uses no other provider.
 
 - **Pros:**
   - One registry, which checks the live fabric before it allocates.
@@ -99,8 +112,8 @@ tenant's state.
   - Keys reach the tenant through its own state, not the substrate vault.
   - The same provider already carries the IoT resources.
 - **Cons:**
-  - The API gains credentials for PowerDNS, the core router's resolver, the state store and read
-    access to the fabric. A compromised API reaches all of them.
+  - The API gains credentials for PowerDNS, the core router's resolver, the state store, and write
+    access to tenant networks and VMs on the tenant hypervisor. A compromised API reaches all of them.
   - The API's database becomes the record of which tenants exist. ADR-0014's durability matters more.
   - Egress is node-local configuration that no API models (§7).
 - **Verdict: Chosen.**
@@ -131,7 +144,8 @@ A hash of the name, reduced to 1–62.
 
 ### 2. `create tenant` does all of onboarding, idempotently
 
-One call creates everything the table in Context lists, except egress (§7).
+One call creates everything the table in Context lists, except egress (§7), and then builds the
+tenant's network (§11).
 - **Each backend step is an ensure.** A step that finds its object already correct changes nothing.
   So a failed create is resumed by calling again, and an existing object is adopted rather than
   duplicated.
@@ -142,9 +156,8 @@ One call creates everything the table in Context lists, except egress (§7).
   - forward and reverse zone, the update server, the TSIG key name and secret
   - the state endpoint, bucket, prefix, access key and secret key
   - the tenant's own API token
-- **Deleting a tenant is refused while the fabric still holds its zone.** The tenant destroys its own
-  resources first. Removing the zones, keys and resolver delegation under a live tenant would leave it
-  running and unreachable.
+- **Deleting a tenant is refused while it has workloads.** Its workloads are destroyed first (§12).
+  Then the API removes the network, the resolver delegation, the zones and key, and the state user.
 
 ### 3. Allocation checks the database and the fabric
 
@@ -195,7 +208,11 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
 | PowerDNS | the HTTP API key | every zone and key on the server | 4.9.17, 2026-09-17 |
 | Core router resolver | an OPNsense API key | the resolver's forwarding entries, and whatever else the key's user is granted | endpoints the `opnsense_dns` role already uses |
 | State store | a dedicated MinIO admin user with a scoped policy | create users and policies and attach them | RELEASE.2025-09-07T16-13-09Z, 2026-09-17 |
-| Fabric | a Proxmox token with read access to SDN | read zones and VNets | hv02, 2026-09-17 |
+| Tenant hypervisor | a Proxmox token scoped to tenant SDN objects, VM creation from the template, the tenant datastore and per-tenant pools | build and remove tenant networks and workloads (§11, §12) | reading SDN: hv02, 2026-09-17; writing: to confirm |
+
+**Where these credentials live.** In OpenBao, not in env files
+([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) §3). The API holds only an
+AppRole credential.
 
 **PowerDNS's HTTP API is enabled, which reverses a recorded choice.** Its configuration says:
 *"The HTTP API is deliberately NOT enabled. Its key is global to the server, so exposing it would
@@ -248,26 +265,82 @@ site's API and gets whatever index is free there.
 
 ### 9. The reference tenant is tdemo
 
-- **`deevnet-tenant-tdemo` is the reference tenant.** It holds no index and no attachment. It creates
-  itself through the provider like any tenant.
+- **`deevnet-tenant-tdemo` is the reference tenant.** It holds no index, no attachment and no
+  substrate credential. It creates itself through the provider like any tenant.
 - **`examples/tenant/` in the factory is removed.** Its guard, an index the module rejects, only
   existed because a copied repository carried a number.
 - **The rebuild-from-scratch drill applies tdemo** and destroys it again.
 
-### 10. Authentication, first slice
+### 10. Admission by enrollment token
 
-- **Creating, listing and deleting tenants takes the operator token**, the API's existing bearer token.
-- **`create tenant` returns a token for the tenant**, stored as a hash. Tenant-scoped calls (ADR-0012
-  §2) will take it.
-- **Deciding who may create a tenant** separately from what a tenant may do afterwards is left for a
-  later record (Open questions).
+- **The operator admits a tenant name.** Admission takes the operator token, and it returns a
+  single-use enrollment token (ADR-0016 §4).
+- **The enrollment token reaches the tenant repository age-encrypted** (ADR-0012 §9). It is the only
+  thing delivered that way; every other value comes back from create.
+- **The tenant's first `create` spends it** and receives the tenant's own token, stored by the API as a
+  hash. Every later call the tenant makes (workloads, records, restore, the IoT resources) takes that
+  token and is confined to that tenant.
+- **Tenant Terraform never holds the operator token**, and no substrate credential either.
+- **Listing all tenants, reconcile and the egress list stay operator calls.**
+
+### 11. The API builds the tenant network
+
+- **`create tenant` gains a `network` step** after the onboarding steps. It builds what
+  `modules/tenant` builds today: the EVPN zone on the fabric's controller, the tenant's VNets, and
+  the subnet with SNAT through the exit node. Then it applies SDN.
+- **Numbers come from the index** (ADR-0002), as they do now.
+- **SDN apply is cluster-wide, so the API serialises it.** One apply runs at a time, across tenants.
+  The fabric's own Terraform must not apply while a tenant step does.
+
+### 12. The API builds workloads
+
+A workload is a VM in the tenant's network, created through the API and exposed as a provider
+resource.
+- **The tenant chooses:** name, cores, memory, disk and SSH public keys.
+- **The API chooses** everything that is substrate knowledge:
+  - the template: the newest by name prefix, the rule `proxmox_vm` already follows, because its VMID
+    changes on every image-factory rebuild
+  - the VMID and MAC, from the same allocation scheme as the substrate's VM identity allocator
+  - the node: the fabric's member
+  - the address: a stable ordinal from `.10` in the tenant subnet, stored in the registry so it
+    survives rebuilds
+- **Cloud-init** gets the static address, the anycast gateway and the site resolver.
+- **Restore:** a workload re-posted from state is adopted by name and tenant tag when the VM still
+  exists. On a reissued index (§5), it is rebuilt on the new numbering.
+
+### 13. The API publishes workload names
+
+- **When the API creates a workload,** it writes that workload's A record in the tenant's zone and
+  the PTR in its reverse zone. It removes both when the workload goes.
+- **Extra names** (aliases such as eds's `palette` and `lightd`) are a provider resource backed by
+  the API.
+- **The TSIG key is still issued.** A tenant that wants to publish over RFC 2136 directly still can
+  (ADR-0004).
+
+### 14. What stays substrate, and what the factory becomes
+
+- **Tenant repositories use one provider,** `deevnet/deevnet`. `bpg/proxmox` and `hashicorp/dns`
+  leave them, and so does every rendered substrate credential.
+- **Hypervisor readiness stays substrate:**
+  - the fabric: openfabric underlay and EVPN controller, in the factory's `fabric/`
+  - the node network: transit, underlay and forwarding, in `proxmox_node_network`
+  - egress (§7)
+- **`deevnet-tenant-factory` is reduced to its fabric** and renamed to say so. Retired:
+  - `modules/tenant` and its tags
+  - `examples/tenant`
+  - `TENANTS.md`
+  - the `tenant-*`, `tenant-attachment`, `fabric-contract` and `example-plan` targets
 
 ---
 
 ## Consequences
 
-**Onboarding becomes an apply.** A new tenant is a repository copied from tdemo and a `terraform
-apply`, with no substrate commit and no automation run, apart from egress until §7's agent exists.
+**Building a tenant becomes an apply.** A new tenant is an admission, a repository copied from
+tdemo, and a `terraform apply` with one provider. There is no substrate commit and no automation run,
+apart from egress until §7's agent exists.
+
+**Tenants hold no substrate credential.** No operator token, no Proxmox token, no vault access. A
+tenant holds its enrollment token once, then its own token and the keys issued to it.
 
 **The substrate vault stops being on the tenant's path.** ADR-0012 §9's credentials file shrinks to
 the one value a tenant needs before it can reach the API. Every other key comes back from `create
@@ -279,15 +352,16 @@ tenant` into state.
 - **Why it matters more:** it sits in the same VM as the state store it would be restored from.
   ADR-0014 now covers the registry too, not only device secrets.
 
-**The API holds more.** Its key rewrites any tenant zone, its router key edits the resolver, and its
-state-store user is effectively an IAM administrator. A compromised API compromises tenant DNS,
-tenant state and tenant IoT together.
+**The API holds more.** Its key rewrites any tenant zone, its router key edits the resolver, its
+state-store user is effectively an IAM administrator, and its Proxmox token builds and removes tenant
+networks and VMs. A compromised API compromises every tenant's DNS, state, network, workloads and IoT
+together.
 
 **PowerDNS runs its HTTP API**, bound to the provisioning VM, and reverses the comment that kept it
 off.
 
 **Two narrow rules join ADR-0012's:**
-- `platform -> management`: the API to the tenant hypervisor's Proxmox API port, for reading SDN
+- `platform -> management`: the API to the tenant hypervisor's Proxmox API port
 - the API to the core router's API. The router answers on each segment's gateway, so this is a rule
   to the router on Platform.
 
@@ -295,24 +369,27 @@ PowerDNS and the state store are on Platform with the API, so they need no rule.
 
 **tdemo comes back.** Its retirement is reversed.
 
-**The factory loses its registry and its example.** It keeps the fabric and the module.
+**The factory becomes the fabric.** Its module, example, registry and tenant targets retire, and it
+is renamed.
 
 ---
 
 ## Open questions
 
-1. **Admission.** Who may create a tenant? The first slice uses the operator token, so creating a
-   tenant is still an operator act, just not a commit. A tenant self-registering needs an admission
-   credential, and a record of its own.
+1. **Admission.** *Answered 2026-09-17* (§10): the operator admits a name and issues a single-use
+   enrollment token.
 2. **Registry recovery without tenants.** Should the API be able to rebuild its registry from the
    fabric alone (zone ID = name, VRF VNI = index) when the database is lost, before any tenant
    re-applies? That would keep indexes stable even if a new tenant is created first. The first slice
    doesn't do it.
 3. **The router key's scope.** Can an OPNsense API user be limited to the resolver's forwarding
    endpoints and reconfigure, rather than sharing the automation user's key?
-4. **Encrypting secrets in the database.** The API stores TSIG and state secrets so it can re-ensure
-   the services after they are rebuilt. The first slice stores them in the clear in a database that
-   publishes no port.
+4. **Encrypting secrets in the database.** *Answered 2026-09-17* (ADR-0016 §3): Transit envelope
+   encryption.
+5. **Workload shape.** Which templates a tenant may choose, and whether cores, memory and disk have
+   per-tenant limits.
+6. **The fabric and tenant SDN apply.** Does the fabric's Terraform move behind the same
+   serialisation, or is it applied only when no tenant step is running?
 
 ## To confirm when building
 
@@ -323,6 +400,10 @@ PowerDNS and the state store are on Platform with the API, so they need no rule.
 - **The egress agent renders exactly what the role renders today** for the same tenant list.
 - **Adopting eds** (zones and key from CHG-0008, never applied) through `create tenant`, with the
   vault's existing secrets supplied, changes nothing on PowerDNS or the state store.
+- **The smallest Proxmox privilege set** that creates and removes tenant zones, VNets, subnets and
+  VMs, applies SDN, and can do nothing to substrate VMs or the fabric's controller.
+- **A workload built by the API** comes up addressed, reachable from the fabric's gateway, egressing
+  through the perimeter, and resolvable by its published name.
 
 ---
 
@@ -341,5 +422,10 @@ PowerDNS and the state store are on Platform with the API, so they need no rule.
   - a drill that lost the database twice: once a restore was reissued a new index because another
     tenant took the old one, once it kept its own
 - **Not yet proven:** a resolver write against the real router.
+- **Revised the same day, not yet built:**
+  - admission (§10)
+  - the network, workloads and names (§11–§13)
+  - the factory's reduction (§14)
+  - the move of credentials and TLS to OpenBao (ADR-0016)
 - `deevnet_tenants` still drives onboarding. The provider, the egress agent and the tdemo and eds
-  cutover come next.
+  cutover come after.

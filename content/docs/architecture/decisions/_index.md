@@ -109,8 +109,15 @@ question is written down, not when it is answered.
   re-derived. The store's data moves to a data disk and is copied on every write to separate on-site
   hardware, and the API's database is backed up on a schedule. It closes ADR-0012 §5's re-flash
   exception, which ADR-0013 had made a single-VM event. Extends ADR-0007 and ADR-0013.
-- [ADR-0015: Tenant Onboarding Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) —
-  *Proposed.* The Deevnet API creates tenants. Its database is the only registry, an index is
-  allocated against both that registry and the live fabric, and every onboarding key comes back into
-  the tenant's own state. Tenant repositories carry no index, so tdemo returns as the reference
-  tenant. Extends ADR-0012; supersedes the registry in ADR-0002 and ADR-0006 §2–§3.
+- [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) —
+  *Proposed.* The Deevnet API creates and builds tenants: its database is the only registry, an
+  index is allocated against that registry and the live fabric, and the API builds each tenant's DNS,
+  state credential, network, workloads and workload names. Tenants are admitted with a single-use
+  enrollment token and hold no substrate credential; tenant repositories use one provider and carry no
+  index, so tdemo returns as the reference tenant, and the factory keeps only the fabric. Extends
+  ADR-0012; supersedes the registry in ADR-0002 and ADR-0006 §1–§3.
+- [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/) —
+  *Proposed.* The substrate's runtime credentials, the encryption of tenant secrets at rest, the
+  internal certificate authority and single-use enrollment tokens live in OpenBao, in the identity VM,
+  unsealed by a static key from ansible-vault. Chosen over Vault Community Edition for its native
+  static seal and free namespaces. Extends ADR-0015.
