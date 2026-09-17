@@ -9,7 +9,7 @@ weight: 12
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-14 |
-| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). |
+| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). Revised 2026-09-16: tenant workloads get broker accounts too (§3), and topic confinement is decided (§10, Open question 4). |
 | **Scope** | How a tenant reaches an IoT platform service whose own interface can't confine it to its scope, and what the substrate builds so it can |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §1 and §3, which require a scoped service but don't say how one is built when the backing software can't scope itself |
 | **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (per-device Wi-Fi keys) |
@@ -363,7 +363,7 @@ digraph provisioning {
 - **It provisions, and nothing else.** A tenant's `terraform apply` is the only thing that calls it.
   It writes:
   - a Wi-Fi key to the Omada controller, which pushes it to the AP
-  - a device account and its ACL to the broker's auth database
+  - a broker account, for a device or a tenant workload, and its ACL to the broker's auth database
 
   After that, the AP authenticates the device itself, and the broker reads its own database (§8).
   No device, AP or broker calls the API at runtime.
@@ -393,7 +393,7 @@ v1 covers exactly the actions that fail ADR-0010's test. Resource names below ar
 |---|---|---|
 | `deevnet_iot_device` | A registry entry: name, trust class (`iot` or `iot_vendor`), optional MAC | The calling tenant |
 | `deevnet_iot_wifi_key` | A per-device PPSK key | **The VLAN of the device's trust class.** The tenant can't choose a VLAN, so no tenant network ever reaches the air (ADR-0011 Option B stays rejected). |
-| `deevnet_iot_broker_account` | An MQTT account for the device, with its topic permissions | Topics under the tenant's prefix, `<tenant>/…`. The existing ACLs already follow this: `eds/lightstand/…`. **Devices of trust class `iot` only.** |
+| `deevnet_iot_broker_account` | An MQTT account, with its topic permissions, for a device or for a tenant workload | Topics under the tenant's prefix, `<tenant>/…`, which the API writes itself (§10). The existing ACLs already follow this: `eds/lightstand/…`. **A device account needs trust class `iot`.** A workload account has no device. |
 
 **IoT Vendor devices get no broker account.**
 - **The standard forbids the path.** It says *"IoT vendor segment MUST be fully isolated from all
@@ -405,6 +405,21 @@ v1 covers exactly the actions that fail ADR-0010's test. Resource names below ar
 - **What the API does instead:** it refuses `deevnet_iot_broker_account` for a device whose trust
   class is `iot_vendor`. Such a device gets a `deevnet_iot_wifi_key` on VLAN 31, and outbound
   internet only.
+
+**Tenant workloads get broker accounts too.** *Added 2026-09-16.*
+- **Why.** A tenant's own services reach its devices through the broker. lightd, in eds, publishes
+  scenes to the LP stand and reads its status, under the ACLs in
+  `mobile/group_vars/mqtt_brokers.yml`. lightd is a workload in the tenant fabric, not a device, so
+  an account that has to belong to a registry entry can't describe it.
+- **How.** `deevnet_iot_broker_account` takes an **optional** device.
+  - With a device, the device's trust class must be `iot`, as above.
+  - Without one, the account belongs to a tenant workload.
+- **Its path is already declared.** A workload connects from the tenant fabric over
+  `tenant_transit -> iot_backend` (Context), so the device trust-class rule doesn't apply to it.
+- **Confinement doesn't change.** Every account's topics are confined to the tenant's prefix
+  (§10), with or without a device.
+- **Not chosen: a separate workload-account resource.** It would repeat the same schema and the
+  same confinement, and differ only in one reference.
 
 The `deevnet_` prefix is not just a naming choice. *"Terraform uses a resource type's name to
 determine which provider to use. By convention, resource type names start with their provider's
@@ -609,8 +624,8 @@ they already do for `bpg/proxmox` and `hashicorp/dns`.
   - *"The database drivers are handled using the `vmq_diversity` plugin"*
   - supported databases: PostgreSQL, MySQL, MongoDB, Redis and CockroachDB
   - passwords are bcrypt for PostgreSQL, MongoDB and Redis
-  - ACLs are JSON pattern objects with optional `modifiers`, which is one way to enforce the tenant
-    prefix (Open question 4)
+  - ACLs are JSON pattern objects with optional `modifiers`. Modifiers turned out not to be a way to
+    enforce the tenant prefix (§10).
 - **Lookups happen once per connection.** *"The database integrations will cache the ACLs when the
   client connects avoiding expensive database lookups for each publish or subscribe message. The
   cache entries are evicted when the client disconnects."*
@@ -684,6 +699,59 @@ re-issuing alone revokes nothing already exposed.
 | **SOPS with age** | The same key model, with values encrypted per key and an Ansible collection (`community.sops`) to write them. But `sops` isn't in the site's configured package repositories, so it would be one more binary to stage. |
 | **The Deevnet API issues the credentials** | This prepares for short-lived tokens. But the API would have to serve TSIG and state keys owned by other roles, and the one-time enrollment secret still has to be delivered somehow. |
 | **One age key per tenant** | Simpler, but a leak anywhere means rotating everywhere. |
+
+### 10. The API confines topics by writing the tenant's prefix itself
+
+*Decided 2026-09-16 (Open question 4).*
+
+**Decision.**
+- **A tenant declares topic patterns relative to its prefix.** eds declares
+  `lightstand/+/scene`, and the API stores `eds/lightstand/+/scene`.
+- **The API validates each pattern before prefixing it.** It refuses a pattern that:
+  - is empty, or starts with `/` or `$`
+  - uses `#` anywhere except as the whole last level, or `+` anywhere except as a whole level
+  - contains `%`, which starts a VerneMQ template variable. v1 doesn't need them: the API chooses
+    usernames, so `%u` has nothing to offer a tenant.
+- **The API never writes `modifiers`**, and no provider attribute can set them.
+
+**Why the prefix holds.**
+- **The first level is always literal.** Every stored pattern starts with the tenant's name as a
+  literal level, and MQTT wildcards can't reach past a level:
+  - *"The plus sign (‘+’ U+002B) is a wildcard character that matches only one topic level."*
+    Where it is used, *"it MUST occupy an entire level of the filter [MQTT-4.7.1-3]"*.
+  - The multi-level wildcard *"MUST be the last character specified in the Topic Filter
+    [MQTT-4.7.1-2]"*.
+  - Source: [MQTT 3.1.1 §4.7](https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html).
+  - So `eds/#` matches topics under `eds`, and never under another tenant's name.
+- **The prefix does the confining.** Refusing a leading `/`, a leading `$` or a malformed wildcard
+  is hygiene. Once prefixed, each of those would still sit under the tenant's name, but none means
+  what the tenant intended.
+
+**Why not modifiers.** Open question 4 listed modifiers as a way to rewrite topics into the prefix.
+They can't do that:
+- **They replace values; they don't prefix them.** VerneMQ documents a publish ACL modifier as
+  `"modifiers": {"topic": "new/topic", "payload": "new payload", "qos": 2, "retain": true,
+  "mountpoint": "other-mountpoint"}`
+  ([VerneMQ database auth](https://docs.vernemq.com/configuring-vernemq/db-auth)).
+- **A fixed topic can't map a wildcard pattern into a prefix.**
+- **A modifier can move a message out of the prefix.** It can set any topic or another mountpoint.
+  That makes it a way around confinement, which is why the API never writes one.
+
+**Why the API prefixes rather than only refusing.** Refusal alone would also confine: the tenant
+writes `eds/…` and the API rejects anything else. Prefixing does the same job and leaves the tenant nothing to get
+wrong.
+
+**What the API writes for each account.** One row in the plugin's `vmq_auth_acl` table:
+- **Mountpoint:** the default, `''`, as in the plugin's own example.
+- **Username:** derived by the API from the tenant and the account name, so no two tenants collide.
+- **Password:** the bcrypt hash (§8).
+- **ACLs:** the prefixed publish and subscribe patterns.
+- **Client ID:** `*`.
+  - The plugin looks a client up with
+    `WHERE mountpoint=$1 AND (client_id=$2 OR client_id='*') AND username=$3`
+    (`apps/vmq_diversity/priv/auth/postgres_cockroach_commons.lua`, unchanged at tag 2.2.0).
+  - So an account isn't tied to a client ID, and a tenant doesn't declare one.
+  - The password still has to match.
 
 ---
 
@@ -784,9 +852,11 @@ An API over a data plane that doesn't enforce anything confines nothing that mat
    leases from the IoT pool and is named in its owner's own zone, so a registry entry is the
    device's identity and the provider composes with the existing `hashicorp/dns` path rather than
    wrapping DNS.
-4. **Where is topic confinement enforced?** The API can refuse to write an ACL outside the
-   tenant's prefix, or write `modifiers` that rewrite topics into it (VerneMQ's database ACLs
-   support both), or both.
+4. **Where is topic confinement enforced?** **Answered 2026-09-16** (§10):
+   - The API enforces it. A tenant declares patterns relative to its prefix, and the API validates
+     each one and writes the prefix itself.
+   - Modifiers were ruled out. They set fixed values, so they can't add a prefix, and they could
+     move a message out of one.
 5. **Is the broker's auth database the API's own database, or a separate one?** *Answered
    2026-09-14:* a separate one, beside the broker in the messaging VM, so it
    fate-shares with the broker rather than with the API (§7). Only the API writes it, and the broker's credential is
@@ -814,6 +884,10 @@ prove.
   (§7).
 - **A self-hosted CI runner decrypts the credentials file with its own key**, and reaches the API
   and the mirror (§9).
+- **A tenant account asking for more than its prefix is refused** (§10).
+  - VerneMQ compares a subscription's filter with the account's ACL patterns. The documentation
+    doesn't say what happens when the filter is wider than every pattern, so test it.
+  - Test cases: a subscription to `#` or `+/…`, and a publish to another tenant's topic.
 
 ---
 
@@ -826,7 +900,8 @@ prove.
   §9), and four remained.
 - Revised the same day: §8 makes the API provisioning-only, which adds Open questions 5 and 6.
 - Open questions 2, 5 and 6 were answered the same day (§7, ADR-0013). Question 3 was answered on
-  2026-09-15, with ADR-0011 question 2. Questions 1 and 4 are deferred to a later iteration.
+  2026-09-15, with ADR-0011 question 2. Question 4 was answered on 2026-09-16 (§10), and §3 gained
+  broker accounts for tenant workloads the same day. Question 1 is deferred to a later iteration.
 - **Acceptance waits on:**
   - ADR-0010 (ADR-0011 was accepted on 2026-09-15)
   - the data-plane changes above: CHG-0005 and CHG-0007
