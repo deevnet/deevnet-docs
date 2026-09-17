@@ -230,19 +230,25 @@ reads every secret. The key gets the same care as the vault password.
   - The Go client `github.com/openbao/openbao/api/v2` v2.7.0 logged in with that AppRole, read KV and
     round-tripped Transit.
   - `ansible.builtin.uri` read KV. `community.hashi_vault` 6.2.1 failed for want of `hvac` (§5).
+- **Confirmed on 2026-09-17 on `dv02idn001v01`, deployed by CHG-0010:**
+  - The image runs under the root podman `podman_service` uses, with the role's uid-matched
+    directories. It reported `"type":"static","initialized":true,"sealed":false` and **came back
+    unsealed after a restart of the container**, with no operator.
+  - Re-running the play is `changed=0`, and it authenticates as Ansible's AppRole rather than root.
+  - The API reads its backend credentials from KV at start, serves TLS from the site CA, and both
+    tenants' Terraform and the provider trust that CA from the delivered file, with no system trust
+    store change.
 - **Still to confirm:**
-  - The image's entrypoint changes ownership of its volumes. Under rootless podman on the Builder
-    that failed (`chown … Operation not permitted`), and the probe ran `bao` directly. Under the
-    root podman `podman_service` uses on the VM, confirm the entrypoint works.
   - A Raft snapshot restored onto a fresh VM gives back KV, Transit and PKI, and the API decrypts its
     stored secrets.
-  - Tenants' Terraform and the provider trust the site CA from a delivered file, with no system
-    trust store change.
 
 ---
 
 ## Current state
 
-- **Proposed.** Nothing is deployed.
-- The first slice of ADR-0015 (open pull requests) still uses env-file credentials and plain HTTP.
-  It changes to this record before it is deployed.
+- **Proposed, and deployed.** CHG-0010 built all of it on 2026-09-17: the instance on
+  `dv02idn001v01`, the static seal from ansible-vault, KV, Transit, PKI and response wrapping, and
+  AppRoles for the API and for Ansible. The root token is revoked.
+- The API holds one AppRole instead of five backend credentials, its TLS certificate comes from the
+  site CA, and both live tenants were admitted with response-wrapped enrollment tokens.
+- What §8 left out is still out: no tenant namespaces, no dynamic database credentials.
