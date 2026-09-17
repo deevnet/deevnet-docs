@@ -81,6 +81,20 @@ Before applying changes:
 - [ ] Dry run shows expected changes (`--check --diff`) — **not available for the network roles, see below**
 - [ ] Changes committed to version control
 - [ ] Rollback plan documented (for disruptive changes)
+- [ ] **Any once-only secret the change produces is encrypted, committed and pushed before the
+      change continues** — see [Vault Operations](/docs/runbook/building-recovery/vault-operations/)
+
+{{< hint warning >}}
+**A secret a change generates is not safe until it is pushed.** An OpenBao init, a device token a
+vendor shows once, a Proxmox token secret: while it sits in a decrypted `vault.yml` it exists in one
+place that git is configured to reject, so nothing is holding it. Encrypt, commit and push it, and
+only then delete whatever the change wrote it to.
+
+While the inventory is decrypted, `git reset --hard`, `git restore .` and `git clean -fd` destroy
+plaintext with no way back — it was never staged, so it is not in the object database. CHG-0010 lost
+OpenBao's recovery key and Ansible's AppRole that way and had to rebuild the service.
+[Vault Operations](/docs/runbook/building-recovery/vault-operations/) has the procedure.
+{{< /hint >}}
 
 {{< hint danger >}}
 **`--check --diff` is not a dry run for the network roles.** Neither the OPNsense roles nor
