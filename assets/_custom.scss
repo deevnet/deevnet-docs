@@ -75,11 +75,19 @@
 // Tables
 // -----------------------------------------------------------------------------
 
+// A table wider than the text column used to be CLIPPED: `overflow: hidden` is
+// what rounds the corners, and on a table it also cuts off whatever does not
+// fit - the right-hand columns disappeared with no scrollbar to say so.
+// `display: block` makes the table its own scroll container, so the corners
+// stay round and a wide table scrolls instead of losing content.
 .markdown table {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 6px;
-  overflow: hidden;
   border: 1px solid var(--border-color);
 
   thead tr {
