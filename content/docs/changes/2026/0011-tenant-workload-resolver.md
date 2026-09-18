@@ -10,8 +10,8 @@ weight: 11
 | **Date** | 2026-09-17 |
 | **Change type** | Configuration · Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | 2026-09-17, after the fix merges |
+| **Status** | **In progress.** Steps 1 and 2 are done and verified; Step 3 (tdemo) is waiting on that tenant's state credentials. |
+| **Window** | Started 2026-09-17; Steps 1–2 ran 2026-09-17/18 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API); tenant workloads 2040 `tdemo-app` and 2080 `eds-services` on `dv02hyp002p02` |
 | **Automation** | `deevnet.mgmt` `playbooks/site.yml --limit deevnet_api`, against `ansible-inventory-deevnet/mobile`; then `terraform apply` in each tenant repo |
@@ -167,15 +167,39 @@ As Undo Step 2, for tdemo.
 
 ## Outcome
 
-*Completed after the change has run.*
-
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-17 | Prereqs | api#8, mgmt#27, inv#39 merged. API tagged `v0.2.6`, `make image`, `make stage`. A missing prerequisite surfaced here — see departures. |
+| 2026-09-18 | Step 1 | `site.yml --limit deevnet_api`: `ok=109 changed=12 failed=0`. `/version` reports v0.2.6 (commit f26617a), `/readyz` 200, and the env file carries `DEEVNET_WORKLOAD_RESOLVER=10.20.50.1` alongside an unchanged `DEEVNET_RESOLVER_FORWARD_TO=10.20.25.21`. |
+| 2026-09-18 | Step 2 | `terraform apply -replace=deevnet_workload.services`: 1 added, 1 destroyed, 34s. Identity came back unchanged — VMID 2080, MAC `02:de:20:00:08:20`, 10.20.130.10 — as the derived-identity rule requires. |
+| — | Step 3 | Not run. Needs tdemo's own API token and MinIO state credentials; the operator's environment held eds's. |
+
+**What Step 2 proved**, from inside the rebuilt VM, using the system resolver rather than the
+config file:
+
+```
+quay.io                          -> 184.193.3.126     (was REFUSED)
+api.mobile.deevnet.net           -> 10.20.25.20       (was REFUSED)
+services.eds.mobile.deevnet.net  -> 10.20.130.10      (worked before, still works)
+registry.fedoraproject.org       rcode=0, 2 answers
+```
+
+This is the first time a tenant workload on this substrate has resolved a public name.
 
 ### Departures from the plan
 
--
+- **A prerequisite was missing.** The plan said "tag and stage" and stopped there, but the
+  `deevnet_api` role **pins** `deevnet_api_version`; staging a tarball does not deploy it. Caught
+  before Step 1 ran and added to Prerequisites. The role does carry a "Confirm the running API is
+  the pinned version" task, so the play would have failed rather than silently redeploying the old
+  image — the gap was in the plan, not the automation.
+- **Step 3 was not reached in the same window**, for the credential reason above rather than
+  anything about the change itself.
+- **Verification went further than written.** The plan asked that `/etc/resolv.conf` name
+  10.20.50.1. On a systemd-resolved host `/etc/resolv.conf` names the local stub `127.0.0.53`, so
+  the check was taken from `resolvectl status` and, more usefully, from what
+  `socket.gethostbyname` actually returns. Checking the config file alone would have looked like a
+  failure while the system worked.
 
 ## Follow-ups
 
@@ -187,5 +211,13 @@ As Undo Step 2, for tdemo.
       `deevnet_workload`.
 - [ ] CHG-0007 must keep the tenant→core-router DNS path open when the zone policy is enforced,
       or every tenant workload loses name resolution.
+- [ ] **A tenant's MinIO state credentials are only recoverable from inside the state they
+      unlock.** `terraform output` reads through the configured backend, so reading
+      `state_backend` needs the keys it contains. Today the only way back in is the
+      pre-migration `terraform.tfstate.backup` left in the tenant directory — which `.gitignore`
+      treats as disposable. Losing it makes the tenant unreachable through its own Terraform,
+      with a rebuild as the recovery. The API issues secrets in create responses only, by design,
+      so the fix is not a read-back endpoint; it needs a deliberate custody answer. (The API
+      token itself is fine — it is a normal output, recoverable once the backend opens.)
 - [ ] The API's test suite asserts what the API writes, not what a workload can do. The
       regression test added here is the first of the latter kind; look for the same gap elsewhere.
