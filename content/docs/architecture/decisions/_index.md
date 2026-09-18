@@ -128,7 +128,8 @@ question is written down, not when it is answered.
   mechanism can change. **Delivery is forced to be a pull** from inside the workload, because a
   tenant has no inbound path. **The mechanism is open:** an SMBIOS bootstrap pointer with
   configuration fetched from the API leads, because it is the only channel with an API-only path
-  today and the only one where secrets never touch substrate storage — at the cost of a
-  substrate-owned agent and the API entering the boot path. Extends ADR-0010, which said tenants own
-  their code without saying how it arrives, and ADR-0015, which builds the empty workload this
-  fills.
+  today and the only one where secrets never touch substrate storage; both halves were tested, and
+  the channel's measured 512-character cap enforces a pointer rather than a payload. The workload
+  fetches only when it has no cached configuration, not on every boot, which is what keeps ADR-0012
+  provisioning-only rather than softening it. Extends ADR-0010, which said tenants own their code
+  without saying how it arrives, and ADR-0015, which builds the empty workload this fills.
