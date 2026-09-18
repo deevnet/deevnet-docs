@@ -35,7 +35,8 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0007 | — | [Core Router Zone Policy, First Application](2026/0007-core-router-zone-policy/) | Configuration | mobile | Planned |
 | CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](2026/0008-domain-vms-build-out/) | Deployment · Decommission | mobile | Complete |
 | CHG-0009 | — | [Access Switch Omada Adoption](2026/0009-access-switch-adoption/) | Migration | mobile | Planned (on hold) |
-| CHG-0010 | — | [Deploy the Deevnet API and Cut Tenants Over](2026/0010-tenant-api-cutover/) | Build-out and migration | mobile | Planned |
+| CHG-0010 | 2026-09-17 | [Deploy the Deevnet API and Cut Tenants Over](2026/0010-tenant-api-cutover/) | Build-out and migration | mobile | Complete |
+| CHG-0011 | — | [Tenant Workloads Get a Resolver](2026/0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Planned |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
