@@ -58,9 +58,36 @@ git revert the inventory commit (restoring deevnet_wifi_psk.iot), then make vaul
 Nothing depends on either object until phase 3. The VLAN 30 network object may be left: it is
 harmless and the other segments have one.
 
-## Record here when it runs
+## Outcome — ran 2026-09-18
 
-- [ ] Did the controller accept a PPSK profile with an **empty** key list, or did the play fall back
-      to the seed-and-delete path? (The play says so in its output.) This answers the one question
-      phase 1 could not.
-- [ ] Did any client drop, and for how long?
+**Done, and verified on the controller rather than from Ansible.**
+
+```
+PLAY RECAP  dv02nms001v01 : ok=30  changed=0  unreachable=0  failed=0  skipped=8
+```
+
+| Object | State after |
+|---|---|
+| SSID `DVNTM-IOT` | VLAN 30, `security: 4` (PPSK without RADIUS) |
+| PPSK profile `DVNTM-IOT` | exists, `type: 0`, bound to that SSID, **0 keys** |
+| `DVNTM` | VLAN 10, security 3 — untouched |
+| `DVNTM-IOTV` | VLAN 31, security 3 — untouched |
+| `DVNTM-GUEST` | VLAN 40, security 3 — untouched |
+| AP `dv02wap001p01` | connected |
+
+A second `make wireless` reports `networks_to_create: []`, `ppsk_profiles_to_create: []`,
+`ssids_to_create: []` and no drift — so the run is idempotent and the new `security` comparison does
+not false-positive on the three shared-key SSIDs.
+
+**The question phase 1 could not answer: this controller ACCEPTS a PPSK profile with an empty key
+list.** `POST .../ppsk-profile` with `{"profileName": "DVNTM-IOT", "ppsk": []}` returned
+`errorCode 0`, and the seed-and-delete fallback was skipped. The fallback stays in the play — it is
+one controller's behaviour, not a documented guarantee, and the schema is silent — but it has never
+had to run here.
+
+Both Open API clients were confirmed working beforehand, read-only: Ansible's and the API's own,
+each `expiresIn: 7200`. That 2-hour TTL is why the API's token cache matters and why its 10-minute
+fallback never fires at this site.
+
+- [ ] Did any client drop off `DVNTM`, and for how long? *(Operator was connected independently of
+      the AP for this window, so the answer has to come from a client that was on it.)*

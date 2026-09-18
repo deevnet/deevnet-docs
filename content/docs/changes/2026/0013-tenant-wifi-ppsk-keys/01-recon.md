@@ -82,8 +82,11 @@ CHG-0005.
 
 Rather than spend a write to find out, the play handles both: it tries empty, and on a refusal
 creates the profile with one random seed key and deletes that key by name in the same run. Same end
-state; the seed never persists and is never reported. Phase 2 records which path this controller
-actually took.
+state; the seed never persists and is never reported.
+
+**Settled by phase 2, 2026-09-18: this controller accepts an empty key list.** The fallback was
+never exercised. It stays in the play anyway — that is one controller's behaviour at one firmware
+level, not a documented guarantee.
 
 ## Two things the spec says that the controller may not mean
 

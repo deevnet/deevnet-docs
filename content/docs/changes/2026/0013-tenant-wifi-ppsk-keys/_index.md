@@ -11,7 +11,7 @@ bookCollapseSection: true
 | **Date** | 2026-09-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** The substrate, API, provider and deployment changes are written and merged; the controller writes and the device flash are not done. |
+| **Status** | **In progress.** Phase 2 is done — `DVNTM-IOT` is on air as PPSK with an empty profile. Phases 3–6 remain. |
 | **Window** | 2026-09-18 onward |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.0), `ansible-inventory-deevnet` |
