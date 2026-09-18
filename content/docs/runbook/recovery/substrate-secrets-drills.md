@@ -122,17 +122,28 @@ curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
 2. **The API says so plainly.** `podman logs deevnet-api` carries
    `stored secret will not open; it must be supplied again`, once per secret, with OpenBao's own reason
    (`ciphertext or signature version is disallowed by policy (too old)`).
-3. **A resupply reseals.** Each tenant re-posts its secrets from its own state, which is the
-   authoritative copy ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) §4);
-   the API answers `reconciled` on the same index.
+3. **The tenant read says so, and a plan notices.** `secrets_stored` goes false, and the tenant's next
+   `terraform plan` shows **one in-place change** on the tenant resource: the three secrets and the flag.
+   Everything else is untouched — index, subnet, zones, gateway — because the registry row is still
+   there and only the secrets are unreadable:
 
-```bash
-curl --cacert site-ca.pem -H "Authorization: Bearer $TENANT_TOKEN" \
-  -X POST https://api.mobile.deevnet.net:8080/v1/tenants \
-  -d '{"name":"...","index":N,"tsig_secret":"...","state_secret":"...","api_token":"..."}'
-```
+   ```text
+   ~ resource "deevnet_tenant" "this" {
+       ~ api_token        = (sensitive value)
+       ~ secrets_stored   = false -> (known after apply)
+       ~ state_secret_key = (sensitive value)
+       ~ tsig_secret      = (sensitive value)
+         # (18 unchanged attributes hidden)
+     }
+   Plan: 0 to add, 1 to change, 0 to destroy.
+   ```
 
-**Verify:** the stored columns carry `vault:v2:` rather than `vault:v1:`.
+4. **`terraform apply` reseals it.** The tenant sends the copies from its own state, which are the
+   authoritative ones
+   ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) §4). No operator call
+   is needed: the resupply is an ordinary apply, on each tenant.
+
+**Verify:** the stored columns carry the new key version, and `secrets_stored` is true again.
 
 ```sql
 SELECT name, left(tsig_secret,10), left(state_secret,10) FROM tenants ORDER BY idx;
@@ -148,9 +159,13 @@ and it leaves the older key version readable for anything missed.
 Both plays `changed=0`, `/readyz` `200`, every tenant name resolving forward, every reverse record
 naming its workload, and both tenants' plans clean.
 
-**A tenant cannot currently tell that the API's copy of its secrets is gone**, which is why the
-resupply above is an explicit call rather than something a plan notices. Until that is closed
-(INC-0003 follow-up), the resupply is a step of this drill and not an optional one.
+**A tenant learns this by itself.** `secrets_stored` on the tenant read was added after the first run
+of this drill, precisely because the resupply had been a `curl` call an operator had to remember. Both
+halves of the drill are now ordinary role runs and ordinary applies.
+
+**Older stored ciphertext stays readable** once `min_decryption_version` is set back, so setting it
+back is safe and is the last step. Nothing should still need it — both tenants resealed — but a tenant
+that was not applied during the drill would.
 
 ---
 
