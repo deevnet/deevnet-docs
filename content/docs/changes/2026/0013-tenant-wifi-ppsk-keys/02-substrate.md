@@ -85,6 +85,16 @@ list.** `POST .../ppsk-profile` with `{"profileName": "DVNTM-IOT", "ppsk": []}` 
 one controller's behaviour, not a documented guarantee, and the schema is silent — but it has never
 had to run here.
 
+{{< hint warning >}}
+**Qualified by [phase 5](../05-device/), 2026-09-18.** The controller accepts an empty profile, but
+the **AP will not authenticate against a profile that was empty when the SSID was provisioned to
+it**. So acceptance was never the question that mattered, and recording it here as a settled useful
+fact was a mistake. The SSID had to have its security configuration re-pushed before any key worked.
+
+The likely fix is that this play should **seed the profile** with the placeholder key rather than
+create it empty, so the SSID is always bound to a non-empty profile. Untested — see phase 5.
+{{< /hint >}}
+
 Both Open API clients were confirmed working beforehand, read-only: Ansible's and the API's own,
 each `expiresIn: 7200`. That 2-hour TTL is why the API's token cache matters and why its 10-minute
 fallback never fires at this site.
