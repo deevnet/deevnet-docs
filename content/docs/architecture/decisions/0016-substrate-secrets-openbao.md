@@ -246,9 +246,20 @@ reads every secret. The key gets the same care as the vault password.
   - The API reads its backend credentials from KV at start, serves TLS from the site CA, and both
     tenants' Terraform and the provider trust that CA from the delivered file, with no system trust
     store change.
+- **Confirmed on 2026-09-17 by the key-change drill**
+  ([OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/)), on the live site:
+  - **A rotated PKI root is picked up.** The `deevnet_api` role compares the CA the host holds with
+    `pki/cert/ca`, reissues, and restarts before its own readiness check; `openbao` refetches the CA to
+    the control node. Expiry alone does not catch a rotation, because the new root carries the same
+    common name.
+  - **A Transit key the stored secrets predate does not lock tenants out.** With
+    `min_decryption_version` raised past them, the API reads them as empty and logs the reason, tenants
+    still authenticate, and a resupply from tenant state reseals under the new version.
 - **Still to confirm:**
   - A Raft snapshot restored onto a fresh VM gives back KV, Transit and PKI, and the API decrypts its
-    stored secrets.
+    stored secrets. This is now the last unconfirmed claim here, and it is a different exercise from the
+    drill above: a restore returns the same issuer and the same key, so it proves durability rather than
+    survivability of a key change.
 
 ---
 

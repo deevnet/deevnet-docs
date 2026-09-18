@@ -132,11 +132,14 @@ by the very condition it exists for. An unreadable secret now reads as empty and
     a Raft snapshot onto a fresh instance with the same seal key gives back KV, Transit and PKI
     *identically*. It would **not** have found any of the three defects above, because nothing's key or
     issuer changes.
-  - **A key change** is what finds them, and it needs no wipe. Both halves are one reversible API call
-    each: rotate the PKI root and make the new issuer default, which must make the `deevnet_api` role
-    reissue; and rotate the Transit key and raise `min_decryption_version`, which must make the stored
-    tenant secrets unreadable and force a resupply. Set the default issuer and
-    `min_decryption_version` back and the site is as it was.
+  - **A key change** is what finds them, and it needs no wipe. **Run on the live site 2026-09-17 and
+    written up as [OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/).** It passed, and
+    found nothing new — which is the result worth having: it exercises exactly the three fixes above,
+    so it is now their regression test. Rotating the PKI root and moving the default issuer made the
+    role reissue, flush its handler in time and come back verifiable; rotating the Transit key and
+    raising `min_decryption_version` made both tenants' stored secrets unreadable, and the API degraded
+    to empty and logged it instead of answering `401`, so both tenants authenticated and resupplied,
+    resealing under `v2`.
 
 **Closed, not open: a vault password file.** It would have let this rebuild run without decrypting the
 repository at all, which is the condition that made the loss possible. It is **declined on purpose**
