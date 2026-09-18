@@ -11,7 +11,7 @@ bookCollapseSection: true
 | **Date** | 2026-09-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Phase 2 is done — `DVNTM-IOT` is on air as PPSK with an empty profile. Phases 3–6 remain. |
+| **Status** | **In progress.** Phases 2 and 3 done: `DVNTM-IOT` is on air and the API issues keys. **One defect open — a tenant's last key cannot be revoked** (phase 3). Phases 4–6 remain. |
 | **Window** | 2026-09-18 onward |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.0), `ansible-inventory-deevnet` |

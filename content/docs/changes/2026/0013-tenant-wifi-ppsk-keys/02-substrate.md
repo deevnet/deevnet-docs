@@ -89,5 +89,21 @@ Both Open API clients were confirmed working beforehand, read-only: Ansible's an
 each `expiresIn: 7200`. That 2-hour TTL is why the API's token cache matters and why its 10-minute
 fallback never fires at this site.
 
-- [ ] Did any client drop off `DVNTM`, and for how long? *(Operator was connected independently of
-      the AP for this window, so the answer has to come from a client that was on it.)*
+**Did anything drop off `DVNTM`? Unknown, with no sign of trouble.** Worth writing down honestly
+rather than recording it as clean.
+
+- The operator was connected independently of the AP for the window, by design, so had no client on
+  it to watch. An SSH session surviving would not have settled it either: TCP rides out several
+  seconds of radio outage.
+- The controller's event log holds **three events in seven days, all `[Device] ap … was
+  connected`**, and **none during the apply**. So the AP itself never disconnected from the
+  controller — it did not reboot or re-provision at the device level.
+- But there are **no `[Client]`-module events at all** in that log, so client association is not
+  being recorded at this level. Its silence during the window says nothing about a client blip.
+
+So: positive evidence the AP stayed up, no evidence of a client drop, and no proof there wasn't one.
+**If this matters for a future SSID creation, watch a client directly** — the controller log will
+not tell you afterwards.
+
+`getEventLogsForSite` is the endpoint, and it needs `filters.timeStart` and `filters.timeEnd` as
+epoch milliseconds; both are required.
