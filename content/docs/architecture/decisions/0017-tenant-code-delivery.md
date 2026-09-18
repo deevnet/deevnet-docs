@@ -9,9 +9,10 @@ weight: 17
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-18 |
+| **Revised** | 2026-09-18, twice, before review. First written as a single choice between delivery mechanisms, with tenant-authored cloud-init user-data recommended; that draft argued the wrong layer. Rewritten to separate the **tenant-facing contract** (§1, settled) from the **substrate-side mechanism** (§2, open). Then revised again once both halves of the leading mechanism were tested rather than assumed, adding the measured SMBIOS limit and **§3, the fetch rule that keeps ADR-0012 provisioning-only**. |
 | **Scope** | How a tenant's own application code and configuration arrive on a tenant workload, and how they are kept current — not what the code is, and not how the workload itself is built |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), which says tenants own their code but does not say how it is delivered; [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), which builds the empty workload this decision fills |
-| **Related** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0011: Edge Devices Are Application-Owned](/docs/architecture/decisions/0011-edge-devices-application-owned/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) |
+| **Related** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/), [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), [ADR-0011: Edge Devices Are Application-Owned](/docs/architecture/decisions/0011-edge-devices-application-owned/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0018: Operator Access to Tenant Workloads](/docs/architecture/decisions/0018-operator-access-to-tenants/) |
 
 ---
 
@@ -27,15 +28,23 @@ application on it, and nothing says how a tenant should.
 This is the first question the EdS tenant hits. Its repository holds real code — a Python palette
 service, a Go `lightd`, ESP-IDF firmware — and a built, running, empty VM to put none of it on.
 
-### A tenant has no inbound path, so nothing can push
+### The substrate must not push, though it now can
 
-This is the constraint that removes most of the obvious answers.
+This record first argued that delivery must be a pull because a tenant *cannot* be reached. That was
+true when it was written and is no longer, so the reasoning is restated rather than left resting on
+a fact that has since changed.
 
-[Shared Tenant Services](/docs/architecture/tenant/shared-services/) states it plainly: a tenant
-has no inbound path. It was confirmed directly — the Builder cannot reach a tenant workload at all.
-Tenant traffic leaves through the fabric's exit node, SNATed
-([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)); nothing
-returns unbidden.
+**What changed.** [ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) gives the
+substrate's operator networks a route to tenant workloads, because the operator owns every tenant
+here and needs to build, check and debug them. Ansible from the Builder can therefore reach a tenant
+workload.
+
+**What did not change.** Tenants own their code
+([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/),
+[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)). Devices, other
+tenants and everything outside the substrate still have no path in. Tenant traffic still leaves
+through the fabric's exit node, SNATed
+([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
 
 The substrate's own deployment pattern is Ansible plus the `podman_service` role, pushed from the
 control node. **That pattern cannot reach a tenant workload**, and it should not: it is
@@ -43,13 +52,19 @@ substrate-side, and [ADR-0010](/docs/architecture/decisions/0010-tenants-consume
 and [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) are explicit that
 tenants own their code the way an AWS customer owns theirs.
 
-The one exception proves the rule. The hypervisor hosting the fabric *can* reach into a tenant's
-VRF — `ip vrf exec vrf_eds ping 10.20.130.10` succeeds from the exit node. But that is the
-substrate reaching into a tenant, available only to whoever holds root on a hypervisor. It is not a
-path a tenant can use, and building on it would rebuild exactly the coupling ADR-0015 removed.
+So the constraint is **architectural rather than physical**, and it is weaker for it: an
+impossibility needs no discipline, a rule does. ADR-0018 draws the line this record depends on —
+*operating* a workload (reaching it to look, to debug, to run a check) is the operator's; *what runs
+on it* is the tenant's. The substrate's Ansible and `podman_service` pattern must not be extended to
+tenant applications, and that is now a decision to be kept rather than a wall to lean on.
 
-**So delivery must be a pull, initiated from inside the workload.** That much is forced. What is
-open is how the workload learns what to pull.
+Two things still make a pull the only sound answer. **No path runs the other way** — a tenant can
+reach out only through the egress it already has, and no tenant can reach another. And **a pull is
+the only form that generalises**: it works for a tenant at any site under any ownership, whereas a
+push works only where the operator happens to own the tenant too.
+
+**So delivery is a pull, initiated from inside the workload** — now by decision rather than by
+physics.
 
 ### What a workload can do today
 
@@ -65,34 +80,58 @@ Three things are newly true, and they matter:
 - **The base image already carries podman and cloud-init**, with the cloud-init units enabled
   (image factory, `fedora.pkr.hcl`).
 
-A tenant workload can therefore pull and run containers from a public registry the moment it boots.
-The missing piece is narrow: **how it is told what to run.**
+A tenant workload can therefore pull and run containers, and call the Deevnet API, the moment it
+boots. The missing piece is narrow: **how it is told what to run.**
 
-### The substrate's only injection point is Proxmox cloud-init, and it is currently limited
+### What the substrate can inject, verified
 
-The Deevnet API configures a workload through the PVE API, setting the native cloud-init fields:
-`ciuser`, `sshkeys`, `nameserver` and `ipconfig0`. Proxmox supports arbitrary user-data only
-through `cicustom`, which points at a **snippet file on a storage**.
+The Deevnet API configures a workload through the PVE API, and by deliberate rule it
+**writes through that API and never files on a hypervisor**. What that permits was checked rather
+than assumed, on the tenant hypervisor:
 
-Two facts constrain that:
+| Channel | Available through the PVE API? |
+|---|---|
+| Native cloud-init fields (`ciuser`, `sshkeys`, `nameserver`, `ipconfig0`) | Yes — used today |
+| `cicustom` user-data | **No.** It points at a snippet file on a storage. `pvesm status -content snippets` returns nothing, and no storage endpoint writes one: upload accepts only `import`, `iso`, `vztmpl`, and content POST allocates disk images. |
+| `smbios1` — `serial`, `product`, `sku`, `family`, `version` | **Yes.** Settable on the config endpoint, base64, no file writes. Readable in-guest from `/sys/class/dmi/id/`. Capped at **512 characters for the whole value**, so about 340 bytes of payload. |
 
-1. **No storage on the tenant hypervisor has `snippets` content enabled.** `pvesm status -content
-   snippets` returns nothing. So `cicustom` is unavailable today without a storage change.
-2. **The API writes through the PVE API and never files on a hypervisor**, by deliberate rule. The
-   PVE upload endpoint does not accept snippets, so honouring that rule while delivering user-data
-   needs a decision, not just a flag.
+So arbitrary user-data is not merely unconfigured, it has **no API-only path at all** on this
+Proxmox version. Any mechanism that depends on it must first resolve that, by enabling snippets
+storage the API can write to some other way, or by relaxing the rule.
 
-There is a third fact that shapes what may go in user-data at all: **a cloud-init snippet is a file
-on substrate storage**, readable by anyone with sufficient PVE privilege, and it is not covered by
-[ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)'s sealing. Whatever
-mechanism is chosen, user-data is not a place for a tenant's long-lived secrets.
+Both `cicustom` and `smbios1` share a property worth stating plainly: whatever they carry is
+**readable by anyone with sufficient PVE privilege**, and neither is covered by
+[ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)'s sealing. Neither is a
+place for a tenant's long-lived secrets.
+
+### Both halves of the leading mechanism were tested, not assumed
+
+Run on 2026-09-18 against a throwaway tenant workload, before any of this was designed around:
+
+- **An `smbios1` field set through the PVE config API arrives in the guest intact.** A 101-byte
+  payload written to `serial` was read back from `/sys/class/dmi/id/product_serial` byte for byte,
+  and Proxmox decodes the base64, so the guest reads plaintext. No snippet, no file on a
+  hypervisor, no storage change.
+- **The channel is capped at 512 characters for the entire `smbios1` value.** A 396-byte payload
+  was refused outright: `value may only be 512 characters long`. After `uuid=` and `base64=1` that
+  leaves roughly **340 bytes**. Enough for a URL and a token; nowhere near enough for
+  configuration. The channel therefore *enforces* a pointer rather than a payload — this is a
+  constraint, not a preference.
+- **A tenant can reach the Deevnet API.** `/healthz`, `/readyz` and `/version` all answer 200 from
+  `10.20.25.20:8080` along the tenant path, and the state store answers too.
+
+*Method, stated so it can be judged:* the reachability test ran from the exit node inside
+`vrf_eds`, not from within the workload itself, because the guest agent is SELinux-confined and
+cannot open a socket to anything but port 53. The one leg that leaves untested — workload to bridge
+to VRF gateway — is already proven, because the workload resolves DNS through 10.20.50.1 over
+exactly that path.
 
 ### Statelessness is the intended shape
 
 The operator's stated direction is that tenant workloads stay **as stateless as possible**, so that
-replacing one is the ordinary repair rather than a loss. This is not yet a guarantee, and it
-interacts with this decision: a delivery mechanism that reconstructs the workload from scratch on
-every boot reinforces statelessness, while one that mutates a long-lived machine works against it.
+replacing one is the ordinary repair rather than a loss. A delivery mechanism that reconstructs the
+workload from scratch on every boot reinforces that; one that mutates a long-lived machine works
+against it.
 
 It also has a sharp edge today. A tenant has **no way to restart a workload in place**; the only
 lever the provider offers is replace, which destroys the disk
@@ -104,145 +143,208 @@ nothing.
 
 ## Options considered
 
-### Option A — Tenant-authored cloud-init user-data
+The first draft of this record treated delivery as one choice. It is two, and conflating them is
+what made a Proxmox implementation detail look like a tenant-facing decision.
 
-The tenant supplies user-data on `deevnet_workload`; the API stores it as a snippet and sets
-`cicustom`. On first boot cloud-init installs units, pulls images and starts them.
+### Part 1 — What does a tenant declare?
 
-- **For:** the standard mechanism, familiar to anyone who has used a cloud; tenant-authored and
-  Terraform-native; declarative; runs before anything else; reinforces statelessness because a
-  replaced workload rebuilds itself identically.
-- **Against:** needs snippets storage enabled on every tenant hypervisor **and** a way for the API
-  to write the snippet without writing files on a hypervisor; user-data is readable on substrate
-  storage, so it cannot carry tenant secrets; it runs **once**, so it delivers but does not keep
-  current.
+**1a. Proxmox-shaped.** The tenant supplies raw cloud-init user-data, passed through to `cicustom`.
 
-### Option B — Tenant-built images
+- **For:** no schema to design; anything cloud-init supports works on day one; portable knowledge.
+- **Against:** it puts Proxmox in the tenant contract. A tenant would be writing to the hypervisor's
+  format, so the substrate could never change mechanism without breaking every tenant — the exact
+  coupling ADR-0015 removed for networks, workloads and names. It also means the tenant-facing
+  contract inherits `cicustom`'s problems, including that it is a readable file.
 
-The tenant builds a VM image containing its application; the substrate boots it instead of the
-shared Fedora template.
+**1b. Deevnet-shaped.** The tenant declares configuration to the Deevnet API in a Deevnet-owned
+schema. The API decides how to realise it.
 
-- **For:** nothing to deliver at run time; the workload is correct the instant it boots; strongest
-  possible statelessness.
+- **For:** the tenant never learns that Proxmox exists, consistent with everything else it
+  declares; the substrate may change mechanism freely; the API can validate, constrain and reject —
+  size limits, and refusing secrets in a field that cannot hold them safely; it can also supply what
+  the substrate requires rather than trusting a tenant to.
+- **Against:** a schema to design and maintain; expressiveness has to be chosen deliberately rather
+  than inherited; a tenant wanting something the schema omits has to ask for it.
+
+**1c. Nothing declared.** Convention only: the workload always runs a container derived from its
+tenant and workload name.
+
+- **For:** the smallest possible contract.
+- **Against:** rigid — one container, no configuration, no environment, no registry choice. A
+  naming convention is a weak contract to hang a platform on.
+
+### Part 2 — How does the substrate realise it?
+
+**2a. cloud-init user-data via `cicustom`.** The API renders the declaration into user-data and
+places it as a snippet.
+
+- **For:** the industry-standard mechanism; declarative; runs before anything else; a replaced
+  workload rebuilds itself identically.
+- **Against:** **no API-only path exists** (see above), so it needs snippets storage the API can
+  reach some other way, which is new substrate machinery with its own lifecycle; the snippet is
+  readable, so it cannot carry secrets; and it runs **once**, so it delivers but does not maintain.
+
+**2b. Bootstrap pointer in `smbios1`, configuration fetched from the API.** The API writes a
+pointer and a single-use bootstrap token into an SMBIOS field. An agent in the base image reads it
+at boot and fetches the real configuration from the Deevnet API over TLS.
+
+- **For:** needs no snippets storage and no files on a hypervisor — it is a config-endpoint field,
+  available today; **secrets never touch substrate storage**, because they arrive over an
+  authenticated channel, which is the strongest argument for it; the agent can re-check on a timer,
+  so it maintains as well as delivers; the API sees each workload check in, which is observability
+  the other options do not give.
+- **Against:** the substrate now ships and owns an agent in the base image that runs
+  tenant-supplied configuration — a real ongoing responsibility and an obvious blast radius; it is a
+  Deevnet-specific mechanism where 2a is a standard one; and SMBIOS fields are small and readable,
+  so the token must be genuinely single-use. A fourth objection — that it makes the API a boot-time
+  dependency, which ADR-0012 avoided on purpose — is answered by §3, but only if the fetch rule
+  there is actually built.
+
+**2c. Tenant-built images.** The tenant builds a VM image containing its application.
+
+- **For:** nothing to deliver at run time; correct the instant it boots; strongest statelessness.
 - **Against:** puts tenant-built artifacts in substrate storage and makes the substrate host a
-  tenant build pipeline; every code change becomes an image build plus a workload replace; the
-  template is currently substrate-owned and substrate-scanned, and tenant images would need their
-  own lifecycle, provenance and cleanup. Heavy for a one-line configuration change.
+  tenant build pipeline, reversing ADR-0010's direction; every change becomes an image build plus a
+  workload replace. A tenant baking its own **container** images is different, and expected.
 
-### Option C — A substrate bootstrap agent in the base image
+**2d. A tenant-run deployer inside its own fabric.** One workload deploys the others.
 
-The base image carries a small agent that, on boot, resolves a tenant-declared pointer and applies
-whatever it names. The tenant publishes the pointer itself — for instance a TXT record in its own
-zone, which it already owns over RFC 2136
-([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
-
-- **For:** needs no snippets storage and no new API surface; the pointer is tenant-owned and
-  changeable without touching the substrate; nothing tenant-specific is stored substrate-side; it
-  can re-check on a timer, so it keeps current as well as delivers.
-- **Against:** the substrate now ships and owns an agent that runs tenant-chosen code, which is a
-  real ongoing responsibility and an obvious blast radius; a DNS TXT pointer is small, public within
-  the site, and an odd control channel; it is a Deevnet-specific mechanism where Option A is an
-  industry-standard one.
-
-### Option D — The tenant runs its own deployer inside its own fabric
-
-Workloads within a tenant's overlay can reach each other. The tenant runs one workload as its own
-CI or deployment node and pushes to the rest.
-
-- **For:** entirely tenant-owned; needs nothing from the substrate; scales naturally to a tenant
-  with many workloads; the tenant may use whatever tooling it likes.
-- **Against:** **it does not solve the problem, it relocates it.** The deployer workload is itself
-  an empty VM that something must fill, and that something is one of the other options. Sensible as
-  a later pattern for a large tenant; it cannot be the base case.
-
-### Option E — Convention over configuration
-
-The substrate passes only the tenant and workload name. The base image always starts a container
-from a fixed, derived location — for example `<registry>/<tenant>/<workload>:latest`.
-
-- **For:** the smallest possible mechanism; no user-data, no agent, no new API field.
-- **Against:** rigid — one container per workload, no configuration, no environment, no choice of
-  registry; a naming convention is a weak contract to hang a platform on; and it still requires a
-  pull loop to keep current, so it buys less than it looks.
+- **For:** entirely tenant-owned; scales to a tenant with many workloads.
+- **Against:** it relocates the problem rather than solving it — the deployer is itself an empty VM
+  that one of the above must fill. A sensible later pattern; it cannot be the base case.
 
 ---
 
 ## Decision
 
-**Proposed, and the part that is not in doubt:** delivery is a **pull initiated from inside the
-workload**. No push mechanism may be introduced, and in particular the substrate's Ansible and
-`podman_service` pattern must not be extended to tenant workloads. That follows from the no-inbound
-architecture and from tenant code ownership, and it is independent of which option below is taken.
+### §1 — The contract is Deevnet-shaped, and this part is settled
 
-**The recommendation is Option A, with three qualifications** — but this ADR is deliberately
-brought forward before the options are closed, because the qualifications are real and one of them
-may change the answer:
+A tenant declares its workload configuration **to the Deevnet API, in a Deevnet-owned schema**
+(option 1b). It does not supply Proxmox user-data, and nothing in the tenant-facing contract names
+a hypervisor mechanism.
 
-1. **User-data delivers; it does not maintain.** Cloud-init runs once. Keeping a workload current
-   is a second mechanism — most cheaply `podman auto-update` on a systemd timer, which the base
-   image can already run, installed *by* the user-data. Delivery and currency should be decided
-   together, not one now and one later.
-2. **User-data carries no secrets.** It lives as a readable file on substrate storage. It may carry
-   public configuration and pointers only. How a workload authenticates to a private registry, or
-   receives a tenant secret at all, is unresolved and is the sharpest open question below.
-3. **The snippets obstacle must be resolved without breaking the "no files on a hypervisor" rule.**
-   If it cannot be, Option C becomes the leading candidate, because it needs no substrate-side
-   per-tenant storage at all.
+This follows directly from ADR-0015. A tenant already declares a network without knowing about SDN
+zones and a workload without knowing about templates or VMIDs; configuration is the same kind of
+thing. Putting `cicustom` in the contract would make a Proxmox implementation detail permanent and
+tenant-visible, and would prevent exactly the mechanism change that §2 leaves open.
 
-Option B is rejected as the base case: making the substrate host tenant build artifacts reverses
-ADR-0010's direction, though a tenant remains free to bake its own container images — which is
-different, and expected. Option D is rejected as a base case for circularity, and recorded as a
-later pattern. Option E is rejected as too rigid to build on.
+### §2 — Delivery is a pull; the mechanism is open, and 2b leads
+
+**Forced, not chosen:** delivery is a **pull initiated from inside the workload**. No push
+mechanism may be introduced, and the substrate's Ansible and `podman_service` pattern must not be
+extended to tenant workloads.
+
+**The mechanism is genuinely undecided.** The leading candidate is **2b**, the SMBIOS bootstrap
+pointer with configuration fetched from the API, for three reasons that emerged from checking
+rather than reasoning:
+
+1. It is the only option with an **API-only path that exists today**. 2a has none.
+2. It is the only option where **secrets never sit on substrate storage**, which is what blocks the
+   EdS broker work, where `lightd` needs a broker credential.
+3. It **maintains as well as delivers**, because the agent can re-check.
+
+Against that, it makes the substrate own an agent, and it puts the API in the workload's boot path.
+Those are real costs and they are why this is `Proposed` rather than decided. **2a remains viable**
+if snippets storage is worth building, and it has the considerable merit of being the mechanism
+everyone already knows.
+
+2c is rejected as the base case; 2d is recorded as a later pattern for a large tenant; 1c is
+rejected as too rigid to build on.
+
+### §3 — The workload fetches only when it has no configuration, so the API stays provisioning-only
+
+Under 2b the agent **fetches when it has no cached configuration, not on every boot.** It caches
+what it fetched and keys that cache on the workload's instance identity; a change of identity means
+a re-fetch, an ordinary reboot does not.
+
+That single rule is what keeps
+[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/)'s provisioning-only stance intact
+rather than softening it:
+
+| Event | Needs the API? | Why |
+|---|---|---|
+| First boot of a new workload | Yes | It is provisioning. This is the API doing its job. |
+| Reboot | **No** | The configuration is already cached. |
+| Replace | Yes | A fresh disk is a new instance, which is provisioning again. |
+
+So the API is touched **only when a workload is being provisioned**, which is precisely the scope
+ADR-0012 reserved for it. A workload that reboots while the API is down comes back configured.
+Nothing at runtime depends on the API being up, and ADR-0012 needs no amendment.
+
+Two things make this sound rather than merely convenient:
+
+- **It is cloud-init's own model.** cloud-init caches its datasource under `/var/lib/cloud`, keys on
+  instance-id, and re-runs per-instance modules only when that changes. Copying those semantics is
+  following the standard, not carving an exception to make a rule fit.
+- **Currency need not involve the API at all.** Keeping images current is `podman auto-update`
+  against the registry, which the workload reaches directly. The "maintains as well as delivers"
+  property survives without the API ever entering the runtime path.
+
+The cost is honest and small: the cached configuration is state on a workload we would rather keep
+stateless. It is **reconstructible** state — losing it costs a re-fetch, not data — which is the
+same category as a container image already on disk.
 
 ---
 
 ## Consequences
 
-- **The `deevnet_workload` resource grows** a user-data attribute, and the API grows the storage
-  path behind it. That is new tenant-facing surface and needs its own contract.
-- **A tenant's workload becomes reproducible from its repository alone.** Given the tenant's
-  Terraform and its images, a destroyed workload returns complete. That is the statelessness goal
-  made real rather than aspirational.
-- **The substrate takes on a storage responsibility it does not have today** — snippets, per
-  hypervisor, with a lifecycle of their own. A workload's user-data must be removed when the
-  workload is.
-- **Restart-in-place becomes more pressing.** Under Option A a user-data change needs a boot, and
-  today the only boot a tenant can cause is a replace. Either the restart action lands, or every
-  configuration change destroys the machine.
-- **Nothing here gives a tenant a way in.** Delivery is solved; interactive access to a running
-  tenant workload remains unavailable to the tenant, and is deliberately out of scope.
+- **The `deevnet_workload` resource grows a configuration attribute**, in a Deevnet schema. That
+  schema is a new tenant-facing contract and needs its own versioning discipline.
+- **The substrate owes the tenant a documented vocabulary** — what can be declared, what cannot,
+  and what the API supplies itself. Under 1b a tenant cannot simply reach for a cloud-init feature.
+- **Under 2b the base image gains an agent**, which makes the image a participant in tenant
+  delivery rather than a neutral starting point, and puts it on the upgrade treadmill.
+- **ADR-0012 is unchanged, but now depends on §3 being built.** The provisioning-only stance
+  survives only because the agent fetches on absence rather than on boot. If that rule is ever
+  relaxed — an agent that re-checks at every start, however convenient — the API silently becomes a
+  runtime dependency and ADR-0012 is broken without anyone deciding to break it.
+- **A tenant's workload becomes reproducible from its declaration alone**, which makes the
+  statelessness goal real rather than aspirational.
+- **Restart-in-place becomes more pressing.** A configuration change takes effect on a boot, and
+  today the only boot a tenant can cause is a replace.
+- **Nothing here gives a tenant a way in.** Interactive access to a running tenant workload remains
+  unavailable to the tenant, and is deliberately out of scope.
 
 ---
 
 ## Open questions
 
-1. **How does a workload get a secret?** The sharpest one. User-data is readable substrate-side, so
-   it cannot hold a registry credential, a broker password or a tenant API token. Candidates: only
-   public images at first; a short-lived token minted by the API and exchanged on boot; or a
-   workload identity derived from something the substrate already asserts. This blocks the EdS
-   broker work, where `lightd` needs a broker credential.
-2. **Can the API write a snippet without writing files on a hypervisor?** If the PVE API genuinely
-   cannot accept one, the rule and the option are in conflict, and one of them gives.
-3. **Delivery and currency: one mechanism or two?** `podman auto-update` on a timer is the cheap
-   answer, but it re-pulls a moving tag, which is in tension with reproducibility.
-4. **Does user-data belong to the workload or the tenant?** Per-workload is more flexible;
-   per-tenant defaults would spare repetition for a tenant with many similar workloads.
-5. **What is the blast radius of arbitrary tenant user-data?** It runs as root in the tenant's own
-   guest, which is the tenant's business — but it is written by the substrate, and that path should
-   be reviewed rather than assumed safe.
+1. **What is in the schema?** The whole of §1 rests on it. Containers and their images, environment,
+   ports, files, units, a plain escape hatch? Too small and tenants are blocked; too large and it is
+   cloud-init with extra steps.
+2. **Does the workload authenticate to the API, and how?** Under 2b the bootstrap token is in a
+   readable SMBIOS field, so it must be single-use and short-lived, and something must define what
+   happens when it has already been spent — a legitimate reboot looks exactly like a replay.
+3. **What is the workload's instance identity, for §3's cache key?** The SMBIOS UUID is the
+   obvious candidate, but it must change on replace and survive a reboot, and that should be
+   confirmed rather than assumed.
+4. **Currency: `podman auto-update` re-pulls a moving tag**, which keeps a workload current at the
+   cost of reproducibility — two workloads built from the same declaration at different times are
+   not the same workload. Whether that trade is acceptable, or whether digests should be pinned, is
+   open.
+5. **Per-workload or per-tenant configuration?** Per-workload is more flexible; per-tenant defaults
+   would spare repetition for a tenant with many similar workloads.
+6. **What is the blast radius of tenant-supplied configuration?** It runs as root in the tenant's
+   own guest, which is the tenant's business — but it is realised by the substrate, and that path
+   should be reviewed rather than assumed safe.
 
 ---
 
 ## To confirm when building
 
+- That the SMBIOS UUID changes when a workload is replaced and survives a reboot, since §3's cache
+  key depends on it.
+- That a workload can reach the Deevnet API from **within the guest**, not only from the exit node
+  inside its VRF. This needs a shell in a workload, which needs `ssh_keys` set — itself the first
+  thing blocking EdS.
 - Whether a storage with `snippets` content can be enabled on the tenant hypervisor without
-  disturbing `local-lvm`, and whether the PVE API can place a snippet on it.
-- That `cicustom` user-data actually applies to a cloned template on this Proxmox version, tested on
-  a throwaway workload.
+  disturbing `local-lvm`, and by what route the API would write to it, if 2a is pursued.
+- That `cicustom` user-data actually applies to a cloned template on this Proxmox version, before
+  any of 2a is built on the assumption that it does.
 - That `podman auto-update` works from a tenant workload against the chosen registry, over the
   egress path confirmed above.
-- Whether removing a workload removes its snippet, and what happens to an orphaned one — the same
-  class of question as the tenant state that survives deletion
+- Whether a workload's configuration is removed when the workload is — the same class of question
+  as the tenant state that survives deletion
   ([CHG-0011](/docs/changes/2026/0011-tenant-workload-resolver/) follow-up).
 - Whether a tenant workload can reach a private registry at all, or only public ones.
 
