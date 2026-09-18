@@ -9,7 +9,7 @@ weight: 12
 |--|--|
 | **Status** | Proposed |
 | **Date** | 2026-09-14 |
-| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). Revised 2026-09-16: tenant workloads get broker accounts too (§3), and topic confinement is decided (§10, Open question 4). |
+| **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). Revised 2026-09-16: tenant workloads get broker accounts too (§3), and topic confinement is decided (§10, Open question 4). Revised 2026-09-18 by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/), which built the Wi-Fi half: a key is per tenant per trust class rather than per device (§3), v1 ships on `DVNTM-IOT` only (§3), the drift report names profiles rather than counting keys (§6), and `DVNTM-IOT` turned out to be a creation rather than a migration (Consequences). |
 | **Scope** | How a tenant reaches an IoT platform service whose own interface can't confine it to its scope, and what the substrate builds so it can |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §1 and §3, which require a scoped service but don't say how one is built when the backing software can't scope itself |
 | **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (per-device Wi-Fi keys) |
@@ -392,8 +392,35 @@ v1 covers exactly the actions that fail ADR-0010's test. Resource names below ar
 | Resource | What it is | Confined by the API to |
 |---|---|---|
 | `deevnet_iot_device` | A registry entry: name, trust class (`iot` or `iot_vendor`), optional MAC | The calling tenant |
-| `deevnet_iot_wifi_key` | A per-device PPSK key | **The VLAN of the device's trust class.** The tenant can't choose a VLAN, so no tenant network ever reaches the air (ADR-0011 Option B stays rejected). |
+| `deevnet_iot_wifi_key` | A PPSK key for one tenant on one trust class's SSID | **That trust class's VLAN.** The tenant can't choose a VLAN, so no tenant network ever reaches the air (ADR-0011 Option B stays rejected). |
 | `deevnet_iot_broker_account` | An MQTT account, with its topic permissions, for a device or for a tenant workload | Topics under the tenant's prefix, `<tenant>/…`, which the API writes itself (§10). The existing ACLs already follow this: `eds/lightstand/…`. **A device account needs trust class `iot`.** A workload account has no device. |
+
+**A key is per tenant per trust class, not per device.** *Amended 2026-09-18.* The original wording
+was one key per device.
+
+- **A MAC binding buys no enforcement.** Omada can bind a key to a MAC, but a MAC is trivially
+  spoofed, so the binding stops nobody who is trying. What it does cost is real: the tenant has to
+  enumerate its hardware to the substrate before it can flash anything, and a replaced device
+  becomes a substrate act — which is exactly the test [ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §2 sets.
+- **The thing that is enforced comes from the key either way.** The VLAN is bound to the key, so a
+  device joining with a tenant's key lands on that trust class's VLAN whether or not the substrate
+  has heard of the device.
+- **So revocation is the only thing granularity buys**, and per tenant per class is the boundary the
+  substrate can actually police: one tenant's key dies without touching another tenant's devices.
+  Finer than that is the tenant's business, and a tenant that wants a key per device can declare
+  several — the resource does not stop it.
+- **The device registry is unaffected.** `deevnet_iot_device` still exists, for broker accounts.
+  A Wi-Fi key does not reference it: one key serves every device the tenant flashes with it.
+- **What it costs, stated plainly.** A key lives in a device's NVS, written over USB, so revoking
+  one means a visit to every device of that tenant in that class. The per-device alternative would
+  have made that one visit — at the price of a substrate registration before every first flash.
+
+**The keys sit in a shared profile, and the controller can read them back.**
+`getPPSKProfileDetail` returns every key in a profile with its password in plaintext, to any caller
+holding the site-write permission every PPSK write needs. That is what makes the API's
+read-before-write possible, and it is also the reason no tenant may ever hold that credential
+(§2, and ADR-0010's Consequences). The substrate automation deliberately never reads a profile's
+keys, so they do not reach Ansible output.
 
 **IoT Vendor devices get no broker account.**
 - **The standard forbids the path.** It says *"IoT vendor segment MUST be fully isolated from all
@@ -405,6 +432,10 @@ v1 covers exactly the actions that fail ADR-0010's test. Resource names below ar
 - **What the API does instead:** it refuses `deevnet_iot_broker_account` for a device whose trust
   class is `iot_vendor`. Such a device gets a `deevnet_iot_wifi_key` on VLAN 31, and outbound
   internet only.
+
+**v1 ships on `DVNTM-IOT` only.** *Added 2026-09-18.* `DVNTM-IOTV` keeps its shared key until its
+own change record: it already exists and already has devices, whereas `DVNTM-IOT` never existed, so
+one is a migration and the other is a creation. See the Consequences.
 
 **Tenant workloads get broker accounts too.** *Added 2026-09-16.*
 - **Why.** A tenant's own services reach its devices through the broker. lightd, in eds, publishes
@@ -506,7 +537,14 @@ construction, but it reverses "the API generates" and wasn't chosen.
   inventory.
 - **The existing guard already fits.** ADR-0009's automation never deletes objects inventory
   doesn't declare (§7), so it leaves the keys in place already. What changes is its report: it has
-  to recognise API-owned keys as expected rather than list them as drift.
+  to recognise API-owned keys as expected rather than list them as drift. *Built 2026-09-18:* it
+  **names the profiles whose contents it is not inspecting** rather than counting their keys,
+  because counting would mean calling `getPPSKProfileDetail`, which returns every tenant's password
+  in plaintext. Live tenant credentials have no business in Ansible memory or output.
+- **Inventory creates the profile empty.** A profile has to exist before the SSID that binds it,
+  and it holds no key of inventory's own. Whether the controller accepts a create with an empty key
+  list is undocumented — the schema permits it — so the play tries empty and, if refused, creates
+  with one random seed key and deletes that key in the same run.
 - **This extends ADR-0009 for one object class; it does not supersede it.**
 
 ### 7. Placement, and how the provider reaches tenants
@@ -804,29 +842,51 @@ services, tenant DNS and state, sit on the management segment. Tenants reach the
 core router currently passes everything (ADR-0011 → Validation). This record doesn't move them, but
 it shouldn't repeat that.
 
-**Moving the IoT SSIDs from a shared key to per-device keys needs its own change record.**
-- **Today:** the IoT SSIDs are WPA-Personal on one shared key per segment (`deevnet_wifi_psk`).
-- **What won't do it:** `omada-wireless.yml`, which creates them from inventory, doesn't rewrite
-  existing objects. Its header says *"existing objects that differ are reported, not rewritten."*
-- **What's at stake:** devices already on the shared key keep working only while that key is
-  accepted. The Ma Bell gateway's key is in NVS, written over USB.
-- **Two ways through:** re-provision every device onto its own key once, or run the shared-key SSID
-  beside the PPSK SSID until each device has moved.
-- **When:** that change record depends on the ADR-0011 device test, so it follows CHG-0005.
+**`DVNTM-IOT` was a creation, not a migration.** *Corrected 2026-09-18.* This entry used to say
+that moving the IoT SSIDs off a shared key needed a change record that solved a coexistence problem.
+For VLAN 30 that premise was wrong: CHG-0005 held the `iot` segment out of `omada-wireless.yml`
+while its security model was undecided, so **`DVNTM-IOT` never existed on the controller and no
+device was ever on its shared key**. There was nothing to convert, no coexistence window and nothing
+to re-flash. [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) created it as PPSK from the
+start, and `deevnet_wifi_psk.iot` was deleted rather than migrated away from.
+
+**`DVNTM-IOTV` still has the problem, and still needs its own change record.**
+- **Today:** it is WPA-Personal on one shared key from `deevnet_wifi_psk`, and it has devices.
+- **What won't do it:** `omada-wireless.yml` doesn't rewrite existing objects. Its header says
+  *"existing objects that differ are reported, not rewritten."* Converting it means deleting and
+  recreating the SSID.
+- **What's at stake:** devices on the shared key keep working only while that key is accepted. The
+  Ma Bell gateway's key is in NVS, written over USB.
+- **Two ways through:** re-provision every device onto a tenant key once, or run the shared-key SSID
+  beside a PPSK one until each device has moved.
+- **The drift check will now say so.** Since CHG-0013 the play compares an SSID's `security` as well
+  as its VLAN, so declaring `iot_vendor` as ppsk without converting it reports the mismatch instead
+  of passing silently.
 
 **Two narrow zone rules are added when the API is built** (§7):
-- `platform -> management`: the provisioning VM to the Omada controller's Open API port
-- `platform -> iot_backend`: the provisioning VM to the broker's auth database port
+- `platform -> management`: the provisioning VM to the Omada controller's Open API port.
+  **Declared by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/).** It is declared rather
+  than applied, because the core router still passes everything
+  ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) has never run). Declaring it now
+  matters precisely because nothing enforces it: when the zone policy is finally applied, an
+  undeclared path would break key issuance as a *timeout inside a tenant's `terraform apply`*,
+  which is among the worst signals to debug.
+- `platform -> iot_backend`: the provisioning VM to the broker's auth database port. Still pending
+  — there is no broker.
 
 They are the only paths the API needs beyond the declared policy, and each is limited to one host
 and one port.
 
-**It depends on data-plane work that isn't done.** As of 2026-09-14:
-- the broker doesn't answer
-- PPSK is untested on the AP, pending [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)
-- the IoT segments aren't enforced, pending [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)
+**It depends on data-plane work, some of which is now done.** As of 2026-09-18:
+- PPSK is **proven on the AP** ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6)
+  and `DVNTM-IOT` is created and served
+  ([CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/))
+- the broker still doesn't answer, so broker accounts remain unbuilt
+- the IoT segments still aren't enforced, pending [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)
 
-An API over a data plane that doesn't enforce anything confines nothing that matters.
+An API over a data plane that doesn't enforce anything confines nothing that matters. That remains
+true of the segment boundary: a tenant's key decides which VLAN its devices land on, but nothing yet
+stops that VLAN reaching another.
 
 **Building it is real work:**
 - the provisioning and network management VMs on `dv02hyp001p01`, and VLAN 25 on that hypervisor's
