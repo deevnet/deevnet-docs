@@ -10,8 +10,8 @@ weight: 11
 | **Date** | 2026-09-17 |
 | **Change type** | Configuration · Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | 2026-09-17, after the fix merges |
+| **Status** | **Complete.** All three steps are done and verified. Step 3 was run as a full destroy-and-rebuild at the operator's request, which proved the fix on the create path as well as the repair path. |
+| **Window** | Started 2026-09-17; Steps 1–2 ran 2026-09-17/18 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API); tenant workloads 2040 `tdemo-app` and 2080 `eds-services` on `dv02hyp002p02` |
 | **Automation** | `deevnet.mgmt` `playbooks/site.yml --limit deevnet_api`, against `ansible-inventory-deevnet/mobile`; then `terraform apply` in each tenant repo |
@@ -167,15 +167,58 @@ As Undo Step 2, for tdemo.
 
 ## Outcome
 
-*Completed after the change has run.*
-
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-17 | Prereqs | api#8, mgmt#27, inv#39 merged. API tagged `v0.2.6`, `make image`, `make stage`. A missing prerequisite surfaced here — see departures. |
+| 2026-09-18 | Step 1 | `site.yml --limit deevnet_api`: `ok=109 changed=12 failed=0`. `/version` reports v0.2.6 (commit f26617a), `/readyz` 200, and the env file carries `DEEVNET_WORKLOAD_RESOLVER=10.20.50.1` alongside an unchanged `DEEVNET_RESOLVER_FORWARD_TO=10.20.25.21`. |
+| 2026-09-18 | Step 2 | `terraform apply -replace=deevnet_workload.services`: 1 added, 1 destroyed, 34s. Identity came back unchanged — VMID 2080, MAC `02:de:20:00:08:20`, 10.20.130.10 — as the derived-identity rule requires. |
+| 2026-09-18 | Step 3 | **Run as a clobber-and-rebuild instead of a replace**, at the operator's request — see departures. tdemo was deleted through the API and rebuilt from admission. Every derived value returned identical: index 1, ordinal 0, VMID 2040, MAC `02:de:20:00:07:f8`, 10.20.129.10. |
+
+**What Step 2 proved**, from inside the rebuilt VM, using the system resolver rather than the
+config file:
+
+```
+quay.io                          -> 184.193.3.126     (was REFUSED)
+api.mobile.deevnet.net           -> 10.20.25.20       (was REFUSED)
+services.eds.mobile.deevnet.net  -> 10.20.130.10      (worked before, still works)
+registry.fedoraproject.org       rcode=0, 2 answers
+```
+
+This is the first time a tenant workload on this substrate has resolved a public name.
+
+**What Step 3 proved, and it is more:** tdemo was destroyed entirely — workload, tenant, zone,
+TSIG key, state credential — and rebuilt from a fresh `POST /v1/admissions` with no prior
+credential. The new VM resolved public names **on first boot, with no intervention**:
+
+```
+quay.io                          -> 44.217.119.106
+registry.fedoraproject.org       rcode=0, 2 answers
+api.mobile.deevnet.net           -> 10.20.25.20
+services.eds.mobile.deevnet.net  -> 10.20.130.10     (another tenant's name, still resolves)
+```
+
+So the fix holds on the **create** path, not only on the repair path — which is what matters,
+because every future tenant arrives that way. The rebuild also incidentally confirmed that a
+destroyed tenant returns with identical derived identity, and that `terraform plan` is clean
+against the re-migrated MinIO backend.
 
 ### Departures from the plan
 
--
+- **A prerequisite was missing.** The plan said "tag and stage" and stopped there, but the
+  `deevnet_api` role **pins** `deevnet_api_version`; staging a tarball does not deploy it. Caught
+  before Step 1 ran and added to Prerequisites. The role does carry a "Confirm the running API is
+  the pinned version" task, so the play would have failed rather than silently redeploying the old
+  image — the gap was in the plan, not the automation.
+- **Step 3 became a destroy-and-rebuild, not a replace.** The operator asked for tdemo to be
+  clobbered rather than repaired, to see the fix land in a genuinely new build. It needed none of
+  tdemo's old credentials — only the operator token — and it exercised admission, tenant creation,
+  networking, the workload and DNS publication end to end. A strictly better test than the planned
+  step, and the plan's Step 3 is left as written above.
+- **Verification went further than written.** The plan asked that `/etc/resolv.conf` name
+  10.20.50.1. On a systemd-resolved host `/etc/resolv.conf` names the local stub `127.0.0.53`, so
+  the check was taken from `resolvectl status` and, more usefully, from what
+  `socket.gethostbyname` actually returns. Checking the config file alone would have looked like a
+  failure while the system worked.
 
 ## Follow-ups
 
@@ -187,5 +230,26 @@ As Undo Step 2, for tdemo.
       `deevnet_workload`.
 - [ ] CHG-0007 must keep the tenant→core-router DNS path open when the zone policy is enforced,
       or every tenant workload loses name resolution.
+- [ ] **Deleting a tenant does not purge its Terraform state, so the next tenant of that name
+      inherits it.** `minio.Remove` (`internal/backend/minio/minio.go:97`) removes the MinIO
+      *user* and *policy* and nothing under the prefix. Observed during Step 3: after tdemo was
+      deleted and re-admitted, the **new** tenant's credential could list the **old** tenant's
+      `tenants/tdemo/terraform.tfstate`, written before the deletion. That state holds the prior
+      tenant's TSIG key, state secret and API token. They are revoked at delete, so these are dead
+      credentials rather than live ones — but an operator deleting a tenant would reasonably
+      expect its state gone, and if a name were ever reused by a different party they would
+      inherit the previous party's state and infrastructure layout. This is the same class as the
+      reverse-zone PTR defect already fixed in CHG-0010, which is purged when the zone is bound to
+      another key; state should be purged the same way, or deletion should say plainly that it is
+      not. Positive finding alongside it: the tenant credential **is** correctly scoped — listing
+      the broader `tenants/` prefix is refused with 403.
+- [ ] **A tenant's MinIO state credentials are only recoverable from inside the state they
+      unlock.** `terraform output` reads through the configured backend, so reading
+      `state_backend` needs the keys it contains. Today the only way back in is the
+      pre-migration `terraform.tfstate.backup` left in the tenant directory — which `.gitignore`
+      treats as disposable. Losing it makes the tenant unreachable through its own Terraform,
+      with a rebuild as the recovery. The API issues secrets in create responses only, by design,
+      so the fix is not a read-back endpoint; it needs a deliberate custody answer. (The API
+      token itself is fine — it is a normal output, recoverable once the backend opens.)
 - [ ] The API's test suite asserts what the API writes, not what a workload can do. The
       regression test added here is the first of the latter kind; look for the same gap elsewhere.
