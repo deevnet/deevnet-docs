@@ -25,6 +25,19 @@ weight: 7
 
 ## Summary
 
+{{< hint danger >}}
+**Demonstrated from a client, 2026-09-18.** During
+[CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) phase 5, a device on the IoT segment
+(`10.20.30.100`) reached **the Builder on the management segment**. The policy declared in inventory
+permits `iot -> iot_backend` and nothing else — no `iot -> management`, no `iot -> tenant_transit`.
+
+This was previously established by a read-only audit ([INC-0001](/docs/runbook/incident-management/)).
+It has now been shown from a real client, which is stronger evidence. The IoT segment is not a
+containment boundary in any sense the network enforces, and tenant Wi-Fi keys — which now work — put
+devices onto that segment.
+{{< /hint >}}
+
+
 `mobile/group_vars/all/firewall.yml` declares a default-deny zone policy: 18 inter-zone allows and
 internet egress for 8 zones. [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/)
 records that this policy *"has still never been applied"*. The router is running whatever a config

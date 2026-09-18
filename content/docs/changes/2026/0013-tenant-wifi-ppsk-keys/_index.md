@@ -11,7 +11,7 @@ bookCollapseSection: true
 | **Date** | 2026-09-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Phases 1–4 and 6 done and verified: `DVNTM-IOT` is on air, the API issues and revokes keys on v0.3.1, and `eds` holds its own key from `terraform apply`. **Only phase 5 is outstanding** — a client joining with that key, which needs someone at the site. |
+| **Status** | **Complete, 2026-09-18.** All six phases done. A client joined `DVNTM-IOT` with eds's key and took `10.20.30.100`. One defect found late and **not** fixed: a profile that was empty when its SSID was created does not authenticate until the SSID's security config is re-pushed — see [phase 5](05-device/). |
 | **Window** | 2026-09-18 onward |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.1), `ansible-inventory-deevnet` |
@@ -153,8 +153,24 @@ the second bug that writing the tests uncovered in the first version of it.
    implementation-agnostic by convention, so it gained the model and the names went to the access
    point page. Phase 6.
 
-**Phase 5 remains**, and it is deliberately narrow: any wireless client joining with a tenant's key
-and landing on `10.20.30.0/24`.
+**Phase 5 passed on 2026-09-18**: a macOS client joined with eds's key and took `10.20.30.100`. It
+took three attempts, and the reason is a defect that is recorded but **not fixed** — see below.
+
+**A second defect, found by phase 5 and left open.** `omada-wireless.yml` creates the PPSK profile
+empty; the AP does not honour a key added to a profile that was empty when the SSID was provisioned
+to it, until the SSID's security configuration is re-pushed. **On a fresh site the first tenant's key
+is therefore dead on arrival.** The workaround used here was `update-basic-config` plus a
+force-provision; the preferred fix is to seed the profile with the existing placeholder key so it is
+never empty at SSID-creation time. Untested, and best proven at a rebuild.
+
+This also qualifies a phase 2 conclusion: the controller *accepts* an empty profile, but the AP will
+not authenticate against one, so acceptance was never the useful question.
+
+**Phase 5 also produced the strongest evidence yet for
+[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/).** From `10.20.30.100` the operator
+reached the Builder on the management segment. The declared policy permits `iot -> iot_backend` and
+nothing else; the router enforces none of it. The credential boundary works, the network boundary
+does not exist.
 
 ## Follow-ups
 
@@ -185,6 +201,10 @@ it, so unlike `DVNTM-IOT` it is a migration rather than a creation. The `securit
 here will report the mismatch if someone declares it `ppsk` without converting it.
 
 **Client isolation is deferred** — see the entry above; it belongs after the broker.
+
+**The empty-profile ordering defect** above is the one piece of this change that is known-broken and
+unfixed. It does not affect the running site — `DVNTM-IOT` works now — but it will bite the next
+fresh profile.
 
 **Two `deevnet_iot_wifi_key` guards are covered by unit test only**, because this site serves one
 trust class: that a key cannot change trust class, and that an unserved class is refused with the
