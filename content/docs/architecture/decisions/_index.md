@@ -121,3 +121,11 @@ question is written down, not when it is answered.
   internal certificate authority and single-use enrollment tokens live in OpenBao, in the identity VM,
   unsealed by a static key from ansible-vault. Chosen over Vault Community Edition for its native
   static seal and free namespaces. Extends ADR-0015.
+- [ADR-0017: How Tenant Code Reaches a Tenant Workload](/docs/architecture/decisions/0017-tenant-code-delivery/) —
+  *Proposed.* Delivery of a tenant's own application code onto its workload is a **pull initiated
+  from inside the workload**: a tenant has no inbound path, so the substrate's Ansible push pattern
+  cannot and must not be extended to tenant workloads. How the workload learns what to pull is still
+  open — tenant-authored cloud-init user-data is the recommendation, qualified by an unresolved
+  secrets question, a Proxmox snippets obstacle, and the fact that user-data delivers but does not
+  keep current. Extends ADR-0010, which said tenants own their code without saying how it arrives,
+  and ADR-0015, which builds the empty workload this fills.
