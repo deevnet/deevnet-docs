@@ -134,7 +134,7 @@ The IoT vendor segment is a strict containment zone for vendor-managed devices t
 
 ### IoT Segment
 
-The IoT segment contains custom-developed embedded devices with controlled firmware. Unlike the IoT Vendor segment, these devices run firmware that is built, managed, and updated through the Deevnet automation pipeline.
+The IoT segment contains controlled devices with a known owner. Their firmware is built and released by that owner, from that owner's repository; the substrate attaches them to the network and issues their credentials, but does not build their software. Unlike the IoT Vendor segment, where the vendor controls the firmware, an IoT device's owner is accountable for what it runs.
 
 **Typical inhabitants:**
 - Raspberry Pis (`dv02rpi001p01`, `dv02rpi002p01`, `dv02rpi003p01`)
@@ -143,7 +143,7 @@ The IoT segment contains custom-developed embedded devices with controlled firmw
 - Sensors and IoT gateways
 
 **Properties:**
-- Medium trust — firmware is custom-developed and controlled
+- Medium trust — firmware is controlled by a known owner
 - Outbound internet access (controlled)
 - Limited or no access to management segment
 - May need access to specific tenant services
