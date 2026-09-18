@@ -95,8 +95,15 @@ One number per tenant is the point. It removes the opportunity to hand-assign a 
 to be free *today* on *this* node and collides the moment the fabric gains a member — which is
 the failure requirement #1 exists to prevent.
 
-**Allocation is recorded in `TENANTS.md` in the tenant factory**, in the same change that adds the
-tenant. An index is never reused while its tenant exists.
+**Allocation is recorded in the Deevnet API's registry**, which issues the index and derives every
+identifier here from it. An index is never reused while its tenant exists.
+
+*Superseded in part by [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/).*
+This originally read "recorded in `TENANTS.md` in the tenant factory", and later in inventory as well
+— two hand-maintained lists for one number, which duplicated and then diverged: one said eds was
+index 1 while the API had allocated it 2. Both were retired by
+[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) step 11. The numbering in this record is
+unchanged; only who records it has moved.
 
 ### Naming constraint
 

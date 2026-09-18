@@ -5,14 +5,22 @@ weight: 10
 
 # Provisioning a Tenant
 
-{{< hint warning >}}
-**This describes the flow before the Deevnet API.**
-[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) (proposed) moves every
-per-tenant object behind the API: a tenant is admitted, then declares itself, its workloads and its
-names through the `deevnet/deevnet` provider, holding no Proxmox credential and no index. This page
-is how it works until that is deployed. The factory repository is now
-[`deevnet-tenant-fabric`](https://github.com/deevnet/deevnet-tenant-fabric) and keeps only the
-fabric; the tenant module remains available by its tags.
+{{< hint danger >}}
+**Historical. Do not follow this page.** Tenants are created through the Deevnet API
+([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)), deployed by
+[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) on 2026-09-17: a tenant is admitted, then
+declares itself, its workloads and its names through the `deevnet/deevnet` provider, holding no
+Proxmox credential, no vault access and no index.
+
+**Every mechanism below has been removed**, not merely superseded. `TENANTS.md`, `deevnet_tenants`,
+`vault_tenant_tsig_keys` and `vault_tenant_state_keys` are gone, and so are the role tasks that read
+them. Adding a row where this page says to would create nothing; hand-allocating an index would
+collide with what the API has already allocated, because the API allocates against its own registry
+**and** the live fabric.
+
+Kept because the *why* below is still accurate, and because a rebuild of a much older substrate may
+need to read it. For the current procedure see
+[Building Tenants](/docs/runbook/building-recovery/build-tenants/).
 {{< /hint >}}
 
 How to create, verify and destroy a tenant on the mobile substrate.

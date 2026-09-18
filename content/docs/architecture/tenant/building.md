@@ -67,7 +67,7 @@ module "tenant" {
   source = "git::ssh://git@github.com/deevnet/deevnet-tenant-factory.git//modules/tenant?ref=tenant-module-v1.1.0"
 
   tenant_name  = "grooveiq"   # <= 8 chars: Proxmox caps SDN zone IDs, and the zone ID is the name
-  tenant_index = 2            # allocated in TENANTS.md; everything else follows from it
+  tenant_index = 2            # issued by the API; everything else follows from it
 
   # Issued by the substrate at onboarding, alongside the tenant's DNS key and
   # its egress. A tenant never invents these, and no longer reads them out of
