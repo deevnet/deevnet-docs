@@ -155,6 +155,19 @@ WiFi passwords are in `group_vars/all/vault.yml` under `deevnet_wifi_psk`.
 make migration-omada-ssids
 ```
 
+{{< hint warning >}}
+**Retired.** `make migration-omada-ssids` and `playbooks/migration/13-omada-ssids.yml` no longer
+exist: they drove the controller's undocumented internal API, which
+[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) replaced with the
+documented Open API. The command above is kept because this is a record of what was run in March
+2026, not an instruction.
+
+**For a rebuild today, use `make wireless`** — see
+[CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) and the
+[AP recovery runbook](/docs/runbook/recovery/console-recovery/wireless-ap/). Note also that
+`DVNTM-IOT` is now a PPSK SSID with no shared key.
+{{< /hint >}}
+
 **Verify:**
 1. Connect to each SSID and confirm correct VLAN IP:
    - DVNTM → `10.20.10.x`

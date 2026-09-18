@@ -344,10 +344,14 @@ deleted, returning the controller to its post-adoption state.
 
 ## Follow-ups
 
-- [ ] **Provision `DVNTM-IOT` for real.** Teach `omada-wireless.yml` to manage a PPSK profile and
-  the `iot` SSID from inventory (per-device keys, each with its `vlan`, plus the `pskSetting`
-  encryption block the controller requires), then drop `omada_segment_skip: ["iot"]`. Until then
-  the `iot` segment is deliberately held out and `DVNTM-IOT` does not exist.
-- [ ] Retire `playbooks/migration/13-omada-ssids.yml`, which used undocumented calls, once
+- [x] **Done by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/), 2026-09-18.**
+  Provision `DVNTM-IOT` for real. `omada-wireless.yml` now manages a PPSK profile and the `iot`
+  SSID from inventory, and the `iot` skip is gone. **One thing changed from what this follow-up
+  assumed:** the keys are not per-device and they do not come from inventory. They are one per
+  tenant per trust class, issued by the Deevnet API into a profile inventory creates empty
+  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, amended). The `pskSetting`
+  workaround this record found was needed exactly as described.
+- [x] **Done by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/), 2026-09-18.**
+      Retire `playbooks/migration/13-omada-ssids.yml`, which used undocumented calls, once
   `omada-wireless.yml` has run for real.
 - [ ] Move the AP firmware procedure into Lifecycle. It sits in the console-recovery page today.

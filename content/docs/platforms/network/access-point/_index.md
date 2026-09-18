@@ -148,12 +148,40 @@ Both access points meet the core selection criteria:
 
 ### SSID Design
 
-SSIDs are mapped to VLANs for network segmentation:
+One SSID per trust class, each carrying one VLAN. The names come from `wifi_ssid` in
+`deevnet_vlans`, and the controller applies them — inventory is the only declaration
+([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)).
 
-| SSID | VLAN | Purpose |
-|------|------|---------|
-| Management | Mgmt VLAN | Infrastructure access |
-| IoT | IoT VLAN | IoT devices (isolated) |
-| Guest | Guest VLAN | Visitor access (internet only) |
+| SSID | VLAN | Security | Key |
+|---|---|---|---|
+| `DVNTM` | 10 (trusted) | WPA-Personal | one shared key, from the vault |
+| `DVNTM-IOT` | 30 (IoT) | **PPSK** (`security: 4`) | **one key per tenant**, issued by the Deevnet API |
+| `DVNTM-IOTV` | 31 (IoT Vendor) | WPA-Personal | one shared key, from the vault |
+| `DVNTM-GUEST` | 40 (guest) | WPA-Personal + guest isolation | one shared key, from the vault |
 
-Specific VLAN IDs and SSID names are documented in the [Network Segmentation](/docs/standards/network-segmentation/) standard.
+There is deliberately **no management SSID**. The management segment is reached over the wire.
+
+**On `DVNTM-IOT` the key decides the VLAN.** It is a PPSK SSID, so each key in its profile carries
+its own VLAN binding, and a device lands on the VLAN of the key it was flashed with — proven on this
+AP at firmware 1.3.11 in
+[CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6. A per-key VLAN needs
+no controller network object: it is raw 802.1Q tagging, and the core router serves the DHCP.
+
+**Who owns what** ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §6):
+
+- **Inventory owns** the SSID and the PPSK profile. `omada-wireless.yml` creates them and never
+  rewrites or deletes what it finds.
+- **The Deevnet API owns the keys inside the profile**, one per tenant per trust class. A tenant gets
+  one from `terraform apply` and never touches the controller.
+- The automation therefore does **not** report those keys as drift. It names the profiles whose
+  contents it is deliberately not inspecting, because reading them would pull every tenant's password
+  into Ansible's memory and output.
+
+**One entry you may see and should leave alone.** The controller refuses to let a PPSK profile reach
+zero keys (`errorCode -34044`), although it will happily create one empty. So when the last tenant key
+in a profile is revoked, the API leaves one placeholder named `DEEVNET-PLACEHOLDER-DO-NOT-USE`. Its
+password is generated, returned to nobody and stored nowhere, so it cannot be used to join anything,
+and it disappears the moment any real key is issued. It is only ever present when the alternative
+would be an empty profile.
+
+Changing any of this is `make wireless` in `deevnet.net`, never the controller UI.

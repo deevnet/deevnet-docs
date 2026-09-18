@@ -90,14 +90,16 @@ question is written down, not when it is answered.
   network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
   platform services; device secrets and signing keys never enter the substrate vault.
 - [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) —
-  *Proposed.* Where a backing service can't confine a tenant, as with the broker and the Wi-Fi
+  *Accepted.* Where a backing service can't confine a tenant, as with the broker and the Wi-Fi
   controller, the substrate runs an API that holds its credentials and scopes every call to one
   tenant, and tenants use it through a Deevnet Terraform provider; v1 is a device registry, a
   Wi-Fi key binding and a broker account binding; extends ADR-0010 §3. Reviewed 2026-09-14:
   the API only provisions and the broker reads its own auth database, device secrets are restored
   from tenant state, providers come from an offline mirror, and tenant credentials are issued
   age-encrypted per consumer. Revised 2026-09-16: tenant workloads get broker accounts too, and
-  the API confines topics by writing the tenant's prefix itself.
+  the API confines topics by writing the tenant's prefix itself. Accepted 2026-09-18 at the close
+  of CHG-0013, which built the Wi-Fi half and amended it: a key is per tenant per trust class, not
+  per device. The device registry and broker accounts are decided but unbuilt — there is no broker.
 - [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) —
   Services on the management hypervisor run as containers on VMs grouped by domain —
   network management, substrate and tenant observability, provisioning, identity, and device
