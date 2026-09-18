@@ -80,6 +80,9 @@ tenant workloads.
       `ansible-inventory-deevnet` (all `fix/workload-resolver`)
 - [ ] Vault decrypted, collections built
 - [ ] API tagged and staged: `make image && make stage` on a clean, tagged tree
+- [ ] `deevnet_api_version` in the `deevnet_api` role bumped to the tag just staged. The role
+      pins the version it deploys; staging a tarball does not deploy it, and the play will
+      happily redeploy the old image without it.
 - [ ] Confirmed 2040 and 2080 hold nothing worth keeping
 
 ## Procedure
