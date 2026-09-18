@@ -295,6 +295,15 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
        the test settled: PPSK is WPA2 under the hood (a `security: 4` SSID also requires the
        `pskSetting` encryption block, not only `ppskSetting`), and a per-key VLAN needs no
        controller network object — it is raw 802.1Q tagging that OPNsense serves DHCP for.
+   - **Amended 2026-09-18 (operator): one key per tenant per trust class, not one per device.**
+     The issuer decision above stands — the Deevnet API holds the controller credential and binds
+     every key to a trust-class VLAN — and the interim is not taken: the API issues keys from the
+     start, so no tenant key is ever a substrate commit. Only the granularity changed. A device's
+     MAC is trivially spoofable, so binding a key to one buys no enforcement, while forcing a
+     tenant to enumerate its hardware to the substrate before it can flash anything. The thing that
+     *is* enforced — the VLAN — comes from the key either way. Revocation therefore lands per
+     tenant per trust class, which is the boundary the substrate can meaningfully police. See
+     [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3.
 4. **How are clients isolated on the IoT SSID?**
    - Omada's per-SSID isolation is its Guest Network setting, which also blocks all private address
      ranges ([Omada](https://support.omadanetworks.com/us/document/12928/)). It can't be used for
@@ -526,36 +535,46 @@ analysis; see Open question 3.
 **Applications that need nothing from the platform owe it nothing.** A device with no network, like
 the pumpkin, is not enrolled anywhere.
 
-**Descriptive pages change only on acceptance.** The tenant segments and IoT inhabitants in
-[Network Segmentation](/docs/architecture/network-segmentation/), the Raspberry Pi row in Tenant
-Compute, and the tenant contract are left as they are while this record is Proposed.
+**Descriptive pages changed on acceptance.** The IoT segment definition in
+[Network Segmentation](/docs/architecture/network-segmentation/) was corrected on 2026-09-18. The
+tenant segments, the Raspberry Pi row in Tenant Compute and the tenant contract are unchanged: the
+four Pis count as substrate for now, so nothing there is wrong yet.
 
-**The segmentation standard changes on acceptance too.**
-[Network Segmentation](/docs/standards/network-segmentation/) §8 defines the IoT segment as holding
+**The segmentation standard changed on acceptance too.**
+[Network Segmentation](/docs/standards/network-segmentation/) §8 defined the IoT segment as holding
 devices whose firmware is *"built, managed, and updated through the Deevnet automation pipeline."*
 Under §4 of this record, firmware is built and released by its owner, from its owner's repository.
-That contradicts the standard's definition. What the standard should say instead is controlled
-firmware whose owner is known, the attachment rule in §3. Because standards are authoritative, the
-standard is corrected when this record is accepted, not before.
+That contradicted the standard's definition. Because standards are authoritative, §8 was corrected
+on 2026-09-18 to the attachment rule in §3 — controlled firmware whose owner is known — rather than
+this record being written around it.
 
 ---
 
 ## Current state
 
-- **Proposed.** Nothing is implemented.
-- The LP stand, the Ma Bell gateway and the MQTT broker remain exactly as `d8c31cd` and earlier
-  commits left them. As of 2026-09-14, the broker doesn't answer at all.
-- **Validated read-only on 2026-09-14:**
+- **Accepted 2026-09-15.** All four open questions are answered. The granularity of question 3 was
+  amended on 2026-09-18 to one key per tenant per trust class.
+- **Per-key VLANs are proven on the hardware, not merely documented.**
+  [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6: on the
+  EAP650-Outdoor at firmware 1.3.11, a client joined with the VLAN-30 key landed on 10.20.30.100
+  and with the VLAN-31 key on 10.20.31.100. The test artifacts were torn down afterwards, so
+  `DVNTM-IOT` does not exist on the controller yet and no application-owned device has Wi-Fi.
+- The LP stand and the Ma Bell gateway remain exactly as `d8c31cd` and earlier commits left them.
+- **The broker does not exist.** `dv02mqt001v01` was retired; VerneMQ on `dv02msg001v01` is built
+  and empty.
+- **Validated read-only on 2026-09-14, and where each finding now stands:**
 
   | Area | Result |
   |---|---|
-  | Controller PPSK and per-key VLAN | Documented |
-  | AP firmware | Listed as supporting PPSK |
-  | Client isolation | Guest Network plus EAP ACL is the only documented route |
+  | Controller PPSK and per-key VLAN | Documented, and since proven on the AP |
+  | AP firmware | Listed as supporting PPSK, and since proven at 1.3.11 |
+  | Client isolation | Guest Network plus EAP ACL is the only documented route; still untested |
   | Core router | Enforces nothing |
-  | Broker | Unreachable |
-- **Blocking acceptance:**
-  - the device test (after CHG-0005)
-  - a running broker for Open question 1
-  - Open question 2
-  - CHG-0007, before the IoT segment is relied on
+  | Broker | Did not answer; since retired |
+- **Still outstanding:**
+  - [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), before the IoT segment is relied
+    on as a boundary. The core router still passes everything between zones.
+  - A running broker, for the device-to-service half of open question 1.
+  - Client isolation (open question 4). The isolation half of CHG-0005 phase 6 was not run, so
+    "best effort" is currently no effort: devices on the IoT segment are not isolated from each
+    other.
