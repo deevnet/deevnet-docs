@@ -252,27 +252,35 @@ sudo ip addr del 192.168.0.1/24 dev enp4s0
 
 ## 6. Reapply the SSIDs
 
-{{< hint warning >}}
-**Only needed if the AP is still on old firmware.** Omada 6.1 will not provision VLAN
-configuration to EAP650-Outdoor firmware 1.0.4 (2023): the SSIDs have to be set in the **AP's
-own standalone web UI**, with their VLAN tags, after adoption. That is a firmware limitation,
-not a misconfiguration — and it is the reason [step 4](#4-upgrade-the-firmware-before-adopting)
-comes first.
+The controller provisions all four SSIDs. Since
+[CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) the AP runs 1.3.11 and is
+adopted, so nothing here is configured in the AP's standalone UI — that route was only ever a
+workaround for firmware 1.0.4, which Omada would not push VLAN configuration to.
 
-On current firmware the controller should push all four itself, and this step becomes a check
-rather than a task. Confirm which case you are in before hand-configuring anything.
-{{< /hint >}}
-
-SSIDs map to the VLANs the trunk allows — `DVNTM-IOT` onto VLAN 30 for custom-firmware
-devices, and the trusted, vendor-IoT and guest SSIDs onto 10, 31 and 40. The authoritative
-list is `deevnet_vlans` in inventory and
-[Step 13](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-13-ap-ssid-configuration).
-
-Once the AP's firmware has been updated and Omada can provision it, this becomes:
+From `ansible-collection-deevnet.net`, with the inventory vault decrypted:
 
 ```bash
-make migration-omada-ssids
+make wireless                    # plan; read the report first
+make wireless APPLY=1 ADOPT=1    # adopt a pending AP, then apply
+make wireless APPLY=1            # once adopted: SSIDs, profiles, networks
 ```
+
+SSIDs map to the VLANs the trunk allows — `DVNTM` onto 10, `DVNTM-IOT` onto 30, `DVNTM-IOTV` onto 31
+and `DVNTM-GUEST` onto 40. The authoritative list is `deevnet_vlans` in inventory; the security model
+for each is on the
+[access point](/docs/platforms/network/access-point/) page.
+
+{{< hint info >}}
+**Recovery does not re-issue tenant keys.** `DVNTM-IOT` is a PPSK SSID, and the per-tenant keys live
+in its PPSK profile on the controller — not on the AP. Rebuilding or re-adopting the AP does not
+touch them, so no device needs reflashing.
+
+If the **profile itself** is lost, the SSID comes back empty and each tenant runs one
+`terraform apply`, which restores **the same key it already holds** — the tenant's state is the
+authoritative copy ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5). Still no
+device visit. Do not hand-create keys in the controller UI to "fix" this: the API owns them, and a
+hand-made key is one nothing will ever clean up.
+{{< /hint >}}
 
 ---
 
@@ -285,8 +293,13 @@ Per SSID, from a client:
   test that actually distinguishes a correct SSID from a plausible one
 - it reaches its gateway, and the internet if that segment is allowed one
 
-An IoT client on `DVNTM-IOT` should land in 10.20.30.0/24. A guest client should land in
-10.20.40.0/24 and reach nothing but the internet.
+A guest client should land in 10.20.40.0/24 and reach nothing but the internet.
+
+**`DVNTM-IOT` needs a tenant's key to test**, since it has no shared one: take `ssid` and `psk` from
+a tenant's `device_wifi` output. A client joining with it should land in 10.20.30.0/24 — and landing
+there is the per-key VLAN binding working, which is the thing worth checking. Confirm the SSID
+broadcasts and that its PPSK profile is bound to it; the keys inside the profile are the API's and
+are not part of this check.
 
 {{< hint info >}}
 **A client that associates but gets no lease is almost always the trunk**, not the SSID —

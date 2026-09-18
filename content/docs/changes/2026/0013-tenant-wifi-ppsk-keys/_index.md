@@ -11,10 +11,10 @@ bookCollapseSection: true
 | **Date** | 2026-09-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Phases 2 and 3 done: `DVNTM-IOT` is on air and the API issues keys. **One defect open — a tenant's last key cannot be revoked** (phase 3). Phases 4–6 remain. |
+| **Status** | **In progress.** Phases 1–4 and 6 done and verified: `DVNTM-IOT` is on air, the API issues and revokes keys on v0.3.1, and `eds` holds its own key from `terraform apply`. **Only phase 5 is outstanding** — a client joining with that key, which needs someone at the site. |
 | **Window** | 2026-09-18 onward |
 | **Site** | mobile |
-| **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.0), `ansible-inventory-deevnet` |
+| **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.1), `ansible-inventory-deevnet` |
 | **Automation** | `deevnet.net` `playbooks/omada-wireless.yml` via `make wireless`; `deevnet.mgmt` role `deevnet_api`; tenant Terraform through `deevnet/deevnet` |
 | **Risk** | Medium — creating an SSID re-applies the WLAN group to a live AP, which can drop associations on `DVNTM` for a few seconds. Nothing existing is rewritten or deleted. |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (proved PPSK, left the follow-up), [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) (the API this extends), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) (must not break the API's path to the controller) |
@@ -104,7 +104,7 @@ Each phase has its own page, with Run, Verify and Undo. The undo is written befo
 | [2. Substrate](02-substrate/) | Create the profile and `DVNTM-IOT` | Maintenance window |
 | [3. API](03-api/) | Deploy v0.3.0 with the controller credential | The Owner's Open API client |
 | [4. Tenant](04-tenant/) | A tenant issues a key through Terraform | Phases 2 and 3 |
-| [5. Device](05-device/) | Flash the LP stand and watch it land on VLAN 30 | An operator at the site |
+| [5. A client joins](05-device/) | Any wireless client joins with a tenant's key and lands on VLAN 30 | Someone at the site with a client |
 | [6. Close-out](06-close-out/) | Correct the stale pages, retire the superseded playbook | Phase 5 |
 
 [Undo](undo/) collects the reversal for every phase.
@@ -120,11 +120,41 @@ Taken from the network, not from Ansible.
 - A tenant's `terraform apply` returns `ssid` and a `psk`; a second apply is a no-op.
 - **The key is deleted from the controller by hand and the next apply restores the identical
   `psk`** — the restore-not-recreate proof, and it needs no hardware.
-- The LP stand takes a lease in `10.20.30.0/24` and appears on the AP's client list.
+- A client joining `DVNTM-IOT` with a tenant's key takes a lease in `10.20.30.0/24` and appears on
+  the AP's client list. Any client will do — what is proven is that the key authenticates and that
+  the key, not the SSID, decides the VLAN.
 
 ## Outcome
 
-*Written when the change completes.*
+**Everything but phase 5 is done, 2026-09-18.** A tenant asks for a Wi-Fi key in its own Terraform
+and gets back an SSID and a password; no operator touches the controller, and no tenant Wi-Fi key
+exists in the substrate vault any more.
+
+- `DVNTM-IOT` is on air: VLAN 30, `security: 4`, bound to a profile inventory created **empty**. The
+  three shared-key SSIDs were untouched and the AP stayed connected.
+- The API issues, re-applies, restores and revokes keys — v0.3.1 on `dv02prv001v01`, with its own
+  Open API client, separate from Ansible's.
+- `eds` holds `eds-devices` on VLAN 30, issued by its own `terraform apply`, with the key in its own
+  state. `1 to add, 0 to change, 0 to destroy`, and the second plan is clean.
+- `deevnet_wifi_psk.iot` is deleted, not migrated away from.
+
+**One defect found and fixed.** Revoking a tenant's only key failed: the controller refuses to let
+`delete-psk` empty a PPSK profile (`errorCode -34044`) even though it will happily *create* one
+empty. Fixed in v0.3.1 with a placeholder entry and verified round-trip on the real controller.
+Phase 3 has the detail, including why the alternative fix was rejected on concurrency grounds and
+the second bug that writing the tests uncovered in the first version of it.
+
+**Departures from the plan**, both recorded where they happened:
+
+1. The preferred fix for that defect (`modifyPPSKProfile` with the remaining keys) was **never
+   tested**. Settling it needed a write to a shared device that the operator and I chose not to
+   spend, because the alternative was structurally safer under concurrency anyway. Phase 3.
+2. Phase 6 did **not** put the SSID names on the architecture page as planned. That page is
+   implementation-agnostic by convention, so it gained the model and the names went to the access
+   point page. Phase 6.
+
+**Phase 5 remains**, and it is deliberately narrow: any wireless client joining with a tenant's key
+and landing on `10.20.30.0/24`.
 
 ## Follow-ups
 
@@ -143,4 +173,19 @@ reach. Two tenants' devices can talk to each other at Layer 3 today.
   follow-up is worth doing **after** the broker, not before.
 - It needs its own change record: it touches an SSID that by then has devices on it.
 
-*The rest is written when the change completes.*
+**The eds application vertical is a separate effort, not a follow-up to this change.** A joined
+device has nothing to talk to: VerneMQ on `dv02msg001v01` is built and empty, and no eds service is
+packaged — there is no Containerfile. Standing up the broker, packaging the services and flashing the
+LP stand against them is its own piece of work, and it is what
+[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3's device registry and broker
+accounts are for. This change deliberately stops at the network credential.
+
+**The `DVNTM-IOTV` conversion still needs its own change record.** It has a shared key and devices on
+it, so unlike `DVNTM-IOT` it is a migration rather than a creation. The `security` drift check added
+here will report the mismatch if someone declares it `ppsk` without converting it.
+
+**Client isolation is deferred** — see the entry above; it belongs after the broker.
+
+**Two `deevnet_iot_wifi_key` guards are covered by unit test only**, because this site serves one
+trust class: that a key cannot change trust class, and that an unserved class is refused with the
+served ones named. Both become live-testable when `iot_vendor` is served.

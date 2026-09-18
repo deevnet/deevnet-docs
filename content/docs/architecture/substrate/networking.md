@@ -118,3 +118,14 @@ Wireless access is provided through APs connected to the access switch:
 - Each SSID maps to a specific VLAN/segment
 - Typical mappings: trusted SSID → trusted VLAN, guest SSID → guest VLAN, IoT SSID → IoT VLAN
 - Wireless clients receive the same firewall policy as wired clients on the same segment
+
+**One SSID per trust class, and on the device segments the credential decides the VLAN.** Where
+devices belong to application owners rather than to the substrate, each device segment keeps its own
+SSID and each SSID carries one VLAN. The SSID uses per-credential keys rather than one shared key, so
+the key a device is flashed with determines which segment it lands on, and a lost key is revoked
+without touching any other device. Keys are issued per owner, not per device, and an owner never
+chooses a VLAN — which is what keeps an owner's own network off the air.
+
+The substrate declares the SSIDs and the key profiles; the keys inside them are issued to owners
+through the provisioning interface. Concrete SSID names, VLANs and security modes are
+implementation, and live with the access point.

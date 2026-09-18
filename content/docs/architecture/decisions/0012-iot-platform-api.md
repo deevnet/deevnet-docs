@@ -7,12 +7,13 @@ weight: 12
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-18, at the close of [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) — when the Wi-Fi half had been built, deployed and proven on the AP, not when it was written. The broker half (§8) and the device registry (§3) are decided but not built. |
 | **Date** | 2026-09-14 |
 | **Reviewed** | 2026-09-14. Four of the original open questions were decided in review: the broker (§8), secrets after a rebuild (§4, §5), provider distribution (§7) and credential delivery (§9). The sources are quoted in each section. Revised the same day: the API is provisioning-only, and the broker authenticates from its own auth database (§8). Open questions 2, 5 and 6 were then answered: where the API, its database, the broker's auth database and the Omada controller run (§7, [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). Revised 2026-09-16: tenant workloads get broker accounts too (§3), and topic confinement is decided (§10, Open question 4). Revised 2026-09-18 by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/), which built the Wi-Fi half: a key is per tenant per trust class rather than per device (§3), v1 ships on `DVNTM-IOT` only (§3), the drift report names profiles rather than counting keys (§6), and `DVNTM-IOT` turned out to be a creation rather than a migration (Consequences). |
 | **Scope** | How a tenant reaches an IoT platform service whose own interface can't confine it to its scope, and what the substrate builds so it can |
 | **Extends** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §1 and §3, which require a scoped service but don't say how one is built when the backing software can't scope itself |
-| **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (per-device Wi-Fi keys) |
+| **Answers, in part** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) open questions 1 (scoped registration) and 3 (Wi-Fi keys — answered per tenant per trust class, not per device; §3) |
 | **Related** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/), [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/), [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) (§4 and §5 depend on it) |
 
 ---
@@ -953,15 +954,27 @@ prove.
 
 ## Current state
 
-- **Proposed.** Nothing is built.
-- The broker accounts and topic permissions remain in substrate inventory as ADR-0010 debt. No
-  Wi-Fi keys are per device, and tenants still read their keys from the substrate vault.
-- Reviewed on 2026-09-14. Four of the original eight open questions were decided (§4, §5, §7, §8,
-  §9), and four remained.
-- Revised the same day: §8 makes the API provisioning-only, which adds Open questions 5 and 6.
-- Open questions 2, 5 and 6 were answered the same day (§7, ADR-0013). Question 3 was answered on
-  2026-09-15, with ADR-0011 question 2. Question 4 was answered on 2026-09-16 (§10), and §3 gained
-  broker accounts for tenant workloads the same day. Question 1 is deferred to a later iteration.
-- **Acceptance waits on:**
-  - ADR-0010 (ADR-0011 was accepted on 2026-09-15)
-  - the data-plane changes above: CHG-0005 and CHG-0007
+- **Accepted 2026-09-18**, at the close of
+  [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) — when the Wi-Fi half had been built,
+  deployed and proven on the AP rather than when it was written.
+- **Built and live: the Wi-Fi half.** `DVNTM-IOT` exists as a PPSK SSID on VLAN 30, bound to a
+  profile inventory creates empty. The API issues, restores and revokes one key per tenant per trust
+  class; the `eds` tenant holds `eds-devices` from its own `terraform apply`, and no tenant reads a
+  Wi-Fi key from the substrate vault any more. `deevnet_wifi_psk.iot` was deleted rather than
+  migrated away from.
+- **Not built: the rest of §3.** The device registry (`deevnet_iot_device`) and broker accounts
+  (`deevnet_iot_broker_account`) still answer `501`. Broker accounts and topic permissions remain in
+  substrate inventory as ADR-0010 debt, because **there is no broker** — VerneMQ on
+  `dv02msg001v01` is built and empty.
+- **The segment boundary is still not enforced.**
+  [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) has never run, so the core router
+  passes everything between zones. A tenant's key decides which VLAN its devices land on; nothing
+  yet stops that VLAN reaching another. The `platform -> management` rule the API needs is declared
+  but unenforced, which is the point of declaring it.
+- **Still open:** open question 1 (device-to-tenant ingress) is deferred to a later iteration, and
+  [ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/) is still
+  Proposed — accepting this record ahead of the one it extends is deliberate: ADR-0010 states a
+  principle, and this is the first service that actually satisfies it.
+- Reviewed on 2026-09-14 (four of eight open questions decided: §4, §5, §7, §8, §9), revised the
+  same day to make the API provisioning-only, then questions 2, 5 and 6 answered (§7, ADR-0013),
+  question 3 on 2026-09-15 and amended 2026-09-18, and question 4 on 2026-09-16 (§10).
