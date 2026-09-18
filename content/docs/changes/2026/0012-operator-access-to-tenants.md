@@ -10,11 +10,11 @@ weight: 12
 | **Date** | 2026-09-18 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **Complete.** The route is applied and verified from both operator zones. |
 | **Window** | 2026-09-18 |
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (core router, static route and zone policy); `ansible-inventory-deevnet` firewall policy |
-| **Automation** | The route is applied by hand — no role manages OPNsense static routes. The zone-policy rules are inventory, applied by `deevnet.net` `opnsense_firewall` when [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) runs. |
+| **Automation** | `deevnet.net` role `opnsense_routes`, run by `playbooks/routes.yml` against `ansible-inventory-deevnet/mobile`. The zone-policy rules are inventory, applied by `opnsense_firewall` when [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) runs. |
 | **Risk** | Low — it adds reachability and removes none. The one thing most likely to go wrong is the route being written to the wrong gateway, which fails closed. |
 | **Related changes** | [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), which must not undo it |
 | **Related incidents** | None |
@@ -73,8 +73,8 @@ what TCP needs.
 
 **In scope:** one static route on the core router; two zone-policy rules in inventory.
 
-**Out of scope:** applying the zone policy (that is CHG-0007); bringing the route under automation;
-replacing the shared `a_autoprov` key; any change to tenant egress or to what devices may reach.
+**Out of scope:** applying the zone policy (that is CHG-0007); replacing the shared `a_autoprov`
+key; any change to tenant egress or to what devices may reach.
 
 ## Risk and impact
 
@@ -84,7 +84,7 @@ replacing the shared `a_autoprov` key; any change to tenant egress or to what de
 | The new rules widen access further than intended | inventory | Both rules name `10.20.128.0/18` as the destination and `management` / `trusted` as the source. No other zone is touched, and the reverse direction is not added. |
 | CHG-0007 later removes the access | core router | The rules are declared in inventory now, so CHG-0007 renders them. This is the whole reason they are written before they are needed. |
 | Tenant egress disturbed | exit node | Nothing on the exit node changes. Egress is re-tested after the route is added. |
-| The route is lost in a router rebuild | core router | **Not guarded.** No role manages it. Recorded as the first follow-up. |
+| The route is lost in a router rebuild | core router | Guarded: the gateway and route are declared in inventory and applied by `opnsense_routes`, so a rebuild replays them. |
 
 ## Prerequisites
 
@@ -92,6 +92,7 @@ replacing the shared `a_autoprov` key; any change to tenant egress or to what de
       changes a property six records rely on
 - [ ] A tenant workload running, to test against
 - [ ] Console access to the core router, in case a routing change misbehaves
+- [ ] `deevnet.net` `opnsense_routes` built and the collection installed
 
 ## Procedure
 
@@ -99,13 +100,16 @@ replacing the shared `a_autoprov` key; any change to tenant egress or to what de
 
 Not disruptive: it adds a route where none existed.
 
-**Run:** on `dv02cor002p01`, System → Routes → Configuration, add:
+OPNsense cannot route to a bare address — a static route references a gateway object — so this
+creates both. Declared in `group_vars/routers/vars.yml` as `opnsense_gateways` and
+`opnsense_static_routes`, and applied by the role; nothing is typed at the router.
 
-| Field | Value |
-|---|---|
-| Network address | `10.20.128.0/18` |
-| Gateway | the fabric exit node on transit, `10.20.50.22` |
-| Description | `CHG-0012: tenant overlay via fabric exit node (ADR-0018)` |
+**Run:**
+
+```bash
+cd ansible-collection-deevnet.net
+ansible-playbook playbooks/routes.yml
+```
 
 **Verify:**
 
@@ -153,7 +157,9 @@ that has not been applied.
 
 ### Undo Step 1
 
-Delete the route. Reachability returns to what it was; nothing else depends on it.
+Remove the gateway and route from `opnsense_gateways` and `opnsense_static_routes` and delete them
+at the router — `opnsense_routes` does not delete, by design. Reachability returns to what it was;
+nothing else depends on it.
 
 ### Undo Step 2
 
@@ -161,22 +167,60 @@ Revert the inventory commit. Nothing was applied, so nothing on the router chang
 
 ## Outcome
 
-*Completed after the change has run.*
-
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-18 | Prereq | `opnsense_routes` written and merged first — see departures. |
+| 2026-09-18 | Step 1 | `ansible-playbook playbooks/routes.yml`: `changed=2` (gateway and route), `changed=0` on re-run. `TENANT_FABRIC_GW` landed on `opt10` with `defaultgw=False` and `monitor_disable=1`; `WAN_GW` remains the only IPv4 default. |
+| 2026-09-18 | Step 2 | Declared in inventory. Not applied — the router still passes everything until CHG-0007. |
+
+**Verified from the network.** From the Builder on management, a shell inside the workload:
+
+```
+eds-services
+a_autoprov
+eth0   UP   10.20.130.10/24
+quay.io 200
+podman version 5.8.4
+```
+
+And from an operator desktop on trusted, which is the path the change exists for:
+
+```
+> tracert 10.20.130.10
+Tracing route to services.eds.mobile.deevnet.net [10.20.130.10]
+  1   2 ms   10.20.10.1
+  2   2 ms   10.20.50.22
+  3   2 ms   services.eds.mobile.deevnet.net [10.20.130.10]
+
+> ssh a_autoprov@services.eds.mobile.deevnet.net
+[a_autoprov@eds-services ~]$
+```
+
+Three hops — trusted gateway, fabric exit node, workload — exactly the designed path, resolving by
+name in both directions.
 
 ### Departures from the plan
 
--
+- **The route was going to be applied by hand, and is not.** The plan said "no role manages OPNsense
+  static routes" and listed the resulting unmanaged config as its first follow-up. The operator's
+  standing rule that substrate changes come from Ansible is why that was not accepted: the
+  `opnsense_routes` role was written first, and the route is declared in inventory.
+
+  That decision paid for itself during the change. The role's own asserts caught two faults that a
+  hand-made change would have walked into: a gateway outside its zone's subnet, which OPNsense
+  accepts and then silently ignores; and the interfaces export labelling its JSON as `text/html`, so
+  `.json` is never populated. The second is the same trap `opnsense_firewall` documents, where it
+  produced a run that reported converged while applying nothing. By hand, it would have looked like
+  it worked.
+- **Step 1's verification was taken from a client on each zone**, not from the router's status page
+  alone, which is what the change is actually for.
 
 ## Follow-ups
 
-- [ ] **The route is unmanaged and will be lost in a router rebuild**, silently, because nothing
-      tests it. No role manages OPNsense static routes. Either the `deevnet.net` collection gains
-      route management, or the rebuild runbook carries this route explicitly — the first is right,
-      the second is the minimum.
+- [x] ~~The route is unmanaged and will be lost in a router rebuild.~~ **Resolved before the change
+      ran:** the `deevnet.net` collection gained an `opnsense_routes` role, and the gateway and
+      route are declared in inventory. This was going to be accepted as a follow-up; the operator's
+      rule that substrate changes come from Ansible is why it was not.
 - [ ] **Every tenant workload trusts the substrate's automation key.** The kickstart bakes
       `a_autoprov_rsa.pub` into the base image with passwordless sudo, so one key reaches root on
       every tenant workload. It was unreachable before this change and is not now. The end state is

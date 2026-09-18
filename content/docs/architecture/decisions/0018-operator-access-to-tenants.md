@@ -111,9 +111,10 @@ decision has to be kept.
   appears: no inbound path *from devices, from other tenants, or from outside the substrate*.
 - **The core router now holds tenant-specific configuration** — the thing ADR-0001 avoided. It is
   one aggregate route rather than per-tenant state, which keeps the property that mattered.
-- **The route is unmanaged.** No role manages OPNsense static routes, so this one is applied by hand
-  and will be lost in a router rebuild — silently, because nothing tests it. That is a follow-up on
-  [CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/), not an acceptable end state.
+- **The route is managed.** It was going to be applied by hand, which would have left the one route
+  the substrate depends on living only in a GUI form. Instead the `deevnet.net` collection gained an
+  `opnsense_routes` role and the gateway and route are declared in inventory, so a router rebuild
+  replays them.
 - **The blast radius of the shared `a_autoprov` key grows.** It was already baked into every tenant
   workload with passwordless sudo; it was simply unreachable. Now that the path exists, one key
   compromise reaches every tenant workload directly. This is recorded as a defect, not accepted as a
@@ -138,5 +139,7 @@ decision has to be kept.
 
 ## Current state
 
-Proposed. Nothing is applied. [CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/) is the
-change that applies it.
+Proposed, and **applied** by
+[CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/) on 2026-09-18. An operator on
+management or trusted reaches any tenant workload, by name, in three hops. The zone-policy rules are
+declared but not yet enforced — the router still passes everything until CHG-0007 runs.

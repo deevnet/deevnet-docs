@@ -37,7 +37,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0009 | — | [Access Switch Omada Adoption](2026/0009-access-switch-adoption/) | Migration | mobile | Planned (on hold) |
 | CHG-0010 | 2026-09-17 | [Deploy the Deevnet API and Cut Tenants Over](2026/0010-tenant-api-cutover/) | Build-out and migration | mobile | Complete |
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](2026/0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
-| CHG-0012 | — | [Operator Access to Tenant Workloads](2026/0012-operator-access-to-tenants/) | Configuration | mobile | Planned |
+| CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](2026/0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
