@@ -128,4 +128,19 @@ Taken from the network, not from Ansible.
 
 ## Follow-ups
 
-*Written when the change completes.*
+**Client isolation on `DVNTM-IOT` — deferred by the operator, 2026-09-18.** Every IoT device shares
+VLAN 30 whatever tenant owns it, so a tenant's key decides where its devices land, not who they can
+reach. Two tenants' devices can talk to each other at Layer 3 today.
+
+- This is [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) question 4's
+  accepted position — best effort, credentials first — but "best effort" is currently **no effort**:
+  the isolation half of CHG-0005 phase 6 was never run.
+- The documented route is Guest Network plus an EAP ACL permit, and it is awkward: Omada's
+  per-SSID isolation is its Guest Network setting, which also blocks all of RFC 1918 — including the
+  broker a device has to reach. There is no plain client-isolation switch in the SSID schema.
+- The thing actually meant to keep owners apart is above Layer 3: per-tenant credentials, which this
+  change delivers, and the broker's per-tenant topic scoping, which does not exist yet. So this
+  follow-up is worth doing **after** the broker, not before.
+- It needs its own change record: it touches an SSID that by then has devices on it.
+
+*The rest is written when the change completes.*
