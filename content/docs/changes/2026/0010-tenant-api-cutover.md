@@ -10,7 +10,7 @@ weight: 10
 | **Date** | 2026-09-17 |
 | **Change type** | Build-out and migration — OpenBao and the tenant API are deployed, and tenants stop being built from inventory |
 | **Classification** | Disruptive in one step only: the tenant DNS server restarts when its HTTP API is turned on. Everything else adds services or changes objects nothing depends on yet. |
-| **Status** | **Steps 1–10 complete.** OpenBao, the PowerDNS API, the API and the egress agent are deployed, and **tdemo and eds are both live and built entirely through the API**. Step 11 — retiring the per-tenant loops from the roles — is outstanding, and is where `deevnet_tenants` finally goes. |
+| **Status** | **Complete.** All eleven steps are done. OpenBao, the PowerDNS API, the API and the egress agent are deployed; **tdemo and eds are both live and built entirely through the API**; and the inventory tenant registry and the role tasks that read it are gone. One working-tree edit awaits `make vault`: the two now-unread tenant secret dicts. |
 | **Window** | No operator on site needed: every step is a control-node run or an API call. The one restart affects tenant name resolution for seconds, and no tenant is live. |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao, tenant DNS), `dv02prv001v01` (the API, its database, the state store), `dv02hyp002p02` (the tenant hypervisor and exit node), `dv02cor002p01` (the resolver's delegations) |
@@ -250,13 +250,36 @@ except the vault, and eds has never applied, so nothing is disturbed.
 
 ### 11. Retire what the API replaced
 
-Once eds runs from the API:
-- `vault_tenant_tsig_keys` and `vault_tenant_state_keys` are no longer read. Remove the per-tenant
-  loops from the `powerdns`, `minio` and `opnsense_dns` roles, which keep the service and lose the
-  tenant work.
-- `deevnet_tenants` becomes empty, and `deevnet_tenant_fabric` is unused.
+**Done 2026-09-17**, after both tenants were proven and after the key-change drill proved the API can
+create and re-create these objects unaided — the order matters, because this step deletes the only
+other thing that could create them.
 
-Each is its own pull request, after both tenants are proven.
+Four roles read the inventory registry, not three: `proxmox_node_network` did too, through
+`proxmox_tenant_egress.tenants`, and emptying the registry would have failed its assert on every run.
+
+- **`powerdns`** keeps the server, its schema and its HTTP API; loses zone creation, TSIG import, key
+  binding, the update ACL and apex reconciliation.
+- **`minio`** keeps the bucket, its versioning and the API's admin user; loses the per-tenant policy
+  and user.
+- **`opnsense_dns`** loses tenant zone delegation entirely. Checked first that nothing in it prunes
+  forward entries, so the API's rows survive a run — `dns_delete_unmanaged` reaches host overrides and
+  aliases only.
+- **`proxmox_node_network`** stops requiring a tenant list when the agent owns the file, and verifies
+  the VRFs the node actually has instead — a better check, because it tests what is there rather than
+  what was declared.
+- **`deevnet_tenants` is gone**, along with `vault_tenant_tsig_keys` and `vault_tenant_state_keys`,
+  whose values were stale as well as unread: the API replaced eds's TSIG secret when it adopted the
+  zone.
+
+**`deevnet_tenant_fabric` is NOT unused**, as this record previously claimed. The `deevnet_api` role
+reads `controller_id` and `node` from it, which is how the API knows where to attach a tenant's zone.
+It stays.
+
+**Verified after the removals:** all four roles run clean, and both tenants' zones still resolve
+forward and reverse with the API's SOA, both state users are intact, both VRFs verify for their
+default route and for leaving via the perimeter, and both tenants' plans are clean.
+
+Three pull requests, one per repository.
 
 ## What the run found
 
