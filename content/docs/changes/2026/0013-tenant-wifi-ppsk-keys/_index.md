@@ -11,10 +11,10 @@ bookCollapseSection: true
 | **Date** | 2026-09-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Phases 2 and 3 done: `DVNTM-IOT` is on air and the API issues keys. **One defect open — a tenant's last key cannot be revoked** (phase 3). Phases 4–6 remain. |
+| **Status** | **In progress.** Phases 2 and 3 done and verified: `DVNTM-IOT` is on air, and the API issues and revokes keys on v0.3.1. Phases 4–6 remain. |
 | **Window** | 2026-09-18 onward |
 | **Site** | mobile |
-| **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.0), `ansible-inventory-deevnet` |
+| **Systems** | `dv02nms001v01` (Omada controller: new SSID and PPSK profile), `dv02wap001p01` (AP: new SSID on air), `dv02prv001v01` (Deevnet API v0.3.1), `ansible-inventory-deevnet` |
 | **Automation** | `deevnet.net` `playbooks/omada-wireless.yml` via `make wireless`; `deevnet.mgmt` role `deevnet_api`; tenant Terraform through `deevnet/deevnet` |
 | **Risk** | Medium — creating an SSID re-applies the WLAN group to a live AP, which can drop associations on `DVNTM` for a few seconds. Nothing existing is rewritten or deleted. |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (proved PPSK, left the follow-up), [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) (the API this extends), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) (must not break the API's path to the controller) |

@@ -105,7 +105,47 @@ the fix ships.
    ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §6), and the API must not
    delete objects inventory declares.
 
-Option 1 needs one write against the controller to settle. Until then the defect stands.
+**Decided and fixed, 2026-09-18: option 2.** Not because option 1 was ruled out — it was never
+tested — but because option 1 is a read-modify-write over a list holding *every* tenant's key, so two
+concurrent revocations could lose one. `add-psk` and `delete-psk` are per-key, so option 2 has no
+such window. Structurally safer under concurrency, at the price of one conspicuous entry in the UI.
+
+Shipped as **API v0.3.1** (`39bfaaf`). A delete that would empty the profile adds
+`DEEVNET-PLACEHOLDER-DO-NOT-USE` first; its password is generated, returned to nobody and stored
+nowhere, so it cannot be used to join anything. Any real issuance clears it. The name cannot collide
+with a tenant's — a real key is `<tenant>-<label>` and tenant names are lowercase — and asking for
+that name as a key is refused.
+
+**Writing the tests found a second bug in the first version of the fix.** Correcting the profile's
+*only* key also does delete-then-add, so that delete was refused for the same reason, and the code
+comment asserted the path was safe. It was not. Both paths now go through one `guardMinimum` helper.
+The stand-in controller in the unit tests was changed to **enforce the real `-34044` rule**, so the
+fix is tested against the controller's behaviour rather than against an assumption about it.
+
+### Verified on the real controller after deploying v0.3.1
+
+The `DELETE` that answered `502` twenty minutes earlier:
+
+```
+DELETE /v1/tenants/tdemo/wifi-keys/scratch  ->  204
+GET    /v1/tenants/tdemo/wifi-keys          ->  {"wifi_keys":[]}
+```
+
+And the full cycle, read back from the controller each time:
+
+| Step | Profile holds |
+|---|---|
+| after revoking the last key | `DEEVNET-PLACEHOLDER-DO-NOT-USE` (VLAN 30) |
+| issue a real key | `tdemo-cycle` — placeholder cleared |
+| revoke it | `DEEVNET-PLACEHOLDER-DO-NOT-USE` again |
+
+Throughout, `DVNTM-IOT` stayed `security: 4` on VLAN 30 and stayed bound to its profile. The
+`tdemo-scratch` key that had been stuck is gone.
+
+**What this cost to find:** one line in this page's Verify section — *"DELETE removes it"*. The
+published schema documents `ppskNameList` with no minimum, so nothing short of running it would have
+caught this. Had the check not been written down, revocation would have shipped broken and stayed
+broken until the first time somebody needed it, which is the worst moment to discover it.
 
 ## Undo
 
