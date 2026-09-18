@@ -121,10 +121,11 @@ by the very condition it exists for. An unreadable secret now reads as empty and
 - **A Raft snapshot, taken and copied off the VM** (ADR-0014). A snapshot would not have held the
   recovery key either, but it is still the missing half of OpenBao's durability, and it remains
   ADR-0016's last unconfirmed claim.
-- **The tenants cannot tell that the API's copy of their secrets is missing.** Both had to be
-  resupplied by an explicit call, because nothing in a plan differs when a stored secret is empty —
-  the provider never sees it. A `secrets_stored` flag on the tenant read, with the provider planning
-  an update when it is false, would make the recovery in ADR-0016 §6 automatic instead of manual.
+- **Done: the tenants can now tell.** `secrets_stored` on the tenant read, with the provider planning
+  an update when it is false, makes ADR-0016 §6's recovery an ordinary `terraform apply` instead of an
+  operator's `curl`. Proven 2026-09-17 by rotating the Transit key past both tenants' stored secrets:
+  each tenant's plan showed one in-place change — the three secrets and the flag, with the index and
+  numbering untouched — and applying resealed them. API v0.2.5, provider `ModifyPlan`.
 - **Two drills, on a schedule, and they are not the same exercise.** The three defects above were found
   because the rebuild produced **keys the site had never seen before** — not because the credentials
   were lost, and not because data was restored.
