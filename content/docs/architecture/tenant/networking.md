@@ -140,7 +140,12 @@ management segment directly. See
 Each tenant network has its own subnet, gateway, and DHCP scope, **served by the tenant fabric**:
 
 - The tenant's gateway (`.1`) is the fabric's anycast gateway for that subnet
-- IPAM and DHCP are owned by the fabric; the core router never learns tenant address space
+- IPAM and DHCP are owned by the fabric
+- The core router learns **one aggregate route** to the tenant overlay, so that the substrate's
+  operator networks can reach tenant workloads
+  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). It holds no
+  per-tenant state: tenant traffic still arrives already SNATed by the fabric exit node, and
+  per-tenant isolation is enforced inside the fabric
 - Static assignments may be used for tenant VMs with deterministic identity requirements
 
 Tenant subnets, network identifiers, and routing-domain identifiers are allocated from a

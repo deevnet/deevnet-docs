@@ -122,10 +122,21 @@ question is written down, not when it is answered.
   unsealed by a static key from ansible-vault. Chosen over Vault Community Edition for its native
   static seal and free namespaces. Extends ADR-0015.
 - [ADR-0017: How Tenant Code Reaches a Tenant Workload](/docs/architecture/decisions/0017-tenant-code-delivery/) —
-  *Proposed.* Delivery of a tenant's own application code onto its workload is a **pull initiated
-  from inside the workload**: a tenant has no inbound path, so the substrate's Ansible push pattern
-  cannot and must not be extended to tenant workloads. How the workload learns what to pull is still
-  open — tenant-authored cloud-init user-data is the recommendation, qualified by an unresolved
-  secrets question, a Proxmox snippets obstacle, and the fact that user-data delivers but does not
-  keep current. Extends ADR-0010, which said tenants own their code without saying how it arrives,
-  and ADR-0015, which builds the empty workload this fills.
+  *Proposed.* Separates the tenant-facing contract from the substrate-side mechanism. **The contract
+  is settled:** a tenant declares its workload configuration to the Deevnet API in a Deevnet-owned
+  schema, never Proxmox user-data, so a hypervisor detail stays out of the tenant contract and the
+  mechanism can change. **Delivery is forced to be a pull** from inside the workload, because a
+  tenant has no inbound path. **The mechanism is open:** an SMBIOS bootstrap pointer with
+  configuration fetched from the API leads, because it is the only channel with an API-only path
+  today and the only one where secrets never touch substrate storage; both halves were tested, and
+  the channel's measured 512-character cap enforces a pointer rather than a payload. The workload
+  fetches only when it has no cached configuration, not on every boot, which is what keeps ADR-0012
+  provisioning-only rather than softening it. Extends ADR-0010, which said tenants own their code
+  without saying how it arrives, and ADR-0015, which builds the empty workload this fills.
+- [ADR-0018: Operator Access to Tenant Workloads](/docs/architecture/decisions/0018-operator-access-to-tenants/) —
+  *Proposed.* The core router carries one aggregate route to the tenant overlay so the substrate's
+  management and trusted networks can reach tenant workloads, because the operator owns every tenant
+  here and building, checking and debugging one otherwise means the hypervisor console. Supersedes,
+  in part, ADR-0001 and ADR-0002 where they say the core router never learns tenant address space.
+  Devices, other tenants and the outside world still have no path in, and this is explicitly not a
+  delivery mechanism for tenant code — ADR-0017 holds, now as a rule rather than a physical fact.

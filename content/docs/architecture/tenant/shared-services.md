@@ -12,9 +12,15 @@ aliases:
 Shared tenant services are the services the substrate runs **for tenants**, so that each tenant
 doesn't have to run its own. The substrate owns the service; the tenant owns what it puts in.
 
-Some of them can't exist inside a tenant at all. A tenant has no inbound path, so a device on the
-IoT segment couldn't reach a broker running inside one. And a tenant zone needs a parent that only
-the substrate holds.
+Some of them can't exist inside a tenant at all. A tenant accepts no inbound connection from a
+device, from another tenant, or from outside the substrate, so a device on the IoT segment couldn't
+reach a broker running inside one. And a tenant zone needs a parent that only the substrate holds.
+
+The one exception is the operator: the substrate's management and trusted networks can reach tenant
+workloads, so that an operator who owns every tenant can build and debug them
+([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). That path is for
+operating a workload, not for delivering what runs on it, and it changes nothing above — a device
+still has no route to a tenant.
 
 ---
 
