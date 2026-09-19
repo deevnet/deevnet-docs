@@ -35,7 +35,7 @@ No later record picked that up.
 
 ### ADR-0012 makes state the authoritative copy of device secrets
 
-ADR-0012 (*Proposed*) changes what state is worth. Its §4 was decided in review:
+ADR-0012 changes what state is worth. Its §4 was decided in review:
 
 - *"**The tenant's state is the authoritative copy.** The API's copies are working copies,
   restorable from the tenant's state (§5)."*

@@ -7,7 +7,8 @@ weight: 16
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19, recording what [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) built on 2026-09-17. The record's own Current state already read *"Proposed, and deployed"*; the status field had simply not caught up. |
 | **Date** | 2026-09-17 |
 | **Scope** | Where the credentials substrate services use at runtime are kept, how tenant secrets are protected at rest and in transit, and where the internal certificate authority lives |
 | **Extends** | [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), whose API holds credentials for PowerDNS, the core router, the state store and the tenant hypervisor, and stores tenant secrets |
@@ -265,7 +266,7 @@ reads every secret. The key gets the same care as the vault password.
 
 ## Current state
 
-- **Proposed, and deployed.** CHG-0010 built all of it on 2026-09-17: the instance on
+- **Accepted, and deployed.** CHG-0010 built all of it on 2026-09-17: the instance on
   `dv02idn001v01`, the static seal from ansible-vault, KV, Transit, PKI and response wrapping, and
   AppRoles for the API and for Ansible. The root token is revoked.
 - The API holds one AppRole instead of five backend credentials, its TLS certificate comes from the
