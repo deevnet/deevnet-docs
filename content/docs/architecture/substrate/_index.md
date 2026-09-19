@@ -20,7 +20,8 @@ block-beta
     hdr["Substrate Infrastructure"]:2
     net["Network"]:1 netd["Routing · Firewall · DNS · DHCP · NAT · Switching · Wireless"]:1
     cmp["Compute · Storage¹"]:1 cmpd["Hypervisors · Persistent storage"]:1
-    mcp["Management / Control Plane"]:1 mcpd["Network management · Observability"]:1
+    mgp["Management Plane"]:1 mgpd["Network management · Substrate observability"]:1
+    ctp["Control Plane"]:1 ctpd["Deevnet API · Tenant DNS · Secrets · Broker"]:1
 {{< /mermaid >}}
 
 ¹ Shared storage is a planned future addition.
@@ -40,16 +41,27 @@ See [Network Segmentation](/docs/architecture/network-segmentation/) for the seg
 
 ### Compute and Storage
 
-**Compute** is the virtualization hosts: a management hypervisor for the management / control
-plane, and workload hypervisors for what runs on the substrate. See [Compute](compute/).
+**Compute** is the virtualization hosts: a management hypervisor carrying both planes' VMs, and a
+tenant hypervisor carrying the fabric and what runs on it. See [Compute](compute/).
 
 **Storage**¹ is shared and persistent storage for substrate consumers. See [Storage](storage/).
 
-### Management / Control Plane
+### Management Plane
 
-The services the substrate runs on its management hypervisor to manage and observe itself:
-network device management and substrate observability. See
-[Management / Control Plane](management-plane/).
+What the substrate runs so it can **manage and observe itself** — network device management and
+substrate observability, on the management segment, for operators and substrate hosts. See
+[Management Plane](management-plane/).
+
+### Control Plane
+
+What the substrate runs so it can **serve what runs on it** — the Deevnet API that creates tenants,
+tenant DNS, the secret store, tenant observability, and the device broker. It sits on the Platform
+and IoT Backend segments, because tenants and devices must never reach the management segment. See
+[Control Plane](control-plane/).
+
+The two planes are separated by **audience**, not by technology, and no host belongs to both. That
+separation is what lets a tenant depend on the substrate without the substrate coming to contain
+the tenant.
 
 ---
 
@@ -58,4 +70,5 @@ network device management and substrate observability. See
 - [Networking](networking/) — Networking services: DNS, DHCP, firewall, VLAN routing, switching
 - [Compute](compute/) — Virtualization and compute model
 - [Storage](storage/) — Shared and persistent storage
-- [Management / Control Plane](management-plane/) — How the substrate manages and observes itself
+- [Management Plane](management-plane/) — How the substrate manages and observes itself
+- [Control Plane](control-plane/) — How the substrate serves the tenants and devices on it

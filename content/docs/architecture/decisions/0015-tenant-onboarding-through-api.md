@@ -7,7 +7,8 @@ weight: 15
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19, recording what [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) settled on 2026-09-17: the API was deployed and **both live tenants were rebuilt entirely through it**. The record sat at `Proposed` after it had already been built and proven, which the status was not saying. |
 | **Date** | 2026-09-17 |
 | **Revised** | 2026-09-17, before review. First written as onboarding only; widened so that everything that builds a tenant (its network, workloads and DNS records) is behind the API and tenants hold no substrate credential (§11–§14). Admission by enrollment token (§10). Secrets handling moved to [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/). |
 | **Scope** | Who allocates a tenant's index, who builds a tenant's network, workloads and names, what a tenant holds, and where the record of tenants lives |
@@ -409,23 +410,19 @@ is renamed.
 
 ## Current state
 
-- **Proposed.**
-- **Built, not deployed** (2026-09-17). The pull requests are open for review:
-  - `deevnet-provisioning-api` #1: the registry, allocation, the four backends, and the create,
-    restore, reconcile, delete and egress calls
-  - `ansible-collection-deevnet.mgmt` #20: PowerDNS's HTTP API, the API's MinIO admin user, and the
-    API's tenant configuration, all off until their vault values exist
-  - `ansible-inventory-deevnet` #35: the site values
-- **Proven against real software:**
-  - PostgreSQL 17.11, pdns-auth 4.9.17 and the site's MinIO release in containers on the Builder
-  - read-only calls to the core router and to hv02's SDN
-  - a drill that lost the database twice: once a restore was reissued a new index because another
-    tenant took the old one, once it kept its own
-- **Not yet proven:** a resolver write against the real router.
-- **Revised the same day, not yet built:**
-  - admission (§10)
-  - the network, workloads and names (§11–§13)
-  - the factory's reduction (§14)
-  - the move of credentials and TLS to OpenBao (ADR-0016)
-- `deevnet_tenants` still drives onboarding. The provider, the egress agent and the tdemo and eds
-  cutover come after.
+- **Accepted and deployed.** [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) completed on
+  2026-09-17: all eleven steps done, the API and the egress agent deployed, and **`tdemo` and `eds`
+  both live and built entirely through the API**.
+- **The API is the only registry.** The inventory tenant registry and the role tasks that read it
+  are gone, and `TENANTS.md` with them — the two hand-maintained lists that had already diverged
+  over `eds`'s index are retired (CHG-0010 step 11).
+- **Everything this record revised on the day it was written is now built:** admission (§10), the
+  network, workloads and names (§11–§13), the factory's reduction to the fabric (§14), and the move
+  of credentials and TLS to OpenBao ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)).
+- **Proven against real software**, both before and during the run: PostgreSQL 17.11, pdns-auth
+  4.9.17 and the site's MinIO release; a drill that lost the database twice, once reissuing a new
+  index because another tenant had taken the old one and once keeping its own; and four defects the
+  live run and rebuild found, fixed by `v0.2.4`.
+- **Still unbuilt:** the device registry and broker accounts (`/v1/devices` answers `501`), which
+  belong to [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) rather than to this
+  record.

@@ -7,7 +7,8 @@ weight: 18
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19, recording what [CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/) applied on 2026-09-18. The route is in place and verified from both operator zones; what waits on CHG-0007 is enforcement of the surrounding policy, not this decision. |
 | **Date** | 2026-09-18 |
 | **Scope** | Whether the substrate's operator networks may reach tenant workloads, and what that does to the "no inbound path" property other records rely on |
 | **Supersedes, in part** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/) and [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), where each says the core router **never learns tenant address space**. It now learns one aggregate route. Everything else in both records stands, including SNAT at the exit node and per-tenant isolation inside the fabric. |
@@ -139,7 +140,7 @@ decision has to be kept.
 
 ## Current state
 
-Proposed, and **applied** by
+Accepted, and **applied** by
 [CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/) on 2026-09-18. An operator on
 management or trusted reaches any tenant workload, by name, in three hops. The zone-policy rules are
 declared but not yet enforced — the router still passes everything until CHG-0007 runs.

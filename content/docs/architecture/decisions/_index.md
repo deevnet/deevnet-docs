@@ -1,6 +1,6 @@
 ---
 title: "Decisions"
-weight: 7
+weight: 8
 bookCollapseSection: true
 ---
 
@@ -82,7 +82,7 @@ question is written down, not when it is answered.
   applies it through its documented Open API; undocumented calls are a marked, version-pinned
   fallback, and the CLI role becomes break-glass for adopted switches.
 - [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) —
-  *Proposed.* A tenant may depend on the substrate, but the substrate must not come to contain the
+  *Accepted.* A tenant may depend on the substrate, but the substrate must not come to contain the
   tenant: platform services are bound to a tenant once at onboarding, and nothing that recurs needs a
   substrate commit; extends ADR-0004 §5 from DNS to every platform service.
 - [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) —
@@ -112,14 +112,14 @@ question is written down, not when it is answered.
   hardware, and the API's database is backed up on a schedule. It closes ADR-0012 §5's re-flash
   exception, which ADR-0013 had made a single-VM event. Extends ADR-0007 and ADR-0013.
 - [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) —
-  *Proposed.* The Deevnet API creates and builds tenants: its database is the only registry, an
+  *Accepted.* The Deevnet API creates and builds tenants: its database is the only registry, an
   index is allocated against that registry and the live fabric, and the API builds each tenant's DNS,
   state credential, network, workloads and workload names. Tenants are admitted with a single-use
   enrollment token and hold no substrate credential; tenant repositories use one provider and carry no
   index, so tdemo returns as the reference tenant, and the factory keeps only the fabric. Extends
   ADR-0012; supersedes the registry in ADR-0002 and ADR-0006 §1–§3.
 - [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/) —
-  *Proposed.* The substrate's runtime credentials, the encryption of tenant secrets at rest, the
+  *Accepted.* The substrate's runtime credentials, the encryption of tenant secrets at rest, the
   internal certificate authority and single-use enrollment tokens live in OpenBao, in the identity VM,
   unsealed by a static key from ansible-vault. Chosen over Vault Community Edition for its native
   static seal and free namespaces. Extends ADR-0015.
@@ -136,7 +136,7 @@ question is written down, not when it is answered.
   provisioning-only rather than softening it. Extends ADR-0010, which said tenants own their code
   without saying how it arrives, and ADR-0015, which builds the empty workload this fills.
 - [ADR-0018: Operator Access to Tenant Workloads](/docs/architecture/decisions/0018-operator-access-to-tenants/) —
-  *Proposed.* The core router carries one aggregate route to the tenant overlay so the substrate's
+  *Accepted.* The core router carries one aggregate route to the tenant overlay so the substrate's
   management and trusted networks can reach tenant workloads, because the operator owns every tenant
   here and building, checking and debugging one otherwise means the hypervisor console. Supersedes,
   in part, ADR-0001 and ADR-0002 where they say the core router never learns tenant address space.

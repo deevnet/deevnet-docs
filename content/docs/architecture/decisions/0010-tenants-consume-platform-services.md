@@ -7,11 +7,12 @@ weight: 10
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19. The principle is the test every later record applies, and two of the three services that failed it have since been remedied. It sat at `Proposed` while [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/), which extends it, was already `Accepted` — an inversion both records had noticed and neither had fixed. |
 | **Date** | 2026-09-13 |
 | **Scope** | What makes a substrate-run service safe for a tenant to depend on, and where issuing a tenant something ends and becoming part of it begins |
 | **Extends** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/) §5, which drew the onboarding-versus-recurring line for DNS only |
-| **Extended by** | [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) — how §3 is met when the backing service can't confine a tenant itself *(Proposed)* |
+| **Extended by** | [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) — how §3 is met when the backing service can't confine a tenant itself. [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) — the same principle applied to building a tenant at all, not only to the services it consumes |
 | **Related** | [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/), [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/) |
 
 ---
@@ -145,11 +146,18 @@ Onboarding may. Nothing that recurs may.
 | Keep Terraform state | No, the offered store or its own | Yes | — |
 | Register a device with the MQTT broker | Yes, vault, inventory and the `mosquitto` role | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, §8: a `deevnet_iot_broker_account` in the tenant's Terraform; the broker asks the API to check the password |
 | Grant a device access to a topic | Yes, `mqtt_acls` in inventory | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, §8: the same account's permissions, confined by the API to the tenant's topic prefix |
-| Give a device its own Wi-Fi key | Yes. There is no per-device key today, only one shared key per segment in the substrate vault (`deevnet_wifi_psk`), so a per-device key would be a vault and inventory act. Added for [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) open question 3. | **No** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3: a `deevnet_iot_wifi_key`, always on the device's trust-class VLAN |
+| Give a device its own Wi-Fi key | **No, since 2026-09-18.** A tenant declares `deevnet_iot_wifi_key` in its own repository and the API writes it into the controller. Originally recorded as non-conformant, when the only key was one shared per-segment secret in the substrate vault. | **Yes** | Built by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/); [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3 |
 
-**The remedies are proposed, not built.** ADR-0012 is Proposed, so the rows marked **No** stay
-**No** until it is built. They change once registering a device, granting its topics and giving it
-a Wi-Fi key are each a `terraform apply` in the tenant's repository.
+**Two of the three are now remedied.** *Updated 2026-09-19.* ADR-0012 is Accepted, and
+[CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) built the Wi-Fi half on 2026-09-18 — a
+tenant issues its own key with no substrate commit. Building a tenant at all became conformant
+earlier, with [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) and
+[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/).
+
+The two broker rows stay **No**, and not because the remedy is undecided — it is decided in
+ADR-0012 §3 and §8. **There is simply no broker**: the device registry answers `501` and VerneMQ on
+`dv02msg001v01` is built and empty, so device accounts and topic grants remain in substrate
+inventory as the debt this record names.
 
 ### 3. Scope is enforced by the service
 
@@ -225,8 +233,10 @@ changed, and none of the substrate's services has one yet.
 
 ## Current state
 
-- **Proposed.** Nothing is implemented by this record.
-- **DNS and state already conform** (ADR-0004, ADR-0007). **The MQTT broker does not.**
+- **Accepted.** This record implements nothing itself; it states the test, and later records build
+  against it.
+- **DNS, state, tenant building and Wi-Fi keys now conform** (ADR-0004, ADR-0007, ADR-0015,
+  ADR-0012 with CHG-0013). **The MQTT broker still does not**, because it does not exist.
 - **Validated read-only on 2026-09-14**, as recorded in
   [ADR-0011 → Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14):
   - **The broker.** `dv02mqt001v01` doesn't answer: it isn't in DNS, doesn't reply to ping, and its

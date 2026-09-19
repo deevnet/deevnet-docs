@@ -1,6 +1,6 @@
 ---
 title: "Network Segmentation"
-weight: 4
+weight: 5
 ---
 
 # Network Segmentation
@@ -29,7 +29,7 @@ Each substrate implements nine segment types:
 | Trusted | High-trust user devices | High |
 | Storage | Dedicated storage traffic | High |
 | Platform | Shared infrastructure services | High |
-| Tenant | Per-tenant workload isolation | Medium |
+| Tenant transit | The fabric's perimeter handoff; per-tenant isolation lives in the fabric, not here | Medium |
 | IoT Vendor | Vendor-managed/untrusted IoT containment | Very Low |
 | IoT | Custom-developed embedded devices with controlled firmware | Medium |
 | IoT Backend | IoT application backends | Medium |
@@ -82,20 +82,34 @@ The storage segment isolates storage protocol traffic from other network activit
 - No internet access required
 - Optional in minimal sites where storage traffic is negligible
 
-### Tenant Segments
+### Tenant Fabric Transport
 
-Tenant segments provide network isolation between workload namespaces. Each tenant gets its own segment.
+**A tenant is not a VLAN.** Since
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/), a tenant's network is an
+EVPN/VXLAN overlay owned by the tenant hypervisor's own fabric, with its own anycast gateway and
+its own VRF. The core router never sees a tenant subnet, and **creating a tenant adds no segment
+here** — which is the whole point of the model.
 
-**Typical inhabitants:**
-- Tenant VMs (e.g., `app-vm01` hosting `api.grooveiq.mobile.deevnet.net`)
-- Tenant containers
-- Tenant application endpoints
+What the substrate carries instead is two segments for the fabric itself, and they do not grow with
+the number of tenants:
+
+| Segment | Carries | Router address |
+|---------|---------|----------------|
+| **Tenant transit** | Aggregate tenant egress, from the fabric to the core router's perimeter | Yes — the perimeter handoff |
+| **Tenant underlay** | VTEP-to-VTEP transport between fabric members | **None** — the core router neither routes it nor holds an address on it |
+
+**Typical inhabitants:** the tenant hypervisor's transit and underlay interfaces. No tenant
+workload sits on either — workloads live in the overlay, at `10.20.128.0/18`.
 
 **Properties:**
-- One segment per tenant namespace
-- Cannot see other tenants' traffic
-- Access to shared services via explicit firewall rules
-- Each tenant segment has its own DHCP scope
+- Isolation between tenants is enforced **inside the fabric**, one VRF per tenant — not by a
+  firewall rule here
+- Tenant traffic arrives at the perimeter already SNATed, so the core router cannot tell one tenant
+  from another even if it wanted to
+- The core router holds **one** aggregate route into the overlay, so that operators on management
+  and trusted can reach tenant workloads
+  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). Devices, other
+  tenants and the outside world still have no path in.
 
 ### Platform Segment
 
@@ -195,7 +209,7 @@ graph TB
 
     Mgmt -->|manages| Storage[Storage<br>High Trust]
     Mgmt -->|manages| Platform[Platform<br>High Trust]
-    Mgmt -->|manages| Tenant[Tenant Segments<br>Medium Trust]
+    Mgmt -->|manages| Tenant[Tenant Transit<br>Medium Trust]
     Mgmt -->|manages| IoTBackend[IoT Backend<br>Medium Trust]
     Mgmt -->|manages| IoT[IoT<br>Medium Trust]
     Mgmt -->|manages| IoTVendor[IoT Vendor<br>Very Low Trust]
@@ -257,7 +271,7 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Sites use nine segment types: Management, Trusted, Storage, Platform, Tenant, IoT Vendor, IoT, IoT Backend, Guest
+1. Sites use nine segment types: Management, Trusted, Storage, Platform, Tenant transit, IoT Vendor, IoT, IoT Backend, Guest — plus the underlay and blackhole segments, which carry no routed traffic
 2. Segments form a trust hierarchy with default-deny routing between them
 3. Each site implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP

@@ -1,5 +1,5 @@
 ---
-title: "Management / Control Plane"
+title: "Management Plane"
 weight: 4
 aliases:
   - /docs/architecture/substrate/management-plane/core-services/
@@ -7,19 +7,29 @@ aliases:
   - /docs/architecture/substrate/management-plane/substrate-services/
 ---
 
-# Management / Control Plane
+# Management Plane
 
 ### Purpose
 
-The management / control plane is the set of services a substrate runs on its own virtual compute
-to **manage and observe itself**: configuring its network devices, and collecting its logs and
+The management plane is the set of services a substrate runs on its own virtual compute to
+**manage and observe itself**: configuring its network devices, and collecting its logs and
 metrics. Substrate automation builds these services, and they are rebuilt from code like
 everything else in the substrate.
 
 > *What does the substrate run so it can manage itself?*
 
-The same plane also hosts services the substrate offers to what runs on it. Those are described
-with tenants, in [Shared Tenant Services](/docs/architecture/tenant/shared-services/).
+Its audience is **operators and substrate hosts**. The services the substrate runs for *tenants and
+devices* — the Deevnet API, tenant DNS, the secret store, the broker — are a different plane with a
+different audience, on different segments: see
+[Control Plane](/docs/architecture/substrate/control-plane/). No host belongs to both.
+
+{{< hint info >}}
+**This page was split on 2026-09-19.** It previously covered both planes under the name
+*"Management / Control Plane"*, which obscured the distinction that actually matters: management
+serves the substrate, control serves what runs on it, and tenants must never reach the segment
+management sits on. Anything about provisioning, tenant identity, tenant observability or device
+messaging now lives in [Control Plane](/docs/architecture/substrate/control-plane/).
+{{< /hint >}}
 
 ---
 
@@ -32,7 +42,7 @@ depends on it:
 |-------|----------|------------|
 | **Builder** | Creates the substrate from nothing, including this plane | [Builder](/docs/architecture/builder/) |
 | **Network** | Routing, firewall, name resolution, address reservations, NAT, switching, wireless | [Networking](/docs/architecture/substrate/networking/) |
-| **Management / Control Plane** | Services that need compute: network device management and observability | This page |
+| **Management Plane** | Services that need compute: network device management and substrate observability | This page |
 
 This ordering is what keeps a rebuild possible. The core network comes up without the plane, and
 the builder can rebuild the plane when every service in it is gone. **The plane helps a rebuild
@@ -97,7 +107,7 @@ How domains map onto hosts:
 The plane is provisioned by **substrate automation**, run from the builder:
 
 - Post-install configuration via build automation
-- Management / control plane VMs are created by build automation
+- Management plane VMs are created by build automation
 - Simplicity and traceability are prioritized
 
 ---
@@ -156,7 +166,7 @@ A service in the plane can make recovery easier. It must never be required for i
 
 ## Architectural Invariants
 
-The management / control plane is considered **correct** when:
+The management plane is considered **correct** when:
 
 - the core network comes up, and a site can be rebuilt, with every service in the plane gone
 - no host has an interface on more than one segment
