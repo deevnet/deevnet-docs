@@ -158,5 +158,8 @@ question is written down, not when it is answered.
   registry entry authorizes. Multi-homing tenant backends onto the segment is rejected: it breaks
   ADR-0013 §2 and creates a cross-tenant Layer 2 path that bypasses VRF isolation. Records that no
   device identity exists at the network layer — a PPSK key is per tenant per class, and MAC and IP
-  are forgeable — so every boundary that holds is either structural or cryptographic. Blocked on the
-  device registry, which returns 501 today.
+  are forgeable — so every boundary that holds is either cryptographic or a zone rule naming one
+  host and port. Amended before acceptance: a routeless segment and a service edge are incompatible,
+  so containment is policy rather than structure, and the edge is then an ordinary single-segment
+  service on the device-messaging VM rather than a new domain. Blocked on the device registry, which
+  returns 501 today.
