@@ -150,3 +150,13 @@ question is written down, not when it is answered.
   boundary would be unreproducible node-local state that cannot be made redundant. Attachment stays
   by trust class, not by owner. Names the test that would change the answer: a protocol that
   genuinely needs Layer 2 adjacency.
+- [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) —
+  *Proposed.* Answers the case ADR-0019 left open: a device needing direct TCP to a tenant service
+  where the broker's semantics do not fit. One shared **contained** access segment — a trust class,
+  never a tenant — with no gateway and no route off itself, and a substrate service edge holding the
+  only address on it, authenticating devices by certificate and proxying to the services their
+  registry entry authorizes. Multi-homing tenant backends onto the segment is rejected: it breaks
+  ADR-0013 §2 and creates a cross-tenant Layer 2 path that bypasses VRF isolation. Records that no
+  device identity exists at the network layer — a PPSK key is per tenant per class, and MAC and IP
+  are forgeable — so every boundary that holds is either structural or cryptographic. Blocked on the
+  device registry, which returns 501 today.
