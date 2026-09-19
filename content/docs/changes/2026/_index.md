@@ -20,4 +20,4 @@ bookCollapseSection: true
 | CHG-0010 | 2026-09-17 | [Deploy the Deevnet API and Cut Tenants Over](0010-tenant-api-cutover/) | Build-out and migration | mobile | Complete |
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
 | CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
-| CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | In progress |
+| CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |

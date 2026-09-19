@@ -7,7 +7,8 @@ weight: 19
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19. It decides *not* to build something, so there is no implementation to wait for. Its one open question was closed by reasoning rather than by experiment — see [The open question, closed](#the-open-question-closed) — and its reconsideration trigger was corrected, because the protocols it first named do not in fact require Layer 2 adjacency. |
 | **Date** | 2026-09-18 |
 | **Scope** | Whether a tenant's EVPN/VXLAN overlay may be extended to the wireless access network as an 802.1Q VLAN, so that a physical device becomes a Layer 2 member of its tenant's subnet |
 | **Re-opens** | [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) Option B, rejected 2026-09-15, in the light of a variation it did not consider: a VLAN range reserved once, so tenant creation needs no switch change |
@@ -185,18 +186,40 @@ CHG-0013 accepted both.
 
 ### The test that would change this answer
 
-**A concrete requirement for Layer 2 adjacency.** Not a preference for tidiness — an actual protocol
-that cannot reasonably be brokered. mDNS, SSDP, Matter commissioning, and most relevantly Art-Net
-and sACN (E1.31), the multicast LED-control protocols, all assume Layer 2 adjacency. EdS does not
-use any of them today; it is a publish/subscribe and HTTP workload that the broker serves correctly.
+**A concrete requirement for Layer 2 adjacency** — not a preference for tidiness, and not a protocol
+that merely *tends* to be deployed flat.
 
-If such a requirement appears, the order of resort is:
+> **Corrected 2026-09-19.** This originally named **Art-Net and sACN (E1.31)** as the strongest
+> examples, *"the multicast LED-control protocols"*. That is wrong, and it matters, because those
+> are the protocols an LP-stand application would most plausibly reach for — a future reader could
+> have re-opened this record on a false premise. **Both are routable.** sACN receivers are required
+> by ANSI E1.31 to process unicast as well as multicast, and Art-Net supports unicast on UDP 6454;
+> neither needs a shared Layer 2 domain, only IP connectivity. Correcting this makes the decision
+> below **stronger**, not weaker: the set of requirements that genuinely force L2 extension is
+> smaller than this record first claimed.
 
-1. Put the multicast-speaking service on the IoT segment, where it is already adjacent to the
-   devices, and keep its control plane on the broker.
-2. Tunnel capable devices in (Option E).
-3. Only then reconsider the network edge — and prefer Option D over B or C, because the boundary
-   belongs in a device designed to hold it.
+What genuinely does not cross a router is **link-local discovery**: mDNS (224.0.0.251, TTL 1) and
+SSDP (239.255.255.250), and Matter commissioning insofar as it depends on mDNS. These are scoped to
+the link by design rather than by convention.
+
+Even those do not justify extending the fabric, because a **reflector** solves them — an
+Avahi-style mDNS/SSDP repeater with a leg on each segment re-emits the announcements without
+joining the two Layer 2 domains. That is cheaper than everything this record rejects, and it is the
+first thing to reach for.
+
+So the order of resort, if such a requirement appears:
+
+1. **Reflect the discovery traffic.** A repeater on the two segments, with the services themselves
+   reached by ordinary routed IP.
+2. **Put the L2-dependent service adjacent to the devices** — on the IoT segment, with its control
+   plane reached through a platform service
+   ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/)).
+3. **Tunnel capable devices in** (Option E).
+4. **Only then reconsider the network edge** — and prefer Option D over B or C, because the
+   boundary belongs in a device designed to hold it.
+
+A requirement survives to step 4 only if it is genuinely non-IP, or depends on link-local discovery
+that a reflector cannot carry. None is known today.
 
 ---
 
@@ -227,27 +250,36 @@ If such a requirement appears, the order of resort is:
 
 ---
 
-## Open question
+## The open question, closed
 
-**Would a manually added bridge port survive an SDN apply?**
+**Would a manually added bridge port survive an SDN apply?** *Closed 2026-09-19, without running
+the experiment.*
 
-Every other claim here was read from source. This one is inference: the generator emits
-`bridge_ports vxlan_<vnetid>` and ifupdown2 reconciles bridge membership on reload, from which it
-follows that an out-of-band port is removed — but the exact behaviour was not observed on this
-estate.
+The draft recorded this as the last inference in the record and proposed a disposable test to
+settle it. **The test is not worth running, and persistence was never the acceptance criterion.**
 
-It does not change the decision. Option B fails on DHCP, redundancy and attachment-by-owner whatever
-the answer is. It is recorded because the reasoning above leans on it, and because it is cheap to
-settle:
+**It would not settle anything if it passed.** Suppose ifupdown2 does preserve the port across a
+reload. The port still modifies **an object Proxmox's SDN generator owns and rewrites** — it is not
+node state sitting *beside* the generated configuration, it is node state *contradicting* it. There
+is no reconciliation for that: the generator's next authoritative render omits the port, so the
+running state and the declared state disagree permanently and nothing in the estate can close the
+gap. This is the same argument
+[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) makes for network
+devices — the question is who owns the object, not whether an edit happens to stick.
 
-1. Create a disposable EVPN zone and VNet with out-of-band numbering — zone `poc`,
-   `vrf-vxlan 10099`, VNet `poc0`, tag `29990`. Not through the Deevnet API, and not touching `eds`.
-2. `ip link set vmbr0.3900 master poc0`, and confirm the datapath.
-3. Trigger an unrelated SDN apply, then `bridge link show master poc0`.
-4. Reboot and re-check, to separate "survives an apply" from "survives a rebuild".
-5. Delete the zone and the VLAN interface.
+**The distinction matters, and a weaker version of this reasoning would be wrong.** "It isn't in
+SDN configuration, therefore it fails the declarative requirement" proves too much:
+[ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/) explicitly
+refined ADR-0001's build requirement #2 to *no hand-carried node state*, **not** *no node state*,
+and this estate legitimately carries Ansible-managed node-local state today — the forwarding
+sysctl, the management-routing systemd unit, the agent-rendered FRR file. Node state beside the
+generator is fine. Node state inside the generator's own object is not.
 
-A scratch datapath can be proven first with no SDN objects at all — a hand-built bridge, a VXLAN
-interface on an unallocated VNI, and a VLAN subinterface, all removable with `ip link del`. That
-stage touches no managed configuration and would confirm only that a Linux bridge does what Linux
-bridges do; it is not evidence that the architecture works.
+**And it would change nothing if it failed.** Option B is rejected on DHCP, on the absence of EVPN
+multihoming, and on attachment-by-owner — each independently sufficient, none contingent on this
+answer. The draft said as much: *"It does not change the decision."*
+
+So the record carries one honest inference rather than a pending experiment: an out-of-band bridge
+port is **expected** to be removed when the generator next runs, and it is **disqualified either
+way**. If a future change ever needs the answer for another reason, the disposable procedure is in
+this record's git history at `0838098`.

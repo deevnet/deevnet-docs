@@ -114,6 +114,32 @@ as `any`, not as empty strings.
 - The home site. Its policy has the same shape, but the role's internet rule hardcodes
   `!10.20.0.0/16`.
 - Any other rule not prefixed `ansible:`.
+- **Traffic between two devices on the same VLAN.** *Added 2026-09-19.* See below — this one is
+  worth stating rather than leaving to inference.
+
+### What this change cannot enforce
+
+This change makes **inter-zone** policy real. It has no effect whatever on traffic between two hosts
+on the *same* segment: those frames are switched at Layer 2 and never reach `dv02cor002p01`, so no
+rule here can see them, let alone drop them.
+
+That matters most on the IoT segment, where devices of different owners share VLAN 30. After this
+change, `iot -> management` is denied and
+[CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) phase 5's demonstrated path is closed —
+but two tenants' devices can still reach each other exactly as they do today. CHG-0013 recorded the
+same thing when it deferred client isolation: *"Two tenants' devices can talk to each other at
+Layer 3 today."*
+
+Intra-segment separation is a different mechanism with a different owner — AP client isolation and
+switch port isolation, tracked as
+[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) open question 4, which
+is still unproven. The control that does hold between owners is credentials, not the network:
+[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 requires
+every device-facing service to authenticate its callers per device, precisely because zone policy
+grants a whole zone.
+
+**So a reader should not conclude "the IoT segment is contained once this lands."** It is contained
+*from other segments*. It is not contained from itself.
 
 ## Decision: removing the allow-all rules
 

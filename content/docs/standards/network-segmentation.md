@@ -140,6 +140,27 @@ The IoT backend segment hosts application backends that process IoT data.
 - Allowed traffic MUST be explicitly defined in firewall rules
 - Firewall rules MUST be version-controlled as code
 
+### Intra-Segment Traffic
+
+Every requirement in this section governs traffic **between** segments. Traffic between two hosts
+*within* one segment is switched at Layer 2 and never reaches the segment authority, so no zone
+rule can observe or constrain it. This is a property of the topology, not a gap in the policy.
+
+- Zone policy MUST NOT be relied on to separate hosts inside one segment
+- A segment that carries mutually-distrusting hosts MUST NOT treat segment membership as trust
+- Services on such a segment MUST authenticate their callers individually; a service that trusts a
+  caller because it arrived from the expected segment has no boundary
+- Intra-segment separation, where required, MUST come from a mechanism that sees the traffic —
+  access-point client isolation for wireless hosts, or switch port isolation for wired ones
+- Where such a mechanism is unavailable, the limitation MUST be recorded rather than assumed away
+
+The IoT segment is the current instance: it carries devices belonging to different owners, and the
+site's access point offers no client isolation that preserves the service reachability those
+devices need. See [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)
+open question 4 for the hardware position, and
+[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 for the
+control that holds instead.
+
 ### Permitted Flows
 
 The following inter-segment flows are permitted when explicitly configured:
