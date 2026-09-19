@@ -198,9 +198,21 @@ digraph runtime {
     in a container beside it, and the broker reads it at connect (§7, §8).
   - The Deevnet API runs in the provisioning VM (`prv`, on Platform, VLAN 25), but nothing at runtime calls it
     (§1).
-- **There is no path between a tenant and a device.** Tenants have no inbound path (ADR-0003), and
-  device-to-tenant ingress is a future record (ADR-0011 open question 5). The broker is where they
-  meet, and both sides dial out to it.
+- **There is no *network* path between a tenant and a device.** Tenants have no inbound path
+  (ADR-0003), so neither side can dial the other directly. They meet at a platform service on IoT
+  Backend that **both** dial out to. The broker is that service for publish/subscribe, and it is
+  the one this record builds.
+  > **Amended 2026-09-19.** This read *"The broker is where they meet, and both sides dial out to
+  > it"* — which, stated without qualification in an accepted record, made MQTT the only way an
+  > application-owned device could ever reach its application. That was never the intent:
+  > [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) §1 says
+  > *"rendezvous services on IoT Backend, **such as** the broker."* The rendezvous **shape** is what
+  > has no alternative — the absence of a network path is a fact about ADR-0003, not a preference
+  > for a protocol. Which service fills that shape is open, and
+  > [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) fills it
+  > for request/response and stream protocols. It also answers what this sentence called
+  > *"ADR-0011 open question 5"* — a number that did not exist until ADR-0011 was repaired the same
+  > day. Nothing else in this record changes.
 
 **What follows from the paths.**
 - **Tenants can't see each other.** Isolation is enforced inside the fabric, one VRF per tenant:
@@ -971,8 +983,14 @@ prove.
   passes everything between zones. A tenant's key decides which VLAN its devices land on; nothing
   yet stops that VLAN reaching another. The `platform -> management` rule the API needs is declared
   but unenforced, which is the point of declaring it.
-- **Still open:** open question 1 (device-to-tenant ingress) is deferred to a later iteration, and
-  [ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/) is still
+- **Still open: open question 1** — whether a custom Omada role can narrow the API's own controller
+  credential. It is defence in depth for §2, not tenant scoping, and it has never been checked.
+  *Corrected 2026-09-19: this line previously read "open question 1 (device-to-tenant ingress)",
+  which mislabelled it — ingress is ADR-0011's open question 5, now answered by
+  [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/). The real
+  open question 1 was consequently tracked nowhere.* The same unchecked item is also recorded at
+  ADR-0010 and ADR-0011 open question 3.
+- [ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/) is still
   Proposed — accepting this record ahead of the one it extends is deliberate: ADR-0010 states a
   principle, and this is the first service that actually satisfies it.
 - Reviewed on 2026-09-14 (four of eight open questions decided: §4, §5, §7, §8, §9), revised the

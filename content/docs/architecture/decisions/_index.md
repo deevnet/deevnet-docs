@@ -143,23 +143,24 @@ question is written down, not when it is answered.
   Devices, other tenants and the outside world still have no path in, and this is explicitly not a
   delivery mechanism for tenant code — ADR-0017 holds, now as a rule rather than a physical fact.
 - [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) —
-  *Proposed.* Re-opens ADR-0011 Option B for a variation it never considered: a VLAN range reserved
+  *Accepted.* Re-opens ADR-0011 Option B for a variation it never considered: a VLAN range reserved
   once, so tenant creation needs no switch change. The variation is real and defeats two of Option
   B's objections, but the answer holds — Proxmox generates a VNet bridge whose only port is its
   VXLAN interface, EVPN zones have no DHCP option, and Proxmox SDN has no EVPN multihoming, so the
   boundary would be unreproducible node-local state that cannot be made redundant. Attachment stays
-  by trust class, not by owner. Names the test that would change the answer: a protocol that
-  genuinely needs Layer 2 adjacency.
+  by trust class, not by owner. Its one open question — whether a hand-added bridge port survives an
+  SDN apply — is closed by reasoning rather than experiment: the port modifies an object the
+  generator owns and rewrites, which is an ownership conflict whatever the reconciliation does.
+  The reconsideration trigger is corrected: Art-Net and sACN are routable and were the wrong
+  examples; only link-local discovery is genuinely L2-bound, and a reflector answers that.
 - [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) —
-  *Proposed.* Answers the case ADR-0019 left open: a device needing direct TCP to a tenant service
-  where the broker's semantics do not fit. One shared **contained** access segment — a trust class,
-  never a tenant — with no gateway and no route off itself, and a substrate service edge holding the
-  only address on it, authenticating devices by certificate and proxying to the services their
-  registry entry authorizes. Multi-homing tenant backends onto the segment is rejected: it breaks
-  ADR-0013 §2 and creates a cross-tenant Layer 2 path that bypasses VRF isolation. Records that no
-  device identity exists at the network layer — a PPSK key is per tenant per class, and MAC and IP
-  are forgeable — so every boundary that holds is either cryptographic or a zone rule naming one
-  host and port. Amended before acceptance: a routeless segment and a service edge are incompatible,
-  so containment is policy rather than structure, and the edge is then an ordinary single-segment
-  service on the device-messaging VM rather than a new domain. Blocked on the device registry, which
-  returns 501 today.
+  *Accepted.* Answers ADR-0011's open question 5, which an editing error had left orphaned and
+  unnumbered: how a device reaches a service its application exposes directly, when publish/subscribe
+  does not fit. It is the rendezvous shape ADR-0011 already named — a platform service on IoT
+  Backend, over the `iot -> iot_backend` flow the standard already permits — so it needs no segment,
+  no SSID and no new rule. What is accepted is the contract, not the mechanism: authorization is
+  cryptographic and never rests on MAC or IP, direct access grants no tenant network membership,
+  tenant workloads are never multi-homed onto device segments, and no zone-level path from devices
+  into tenant space may be added. Records the invariant the shared segment depends on — every
+  device-facing service authenticates its callers per device, because zone policy grants a whole
+  zone — and accepts that peer devices on one VLAN are not separable with the current access point.

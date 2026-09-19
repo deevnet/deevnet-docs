@@ -7,74 +7,87 @@ weight: 20
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted |
+| **Accepted** | 2026-09-19. What is accepted is a **contract**, not a mechanism: the capability, where authorization lives, and what it must never become. The service that implements it is future work and needs no decision here. |
 | **Date** | 2026-09-18 |
-| **Amended** | 2026-09-18, before acceptance. The first draft asserted both a routeless segment and a service edge that proxies to tenant services. Those are incompatible — see [Decision §2](#2-the-segment-is-routed-and-containment-is-policy). Containment is policy, not structure, and the edge's placement follows from that. |
-| **Scope** | How a physical device reaches a tenant service directly, when the broker's publish/subscribe semantics do not fit the protocol; what segment it attaches to, and where the authorization boundary sits |
-| **Depends on** | [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/0011-edge-devices-application-owned/), [ADR-0012: IoT Platform Services Through a Deevnet API](/docs/architecture/decisions/0012-iot-platform-api/) |
-| **Related** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/), [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/), [ADR-0018: Operator Access to Tenant Workloads](/docs/architecture/decisions/0018-operator-access-to-tenants/), [Network Segmentation](/docs/standards/network-segmentation/) §8–§9 |
-| **Blocked on** | The device registry. `GET /v1/devices` returns `501 Not Implemented` today. |
+| **Amended** | 2026-09-18 and 2026-09-19, both before acceptance. See [What this record stopped saying](#what-this-record-stopped-saying). |
+| **Scope** | How an application-owned device consumes a service belonging to its application when the broker's publish/subscribe semantics do not fit, and where the authorization boundary sits |
+| **Extends** | [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) — answers its **open question 5**, *"How does a device reach a service a tenant exposes directly?"*. [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) — which built the rendezvous shape for publish/subscribe and, until amended, read as though that were the only shape. Both stay `Accepted` and unchanged in substance. |
+| **Related** | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) §2, [ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), [Network Segmentation](/docs/standards/network-segmentation/) §8–§9 |
 
 ---
 
 ## Context
 
-[ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) closed the question of
-whether a tenant's overlay may reach the air. It named the test that would re-open the subject: *a
-protocol that genuinely needs Layer 2 adjacency.* This record answers the weaker and much more
-common case — a device that needs **direct TCP, UDP, HTTP or WebSocket connectivity to a tenant
-service**, where the broker's semantics do not fit, but Layer 2 adjacency is not actually required.
+[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) settled that an
+application owns its devices, the platform attaches them by **trust class**, and they reach their
+application through **scoped platform services**. It then opened a question it never numbered:
 
-The operator's proposal, evaluated here, is deliberately built to respect the invariant ADR-0019
-defended:
+> **How a device reaches a service a tenant exposes directly.** This is tenant ingress, which
+> ADR-0003 does not provide.
 
-> `VLAN = device trust/access class`, **not** `VLAN = tenant identity`.
+An editing error deleted the heading that would have numbered it, and it sat orphaned for six days
+while [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) cited it as *"ADR-0011 open
+question 5"* — a number that did not exist. This record answers it.
 
-One shared access segment represents a class of devices. Every tenant's direct-access devices share
-it. Tenant #63 creates no VLAN. That framing is correct, it is preserved by the decision below, and
-the proposal does **not** drift into per-tenant VLANs.
+### The requirement, stated from the application's side
 
-It drifts somewhere else, and this record exists mostly to name that: once a device needs
-authenticated, per-service authorization for arbitrary protocols, **what you are building is a
-broker that speaks TCP instead of MQTT.** That may well be worth building. It should not happen by
-accident, and it should not be mistaken for a networking change.
+An application such as EdS owns physical devices. Those devices must be able to consume the
+services their application exposes — and the shared platform capabilities they are authorized for —
+over protocols the **application** chooses, with no implicit access to anything else.
+
+The requirement is *not* "the LP stand must be in `10.20.130.0/24`". It is "the LP stand must be
+able to consume the EdS services it is authorized to consume." Likewise it is not "the LP stand must
+speak MQTT": an application may legitimately need HTTP, WebSocket, plain TCP or UDP, and a platform
+where every interaction must be translated into publish/subscribe is restrictive for no
+architectural reason.
+
+ADR-0011 already anticipated this. Its Access axis reads *"Rendezvous services on IoT Backend,
+**such as** the broker"* — a shape, not a protocol. This record makes that explicit and says what
+the shape requires.
 
 ### What was verified before deciding
 
 | Fact | Source |
 |---|---|
-| A PPSK key is **per tenant per trust class, not per device**. One key serves every device the tenant flashes with it | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, amended 2026-09-18 by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) |
+| A PPSK key is **per tenant per trust class, not per device**. One key serves every device the tenant flashes with it | ADR-0012 §3, amended 2026-09-18 by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) |
 | A MAC binding "buys no enforcement... a MAC is trivially spoofed" | ADR-0012 §3 |
-| The device registry is **unbuilt**. `GET /v1/devices` returns `501 Not Implemented` | `deevnet-provisioning-api` `internal/server` |
+| The device registry is **unbuilt** — `GET /v1/devices` returns `501` through the `/v1/` catch-all | `deevnet-provisioning-api` `internal/server/server.go` |
+| The API's finest authorization granularity today is the **tenant name**; there is no device type, and no MAC or IP is used in any authorization decision | `internal/server/principal.go`, `internal/tenant/` |
 | **"A VM never spans two segments."** "A domain that needs two segments becomes two VMs. Anything that crosses segments goes through the core router and its zone policy" | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) §2 |
-| No SSID-level client-isolation field exists in the controller's served API spec; `guestNetEnable` is the only per-SSID separation setting | [ADR-0011 Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#wireless-client-isolation), 2026-09-14 |
-| Guest Network blocks clients from reaching "any private IP subnet" as well as each other | TP-Link, via the same validation |
-| "Access Control function can't take effect to wireless clients which connected with the same SSID of same AP" | TP-Link, via the same validation |
-| The core router currently passes all traffic between every segment | ADR-0011 Validation, 2026-09-14 |
-| A trust class is derived automatically from any `deevnet_vlans` segment declaring `wifi_security: ppsk` | `deevnet.mgmt` `roles/deevnet_api/defaults/main.yml` |
-| Substrate segments follow `10.20.{vlan_id}.0/24`, and `10.20.128.0/18` is tenant overlay space | [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/) |
-
-That last row is a constraint on the segment's number: a VLAN ID at or above 128 would generate a
-subnet inside tenant space. **A direct-access segment must take a VLAN ID of 127 or below.**
+| `iot -> iot_backend` is a permitted flow in the standard **and already declared** in the site's policy | [Network Segmentation](/docs/standards/network-segmentation/); `mobile/group_vars/all/firewall.yml` |
+| `dv02msg001v01` (IoT Backend, VLAN 35) already holds the charter *"later other device rendezvous services"* | ADR-0013 §1 |
+| The zone policy is **not enforced today** — the core router passes all traffic between every segment, demonstrated from a real client on 2026-09-18 | ADR-0011 Validation; [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) phase 5 |
+| Devices of different owners share VLAN 30's Layer 2, and nothing separates them today | ADR-0012; ADR-0011 open question 4 |
 
 ### The finding that shapes everything else
 
 **There is no device identity at the network layer, and there is no way to create one there.**
 
-A PPSK key identifies a tenant and a trust class. Every device of every tenant on the shared segment
-draws an address from one pool on one subnet. MAC and IP are both forgeable by any device on that
-segment. So a policy of the shape
+A PPSK key identifies a tenant and a trust class. Every device of every tenant on the IoT segment
+draws an address from one pool on one subnet. MAC and IP are both forgeable by anything already on
+that segment. So a policy of the shape
 
 ```
-LP Stand   -> EdS authorized service    ALLOW
-LP Stand   -> Ma Bell services          DENY
+LP Stand   -> EdS authorized services    ALLOW
+LP Stand   -> Ma Bell services           DENY
 ```
 
 **cannot be enforced by firewall or routing policy**, because no packet carries anything that
 distinguishes an LP Stand from a Ma Bell device. This is not an implementation gap to be closed
-later; it is a property of putting mutually-distrusting devices on one subnet.
+later; it is a property of putting mutually-distrusting devices on one subnet, and it would remain
+true on a per-tenant segment too, since a tenant's own devices still share Layer 2 with each other.
 
-The authorization boundary must therefore be **cryptographic**, at or above the transport layer.
+**This is about *authorization* identity, and it does not contradict the standards.**
+[Correctness](/docs/standards/correctness/) §3.1 defines a host's identity chain as MAC → IP → DNS,
+and [Identity vs Intent](/docs/standards/identity-vs-intent/) lists MAC and IP as identity
+variables. Both are describing **inventory** identity — how the substrate names and addresses a
+thing it already controls, deterministically and from code. Neither is a claim that an address
+proves *who is speaking* to a service. For that,
+[Secure Identity](/docs/standards/secure-identity/) §1.2 already has the rule: *"A client device is
+allowed to prove who you are — it should not permanently store what you know."*
+
+The authorization boundary must therefore be **cryptographic, at or above the transport layer**.
 Network policy below it is defense in depth and nothing more.
 
 ---
@@ -83,53 +96,53 @@ Network policy below it is defense in depth and nothing more.
 
 ### A — Broker only *(status quo)*
 
-Devices stay on `iot` (VLAN 30) and reach tenants through the broker, with per-device credentials
-and per-topic ACLs under the tenant's prefix.
+Devices reach tenants only through the MQTT broker, with per-device credentials and per-topic ACLs.
 
-- **Pros:** built (in design), identity is cryptographic and per-device, no new segment, no new
-  substrate.
+- **Pros:** identity is cryptographic and per-device; nothing new to build; fits every device that
+  can speak MQTT.
 - **Cons:** publish/subscribe does not fit every workload. A device needing request/response, bulk
-  transfer, streaming or an existing HTTP protocol has no path.
-- **Verdict:** remains correct wherever its semantics fit, and remains the default.
+  transfer, streaming or an existing HTTP protocol has no path at all, and the application is
+  forced to tunnel its semantics through a broker that was not chosen for them.
+- **Verdict:** remains correct and preferred **wherever its semantics fit**. It is not sufficient as
+  the only answer.
 
-### B — Shared segment with multi-homed tenant backends *(as proposed)*
+### B — Tenant backends multi-homed onto the device segment
 
-One shared access segment; tenant backends that need direct device traffic take a second NIC on it,
-with IP forwarding disabled.
+A tenant workload takes a second NIC on the device segment, with IP forwarding disabled.
 
-- **Pros:** no proxy to build; the backend talks to devices directly; preserves `VLAN = trust class`.
+- **Pros:** nothing to build; the backend talks to devices directly.
 - **Cons:**
-  - **It breaks ADR-0013 §2 outright.** A VM never spans two segments; a domain needing two becomes
-    two VMs.
-  - **It creates a cross-tenant Layer 2 path in the substrate.** Two tenants' backends, each holding
-    a NIC on the shared segment, are Layer 2 adjacent to each other. A compromised EdS backend
-    reaches a Ma Bell backend directly, and the fabric's VRF isolation — the entire basis of
-    [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)'s tenant separation — is
-    simply routed around by two second NICs.
-  - **`ip_forward=0` is a default, not a boundary.** Root on a compromised backend flips it. And
-    forwarding is not even needed to relay: any process can read one socket and write another.
-  - It couples tenant workloads to a substrate segment, so a tenant's service placement becomes a
-    substrate concern.
-- **Verdict:** Rejected. The cross-tenant path is disqualifying on its own.
+  - **It breaks [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) §2
+    outright** — *"A VM never spans two segments."*
+  - **It creates a cross-tenant Layer 2 path in the substrate.** Two tenants' backends, each
+    holding a NIC on the shared segment, are Layer 2 adjacent **to each other**. A compromised EdS
+    backend reaches a Ma Bell backend directly, and the VRF isolation that is the entire basis of
+    [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)'s tenant separation is
+    routed around by two second NICs.
+  - **`ip_forward=0` is a default, not a boundary.** Root on a compromised backend flips it, and
+    forwarding is not even needed to relay — any process can read one socket and write another.
+  - It couples tenant service placement to substrate networking, so where a tenant runs a service
+    becomes a substrate concern.
+- **Verdict:** **Rejected.** The cross-tenant path is disqualifying on its own.
 
-### C — Shared contained segment with a substrate service edge *(chosen)*
+### C — A dedicated, more contained device segment
 
-One shared access segment with **no gateway and no route off itself**. A single substrate-owned
-service edge holds the only address on it and terminates device connections, authenticating each
-device cryptographically and proxying to the tenant service its registry entry authorizes.
+A second access segment for devices needing direct access, with no route off itself, its own SSID,
+and a service edge holding the only address on it.
 
-- **Pros:**
-  - Every VM keeps one segment (ADR-0013 §2 holds). Tenant backends never touch the segment.
-  - No cross-tenant Layer 2 path exists, because no tenant workload is attached.
-  - The segment is non-routable **by construction**, so a firewall mistake cannot open it — which
-    matters given that the core router currently passes all traffic between every segment.
-  - Identity is cryptographic, which is the only thing that can carry the policy.
-  - Policy is generated from the same registry that already shapes broker ACLs.
+- **Pros:** the smallest blast radius; containment by construction rather than by policy.
 - **Cons:**
-  - It is a component to build, and it is a proxy — protocol-aware for anything beyond plain TCP.
-  - The edge is a single point of failure for direct device access, and a high-value target: it
-    holds the map from device identity to every tenant service.
-  - Honestly described, it is a second broker. See [Consequences](#consequences).
+  - **The containment it promises is not achievable alongside a proxy.** A service that receives
+    device connections *and* reaches tenant services either needs a route off the segment — in
+    which case containment is policy again — or a second interface, which is option B wearing a
+    substrate badge.
+  - **It splits a trust class by purpose.** Devices needing direct access and devices using the
+    broker run the same owner-controlled firmware and carry identical trust. Giving them different
+    segments is attachment by *purpose*, which is the same category error as attachment by *owner*
+    — the thing ADR-0011 §3 exists to prevent.
+  - Every bit of it is substrate that has to exist before the first consumer does.
+- **Verdict:** **Rejected as unnecessary.** It was the draft's answer; see
+  [What this record stopped saying](#what-this-record-stopped-saying).
 
 ### D — Per-device certificates with 802.1X
 
@@ -137,136 +150,118 @@ Identity established at attachment: the AP authenticates each device against RAD
 VLAN per device (`wirelessVlanAssignment` exists in the controller's served spec).
 
 - **Pros:** the strongest identity, established before an address is issued.
-- **Cons:** a RADIUS service, a device PKI, and per-device certificates provisioned onto ESP32-class
-  hardware over USB. Large new substrate for a problem option C solves above the transport layer.
-- **Verdict:** Not now. Recorded because it is the right answer if device identity ever needs to be
-  established at attachment rather than at connection.
+- **Cons:** a RADIUS service, a device PKI, and per-device certificates provisioned onto
+  ESP32-class hardware over USB — large new substrate for a problem the transport layer solves.
+- **Verdict:** **Not now.** Recorded because it is the right answer if identity ever needs to be
+  established at *attachment* rather than at *connection*.
 
-### E — Reuse the IoT Backend segment
+### E — A device-facing service on IoT Backend *(chosen)*
 
-Place the tenant's device-facing service on `iot_backend` (VLAN 35) and let `iot` devices reach it,
-which [Network Segmentation](/docs/standards/network-segmentation/) already lists as a permitted
-flow.
+The device stays on the access segment of its trust class. The service it consumes is a
+platform-run, owner-scoped service on **IoT Backend**, reached over the `iot -> iot_backend` flow
+the standard already permits and the site already declares. It authenticates the device
+cryptographically and serves only what that device's registration authorizes.
 
-- **Pros:** zero new substrate. The path is already modeled and already permitted.
-- **Cons:** policy granularity is the zone, not the device — every IoT device may reach every IoT
-  Backend service. It also puts tenant services on a substrate segment, with the same coupling
-  objection as B, though without B's second NIC.
-- **Verdict:** Not chosen, but it is the correct answer for any service where **zone-level
-  granularity is genuinely sufficient**, and it should be preferred over building the edge for a
-  single early case.
+- **Pros:**
+  - **This is ADR-0011's existing shape**, not a new one. The broker is the instance that exists;
+    this is the same rendezvous with different protocol semantics.
+  - **Zero new substrate.** No segment, no SSID, no VLAN, no DHCP or DNS change, no new zone rule.
+    ADR-0013 §1 already gives the device-messaging VM the charter for *"later other device
+    rendezvous services."*
+  - Every VM keeps one segment, so ADR-0013 §2 holds and no cross-tenant Layer 2 path exists.
+  - It works for tenantless applications, exactly as ADR-0011 requires.
+- **Cons:**
+  - It is a component to build, and for anything beyond plain TCP it is protocol-aware.
+  - It concentrates value: it holds the map from device identity to tenant services.
+  - Honestly described, it is a second broker. See [Consequences](#consequences).
 
 ---
 
 ## Decision
 
-**Option C**, with three corrections to the proposal as put.
+**Option E**, and what is accepted is the contract below rather than any particular service.
 
-### 1. Name the class by containment, not by connectivity
+### 1. Direct service access is a platform capability
 
-The proposal's `direct_iot` and `brokered_iot` are not trust classes. Both hold devices running
-owner-controlled firmware — identical trust under
-[Network Segmentation](/docs/standards/network-segmentation/) §8. What separates them is
-*connectivity pattern*, and a class per connectivity pattern multiplies without limit.
+Deevnet supports **authenticated, owner-scoped direct access** from an application-owned device to
+a service belonging to its application, for protocols where broker semantics do not fit. It is a
+first-class capability, not a concession for an awkward device.
 
-The honest distinction is **containment**: this segment's devices have **no route off it**. That is
-a trust-relevant property and it is what the segment should be named for — `iot_contained` rather
-than `direct_iot`. ADR-0011 §3's rule survives intact: attachment is still by class, never by owner.
+MQTT remains **preferred wherever publish/subscribe fits**, because it is built, because it gives
+store-and-forward and fan-out for free, and because a strong application-level boundary is better
+than a thin one. Direct access exists for the cases it does not fit. The choice is a property of
+the **protocol and the service**, not of the tenant.
 
-### 2. The segment is routed, and containment is policy
+### 2. Authorization is cryptographic, at or above the transport layer
 
-The first draft of this record claimed the segment would carry **no gateway and no router
-interface**, and called that "containment structural rather than policy-dependent." That claim does
-not survive contact with the rest of the design, and the contradiction is recorded here rather than
-quietly corrected.
+A device's authorization to consume a service is carried by a **credential it proves**, never by
+its address. MAC and IP are forgeable on a shared segment and are not authorization inputs.
 
-**A routeless segment and a service edge cannot both exist.** The edge has to receive device
-connections on `iot_contained` *and* reach tenant services. If nothing routes off the segment, the
-only way it can do both is a second interface — which is precisely
-[option B](#b--shared-segment-with-multi-homed-tenant-backends-as-proposed) above, rejected two
-sections earlier, merely moved from a tenant workload to a substrate one. The structural claim was
-wrong; it was not a property the design ever had.
+The PPSK / network credential establishes only *attachment*: that this connection belongs to a
+tenant, in a trust class, permitted onto this access network. **Attachment is not authorization.**
+Joining `DVNTM-IOT` does not mean a device may consume everything reachable from VLAN 30.
 
-So the segment is routed, and the boundary is a zone rule that names one destination:
+The concrete credential mechanism is **not decided here** — mTLS, a token, or something the device
+PKI layer brings later. ADR-0012 §3 already defers "identity and PKI" to its own record, and this
+record does not pre-empt it.
 
-```yaml
-- from_zone: iot_contained
-  to_zone: iot_backend
-  action: pass
-  protocol: TCP
-  destination_net: "<edge>/32"
-  destination_port: "<edge port>"
-```
+### 3. Direct access does not grant tenant network membership
 
-This is an existing form, not a new one. The Deevnet API's two reaches outside Platform are written
-exactly this way — one source host, one destination, one port — for the same reason: *"what it may
-reach is worth stating exactly."*
+The device does not join the tenant's overlay, is not addressed from it, and is not Layer 2
+adjacent to it. Attachment remains by **trust class**
+([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) §3);
+[ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) holds.
 
-**DHCP still hands out no default route**, and the edge still serves DNS, NTP and firmware updates
-on the segment. That keeps the device's reachable world small and makes naive malware fail closed.
-It is **defense in depth**, not the boundary: a compromised device can install a static route and
-reach whatever the zone policy allows.
+### 4. Two shortcuts are closed
 
-The cost of this correction is real and worth stating plainly. Containment now depends on the zone
-policy being correct, at an estate where the 2026-09-14 validation found the core router passing all
-traffic between every segment. [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) is the
-change that makes the matrix real, and this rule belongs in it.
+- **Tenant workloads are not multi-homed onto device segments.** Option B's reasoning applies to
+  any workload, tenant or substrate: a VM that spans the device segment and a tenant segment is a
+  cross-tenant Layer 2 path regardless of who owns it.
+- **`IoT -> tenant_transit`, or `IoT -> tenant networks`, is not the answer.** A zone-level allow
+  from the device segment into tenant space would give every device reach into every tenant, which
+  destroys the owner-scoping this record exists to provide. It must not be added.
 
-### 3. It has its own SSID
+### 5. The invariant that makes the shared segment safe
 
-Client isolation on this controller is `guestNetEnable`, which is a **per-SSID** setting. The
-proposal reuses the common PPSK SSID, which would apply isolation to brokered devices as well — or,
-if not enabled, leave this segment without it. A separate SSID is required for the isolation to be
-targetable at all.
+**Every device-facing service on IoT Backend authenticates its callers per device.**
 
-### 4. Where the edge runs — leading answer, not yet settled
+This follows from the two facts above it and is load-bearing: zone policy grants the **whole
+zone**, so once CHG-0007 runs, any device on the IoT segment may reach any service on IoT Backend
+at the network level. Network policy decides *which segments may speak*; only the service decides
+*who is speaking*. A device-facing service that trusts its callers because they arrived from the
+right VLAN has no boundary at all.
 
-Once the segment is routed, the edge does not need an address on `iot_contained` at all: devices
-reach it through the core router, under the rule above. That makes it an ordinary single-segment
-service, and [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) §3 then
-places it without argument — *"a new service joins the VM of its domain, on the segment that domain
-sits on."*
+This is what makes the unresolved peer-isolation limitation (below) tolerable, and it is why the
+limitation is an accepted cost rather than an architectural failure.
 
-Its domain is **device messaging**. ADR-0013 §1 already gives `dv02msg001v01` the charter *"the
-VerneMQ broker and its auth database; later other device rendezvous services"*, and an edge that
-lets a device reach a tenant service is a device rendezvous service.
+---
 
-It is **not a new domain**. ADR-0013 §4's test is audience, not segment: the two observability VMs
-got separate roles because they *"serve different audiences on different segments, so they are
-different classes of host, not two instances of one."* The broker serves devices; the edge serves
-devices. Same audience, same domain.
+## What this record stopped saying
 
-**Leading answer: the edge is a container on `dv02msg001v01`.** No new VM, no new role mnemonic, no
-amendment to ADR-0013.
+Two drafts preceded acceptance, and both are recorded rather than quietly replaced.
 
-Two alternatives stay live, and this record does not close them:
+**2026-09-18 — a routeless segment and a proxy cannot coexist.** The first draft asserted both that
+the device segment would carry no gateway and no router interface, and that a service edge on it
+would proxy to tenant services. Those are incompatible: the edge must receive device connections
+*and* reach tenant services, and with no route off the segment the only way to do both is a second
+interface — which is option B. The "structural containment" claim was not a property the design
+ever had.
 
-- **A dual-homed edge on a routeless segment.** Keeps the structural containment §2 gives up, at the
-  cost of amending ADR-0013 §2 to permit a named policy-enforcement exception. Arguable — the core
-  router already spans every segment, and an edge enforcing mTLS and per-device bindings is a
-  narrower and stronger crossing point than a zone rule. But it grants a substrate service the
-  exception this record denies tenant backends, and that should be a decision rather than a
-  convenience.
-- **`dv02msg002v01` on `iot_contained`.** A second instance of the same role, if devices should talk
-  to a local address rather than traverse the router. Not needed to make the design work; it is a
-  latency and blast-radius question, not a correctness one.
+**2026-09-19 — the dedicated segment was unnecessary.** The second draft kept a dedicated
+`iot_contained` segment with its own VLAN, its own SSID, prescribed DHCP and DNS behaviour, an
+exact firewall rule and a named VM placement. All of it is removed. It was invented to buy
+containment that the zone policy delivers anyway, and separation between device classes that carry
+**identical trust** — splitting a trust class by purpose is the same error as splitting it by
+owner. The existing `iot -> iot_backend` flow already carries this capability with no new substrate
+at all.
 
-### What is enforced, and where
+What survived both drafts is what did not depend on the mechanism: the identity finding, the
+multi-homing rejection, the closed shortcuts, and §5's invariant. That is the whole of the
+contract, and it is what is accepted.
 
-| Boundary | Mechanism | Strength |
-|---|---|---|
-| Device → tenant service | mTLS at the edge; client certificate maps to owner and permitted services | **Authoritative.** The only device-granular boundary. |
-| Device → anything else off-segment | Zone policy naming one host and port | **Policy.** Correct only while the matrix is enforced. |
-| Device → off-segment, naive case | No default route from DHCP | **Defense in depth.** A static route defeats it. |
-| Device → device | AP client isolation | **Defense in depth.** Unproven, wireless-only, and see Open questions. |
-| Edge → tenant service | Ordinary routed path and zone policy | Standard. |
-
-### Build order
-
-**The device registry comes first.** `deevnet_iot_device` and a service-binding resource are what
-make the edge's policy derivable rather than hand-written. Until `/v1/devices` exists, this segment
-would be a flat subnet holding mutually-distrusting devices at one trust level, with no way to tell
-them apart — **strictly worse than VLAN 30**, which at least has a broker in front of it.
+**A dedicated segment is not forbidden — it is unjustified.** It becomes justified only by a
+genuine **trust** difference between device classes, at which point it is a new trust class under
+ADR-0011 §3 and gets its own record.
 
 ---
 
@@ -274,87 +269,108 @@ them apart — **strictly worse than VLAN 30**, which at least has a broker in f
 
 ### Positive
 
-- `VLAN = trust class` is preserved. Creating a tenant creates no VLAN, and the substrate's
-  one-time provisioning is a segment, an SSID and an edge.
-- Tenant workloads stay on exactly one segment, so ADR-0013 §2 holds and no cross-tenant Layer 2
-  path is created.
-- A compromised device reaches the edge and nothing else, provided the zone policy is enforced —
-  and the rule it needs is one line in the matrix CHG-0007 already exists to apply.
-- Authorization derives from the same registry that shapes broker ACLs, so there is one model of
-  "what may this device reach", not two.
+- ADR-0011's open question 5 is answered without amending ADR-0011's decision, and without adding a
+  segment, an SSID, a VLAN or a zone rule.
+- An application chooses its protocol. A platform where every interaction must become MQTT is not
+  what these records describe, and a future reader cannot conclude otherwise.
+- The rule for which mechanism to use is semantic and stable: publish/subscribe to the broker,
+  everything else to a direct service, both owner-scoped and both authenticated per device.
+- Tenant workloads stay on exactly one segment, so no cross-tenant Layer 2 path is created.
 
 ### Negative / accepted
 
-- **This is a second broker.** It is an authenticating, authorizing proxy between devices and tenant
-  services, differing from the MQTT broker in protocol rather than in purpose. Accepting this record
-  means accepting that the estate will run two of them, and that a service must choose. The
-  selection rule is semantic: MQTT where publish/subscribe fits, the edge where it does not.
-- The edge is a single point of failure for direct device access, and holds the device-to-service
-  map for every tenant. It is a higher-value target than the broker, because it brokers more.
-- The Segmentation standard gains a segment type, and `iot_contained` must be written into §8's
-  neighbourhood with its own rules — notably "MUST NOT have a routed interface or a default route",
-  which no existing IoT segment says.
-- Device-to-device isolation on the shared segment rests on an AP mechanism that is unverified, and
-  on a segment that a wired port would bypass entirely.
+- **This is a second broker.** It is an authenticating, authorizing rendezvous between devices and
+  tenant services, differing from the MQTT broker in protocol rather than in purpose. Accepting
+  this record accepts that the estate will eventually run two, and that a service must choose
+  between them.
+- **It concentrates value.** Whatever implements it holds the device-to-service map for every
+  tenant, which makes it a higher-value target than the broker.
+- **Nothing is built.** The device registry answers `501`, no broker runs, and no direct service
+  exists. The contract is accepted; the mechanism waits. This is deliberate — the alternative was
+  freezing an implementation before a single consumer existed.
+- **Devices on a shared segment can still reach one another.** See below.
 
 ### Neutral
 
-- Option E remains available and cheaper for any case where zone-level granularity suffices. This
-  record does not require the edge to be built for the first such case.
+- Option A stays the default. This record does not push anything toward direct access that
+  publish/subscribe already serves.
+- Option D stays available if identity ever needs to move to attachment time.
+
+---
+
+## Peer devices on a shared segment: an accepted limitation
+
+Devices of different owners share VLAN 30, and **nothing separates them today**. This is not fixed
+by CHG-0007 and cannot be: traffic between two devices on one VLAN is switched at Layer 2 and never
+reaches the core router.
+
+What the access hardware can actually do, from the 2026-09-14 validation and vendor documentation:
+
+- The controller's SSID schema has **no client-isolation field**. Omada folded SSID Isolation into
+  its **Guest Network** setting, which also blocks clients from reaching *"any private IP subnet"* —
+  which is where every service they need lives.
+- The documented workaround is Guest Network plus an EAP ACL permit to a specific destination, and
+  the vendor does not state whether client isolation survives the permit.
+- TP-Link states that access control *"can't take effect to wireless clients which connected with
+  the same SSID of same AP."*
+- **Wired devices have no isolation mechanism at all**, and AP isolation would not cover them.
+- Whether PPSK and Guest Network can be enabled on **the same SSID at all** has never been tested;
+  ADR-0011 open question 4 turns on it.
+
+**Why this does not threaten the architecture.** The distinction that matters is between *being
+unable to send a packet to another device* and *being unable to authenticate to another owner's
+services*. Only the second is a security boundary, and §5's invariant provides it: a hostile peer
+can emit packets but cannot consume what it cannot authenticate to.
+
+**It does not justify per-tenant segments.** Those would not fix it either — a tenant's own devices
+still share Layer 2 with each other — and ADR-0019 rejects the mechanism on independent grounds.
 
 ---
 
 ## How a compromised device is contained
 
-Recorded because the proposal explicitly asked for the model to be attacked, and because the answers
-are the justification for the three corrections above.
+Assumes CHG-0007 has run; where it has not, every row below is currently open.
 
 | Target | Outcome | Why |
 |---|---|---|
-| Another device on the segment | **Degraded, not blocked.** AP isolation should stop station-to-station frames, but ARP toward the edge must still pass, so ARP poisoning remains available as a denial-of-service. Interception is prevented only if isolation holds. | Isolation is AP-enforced and unproven |
-| Another device, via the wire | **Not contained.** Any wired port on this VLAN, or a second AP, sits outside AP-enforced isolation. | Isolation lives on the AP; the VLAN extends past it |
-| Another tenant's backend | **Blocked** under option C — no tenant workload is on the segment. **Reachable** under the rejected option B, at Layer 2, bypassing VRF isolation entirely. | The reason B is rejected |
-| Its owner's tenant network, beyond authorized services | **Blocked** — the device reaches the edge, and the edge opens only the bindings its certificate carries. | mTLS plus registry bindings |
-| Management or substrate | **Blocked by policy.** The segment's only permitted destination is the edge's address and port. No default route is issued, but that is defense in depth — a static route defeats it, the zone rule does not. | Decision §2 |
-| The internet | **Blocked by the same rule**, and by the absence of any pass to a WAN path. | Decision §2 |
-| Impersonating another device | **Blocked at the edge, not on the network.** IP and MAC are forgeable on a shared segment; the certificate is not. | The finding in Context |
+| Another device on the same segment | **Not contained.** No isolation exists today, wireless or wired. | Accepted limitation, above |
+| Another owner's service | **Blocked** — it cannot present that owner's credential. | Decision §2 and §5 |
+| Another tenant's backend | **Blocked** — no tenant workload is on a device segment. | Decision §4 |
+| Its owner's tenant network, beyond authorized services | **Blocked** — it reaches a platform service, which opens only what its registration authorizes. It is never on the tenant's network. | Decision §3 |
+| Management, storage, trusted, platform | **Blocked by zone policy** — the IoT segment's only declared destination is IoT Backend. | CHG-0007 |
+| Any tenant network directly | **Blocked, and must stay so.** No `IoT -> tenant_transit` rule exists and none may be added. | Decision §4 |
+| The internet | **Permitted, by design** — the standard rates IoT as allowing controlled outbound access. | Segmentation §8 |
+| Impersonating another device | **Blocked at the service, not on the network.** IP and MAC are forgeable; the credential is not. | The finding in Context |
 
-The pattern is that every boundary that holds is either **cryptographic** (mTLS at the edge) or a
-**zone rule naming one host and port**. Every boundary that depends on the network distinguishing
-one device from another does not hold, and none of them can be made to — which is the finding in
-Context, and the reason the edge exists at all.
+Every boundary that holds is either a **zone rule** or a **credential**. Every boundary that would
+depend on the network distinguishing one device from another does not hold, and none can be made
+to.
 
 ---
 
-## Open questions
+## What would reopen this
 
-1. **Does Omada client isolation behave as assumed?** Specifically: does `guestNetEnable` isolation
-   hold for clients on one AP with PPSK; does it hold across APs; does it survive the EAP ACL permit
-   that would be required to let devices reach the edge's private address at all; and does it apply
-   to broadcast and multicast. The 2026-09-14 validation established that no other per-SSID
-   isolation setting exists, and that TP-Link's own guidance says Access Control "can't take effect
-   to wireless clients which connected with the same SSID of same AP" — which is about ACLs rather
-   than Guest Network isolation, and leaves the interaction between the two undocumented. This
-   should be settled by test before the segment carries two owners' devices.
+- **A device that cannot hold a credential at all.** The contract assumes a device can prove
+  something. One that cannot needs a different answer, probably option D.
+- **A genuine trust difference between device classes**, which would make a second access segment a
+  new trust class under ADR-0011 §3 rather than the convenience this record rejected.
+- **A protocol requiring Layer 2 adjacency**, which is
+  [ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/)'s question, not this
+  one.
+- **PPSK and Guest Network proving mutually exclusive**, which would not change this contract but
+  would settle ADR-0011 open question 4 against isolation and make §5's invariant the only control
+  between peers.
 
-2. **What protocol surface does the edge actually need?** Plain TCP forwarding keyed on the client
-   certificate is the minimum. HTTP-aware routing is more useful and more work. This decides whether
-   the edge is a small component or a large one, and it should be answered by a real device's
-   requirement rather than in advance.
+## Implementation notes, for whoever builds it
 
-3. **Routed segment, or a dual-homed edge?** *Resolved in direction, not in fact.* Decision §2 takes
-   the routed segment and Decision §4 places the edge on `dv02msg001v01`, which needs no ADR
-   amended and uses a zone-policy form the matrix already carries. The alternative — a routeless
-   segment with a deliberately dual-homed edge — buys back structural containment at the price of
-   amending ADR-0013 §2, and is not foreclosed here. **Nothing is built on either answer yet**, and
-   the choice should be made deliberately rather than inherited from this draft.
+Not decisions, and deliberately not settled here:
 
-   What would settle it: whether the zone policy is trustworthy enough to be the boundary. Today it
-   is not — the core router passes everything. After CHG-0007 it should be, and the routed answer
-   becomes clearly correct. If CHG-0007 stalls, the structural answer gets stronger.
-
-4. **Is the edge one service or two?** The broker and the edge would share `dv02msg001v01` and
-   therefore its fate — ADR-0013 names this cost: *"Containers in one VM share its fate: a reboot
-   takes all of them."* Direct device access and brokered device access failing together may be
-   acceptable, or may be the argument for `dv02msg002v01` on its own. Worth deciding with a real
-   availability requirement rather than in advance.
+- **Protocol surface.** Plain TCP keyed on the presented credential is the minimum; HTTP-aware
+  routing is more useful and more work. A real consumer's requirement should decide this, not this
+  record.
+- **Placement.** ADR-0013 §3 puts a new service on the VM of its domain, on that domain's segment —
+  which is the device-messaging VM on IoT Backend. ADR-0013 also names the cost: *"Containers in one
+  VM share its fate: a reboot takes all of them."* Whether direct and brokered access should fail
+  together is an availability question for a real requirement.
+- **Order of work.** The device registry comes first. Until `/v1/devices` exists there is nothing to
+  record a device's permitted services in, and the contract's §2 and §5 have no state to draw on.

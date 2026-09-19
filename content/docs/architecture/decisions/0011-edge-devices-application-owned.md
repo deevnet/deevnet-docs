@@ -10,6 +10,8 @@ weight: 11
 | **Status** | Accepted |
 | **Accepted** | 2026-09-15, once its four open questions were answered. Questions 1–3 were settled by the operator on 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9's controller work made the platform side real); question 4 was settled on 2026-09-14. |
 | **Date** | 2026-09-13 |
+| **Amended** | 2026-09-19, reconciling against ADR-0019 and ADR-0020. An editing error had deleted the heading that numbered two further open questions, leaving them orphaned — they are now **5** (tenant ingress, answered by ADR-0020) and **6** (the firmware supply chain, still open). Five statements overtaken by CHG-0013 and by ADR-0012 §8 are corrected in place. The decision is unchanged. |
+| **Extended by** | [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) — why a device does not join its tenant's network. [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) — how it reaches that tenant's services instead, answering open question 5. Both leave this record `Accepted` and unchanged in substance. |
 | **Validated** | 2026-09-14, read-only, before acceptance. See [Validation](#validation-2026-09-14) |
 | **Scope** | Who owns a physical device an application uses, what the platform knows about it, which network it joins, and how it reaches the services it needs |
 | **Depends on** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) |
@@ -171,6 +173,16 @@ and serves it through scoped platform services.
 | **Attachment** | The substrate, chosen by **trust class** | The access segment (IoT or IoT Vendor), over Wi-Fi or a switch port |
 | **Access** | Platform services, scoped per owner | Rendezvous services on IoT Backend, such as the broker; per-device permissions |
 
+> **"Such as the broker" is not a figure of speech.** *Added 2026-09-19.* This axis names a
+> **shape** — an authenticated, owner-scoped service the device dials and the tenant dials, on a
+> segment both can reach — not a protocol. The broker is the first instance of that shape and the
+> preferred one wherever publish/subscribe fits, but an application is not obliged to express every
+> interaction as MQTT to be served by the platform.
+> [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) is the
+> same shape for request/response and stream protocols, and answers
+> [open question 5](#open-questions). Nothing in this record makes a protocol mandatory, and a
+> reader who concludes *"all Deevnet edge devices must use MQTT"* has read it wrongly.
+
 ### 2. Tenants own devices; they do not contain them
 
 The tenant fabric stays what ADR-0001 built: isolated virtual compute. A device a tenant owns joins
@@ -237,8 +249,15 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      ([The broker](#the-broker-is-not-reachable)).
    - **Decided 2026-09-15 (operator): [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/)
      is the answer.** Owners register devices through the Deevnet API and its Terraform provider,
-     which confine them to their own topic prefix. The broker behind it is VerneMQ, which asks the
-     API on every connect, subscribe and publish (ADR-0012 §8).
+     which confine them to their own scope. The broker behind it is VerneMQ.
+     - **Corrected 2026-09-19.** This originally read that the broker *"asks the API on every
+       connect, subscribe and publish."* ADR-0012 §8 reversed that the same day it was written —
+       the pull model put the API in every device's path, so the broker reads its own auth database
+       and never calls the API.
+     - **Registration is not broker-specific.** The scope an owner is issued is what confines it;
+       a topic prefix is how the *broker* expresses that scope, not what registration means. See
+       [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) for
+       the same registration serving a non-broker service.
      - **Nothing is tested end to end yet**, because the broker is not built. The API shell is
        deployed (CHG-0008), and the broker is a later change.
 2. **Does an owner's device still need a substrate host record?**
@@ -340,16 +359,31 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
        EAP ACL permit, **only if the device test shows it works**.
      - **Wired devices on VLAN 30 stay unisolated, and that is accepted for now.**
      - Isolating wired devices, for example with switch port isolation once the switch is adopted,
-       would be a separate decision., numbered when opened:
-   - **How a device reaches a service a tenant exposes directly.** This is tenant ingress, which
-     ADR-0003 does not provide.
-   - **The firmware supply chain:**
-     - custody of signing keys. ESP32 Secure Boot v2 stores one public key per chip, permanently
-       ([Espressif](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/security/secure-boot-v2.html)),
-       so whoever holds the key owns every future image for that chip.
-     - where OTA images are hosted so the IoT segment can reach them
-     - keeping secrets out of firmware binaries
-     - recovery once flash encryption blocks USB reflashing
+       would be a separate decision.
+   - **The isolation half is still unproven. *Restated 2026-09-19.*** Steps 2–4 of the device test
+     were never run — see [What was not tested](#what-was-not-tested-and-why). The load-bearing
+     unknown is whether PPSK and Guest Network can be enabled on the same SSID **at all**: if the
+     controller refuses the combination, per-tenant keys and AP isolation cannot coexist on one
+     SSID and this decision needs revisiting. Until that is settled the answer rests entirely on
+     its first clause — credentials first — and the AP contributes nothing.
+5. **How does a device reach a service a tenant exposes directly?**
+   Tenant ingress, which ADR-0003 does not provide. *This was opened here without a number by an
+   editing error, which is why [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §1
+   cites an "open question 5" that did not exist. Numbered 2026-09-19.*
+   - **Answered 2026-09-19 by [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/).**
+     The device reaches it through an authenticated, owner-scoped platform service — the same shape
+     as the broker, over the same already-declared `iot -> iot_backend` path, with authorization
+     carried by a credential rather than by the device's address. It does **not** reach it by
+     joining the tenant's network; see
+     [ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/).
+6. **The firmware supply chain.** Out of scope for this record, and numbered so it is not lost a
+   second time.
+   - custody of signing keys. ESP32 Secure Boot v2 stores one public key per chip, permanently
+     ([Espressif](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/security/secure-boot-v2.html)),
+     so whoever holds the key owns every future image for that chip.
+   - where OTA images are hosted so the IoT segment can reach them
+   - keeping secrets out of firmware binaries
+   - recovery once flash encryption blocks USB reflashing
 
 ---
 
@@ -511,11 +545,16 @@ the four production SSIDs:
 
 ## Consequences
 
-**The broker's device records move to their owner, once Open question 1 has an answer.** Until then
-`lp-stand-01` stays in `mqtt_acls` and `vault_mqtt_users` as recorded ADR-0010 debt.
+**The broker's device records move to their owner once there is a broker.** Open question 1 is
+answered — ADR-0012's registry is the mechanism — but the registry answers `501` and no broker
+runs, so `lp-stand-01` stays in `mqtt_acls` and `vault_mqtt_users` as recorded ADR-0010 debt.
+*Reworded 2026-09-19: this said "once Open question 1 has an answer", which it has had since
+2026-09-15. What is missing is the implementation, not the decision.*
 
 **`edge_devices` needs a new home or a new meaning.** A group of application-owned devices can't
-stay under `infrastructure`. Where it goes depends on Open question 2.
+stay under `infrastructure`. Open question 2 settled that such a device needs no substrate host
+record, so the group's remaining members are the substrate-owned devices; where it goes is an
+inventory change nobody has made yet.
 
 **Isolation now leans on enforcement the site doesn't yet have.** Owners share the IoT segment, so
 the segment's zone policy must actually be in force. It is not:
@@ -527,10 +566,12 @@ The 2026-09-14 validation makes this concrete. The router is not merely missing 
 it runs explicit allow-all rules on every segment, including two that the automation can't see.
 Trust-class attachment, this record's §3, means nothing on the network until CHG-0007 is done.
 
-**Per-device Wi-Fi keys are feasible but not self-service.** The controller and the AP's firmware
-list PPSK with a VLAN per key, which fits §3. But a PPSK write needs site-wide network permissions,
-so an owner can't be given that credential directly without breaking ADR-0010 §3. This is
-analysis; see Open question 3.
+**Wi-Fi keys are self-service now, through the API rather than directly.** A PPSK write needs
+site-wide network permissions, so an owner can never hold that credential without breaking
+ADR-0010 §3 — the Deevnet API holds it instead and scopes every call to one tenant.
+*Superseded in part 2026-09-19: this was written as "feasible but not self-service", which was true
+while the API could not issue keys. [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/)
+built that on 2026-09-18, and a key is now per tenant per trust class rather than per device.*
 
 **Applications that need nothing from the platform owe it nothing.** A device with no network, like
 the pumpkin, is not enrolled anywhere.
@@ -557,8 +598,10 @@ this record being written around it.
 - **Per-key VLANs are proven on the hardware, not merely documented.**
   [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6: on the
   EAP650-Outdoor at firmware 1.3.11, a client joined with the VLAN-30 key landed on 10.20.30.100
-  and with the VLAN-31 key on 10.20.31.100. The test artifacts were torn down afterwards, so
-  `DVNTM-IOT` does not exist on the controller yet and no application-owned device has Wi-Fi.
+  and with the VLAN-31 key on 10.20.31.100. Those test artifacts were torn down afterwards.
+  **Updated 2026-09-19:** [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) then built the
+  real thing on 2026-09-18 — `DVNTM-IOT` exists as a PPSK SSID on VLAN 30, the `eds` tenant holds
+  its own key from its own `terraform apply`, and a client joined with it and took 10.20.30.100.
 - The LP stand and the Ma Bell gateway remain exactly as `d8c31cd` and earlier commits left them.
 - **The broker does not exist.** `dv02mqt001v01` was retired; VerneMQ on `dv02msg001v01` is built
   and empty.
@@ -574,7 +617,11 @@ this record being written around it.
 - **Still outstanding:**
   - [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), before the IoT segment is relied
     on as a boundary. The core router still passes everything between zones.
-  - A running broker, for the device-to-service half of open question 1.
+  - A running device-facing service, for the device-to-service half of open question 1. The broker
+    is the first one and none exists yet; it is the instance, not the category (§1).
   - Client isolation (open question 4). The isolation half of CHG-0005 phase 6 was not run, so
     "best effort" is currently no effort: devices on the IoT segment are not isolated from each
-    other.
+    other. Whether PPSK and Guest Network can coexist on one SSID at all is still unknown, and
+    open question 4's answer depends on it.
+  - The device registry. `GET /v1/devices` answers `501`, so per-device permissions — the control
+    the isolation decision leans on — have nothing to be recorded in yet.
