@@ -142,3 +142,11 @@ question is written down, not when it is answered.
   in part, ADR-0001 and ADR-0002 where they say the core router never learns tenant address space.
   Devices, other tenants and the outside world still have no path in, and this is explicitly not a
   delivery mechanism for tenant code — ADR-0017 holds, now as a rule rather than a physical fact.
+- [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) —
+  *Proposed.* Re-opens ADR-0011 Option B for a variation it never considered: a VLAN range reserved
+  once, so tenant creation needs no switch change. The variation is real and defeats two of Option
+  B's objections, but the answer holds — Proxmox generates a VNet bridge whose only port is its
+  VXLAN interface, EVPN zones have no DHCP option, and Proxmox SDN has no EVPN multihoming, so the
+  boundary would be unreproducible node-local state that cannot be made redundant. Attachment stays
+  by trust class, not by owner. Names the test that would change the answer: a protocol that
+  genuinely needs Layer 2 adjacency.
