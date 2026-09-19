@@ -17,7 +17,7 @@ Defines the shared and persistent storage model for Deevnet sites.
 
 ## Intent
 
-Shared storage will provide persistent volumes for substrate consumers — both the management / control plane and the workloads that run on the substrate — independent of any single compute host.
+Shared storage will provide persistent volumes for substrate consumers — the management and control planes, and the workloads that run on the substrate — independent of any single compute host.
 
 ---
 

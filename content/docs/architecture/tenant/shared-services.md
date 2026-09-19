@@ -26,9 +26,9 @@ still has no route to a tenant.
 
 ## 1. Where They Run
 
-Shared tenant services run on the substrate's
-[management / control plane](/docs/architecture/substrate/management-plane/), grouped into domains
-the same way as the substrate's own services. They never share a host with those services:
+Shared tenant services are the tenant-facing half of the substrate's
+[control plane](/docs/architecture/substrate/control-plane/), grouped into domains the same way as
+the substrate's own services. They never share a host with those services:
 
 - **Tenants must not reach the management segment**, where the substrate's own services sit. A
   service tenants use therefore can't sit there, even though the substrate owns it.
@@ -56,7 +56,7 @@ digraph shared_tenant_services {
     Devices [label="Edge / IoT\ndevices"]
 
     subgraph cluster_plane {
-        label="Management / Control Plane"
+        label="Control Plane"
         labelloc=b
         style=filled
         fillcolor="#fff3cd"
@@ -103,50 +103,26 @@ writing a device's broker account.
 
 ---
 
-## 2. Domains
+## 2. What a Tenant Can Consume
 
-| Domain | Segment | Holds | Decided in |
-|--------|---------|-------|------------|
-| **Provisioning** | Platform | The **state store** for tenant infrastructure code; the **platform API** for what backing services can't scope themselves | [ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/); [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) *(Proposed)* |
-| **Identity** | Platform | **Tenant authoritative DNS**: one delegated zone per tenant; later, a directory | [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) |
-| **Tenant observability** | Platform | Logs and metrics tenants share | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) |
-| **Device messaging** | IoT backend | The **message broker** devices connect to, and its authentication store; later, other device rendezvous services | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) *(Proposed)* |
+The services themselves — what each domain holds, which segment it sits on, and why — are described
+in [Control Plane](/docs/architecture/substrate/control-plane/). From a tenant's side, four of them
+matter:
 
-### 2.1 Provisioning
+| Service | What the tenant gets | Declared in the tenant's code as |
+|---------|----------------------|----------------------------------|
+| **The Deevnet API** | Its own existence: index, network, workloads, names, and the credentials for the rest | `deevnet_tenant`, `deevnet_workload`, `deevnet_dns_record` |
+| **Tenant DNS** | A delegated zone under the site zone, and a key scoped to it | `deevnet_dns_record`, or RFC 2136 directly |
+| **State store** | An S3-compatible bucket, scoped to the tenant's own prefix | A Terraform `backend "s3"` block — or nothing, if the tenant keeps custody |
+| **Device messaging** | A broker account for a device the tenant owns, scoped to the tenant's topics | `deevnet_iot_broker_account` *(decided; the broker is not built)* |
 
-Provisioning holds what a tenant's `apply` talks to.
+Two things a tenant does **not** get, and should not expect:
 
-- **The state store is offered, not mandated.** A tenant may keep its state elsewhere and carry its
-  own custody. A dependency a tenant chooses is acceptable in a way an inherited one is not.
-- **Each tenant's credential is scoped by the store** to that tenant's own prefix. A tenant is
-  refused another tenant's state by the server, not by its own code declining to ask.
-- **The platform API** fronts services whose own interface can't confine a tenant. Examples are a
-  per-device wireless key, and a broker account limited to the tenant's topics. The API holds the
-  backing credentials, and the tenant never holds one that could go around it.
-- **The API provisions; it is never in a device's path.** Devices talk to the broker and the
-  wireless network, never to the API.
-
-### 2.2 Identity
-
-- **Each tenant gets a delegated zone** under the site zone, and writes its own records into it.
-  The core network's resolver forwards the zone to this service, so tenant records never enter the
-  resolver's own configuration
-  ([Naming and Addressing](/docs/architecture/naming-and-addressing/)).
-- **A per-zone key confines each tenant** to its own zone.
-
-### 2.3 Tenant observability
-
-- Tenants reach it over the tenant perimeter, as they do the rest of the platform segment.
-- It is separate from substrate observability, which sits on management where tenants can't reach
-  it.
-
-### 2.4 Device messaging
-
-- **It sits on the IoT backend segment**, where devices on the IoT segment can reach it.
-- **The broker authenticates from its own store**, which lives beside it. Losing the provisioning
-  domain therefore never disconnects a device.
-- **Only devices on the IoT segment get a broker account.** The IoT vendor segment is isolated from
-  every internal segment, so an account for one of its devices could never be used.
+- **A path from a device into its network.** A device the tenant owns reaches it through a service
+  on IoT Backend that both sides dial out to, never by joining the tenant's overlay. See
+  [Edge Devices → Access](/docs/architecture/edge-devices/access/).
+- **A substrate credential of any kind.** Everything above is reached with the tenant's own token,
+  issued by the API, or with a key scoped to exactly one zone or one prefix.
 
 ---
 
@@ -218,7 +194,7 @@ store's own state would have nowhere to live
   loses it, each tenant re-applies its own code to restore it.
 - **A substrate rebuild never costs a device visit.** Secrets a device already holds are restored
   from the tenant's state, not regenerated
-  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5, *Proposed*). That makes
+  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5). That makes
   tenant state data worth keeping, and how the store keeps it is
   [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) (*Proposed*).
 - **A tenant may decline a service** wherever declining is possible, as it can for the state store.

@@ -19,15 +19,17 @@ Tenants are the workload layer that runs **within** sites, on top of substrate i
 {{< mermaid >}}
 graph TB
     subgraph tenants["Tenants (Workloads)"]
-        T["grooveiq, vintronics, moneyrouter, etc."]
+        T["eds · tdemo"]
     end
     subgraph substrate["Substrate Infrastructure"]
-        S["Network, Compute, Management Plane"]
+        S["Network · Compute · Management Plane · Control Plane"]
     end
     tenants -->|deployed on| substrate
 {{< /mermaid >}}
 
-Examples of tenants: `grooveiq`, `vintronics`, `moneyrouter`
+The tenants that exist today are **`eds`** — the LP jacket stand application, whose workload drives
+an RGB strip from album cover art — and **`tdemo`**, the reference tenant a new tenant is copied
+from.
 
 ---
 
@@ -39,7 +41,7 @@ Tenants:
 - Run **within** sites, not defining them
 - May be deployed to one or more sites
 - Are isolated from other tenants
-- Share substrate infrastructure (network, compute, management)
+- Share substrate infrastructure (network, compute, and both planes)
 
 ### Tenant Networks Are Virtual Overlays
 
@@ -56,10 +58,11 @@ requires **no change to physical switching**. This is the model established by
 Every tenant supplies the **IaC and CaC** needed to rebuild itself from scratch against the
 substrate, and it supplies them from **its own repository** — `deevnet-tenant-<name>`, not a
 directory inside a substrate repo
-([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)). Nothing about a tenant is precious hand-clicked state: its overlay network, its VMs,
-and its DNS records are all declared in the tenant's own code. Rebuilding a tenant reconstitutes
-it whole — network, workloads, and records — which is what keeps the substrate stateless and the
-tenant portable.
+([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)). Nothing about a tenant is
+precious hand-clicked state: its workloads and the names in front of them are declared in the
+tenant's own code, and the network they land on is built for it by the control plane from that same
+declaration. Rebuilding a tenant reconstitutes it whole — network, workloads, and records — which
+is what keeps the substrate stateless and the tenant portable.
 
 ### Intent Over Identity
 
@@ -76,9 +79,9 @@ Tenant services follow a hierarchical DNS pattern:
 service.tenant.site.deevnet.net
 ```
 
-**Example:** `api.grooveiq.mobile.deevnet.net`
-- `api` — the service
-- `grooveiq` — the tenant
+**Example:** `service.eds.mobile.deevnet.net`
+- `service` — the service
+- `eds` — the tenant
 - `mobile` — the site
 - `deevnet.net` — the domain
 
@@ -89,44 +92,61 @@ service.tenant.site.deevnet.net
 | Aspect | Site | Tenant |
 |--------|------|--------|
 | **Purpose** | Infrastructure boundary | Workload namespace |
-| **Contains** | Network, compute, management | Applications, services |
+| **Contains** | Network, compute, management and control planes | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
 | **Provisioning** | Automation-first | Terraform-first |
-| **Example** | `mobile`, `home` | `grooveiq`, `vintronics` |
+| **Example** | `mobile`, `home` | `eds`, `tdemo` |
 
 ---
 
 ## Multi-Site Tenants
 
-A tenant may be deployed to multiple sites:
+A tenant may be deployed to multiple sites. The name is logically the same; the instances are
+site-scoped and independent:
 
 ```
-api.grooveiq.mobile.deevnet.net  — Development instance
-api.grooveiq.home.deevnet.net   — Production instance
+service.eds.mobile.deevnet.net   — the instance that exists
+service.eds.home.deevnet.net     — what a second instance would be called
 ```
 
-The tenant is logically the same (`grooveiq`), but instances are site-scoped.
+Nothing is deployed to `home` today: it is an inventory skeleton with no hosts
+([Limits](/docs/architecture/limits/)). Each instance would be built separately, against that
+site's own substrate, from the same tenant repository.
 
 ---
 
 ## The Tenant Contract
 
-A tenant is defined by the **contract** it satisfies with the substrate — a clean interface
-between what the tenant supplies and what the substrate guarantees:
+A tenant is defined by the **contract** it satisfies with the substrate — a clean interface between
+what the tenant declares and what the substrate builds for it.
 
-| The tenant supplies (as code) | The substrate guarantees |
-|-------------------------------|--------------------------|
-| Its overlay network (subnet, gateway, isolation) in the fabric | A tenant fabric to attach to |
-| Its workloads (VMs from a template) | Compute on the tenant hypervisor |
-| Its data disks, sized and attached to its VMs | VM images with a small, growable OS disk |
-| Its own repository, from which it is rebuilt | A fabric attachment, issued at onboarding |
-| Custody of its Terraform state, or use of the one offered | A state store it may use or decline |
-| Its DNS records | A DNS zone to publish into |
-| Its addressing, from a globally-unique plan | A perimeter for egress and shared-service access |
+The line between those two moved with
+[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/). A tenant used to
+declare its own network, derive every identifier from an index it was issued, and hold a Proxmox
+credential to build with. It now **asks the Deevnet API**, and the API builds all of that on its
+behalf. The tenant is left declaring only what is genuinely its own:
+
+| The tenant declares | The substrate builds and guarantees |
+|---------------------|--------------------------------------|
+| That it exists, and its name | Its index, and every identifier derived from it — VRF, VNet, subnet, gateway |
+| Its workloads: how many, how big, whose SSH keys | The VMs, their VMIDs, MACs and addresses, on the tenant hypervisor |
+| The names it wants in front of them | A delegated DNS zone, and the key that writes into it |
+| Whether to use the offered state store | An S3-compatible state store it may use or decline |
+| Its own repository, from which it is rebuilt | A perimeter for egress and shared-service access |
+
+Two properties of that interface matter more than the rows themselves:
+
+- **A tenant holds no substrate credential.** It is admitted with a single-use enrollment token and
+  trades it for its own token on first apply. It never holds a Proxmox login, a vault password or a
+  controller credential — so there is nothing it could use to reach around the interface.
+- **Nothing recurring needs a substrate commit.** Onboarding a tenant is a substrate act;
+  everything after it — adding a workload, publishing a name, issuing a device key — is the
+  tenant's own `terraform apply`
+  ([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
 
 Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
-changing the substrate. The contract itself is being formalized — see the
-[Tenant Platform roadmap](/docs/roadmap/infrastructure/mobile/tenant-platform/).
+changing the substrate. See [Building](/docs/architecture/tenant/building/) for what that looks
+like in practice.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Naming and Addressing"
-weight: 5
+weight: 6
 aliases:
   - /docs/architecture/addressing/
   - /docs/architecture/substrate/naming-and-addressing/

@@ -63,13 +63,13 @@ digraph architecture {
             // Yellow boxes are virtual: each is a hypervisor (standalone
             // today, could grow into a cluster)
             subgraph cluster_mgmt {
-                label="Management / Control Plane"
+                label="Management + Control Plane"
                 labelloc=b
                 style=filled
                 fillcolor="#fff3cd"
 
-                SubstrateSvc [label="Substrate\nServices"]
-                SharedTenantSvc [label="Shared Tenant\nServices"]
+                SubstrateSvc [label="Management Plane\nnetwork mgmt, observability"]
+                SharedTenantSvc [label="Control Plane\nDeevnet API, DNS, secrets, broker"]
             }
 
             subgraph cluster_tenant {
@@ -81,7 +81,7 @@ digraph architecture {
                 TenantHV [label="Tenant\nCompute"]
             }
 
-            PiCompute [label="Pi Compute\nEdge / IoT"]
+            EdgeDev [label="Edge Devices\napplication-owned, platform-attached"]
         }
 
         CoreRouter -> WirelessAP
@@ -89,7 +89,8 @@ digraph architecture {
         AccessSwitch -> SubstrateSvc
         AccessSwitch -> SharedTenantSvc
         AccessSwitch -> TenantHV
-        AccessSwitch -> PiCompute
+        WirelessAP -> EdgeDev
+        AccessSwitch -> EdgeDev
     }
 
     EdgeRouter -> CoreRouter
@@ -99,7 +100,9 @@ digraph architecture {
 
 Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster.
 
-The platform is organized around three architectural boundaries — **sites**, **substrates**, and **tenants** — that separate infrastructure from workloads. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
+The platform is organized around a few architectural boundaries that separate infrastructure from what runs on it. A **site** is a self-contained deployment. Within it, the **substrate** provides infrastructure; **tenants** are isolated virtual workloads that run on it; and **edge devices** are physical things an application owns and the platform attaches. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
+
+The distinction between the last two matters more than it first appears. A tenant is virtual and lives in an overlay of its own; an edge device is physical, shares an access network with devices of other owners, and is **never** a member of its application's network. Keeping them separate is what lets an application own a device without the substrate owning it, and without the device gaining reach into its application's network.
 
 ## Sites
 
@@ -120,7 +123,11 @@ The **substrate** is the shared infrastructure foundation within a site — netw
 
 ### Tenant
 
-A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Tenants are decoupled from the underlying infrastructure — they can be provisioned, migrated, or rebuilt without changes to the substrate, and are not bound to any one site. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
+A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Each tenant has its own virtual network, its own DNS zone and its own workloads, all created for it by the substrate's control plane when the tenant asks. Creating one changes nothing physical. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
+
+### Edge Devices
+
+An **edge device** is a physical thing an application owns — a microcontroller, a gateway, a sensor — that the platform attaches to an access network according to how far its firmware is trusted. It is neither substrate nor tenant: the application owns its purpose and its firmware, the platform owns only what it must know to attach and authenticate it. See [Edge Devices](edge-devices/) for the ownership model, and [Access](edge-devices/access/) for how a device reaches the services its application exposes.
 
 ### Network Segmentation
 
