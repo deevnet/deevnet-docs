@@ -161,6 +161,35 @@ open question 4 for the hardware position, and
 [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 for the
 control that holds instead.
 
+### Reachability and Permission
+
+Zone policy governs **reachability between** segments. It does not govern which service on a
+reachable host a caller may use: a zone rule admits a source segment to a destination segment, and
+every listening socket in that segment sits behind the same rule. This is intentional. A zone is a
+coarse unit by design, and making zone rules per-service would pull every service's topology into
+the router's rule table and make adding a listener a firewall change.
+
+- Network policy MUST control reachability between zones
+- Host or service policy MAY further constrain access to individual services within a zone, where
+  zone-level policy is intentionally coarser than the service requires
+- A service whose exposure must be narrower than its zone MUST be constrained by a mechanism that
+  can see what a zone rule cannot — a host firewall, or the service's own authentication
+- Where a service's real exposure is narrower than the zone rule implies, the zone policy MUST say
+  where the rest of the enforcement lives, so a reader of the rule table is not left believing the
+  rule is the whole control
+- Reachability MUST NOT be read as permission
+
+The IoT Backend segment is the current instance. `iot -> iot_backend` is a zone-level pass, because
+it is how a device reaches the broker at all; it is not a statement that a device may reach every
+port on that segment. The broker's auth database sits there too, and its exposure is narrowed by a
+host firewall rather than by the zone rule, which cannot distinguish one port from another. See
+[CHG-0016](/docs/changes/2026/0016-broker-accounts/).
+
+This is the same reasoning as [Intra-Segment Traffic](#intra-segment-traffic) applied one layer
+out, and the service half of it is
+[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5:
+*"Network policy decides which segments may speak; only the service decides who is speaking."*
+
 ### Permitted Flows
 
 The following inter-segment flows are permitted when explicitly configured:
