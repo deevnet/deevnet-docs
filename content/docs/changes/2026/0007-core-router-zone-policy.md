@@ -111,8 +111,9 @@ as `any`, not as empty strings.
 - The router's Automation filter rules match the declared set, as reported by the role's plan
   mode, with no unexplained extras. **The allow-all, stale and test rules above are gone.**
 - The two allow rules outside automation are gone.
-- There are no per-interface "conntrack" pass rules. Each zone reaches its own gateway's **DNS and
-  DHCP** through explicit rules instead.
+- There are no per-interface "conntrack" pass rules. Each zone reaches its own gateway's **DNS,
+  NTP and DHCP** through explicit rules instead. *NTP was added on 2026-09-19 after phase 3 found
+  it was the one thing the apply broke — see [Phase 3](#phase-3--from-clients-2026-09-19-in-progress).*
 - Every allowed path in [Verification](#verification) answers, and every denied path doesn't.
 - The control host still reaches the router on 443 and 22, and `cancelRollback` was sent only
   because the reachability check actually passed.
@@ -528,6 +529,71 @@ itself), and **the anti-lockout rule is not a legacy rule** — it is absent fro
 `noantilockout` is unset, and it is still present after the flush. So the LAN recovery path still
 reaches the router's own UI and SSH, which is what it is for. What it no longer does is route
 onward from LAN, which nothing used.
+
+### Phase 3 — from clients, 2026-09-19, in progress
+
+Taken from real clients and corroborated against the router's own firewall log, not from the
+control host. Passes are not logged, so an allowed path shows as the *absence* of a block.
+
+Counts are from the router's rolling firewall log, read shortly after each test; the buffer ages
+out, so they record what was observed rather than a running total.
+
+**Trusted.** A workstation on `10.20.10.100`, associated to `DVNTM`, reached `dv00bld001p01`
+on `10.20.99.95:22` and held the session — after allow-all was deleted **and** after the legacy
+`any -> 10.20.99.0` rule was flushed. So `ansible: trusted -> management` is carrying that
+traffic on its own. This is the lab exception the segmentation standard does not grant by
+default, and it works.
+
+**IoT.** A Mac joined `DVNTM-IOT` with a tenant PPSK key and took `10.20.30.101` from the
+DHCP pool — which is itself the first exercise of `ansible: gateway services DHCP iot`, a rule
+that replaced the conntrack rules and had never carried a real lease. `management -> iot` was
+confirmed in the other direction by ping from the control host.
+
+| From `10.20.30.101` | Observed | Rule |
+|---|---|---|
+| `10.20.99.95:22` — the Builder | **7 packets blocked**, `Default deny / state violation rule` on `vlan04` | not declared |
+| `10.20.99.22:8006` — Proxmox | **33 blocked** | not declared |
+| `10.20.130.10:80` — **eds, on the tenant overlay** | **30 blocked** | not declared, and [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §4 forbids declaring it |
+| `10.20.30.255:137` — NetBIOS broadcast | 18 blocked | not declared |
+| `10.20.35.0/24` — iot_backend | no blocks | `iot -> iot_backend` |
+| internet | no blocks | `iot -> internet` |
+
+**The first row closes the hint at the top of this record.** On 2026-09-18, CHG-0013 phase 5
+showed a device on `10.20.30.100` reaching the Builder on management. On 2026-09-19 a device on
+`10.20.30.101` cannot, and the router logs the drop.
+
+**The eds row is evidence ADR-0020 did not have.** A device attempting to reach its owner's
+tenant workload directly was dropped — which is that record's §4 enforced rather than asserted.
+It is not a gap: §1 supports direct access, but §3 and §5 place the device-facing endpoint on
+IoT Backend, and ADR-0020 records that none of it is built yet.
+
+#### One regression, found and fixed: NTP to the gateway
+
+A sweep of 2000 firewall log entries found exactly one kind of internal traffic being dropped that
+should not have been:
+
+```
+2026-09-20T02:09:59  block  vlan011  10.20.99.97:59547 -> 10.20.99.1:123
+```
+
+`dv02bld001v01` and one DHCP-pool host reaching the router on **NTP**. The gateway-service rules
+covered DNS and DHCP because that is what [Goal](#goal) asked for; the router also runs `ntpd` on
+every interface, and a DHCP client with no explicit `ntpserver` option falls back to its gateway.
+Removing allow-all took time sync away **silently** — clocks drift rather than anything failing
+outright, so this would not have surfaced for days.
+
+It matters most where there is no alternative: `storage` is deliberately absent from
+`firewall_internet_zones`, so its gateway is the only time source a host there can have.
+
+Fixed by adding a third gateway-service rule per zone, UDP 123 to the interface address — nine
+rules, purely additive: `Added 9, updated 0, deleted 0`, and all six paths still answered. Verified
+by an actual exchange from `dv02bld001v01`: *"System clock wrong by -0.004222 seconds"*. No further
+`:123` blocks. The managed set is now **56 rules**.
+
+Nothing else in the sweep was being dropped.
+
+Still outstanding: `DVNTM-GUEST` and `DVNTM-IOTV` clients, the per-zone gateway DNS check from
+each segment, and a DHCP lease on trusted, iot_vendor and guest.
 
 ## Follow-ups
 
