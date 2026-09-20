@@ -10,12 +10,12 @@ weight: 7
 | **Date** | Not yet scheduled |
 | **Change type** | Configuration |
 | **Classification** | Disruptive — it changes what every segment on site can reach, the operator's own path included |
-| **Status** | **Planned**, after the `opnsense_firewall` fixes and the mobile reachability targets (see [Prerequisites](#prerequisites)). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
-| **Window** | To be scheduled, with the operator at the rack and the router's console connected |
+| **Status** | **In progress.** Phase 1 ran on 2026-09-19 and passed its gate — see [Outcome](#outcome). The prerequisites are built; phase 2 is scheduled separately, with the console at the rack. Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
+| **Window** | Phase 1: 2026-09-19, no writes. Phase 2: to be scheduled, with the operator at the rack and the router's console connected |
 | **Site** | mobile |
 | **Systems** | Core router `dv02cor002p01` (OPNsense 26.7.3); control host `dv00bld001p01` |
 | **Automation** | `ansible-collection-deevnet.net` role `opnsense_firewall`, run by `playbooks/migration/07-opnsense-firewall.yml` (`make migration-opnsense-firewall`) against `ansible-inventory-deevnet/mobile` |
-| **Risk** | High. The policy has never been applied as a whole, and the last unguarded run of this role took the site down. |
+| **Risk** | High. The policy has never been applied as a whole, and the last unguarded run of this role took the site down. **The savepoint that was to guard phase 2 does not exist** — see [The guard that was not there](#the-guard-that-was-not-there-2026-09-19). |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the segmentation that declared this policy |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — its open items are this change |
 | **Related decisions** | [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) — attachment by trust class depends on this policy; its [Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14) is where the pre-change state was first read |
@@ -38,8 +38,12 @@ devices onto that segment.
 {{< /hint >}}
 
 
-`mobile/group_vars/all/firewall.yml` declares a default-deny zone policy: 18 inter-zone allows and
-internet egress for 8 zones. [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/)
+`mobile/group_vars/all/firewall.yml` declares a default-deny zone policy: **23 entries — 22
+inter-zone allows and one intra-zone rule** — plus internet egress for 8 zones. It was 18 when this
+record was opened; PRs #37, #40 and #42 added the Deevnet API's paths to the tenant hypervisor and
+the wireless controller, the ADR-0018 operator route to `10.20.128.0/18`, and the
+`platform -> platform` rule that lets the API reach the core router's own API.
+[INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/)
 records that this policy *"has still never been applied"*. The router is running whatever a config
 backup of unknown vintage put back.
 
@@ -71,6 +75,19 @@ repeats the read to confirm nothing has changed since.
 | `ansible:temp-allow-all-opt1` … `-opt10` | Every assigned VLAN interface: Trusted, storage, platform, iot, iot_vendor, iot_backend, guest, management, blackhole, tenant_transit | Pass `any` → `any`, `inet`, quick, keep state. **Each exists twice.** |
 | `ansible:temp-allow-all-opt11`, `-opt12` | `opt11`, `opt12`, which are no longer assigned | The same, twice each. Stale. |
 | `ansible:test-rule` | management | A leftover test rule |
+
+### The 25 rules are 13 descriptions
+
+*Added 2026-09-19, and it matters for Option A.* The 25 rows are **12 descriptions present twice
+each, plus one `ansible:test-rule`** — 13 distinct descriptions in all. Re-read from the router on
+2026-09-19 and unchanged since 2026-09-14.
+
+`opnsense_firewall` indexed the live rules in a dict keyed on description, so it could only ever
+see 13 of the 25 rows. A reconcile built from that index would have deleted 13 rules and left 12
+allow-all rules in place — every segment still open, and phase 3's deny rows failing for a reason
+nobody would have looked for. Option A's gate, *"the would-delete list must be exactly the 25"*,
+was not meetable as the role stood. Fixed before phase 1 ran; the role now keys deletions on
+`uuid`, and treats a duplicate copy of a declared rule as a deletion candidate too.
 
 **Rules outside the automation API (2).** These appear in the router's full rule listing, but not
 as automation rules, so `opnsense_firewall` can't see, change or delete them:
@@ -173,17 +190,55 @@ anything is written. B's first apply proves nothing, and its second apply has no
 - **The two rules outside automation are still removed by hand**, as phase 2's last step, with the
   console open, because the role can't reach them.
 
+## The guard that was not there (2026-09-19)
+
+Phase 1's preparation read the router's field behaviour rather than assuming it, and found that
+**this change's principal safety mechanism does not exist.**
+
+`opnsense_firewall` requested a rollback savepoint, applied to that revision, and sent
+`cancelRollback` once the control path was proven. Every risk row below used to lean on it. None of
+those three endpoints is real on OPNsense 26.7.3_11:
+
+| Check | Result |
+|---|---|
+| `GET /api/firewall/filter/savepoint`, `/cancelRollback`, `/revert` on `dv02cor002p01` | `404 {"errorMessage":"Endpoint not found"}` for each. A POST-only endpoint that *does* exist, `addRule`, answers a GET with `200 {"result":"failed"}`, and an invented path answers the same 404 — so this is route-absent, not method-not-allowed |
+| Upstream `FilterController.php` | No `savepoint`, `cancelRollback` or `revert` action. `FilterBaseController::applyAction()` takes no revision: `return ['status' => (new Backend())->configdRun('filter reload skip_alias')];` |
+| [OPNsense core firewall API documentation](https://docs.opnsense.org/development/api/core/firewall.html) | Lists twelve `FilterController` endpoints. Neither "savepoint" nor "cancelRollback" appears on the page |
+
+So the savepoint request returned nothing, the role fell through to a plain apply and printed a
+notice, and `cancelRollback` went to an endpoint that was never there. The apply has always been
+unguarded. This is not a regression — it was written against an API that does not exist, and
+INC-0001 listed building the guard as a corrective action without anyone checking the endpoint.
+
+**What replaces it.** The router's own configuration history, `/conf/backup`, is real and reachable:
+`core/backup/backups/this` lists 100 revisions each with an `id` like `config-1789702628.4244.xml`,
+`core/backup/download/this` returns the running configuration, and `core/backup/revertBackup/<id>`
+restores one (`$cnf->restoreBackup($filename); $cnf->save();` → `['status' => 'reverted']`). The role
+now:
+
+1. records the newest revision **before** the first write — every API write creates a revision, so
+   reading it in the apply handler would be too late — and downloads the running configuration to
+   the control host
+2. applies, then checks reachability
+3. on failure, if the router's API still answers, reverts to that revision and re-applies
+4. on failure with the router unreachable, fails naming the exact revision to restore at the console
+
+**Step 4 is the honest limit.** When the severed path is the control host's own, nothing the control
+host can send will fix it, and no OPNsense timer will undo it either. The console is the undo. That
+is why phase 2 does not run without one.
+
 ## Risk and impact
 
 | Risk | Where | Guard |
 |---|---|---|
-| The apply severs the control host's path to the router | Phase 2 | Savepoint armed: the router reverts on its own unless `cancelRollback` arrives. The role must fail, not fall back, when no savepoint is issued. Console connected. |
-| The reachability check passes when a path is down, so the rollback is cancelled anyway | Phase 2 | Prerequisite fix: today `failed_when: false` makes every result `failed: false`, so the check can never trip |
-| The router rejects a rule and the run reports success | Phases 1–2 | Prerequisite fix: `addRule`/`setRule` must check the API's `result`, not only HTTP 200 |
-| Removing the conntrack pass rules breaks DNS to each zone's gateway, which no zone rule covers | Phase 2 | Prerequisite fix: explicit per-zone gateway-service rules. DNS checked from each zone in phase 3. |
-| **DHCP clients lose their leases once allow-all goes: nothing lets a VLAN client reach the gateway's DHCP server** | Phase 2 | Gateway-service rules cover DHCP as well as DNS (prerequisite). A lease is checked from each DHCP zone in phase 3. |
-| **The policy is applied but the allow-all rules stay, so nothing is enforced and phase 3's allow tests all pass** | Phase 2 | Option A ([Decision](#decision-removing-the-allow-all-rules)): the role deletes them in the same apply, behind the savepoint. Phase 3's **deny** rows are what prove enforcement. |
-| **A reachability target is down for reasons unrelated to the policy, and the rollback reverts a correct apply** | Phase 2 | Every target must answer *before* phase 2. On 2026-09-14 the broker `10.20.35.20` didn't answer at all, so it is not a target until it does. |
+| The apply severs the control host's path to the router | Phase 2 | **No savepoint exists** ([above](#the-guard-that-was-not-there-2026-09-19)). The role records the pre-run configuration revision, downloads the configuration to the control host, and reverts over the API if a path is lost *and the router still answers*. If it does not, the console is the only undo — which is why phase 2 does not run without one. |
+| The reachability check passes when a path is down, so nothing is rolled back | Phase 2 | **Fixed.** `failed_when: false` made every result `failed: false`, so the check could never trip; it is now `ignore_errors: true`, which registers the failure and lets the collector see it |
+| The router rejects a rule and the run reports success | Phases 1–2 | **Fixed.** `addRule`, `setRule` and `delRule` check the API's `result`, not only HTTP 200, and the loop finishes before failing so the report names every rejected rule with the router's own `validations` |
+| Removing the conntrack pass rules breaks DNS to each zone's gateway, which no zone rule covers | Phase 2 | **Fixed.** Per-zone gateway-service rules, 9 DNS and 5 DHCP. This is not hypothetical: the control host's own resolver is `10.20.99.1`. DNS checked from each zone in phase 3. |
+| **DHCP clients lose their leases once allow-all goes: nothing lets a VLAN client reach the gateway's DHCP server** | Phase 2 | **Fixed.** The DHCP rule's destination is `any`, not the interface address — DISCOVER goes to 255.255.255.255, which an interface-address rule would not match. A lease is checked from each DHCP zone in phase 3. |
+| **The policy is applied but the allow-all rules stay, so nothing is enforced and phase 3's allow tests all pass** | Phase 2 | Option A ([Decision](#decision-removing-the-allow-all-rules)): the role deletes them in the same run. Phase 3's **deny** rows are what prove enforcement. |
+| **Half the allow-all rules survive the delete, because the role cannot see duplicate descriptions** | Phase 2 | **Fixed** before phase 1 ran ([The 25 rules are 13 descriptions](#the-25-rules-are-13-descriptions)). Deletions are keyed on `uuid`, and phase 1's list came back as 25 rows with 25 distinct uuids. |
+| **A reachability target is down for reasons unrelated to the policy, and the rollback reverts a correct apply** | Phase 2 | Every target must answer *before* phase 2; all six did on 2026-09-19. The broker's `1883` is not a target — the VM is up but VerneMQ has never been deployed, so port 22 on the same host stands in for it. After a rollback the role re-checks and says plainly whether the paths came back, so "the apply broke it" and "it was already down" are distinguishable. |
 | **Removing "temp: allow all VLAN 99" takes away a management path the declared rules don't replace** | Phase 2, last step | Removed last, after the automation apply is verified, with the console open. Router 443/22 and the management → zone paths re-checked afterwards. |
 | **A tenant workload reaches a tenant-facing service on management directly and is cut off.** Tenant DNS `10.20.99.30` and the state store `10.20.99.31` sit on management, and no `tenant_transit -> management` rule is declared. | Phase 2 | Phase 1 records whether any tenant workload is live and talks to either directly. Tenant Terraform runs from management and isn't affected. |
 | The live rule set differs from what the restore is assumed to hold | Phase 1 | Plan mode reports adds, updates (field by field) and would-deletes before anything is written, and is compared with [Pre-change state](#pre-change-state-read-2026-09-14) |
@@ -192,35 +247,42 @@ anything is written. B's first apply proves nothing, and its second apply has no
 
 ## Prerequisites
 
-- [ ] **`opnsense_firewall` fixed and merged** in `ansible-collection-deevnet.net`:
-  - [ ] a zero-write plan mode, as the default, that names every add, update and would-delete with
-    field-level differences
-  - [ ] `addRule`/`setRule` fail on `result` other than `saved`, and print the validation errors
-  - [ ] required fields sent as `any` rather than empty strings. *The live release's behaviour was
-    confirmed read-only on 2026-09-14 ([Pre-change state](#pre-change-state-read-2026-09-14)); the
-    role change itself is still to do.*
-  - [ ] a reachability check that actually fails
-  - [ ] failure, not a plain apply, when savepoint is requested and no revision comes back;
-    `firewall_savepoint_timeout` implemented or removed
-  - [ ] per-interface conntrack pass rules replaced by per-zone gateway-service rules, **covering
-    DHCP as well as DNS**
-  - [ ] the `migration-opnsense-firewall` Makefile target passes extra variables through (for
-    example `EXTRA_ARGS`). Phase 2 needs this for Option A's one-run
-    `-e firewall_delete_unmanaged=true` and the apply switch, and today the target appends none.
-- [ ] **Mobile `firewall_reachability_targets`** in `ansible-inventory-deevnet`, beyond the router's
-  own 443 and 22. **Each target must answer before phase 2.** The broker didn't on 2026-09-14.
+- [x] **`opnsense_firewall` fixed** in `ansible-collection-deevnet.net`, branch
+  `chg-0007/firewall-role-prereqs`:
+  - [x] a zero-write plan mode, as the default, that names every add, update and would-delete with
+    field-level differences. **The switch is `firewall_apply`**, false by default
+  - [x] `addRule`/`setRule`/`delRule` fail on `result` other than `saved` (`deleted` for a
+    deletion), and print the router's `validations`
+  - [x] required fields sent as `any` rather than empty strings. Also fixed: the role stored
+    `ipprotocol` under the key `protocol`, so the real protocol was never compared
+  - [x] a reachability check that actually fails
+  - [x] **the savepoint machinery removed and replaced** — the endpoints do not exist
+    ([The guard that was not there](#the-guard-that-was-not-there-2026-09-19)).
+    `firewall_use_savepoint` and `firewall_savepoint_timeout` are gone;
+    `firewall_rollback_on_failure` and `firewall_config_backup_dir` replace them
+  - [x] per-interface conntrack pass rules replaced by per-zone gateway-service rules, **covering
+    DHCP as well as DNS** — 9 DNS rules and 5 DHCP rules
+  - [x] **a defect the record had not anticipated**: duplicate descriptions were invisible, so the
+    delete would have removed 13 of 25 rules
+    ([The 25 rules are 13 descriptions](#the-25-rules-are-13-descriptions))
+  - [x] the `migration-opnsense-firewall` Makefile target passes `EXTRA_ARGS` through, and sets
+    `pipefail` so `tee` stops masking a failed play as a successful `make`
+- [x] **Mobile `firewall_reachability_targets`** in `ansible-inventory-deevnet`: six targets, one
+  live host on each policy-bearing segment that has one. All six answered on 2026-09-19.
 - [x] **The allow-all removal decided:** Option A, on 2026-09-14
   ([Decision](#decision-removing-the-allow-all-rules)).
-- [ ] **The MQTT broker answering**, or its rows dropped from [Verification](#verification) and
-  recorded under Outcome.
+- [x] **The MQTT broker answering**, or its rows dropped: **dropped.** `10.20.35.20` is up but
+  `1883` is closed — the VM exists and VerneMQ has never been deployed. Port 22 on the same host
+  stands in for it as a reachability target, and the `1883` rows in
+  [Verification](#verification) are marked not tested.
 - [ ] **Config backup downloaded** from **System → Configuration → Backups → Download** and kept
   off the router ([Console Recovery](/docs/runbook/recovery/console-recovery/#before-you-need-any-of-this)).
 - [ ] **Console kit at the rack:** mini DisplayPort cable, USB keyboard, and a monitor not on the
   affected network.
 - [ ] **Vault decrypted before walking over**, including the router's root password in
   `mobile/group_vars/routers/vault.yml`.
-- [ ] `firewall_delete_unmanaged` confirmed `false` in the rendered variables, so phase 1 and every
-  run after this change delete nothing. Option A overrides it on the phase 2 command line only.
+- [x] `firewall_delete_unmanaged` confirmed `false` in the rendered variables — it is set nowhere
+  in inventory, so the role default holds. Option A overrides it on the phase 2 command line only.
 - [ ] Test clients ready: one each on `DVNTM-GUEST` and `DVNTM-IOTV`, and one on `DVNTM`.
 
 ---
@@ -236,10 +298,11 @@ rule table and reports.
 
 ```bash
 cd ansible-collection-deevnet.net
-make migration-opnsense-firewall     # plan mode is the role's default once the fix merges
+make migration-opnsense-firewall     # plan mode is the role's default
 ```
 
-The variable that switches plan mode off is named by the role fix. Record it here when that merges.
+The variable that switches plan mode off is **`firewall_apply`**, false by default and never set in
+inventory.
 
 **Verify:**
 
@@ -268,25 +331,23 @@ With the console connected and the phase 1 report read, apply the declared set b
 
 ```bash
 # Option A: deletion on for this one run, on the command line only - never in inventory.
-# The apply switch is named by the role fix; record it here when that merges.
-make migration-opnsense-firewall EXTRA_ARGS="-e <apply switch>=true -e firewall_delete_unmanaged=true"
+make migration-opnsense-firewall EXTRA_ARGS="-e firewall_apply=true -e firewall_delete_unmanaged=true"
 ```
 
-**The Makefile target doesn't pass extra variables today.** As of 2026-09-14 it runs
-`ansible-playbook playbooks/migration/07-opnsense-firewall.yml -i "$(MIGRATION_INV)"`, logging
-through `tee`, with nothing appended. The `EXTRA_ARGS` passthrough above is a prerequisite
-([Prerequisites](#prerequisites)), so the run keeps the target's timestamped log. The two `-e`
-values are what matter.
+`EXTRA_ARGS` is passed through as of this change, so the run keeps the target's timestamped log.
+The two `-e` values are what matter, and neither is in inventory: the next run of the role without
+them reports and writes nothing.
 
 **Verify:**
 
 1. The run shows:
-   - a savepoint revision issued
-   - the adds, and **deletes that are exactly phase 1's would-delete list** (the 25 rules). Any other
-     delete means stop: don't cancel the rollback, and let the router revert.
-   - the apply to that revision
-   - every reachability target answering
-   - `cancelRollback` sent
+   - a pre-apply snapshot: a configuration revision id to roll back to, and the configuration
+     downloaded to the control host. **Write the revision id down** — it is what you pick at the
+     console if the path is lost, and the console cannot read this log
+   - the adds, and **deletes that are exactly phase 1's would-delete list** (the 25 rows, by uuid).
+     Any other delete means stop
+   - the apply
+   - all six reachability targets answering
 2. From the control host: `curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/` returns an
    HTTP code, and SSH to `10.20.99.1` answers.
 3. **Last step: remove the two rules outside automation**, *"temp: allow all VLAN 99"* on
@@ -310,8 +371,11 @@ rows are what prove enforcement.
 | From | To | Expect | Rule |
 |---|---|---|---|
 | Control host (management) | Router `10.20.99.1` 443, 22 | Answers | anti-lockout |
+| Control host (management) | Exit node `10.20.50.22` 22 (tenant_transit) | Answers | `management -> tenant_transit` |
+| Control host (management) | `services.eds.mobile.deevnet.net` `10.20.130.10` 22 | Answers | `management -> tenant_transit: tenant overlay (ADR-0018)` |
 | Control host (management) | Pi `10.20.30.11` 22 (iot) | Answers | `management -> iot` |
-| Control host (management) | Broker `10.20.35.20` 1883 (iot_backend) | Answers, **if the broker is running** | `management -> iot_backend` |
+| Control host (management) | `10.20.35.20` 22 (iot_backend) | Answers | `management -> iot_backend` |
+| Control host (management) | Broker `10.20.35.20` 1883 | **Not tested** — VerneMQ is not deployed, the port is closed | `management -> iot_backend` |
 | `DVNTM` client (trusted) | `dv00bld001p01` `10.20.99.95` 22 | Answers | `trusted -> management` |
 | `DVNTM` client (trusted) | `10.20.31.x` host (iot_vendor), if one exists | Denied | not declared |
 | `DVNTM-GUEST` client | `10.20.99.95` 22 (management) | **Denied** | not declared |
@@ -319,8 +383,9 @@ rows are what prove enforcement.
 | `DVNTM-GUEST` client | `1.1.1.1` | Answers | internet egress |
 | `DVNTM-IOTV` client | `10.20.99.95` 22, `10.20.30.11` 22 | **Denied** | not declared |
 | `DVNTM-IOTV` client | `1.1.1.1` | Answers | internet egress |
-| Pi `10.20.30.11` (iot) | `10.20.99.95` 22 (management) | **Denied** | prohibited by the standard |
-| Pi `10.20.30.11` (iot) | Broker `10.20.35.20` 1883 | Answers, **if the broker is running** | `iot -> iot_backend` |
+| A client on `DVNTM-IOT` (iot) | `10.20.99.95` 22 (management) | **Denied** | prohibited by the standard. This is the path CHG-0013 phase 5 demonstrated open |
+| A client on `DVNTM-IOT` (iot) | `10.20.35.20` 22 (iot_backend) | Answers | `iot -> iot_backend` |
+| Pi `10.20.30.11` (iot) | anything | **Not tested** — the Pi does not answer at all; a PPSK Wi-Fi client stands in for it | — |
 | A client in each zone | Its own gateway, DNS 53 | Resolves `dv00bld001p01.mobile.deevnet.net` | gateway-service rule |
 | A client in each DHCP zone (trusted, iot, iot_vendor, guest) | Its own gateway, DHCP | Renews a lease | gateway-service rule |
 
@@ -331,35 +396,93 @@ report.
 
 ### Undo phase 2
 
-1. **If the control path is lost and a savepoint was issued:** wait. The router reverts on its own
-   when the rollback window lapses. Don't re-run the role.
-2. **If the path is lost and no savepoint was issued, or it didn't revert:** follow
-   [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/). Restore
-   the last configuration revision **before** this change, then verify with its reachability pings.
-3. **If the path survived but the verification table fails:** disable the offending `ansible:` rule
+**There is no self-reverting timer.** Nothing on the router undoes this on its own
+([The guard that was not there](#the-guard-that-was-not-there-2026-09-19)). Waiting is not a
+recovery step.
+
+1. **If a path is lost but the router's API still answers:** the role has already reverted to the
+   pre-run revision and re-applied, and its failure message says whether the paths came back. If
+   they did not, the apply is probably not what broke them — check the target hosts.
+2. **If the control host's own path is lost:** the revert cannot be sent from here. Follow
+   [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/) and
+   restore the revision the run printed before applying — under **Restore a backup**, matched by
+   its `config-<timestamp>.xml` name. A copy of that configuration is also on the control host,
+   under `migration-logs/`.
+3. **If every path survived but the verification table fails:** disable the offending `ansible:` rule
    under Firewall → Automation → Filter and apply, or restore the downloaded backup. Record which,
    under Outcome.
 4. **If removing the two rules outside automation cut a path:** at the console, restore the
    configuration revision taken just before that removal. The automation apply stays in place.
 
-There is no point of no return. The downloaded backup restores the pre-change rule set at any time.
+There is no point of no return. The downloaded configuration restores the pre-change rule set at
+any time, from the console if not over the network.
+
+**Delete the downloaded configuration when this change closes.** It is the whole router
+configuration, secrets included. `migration-logs/` is gitignored in the collection, which stops it
+being committed, not from sitting on disk.
 
 ---
 
 ## Outcome
 
-Not yet run. The pre-change state was read on 2026-09-14 and is recorded
-[above](#pre-change-state-read-2026-09-14).
+### Phase 1 — 2026-09-19, passed
+
+Run as `make migration-opnsense-firewall` with `firewall_apply` at its default `false`.
+**`changed=0`, and the router still holds 25 managed rules after the run** — the plan wrote
+nothing, confirmed by re-reading `searchRule`.
+
+| Gate | Expected | Got |
+|---|---|---|
+| Would-delete | exactly the 25 `temp-allow-all` and `test-rule` rows | **25 rows, 25 distinct uuids**, every one reported as "not declared in inventory" |
+| Protected set in the delete list | none | none. All three protected descriptions listed and excluded |
+| Adds | the declared set and nothing else | **47**: 2 anti-lockout + 14 gateway-service (9 DNS, 5 DHCP) + 23 zone policy + 8 internet |
+| Updates | empty | **0 of 0** — no declared rule is present on the router yet |
+| Router rule table | unchanged | 25 before, 25 after |
+
+Nothing unexplained. The gate for Option A is met: phase 2 may run with deletion on.
+
+**Tenant workloads and the management-resident services** (risk row, and phase 1 step 4):
+`10.20.99.30` and `10.20.99.31` do not answer ICMP from the control host. Tenant DNS and the state
+store have moved to the domain VMs — `dv02idn001v01` `10.20.25.21` and `dv02tob001v01`
+`10.20.25.22`, both on **platform**, which `tenant_transit -> platform` already declares. The risk
+this row was written for has been designed out; the [follow-up](#follow-ups) about where
+tenant-facing services live is settled in practice and only needs recording.
+
+### Router field behaviour, read 2026-09-19
+
+Read from `dv02cor002p01` before the role was changed, so none of the fixes rests on inference:
+
+| Question | What the router returned |
+|---|---|
+| Blank rule template | `source_net: "any"`, `destination_net: "any"`, `destination_port: ""`, `protocol` a select with `any` chosen, `direction` `in`, `ipprotocol` `inet` |
+| Existing rules read back | `protocol: "any"`, `source_net: "any"`, `destination_net: "any"`, `destination_port: ""` — so comparing against `''` made every rule read as changed |
+| Combined TCP and UDP | `TCP/UDP` is a valid `protocol` value, so a DNS rule is one rule, not two |
+| Interface-address destination | `opt1ip` … `opt10ip` and `lanip` all appear in `firewall/filter/listNetworkSelectOptions`, alongside `any` and `(self)` |
+| A rejected write | HTTP 200 with `{"result":"failed"}`. Even a `GET` to `addRule` answers `200 {"result":"failed"}` |
+| Savepoint | Does not exist — see [The guard that was not there](#the-guard-that-was-not-there-2026-09-19) |
+
+### Phase 2
+
+Not yet run.
 
 ## Follow-ups
 
 - [ ] Update INC-0001's remaining open items and status, and its row in the incidents index. Its
-  first two open items were settled on 2026-09-14.
+  first two open items were settled on 2026-09-14; the role faults were built on 2026-09-19, and
+  one of its corrective actions turned out to be
+  [unbuildable as written](#the-guard-that-was-not-there-2026-09-19).
 - [ ] Derive the internet rule's destination from the site, so the same role can apply the home
   policy.
 - [ ] Decide which reachability targets stay permanent in inventory, and which were only for this
   change.
-- [ ] Decide where tenant-facing services live. Tenant DNS and the state store sit on management,
-  reachable from tenant workloads today only because of allow-all.
-  [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) (Proposed) places its API on the
-  platform segment for this reason.
+- [ ] Record that tenant-facing services now live on **platform**, not management — tenant DNS
+  `10.20.25.21` and tenant observability `10.20.25.22`, both reached by the declared
+  `tenant_transit -> platform` rule. This follow-up was written when they sat on management and
+  depended on allow-all; CHG-0008 moved them, and phase 1 confirmed the old addresses are dead.
+  [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) placed its API on platform for
+  the same reason.
+- [ ] The broker's `1883` and a wired IoT host are both untested paths. Re-run those two
+  verification rows once VerneMQ is deployed and the Pi is back.
+- [ ] `opnsense_dns`, `opnsense_dhcp` and `opnsense_vlans` share this role's API-result blindness:
+  they accept HTTP 200 without checking the body's `result`. Worth the same fix before they are
+  next used in anger.
