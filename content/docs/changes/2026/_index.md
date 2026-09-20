@@ -14,10 +14,11 @@ bookCollapseSection: true
 | CHG-0004 | 2026-09-10 | [Omada Controller Upgrade](0004-omada-controller-upgrade/) | Upgrade | mobile | Complete |
 | CHG-0005 | 2026-09-15 | [Wireless AP Firmware and Omada Adoption](0005-wireless-ap-firmware-and-adoption/) | Migration | mobile | Complete |
 | CHG-0006 | 2026-09-16 | [Access Switch Firmware Upgrade](0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Complete |
-| CHG-0007 | — | [Core Router Zone Policy, First Application](0007-core-router-zone-policy/) | Configuration | mobile | Planned |
+| CHG-0007 | 2026-09-19 | [Core Router Zone Policy, First Application](0007-core-router-zone-policy/) | Configuration | mobile | Complete |
 | CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](0008-domain-vms-build-out/) | Deployment · Decommission | mobile | Complete |
 | CHG-0009 | — | [Access Switch Omada Adoption](0009-access-switch-adoption/) | Migration | mobile | Planned (on hold) |
 | CHG-0010 | 2026-09-17 | [Deploy the Deevnet API and Cut Tenants Over](0010-tenant-api-cutover/) | Build-out and migration | mobile | Complete |
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
 | CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
 | CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |
+| CHG-0014 | — | [The Tenant Device Registry](0014-tenant-device-registry/) | Deployment | mobile | Planned |

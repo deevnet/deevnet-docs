@@ -974,15 +974,27 @@ prove.
   class; the `eds` tenant holds `eds-devices` from its own `terraform apply`, and no tenant reads a
   Wi-Fi key from the substrate vault any more. `deevnet_wifi_psk.iot` was deleted rather than
   migrated away from.
-- **Not built: the rest of §3.** The device registry (`deevnet_iot_device`) and broker accounts
-  (`deevnet_iot_broker_account`) still answer `501`. Broker accounts and topic permissions remain in
-  substrate inventory as ADR-0010 debt, because **there is no broker** — VerneMQ on
-  `dv02msg001v01` is built and empty.
-- **The segment boundary is still not enforced.**
-  [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) has never run, so the core router
-  passes everything between zones. A tenant's key decides which VLAN its devices land on; nothing
-  yet stops that VLAN reaching another. The `platform -> management` rule the API needs is declared
-  but unenforced, which is the point of declaring it.
+- **Written, not yet deployed: the device registry.** `deevnet_iot_device` is built in API v0.4.0
+  and the provider ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), ordered first by
+  [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/). Nothing is
+  staged or deployed, so the route still answers `501` on the live API.
+- **Not built: broker accounts.** `deevnet_iot_broker_account` answers `501`, and broker accounts
+  and topic permissions remain in substrate inventory as ADR-0010 debt, because **there is no
+  broker**. *Corrected 2026-09-20: this line previously read "VerneMQ on `dv02msg001v01` is built
+  and empty", which parses as VerneMQ being built. The **VM** is built and empty. VerneMQ has never
+  been built at all — there is no image in the artifact store and no role, and `mqtt_brokers` holds
+  no host.*
+- **The segment boundary is enforced.** *Updated 2026-09-20.*
+  [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) completed 2026-09-19: the core router
+  applies default-deny between zones, and the `platform -> management` rule the API needs is live
+  rather than merely declared. A tenant's key still decides only which VLAN its devices land on —
+  two tenants' devices share VLAN 30 and reach each other at Layer 2, which no zone rule can fix
+  (ADR-0020, *Peer devices on a shared segment*).
+- **One rule §7 promised is still missing.** §7 says both of the API's narrow rules *"are declared
+  when the API is built"*. `platform -> management` is live; **`platform -> iot_backend` was never
+  declared.** That was harmless while the router passed everything and is not harmless now: the API
+  cannot reach the broker's auth database until it is added and applied, and an undeclared path
+  fails as a timeout inside a tenant's own `terraform apply`.
 - **Still open: open question 1** — whether a custom Omada role can narrow the API's own controller
   credential. It is defence in depth for §2, not tenant scoping, and it has never been checked.
   *Corrected 2026-09-19: this line previously read "open question 1 (device-to-tenant ingress)",
