@@ -401,7 +401,9 @@ corrected here rather than quietly ticked** — see the notes beneath.
 | A client subscribing wider than its ACL | refused | PASS — see correction 2 |
 | Wrong password, and unknown username | refused at authentication | PASS — and this is what makes the two rows above meaningful |
 | Revoking an account | removed from the registry **and** the broker | PASS — both reached zero |
-| **From a device on VLAN 30**, `10.20.35.20:5432` | **refused** — this is the check the whole decision is about | **Still owed** — nothing answers on that segment |
+| **From a device on VLAN 30**, `10.20.35.20:5432` | **refused** — this is the check the whole decision is about | **PASS** — run from a laptop on `DVNTM-IOT` at `10.20.30.101` |
+| From the same device, `10.20.35.20:8883` | reachable | PASS — and this is what makes the row above mean "closed" rather than "no path" |
+| From the same device, an issued account | connects over TLS, publishes in its ACL, is denied outside it | PASS |
 | From `dv02prv001v01`, `10.20.35.20:5432` | **closed** | PASS — see correction 3 |
 | From `dv02prv001v01`, `10.20.35.20:22` | reachable, and only after the rule | PASS — closed before the apply, open after |
 | `opnsense_firewall` plan run afterwards | no unexpected drift | PASS — 57 rows, `ADD 0 / UPDATE 0 / DELETE 0` |
@@ -464,11 +466,27 @@ would prove nothing.
 The third row is the early warning for the podman dependency above. The first two are cheap enough
 to run on any change to the host.
 
-**The VLAN 30 test is still owed.** Nothing currently on that segment answers — the Pi at
-`10.20.30.11` is dead — so it has not been run. The Builder is a sound proxy for the *mechanism*,
-since firewalld and `pg_hba` match on source address and know nothing about VLANs, but it is not a
-substitute for the real path. Run it with a client on `DVNTM-IOT` when one is next available, the
-way CHG-0007 phase 3 did.
+**The VLAN 30 test was run on 2026-09-20** from a laptop joined to `DVNTM-IOT` at `10.20.30.101`,
+and it passes. `8883` is reachable and `5432` is refused, from the segment the decision is actually
+about rather than from a proxy.
+
+Both lines matter together. The Builder is a sound proxy for the *mechanism* — firewalld and
+`pg_hba` match on source address and know nothing about VLANs — but it is not a substitute for the
+real path, and a closed port proves nothing on its own unless something else on the same host
+answers. `8883` succeeding is what makes `5432` refused mean "the port is closed" rather than "the
+network is broken".
+
+The same client also exercised the broker end to end: an account issued through the API
+authenticated over TLS, published inside its ACL and was refused outside it, with the denial
+visible in the broker's own log:
+
+```
+can't auth publish for client (user "eds-mactest")
+  on topic [eds,somewhere,else] due to not_authorized
+```
+
+So the device path is proven from where a device really sits, not only from the control node. The
+test account was revoked afterwards; the registry and the broker database both returned to zero.
 
 ## What was built
 
@@ -579,7 +597,6 @@ existing sessions alone. Nothing a tenant holds is lost that a re-apply cannot r
   editing a vault in a hurry is how the last incident started.
 - **ADR-0012 §8's subscribe claim can be marked proven.** The verification above answers it: a
   filter wider than every ACL pattern is refused. The ADR still lists it as untested.
-- **The VLAN 30 reachability row** is the one outstanding check. It needs a client on `DVNTM-IOT`.
 - **Stale writer binaries** from pre-release testing are still in the artifact store beside the
   tagged ones. Harmless, and worth sweeping when convenient.
 - **ADR-0020's direct service** still has no consumer.
