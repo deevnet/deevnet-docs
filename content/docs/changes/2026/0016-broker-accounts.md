@@ -209,8 +209,21 @@ existing sessions alone. Nothing a tenant holds is lost that a re-apply cannot r
 
 ## Follow-ups
 
-- **CHG-0017: retire the inventory ACLs.** `mqtt_acls` and `vault_mqtt_users` are now **orphaned**,
-  not merely debt: the only thing that read them was the `mosquitto` role, and no play runs it since
-  CHG-0015 replaced it. They describe accounts that do not exist on a broker that never sees them.
+- **CHG-0017: retire mosquitto.** Wider than the inventory ACLs alone, because the pivot to VerneMQ
+  left litter in three places and they are one job:
+  - `mqtt_acls` and `vault_mqtt_users` in inventory. **Orphaned, not merely debt** — the only thing
+    that read them was the `mosquitto` role, and no play has run it since CHG-0015 replaced it.
+    They describe accounts that do not exist, on a broker that never sees them.
+  - The **`mosquitto` role itself**, still on disk in `deevnet.mgmt` and referenced by no playbook.
+  - The **collection README**, which still lists mosquitto as *"to be replaced by VerneMQ in the
+    messaging VM"*. It has been. A document describing a future that already happened is worse than
+    one that says nothing.
+
+  `dv02mqt001v01` needs nothing: it is already out of inventory, named only in a comment.
+
+  Worth its own window rather than being tacked onto this change, because removing
+  `vault_mqtt_users` touches a vault file and wants the same encrypt, commit and **push** ordering
+  CHG-0015's secrets used — the discipline INC-0003 exists to enforce. Deleting a role is cheap;
+  editing a vault in a hurry is how the last incident started.
 - **ADR-0020's direct service** still has no consumer.
 - **The Builder's container storage** is still on a 20G `/home`.
