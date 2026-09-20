@@ -10,7 +10,7 @@ weight: 16
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned, on option C.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. **C1 and C2 are both undecided**: the mechanism design is reviewed before one is chosen. Nothing is built. |
+| **Status** | **Planned, on option C, mechanism C1.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. C1 was **accepted at design review on 2026-09-20**. Nothing is built. |
 | **Window** | TBD |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02msg001v01` (the broker's auth database), `dv02cor002p01` (one new firewall rule, applied) |
 | **Automation** | `deevnet.mgmt` `deevnet_api`; `deevnet.net` `opnsense_firewall` with `firewall_apply`; tenant Terraform through `deevnet/deevnet` |
