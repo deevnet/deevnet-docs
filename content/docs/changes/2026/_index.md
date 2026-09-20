@@ -21,5 +21,5 @@ bookCollapseSection: true
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
 | CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
 | CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |
-| CHG-0014 | — | [The Tenant Device Registry](0014-tenant-device-registry/) | Deployment | mobile | Planned |
+| CHG-0014 | 2026-09-20 | [The Tenant Device Registry](0014-tenant-device-registry/) | Deployment | mobile | Complete |
 | CHG-0015 | 2026-09-20 | [The VerneMQ Broker](0015-vernemq-broker/) | Deployment | mobile | Complete |

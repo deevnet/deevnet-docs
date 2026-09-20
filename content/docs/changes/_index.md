@@ -39,7 +39,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](2026/0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
 | CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](2026/0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
 | CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](2026/0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |
-| CHG-0014 | — | [The Tenant Device Registry](2026/0014-tenant-device-registry/) | Deployment | mobile | Planned |
+| CHG-0014 | 2026-09-20 | [The Tenant Device Registry](2026/0014-tenant-device-registry/) | Deployment | mobile | Complete |
 | CHG-0015 | 2026-09-20 | [The VerneMQ Broker](2026/0015-vernemq-broker/) | Deployment | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like

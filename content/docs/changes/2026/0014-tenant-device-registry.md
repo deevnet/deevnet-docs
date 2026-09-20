@@ -10,8 +10,8 @@ weight: 14
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Planned.** Code, tests and documentation are written and green; nothing is deployed and no image is staged. |
-| **Window** | TBD |
+| **Status** | **Complete, 2026-09-20.** v0.4.0 is deployed on `dv02prv001v01` and the device registry answers. Two rows of the verification table below were wrong and are corrected in place; two checks are recorded as not run. |
+| **Window** | 2026-09-20 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (Deevnet API v0.3.1 → v0.4.0, and its database: one new table) |
 | **Automation** | `deevnet.mgmt` `playbooks/site.yml --limit deevnet_api`, against `ansible-inventory-deevnet/mobile`; then `terraform apply` in a tenant repo |
@@ -125,7 +125,7 @@ substrate must tear down, unlike a workload, which is a real VM and blocks its t
 | The same with `"mac":"AA:BB:CC:DD:EE:FF"` | `201`, `mac` echoed as `aa:bb:cc:dd:ee:ff` |
 | eds's token against `/v1/tenants/tdemo/devices` | **`404`**, not `403` |
 | `"trust_class":"nonesuch"` | `400`, naming the classes the site serves |
-| `"trust_class":"iot_vendor"` | `201` — legal; ADR-0012 §3 refuses such a device a *broker account*, not an identity |
+| `"trust_class":"iot_vendor"` | **`400`** at this site. *Corrected 2026-09-20.* ADR-0012 §3's point — that an `iot_vendor` device gets an identity but no broker account — is about the model. Whether a class can be asked for at all is `DEEVNET_IOT_TRUST_CLASSES`, and **this site serves only `iot`**, so the served-class check refuses it first. The original expectation of `201` confused the two. |
 | `deevnet_iot_device` in `tdemo`, `apply` then `plan` | no changes |
 | **Restore drill:** `DELETE` the row at the API, then `plan` | a diff, not "no changes"; `apply` puts the row back |
 | `opnsense_firewall` report mode | 0 adds, 0 updates, 0 would-deletes |
@@ -146,7 +146,47 @@ through the catch-all. Any `deevnet_iot_device` in a tenant's state then reads `
 
 ## Outcome
 
-Not yet run.
+**Deployed 2026-09-20.** `v0.4.0`, commit `e91e2bf` — the squash-merge of the API pull request, so
+the running binary traces to a commit on `main`. The play was `site.yml --limit deevnet_api`:
+`ok=111 changed=11 failed=0`, and the role's own assert that the running version matches the pinned
+one passed. The previous version was `v0.3.1` (`39bfaaf`).
+
+**What passed**, against the live API with the operator token:
+
+| | |
+|---|---|
+| `GET /version` | `v0.4.0` |
+| Create a device | `201`, `status: ready` |
+| `mac: "AA:BB:CC:DD:EE:FF"` | `201`, echoed `aa:bb:cc:dd:ee:ff` |
+| Bad trust class | `400`, *"is not served at this site; it serves [iot]"* |
+| Unknown field | `400` |
+| Re-applying the same device | `201`, converges, one row |
+| `GET` list | both devices |
+| Broker accounts | still `501` — there is no broker |
+| `opnsense_firewall` plan run | **0 adds, 0 updates, 0 deletes**, 56 rules over 56 distinct descriptions |
+
+The five verification devices were deleted afterwards and `tdemo` holds none.
+
+### What was not verified, and why
+
+**The Terraform round-trip and the restore drill did not run.** Both need `tdemo`'s API token and
+its MinIO credentials, and those live inside the tenant's own Terraform state — which is the thing
+the backend needs credentials to read. Breaking that circle is credential recovery, not a deploy
+step, so it was left rather than forced. The restore path is covered by provider unit tests; what
+is untested is the live round trip.
+
+**The trust-class-change guard could not be exercised.** It refuses moving a device between
+classes, but this site serves only `iot`, so the served-class check refuses the request first and
+the guard is never reached. Unit-tested only, and it will stay that way until a second class is
+served here.
+
+### One behaviour worth recording
+
+`GET /v1/tenants/<unknown>/devices` as the operator returns **`200` with an empty list**, not `404`.
+That is not particular to devices: `wifi-keys` and `workloads` answer the same way, and only the
+tenant resource itself `404`s. Checked rather than assumed, so the registry is consistent with the
+API around it. A tenant asking about another tenant still gets `404` — that is `ownTenant`, and it
+is unaffected.
 
 ## Follow-ups
 
