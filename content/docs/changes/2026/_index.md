@@ -23,3 +23,4 @@ bookCollapseSection: true
 | CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |
 | CHG-0014 | 2026-09-20 | [The Tenant Device Registry](0014-tenant-device-registry/) | Deployment | mobile | Complete |
 | CHG-0015 | 2026-09-20 | [The VerneMQ Broker](0015-vernemq-broker/) | Deployment | mobile | Complete |
+| CHG-0016 | — | [The API Writes Broker Accounts](0016-broker-accounts/) | Deployment · Configuration | mobile | Draft |
