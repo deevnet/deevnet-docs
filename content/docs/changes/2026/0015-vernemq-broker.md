@@ -10,8 +10,8 @@ weight: 15
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Planned.** The image is built and proven, the role is written and tested against the real broker, and nothing is deployed. |
-| **Window** | TBD |
+| **Status** | **Complete, 2026-09-20.** VerneMQ 2.2.0 serves TLS on `dv02msg001v01`. It took three runs: the first two failed on the role's own preflight, both times because inventory had not been given something the role asserts on. |
+| **Window** | 2026-09-20 |
 | **Site** | mobile |
 | **Systems** | `dv02msg001v01` (VerneMQ and its PostgreSQL auth database); `dv02mqt001v01` and the `mosquitto` role are superseded |
 | **Automation** | `deevnet.mgmt` `playbooks/site.yml --limit mqtt_brokers`, new role `vernemq`; image from the new `deevnet-container-image-factory` |
@@ -130,12 +130,86 @@ costs a round of tenant applies, not a device visit.
 
 ## Outcome
 
-Not yet run.
+**Deployed 2026-09-20.** `ok=87 changed=29 failed=0`, and the role's closing report read:
+
+> VerneMQ 2.2.0 serving TLS on dv02msg001v01.mobile.deevnet.net:8883; 0 account(s) in the registry.
+
+Zero accounts is correct: the API provisions them and that is CHG-0016.
+
+### It took three runs, and both failures were preflight
+
+Neither failure created anything. The role asserts before it builds, so the first two runs stopped
+with no database, no container and no certificate — which is the behaviour those asserts exist for.
+
+**Run 1** failed on *"Fail early if OpenBao is not configured"*. The role reads
+`vernemq_openbao_addr` and `vernemq_openbao_ca_local` from inventory and nothing supplied them.
+That was a genuine gap in the change: the role was tested against a hand-written config, which
+never exercised the inventory wiring.
+
+**Run 2** failed on the same assert, now for the AppRole credentials. `vault_openbao_ansible_role_id`
+lives in the `openbao` group's vault, so it is visible only to members of that group — and the
+messaging VM is not one, nor should it be. `deevnet_api` solves this by reaching through `hostvars`
+to the host that holds the credential; inventory now does the same.
+
+**The assert was not diagnosable, and that is fixed.** It carries `no_log`, because an AppRole id is
+half a credential, so a failure said *"assertion failed"* and nothing more with four candidate
+causes. A task now reports which settings are empty **by name**, touching no value, and on run 2 it
+printed the answer directly. A guard that refuses to proceed is only half the job; one that refuses
+without saying why turns a one-minute fix into a bisection.
+
+### What passed, against the live broker over the real network
+
+| | |
+|---|---|
+| `vmq-admin listener show` | one `mqtts` listener, `running`, `0.0.0.0:8883` |
+| Certificate issuer | `CN=Deevnet mobile internal CA` — the site CA, not self-signed |
+| Certificate SANs | `dv02msg001v01.mobile.deevnet.net`, `mqtt.mobile.deevnet.net`, `10.20.35.20` |
+| Device publishes in its own prefix over TLS | published |
+| Wrong password | refused |
+| Right password, **wrong client id** | refused — the account key is `(mountpoint, client_id, username)` |
+| Anonymous | refused |
+| Subscribe `#`, and another tenant's prefix | denied — **ADR-0012 §10, now confirmed over TLS** |
+| Subscribe own prefix | allowed |
+| Port 1883 | nothing listening; there is no plaintext listener |
+| The **API's** database role | provisioned an account |
+| The **broker's** database role | `permission denied for table vmq_auth_acl` |
+
+That last pair is ADR-0012 open question 5 — *"only the API writes it, and the broker's credential is
+read-only"* — enforced in production rather than intended.
+
+Both retry loops fired once before succeeding, including the TLS listener wait. That is the readiness
+check earning its place: `vernemq ping` would have answered `pong` before the acceptor was bound.
+
+### The `mqtt` name
+
+Published by the DNS play, one change on the router. It then appeared not to resolve — which was a
+negative cache entry in the Builder's own `systemd-resolved`, created by checking the name *before*
+publishing it. Querying the router directly showed the record was correct all along. Worth the
+reminder that a resolver's answer is not the same as the zone's contents.
+
+With the name in place, TLS hostname verification against `mqtt.mobile.deevnet.net` passes and a
+client publishes over it — which is the path a flashed device actually takes.
+
+### The reachability probe was swapped, and checked
+
+`firewall_reachability_targets` probed port 22 on this host as a stand-in *"until the broker
+exists"*. It exists, so the target is now **8883** — the application itself, not something that only
+proves the zone boundary.
+
+That change was verified before being trusted. Reachability runs only under `firewall_apply`, so a
+plan run never exercises it, and a target that fails to answer **rolls back a correct policy**. All
+six targets were probed from the control host the way the role probes them, and all six answer. A
+plan run alongside it reported 0 adds, 0 updates and 0 deletes over 56 rules.
 
 ## Follow-ups
 
 - **CHG-0016: the API writes broker accounts**, and with it the narrow
-  `platform -> iot_backend` rule. That rule is **not declared** today, and adding it means
+  `platform -> iot_backend` rule. The database credential it needs already exists —
+  `vault_vernemq_db_writer_password`, created by this change and proven able to provision an account
+  that the broker then authenticated.
+- **The role was tested against a hand-written config, not against inventory**, which is why both
+  deploy failures were inventory wiring. A role that reads settings from inventory has not been
+  tested until inventory has supplied them. That rule is **not declared** today, and adding it means
   `firewall_apply` against a live enforcing router.
 - **Where the auth database is exposed.** The API must reach it from Platform, but `iot -> iot_backend`
   is a zone-level pass, so publishing the database port on this host's address would also reach
