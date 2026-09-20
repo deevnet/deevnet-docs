@@ -120,13 +120,25 @@ Read the reporting tasks in the output rather than trusting `changed=0`, and see
 [Change Management](/docs/runbook/change-management/) first — `--check --diff` will not
 preview any of it.
 
-{{< hint info >}}
-**`opnsense_firewall` is guarded since 2026-09-08.** The guards in
-[INC-0001 actions 1–5](/docs/incidents/2026/0001-firewall-policy-deletion/#corrective-actions)
-have landed: it refuses a broken discovery, withholds deletions by default, protects the
-operator path, and applies behind a rollback savepoint. They were verified offline, not yet
-against this router, so treat its first real run here as a watched change with the console
-open.
+{{< hint warning >}}
+**`opnsense_firewall` is guarded — but not by a savepoint.** *Corrected 2026-09-19, when the
+guards met the live router in [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/).*
+
+What holds: it reports by default and writes nothing without `-e firewall_apply=true`, refuses a
+broken discovery, withholds deletions unless `firewall_delete_unmanaged=true`, protects the
+operator path, checks the API's `result` rather than the HTTP status, and verifies reachability
+afterwards.
+
+**What does not exist is the rollback savepoint this page used to promise.** OPNsense has no
+`firewall/filter/savepoint`, `/cancelRollback` or `/revert` endpoint — each answers
+`404 "Endpoint not found"`. In its place the role records the configuration revision from before
+the run, downloads the configuration to the control host, and reverts over the API if a path is
+lost **and the router still answers**.
+
+**If the control host's own path is what broke, nothing reverts on its own.** No timer will fix
+it, and waiting is not a recovery step. That case is this page. The run prints the revision id
+before it writes anything — `config-<timestamp>.xml` — and that is what to pick under *Restore a
+backup*.
 {{< /hint >}}
 
 ---

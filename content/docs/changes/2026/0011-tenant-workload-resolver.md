@@ -61,7 +61,7 @@ and so it passed with the broken value.
 **In scope:** the `WorkloadResolver` split in the API; the `deevnet_api` role and inventory
 variable; redeploying the API; replacing workloads 2040 and 2080 through the provider.
 
-**Out of scope:** the zone policy (CHG-0007 — the router is still allow-all, and this change does
+**Out of scope:** the zone policy (CHG-0007 — the router was still allow-all when this ran; it was applied on 2026-09-19, and this change does
 not depend on that); giving tenants a way to reboot a workload in place; DNS for anything but
 tenant workloads.
 
