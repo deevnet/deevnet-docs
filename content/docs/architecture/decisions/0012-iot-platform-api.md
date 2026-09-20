@@ -585,6 +585,18 @@ construction, but it reverses "the API generates" and wasn't chosen.
   - It is a separate database from the API's own.
   - The API writes it over a narrow `platform -> iot_backend` rule: from the provisioning VM
     to the database port, and nothing else.
+  - **Amended 2026-09-20.** "And nothing else" is not something a zone rule can deliver, and this
+    sentence would be believed by someone who has not tried. Zone rules grant a whole zone, and the
+    site declares `iot -> iot_backend` as a zone-level pass because that is how a device reaches
+    the broker. So a database port published on that segment is reachable from every device on the
+    IoT segment, whatever the `platform -> iot_backend` rule says — not because a rule permits it,
+    but because the rule that admits devices to the broker cannot tell one port from another.
+    The zone rule states the intent; a **host firewall** on the messaging VM enforces the part the
+    zone rule cannot express. This was written before
+    [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) made zone policy real, which is
+    why it assumed otherwise. See
+    [Network Segmentation → Reachability and Permission](/docs/standards/network-segmentation/#reachability-and-permission)
+    and [CHG-0016](/docs/changes/2026/0016-broker-accounts/).
 - **The Omada controller runs as a container in the network management VM (`nms`)**, on management
   ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). The API
   reaches it over a narrow `platform -> management` rule: from the provisioning VM to the

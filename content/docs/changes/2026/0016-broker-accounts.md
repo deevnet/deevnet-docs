@@ -10,7 +10,7 @@ weight: 16
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Draft.** One decision is open and is called out below; nothing is built. |
+| **Status** | **Planned.** The open decision is settled — option A, with the principle behind it written into the segmentation standard. Nothing is built. |
 | **Window** | TBD |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02msg001v01` (the broker's auth database), `dv02cor002p01` (one new firewall rule, applied) |
 | **Automation** | `deevnet.mgmt` `deevnet_api`; `deevnet.net` `opnsense_firewall` with `firewall_apply`; tenant Terraform through `deevnet/deevnet` |
@@ -106,34 +106,54 @@ the messaging VM — an agent, or Ansible — rather than connecting to the data
   guarantee is about the *runtime* path, not the provisioning one. A tenant's apply would now depend
   on delivery as well as on the API.
 
-### Recommendation
+### Decided: A
 
-**A**, with the host rule treated as part of the change rather than an implementation detail — named
-in the change record, verified after the apply, and referenced from `firewall.yml` so the zone
-policy's reader is told where the rest of the enforcement lives.
+**Accepted 2026-09-20.** The port is published and confined on the host: the narrow
+`platform -> iot_backend` rule states the intent, and a host firewall rule on `dv02msg001v01`
+accepts `5432` only from `dv02prv001v01`.
 
-The precedent is already set. [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5
-says it plainly for the same segment and the same reason: *"Network policy decides which segments
-may speak; only the service decides who is speaking."* A host firewall is a weaker form of the same
-idea — the zone says who may speak to IoT Backend, and the host says which port they may speak to.
+What settled it was not that a host firewall is an acceptable fallback where the zone rule falls
+short. That framing treats zone coarseness as a deficiency, and it does not scale: it would have to
+be re-argued for every service that lands on a shared segment. The framing that does scale is that
+**zone policy and host policy govern different things**, and neither is standing in for the other:
 
-**What needs your decision:** whether enforcement below the zone policy is acceptable here, or
-whether the architecture should insist that anything the zone cannot express does not get exposed at
-all — which would mean C.
+> Network policy controls reachability between security zones; host or service policy may further
+> constrain access to individual services where zone-level policy is intentionally coarser.
+
+`iot -> iot_backend` is not a compromise. It is a deliberate statement that the IoT segment may
+reach the IoT Backend segment, and it was never a statement about every socket behind it.
+**Reachability is not permission.** A zone that made per-service statements would pull every
+service's topology into the router's rule table and turn adding a listener into a firewall change.
+
+This is now recorded where a future reader will find it without reading this change:
+[Network Segmentation → Reachability and Permission](/docs/standards/network-segmentation/#reachability-and-permission).
+It matters more than this change does. IoT Backend has two services today; when it has fifteen,
+nobody should have to rediscover why zone reachability is not permission to every socket in the
+zone.
+
+The obligation it puts on this change: because the database's real exposure is narrower than
+`firewall.yml` implies, the zone policy has to **say so**, or a reader of the rule table concludes
+the database is open to VLAN 30.
 
 ---
 
-## Does this need an ADR? No.
+## Does this need an ADR? No — and here is what was done instead.
 
 ADR-0012 decides every substantive question this change touches: §3 the resource and its
 confinement, §10 how topics are confined and exactly what the API writes, §7 the placement, §1 that
-the API is provisioning-only. Nothing here is a new architectural position.
+the API is provisioning-only. Nothing here is a new architectural position, and a new record would
+restate existing ones.
 
-**But ADR-0012 §7 should be amended in place**, the way §3 was for CHG-0013. Its sentence *"a narrow
-`platform -> iot_backend` rule: from the provisioning VM to the database port, and nothing else"*
-promises something a zone rule cannot deliver, and a future reader will believe it. The amendment
-should say what the zone rule can express, what it cannot, and where the rest of the enforcement
-lives.
+Two documents changed instead, both narrower than an ADR and both more likely to be read by the
+person who needs them:
+
+- **The segmentation standard gained the principle**, because it is general and outlives this
+  change. A standard is where a rule belongs when it will apply to every service on a shared
+  segment, not just to this one.
+- **ADR-0012 §7 is amended in place**, the way §3 was for CHG-0013. Its sentence *"a narrow
+  `platform -> iot_backend` rule: from the provisioning VM to the database port, and nothing else"*
+  promises something a zone rule cannot deliver. It was written before CHG-0007 made zone policy
+  real, which is why it assumed otherwise. Left alone it would be believed.
 
 ---
 
