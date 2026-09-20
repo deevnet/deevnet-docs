@@ -10,8 +10,8 @@ weight: 16
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned, on option C, mechanism C1.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. C1 was **accepted at design review on 2026-09-20**. Nothing is built. |
-| **Window** | TBD |
+| **Status** | **Complete 2026-09-20**, on option C, mechanism C1. Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. C1 was accepted at design review on 2026-09-20, built, deployed and verified the same day. Two defects were found in deployment and fixed; both are recorded below. |
+| **Window** | 2026-09-20 |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02msg001v01` (the broker's auth database), `dv02cor002p01` (one new firewall rule, applied) |
 | **Automation** | `deevnet.mgmt` `deevnet_api`; `deevnet.net` `opnsense_firewall` with `firewall_apply`; tenant Terraform through `deevnet/deevnet` |
 | **Risk** | Medium — a firewall rule applied to an enforcing router, and a new provisioning path between two VMs. Everything else adds. |
@@ -384,18 +384,64 @@ behaviour. The Builder regression test below is what would catch it.
 
 ## Verification
 
-| Check | Expect |
+Run against the live system on 2026-09-20. **Two rows of the original table were wrong and are
+corrected here rather than quietly ticked** — see the notes beneath.
+
+| Check | Expect | Result |
+|---|---|---|
+| A tenant declares `lightstand/+/scene` | stored as `<tenant>/lightstand/+/scene` | PASS — `eds/lightstand/+/scene` |
+| A tenant declares `/x`, `$SYS/#`, `a/#/b`, or a pattern containing `%` | refused | PASS — `400`, each naming the pattern and the rule |
+| A tenant declares `#` | **accepted**, and prefixed to `<tenant>/#` | PASS — see correction 1 |
+| A tenant declares another tenant's prefix | stored under its own prefix, so harmless | PASS — `eds/tdemo/secrets/#` |
+| A tenant declares neither publish nor subscribe | refused | PASS — `400`; one direction alone is fine |
+| An account with no device | issued — that is a workload account | PASS |
+| An account for an `iot_vendor` device | refused (ADR-0012 §3) | **Not exercised** — this site serves only `iot`, so the served-class check fires first, exactly as CHG-0014 found for the registry. Unit tests only |
+| A client using the issued account | connects over TLS and publishes in its prefix | PASS — `CONNACK (0)` then `PUBACK (RC:0)` |
+| The same client publishing outside its prefix | denied, and the message does not arrive | PASS — connection dropped, no `PUBACK` |
+| A client subscribing wider than its ACL | refused | PASS — see correction 2 |
+| Wrong password, and unknown username | refused at authentication | PASS — and this is what makes the two rows above meaningful |
+| Revoking an account | removed from the registry **and** the broker | PASS — both reached zero |
+| **From a device on VLAN 30**, `10.20.35.20:5432` | **refused** — this is the check the whole decision is about | **Still owed** — nothing answers on that segment |
+| From `dv02prv001v01`, `10.20.35.20:5432` | **closed** | PASS — see correction 3 |
+| From `dv02prv001v01`, `10.20.35.20:22` | reachable, and only after the rule | PASS — closed before the apply, open after |
+| `opnsense_firewall` plan run afterwards | no unexpected drift | PASS — 57 rows, `ADD 0 / UPDATE 0 / DELETE 0` |
+
+**Correction 1 — `#` is accepted, not refused.** The original row grouped `#` with the malformed
+patterns. That was wrong, and the distinction matters. Patterns are declared *relative* to the
+tenant, so `#` prefixes to `<tenant>/#`: the tenant's own whole tree and nothing beyond it. Refusing
+it would be arbitrary, and a tenant cannot express anything wider, because the API writes the prefix
+and never accepts an absolute pattern. What the row was reaching for is the *broker-side* question,
+which is correction 2.
+
+**Correction 2 — the subscribe question is about the broker, not the API.** ADR-0012 §8 flagged as
+untested whether a subscription wider than every ACL pattern is refused; the vendor docs do not say.
+**It is refused**, measured directly. For an account whose subscribe ACL is
+`eds/lightstand/+/state`:
+
+| Filter | |
 |---|---|
-| A tenant declares `lightstand/+/scene` | stored as `<tenant>/lightstand/+/scene` |
-| A tenant declares `#`, `/x`, `$SYS/#`, or a pattern containing `%` | refused |
-| A tenant declares another tenant's prefix | stored under its own prefix, so harmless |
-| An account for an `iot_vendor` device | refused (ADR-0012 §3) |
-| An account with no device | issued — that is a workload account |
-| A client using the issued account | connects over TLS and publishes in its prefix |
-| The same client publishing outside its prefix | denied, and the message does not arrive |
-| **From a device on VLAN 30**, `10.20.35.20:5432` | **refused** — this is the check the whole decision is about |
-| From `dv02prv001v01`, the same port | reachable |
-| `opnsense_firewall` plan run afterwards | no unexpected drift |
+| `eds/lightstand/a/state` | granted |
+| `eds/lightstand/+/state` | granted |
+| `eds/lightstand/a/scene` — its own *publish* topic | **denied** |
+| `eds/#` — wider, still inside the tenant | **denied** |
+| `#` | **denied** |
+| `tdemo/#` | **denied** |
+
+This resolves the ADR's open claim in the safe direction.
+
+**Correction 3 — the API does not reach the database, and must not.** The original row said the API
+should reach `5432`, which was true of **option A** and is false under C. Under C the database is
+published to `127.0.0.1` only; the API reaches port **22** and speaks to the writer. The row is
+inverted above because "the API cannot reach the database either" is the stronger property, not a
+gap.
+
+**A note on how the client checks were run.** The test classifies three outcomes separately —
+*allowed*, *denied by ACL*, *authentication refused* — because a check that cannot tell a denial
+from a broken connection will certify a broken system as a working one. That is not hypothetical:
+it produced false passes during CHG-0015. The wrong-password and unknown-user rows exist to prove
+the classifier can see an authentication failure, which is what makes the denial rows trustworthy.
+A first attempt at the subscribe table reported the opposite result because its predicate could not
+see the broker's denial; it was discarded rather than reported.
 
 ### The Builder regression test — permanent, not a one-off
 
@@ -424,6 +470,88 @@ since firewalld and `pg_hba` match on source address and know nothing about VLAN
 substitute for the real path. Run it with a client on `DVNTM-IOT` when one is next available, the
 way CHG-0007 phase 3 did.
 
+## What was built
+
+| | |
+|---|---|
+| `internal/brokeracct` | the wire contract both ends share |
+| `cmd/deevnet-broker-account` | the writer: fixed config path, never reads `SSH_ORIGINAL_COMMAND`, parameterised SQL only |
+| `internal/backend/brokerwriter` | the SSH transport: pinned host key, bounded at connect and session |
+| `deevnet_iot_broker_account` | the API resource and the provider resource |
+| `deevnet.mgmt` `vernemq` | installs the writer, pins the API's key, restricts sshd |
+| `deevnet.mgmt` `deevnet_api` | reads the messaging host's key at deploy time and pins it |
+| One firewall rule | `platform -> iot_backend`, TCP 22, host to host |
+
+Deployed as API `v0.5.1`. The writer's key is the API's own and is used for nothing else, so
+revoking it revokes exactly this capability.
+
+### The ordering that makes a retry safe
+
+The hash is written to the registry **before** the writer is called. A retry after an ambiguous
+failure therefore sends the same hash and converges. The other order mints a new password on every
+retry and strands every device already flashed with the old one — the CHG-0013 failure, in a new
+place.
+
+This was exercised for real. The three accounts created during the failed first attempt came back
+on retry with an empty password, because the re-apply correctly reused the stored hash. The API
+keeps only a bcrypt hash and cannot reproduce a plaintext it once issued, so **the only copy of
+those passwords was in the `502` bodies**. A caller that discards them strands the account,
+recoverable only by delete-and-recreate. The provider keeps them; the ad-hoc probe used here did
+not, which is why those three were deleted and reissued.
+
+## Two defects found in deployment
+
+Both were found by running the thing, not by reading it, and both had passed a check beforehand
+that turned out to be asking the wrong question.
+
+### 1. A pinned host key needs its algorithm pinned too
+
+Every account failed with:
+
+```
+authenticating to the writer: ssh: handshake failed: ssh: host key mismatch
+```
+
+against a host that was exactly who it said it was.
+
+The messaging VM offers **ecdsa, ed25519 and rsa** with no `HostKey` directive narrowing them, and
+which one the server presents is chosen from the **client's** preference list. `x/crypto`'s default
+order is ECDSA, then RSA, with **ed25519 last**. The role pins `ssh_host_ed25519_key.pub`, so the
+server answered with its ECDSA key every time and the pin could never match.
+
+Fixed by constraining `HostKeyAlgorithms` to the pinned key's own type. Worth guarding carefully,
+because the failure **reads identically to an attack** — which is the worst way for a configuration
+error to present.
+
+The regression test took three attempts and **the first two were worthless**: both passed with the
+fix reverted. The first offered a second host key but set the field *after* the constructor had
+already built the server config, so no second key was ever offered and there was no negotiation to
+exercise. The second fixed that but pinned RSA while offering ed25519 — the direction the client
+already gets right. The test now pins ed25519 against an rsa-offering host, and fails without the
+fix with the same message the deployment produced.
+
+### 2. `SSH_CLIENT` does not survive `become`
+
+The `vernemq` role derives the control node's address from what the host sees Ansible arrive from,
+rather than from a value inventory names — because the assert is about *that* address, and
+inventory's belief about a route is not the route.
+
+The first implementation read `ansible_env.SSH_CLIENT`. The site play runs with `become`, and
+sudo's `env_reset` strips `SSH_CLIENT`, so the fact is absent **exactly where it is needed**. It had
+been verified before deploying — but with ad-hoc `ansible` and a playbook that did not `become`, so
+the check passed in a context the role never runs in. It now asks the connection user directly,
+with `become: false` on that one task.
+
+**The guard worked.** The assert refused on an empty value and stopped before touching sshd, so a
+wrong derivation cost a re-run rather than console access. That is the whole reason it is written
+as an assert and not a default.
+
+### What both have in common
+
+Each was verified beforehand in a context the production path does not use — a single-host-key test
+server, and a play without `become`. A check that does not reproduce the real conditions returns a
+green that means nothing, which is the same lesson CHG-0015 recorded about its own test harness.
+
 ## Undo
 
 Remove the account rows, set the API version back, and delete the firewall rules. The broker keeps
@@ -449,5 +577,10 @@ existing sessions alone. Nothing a tenant holds is lost that a re-apply cannot r
   `vault_mqtt_users` touches a vault file and wants the same encrypt, commit and **push** ordering
   CHG-0015's secrets used — the discipline INC-0003 exists to enforce. Deleting a role is cheap;
   editing a vault in a hurry is how the last incident started.
+- **ADR-0012 §8's subscribe claim can be marked proven.** The verification above answers it: a
+  filter wider than every ACL pattern is refused. The ADR still lists it as untested.
+- **The VLAN 30 reachability row** is the one outstanding check. It needs a client on `DVNTM-IOT`.
+- **Stale writer binaries** from pre-release testing are still in the artifact store beside the
+  tagged ones. Harmless, and worth sweeping when convenient.
 - **ADR-0020's direct service** still has no consumer.
 - **The Builder's container storage** is still on a 20G `/home`.
