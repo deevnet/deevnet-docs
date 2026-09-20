@@ -10,11 +10,11 @@ weight: 16
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned.** The open decision is settled — option A, with the principle behind it written into the segmentation standard. Nothing is built. |
+| **Status** | **Planned, on option C.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. The provisioning mechanism for C is proposed below and not yet chosen. Nothing is built. |
 | **Window** | TBD |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02msg001v01` (the broker's auth database), `dv02cor002p01` (one new firewall rule, applied) |
 | **Automation** | `deevnet.mgmt` `deevnet_api`; `deevnet.net` `opnsense_firewall` with `firewall_apply`; tenant Terraform through `deevnet/deevnet` |
-| **Risk** | Medium — the only change here that can break something else is a firewall rule applied to a router that is now enforcing. Everything else adds. |
+| **Risk** | Medium — a firewall rule applied to an enforcing router, and a new provisioning path between two VMs. Everything else adds. |
 | **Related changes** | [CHG-0015](/docs/changes/2026/0015-vernemq-broker/) (built the broker and the database), [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/) (the registry an account may reference), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) (why the rule is not enough on its own) |
 | **Related incidents** | None |
 
@@ -106,34 +106,139 @@ the messaging VM — an agent, or Ansible — rather than connecting to the data
   guarantee is about the *runtime* path, not the provisioning one. A tenant's apply would now depend
   on delivery as well as on the API.
 
-### Decided: A
+### Decided: C. Option A was tried and does not work.
 
-**Accepted 2026-09-20.** The port is published and confined on the host: the narrow
-`platform -> iot_backend` rule states the intent, and a host firewall rule on `dv02msg001v01`
-accepts `5432` only from `dv02prv001v01`.
+**A was chosen on 2026-09-20, implemented, tested, and withdrawn the same day.** The reasoning that
+chose it was sound and is unchanged; the *mechanism* it depended on does not exist. That distinction
+matters, so both are kept.
 
-What settled it was not that a host firewall is an acceptable fallback where the zone rule falls
-short. That framing treats zone coarseness as a deficiency, and it does not scale: it would have to
-be re-argued for every service that lands on a shared segment. The framing that does scale is that
-**zone policy and host policy govern different things**, and neither is standing in for the other:
+#### What A assumed
 
-> Network policy controls reachability between security zones; host or service policy may further
-> constrain access to individual services where zone-level policy is intentionally coarser.
+That a host firewall could constrain a port the zone rule cannot. The zone rule states intent, the
+host enforces it, and the principle above says exactly that is allowed.
 
-`iot -> iot_backend` is not a compromise. It is a deliberate statement that the IoT segment may
-reach the IoT Backend segment, and it was never a statement about every socket behind it.
-**Reachability is not permission.** A zone that made per-service statements would pull every
-service's topology into the router's rule table and turn adding a listener into a firewall change.
+#### What is actually true
 
-This is now recorded where a future reader will find it without reading this change:
-[Network Segmentation → Reachability and Permission](/docs/standards/network-segmentation/#reachability-and-permission).
-It matters more than this change does. IoT Backend has two services today; when it has fifteen,
-nobody should have to rediscover why zone reachability is not permission to every socket in the
-zone.
+**A firewalld rich rule does not filter a published podman port.** Publishing is DNAT plus forward:
+netavark rewrites the destination in `prerouting` and the packet is *forwarded* to the container at
+`10.89.0.x`. It never reaches the INPUT chain a rich rule sits on.
 
-The obligation it puts on this change: because the database's real exposure is narrower than
-`firewall.yml` implies, the zone policy has to **say so**, or a reader of the rule table concludes
-the database is open to VLAN 30.
+Measured, not reasoned about. With the rule in place and permitting only `10.20.25.20/32`:
+
+| From the Builder (`10.20.99.95`, not a permitted source) | |
+|---|---|
+| broker `8883` | REACHABLE |
+| database `5432` | **REACHABLE** — the rule did nothing |
+
+**A firewalld policy object does not fix it either.** Policy objects are the mechanism that filters
+forwarded traffic, and that is the right thing to reach for. Tried twice — `egress-zone trusted`,
+then `egress-zone ANY` — and neither filtered anything. Two reasons, both structural:
+
+- netavark's forward chain runs at nftables priority `filter` (0); firewalld's runs at `filter + 10`.
+- firewalld's zone membership for the container network is by **source address** (`trusted` has
+  `sources: 10.89.0.0/24`), while egress-zone matching is by **outgoing interface**. The policy
+  never matched the traffic.
+
+**Hand-ordered nftables would work, and is deliberately not done.** It would put a security control
+in a table podman owns and rewrites, where a container recreate is enough to remove it silently. A
+control that a routine lifecycle event can delete without a word is worse than no control, because
+it is believed.
+
+#### The distinction that decides C
+
+The failure is specific to **published container ports**, not to host firewalls. Proven in both
+directions on this host, with a throwaway listener so that sshd — which Ansible needs — was never
+at risk:
+
+| Path | firewalld rich rule restricted to one source |
+|---|---|
+| Host listener (INPUT) | **blocked** the Builder correctly |
+| Podman published port (DNAT + forward) | no effect; reachable |
+
+So a mechanism that keeps the traffic on a **host listener** gets the packet filter back. That is
+the whole argument for C, and it is why C is not merely "A minus the port".
+
+### C: the database is never published
+
+PostgreSQL keeps no published port. It is reachable only by the broker, over the host's private
+container network, exactly as it is today. The API provisions through a mechanism on the messaging
+VM rather than by connecting to the database.
+
+**What C costs, said plainly.** ADR-0012 §1's guarantee is about the **runtime** path and survives
+untouched: the broker reads accounts at connect with the API absent, which CHG-0015 proved. But a
+tenant's `terraform apply` now depends on delivery as well as on the API. That is a real change to
+the provisioning path and is the price of not publishing the port.
+
+---
+
+## The provisioning mechanism: proposed, not chosen
+
+C needs a way for `dv02prv001v01` to get an account onto `dv02msg001v01` without publishing the
+database. **Nothing below is built.** The requirements it has to meet, all of them non-negotiable:
+
+| | |
+|---|---|
+| PostgreSQL | stays unpublished |
+| The API | gets a **definitive success or failure, synchronously** — a tenant's apply is waiting |
+| Retries | safe and idempotent; a retry after an ambiguous failure must not double-issue |
+| Surface | **no new general-purpose, device-reachable administrative interface** |
+
+And one that follows from the zone policy: whatever listens must be on the **host**, not a published
+container port, or it inherits exactly the problem that killed A. Ansible may **deploy** the
+mechanism; it must not be in the request path, because the API answers a tenant synchronously and
+Ansible is not a request-response channel.
+
+### C1 — SSH with a forced command
+
+The API holds a key; `authorized_keys` on the messaging VM pins it to one program:
+
+```
+command="/usr/local/bin/deevnet-broker-account",restrict <key>
+```
+
+The API opens a connection, writes the account as JSON on stdin, and reads the result and exit
+status. `restrict` disables the pty, agent, port and X11 forwarding, so the key buys the one program
+and nothing else.
+
+- **No new listening surface.** sshd is already there, already hardened, already lifecycle-managed.
+- **It is a host listener**, so firewalld filters it — proven above — and a rich rule can hold it to
+  the API's address. That recovers the packet filter A could not have.
+- **Synchronous and definitive by construction**: an exit status and a body, over one connection.
+- **Idempotent** if the program does the same `ON CONFLICT` upsert the API would have.
+- **Costs:** the API gains an SSH key, a new credential class for it — though it already holds an
+  OpenBao AppRole, a Proxmox token and Omada credentials, so not unprecedented. Needs a narrow
+  `platform -> iot_backend` rule for port 22. **The forced command must be a real program with
+  strict input validation, not a shell script** — a shell script taking JSON on stdin from a network
+  peer is where the injection bug will be.
+
+### C2 — A minimal authenticated service
+
+A small purpose-built service on the messaging VM with one endpoint, authenticated with mTLS from
+the site CA, which already exists and already issues the broker's certificate.
+
+- **A typed contract** rather than a program reading stdin, and an obvious place for validation.
+- **mTLS** avoids giving the API an SSH key, and the CA is already in the picture.
+- **Costs:** it is a service to write, deploy, version and patch, for one function. It **must run as
+  a host service, not a container with a published port**, or it inherits A's failure. And it is a
+  new administrative surface — narrow, but new, on a segment devices can already reach, which is
+  precisely what ADR-0020 §5 says must then authenticate every caller.
+
+### Recommendation: C1
+
+It adds **no new listening surface at all**, which is the requirement that most directly limits what
+this change can cost. It reuses a daemon that is already hardened and already patched by the normal
+update path, and `restrict` plus a forced command makes the key single-purpose rather than a general
+login. Where C2 has to earn its safety by being written carefully, C1 starts from a service whose
+safety is someone else's ongoing job.
+
+The one place C1 is genuinely weaker is the input boundary: a program invoked by sshd reading a
+network peer's stdin. That is answerable by writing a real program with a strict schema, and it is a
+smaller thing to get right than a whole service.
+
+**A note on what is already true.** sshd on the messaging VM listens on the segment, and
+`iot -> iot_backend` is a zone-level pass, so a device on VLAN 30 can already reach port 22 there
+today — independently of this change. C1 gives a reason to put a rich rule on sshd, which would be
+an improvement on the status quo rather than a new obligation it creates.
 
 ---
 
@@ -163,9 +268,10 @@ person who needs them:
 |---|---|
 | API: `deevnet_iot_broker_account`, migration `0005_`, an auth-database backend | The device-facing direct service (ADR-0020 Option E) |
 | Provider: `deevnet_iot_broker_account` | Retiring `mqtt_acls` — CHG-0017 |
-| The narrow `platform -> iot_backend` rule, applied | Any change to the broker itself |
-| A host firewall rule on `dv02msg001v01`, if option A | Clustering |
-| The API's database credential in its configuration | |
+| The provisioning mechanism (C1 or C2), and its Ansible deployment | Any change to the broker itself |
+| A narrow `platform -> iot_backend` rule for that mechanism's port, applied | Clustering |
+| A firewalld rich rule on `dv02msg001v01` restricting that port to the API | Publishing the database port — C exists to avoid it |
+| The API's credential for the mechanism | |
 
 ## What is already proven
 
@@ -179,6 +285,13 @@ Verified during and after CHG-0015, so this change does not need to re-establish
   `password_hash_method = crypt`, which verifies inside PostgreSQL. Those are different mechanisms
   and it was not obvious they would agree. Checked against the live database with an externally
   generated `$2a$` hash: the right password verifies, a wrong one does not.
+- **firewalld filters a host listener but not a published container port.** Proven in both
+  directions on this host, with a throwaway listener so sshd — which Ansible needs — was never at
+  risk. This is what makes C workable and A not.
+- **podman preserves the caller's source address** through a published port; it does not
+  masquerade. This is what lets `pg_hba` distinguish anyone, and it is an observed behaviour rather
+  than a guarantee — see below.
+- **`pg_hba` refuses by address**, deployed and proven against the live database.
 
 ## A correction CHG-0015 earns
 
@@ -194,16 +307,46 @@ first from an API-issued account.
 
 ## Procedure
 
-1. **Decide the question above.** Everything else follows from it.
-2. **Amend ADR-0012 §7** in place.
-3. **API**: the resource, migration `0005_`, and a backend that writes `vmq_auth_acl`. Validate and
+1. **Choose the mechanism** — C1 or C2. Everything after this depends on it.
+2. **Amend ADR-0012 §7** in place. *(Done — see below.)*
+3. **Build the mechanism** and deploy it with Ansible. It listens on the **host**, never as a
+   published container port.
+4. **Inventory**: the narrow `platform -> iot_backend` rule for its port, a firewalld rich rule on
+   the messaging VM restricting that port to the API, and the API's credential for it.
+5. **Apply the firewall rule** with `firewall_apply`, against a router that is enforcing. Probe
+   every reachability target first — they run only under apply, so a plan run never exercises them,
+   and a target that does not answer rolls back a correct policy.
+6. **Run the Builder regression test** before going further. If `5432` is reachable, stop.
+7. **API**: the resource, migration `0005_`, and a backend that calls the mechanism. Validate and
    prefix patterns per §10; refuse a device whose trust class is not `iot`; refuse `modifiers`.
-4. **Provider**: `deevnet_iot_broker_account`, with the `present` + `ModifyPlan` restore path and
+8. **Provider**: `deevnet_iot_broker_account`, with the `present` + `ModifyPlan` restore path and
    the password as a sensitive computed attribute — the tenant's state holds the authoritative copy.
-5. **Inventory**: the narrow zone rule, the host rule if option A, and the API's database credential.
-6. **Apply the firewall rule** with `firewall_apply`, against a router that is enforcing. Probe all
-   reachability targets first; a target that does not answer rolls back a correct policy.
-7. **Deploy** the API, then issue an account through tenant Terraform.
+9. **Deploy** the API, then issue an account through tenant Terraform.
+
+## pg_hba: defence in depth, and a dependency worth watching
+
+The auth database restricts who may authenticate, by source address, in its own `pg_hba.conf`. This
+is **deployed and proven** — from the Builder, which is not a permitted source:
+
+```
+FATAL: no pg_hba.conf entry for host "10.20.99.95", user "deevnet_api", database "vernemq"
+FATAL: no pg_hba.conf entry for host "10.20.99.95", user "vernemq",     database "vernemq"
+```
+
+**It is defence in depth and does not satisfy ADR-0012 §7 on its own.** A client refused here has
+still reached the port and spoken the PostgreSQL protocol; what it cannot do is authenticate. Under
+C the port is unpublished, so nothing off this host reaches it at all — `pg_hba` is the second lock,
+not the first, and it stays that way if the port is ever published for some later reason.
+
+**It rests on an observed behaviour, not a guaranteed one.** `pg_hba` can distinguish callers only
+because **podman currently preserves the original source address** through a published port — it
+does not masquerade it. Measured on this host: a connection from the Builder appeared in the
+database container's own `/proc/net/tcp` as `10.20.99.95`, its real address.
+
+If a future podman release starts masquerading hostport traffic, every external caller collapses to
+the gateway address, every `pg_hba` host rule matches everyone or no one, and **this control fails
+silently** — no error, no log, just a rule that no longer distinguishes. The Builder regression test
+below is what would catch it.
 
 ## Verification
 
@@ -219,6 +362,33 @@ first from an API-issued account.
 | **From a device on VLAN 30**, `10.20.35.20:5432` | **refused** — this is the check the whole decision is about |
 | From `dv02prv001v01`, the same port | reachable |
 | `opnsense_firewall` plan run afterwards | no unexpected drift |
+
+### The Builder regression test — permanent, not a one-off
+
+Run this whenever the broker host, podman, firewalld or the provisioning mechanism changes. It is
+kept because it proves the one property this whole change turns on:
+
+> **Zone-level reachability does not imply service-level reachability.**
+
+The Builder is the right prober precisely because the zone policy *permits* it. `management ->
+iot_backend` is a pass, so the Builder can reach the segment; if it is nonetheless refused the
+database, then something above the zone rule is doing the work. A prober the zone already blocks
+would prove nothing.
+
+| From the Builder | Expect | What a failure means |
+|---|---|---|
+| `8883` | **reachable** | if not, the zone path is broken and the rest of the test is meaningless |
+| `5432` | **closed** | if reachable, the database is exposed to every zone the policy admits to IoT Backend — which includes VLAN 30 |
+| `psql` as `deevnet_api` | `no pg_hba.conf entry for host …` | if it authenticates, podman has started masquerading and `pg_hba` no longer distinguishes anyone |
+
+The third row is the early warning for the podman dependency above. The first two are cheap enough
+to run on any change to the host.
+
+**The VLAN 30 test is still owed.** Nothing currently on that segment answers — the Pi at
+`10.20.30.11` is dead — so it has not been run. The Builder is a sound proxy for the *mechanism*,
+since firewalld and `pg_hba` match on source address and know nothing about VLANs, but it is not a
+substitute for the real path. Run it with a client on `DVNTM-IOT` when one is next available, the
+way CHG-0007 phase 3 did.
 
 ## Undo
 
