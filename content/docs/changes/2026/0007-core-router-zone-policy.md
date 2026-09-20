@@ -10,7 +10,7 @@ weight: 7
 | **Date** | Not yet scheduled |
 | **Change type** | Configuration |
 | **Classification** | Disruptive — it changes what every segment on site can reach, the operator's own path included |
-| **Status** | **In progress.** Phase 1 ran on 2026-09-19 and passed its gate — see [Outcome](#outcome). The prerequisites are built; phase 2 is scheduled separately, with the console at the rack. Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
+| **Status** | **Applied 2026-09-19, phase 3 outstanding.** Phases 1 and 2 are done and the declared policy is live — the router is no longer allow-all. Verification from clients on each segment (phase 3) has not been done; the **deny** rows are what prove enforcement. See [Outcome](#outcome). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
 | **Window** | Phase 1: 2026-09-19, no writes. Phase 2: to be scheduled, with the operator at the rack and the router's console connected |
 | **Site** | mobile |
 | **Systems** | Core router `dv02cor002p01` (OPNsense 26.7.3); control host `dv00bld001p01` |
@@ -461,9 +461,73 @@ Read from `dv02cor002p01` before the role was changed, so none of the fixes rest
 | A rejected write | HTTP 200 with `{"result":"failed"}`. Even a `GET` to `addRule` answers `200 {"result":"failed"}` |
 | Savepoint | Does not exist — see [The guard that was not there](#the-guard-that-was-not-there-2026-09-19) |
 
-### Phase 2
+### Phase 2 — 2026-09-19, applied
 
-Not yet run.
+**The declared policy is live. The router is no longer allow-all.**
+
+| | |
+|---|---|
+| Result | `Added 8, updated 0, deleted 25.` then `Applied, and all 6 required path(s) still answer.` |
+| Rule table after | **47 managed rules — exactly the declared set.** Zero `temp-allow-all`, zero `test-rule` |
+| Rollback | Not needed. Every rollback handler skipped, so no required path was lost |
+| Snapshot taken | `config-1789867120.9272.xml` (2026-09-20T01:18:40Z), configuration also downloaded to the control host |
+
+Per-interface, live: management 14, Trusted 10, platform 5, iot 4, tenant_transit 4, guest 3,
+iot_vendor 3, iot_backend 3, storage 1.
+
+Verified from the control host after the apply: router 443/22, platform, iot_backend,
+tenant_transit, both tenant workloads (`10.20.129.10`, `10.20.130.10`), the wireless controller
+`10.20.99.40:8043`, both Proxmox nodes on 8006, tenant DNS and observability on platform, DNS
+resolution through `10.20.99.1`, and internet egress. All answered.
+
+#### It took two attempts, and the guards are why that was safe
+
+**Attempt 1 failed at the snapshot**, before a single write: `_fw_backups.json.items` resolves to
+Python's `dict.items` method in Jinja rather than the JSON key. Nothing written, `changed=0`.
+
+**Attempt 2 failed after 39 of 47 additions**, on the new API-result check. The router rejected all
+eight internet rules:
+
+```
+'rule.destination_net': '!10.20.0.0/16 is not a valid source IP address or alias.'
+```
+
+The `!` prefix is the **web UI's** syntax for a negated network. The API expects the separate
+`source_not` / `destination_not` booleans. **This is the defect the result check existed to catch.**
+The old role accepted any HTTP 200, and OPNsense answers a rejected rule with 200 and
+`{"result":"failed"}` — so it would have reported eight successful additions, deleted the
+twenty-five allow-all rules in the same run, and left every segment on the site with no route to
+the internet, with the play reporting success.
+
+Because the play failed before the handler, the apply never fired: 39 rules sat in the
+configuration, unapplied, and the running filter was untouched. The resumed run found all 39
+already matching inventory — **0 updates** — added the 8, deleted the 25, and applied once.
+
+#### The two rules outside automation
+
+Both removed, and it was not the manual step this record assumed. On OPNsense 26.7.3_11 the
+classic per-interface rule pages are read-only pending migration: the rows show a *"lookup rule
+reference"* link and a migration notice, with **no delete control**. They live in the legacy
+`<filter><rule>` section, which `Firewall → Automation → Filter` does not manage.
+
+The supported route is `firewall/migration/flush`, and it is **all-or-nothing** —
+`delItem('filter.rule')` removes every legacy rule. There were four:
+
+| Interface | Rule | |
+|---|---|---|
+| `lan` | Default allow LAN to any rule | removed |
+| `lan` | Default allow LAN IPv6 to any rule | removed |
+| `opt1` Trusted | *(no description)* `any -> 10.20.99.0` | **target** |
+| `opt8` Management | `temp: allow all VLAN 99` `any -> any` | **target** |
+
+Flushed all four, then applied. Legacy rule count is now **0**.
+
+Losing the two LAN defaults costs nothing and improves the posture — they were two more undeclared
+allow-alls. Checked first: nothing is on the untagged LAN (`192.168.10.0/23` ARP shows only `re0`
+itself), and **the anti-lockout rule is not a legacy rule** — it is absent from `<filter><rule>`,
+`noantilockout` is unset, and it is still present after the flush. So the LAN recovery path still
+reaches the router's own UI and SSH, which is what it is for. What it no longer does is route
+onward from LAN, which nothing used.
 
 ## Follow-ups
 
@@ -481,6 +545,9 @@ Not yet run.
   depended on allow-all; CHG-0008 moved them, and phase 1 confirmed the old addresses are dead.
   [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) placed its API on platform for
   the same reason.
+- [ ] **Phase 3 from clients has not been done.** Every result above is from the control host on
+  management. The deny rows — guest, iot_vendor and iot to management — are what prove enforcement,
+  and they need a client on each segment.
 - [ ] The broker's `1883` and a wired IoT host are both untested paths. Re-run those two
   verification rows once VerneMQ is deployed and the Pi is back.
 - [ ] `opnsense_dns`, `opnsense_dhcp` and `opnsense_vlans` share this role's API-result blindness:
