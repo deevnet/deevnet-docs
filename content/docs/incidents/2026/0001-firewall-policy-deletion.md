@@ -14,16 +14,23 @@ aliases:
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Core router `dv02cor002p01` (OPNsense); the `opnsense_firewall` role in `ansible-collection-deevnet.net` |
 | **Severity** | Total site outage; physical console access required to recover |
-| **Status** | Root cause confirmed. Service restored from config backup. Corrective and preventive actions 1–8 done as of 2026-09-08. Of five open items, two were settled on 2026-09-14 and one narrowed; three remain, planned as [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/). |
+| **Status** | **Closed, 2026-09-19.** Root cause confirmed, service restored, and every open item resolved by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), which applied the zone policy for the first time and verified it from real clients. **One preventive action recorded "Done" here in 2026-09-08 turned out never to have worked** — see [Preventive actions](#preventive-actions). |
 | **Times** | UTC (local is UTC−4), as recorded in the session transcript |
 
-{{< hint warning >}}
-**The guards are in, but have not yet met the live router.** Since 2026-09-08,
-`opnsense_firewall` refuses to reconcile from a broken discovery, withholds deletions by
-default, protects the operator's path, and applies behind a rollback savepoint
-([Corrective actions](#corrective-actions), [Preventive actions](#preventive-actions)). They
-were verified offline against this incident's own input. The zone policy has still never been
-applied, so its first real application remains a watched change with the console open.
+{{< hint danger >}}
+**The guards met the live router on 2026-09-19, and one of them was fiction.**
+
+[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) applied the zone policy for the first
+time. The discovery guard, the deletion gate and the protected-path list all held. **Preventive
+action 4 — "apply behind a rollback savepoint" — did not, because the endpoints it was built on do
+not exist.** `firewall/filter/savepoint`, `/cancelRollback` and `/revert` each answer
+`404 "Endpoint not found"` on OPNsense 26.7.3_11; upstream `FilterController.php` has no such
+action; the official API documentation does not mention them. The role requested a savepoint, fell
+through when none came back, and sent a cancel to nothing. It was marked Done on 2026-09-08 after
+being *"verified offline against this incident's own input"* — which is precisely the kind of
+verification that cannot catch an endpoint that was never there.
+
+Nobody called the endpoint. That is the lesson this record did not previously carry.
 {{< /hint >}}
 
 ---
@@ -273,10 +280,23 @@ and the read is described in
   `destination_net` to `any`, and reads existing rules back as `any`. Sending empty strings, as in the
   2026-09-13 item above, is wrong.
 
-Still open, all planned as CHG-0007:
-- the policy's first application
-- the role faults listed above
-- the narrowed contradiction
+**Resolved 2026-09-19 by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/).**
+
+- **The policy's first application: done.** 47 declared rules applied, the 25 `temp-allow-all` and
+  `test-rule` entries deleted, and all four legacy `<filter>` rules flushed. No path was lost and
+  nothing rolled back. Enforcement was then demonstrated from real clients on the IoT and IoT
+  Vendor segments, with the drops read from the router's own firewall log rather than inferred from
+  client timeouts.
+- **The role faults: fixed**, in `ansible-collection-deevnet.net` — plan mode as the default,
+  `result` checked rather than HTTP status, `any` instead of empty strings, a reachability check
+  that can fail, gateway-service rules for DNS, NTP and DHCP, and the savepoint machinery replaced
+  (below). Two faults this record never listed were also found: the role could not see duplicate
+  rule descriptions, and `!net` is web-UI syntax the API rejects.
+- **The narrowed contradiction: settled as far as it can be.** Phase 1 read the live table as 25
+  rows under 13 distinct descriptions — twelve `temp-allow-all` entries present twice each. The
+  2026-09-07 runs most likely deleted that set rather than any declared policy, which matches the
+  recorded impact. No evidence remains that could raise this above a well-supported inference, and
+  none is expected to appear.
 
 ## Preventive actions
 
@@ -284,13 +304,33 @@ Actions that stop this class of failure recurring, or make surviving it unnecess
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | **Done** — `1bdba4a` |
-| 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | **Done** — `1bdba4a` |
+| 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | ~~Done — `1bdba4a`~~ **Never worked. Replaced 2026-09-19** — see below |
+| 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | ~~Done — `1bdba4a`~~ **Could never fail as written. Fixed 2026-09-19** — `failed_when: false` set `failed: false` on every result, so the collector always saw an empty list and `cancelRollback` was always sent. Mobile also had no targets beyond the router's own ports until CHG-0007 |
 | 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/runbook/change-management/) | **Done** |
 | 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/recovery/console-recovery/) | **Done** |
 
-Action 4 is the one that makes surviving the change unnecessary: it does not depend on the
-control host staying reachable.
+**Action 4 was the one that made surviving the change unnecessary — and it never existed.**
+*Corrected 2026-09-19.* OPNsense 26.7.3_11 has no `firewall/filter/savepoint`, `/cancelRollback`
+or `/revert` endpoint; each answers `404 "Endpoint not found"`, where a POST-only endpoint that
+does exist answers a GET with HTTP 200 and a body. Upstream `FilterController.php` carries no such
+action, and `applyAction()` takes no revision at all. So every apply since 2026-09-08 has been
+unguarded, and the record said otherwise.
+
+Actions 4 and 5 failed the same way: both were **verified against this incident's own input rather
+than against the router**. A guard tested only offline is a guard whose failure mode is exactly
+"the real system does not work like the test".
+
+**What replaces action 4.** The router's own configuration history, which is real:
+`core/backup/backups/this` lists revisions, `core/backup/download/this` returns the running
+configuration, and `core/backup/revertBackup/{id}` restores one. The role now records the newest
+revision *before* the first write — every API write creates one, so reading it in the apply handler
+would be too late — downloads the configuration to the control host, and on a lost path reverts and
+re-applies **if the router still answers**. If it does not, the revert cannot be sent from the
+control host either, and the play fails naming the exact revision to restore at the console.
+
+That last case is a genuine reduction in the guarantee this record claimed. There is no unattended
+recovery when the control host's own path is the one severed. The console is the answer, which is
+why CHG-0007 phase 2 did not run without one.
 
 Investigating action 7 turned up a second case: `switch_vlans` uses
 `ansible.netcommon.cli_command`, which supports check mode but accepts only `show` commands,
@@ -311,6 +351,18 @@ family gives a usable dry run; the OPNsense one is worse only because it is quie
   replaced by a narrower ad-hoc one that invoked the same role without the same scrutiny.
 - **Record the wrong conclusion.** The mistaken "nothing was deleted", committed to git, was
   the most consequential error of the incident. It survives here so it is not repeated.
+- **A guard verified offline is not verified.** *Added 2026-09-19.* Actions 4 and 5 were both
+  marked Done after being tested against this record's own inputs. One was built on API endpoints
+  that have never existed on any OPNsense release; the other could not fail by construction. Both
+  survived eleven days and a full review because nobody called the endpoint or let the check trip.
+  **Before depending on a remote API, call it** — a GET against a POST-only OPNsense endpoint
+  returns HTTP 200 with a body, and a route that does not exist returns
+  `404 {"errorMessage":"Endpoint not found"}`. One request distinguishes "wrong method" from "does
+  not exist", and it costs nothing.
+- **"Done" in a corrective-actions table is a claim, not a fact.** The strongest thing this
+  incident produced was a table of eight completed actions, and two of them were wrong in a way
+  that would only have shown up during the next outage. An action is done when the system it
+  guards has exercised it, not when the code is merged.
 
 ## Related changes
 

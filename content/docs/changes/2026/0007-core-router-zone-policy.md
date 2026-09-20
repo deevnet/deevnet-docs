@@ -10,7 +10,7 @@ weight: 7
 | **Date** | Not yet scheduled |
 | **Change type** | Configuration |
 | **Classification** | Disruptive — it changes what every segment on site can reach, the operator's own path included |
-| **Status** | **Applied 2026-09-19, phase 3 outstanding.** Phases 1 and 2 are done and the declared policy is live — the router is no longer allow-all. Verification from clients on each segment (phase 3) has not been done; the **deny** rows are what prove enforcement. See [Outcome](#outcome). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
+| **Status** | **Complete, 2026-09-19.** All three phases ran. The declared policy is live and enforcement is demonstrated from real clients on three segments, with the drops read from the router's own firewall log. Four items are recorded as untested rather than passed — see [Phase 3](#phase-3--from-clients-2026-09-19). One regression was found and fixed during verification. See [Outcome](#outcome). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |
 | **Window** | Phase 1: 2026-09-19, no writes. Phase 2: to be scheduled, with the operator at the rack and the router's console connected |
 | **Site** | mobile |
 | **Systems** | Core router `dv02cor002p01` (OPNsense 26.7.3); control host `dv00bld001p01` |
@@ -111,8 +111,9 @@ as `any`, not as empty strings.
 - The router's Automation filter rules match the declared set, as reported by the role's plan
   mode, with no unexplained extras. **The allow-all, stale and test rules above are gone.**
 - The two allow rules outside automation are gone.
-- There are no per-interface "conntrack" pass rules. Each zone reaches its own gateway's **DNS and
-  DHCP** through explicit rules instead.
+- There are no per-interface "conntrack" pass rules. Each zone reaches its own gateway's **DNS,
+  NTP and DHCP** through explicit rules instead. *NTP was added on 2026-09-19 after phase 3 found
+  it was the one thing the apply broke — see [Phase 3](#phase-3--from-clients-2026-09-19-in-progress).*
 - Every allowed path in [Verification](#verification) answers, and every denied path doesn't.
 - The control host still reaches the router on 443 and 22, and `cancelRollback` was sent only
   because the reachability check actually passed.
@@ -529,6 +530,132 @@ itself), and **the anti-lockout rule is not a legacy rule** — it is absent fro
 reaches the router's own UI and SSH, which is what it is for. What it no longer does is route
 onward from LAN, which nothing used.
 
+### Phase 3 — from clients, 2026-09-19
+
+Taken from real clients and corroborated against the router's own firewall log, not from the
+control host. Passes are not logged, so an allowed path shows as the *absence* of a block.
+
+Counts are from the router's rolling firewall log, read shortly after each test; the buffer ages
+out, so they record what was observed rather than a running total.
+
+**Trusted.** A workstation on `10.20.10.100`, associated to `DVNTM`, reached `dv00bld001p01`
+on `10.20.99.95:22` and held the session — after allow-all was deleted **and** after the legacy
+`any -> 10.20.99.0` rule was flushed. So `ansible: trusted -> management` is carrying that
+traffic on its own. This is the lab exception the segmentation standard does not grant by
+default, and it works.
+
+**IoT.** A Mac joined `DVNTM-IOT` with a tenant PPSK key and took `10.20.30.101` from the
+DHCP pool — which is itself the first exercise of `ansible: gateway services DHCP iot`, a rule
+that replaced the conntrack rules and had never carried a real lease. `management -> iot` was
+confirmed in the other direction by ping from the control host.
+
+| From `10.20.30.101` | Observed | Rule |
+|---|---|---|
+| `10.20.99.95:22` — the Builder | **7 packets blocked**, `Default deny / state violation rule` on `vlan04` | not declared |
+| `10.20.99.22:8006` — Proxmox | **33 blocked** | not declared |
+| `10.20.130.10:80` — **eds, on the tenant overlay** | **30 blocked** | not declared, and [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §4 forbids declaring it |
+| `10.20.30.255:137` — NetBIOS broadcast | 18 blocked | not declared |
+| `10.20.35.0/24` — iot_backend | no blocks | `iot -> iot_backend` |
+| internet | no blocks | `iot -> internet` |
+
+**The first row closes the hint at the top of this record.** On 2026-09-18, CHG-0013 phase 5
+showed a device on `10.20.30.100` reaching the Builder on management. On 2026-09-19 a device on
+`10.20.30.101` cannot, and the router logs the drop.
+
+**The eds row is evidence ADR-0020 did not have.** A device attempting to reach its owner's
+tenant workload directly was dropped — which is that record's §4 enforced rather than asserted.
+It is not a gap: §1 supports direct access, but §3 and §5 place the device-facing endpoint on
+IoT Backend, and ADR-0020 records that none of it is built yet.
+
+#### One regression, found and fixed: NTP to the gateway
+
+A sweep of 2000 firewall log entries found exactly one kind of internal traffic being dropped that
+should not have been:
+
+```
+2026-09-20T02:09:59  block  vlan011  10.20.99.97:59547 -> 10.20.99.1:123
+```
+
+`dv02bld001v01` and one DHCP-pool host reaching the router on **NTP**. The gateway-service rules
+covered DNS and DHCP because that is what [Goal](#goal) asked for; the router also runs `ntpd` on
+every interface, and a DHCP client with no explicit `ntpserver` option falls back to its gateway.
+Removing allow-all took time sync away **silently** — clocks drift rather than anything failing
+outright, so this would not have surfaced for days.
+
+It matters most where there is no alternative: `storage` is deliberately absent from
+`firewall_internet_zones`, so its gateway is the only time source a host there can have.
+
+Fixed by adding a third gateway-service rule per zone, UDP 123 to the interface address — nine
+rules, purely additive: `Added 9, updated 0, deleted 0`, and all six paths still answered. Verified
+by an actual exchange from `dv02bld001v01`: *"System clock wrong by -0.004222 seconds"*. No further
+`:123` blocks. The managed set is now **56 rules**.
+
+Nothing else in the sweep was being dropped.
+
+#### Guest: contained, but this change cannot take the credit
+
+A Mac joined `DVNTM-GUEST` and leased `10.20.40.50`, the first address in the pool — so
+`ansible: gateway services DHCP guest` works. Its attempts to reach management and iot_backend
+hung, and `1.1.1.1:443` succeeded, which is the expected shape.
+
+**But the denials are not attributable to this change.** `DVNTM-GUEST` is the only SSID on the
+controller with `guestNetEnable: true` — read from the Omada Open API on 2026-09-19 — and Guest
+Network blocks a client from every local subnet at the access point. Those packets most likely
+never reached `dv02cor002p01`: the firewall log shows nothing from `10.20.40.50`, neither blocks
+nor passes.
+
+The corroborating observation is that `management -> guest` in the *other* direction was passed by
+the router (`pass vlan07 10.20.99.95 -> 10.20.40.50`) and still did not reach the client. The zone
+policy did its part; the AP dropped it.
+
+So the guest segment is contained by two overlapping mechanisms, and the zone policy's share is not
+separately observable without turning isolation off — which is not worth doing to satisfy a test.
+Recorded as **contained, attribution shared**, rather than as a clean pass for this change. The
+same read produced [evidence for ADR-0011 open question 4](/docs/architecture/decisions/0011-edge-devices-application-owned/),
+which is the more useful outcome.
+
+#### IoT Vendor: full containment, and the cleanest result of the change
+
+`DVNTM-IOTV` has `guestNetEnable: false`, so nothing at the access point intervenes and every
+verdict below is the zone policy's. A Mac joined and leased `10.20.31.100` — the third
+gateway-service DHCP rule to carry a real lease. Captured from the firewall log by polling it every
+four seconds during the test, because the buffer holds only about fifty seconds under WAN
+background load.
+
+| From `10.20.31.100` | Blocked | Why |
+|---|---|---|
+| `10.20.99.95:22` — the Builder | **8** | `iot_vendor -> management` not declared |
+| `10.20.99.22:8006` — Proxmox | **106** | same |
+| `10.20.35.20:22` — iot_backend | **8** | not declared |
+| `10.20.30.100:22` — **a live phone on the IoT segment** | **8** | not declared |
+| `10.20.25.20:22` — platform | **7** | not declared |
+| `10.20.31.255:137` — broadcast | 15 | not declared |
+| `1.1.1.1:443` | none — passed | `iot_vendor -> internet` |
+
+Every drop logged as `Default deny / state violation rule`. This is the full containment
+[Network Segmentation](/docs/standards/network-segmentation/) requires of the IoT Vendor segment —
+*"IoT vendor to any internal segment"* is a prohibited flow, and it now is one.
+
+The `10.20.30.100` row is worth singling out: a real client on the vendor segment could not reach a
+real device on the IoT segment. Cross-segment isolation demonstrated between two live hosts rather
+than a packet sent into an empty subnet.
+
+The only non-block entries were the access point itself (`10.20.99.9`) sending mDNS and NetBIOS
+*to* the client under the stock *"let out anything from firewall host itself"* rule — inbound from
+the router, not traffic from a client.
+
+#### Gateway DNS
+
+`dig @10.20.31.1 dv00bld001p01.mobile.deevnet.net` from the vendor segment returned
+**`10.20.99.95`**. The gateway-service DNS rule works, and the result is
+[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 made
+concrete: the client resolves the Builder's name while being unable to reach it. Resolution and
+reachability are separate, and a service that treats the first as evidence of entitlement has no
+boundary.
+
+Checked from `iot_vendor` only. The other segments' DNS rules are identical in shape and were
+generated by the same loop, but they have not each been exercised.
+
 ## Follow-ups
 
 - [ ] Update INC-0001's remaining open items and status, and its row in the incidents index. Its
@@ -545,10 +672,13 @@ onward from LAN, which nothing used.
   depended on allow-all; CHG-0008 moved them, and phase 1 confirmed the old addresses are dead.
   [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) placed its API on platform for
   the same reason.
-- [ ] **Phase 3 from clients has not been done.** Every result above is from the control host on
-  management. The deny rows — guest, iot_vendor and iot to management — are what prove enforcement,
-  and they need a client on each segment.
-- [ ] The broker's `1883` and a wired IoT host are both untested paths. Re-run those two
+- [ ] **Four verification rows are untested, not passed.** The broker's `1883` (VerneMQ is not
+  deployed), a wired IoT host (`10.20.30.11` is off), a DHCP *renewal* on trusted as opposed to the
+  lease that was already held, and gateway DNS from segments other than `iot_vendor`. None is
+  blocking; all are recorded so nobody later reads this change as having proven them.
+- [ ] **Guest containment has shared attribution.** `DVNTM-GUEST` runs with Omada Guest Network
+  isolation, so its denials cannot be credited to this change. If that isolation is ever turned
+  off, the guest rows become testable and should be re-run. Re-run those two
   verification rows once VerneMQ is deployed and the Pi is back.
 - [ ] `opnsense_dns`, `opnsense_dhcp` and `opnsense_vlans` share this role's API-result blindness:
   they accept HTTP 200 without checking the body's `result`. Worth the same fix before they are

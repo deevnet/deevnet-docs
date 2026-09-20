@@ -374,3 +374,12 @@ Not decisions, and deliberately not settled here:
   together is an availability question for a real requirement.
 - **Order of work.** The device registry comes first. Until `/v1/devices` exists there is nothing to
   record a device's permitted services in, and the contract's §2 and §5 have no state to draw on.
+- **Connection direction is not a choice any more.** *Added 2026-09-19, once
+  [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) applied the zone policy.* The site
+  declares `tenant_transit -> iot_backend` and **not** its reverse. So a tenant workload may dial
+  **out** to a service on IoT Backend, and a service on IoT Backend **cannot** dial into a tenant.
+  The rendezvous is therefore a place both sides connect to — tenant outbound, device inbound —
+  and never a proxy that reaches into the overlay on the device's behalf. That was already the
+  broker's shape; it is now enforced rather than intended, and an implementation that assumes it
+  can originate toward a tenant will be dropped by default deny with no rule to relax, because
+  §4 forbids the rule that would relax it.
