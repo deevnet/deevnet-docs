@@ -10,7 +10,7 @@ weight: 16
 | **Date** | 2026-09-20 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned, on option C.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. The provisioning mechanism for C is proposed below and not yet chosen. Nothing is built. |
+| **Status** | **Planned, on option C.** Option A was selected, implemented, tested and **withdrawn** — its mechanism does not work, for a reason worth keeping. **C1 and C2 are both undecided**: the mechanism design is reviewed before one is chosen. Nothing is built. |
 | **Window** | TBD |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02msg001v01` (the broker's auth database), `dv02cor002p01` (one new firewall rule, applied) |
 | **Automation** | `deevnet.mgmt` `deevnet_api`; `deevnet.net` `opnsense_firewall` with `firewall_apply`; tenant Terraform through `deevnet/deevnet` |
@@ -197,10 +197,26 @@ command="/usr/local/bin/deevnet-broker-account",restrict <key>
 ```
 
 The API opens a connection, writes the account as JSON on stdin, and reads the result and exit
-status. `restrict` disables the pty, agent, port and X11 forwarding, so the key buys the one program
-and nothing else.
+status.
 
-- **No new listening surface.** sshd is already there, already hardened, already lifecycle-managed.
+**Requirements on the key entry, not description of it.** Each of these MUST hold; a key installed
+without them is a general login to the messaging VM:
+
+| | |
+|---|---|
+| `command="…"` | pins the key to one program. The client's requested command is ignored and available in `SSH_ORIGINAL_COMMAND`, which the program MUST NOT execute or interpret |
+| `restrict` | denies pty, agent, port, X11 and user-rc by default. It is a *default-deny*, so later OpenSSH additions stay denied — prefer it to listing `no-*` options, which enumerate what was known at the time of writing |
+| `from="<API address>"` | binds the key to the source, so a stolen key is not usable from anywhere else. Belt to the firewalld rich rule's braces, and it survives a firewall mistake |
+| A dedicated account | not `root` and not `a_autoprov`. The program escalates to what it needs and nothing more |
+| Its own key pair | used for nothing else, so revocation is a single-purpose act |
+
+**The program MUST validate its input against a strict schema and MUST NOT be a shell script.** A
+shell script reading JSON from a network peer is where the injection bug will be.
+
+- **No new daemon and no new listening port.** sshd is already there, already hardened, already
+  patched by the normal update path. Note the precision: C1 *does* add attack surface — the forced
+  command is a program reachable by anyone holding the key — but it adds no process listening on a
+  socket that was not listening before.
 - **It is a host listener**, so firewalld filters it — proven above — and a rich rule can hold it to
   the API's address. That recovers the packet filter A could not have.
 - **Synchronous and definitive by construction**: an exit status and a body, over one connection.
@@ -289,8 +305,9 @@ Verified during and after CHG-0015, so this change does not need to re-establish
   directions on this host, with a throwaway listener so sshd — which Ansible needs — was never at
   risk. This is what makes C workable and A not.
 - **podman preserves the caller's source address** through a published port; it does not
-  masquerade. This is what lets `pg_hba` distinguish anyone, and it is an observed behaviour rather
-  than a guarantee — see below.
+  masquerade. This mattered for reading the failed option-A experiment correctly, and it is what
+  would let `pg_hba` distinguish callers *if* a port were ever published. **It is not a dependency
+  of C** — see below.
 - **`pg_hba` refuses by address**, deployed and proven against the live database.
 
 ## A correction CHG-0015 earns
@@ -338,15 +355,32 @@ still reached the port and spoken the PostgreSQL protocol; what it cannot do is 
 C the port is unpublished, so nothing off this host reaches it at all — `pg_hba` is the second lock,
 not the first, and it stays that way if the port is ever published for some later reason.
 
-**It rests on an observed behaviour, not a guaranteed one.** `pg_hba` can distinguish callers only
-because **podman currently preserves the original source address** through a published port — it
-does not masquerade it. Measured on this host: a connection from the Builder appeared in the
-database container's own `/proc/net/tcp` as `10.20.99.95`, its real address.
+### What C's isolation actually rests on
 
-If a future podman release starts masquerading hostport traffic, every external caller collapses to
-the gateway address, every `pg_hba` host rule matches everyone or no one, and **this control fails
-silently** — no error, no log, just a rule that no longer distinguishes. The Builder regression test
-below is what would catch it.
+**C's isolation of PostgreSQL is that the port is not published.** Nothing off this host has a route
+to it, so there is no address to filter and no authentication to attempt. That property depends on
+no podman behaviour at all — only on the port staying unpublished.
+
+This is worth stating because the paragraph below is easy to misread as a dependency of C. It is
+not.
+
+### Where podman's source handling *does* matter
+
+Two narrower places:
+
+1. **Reading the failed option-A experiment.** Had podman masqueraded, the Builder would have
+   appeared as the gateway address and the rich rule's failure could have been misdiagnosed as a
+   source-matching problem rather than a wrong-chain problem. Knowing the real address was
+   preserved is what made the DNAT-plus-forward explanation the only one left.
+2. **`pg_hba` as defence in depth, in the world where a port is published again.** `pg_hba` can
+   only distinguish callers if it sees their real addresses. Measured on this host: a connection
+   from the Builder appeared in the database container's own `/proc/net/tcp` as `10.20.99.95`.
+
+So: if a future podman release starts masquerading hostport traffic, every external caller collapses
+to the gateway address and `pg_hba` stops distinguishing anyone — **silently**, with no error and no
+log. Under C that changes nothing, because nothing reaches the port. It would matter the moment
+anyone published it again, which is exactly when nobody would be thinking about podman's NAT
+behaviour. The Builder regression test below is what would catch it.
 
 ## Verification
 
@@ -379,7 +413,7 @@ would prove nothing.
 |---|---|---|
 | `8883` | **reachable** | if not, the zone path is broken and the rest of the test is meaningless |
 | `5432` | **closed** | if reachable, the database is exposed to every zone the policy admits to IoT Backend — which includes VLAN 30 |
-| `psql` as `deevnet_api` | `no pg_hba.conf entry for host …` | if it authenticates, podman has started masquerading and `pg_hba` no longer distinguishes anyone |
+| `psql` as `deevnet_api` | `no pg_hba.conf entry for host …` | under C this should not even connect; if it *authenticates*, a port has been published **and** podman has started masquerading, and the defence-in-depth layer is gone |
 
 The third row is the early warning for the podman dependency above. The first two are cheap enough
 to run on any change to the host.
