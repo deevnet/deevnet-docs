@@ -5,11 +5,9 @@ weight: 20
 
 # Broker Account Writer
 
-**Design, for review. Nothing here is built.** It is the C1 mechanism of
+**Accepted at design review, 2026-09-20. Nothing here is built yet.** It is the C1 mechanism of
 [CHG-0016](/docs/changes/2026/0016-broker-accounts/): how the Deevnet API gets an MQTT account onto
-the messaging VM without publishing the broker's auth database to the network.
-
-C1 is recommended but **not chosen**. This document is what the choice is reviewed against.
+the messaging VM without making the broker's auth database reachable from the network.
 
 ## What it is
 
@@ -17,9 +15,13 @@ A single program on `dv02msg001v01`, invoked by sshd as a forced command. The AP
 connection with a key pinned to that program, writes one request as JSON on stdin, and reads one
 response as JSON on stdout plus an exit status.
 
-There is no new daemon and no new listening port. sshd is already running, already hardened, and
-already patched by the normal update path. The surface this adds is the program itself, and the
-rest of this document exists to bound it.
+**No new daemon and no new listening port.** sshd is already running, already hardened, and already
+patched by the normal update path.
+
+**It does add a capability, and that should be said plainly.** A narrowly constrained one, reached
+through an existing surface: anyone holding the key can cause this program to run. The claim is not
+that C1 is free, but that it adds no second listener to configure, expose, patch and remember. What
+it does add is the program, and the rest of this document exists to bound it.
 
 ## Why not a direct database connection
 
@@ -77,20 +79,32 @@ little as possible.**
 | `client_id` | **fixed**: `'*'` | ADR-0012 §10: an account is not tied to a client id, and a tenant does not declare one |
 | Topic prefix | **enforced**: every pattern must already start with `<tenant>/` | See below |
 
-### The prefix check is the point
+### The tenant trust boundary, precisely
 
-ADR-0012 §10 has the API validate patterns and write the tenant's prefix itself. The program
-**re-checks that invariant independently**: every entry in `publish` and `subscribe` must begin with
-the literal `<tenant>/`, or the whole request is refused.
+**The writer trusts the authenticated API to name the correct tenant.** It has no independent way to
+know which tenant a request is really for, and it is deliberately not given one.
 
-That is not redundant. It means a bug in the API — or an API that has been tampered with — cannot
-write an ACL that reaches another tenant's topics. The check lives on the machine that holds the
-data, in a program with one job, and it is the last thing between a malformed request and a
-cross-tenant grant.
+What it enforces is **internal consistency with the claimed tenant**: the username it derives, and
+every pattern it accepts, must fall within `<tenant>/`. A request claiming `eds` cannot smuggle a
+`tdemo/` pattern past it.
+
+**What it cannot do — and this is the honest limit — is stop a compromised API from claiming
+`tdemo` outright** and writing entirely self-consistent `tdemo` ACLs. The API is the component that
+knows which tenant authenticated; if it is compromised, tenant scoping is already lost upstream and
+no check in this program recovers it.
+
+That is accepted, not solved. A second tenant-identity mechanism here — per-tenant keys, signed
+requests — would duplicate authorisation the API already performs, and site the duplicate where
+there is less context to perform it well. The boundary belongs at the API, and this program is not
+the place to rebuild it.
+
+So the check's value is narrower than "defends against a tampered API", and still real: it catches
+API bugs that produce inconsistent requests, and it makes a malformed or half-constructed request
+fail closed rather than write a cross-prefix grant.
 
 The program also refuses any pattern that uses `#` other than as the whole final level, uses `+`
 other than as a whole level, or contains `%` — the same rules as §10, re-applied rather than
-trusted.
+trusted. Same reasoning, same limit: this catches malformed requests, not a lying caller.
 
 ### The password never leaves the API
 
@@ -113,6 +127,21 @@ same as calling it once.
 rotate a credential that devices are already flashed with — the failure CHG-0013 records for Wi-Fi
 keys, in a new place. The API stores the hash, then calls; a retry sends the same hash and converges.
 
+**Every wait is bounded.** Nothing here may hang, because a tenant's `terraform apply` is holding
+the other end.
+
+| Bound | Applies to |
+|---|---|
+| SSH connect timeout | establishing the connection to the messaging VM |
+| SSH session timeout | the whole invocation, from connect to exit status |
+| Writer execution timeout | the program's own work, so it cannot outlive the session that called it |
+| Database statement timeout | the query, so a lock cannot become a hung apply |
+
+Each expiry is an **ambiguous failure**, not a distinct outcome: the API does not know whether the
+row was written, and takes the retry path below with the hash it already persisted. A timeout is
+therefore indistinguishable from a dropped connection, deliberately — one path, already proven safe,
+rather than a second one that gets less testing.
+
 **An ambiguous failure is safe.** If the connection drops after the request is written and before
 the response is read, the API does not know whether the row was written. Because the operation is
 idempotent and the hash is stable, retrying is correct either way. This is the property that lets
@@ -124,7 +153,7 @@ the API answer a tenant honestly instead of guessing.
 |---|---|
 | Exit 0, `ok: true` | success; return the account to the tenant |
 | Exit non-zero, `ok: false` with an `error` | a definite refusal; surface the error, do not retry |
-| Non-zero with no parseable body, or a dropped connection | unknown; retry is safe, and a persistent failure is a `StepError` naming the step |
+| Non-zero with no parseable body, a dropped connection, or **any timeout above** | unknown; retry is safe with the persisted hash, and a persistent failure is a `StepError` naming the step |
 
 The last row matters for a tenant's `terraform apply`: it fails with a named step rather than
 hanging, which is what the rest of the API already does.
@@ -171,19 +200,23 @@ caller's string into a statement.
 The database container has no port on the segment and must not gain one. The program runs on the
 host, so it needs a host-local path to a container that deliberately has none.
 
-**Proposed: bind the published port to loopback** — `127.0.0.1:5432:5432`. Nothing off the host can
-reach it, because the host-side listener is on `127.0.0.1`; there is no segment exposure to filter,
-so podman's DNAT behaviour never comes into it.
+**Selected: the published port is bound to loopback** — `127.0.0.1:5432:5432`. Decided at review,
+not left open.
 
-**This needs confirming in review, because it is the one place this design touches the requirement
-that PostgreSQL stays unpublished.** It is unpublished *on the network*, which is the property
-CHG-0016 exists to protect, but it is a published port in podman's sense and the distinction should
-be agreed rather than assumed from silence.
+**PostgreSQL remains network-unpublished.** The host-side listener exists only on `127.0.0.1`, so
+nothing off this host has a route to it: there is no segment exposure to filter, and podman's DNAT
+behaviour never enters the picture. The security property CHG-0016 exists to protect — *not
+reachable from the network* — holds exactly.
 
-**The alternative is `podman exec`**, which needs no port at all — and needs the program's account
-to have podman access, which on this host means root or close to it. That trades a loopback
-listener for a large privilege increase in exactly the component this design is trying to keep
-small. Proposed against, but it is a real option.
+The wording matters only because podman would describe this as a published port. It is, in podman's
+sense, and it is not network-published in any sense that affects the threat this change addresses.
+Both things are true and the record says both, so nobody later reads `-p` in the role and concludes
+the database was exposed after all.
+
+**`podman exec` was considered and rejected.** It needs no port at all, and needs the program's
+account to have podman access — which on this host is root or close to it. That trades a loopback
+listener for a large privilege increase in precisely the component this design exists to keep
+small.
 
 ---
 
@@ -196,13 +229,54 @@ synchronously; Ansible is not a request-response channel and must not become one
 The API's private key is stored in its OpenBao KV secret, beside the credentials it already reads
 there (ADR-0016).
 
-One firewall change: a narrow `platform -> iot_backend` rule for port 22, plus a firewalld rich rule
-on the messaging VM restricting 22 to the API and the control node. **sshd there is reachable from
-VLAN 30 today**, because `iot -> iot_backend` is a zone-level pass — so this is an improvement on
-the status quo rather than an exposure this design creates. The control node must stay permitted, or
-Ansible loses the host.
+### Restricting sshd on the messaging VM
+
+Two rules, and this is an improvement on the current state rather than an exposure C1 creates:
+
+- A narrow `platform -> iot_backend` rule for port 22, from the API's address only.
+- **A firewalld rich rule on the messaging VM restricting port 22 to the API host and the control
+  node**, because sshd is host INPUT traffic — the one path where a rich rule is *proven* to work
+  on this host, as against a published container port where it does nothing (CHG-0016).
+
+**sshd there is reachable from VLAN 30 today**, because `iot -> iot_backend` is a zone-level pass.
+Every device on that segment can already reach port 22 on the messaging VM. So this rule closes an
+exposure that predates C1.
+
+**The control node must be in that rule, and it must go in before the restriction bites.** Ansible
+reaches this host over exactly the port being restricted; omitting it, or ordering it wrong, costs
+console access to put right. The rule is written with both sources present from the first apply —
+never API-only first and control node second.
 
 ---
+
+## Permanent reachability tests
+
+Negative tests, kept for the life of the mechanism. They assert the property the whole of CHG-0016
+turns on: **PostgreSQL is not reachable from the network, from anywhere, including the host that
+uses it.**
+
+| From | To | Expect |
+|---|---|---|
+| The API host, `dv02prv001v01` | `10.20.35.20:5432` | **fails** — the API reaches the database through this writer, never directly. If this succeeds, C has quietly become A |
+| The Builder, `dv02bld001p01` | `10.20.35.20:5432` | **fails** |
+| A device on VLAN 30 | `10.20.35.20:5432` | **fails** |
+| The messaging VM itself | `127.0.0.1:5432` | **succeeds** — the writer's only path |
+
+The API-host row is the one most worth keeping, because it is the least obvious: the API is the
+legitimate consumer, and it is still supposed to fail here. Its access is a forced command over
+SSH, not a database connection.
+
+**These must hold across a lifecycle, not just after a deploy:** a database container recreate, a
+container restart, a firewalld reload, and a host reboot. Each of those is a moment when a
+published-port mapping or a firewall rule could come back differently, and the earlier
+investigation showed how quietly that can happen.
+
+The Builder row doubles as the regression test CHG-0016 keeps permanently: the Builder is the right
+prober precisely because the zone policy *permits* it, so a refusal proves something above the zone
+rule is doing the work.
+
+**The VLAN 30 row is still owed** — nothing on that segment answers today. Run it with a client on
+`DVNTM-IOT` when one is next available.
 
 ## What it must never do
 
@@ -214,11 +288,32 @@ Ansible loses the host.
 - Hold database privileges beyond `vmq_auth_acl`
 - Become a general-purpose administrative interface. One request type, two operations
 
-## Open for review
+## Review disposition, 2026-09-20
 
-1. **Loopback binding, or `podman exec`?** The one place this touches "PostgreSQL stays unpublished".
-2. **Should `delete` be reachable at all**, or should revocation be an operator act? Tenants can
-   already destroy their own resources through Terraform, so refusing `delete` here would be
-   inconsistent — but it is the one operation that removes a device's access.
-3. **C1 against C2.** This design is what C1 costs. C2 is a service with a typed contract and mTLS,
-   at the price of a new daemon and a new listening port.
+All three open questions are closed. **C1 is accepted**; implementation has not started.
+
+| Question | Decided |
+|---|---|
+| Loopback binding, or `podman exec`? | **Loopback.** The requirement is that PostgreSQL is not reachable from the network, and a loopback-only host binding preserves that without granting the writer podman- or root-equivalent privilege |
+| Should `delete` be reachable at all? | **Keep both `put` and `delete`.** This is a Terraform-managed tenant resource, so removing one is ordinary lifecycle management, not an operator-only act. Idempotent semantics as designed: a missing row is a successful delete |
+| C1 against C2? | **C1.** No new daemon and no new listening port, at the cost of a narrowly constrained capability through the existing SSH surface |
+
+### Non-negotiable at implementation
+
+Carried from review. None of these is a preference:
+
+- A **dedicated key pair**, used for nothing else
+- `command=`, `restrict`, and `from=` on the key entry
+- **No interpretation of `SSH_ORIGINAL_COMMAND`** — not executed, not parsed, not logged as a command
+- No PTY, no forwarding of any kind, no general shell
+- A **dedicated unprivileged account**, not `root` and not `a_autoprov`
+- A **strict typed input schema**, unknown keys rejected, **every field length-bounded**
+- **Parameterised SQL only** — no caller string is ever interpolated into a statement
+- **Only the existing least-privilege `deevnet_api` database role**, which holds
+  `SELECT, INSERT, UPDATE, DELETE` on `vmq_auth_acl` and nothing else
+
+### What implementation still has to settle
+
+Not blockers, but decided in code rather than here: the concrete timeout values, the program's
+language and where it is built, and whether the writer logs a request digest for audit without
+recording any hash or pattern that would make the log a secondary copy of the ACL table.
