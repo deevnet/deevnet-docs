@@ -541,6 +541,35 @@ the four production SSIDs:
 5. Record the WPA versions the controller offers for the PPSK SSID.
 6. Remove the test SSID, profile and ACL.
 
+**Partial evidence, read from the controller 2026-09-19 during
+[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) phase 3.** Not the device test above,
+which is still to run — but it settles two of its unknowns for free, at no risk, because it is a
+read of production state rather than an experiment.
+
+`guestNetEnable` is a **per-SSID boolean**, and exactly one SSID has it:
+
+| SSID | VLAN | `guestNetEnable` | `security` |
+|---|---|---|---|
+| `DVNTM` | 10 | unset | 3 |
+| `DVNTM-IOTV` | 31 | unset | 3 |
+| `DVNTM-GUEST` | 40 | **`true`** | 3 |
+| `DVNTM-IOT` | 30 | unset | 4 (PPSK) |
+
+- **The isolation works.** A Mac on `DVNTM-GUEST` at `10.20.40.50` could not be reached from the
+  management segment, while the *same Mac* on `DVNTM-IOT` at `10.20.30.101` answered ping from the
+  same source minutes earlier. The core router logged `pass vlan07 10.20.99.95 -> 10.20.40.50`, so
+  the zone policy forwarded it and the drop happened at the AP. Isolation on this AP and this
+  controller (6.3.0.45) is demonstrated, not assumed.
+- **The field is independent of `security` in the schema**, so step 3's question narrows: it is no
+  longer "does the controller model these as mutually exclusive" but "will it accept
+  `guestNetEnable` on a `security=4` SSID". Still untested, and still the thing to test.
+- **Unchanged:** the reason this route was not taken for IoT. Guest Network blocks a client from
+  every local subnet, which would break `iot -> iot_backend` — the one flow a device needs. The
+  EAP ACL permit in step 2 remains the whole question, not a detail of it.
+- **Also observed:** `DVNTM-IOTV` has isolation **off**. Vendor devices are contained from other
+  segments but not from each other, on a segment whose stated purpose is containment. That is the
+  same gap as IoT, and it was not previously written down.
+
 ---
 
 ## Consequences

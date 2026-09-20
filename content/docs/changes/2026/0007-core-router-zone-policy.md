@@ -592,8 +592,31 @@ by an actual exchange from `dv02bld001v01`: *"System clock wrong by -0.004222 se
 
 Nothing else in the sweep was being dropped.
 
-Still outstanding: `DVNTM-GUEST` and `DVNTM-IOTV` clients, the per-zone gateway DNS check from
-each segment, and a DHCP lease on trusted, iot_vendor and guest.
+#### Guest: contained, but this change cannot take the credit
+
+A Mac joined `DVNTM-GUEST` and leased `10.20.40.50`, the first address in the pool — so
+`ansible: gateway services DHCP guest` works. Its attempts to reach management and iot_backend
+hung, and `1.1.1.1:443` succeeded, which is the expected shape.
+
+**But the denials are not attributable to this change.** `DVNTM-GUEST` is the only SSID on the
+controller with `guestNetEnable: true` — read from the Omada Open API on 2026-09-19 — and Guest
+Network blocks a client from every local subnet at the access point. Those packets most likely
+never reached `dv02cor002p01`: the firewall log shows nothing from `10.20.40.50`, neither blocks
+nor passes.
+
+The corroborating observation is that `management -> guest` in the *other* direction was passed by
+the router (`pass vlan07 10.20.99.95 -> 10.20.40.50`) and still did not reach the client. The zone
+policy did its part; the AP dropped it.
+
+So the guest segment is contained by two overlapping mechanisms, and the zone policy's share is not
+separately observable without turning isolation off — which is not worth doing to satisfy a test.
+Recorded as **contained, attribution shared**, rather than as a clean pass for this change. The
+same read produced [evidence for ADR-0011 open question 4](/docs/architecture/decisions/0011-edge-devices-application-owned/),
+which is the more useful outcome.
+
+Still outstanding: the `DVNTM-IOTV` client — whose results *will* be attributable, since that SSID
+has isolation off — the per-zone gateway DNS check from each segment, and a DHCP lease on trusted
+and iot_vendor.
 
 ## Follow-ups
 
