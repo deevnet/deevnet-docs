@@ -197,3 +197,14 @@ question is written down, not when it is answered.
   routes by a substrate-stamped tenant label to ntfy on Platform, where each tenant is limited to its
   own topic prefix. Open: who watches the watcher, and how an off-site phone is reached. Extends
   ADR-0022.
+- [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/) —
+  *Proposed.* Grafana OSS on the tenant observability VM, with one organisation per tenant, because
+  free Grafana has no data-source permissions inside an organisation. The API creates each tenant's
+  organisation, its four data sources, which carry the tenant's read token, and one login. A tenant
+  is an Editor, never an Admin, so it can build dashboards but can't create a data source. A data
+  source is a URL Grafana's server would request. Grafana's own alerting is off, since alerting is
+  ADR-0023's. Tenants declare dashboards with the `grafana/grafana` Terraform provider, served from
+  the offline mirror, using the same login. A password, unlike a service-account token, can be
+  restored from tenant state after a rebuild. Dashboards are re-derivable from code, and ones built
+  only by clicking are not kept. Perses was considered: it is pre-1.0 and has no Terraform provider.
+  Extends ADR-0023.
