@@ -164,3 +164,13 @@ question is written down, not when it is answered.
   into tenant space may be added. Records the invariant the shared segment depends on — every
   device-facing service authenticates its callers per device, because zone policy grants a whole
   zone — and accepts that peer devices on one VLAN are not separable with the current access point.
+- [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) —
+  *Proposed.* Answers ADR-0016 §8, which left tenant namespaces for their own record. Each tenant
+  gets a namespace in the substrate's OpenBao, made by the API, and it holds a copy of the tenant's
+  runtime secrets, never the only one. A secret is either one the tenant wrote, such as a third-party
+  API key, or one the substrate issued. The tenant's repository or state keeps the authoritative copy
+  and writes it through the Deevnet API, so a rebuild costs one apply and never a secret. Each
+  workload reads directly under its own AppRole, delivered once through ADR-0017's channel, so the
+  API stays out of the read path. OpenBao becomes something needed to *start* a tenant service, not
+  to keep one running. Its blast radius now covers tenant secrets, and an audit device and a proven
+  snapshot restore are preconditions for accepting this record. Extends ADR-0016; depends on ADR-0017.
