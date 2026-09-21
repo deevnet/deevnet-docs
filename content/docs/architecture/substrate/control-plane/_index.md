@@ -102,6 +102,15 @@ Platform, and why it is described here rather than with tenants.
   ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/)).
 - **Only devices in the IoT trust class get an account.** The IoT Vendor segment is isolated from
   every internal segment, so an account for one of its devices could never be used.
+- **The broker's authentication store is never reachable from the network.** Not from a device, not
+  from the Builder, and not from the API that writes to it. Provisioning reaches it through a
+  constrained program on its own host, invoked over an existing surface, rather than by opening a
+  database to the segment ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)).
+- **The provisioning path names as little as possible.** An account's username and its topic scope
+  are *derived* from the tenant rather than accepted from the caller, so a malformed request fails
+  closed instead of writing a grant outside that tenant's prefix. The limit is honest: this catches
+  a bug in the caller, not a compromised one. Tenant identity is established where the tenant
+  authenticates, and is not rebuilt further down.
 
 ---
 
@@ -149,11 +158,18 @@ The control plane is correct when:
 
 ## Current state
 
-Partly built. The provisioning domain is real — the Deevnet API creates tenants today, and `eds`
-and `tdemo` were both built through it. Tenant DNS and the state store are running. The broker is
-decided but **not built**, so no device reaches an application through the substrate yet, and the
-device registry behind it still answers `501`. Tenant observability is unbuilt.
+Mostly built. The provisioning domain is real — the Deevnet API creates tenants today, and `eds`
+and `tdemo` were both built through it. Tenant DNS and the state store are running.
 
-The zone policy that makes these segment boundaries real has also never been applied — see
-[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) and
-[Limits](/docs/architecture/limits/).
+Device messaging is now real too. The broker is deployed and serving TLS
+([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)), the device registry behind it answers rather
+than `501` ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), and a tenant can be issued
+an MQTT account through the API ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)), which a real
+client then used to connect over TLS and publish inside its own prefix. What does not exist yet is an
+application on the other side of that rendezvous to consume it.
+
+Tenant observability is unbuilt.
+
+The zone policy that makes these segment boundaries real is applied and enforcing
+([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)). The hardware limits behind it have
+not changed — see [Limits](/docs/architecture/limits/).

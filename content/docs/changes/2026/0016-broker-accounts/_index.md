@@ -1,6 +1,7 @@
 ---
 title: "CHG-0016: The API Writes Broker Accounts"
 weight: 16
+bookCollapseSection: true
 ---
 
 # CHG-0016: The API Writes Broker Accounts
@@ -250,6 +251,10 @@ safety is someone else's ongoing job.
 The one place C1 is genuinely weaker is the input boundary: a program invoked by sshd reading a
 network peer's stdin. That is answerable by writing a real program with a strict schema, and it is a
 smaller thing to get right than a whole service.
+
+C1's design as accepted at review — the wire contract, what the program derives rather than accepts,
+the privilege each layer holds, and the constraints that are non-negotiable for any later change to
+it — is [C1 Design: The Broker Account Writer](design/).
 
 **A note on what is already true.** sshd on the messaging VM listens on the segment, and
 `iot -> iot_backend` is a zone-level pass, so a device on VLAN 30 can already reach port 22 there
