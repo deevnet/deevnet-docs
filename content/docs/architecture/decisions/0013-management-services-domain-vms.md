@@ -13,7 +13,7 @@ weight: 13
 | **Scope** | How services on the management hypervisor are grouped into VMs and named, where the site's Omada controller officially runs, and the order a rebuild uses them in |
 | **Extends** | [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/0009-network-device-config-ownership/), which decided that the controller is the actuator for switch and AP configuration, but not where it runs |
 | **Extended by** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) — the provisioning VM holds both the state store and the API's database, so their data needs a data disk and a copy on separate hardware *(Proposed)*; [ADR-0025: Identity Directory](/docs/architecture/decisions/0025-identity-directory/) — Keycloak in the identity VM, with a realm per tenant *(Proposed)* |
-| **Superseded in part by** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) — §5, for logs only: one log store on Platform instead of one per audience *(Proposed)* |
+| **Superseded in part by** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) — §5, for logs only: one log store on Platform instead of one per audience *(Proposed)*. The two observability VMs are replaced as a result, `sob` by `dv02col001v01` (collector) and `tob` by `dv02obs001v01` (store), in [CHG-0018](/docs/changes/2026/0018-central-log-store/) *(Planned)* |
 | **Related** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0008: Host Naming and Site Codes](/docs/architecture/decisions/0008-host-naming-site-codes/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) (its Open questions 2, 5 and 6), [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) |
 
 ---
@@ -199,6 +199,10 @@ All run on `dv02hyp001p01`. Host names are proposed (§4).
   `msg`.
 
 ### 5. Observability comes in two flavours
+
+> **Note, 2026-09-21.** Overtaken for logs by ADR-0022 and for metrics by ADR-0023, both Proposed:
+> one store on Platform (`obs`) and one collector on management (`col`), replacing `tob` and `sob`
+> in CHG-0018. The text below is kept as decided.
 
 - **Substrate observability (`sob`) sits on management.** IoT Backend can't reach management
   (§9), and no rule lets Platform reach it. So it **collects by pull** from Platform and IoT

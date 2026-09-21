@@ -24,6 +24,11 @@ weight: 22
 - **CHG-0008 built both observability VMs empty.** `dv02sob001v01`, on management, is for the
   substrate. `dv02tob001v01`, on Platform, is for tenants. Each runs only sshd, and CHG-0008's
   follow-up *"Observability tooling for `dv02sob001v01` and `dv02tob001v01`"* is still open.
+- **Both are replaced, not reused.** This record puts every log in one store, so the audience split
+  their names describe no longer exists. [CHG-0018](/docs/changes/2026/0018-central-log-store/)
+  replaces `tob` with **`dv02obs001v01`**, the observability store, and `sob` with
+  **`dv02col001v01`**, the collector (naming §3.4). Both are still empty, so replacing them costs
+  nothing. The rest of this record uses the new names.
 - **Every host keeps its own journal.** Reading across the site means an SSH session per host, and
   the core router's log buffer holds about fifty seconds.
 - **Tenants have nothing at all.** The tenant pages promise logs *"Tagged with tenant identifier"*,
@@ -50,7 +55,7 @@ What ADR-0013 didn't weigh is the reverse.
 
 | Source | Rule, already declared |
 |---|---|
-| Management hosts, including the hypervisors and `sob` | `management -> platform` |
+| Management hosts, including the hypervisors and `col` | `management -> platform` |
 | The operator, from trusted | `trusted -> platform` |
 | Tenant workloads | `tenant_transit -> platform` |
 | The broker on IoT Backend | `iot_backend -> platform` |
@@ -146,15 +151,15 @@ for this hardware.
 
 ## Decision
 
-**Option C, with VictoriaLogs behind vmauth, on `dv02tob001v01`.**
+**Option C, with VictoriaLogs behind vmauth, on `dv02obs001v01`.**
 
 ### 1. One store, on Platform
 
-- **VictoriaLogs and vmauth run as containers on `dv02tob001v01`**, in the pattern ADR-0013 set.
+- **VictoriaLogs and vmauth run as containers on `dv02obs001v01`**, in the pattern ADR-0013 set.
 - **vmauth is the only listener tenants can reach.** VictoriaLogs' own HTTP port is bound to the
   loopback interface.
 - **Logs live on a data disk, not the OS disk**, as the provisioning VM's data needs (ADR-0014).
-- **`dv02sob001v01` keeps its place for pull-based collection** such as metrics, which a later record
+- **`dv02col001v01` keeps its place for pull-based collection** such as metrics, which a later record
   decides. It stores no logs.
 
 ### 2. Partitions follow the tenant index
@@ -194,7 +199,7 @@ tenant identifier already derives from (ADR-0002):
   (ADR-0015). They are returned in the create response, kept in tenant state, and restorable from it
   (ADR-0012 §4). A workload receives its ingest token through ADR-0021 once that exists.
 - **The API writes vmauth's configuration.** The path is the one CHG-0016 used for broker accounts:
-  a forced SSH command on `tob`, reached by one narrow rule from the provisioning VM. No substrate
+  a forced SSH command on `obs`, reached by one narrow rule from the provisioning VM. No substrate
   commit per tenant, as ADR-0010 requires.
 - **Each substrate host has its own ingest token**, which writes only `(0, 0)`. One host's token
   can be revoked without touching the others, and a forged line traces to the token that sent it.
@@ -236,7 +241,7 @@ a collector's job, and it is left open (Open question 3).
 
 **The syslog listener is the one unauthenticated path.** A tenant can reach Platform, so it can
 reach that port. Zone policy can't narrow this, because zone policy admits segments, not services
-(standards, *Reachability and Permission*). The host firewall on `tob` admits only the network
+(standards, *Reachability and Permission*). The host firewall on `obs` admits only the network
 devices' and hypervisors' addresses. That is the same split between zone policy and host policy that
 the broker's SSH port already relies on.
 
@@ -297,7 +302,7 @@ document-level security could show. It is deliberately less, and it grows only b
 today.
 
 **The segmentation reasoning in ADR-0013 §5 is narrowed.** Substrate logs are pushed to Platform,
-not pulled to management. For whatever `sob` collects later, the pull model still holds.
+not pulled to management. For whatever `col` collects later, the pull model still holds.
 
 **VictoriaLogs is a smaller project than Loki or OpenSearch.** It is swappable: every ingest path
 here is a standard protocol, and only the partition headers are specific to it.
@@ -342,7 +347,7 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 - That the syslog port under host networking is filtered by firewalld, measured from a source that
   is not allowed, as CHG-0016 measured it.
 - The systemd version on `dv02hyp002p02`. Only `dv02hyp001p01` was checked.
-- That VictoriaLogs and vmauth run in the memory `tob` is given, at a realistic ingest rate. `tob` was
+- That VictoriaLogs and vmauth run in the memory `obs` is given, at a realistic ingest rate. `obs` was
   built with 2 GB before logging had requirements, and resizing it is approved.
 
 ---
@@ -352,5 +357,6 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 - **Proposed. Nothing is built.** The stack and partition scheme were reviewed and accepted as
   written on 2026-09-21, and every open question was answered. This record becomes Accepted when
   [CHG-0018](/docs/changes/2026/0018-central-log-store/) completes.
-- `dv02tob001v01` and `dv02sob001v01` run only sshd.
+- `dv02tob001v01` and `dv02sob001v01` run only sshd. CHG-0018 replaces them with `dv02obs001v01` and
+  `dv02col001v01`.
 - No host ships its logs anywhere.

@@ -23,7 +23,9 @@ weight: 23
 - **The substrate has no metrics and no alerts.** The operator learns about a fault when a tenant's
   apply times out or a page stops loading.
 - **Both observability VMs are still empty.** `dv02sob001v01` is on management and
-  `dv02tob001v01` is on Platform.
+  `dv02tob001v01` is on Platform. Both are being replaced: `tob` by the store `dv02obs001v01`, and `sob`
+  by the collector `dv02col001v01` ([CHG-0018](/docs/changes/2026/0018-central-log-store/), naming
+  §3.4). The rest of this record uses the new names.
 - **Tenants were promised more than they have.** The tenant pages promise *"VM resource
   utilization"*, *"Per-tenant thresholds"* and *"Tenant-specific notification channels"*. None of
   it exists.
@@ -54,9 +56,9 @@ target.** A scraper on Platform would need new rules into management and IoT Bac
 
 | Option | Collection | Storage | Verdict |
 |---|---|---|---|
-| **A — `sob` scrapes, `tob` stores** | pull, from management | on Platform, beside the logs | **Chosen** |
-| B — Everything pushes to `tob` | every host runs a push agent with a credential | on Platform | Rejected: a credential on every substrate host, and pushing from Platform-reachable hosts only moves the scrape problem into each host |
-| C — Two stores, as ADR-0013 §5 has it | pull, from management | substrate on `sob`, tenants on `tob` | Rejected for the reasons ADR-0022 gave for logs: two stacks, and no path from the substrate's store to what a tenant should see |
+| **A — `col` scrapes, `obs` stores** | pull, from management | on Platform, beside the logs | **Chosen** |
+| B — Everything pushes to `obs` | every host runs a push agent with a credential | on Platform | Rejected: a credential on every substrate host, and pushing from Platform-reachable hosts only moves the scrape problem into each host |
+| C — Two stores, as ADR-0013 §5 has it | pull, from management | substrate on `col`, tenants on `obs` | Rejected for the reasons ADR-0022 gave for logs: two stacks, and no path from the substrate's store to what a tenant should see |
 
 ### Store
 
@@ -96,16 +98,16 @@ Vendor documentation was checked on 2026-09-21.
 
 ## Decision
 
-**Option A: `sob` scrapes, `tob` stores.** The store is a VictoriaMetrics cluster behind ADR-0022's
+**Option A: `col` scrapes, `obs` stores.** The store is a VictoriaMetrics cluster behind ADR-0022's
 vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on Platform delivers.
 
-### 1. Collection: `sob` scrapes the substrate
+### 1. Collection: `col` scrapes the substrate
 
-- **vmagent on `dv02sob001v01` scrapes every substrate target** and remote-writes to `tob` through
+- **vmagent on `dv02col001v01` scrapes every substrate target** and remote-writes to `obs` through
   vmauth, using the substrate's ingest token.
   - Management reaches every zone, so this needs no new zone rule.
-  - `sob` → `tob` uses the existing `management -> platform` rule.
-- **vmagent buffers to disk while `tob` is unreachable:** *"If the remote storage is unavailable, the
+  - `col` → `obs` uses the existing `management -> platform` rule.
+- **vmagent buffers to disk while `obs` is unreachable:** *"If the remote storage is unavailable, the
   collected metrics are buffered at `-remoteWrite.tmpDataPath`"*. An outage of the store loses no
   samples, up to the buffer's size.
 - **Sources:**
@@ -113,29 +115,29 @@ vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on 
   | Source | How |
   |---|---|
   | Fedora VMs, the Builder | `node-exporter` (Fedora package), and `prometheus-podman-exporter` on container hosts |
-  | Proxmox hypervisors | the External Metric Server, InfluxDB protocol, sent to vmagent on `sob` (both on management) |
+  | Proxmox hypervisors | the External Metric Server, InfluxDB protocol, sent to vmagent on `col` (both on management) |
   | Core router | `os-node_exporter`, from the official OPNsense plugins |
-  | Switch, access point | SNMP, enabled in the Omada controller, scraped through an SNMP exporter on `sob` |
+  | Switch, access point | SNMP, enabled in the Omada controller, scraped through an SNMP exporter on `col` |
   | OpenBao | `/v1/sys/metrics` in Prometheus format |
   | PowerDNS, VerneMQ, MinIO | each service's own Prometheus endpoint |
   | The Deevnet API, PostgreSQL | an instrumented `/metrics`, and `postgres_exporter` |
 
-- **Every exporter on a Platform or IoT Backend host admits only `sob`.** Tenants can reach Platform,
+- **Every exporter on a Platform or IoT Backend host admits only `col`.** Tenants can reach Platform,
   and zone policy admits segments, not services. So each exporter listens on its host's address
-  behind a host firewall rule for `sob`'s address alone. This is the same host-policy control as
+  behind a host firewall rule for `col`'s address alone. This is the same host-policy control as
   ADR-0022's syslog listener.
   - Several services bind their metrics to localhost by default (VerneMQ, PowerDNS). Each role
     changes that deliberately.
 
-### 2. Storage: a VictoriaMetrics cluster on `tob`, partitioned as the logs are
+### 2. Storage: a VictoriaMetrics cluster on `obs`, partitioned as the logs are
 
-- **vminsert, vmselect and vmstorage run as containers on `dv02tob001v01`**, bound to loopback, with
+- **vminsert, vmselect and vmstorage run as containers on `dv02obs001v01`**, bound to loopback, with
   vmauth as the only listener. Data goes on the same data disk as the logs.
 - **The partitions are ADR-0022's:**
   - `(0, 0)` is the substrate
   - `(index, 0)` is what the tenant ships
   - `(index, 1)` is what the substrate publishes about the tenant
-- **Tenants push, and `sob` never scrapes a tenant workload.**
+- **Tenants push, and `col` never scrapes a tenant workload.**
   - ADR-0018's route would let it, but that route is operator access, and ADR-0018 says it is not a
     delivery path.
   - Scraping would also make substrate configuration track tenant workloads, which ADR-0010 forbids.
@@ -164,7 +166,7 @@ vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on 
   operator's read token. They cover `(0, 0)`, and span tenants through the multitenant endpoint where
   a rule needs to.
 - **Each tenant's rules are declared through the Deevnet API**, as a new provider resource. The API
-  writes them to `tob` over the same forced-command path ADR-0022 uses for vmauth.
+  writes them to `obs` over the same forced-command path ADR-0022 uses for vmauth.
 - **Each tenant's rules are evaluated by that tenant's own vmalert instance, using the tenant's own
   read token.** This is the central choice. What a tenant's rule can read is limited by vmauth, not
   by the rule's text. A rule that tries another tenant's data gets the tenant's own partition or a
@@ -175,9 +177,9 @@ vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on 
   Alertmanager routes on that label.
 
 **Routing and delivery.**
-- **One Alertmanager on `tob`.** Routes are generated by the substrate: operator alerts go to the
+- **One Alertmanager on `obs`.** Routes are generated by the substrate: operator alerts go to the
   operator's receivers, and each tenant's alerts go to that tenant's receivers only.
-- **ntfy runs on `tob` as the notification service**, with `auth-default-access: deny-all`.
+- **ntfy runs on `obs` as the notification service**, with `auth-default-access: deny-all`.
   - The operator subscribes from trusted or management, and tenants from tenant transit. Both reach
     Platform.
   - Each tenant gets an ntfy user limited to its own topic prefix. ntfy supports that directly: *"a
@@ -204,7 +206,7 @@ vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on 
 
 **The site can alert on itself.** Faults become notifications instead of discoveries.
 
-**`tob` becomes the site's busiest management-hypervisor VM.** It carries:
+**`obs` becomes the site's busiest management-hypervisor VM.** It carries:
 - vmauth
 - VictoriaLogs
 - vminsert, vmselect and vmstorage
@@ -212,21 +214,21 @@ vmauth. vmalert runs once per partition owner, Alertmanager routes, and ntfy on 
 - ntfy
 - one vmalert per tenant
 
-The 2 GB it was built with is unlikely to be enough, and sizing it is To confirm. `sob` stays small:
+The 2 GB it was built with is unlikely to be enough, and sizing it is To confirm. `col` stays small:
 vmagent and an SNMP exporter.
 
-**Alerting shares the fate of what it watches.** If `tob` is down, there are no evaluations and no
-notifications, and nothing says so. vmagent on `sob` keeps its samples, but no alert fires about the
+**Alerting shares the fate of what it watches.** If `obs` is down, there are no evaluations and no
+notifications, and nothing says so. vmagent on `col` keeps its samples, but no alert fires about the
 outage itself. This is the gap in the design (Open question 1).
 
 **Every exporter is a firewall rule on its host.** A new service with metrics is not finished until
-its exporter admits only `sob`.
+its exporter admits only `col`.
 
 **A tenant's alerting costs the substrate a process.** One vmalert per tenant is cheap at today's two
 tenants and would need revisiting near the 62-tenant ceiling.
 
 **The API grows again.** It gains an alert-rule resource, an ntfy user per tenant, the VMID map for
-§3, and one more file it writes on `tob`.
+§3, and one more file it writes on `obs`.
 
 **Off-site notifications don't work yet.** ntfy on Platform notifies phones on site. Off-site, the
 phone needs a path back to the site, which is Open question 3.
@@ -235,15 +237,15 @@ phone needs a path back to the site, which is Open question 3.
 
 ## Open questions
 
-1. **Who watches the watcher?** Something outside `tob` has to notice when `tob` stops.
-   - The candidate is a heartbeat alert that fires constantly, with its absence detected on `sob`.
-   - `sob` can't send through `tob`'s ntfy, because that is what failed, so the check needs a second
-     delivery path. One option is a small operator-only notifier on `sob` itself: the operator's phone
+1. **Who watches the watcher?** Something outside `obs` has to notice when `obs` stops.
+   - The candidate is a heartbeat alert that fires constantly, with its absence detected on `col`.
+   - `col` can't send through `obs`'s ntfy, because that is what failed, so the check needs a second
+     delivery path. One option is a small operator-only notifier on `col` itself: the operator's phone
      on trusted can reach management, and tenants can't. The other is to send that one heartbeat
      through a hosted service, which reveals only that the site is down.
 2. **Delivering the VMID map to vmagent.** Options:
-   - `sob` polls an operator endpoint on the API and regenerates relabel rules
-   - the API writes the map to `sob` over a forced command, as it does to `tob`
+   - `col` polls an operator endpoint on the API and regenerates relabel rules
+   - the API writes the map to `col` over a forced command, as it does to `obs`
    - vmagent reads Proxmox's `/cluster/resources` and a separate job joins it to the map
 
    It must not be inventory.
@@ -265,7 +267,7 @@ phone needs a path back to the site, which is Open question 3.
 
 ## To confirm when building
 
-- That a VictoriaMetrics cluster and VictoriaLogs together fit a resized `tob`, and what it needs.
+- That a VictoriaMetrics cluster and VictoriaLogs together fit a resized `obs`, and what it needs.
 - That vmauth refuses a tenant token on another tenant's `/select/<accountID>:<projectID>/` and on
   `/select/multitenant/`.
 - That a tenant rule cannot override the `tenant` label vmalert stamps.

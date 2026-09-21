@@ -136,17 +136,21 @@ The role is a three-letter mnemonic and is **mandatory** — there is no unprefi
 | `cor` | Core router | | `bgw` | Bell gateway |
 | `edg` | Edge router | | `rpi` | Raspberry Pi |
 | `acc` | Access switch | | `nms` | Network management |
-| `wap` | Wireless AP | | `sob` | Substrate observability |
-| `prv` | Provisioning | | `tob` | Tenant observability |
+| `wap` | Wireless AP | | `col` | Collection (observability) |
+| `prv` | Provisioning | | `obs` | Observability store |
 | `idn` | Identity | | `msg` | Device messaging |
 
-The domain-VM codes (`nms`, `sob`, `tob`, `prv`, `idn`, `msg`) name what a VM's containers are
+The domain-VM codes (`nms`, `col`, `obs`, `prv`, `idn`, `msg`) name what a VM's containers are
 for, not which product runs in them
 ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)).
 
 **Retired, never reused:** `tdn` (Tenant DNS, folded into `idn`), `tst` (Tenant state, folded into
 `prv`) and `mqt` (MQTT broker, folded into `msg`), by
-[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/).
+[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/). `sob` (Substrate observability) and `tob` (Tenant observability) are
+retired by [CHG-0018](/docs/changes/2026/0018-central-log-store/), because
+[ADR-0022](/docs/architecture/decisions/0022-central-logging/) put every log in one store and the
+audience split in their names no longer holds. `obs` and `col` replace them. Until CHG-0018 is
+Complete, the old hosts still exist under the old codes.
 
 Mnemonics are allocated deliberately, like tenant indices. A new class MUST have its code added
 here in the same change that introduces the host.
