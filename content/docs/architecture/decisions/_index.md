@@ -208,3 +208,15 @@ question is written down, not when it is answered.
   restored from tenant state after a rebuild. Dashboards are re-derivable from code, and ones built
   only by clicking are not kept. Perses was considered: it is pre-1.0 and has no Terraform provider.
   Extends ADR-0023.
+- [ADR-0025: Identity Directory](/docs/architecture/decisions/0025-identity-directory/) —
+  *Proposed.* Keycloak on the identity VM, with a `deevnet` realm for the operator and substrate UIs
+  and one realm per tenant for its people and its applications' end users. The tenant manages its
+  realm with the `keycloak/keycloak` provider, through a management client the API creates. The
+  Omada controller's admin SSO accepts only SAML, which rules out the lighter providers, and only
+  Keycloak and Zitadel draw a real boundary between tenants. Tenant people reach substrate UIs by
+  brokering through `deevnet`, which stamps the tenant claim itself, so a tenant realm can't claim
+  another tenant. Grafana OSS maps that claim to the tenant's organisation. Host login uses
+  short-lived SSH certificates from OpenBao, never a directory lookup, and the core router keeps
+  local accounts. The rebuild path never waits on the directory, and every consumer keeps a
+  break-glass account. Users' credentials exist nowhere else, an accepted exception to ADR-0010 §4
+  that makes Keycloak's database kept data. Extends ADR-0013 and ADR-0024.
