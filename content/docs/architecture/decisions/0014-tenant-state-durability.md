@@ -11,6 +11,7 @@ weight: 14
 | **Date** | 2026-09-16 |
 | **Scope** | How the tenant state store's contents survive losing the host, disk or hypervisor they live on, and how that copy is kept apart from the platform API's database, which the state restores |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), which offered the store and recorded its durability as *"the weakest part of the decision"*; [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/), whose §1 and §6 put the store and the API's database in one VM |
+| **Extended by** | [ADR-0026: Object Storage](/docs/architecture/decisions/0026-object-storage/) — the store is defined by a contract, runs pgsty/silo, and also offers tenant buckets *(Proposed)* |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §4 and §5, [Substrate Storage](/docs/architecture/substrate/storage/), [Limits](/docs/architecture/limits/) |
 
 ---

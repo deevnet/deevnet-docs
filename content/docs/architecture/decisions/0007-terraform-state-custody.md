@@ -11,7 +11,7 @@ weight: 7
 | **Date** | 2026-09-03 |
 | **Scope** | Where Terraform state lives, who may read it, and what protects it |
 | **Depends on** | [ADR-0006: Tenant Code Boundary](/docs/architecture/decisions/0006-tenant-code-boundary/) |
-| **Extended by** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) — how the store's contents survive losing their host, once state holds device secrets *(Proposed)* |
+| **Extended by** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) — how the store's contents survive losing their host, once state holds device secrets *(Proposed)*; [ADR-0026: Object Storage](/docs/architecture/decisions/0026-object-storage/) — the store is defined by a contract, runs pgsty/silo, and also offers tenant buckets *(Proposed)* |
 
 ---
 

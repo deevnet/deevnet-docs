@@ -220,3 +220,23 @@ question is written down, not when it is answered.
   local accounts. The rebuild path never waits on the directory, and every consumer keeps a
   break-glass account. Users' credentials exist nowhere else, an accepted exception to ADR-0010 §4
   that makes Keycloak's database kept data. Extends ADR-0013 and ADR-0024.
+- [ADR-0026: Object Storage](/docs/architecture/decisions/0026-object-storage/) —
+  *Proposed.* MinIO's community edition was archived on 2026-04-25. The state store is now defined
+  by a contract any engine must pass on the site's own build. The contract requires:
+  - a second `If-None-Match: *` write refused with 412, atomically, on a versioned bucket, which is
+    what `use_lockfile` needs
+  - keys confined by the server
+  - hard quotas
+  - versioning and asynchronous replication
+  - TLS
+  - an admin API
+  - offline operation
+
+  pgsty/silo, a maintained MinIO fork, meets it as an in-place swap, built from source by the
+  container image factory. SeaweedFS is next in line: its quotas are soft. Garage is ruled out,
+  because it rejects conditional writes and has no versioning. Ceph RGW waits for a second box. One
+  store holds two classes: Terraform state, as today, and tenant buckets through a new
+  `deevnet_bucket` resource, each with a key and a required hard quota. A reserve protects state
+  from being starved, and the substrate stores tenant buckets without backing them up unless the
+  tenant opts into replication. It also closes a gap: the store has served plain HTTP despite
+  ADR-0016. Extends ADR-0007 and ADR-0014.
