@@ -7,7 +7,7 @@ weight: 9
 
 | | |
 |---|---|
-| **Date** | Not yet scheduled |
+| **Date** | Unscheduled |
 | **Change type** | Migration — the switch moves from standalone to controller-managed |
 | **Classification** | Disruptive — adoption rewrites port VLANs, and the uplink is expected to drop until they are re-applied |
 | **Status** | **Planned, on hold since 2026-09-16.** Deprioritised behind the Deevnet API and the first working tenant; it is not on that path. The research below settles the route, so the work resumes from here without repeating it. |

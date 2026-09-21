@@ -11,7 +11,7 @@ weight: 3
 | **Site** | mobile (`dvntm`) |
 | **Systems** | OpenBao on `dv02idn001v01`; the Deevnet API on `dv02prv001v01`; the inventory repository `ansible-inventory-deevnet` |
 | **Severity** | Provisioning only. OpenBao kept running and self-unsealing, the Deevnet API kept serving, and both live tenants — `tdemo` and `eds` — were unaffected throughout, including during the rebuild. No client-facing outage. |
-| **Status** | **Resolved.** OpenBao was rebuilt, both tenants resupplied their secrets, and the practice that allowed it is now written down and enforced by a checklist. Three code defects the rebuild exposed are fixed. |
+| **Status** | **Open · Hardening.** Service restored and the cause remediated. OpenBao was rebuilt, both tenants resupplied their secrets, and the practice that allowed it is now written down and enforced by a checklist. Three code defects the rebuild exposed are fixed. **Open on three follow-ups:** an OpenBao audit device, a Raft snapshot copied off the VM, and a scheduled snapshot-restore drill — see [Follow-ups](#follow-ups). |
 | **Cause** | `git reset --hard` run in a repository whose vault files were decrypted, eight minutes after an initialisation wrote once-only credentials into one of them |
 
 ---

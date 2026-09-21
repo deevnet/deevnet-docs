@@ -11,7 +11,7 @@ weight: 2
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Network-management VM `dv02nms001v01` (VMID 204 on `dv02hyp001p01`), running the Omada controller container |
 | **Severity** | Management-plane only. The controller was unreachable, which **blocked [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)**. No client-facing outage: the AP was still standalone on its old firmware, so wireless kept serving. |
-| **Status** | **Service restored by a guest reboot; root cause not established.** The controller and its Omada data (local Owner, Open API client) came back intact. Corrective and preventive actions are open. |
+| **Status** | **Open · Mitigated.** **Service restored by a guest reboot; root cause not established.** The controller and its Omada data (local Owner, Open API client) came back intact. Corrective and preventive actions are open. |
 | **Times** | Local (EDT, UTC−4), as observed from the builder during the CHG-0005 window |
 
 ---

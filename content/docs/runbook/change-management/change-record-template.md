@@ -20,7 +20,7 @@ worked example of a multi-phase change.
 | **Single-page change** | `content/docs/changes/<YYYY>/<NNNN>-<slug>.md` |
 | **Multi-phase change** | A folder `content/docs/changes/<YYYY>/<NNNN>-<slug>/`. `_index.md` is the record; numbered phase pages hold the procedure; `undo.md` holds the undo; optionally `troubleshooting.md` holds issues and follow-ups. Add `bookCollapseSection: true` to `_index.md`. |
 | **Title** | `CHG-NNNN: <What changed>`, from the site's point of view, e.g. "CHG-0001: Flat Network → VLANs" |
-| **Date** | The header's Date row: the day execution starts. While the change is still *Planned*, use the planned date, and move it if the date moves. |
+| **Date** | The header's Date row: the day execution starts. While the change is still *Planned*, use the planned date, and move it if the date moves; with no date yet, write **Unscheduled**, here and on the index. |
 | **Weight** | `NNNN`, so records sort by number, as ADRs do |
 | **Index** | Add a row to [Change Records](/docs/changes/) and to that year's page |
 

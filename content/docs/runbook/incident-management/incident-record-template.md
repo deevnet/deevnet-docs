@@ -32,7 +32,7 @@ weight: NNNN
 | **Site** | |
 | **Systems** | Devices, hosts and roles involved, by inventory name |
 | **Severity** | What was lost, and what recovery required |
-| **Status** | Open · Service restored · Resolved (actions done) |
+| **Status** | Open · Triage / Investigating / Mitigated / Remediated / Hardening — or Closed · Completed YYYY-MM-DD. See [Status](/docs/runbook/incident-management/#status) |
 | **Times** | Timezone used in this record |
 
 ---
@@ -129,7 +129,8 @@ Procedures used during recovery, and procedures written or changed because of it
   elsewhere, or make surviving it unnecessary. Number actions across both tables, so that "action
   4" means one thing wherever it is cited.
 - **Keep action status current.** Mark an action done with the commit or PR that did it. Until
-  every action is done, the record's status says so.
+  every action is done, the record's status says so. Move the substatus as actions land, and
+  update the row on both index pages in the same commit.
 - **Keep the record, even when it is embarrassing.** A wrong conclusion committed to git during
   the incident belongs under Investigation, quoted, with what overturned it.
 - **Evidence over recollection:** command output, recap counts, timestamps. Cite files and

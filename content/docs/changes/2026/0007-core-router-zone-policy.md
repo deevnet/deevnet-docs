@@ -7,7 +7,7 @@ weight: 7
 
 | | |
 |---|---|
-| **Date** | Not yet scheduled |
+| **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Disruptive — it changes what every segment on site can reach, the operator's own path included |
 | **Status** | **Complete, 2026-09-19.** All three phases ran. The declared policy is live and enforcement is demonstrated from real clients on three segments, with the drops read from the router's own firewall log. Four items are recorded as untested rather than passed — see [Phase 3](#phase-3--from-clients-2026-09-19). One regression was found and fixed during verification. See [Outcome](#outcome). Pre-change state read on 2026-09-14 (see [Pre-change state](#pre-change-state-read-2026-09-14)). Allow-all removal decided on 2026-09-14: Option A (see [Decision](#decision-removing-the-allow-all-rules)). |

@@ -66,7 +66,13 @@ routine changes may have one; otherwise their commit history is their record.
 
 Records are kept under [Change Records](/docs/changes/), numbered `CHG-NNNN` like ADRs, and
 start from the [change record template](change-record-template/). The template is maintained
-here; each record is retained there. When a change goes wrong in a way that affects service,
+here; each record is retained there.
+
+**Keep the index current.** Add the record's row to [Change Records](/docs/changes/) and to that
+year's page when the record is opened, and update both whenever the record's date or status
+changes — execution starts, it completes, it is rolled back or abandoned — in the same commit as
+the record. The index is what gets read; a record that has moved on while its row has not is the
+index lying. When a change goes wrong in a way that affects service,
 the incident gets its own record under [Incident Records](/docs/incidents/) — see
 [Incident Management](/docs/runbook/incident-management/).
 

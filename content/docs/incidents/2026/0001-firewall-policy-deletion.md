@@ -14,7 +14,7 @@ aliases:
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Core router `dv02cor002p01` (OPNsense); the `opnsense_firewall` role in `ansible-collection-deevnet.net` |
 | **Severity** | Total site outage; physical console access required to recover |
-| **Status** | **Closed, 2026-09-19.** Root cause confirmed, service restored, and every open item resolved by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), which applied the zone policy for the first time and verified it from real clients. **One preventive action recorded "Done" here in 2026-09-08 turned out never to have worked** — see [Preventive actions](#preventive-actions). |
+| **Status** | **Closed · Completed 2026-09-19.** Root cause confirmed, service restored, and every open item resolved by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), which applied the zone policy for the first time and verified it from real clients. **One preventive action recorded "Done" here in 2026-09-08 turned out never to have worked** — see [Preventive actions](#preventive-actions). |
 | **Times** | UTC (local is UTC−4), as recorded in the session transcript |
 
 {{< hint danger >}}
