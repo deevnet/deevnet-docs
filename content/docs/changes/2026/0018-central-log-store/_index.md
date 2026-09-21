@@ -41,7 +41,7 @@ follow-up adds vmauth users and nothing else.
 | `dv02tob001v01` | has the memory it needs and a data disk at `/srv`, and runs VictoriaLogs and vmauth as containers with host networking |
 | VictoriaLogs HTTP | listens on `127.0.0.1` only; unreachable from any other host |
 | vmauth | listens on HTTPS with a certificate from the site CA, and refuses any request without a known bearer token |
-| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with the substrate ingest token |
+| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with its **own** ingest token |
 | Both hypervisors | ship to the syslog listener, which stores into `(0, 0)` |
 | Core router, switch, AP | send syslog to the same listener |
 | Syslog listener | reachable only from the addresses above, **measured** from one that is not |
@@ -50,8 +50,8 @@ follow-up adds vmauth users and nothing else.
 
 ## Scope
 
-**In scope:** resizing `tob`; the two images; the `victorialogs` role; the substrate ingest token
-and operator read token in the inventory vault; journal shipping from the domain VMs; syslog from the
+**In scope:** resizing `tob`; the two images; the `victorialogs` role; a per-host ingest token for each
+`log_shippers` host and the operator read token, in the inventory vault; journal shipping from the domain VMs; syslog from the
 hypervisors and network devices; host firewall rules on `tob`.
 
 **Out of scope:**
@@ -143,26 +143,38 @@ window.
 
 **Undo:** [Undo Step 2](#undo-step-2)
 
-### Step 3: Put the two tokens in the vault
+### Step 3: Put the tokens in the vault
 
-The same pattern as the broker's `vault_vernemq_*` credentials (CHG-0015):
+The same pattern as the broker's `vault_vernemq_*` credentials (CHG-0015).
+
+**One ingest token per shipping host, not one shared token.** A shared token would sit in plaintext
+on six hosts, so root on any one of them could write as all of them, and the only revocation would
+be rotating it everywhere. Per-host tokens make each host a separate vmauth user. That means one
+host can be revoked alone, and a forged line can be traced to the token that sent it.
+
+A new inventory group, **`log_shippers`**, lists the hosts that ship by journal-upload: the six
+Fedora domain VMs (`nms`, `sob`, `idn`, `prv`, `tob`, `msg`). The Builder is deliberately absent
+(ADR-0022 §5). The hypervisors are absent too, because they ship by syslog and hold no token.
 
 | Variable | File | Read by |
 |---|---|---|
-| `vault_victorialogs_substrate_ingest_token` | `group_vars/all/vault.yml` | `tob` (vmauth) and every shipping host |
+| `vault_log_ingest_token` | `host_vars/<host>/vault.yml`, one per `log_shippers` host (new files where absent) | that host, and `tob` (vmauth) |
 | `vault_victorialogs_operator_read_token` | `group_vars/tenant_observability/vault.yml` (new) | `tob` (vmauth) |
 
-1. Generate each token with `openssl rand -hex 32`, and write them into the decrypted files.
-2. **Stop.** The operator runs `make vault && git add -u && git commit && git push`, then
-   `make unvault` to continue. A new `vault.yml` needs `git add` by path, not `-u`.
+1. Generate each token with `openssl rand -hex 32`, and write them into the decrypted files. That
+   is seven tokens.
+2. **Stop.** The operator runs `make vault`, then `git add` **each file by path**, because new
+   `vault.yml` files are untracked and `-u` misses them. Then commit and push, and `make unvault`
+   to continue.
 3. Confirm the commit is on origin before Step 4 reads the tokens.
 
 A token that exists only in a decrypted working tree is one `git restore` away from gone
 (INC-0003).
 
 **Verify:**
-- `git log origin/main -- <both files>` shows the commit.
+- `git log origin/main -- <every file>` shows the commit.
 - `head -1` of each file is `$ANSIBLE_VAULT`.
+- The seven tokens are distinct.
 
 **Undo:** [Undo Step 3](#undo-step-3)
 
@@ -181,13 +193,15 @@ A new `victorialogs` role in `deevnet.mgmt`, and a play for `hosts: tenant_obser
   - a UDP listener only if a device can't send over TCP; if so, record which device and why
 - runs vmauth on the host's HTTPS port with a certificate issued from the site CA, following the
   pattern of `roles/vernemq/tasks/openbao.yml`
-- writes vmauth's `-auth.config` with exactly two users, each setting **both** headers:
-  - substrate ingest: `/insert/.*` only, `AccountID: 0`, `ProjectID: 0`
-  - operator read: `/select/.*` only, with one `url_map` entry per partition to read. In this
-    change that is `(0, 0)` alone
+- writes vmauth's `-auth.config`, in which every user sets **both** headers:
+  - one ingest user per `log_shippers` host, named after the host, holding that host's
+    `vault_log_ingest_token`: `/insert/.*` only, `AccountID: 0`, `ProjectID: 0`
+  - one operator read user: `/select/.*` only, with one `url_map` entry per partition to read. In
+    this change that is `(0, 0)` alone
 - has no `unauthorized_user`
-- reads both tokens from the inventory vault and **asserts they are present**. It never generates
-  them, as the `vernemq` role doesn't generate its credentials (see Step 3)
+- reads every token from the inventory vault (through `hostvars` for the shippers) and **asserts
+  each one is present and that no two are equal**. It never generates them, as the `vernemq` role
+  doesn't generate its credentials (see Step 3)
 - adds firewalld rules on `tob`:
   - vmauth's port from Management and Platform
   - the syslog port only from `10.20.99.1` (router), `10.20.99.10` (switch), `10.20.99.9` (AP),
@@ -210,25 +224,52 @@ ansible-playbook playbooks/site.yml --limit tenant_observability
 
 ### Step 5: Ship the Fedora domain VMs
 
-A new shipping role on `management_plane` (not the Builder):
+A new shipping role on `log_shippers`:
 - installs `systemd-journal-remote`
-- writes `/etc/systemd/journal-upload.conf` with `URL=https://<tob>/insert/journald` and
-  `Header=Authorization: Bearer <substrate ingest token>`, taken from the vault. The file is root-only
+- configures `URL=https://<tob>/insert/journald`, plus `Header=Authorization: Bearer <this host's
+  token>`, taken from the vault
 - trusts the site CA
 - enables `systemd-journal-upload`
 
 The domain VMs run systemd 259, and `Header=` needs 258 or later. Assert the version rather than
 assume it.
 
-**Verify:** each host's `_HOSTNAME` appears in `(0, 0)`, and `systemctl status
-systemd-journal-upload` is active with no retry loop.
+**How the token is kept on the host is unresolved. Settle it before writing the role.** It depends on
+which user `systemd-journal-upload.service` runs as on Fedora 44, and that has not been checked.
+- If it runs as root, a `0600 root` config file is enough.
+- If it runs as its own unprivileged or dynamic user, a `0600 root` file breaks the service, and the
+  stock `0644` exposes the token to every local user. In that case the token goes in through
+  systemd's credential passing (`LoadCredential=` in a drop-in), provided `journal-upload` can take
+  its header from a credential. If it can't, use a `0640` file owned by the service's group, if it
+  has a static one.
+
+Read the unit file from the Fedora 44 package, and record what it says here before choosing. Do not
+decide from memory.
+
+**Store and forward, not a switch-over.** The local journal stays exactly as it is and is still the
+first copy. `journal-upload` reads from it and records how far it got in a state file, so it can
+resume from that point after `tob` or the network has been down. That resume behaviour should be
+confirmed on the F44 unit (`--save-state`), not assumed. Nothing on the host changes how it logs, so
+no later change is needed to "cut over". The one loss window is local journal rotation: an outage
+longer than the journal's retention loses the lines rotated out before upload.
+
+**Verify:**
+- Each host's `_HOSTNAME` appears in `(0, 0)`, and `systemctl status systemd-journal-upload` is
+  active with no retry loop.
+- A non-root user on one host cannot read that host's token.
+- Stop vmauth for five minutes, then start it. The lines from that gap arrive, and none are
+  duplicated.
 
 **Undo:** disable the unit and remove the config.
 
 ### Step 6: Ship the hypervisors and network devices
 
 - **Hypervisors:** Debian 12 has systemd 252, so there is no `Header=`. They use rsyslog forwarding
-  over TLS to the syslog listener.
+  over TLS to the syslog listener, with a **disk-assisted action queue**. That gives them the same
+  store and forward as the VMs: rsyslog's default queue is in memory, and it is lost if rsyslog
+  restarts during an outage.
+- **Network devices** have no buffer of their own worth relying on (the router's holds about fifty
+  seconds). Lines they send while `tob` is down are lost. That is accepted: it is no worse than today.
 - **Core router:** the syslog target is set through the OPNsense API, with a readback, because
   rejected writes return HTTP 200.
 - **Switch and AP:** the syslog server setting. The AP's is through the Omada controller.
@@ -249,15 +290,17 @@ The change is Complete only when all of these pass, measured from the network, n
    workload, and the Builder), connecting to the syslog port **fails**. From the router it succeeds.
    Before trusting that failure, remove the firewalld rule and watch the same test **succeed**
    (feedback: verify in the production context).
-2. **Headers are overwritten.** From a tenant workload, send an ingest request with the substrate
-   token absent and `AccountID: 0` / `ProjectID: 0` headers set. It is refused. With the substrate
-   ingest token and forged `AccountID: 5`, the line lands in `(0, 0)`, not `(5, 0)`.
-3. **An unmatched route is refused.** The read token on a path outside its `url_map` gets an error,
+2. **Headers are overwritten.** From a tenant workload, send an ingest request with no token
+   and `AccountID: 0` / `ProjectID: 0` headers set. It is refused. With one host's ingest token and
+   a forged `AccountID: 5`, the line lands in `(0, 0)`, not `(5, 0)`.
+3. **Per-host revocation works.** Remove one host's vmauth user. That host's uploads are refused,
+   and every other host keeps shipping. Restore the user, and the host's backlog arrives.
+4. **An unmatched route is refused.** The read token on a path outside its `url_map` gets an error,
    not `(0, 0)` data.
-4. **Every source is present.** Each domain VM, both hypervisors, the router, the switch and the AP
+5. **Every source is present.** Each domain VM, both hypervisors, the router, the switch and the AP
    have at least one line in `(0, 0)`. The Builder has none.
-5. **Memory holds.** `tob`'s memory after 24 hours of real ingest is recorded here, with headroom.
-6. **No secrets.** Spot-check the first day of `(0, 0)` for tokens, PSKs and passwords.
+6. **Memory holds.** `tob`'s memory after 24 hours of real ingest is recorded here, with headroom.
+7. **No secrets.** Spot-check the first day of `(0, 0)` for tokens, PSKs and passwords.
 
 ## Undo
 
@@ -280,7 +323,7 @@ tokens until the record is closed.
 
 ### Undo Step 3
 
-Remove the two variables, then vault, commit and push again. Do this only after Step 4 is undone.
+Remove the tokens and the `log_shippers` group, then vault, commit and push again. Do this only after Step 4 is undone.
 
 ### Undo Step 2
 

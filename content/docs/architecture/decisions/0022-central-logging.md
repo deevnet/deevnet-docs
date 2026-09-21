@@ -196,9 +196,10 @@ tenant identifier already derives from (ADR-0002):
 - **The API writes vmauth's configuration.** The path is the one CHG-0016 used for broker accounts:
   a forced SSH command on `tob`, reached by one narrow rule from the provisioning VM. No substrate
   commit per tenant, as ADR-0010 requires.
-- **The substrate has its own ingest token**, which writes only `(0, 0)`, and an operator read
-  token covering every partition. Both are kept in the inventory vault, as the broker's service
-  credentials are (CHG-0015).
+- **Each substrate host has its own ingest token**, which writes only `(0, 0)`. One host's token
+  can be revoked without touching the others, and a forged line traces to the token that sent it.
+  An operator read token covers every partition. All of them are kept in the inventory vault, as
+  the broker's service credentials are (CHG-0015).
 
 ### 4. The substrate publishes to tenants; nothing filters substrate logs
 
@@ -226,11 +227,11 @@ a collector's job, and it is left open (Open question 3).
 
 | Source | Mechanism | Credential |
 |---|---|---|
-| Substrate hosts: Fedora domain VMs | `systemd-journal-upload` over HTTPS to vmauth; `Header=` needs systemd 258+, and the domain VMs run 259 (Fedora 44, checked 2026-09-21) | the substrate ingest token |
+| Substrate hosts: Fedora domain VMs | `systemd-journal-upload` over HTTPS to vmauth; `Header=` needs systemd 258+, and the domain VMs run 259 (Fedora 44, checked 2026-09-21) | that host's own ingest token |
 | Substrate hosts: hypervisors | syslog over TLS to the listener fixed to `(0, 0)`. `dv02hyp001p01` runs Debian 12 with systemd 252, which has no `Header=`, so journal-upload cannot carry a token | none; the same host firewall rule as the network devices |
 | The Builder | **ships nowhere.** It roams, belongs to no site, and keeps its own journal | — |
 | Core router, switch, access point | RFC 5424 syslog to a dedicated VictoriaLogs listener fixed to `(0, 0)` | none, so the listener is limited by a host firewall rule to those devices' addresses |
-| The Deevnet API | its own logs through the journal; tenant events as JSON lines through vmauth (§4) | the substrate ingest token |
+| The Deevnet API | its own logs through the journal; tenant events as JSON lines through vmauth (§4) | its host's ingest token |
 | Tenant workloads | the tenant's choice: journal-upload, syslog via a collector, or any JSON or OTLP shipper, through vmauth | the tenant's ingest token |
 
 **The syslog listener is the one unauthenticated path.** A tenant can reach Platform, so it can
