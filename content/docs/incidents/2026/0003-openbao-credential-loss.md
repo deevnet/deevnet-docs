@@ -11,7 +11,7 @@ weight: 3
 | **Site** | mobile (`dvntm`) |
 | **Systems** | OpenBao on `dv02idn001v01`; the Deevnet API on `dv02prv001v01`; the inventory repository `ansible-inventory-deevnet` |
 | **Severity** | Provisioning only. OpenBao kept running and self-unsealing, the Deevnet API kept serving, and both live tenants — `tdemo` and `eds` — were unaffected throughout, including during the rebuild. No client-facing outage. |
-| **Status** | **Open · Hardening.** Service restored and the cause remediated. OpenBao was rebuilt, both tenants resupplied their secrets, and the practice that allowed it is now written down and enforced by a checklist. Three code defects the rebuild exposed are fixed. **Open on three follow-ups** (5, 6 and 9): an OpenBao audit device, a Raft snapshot copied off the VM, and a snapshot-restore drill — see [Follow-ups](#follow-ups). |
+| **Status** | **Closed · Completed 2026-09-21.** The cause was a lock-in failure, and the corrective action is the policy: a once-only secret a change generates is encrypted, committed and **pushed** before the change goes any further. That is written into Vault Operations and the change-management checklist (actions 1–2). The rebuild itself was within [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)'s scope — it ran twice, not once. The follow-ups it prompted are improvements rather than incident work, and each is carried by [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/). |
 | **Cause** | `git reset --hard` run in a repository whose vault files were decrypted, eight minutes after an initialisation wrote once-only credentials into one of them |
 
 ---
@@ -114,11 +114,11 @@ by the very condition it exists for. An unreadable secret now reads as empty and
 
 | # | Follow-up | Where | Status |
 |---|-----------|-------|--------|
-| 5 | An audit device for OpenBao. It would not have recovered these values, but it is the only record of what a token did, and this incident is the second time its absence has been felt | ADR-0016 open question 2 | {{< action-status "Open" >}} |
-| 6 | A Raft snapshot, taken and copied off the VM. It would not have held the recovery key either, but it is the missing half of OpenBao's durability | ADR-0014; ADR-0016's last unconfirmed claim | {{< action-status "Open" >}} |
+| 5 | An audit device for OpenBao. It would not have recovered these values, but it is the only record of what a token did, and this incident is the second time its absence has been felt | ADR-0016 open question 2 | {{< action-status "Scheduled" >}} [ADR-0016 → Open questions](/docs/architecture/decisions/0016-substrate-secrets-openbao/#open-questions), question 2 |
+| 6 | A Raft snapshot, taken and copied off the VM. It would not have held the recovery key either, but it is the missing half of OpenBao's durability | ADR-0014; ADR-0016's last unconfirmed claim | {{< action-status "Scheduled" >}} [ADR-0016 §1](/docs/architecture/decisions/0016-substrate-secrets-openbao/#1-one-instance-in-the-identity-vm): a scheduled snapshot, copied off the VM |
 | 7 | Let a tenant tell when its stored secrets are gone, so ADR-0016 §6's recovery is an ordinary `terraform apply` rather than an operator's `curl` | API v0.2.5 `secrets_stored`; provider `ModifyPlan` | {{< action-status "Done" >}} 2026-09-17 |
 | 8 | Key-change drill: rotate the keys in place and watch the consumers recover | [OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/) | {{< action-status "Done" >}} 2026-09-17; to repeat on a schedule |
-| 9 | Snapshot-restore drill: a Raft snapshot onto a fresh instance with the same seal key | ADR-0014; ADR-0016 | {{< action-status "Open" >}} — needs 6 |
+| 9 | Snapshot-restore drill: a Raft snapshot onto a fresh instance with the same seal key | ADR-0014; ADR-0016 | {{< action-status "Scheduled" >}} [ADR-0016 → To confirm when building](/docs/architecture/decisions/0016-substrate-secrets-openbao/#to-confirm-when-building); needs 6 |
 | 10 | A vault password file, so a rebuild can run without decrypting the repository — the condition that made the loss possible | ADR-0016 §2 | {{< action-status "Declined" >}} — see below |
 
 **7, proven.** Rotating the Transit key past both tenants' stored secrets gave each tenant's plan one
