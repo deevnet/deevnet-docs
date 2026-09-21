@@ -11,7 +11,7 @@ weight: 2
 | **Site** | mobile (`dvntm`) |
 | **Systems** | Network-management VM `dv02nms001v01` (VMID 204 on `dv02hyp001p01`), running the Omada controller container |
 | **Severity** | Management-plane only. The controller was unreachable, which **blocked [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)**. No client-facing outage: the AP was still standalone on its old firmware, so wireless kept serving. |
-| **Status** | **Open · Mitigated.** **Service restored by a guest reboot; root cause not established.** The controller and its Omada data (local Owner, Open API client) came back intact. Corrective and preventive actions are open. |
+| **Status** | **Open · Mitigated.** **Service restored by a guest reboot; root cause not established.** The controller and its Omada data (local Owner, Open API client) came back intact. Action 2 is done — `qm agent` is now a trustworthy probe — and actions 1, 3 and 4 are open. |
 | **Times** | Local (EDT, UTC−4), as observed from the builder during the CHG-0005 window |
 
 ---
@@ -119,15 +119,15 @@ of `omada-wireless.yml`. CHG-0005 then proceeded on the recovered controller.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Determine why the freshly provisioned guest lost its network stack — next occurrence, capture the noVNC console **before** rebooting (panic trace / emergency shell / journal since boot) | `dv02nms001v01` | Open |
-| 2 | Confirm `qemu-guest-agent` is enabled and started on the Fedora VM template, so `qm agent` is a reliable probe rather than another thing that is "not running" | image factory / template | Open |
+| 1 | Determine why the freshly provisioned guest lost its network stack — next occurrence, capture the noVNC console **before** rebooting (panic trace / emergency shell / journal since boot) | `dv02nms001v01` | {{< action-status "Open" >}} |
+| 2 | Confirm `qemu-guest-agent` is enabled and started on the Fedora VM template, so `qm agent` is a reliable probe rather than another thing that is "not running" | image factory / template | {{< action-status "Done" >}} 2026-09-21 — installed and enabled by the template kickstart (`kickstart.cfg.pkrtpl`, package and `%post`), agent flag set by Packer (`qemu_agent = true`) and by `proxmox_vm` (`agent: enabled=1`). On the live site `qm agent <id> ping` answers for `dv02nms001v01` and every other running domain VM |
 
 ## Preventive actions
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 3 | Monitor the controller's health (`/api/info` reachable and `configured: true`) on a schedule, so a silent controller raises an alert instead of waiting for the next change window | management plane | Open |
-| 4 | Establish whether a Terraform re-create of the domain VMs preserves the Omada data disk, and if not, protect the controller's state (out-of-band backup, or a lifecycle guard) so a rebuild cannot wipe it | tenant/mgmt Terraform; [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) | Open |
+| 3 | Monitor the controller's health (`/api/info` reachable and `configured: true`) on a schedule, so a silent controller raises an alert instead of waiting for the next change window | management plane | {{< action-status "Open" >}} |
+| 4 | Establish whether a Terraform re-create of the domain VMs preserves the Omada data disk, and if not, protect the controller's state (out-of-band backup, or a lifecycle guard) so a rebuild cannot wipe it | tenant/mgmt Terraform; [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) | {{< action-status "Open" >}} |
 
 ## Lessons learned
 

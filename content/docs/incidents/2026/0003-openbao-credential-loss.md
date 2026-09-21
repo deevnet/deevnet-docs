@@ -11,7 +11,7 @@ weight: 3
 | **Site** | mobile (`dvntm`) |
 | **Systems** | OpenBao on `dv02idn001v01`; the Deevnet API on `dv02prv001v01`; the inventory repository `ansible-inventory-deevnet` |
 | **Severity** | Provisioning only. OpenBao kept running and self-unsealing, the Deevnet API kept serving, and both live tenants — `tdemo` and `eds` — were unaffected throughout, including during the rebuild. No client-facing outage. |
-| **Status** | **Open · Hardening.** Service restored and the cause remediated. OpenBao was rebuilt, both tenants resupplied their secrets, and the practice that allowed it is now written down and enforced by a checklist. Three code defects the rebuild exposed are fixed. **Open on three follow-ups:** an OpenBao audit device, a Raft snapshot copied off the VM, and a scheduled snapshot-restore drill — see [Follow-ups](#follow-ups). |
+| **Status** | **Closed · Completed 2026-09-21.** The cause was a lock-in failure, and the corrective action is the policy: a once-only secret a change generates is encrypted, committed and **pushed** before the change goes any further. That is written into Vault Operations and the change-management checklist (actions 1–2). The rebuild itself was within [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)'s scope — it ran twice, not once. The follow-ups it prompted are improvements rather than incident work, and each is carried by [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/). |
 | **Cause** | `git reset --hard` run in a repository whose vault files were decrypted, eight minutes after an initialisation wrote once-only credentials into one of them |
 
 ---
@@ -103,48 +103,43 @@ by the very condition it exists for. An unreadable secret now reads as empty and
 
 ## Corrective actions
 
-- **Done.** [Vault Operations](/docs/runbook/building-recovery/vault-operations/) gained two sections:
-  the lock-in order for a once-only secret, in which encrypt, commit, **push** and delete the source
-  file are one action; and what must never be run while the tree is decrypted, with `git reset --hard`
-  named first and the alternative for a blocked pull spelled out.
-- **Done.** The [change-management checklist](/docs/runbook/change-management/) carries the rule,
-  because that is where it bites.
-- **Done.** `playbooks/openbao.yml`, so administering OpenBao never requires `site.yml --limit` on a
-  host that would also run the `powerdns` per-tenant loop.
-- **Done.** The three code defects above.
+| # | Action | Where | Status |
+|---|--------|-------|--------|
+| 1 | Write down the lock-in order for a once-only secret — encrypt, commit, **push**, then delete the source file, as one action — and what must never run while the tree is decrypted, `git reset --hard` first, with the alternative for a blocked pull | [Vault Operations](/docs/runbook/building-recovery/vault-operations/) | {{< action-status "Done" >}} |
+| 2 | Put the rule on the checklist, because that is where it bites | [Change Management](/docs/runbook/change-management/) | {{< action-status "Done" >}} |
+| 3 | Administer OpenBao without `site.yml --limit` on a host that would also run the `powerdns` per-tenant loop | `playbooks/openbao.yml` | {{< action-status "Done" >}} |
+| 4 | Fix the three code defects the rebuild exposed | See [Three defects the rebuild exposed](#three-defects-the-rebuild-exposed) | {{< action-status "Done" >}} |
 
 ## Follow-ups
 
-- **An audit device for OpenBao** (ADR-0016 open question 2). It would not have recovered these
-  values, but it is the only record of what a token did, and this incident is the second time its
-  absence has been felt.
-- **A Raft snapshot, taken and copied off the VM** (ADR-0014). A snapshot would not have held the
-  recovery key either, but it is still the missing half of OpenBao's durability, and it remains
-  ADR-0016's last unconfirmed claim.
-- **Done: the tenants can now tell.** `secrets_stored` on the tenant read, with the provider planning
-  an update when it is false, makes ADR-0016 §6's recovery an ordinary `terraform apply` instead of an
-  operator's `curl`. Proven 2026-09-17 by rotating the Transit key past both tenants' stored secrets:
-  each tenant's plan showed one in-place change — the three secrets and the flag, with the index and
-  numbering untouched — and applying resealed them. API v0.2.5, provider `ModifyPlan`.
-- **Two drills, on a schedule, and they are not the same exercise.** The three defects above were found
-  because the rebuild produced **keys the site had never seen before** — not because the credentials
-  were lost, and not because data was restored.
-  - **A snapshot restore** (ADR-0014, and ADR-0016's last unconfirmed claim) proves the data survives:
-    a Raft snapshot onto a fresh instance with the same seal key gives back KV, Transit and PKI
-    *identically*. It would **not** have found any of the three defects above, because nothing's key or
-    issuer changes.
-  - **A key change** is what finds them, and it needs no wipe. **Run on the live site 2026-09-17 and
-    written up as [OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/).** It passed, and
-    found nothing new — which is the result worth having: it exercises exactly the three fixes above,
-    so it is now their regression test. Rotating the PKI root and moving the default issuer made the
-    role reissue, flush its handler in time and come back verifiable; rotating the Transit key and
-    raising `min_decryption_version` made both tenants' stored secrets unreadable, and the API degraded
-    to empty and logged it instead of answering `401`, so both tenants authenticated and resupplied,
-    resealing under `v2`.
+| # | Follow-up | Where | Status |
+|---|-----------|-------|--------|
+| 5 | An audit device for OpenBao. It would not have recovered these values, but it is the only record of what a token did, and this incident is the second time its absence has been felt | ADR-0016 open question 2 | {{< action-status "Scheduled" >}} [ADR-0016 → Open questions](/docs/architecture/decisions/0016-substrate-secrets-openbao/#open-questions), question 2 |
+| 6 | A Raft snapshot, taken and copied off the VM. It would not have held the recovery key either, but it is the missing half of OpenBao's durability | ADR-0014; ADR-0016's last unconfirmed claim | {{< action-status "Scheduled" >}} [ADR-0016 §1](/docs/architecture/decisions/0016-substrate-secrets-openbao/#1-one-instance-in-the-identity-vm): a scheduled snapshot, copied off the VM |
+| 7 | Let a tenant tell when its stored secrets are gone, so ADR-0016 §6's recovery is an ordinary `terraform apply` rather than an operator's `curl` | API v0.2.5 `secrets_stored`; provider `ModifyPlan` | {{< action-status "Done" >}} 2026-09-17 |
+| 8 | Key-change drill: rotate the keys in place and watch the consumers recover | [OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/) | {{< action-status "Done" >}} 2026-09-17; to repeat on a schedule |
+| 9 | Snapshot-restore drill: a Raft snapshot onto a fresh instance with the same seal key | ADR-0014; ADR-0016 | {{< action-status "Scheduled" >}} [ADR-0016 → To confirm when building](/docs/architecture/decisions/0016-substrate-secrets-openbao/#to-confirm-when-building); needs 6 |
+| 10 | A vault password file, so a rebuild can run without decrypting the repository — the condition that made the loss possible | ADR-0016 §2 | {{< action-status "Declined" >}} — see below |
 
-**Closed, not open: a vault password file.** It would have let this rebuild run without decrypting the
-repository at all, which is the condition that made the loss possible. It is **declined on purpose**
-(ADR-0016 §2): the vault password unlocks the seal key, the seal key unlocks OpenBao, and OpenBao holds
+**7, proven.** Rotating the Transit key past both tenants' stored secrets gave each tenant's plan one
+in-place change — the three secrets and the flag, with the index and numbering untouched — and
+applying resealed them.
+
+**8 and 9 are not the same exercise.** The three defects above were found because the rebuild
+produced **keys the site had never seen before** — not because the credentials were lost, and not
+because data was restored.
+
+- **A snapshot restore** (9) proves the data survives: KV, Transit and PKI come back *identically*. It
+  would **not** have found any of the three defects, because nothing's key or issuer changes.
+- **A key change** (8) is what finds them, and it needs no wipe. It ran on the live site on 2026-09-17,
+  passed, and found nothing new — which is the result worth having: it exercises exactly the three
+  fixes above, so it is now their regression test. Rotating the PKI root and moving the default issuer
+  made the role reissue, flush its handler in time and come back verifiable; rotating the Transit key
+  and raising `min_decryption_version` made both tenants' stored secrets unreadable, and the API
+  degraded to empty and logged it instead of answering `401`, so both tenants authenticated and
+  resupplied, resealing under `v2`.
+
+**10, declined on purpose** (ADR-0016 §2): the vault password unlocks the seal key, the seal key unlocks OpenBao, and OpenBao holds
 every runtime credential on the site, so putting that password in a file on the control node would make
 shell access to the Builder equivalent to holding every secret here. A human holding it is the one link
 automation cannot follow, and that is worth more than an unattended run. The mitigation is a short
