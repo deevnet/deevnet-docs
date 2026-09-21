@@ -80,7 +80,7 @@ in protocol semantics, and the choice belongs to the service, not to the tenant.
 | **Protocol** | MQTT publish/subscribe | HTTP, WebSocket, TCP, UDP |
 | **Scoping** | Per-device account, topics under the owner's prefix | Per-device credential mapped to permitted services |
 | **Decided in** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) | [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) |
-| **Built?** | Decided, **not built** — there is no broker | Contract accepted, mechanism deferred |
+| **Built?** | **Built** — broker, device registry and per-device accounts ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/), [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/), [CHG-0016](/docs/changes/2026/0016-broker-accounts/)) | Contract accepted, mechanism deferred |
 
 **Messaging is preferred wherever publish/subscribe fits.** It gives store-and-forward and fan-out
 for free, and a device that is asleep or unreachable is a normal condition rather than an error.

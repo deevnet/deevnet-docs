@@ -115,13 +115,22 @@ tenant it must be substrate" framing could not do.
 
 ## Current state
 
-The model is decided and partly built. Wireless attachment is real: `DVNTM-IOT` is a PPSK network
+The model is decided and largely built. Wireless attachment is real: `DVNTM-IOT` is a PPSK network
 on the IoT segment, and a tenant issues its own key through the Deevnet API without a substrate
 commit.
 
-What is not built is everything on the other side of attachment. There is **no broker**, so no
-device currently reaches an application through the substrate at all — the LP stand's firmware
-points at one that does not answer. The device registry answers `501`. And the segment boundaries
-this model depends on are not enforced, because the core router still passes all traffic between
-every zone ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)). Until that change runs,
-"attachment by trust class" describes an intention rather than a control.
+The other side of attachment is built too. The broker is deployed and serving TLS
+([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)), the device registry answers rather than `501`
+([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), and a tenant can be issued an MQTT
+account scoped to its own topic prefix ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)) — a
+real client used one to connect over TLS, publish inside its prefix, and be denied outside it.
+
+**"Attachment by trust class" is now a control rather than an intention.** The zone policy is
+applied and enforcing ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)), demonstrated
+from a real client on the IoT segment and, for IoT Vendor, against a live phone that could reach
+nothing internal. Four items in that change are recorded as untested rather than passed, so read its
+verification before relying on a specific flow.
+
+What no record yet shows is a device and its application meeting on the rendezvous end to end. Every
+piece is in place and both sides can hold accounts on it; nothing has been stood up on the
+application side to consume what a device would publish.
