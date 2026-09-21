@@ -1,13 +1,19 @@
 ---
-title: "Broker Account Writer"
-weight: 20
+title: "C1 Design: The Broker Account Writer"
+weight: 1
+aliases:
+  - /docs/architecture/substrate/control-plane/broker-account-writer/
 ---
 
-# Broker Account Writer
+# C1 Design: The Broker Account Writer
 
-**Accepted at design review, 2026-09-20. Nothing here is built yet.** It is the C1 mechanism of
-[CHG-0016](/docs/changes/2026/0016-broker-accounts/): how the Deevnet API gets an MQTT account onto
-the messaging VM without making the broker's auth database reachable from the network.
+**The design C1 was accepted on at review, 2026-09-20, and built the same day.** It is the mechanism
+by which the Deevnet API gets an MQTT account onto the messaging VM without making the broker's auth
+database reachable from the network.
+
+This page is the design as reviewed, kept because the constraints it fixes are binding on anything
+that touches the writer later. What was actually built, the two defects found deploying it, and the
+tests that prove it are in [CHG-0016](./) itself. Where the two disagree, the change record wins.
 
 ## What it is
 
@@ -251,32 +257,11 @@ never API-only first and control node second.
 
 ## Permanent reachability tests
 
-Negative tests, kept for the life of the mechanism. They assert the property the whole of CHG-0016
-turns on: **PostgreSQL is not reachable from the network, from anywhere, including the host that
-uses it.**
-
-| From | To | Expect |
-|---|---|---|
-| The API host, `dv02prv001v01` | `10.20.35.20:5432` | **fails** — the API reaches the database through this writer, never directly. If this succeeds, C has quietly become A |
-| The Builder, `dv02bld001p01` | `10.20.35.20:5432` | **fails** |
-| A device on VLAN 30 | `10.20.35.20:5432` | **fails** |
-| The messaging VM itself | `127.0.0.1:5432` | **succeeds** — the writer's only path |
-
-The API-host row is the one most worth keeping, because it is the least obvious: the API is the
-legitimate consumer, and it is still supposed to fail here. Its access is a forced command over
-SSH, not a database connection.
-
-**These must hold across a lifecycle, not just after a deploy:** a database container recreate, a
-container restart, a firewalld reload, and a host reboot. Each of those is a moment when a
-published-port mapping or a firewall rule could come back differently, and the earlier
-investigation showed how quietly that can happen.
-
-The Builder row doubles as the regression test CHG-0016 keeps permanently: the Builder is the right
-prober precisely because the zone policy *permits* it, so a refusal proves something above the zone
-rule is doing the work.
-
-**The VLAN 30 row is still owed** — nothing on that segment answers today. Run it with a client on
-`DVNTM-IOT` when one is next available.
+The negative tests that assert the property this whole mechanism turns on — **PostgreSQL is not
+reachable from the network, from anywhere, including the host that uses it** — are recorded with
+their results in [CHG-0016](./), not duplicated here. The row most worth keeping is the least
+obvious one: the API host is the legitimate consumer and is still supposed to fail, because its
+access is a forced command over SSH and never a database connection.
 
 ## What it must never do
 
@@ -290,7 +275,8 @@ rule is doing the work.
 
 ## Review disposition, 2026-09-20
 
-All three open questions are closed. **C1 is accepted**; implementation has not started.
+All three open questions were closed at review. **C1 was accepted**, then built, deployed and
+verified the same day as API `v0.5.1`.
 
 | Question | Decided |
 |---|---|
@@ -298,9 +284,9 @@ All three open questions are closed. **C1 is accepted**; implementation has not 
 | Should `delete` be reachable at all? | **Keep both `put` and `delete`.** This is a Terraform-managed tenant resource, so removing one is ordinary lifecycle management, not an operator-only act. Idempotent semantics as designed: a missing row is a successful delete |
 | C1 against C2? | **C1.** No new daemon and no new listening port, at the cost of a narrowly constrained capability through the existing SSH surface |
 
-### Non-negotiable at implementation
+### Non-negotiable
 
-Carried from review. None of these is a preference:
+Carried from review, and binding on any later change to the writer. None of these is a preference:
 
 - A **dedicated key pair**, used for nothing else
 - `command=`, `restrict`, and `from=` on the key entry
@@ -312,8 +298,12 @@ Carried from review. None of these is a preference:
 - **Only the existing least-privilege `deevnet_api` database role**, which holds
   `SELECT, INSERT, UPDATE, DELETE` on `vmq_auth_acl` and nothing else
 
-### What implementation still has to settle
+### Left to implementation, and where it landed
 
-Not blockers, but decided in code rather than here: the concrete timeout values, the program's
-language and where it is built, and whether the writer logs a request digest for audit without
-recording any hash or pattern that would make the log a secondary copy of the ACL table.
+These were deliberately decided in code rather than here. The build settled them as
+`cmd/deevnet-broker-account` and `internal/backend/brokerwriter` in `deevnet-provisioning-api`,
+installed by the `deevnet.mgmt` `vernemq` role — see [CHG-0016](./) for the shipped components and
+the two defects found deploying them.
+
+Still genuinely open: whether the writer logs a request digest for audit without recording any hash
+or pattern that would make the log a secondary copy of the ACL table.
