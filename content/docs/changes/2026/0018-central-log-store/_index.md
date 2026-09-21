@@ -8,11 +8,11 @@ bookCollapseSection: true
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-21 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Not yet scheduled |
+| **Status** | In progress. Step 1 is partly done (the VMs are destroyed and the inventory is replaced); Step 3 is done |
+| **Window** | Started 2026-09-21 19:42 |
 | **Site** | mobile |
 | **Systems** | `dv02tob001v01` and `dv02sob001v01` (destroyed), `dv02obs001v01` (new; runs the store), `dv02col001v01` (new; ADR-0023's collector, empty here), `dv02hyp001p01` (hosts all four), every Fedora domain VM (`nms`, `col`, `idn`, `prv`, `obs`, `msg`), `dv02hyp001p01` and `dv02hyp002p02` (ship logs), `dv02cor002p01`, `dv02acc001p01`, `dv02wap001p01` (send syslog) |
 | **Automation** | `deevnet.mgmt` `site.yml`: `proxmox_vm` and `data_disk` (`--tags vms`), a new `victorialogs` role, and a new shipping role; `deevnet.builder` `artifacts` for the images. Inventory `ansible-inventory-deevnet/mobile` |
@@ -367,11 +367,23 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-21 19:42:51, 19:43:07 | 1 | The operator destroyed `dv02sob001v01` (VMID 206) and `dv02tob001v01` (VMID 207) on `dv02hyp001p01`. Both were checked beforehand, read-only: no containers, no services beyond the base OS, nothing in `/srv`. |
+| 2026-09-21 19:43 | 1 | `vm-identity.yml` audit: 206 and 207 free on both hypervisors. Allocation gave `dv02col001v01` 206 (`02:de:20:00:00:ce`) and `dv02obs001v01` 207 (`02:de:20:00:00:cf`). |
+| 2026-09-21 | 1, 3 | Inventory [#47](https://github.com/deevnet/ansible-inventory-deevnet/pull/47): the groups become `observability_store` and `observability_collectors`, `log_shippers` is added, the host_vars move to the new names, and `obs` gets 4 GB and a 100G `/srv`. Seven tokens were generated straight into new vault files and never printed; all seven are distinct. The operator ran `make vault`; the commit was pushed, and origin was checked to hold ciphertext for every new file. |
 
 ### Departures from the plan
 
--
+- **The VMs were destroyed before the new inventory was merged.** The plan said to wait, so that a
+  `site.yml` run couldn't rebuild `tob` and `sob` from the old inventory. The operator chose to go
+  first, as the only person running playbooks.
+- **The VMIDs were reused, which removed a hazard.** The plan expected new VMIDs and warned that
+  `col` would carry a new MAC onto a DHCP-reserved address. With the old VMs gone first, the
+  allocator gave out 206 and 207 again, in the same order. The MAC is a function of the VMID, so
+  `col` has `sob`'s MAC, and the existing reservation for `10.20.99.41` already matches. The old
+  names' DNS A records still need removing.
+- **Step 3 ran before Step 2.** The tokens don't depend on the images.
+- **The new vault files were created `664` despite `umask 077`.** They were set to `600` before any
+  content was committed. They were plaintext on the Builder only until `make vault`.
 
 ## Follow-ups
 
