@@ -11,6 +11,7 @@ weight: 24
 | **Date** | 2026-09-21 |
 | **Scope** | How the operator and each tenant view their metrics and logs as dashboards, how people log in to do it, how dashboards are declared as code, and what a tenant may and may not configure. Not alerting, which ADR-0023 decides. |
 | **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organisation per tenant as the likely shape |
+| **Extended by** | [ADR-0025: Identity Directory](/docs/architecture/decisions/0025-identity-directory/): people sign in to Grafana through the directory, and the per-tenant login becomes machine-only *(Proposed)* |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §4, §7, [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) |
 
 ---
