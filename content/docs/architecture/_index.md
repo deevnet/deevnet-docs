@@ -48,11 +48,15 @@ digraph architecture {
 
     subgraph cluster_site {
         label="Site"
+        labeljust=l
+        margin=24
         style=filled
         fillcolor="#d0e8d0"
 
         subgraph cluster_substrate {
             label="Substrate"
+            labeljust=l
+            margin=16
             style=filled
             fillcolor="#e0f0ff"
 
@@ -60,11 +64,17 @@ digraph architecture {
             WirelessAP [label="Wireless AP", width=1.0]
             AccessSwitch [label="Access Switch", width=6.0]
 
+            // Physical substrate compute: inventoried, cabled to the access
+            // switch, and outside the yellow hypervisor boxes because it is
+            // not virtualized.
+            PiCompute [label="Bare-Metal Compute\nsingle-board hosts, not virtualized"]
+
             // Yellow boxes are virtual: each is a hypervisor (standalone
             // today, could grow into a cluster)
             subgraph cluster_mgmt {
                 label="Management + Control Plane"
                 labelloc=b
+                labeljust=l
                 style=filled
                 fillcolor="#fff3cd"
 
@@ -75,22 +85,26 @@ digraph architecture {
             subgraph cluster_tenant {
                 label="Tenant"
                 labelloc=b
+                labeljust=l
                 style=filled
                 fillcolor="#fff3cd"
 
                 TenantHV [label="Tenant\nCompute"]
             }
-
-            EdgeDev [label="Edge Devices\napplication-owned, platform-attached"]
         }
+
+        // Edge devices are neither substrate nor tenant: they sit in the
+        // site, attached to the substrate's access networks.
+        EdgeDev [label="Edge Devices\napplication-owned, platform-attached"]
 
         CoreRouter -> WirelessAP
         CoreRouter -> AccessSwitch
+        AccessSwitch -> PiCompute
         AccessSwitch -> SubstrateSvc
         AccessSwitch -> SharedTenantSvc
         AccessSwitch -> TenantHV
-        WirelessAP -> EdgeDev
-        AccessSwitch -> EdgeDev
+        WirelessAP -> EdgeDev [minlen=2]
+        AccessSwitch -> EdgeDev [minlen=2]
     }
 
     EdgeRouter -> CoreRouter
@@ -98,9 +112,9 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster.
+Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster. Everything else inside the substrate is physical — including bare-metal compute, which is inventoried, cabled to the access switch, and provisioned like any other substrate host. Edge devices sit inside the site but outside the substrate: the substrate attaches them, it does not own them.
 
-The platform is organized around a few architectural boundaries that separate infrastructure from what runs on it. A **site** is a self-contained deployment. Within it, the **substrate** provides infrastructure; **tenants** are isolated virtual workloads that run on it; and **edge devices** are physical things an application owns and the platform attaches. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
+The platform is organized around a few architectural boundaries that separate infrastructure from what runs on it. A **site** is a self-contained deployment. Within it, the **substrate** provides infrastructure — networking, virtualized compute, and bare-metal hosts alike; **tenants** are isolated virtual workloads that run on it; and **edge devices** are physical things an application owns and the platform attaches. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
 
 The distinction between the last two matters more than it first appears. A tenant is virtual and lives in an overlay of its own; an edge device is physical, shares an access network with devices of other owners, and is **never** a member of its application's network. Keeping them separate is what lets an application own a device without the substrate owning it, and without the device gaining reach into its application's network.
 
