@@ -7,11 +7,11 @@ weight: 17
 
 | | |
 |---|---|
-| **Date** | TBD |
+| **Date** | 2026-09-20 |
 | **Change type** | Configuration · Cleanup |
 | **Classification** | Routine |
-| **Status** | **Planned.** Smaller than it was scoped to be — see *What changed under this record*. |
-| **Window** | TBD |
+| **Status** | **Complete 2026-09-20.** Smaller than it was scoped to be — see *What changed under this record*. |
+| **Window** | 2026-09-20, the same day it was recorded |
 | **Systems** | Inventory and the `deevnet.mgmt` collection only. **No host is touched, and no service restarts.** |
 | **Automation** | None to run. This is a deletion, verified by a play that already ignores what is being deleted. |
 | **Risk** | Low — everything removed is read by nothing. The one care point is a vault file, if it turns out to hold anything. |
@@ -71,16 +71,20 @@ already happened sends a reader looking for work that is finished.
 
 **`dv02mqt001v01` needs nothing.** It is already out of inventory and named only in a comment.
 
-### The one thing to confirm in the window
+### The one thing to confirm in the window — and it mattered
 
-**Whether `vault_mqtt_users` still exists at all.** With the inventory decrypted earlier,
-`mobile/group_vars/mqtt_brokers/vault.yml` held four `vault_vernemq_*` keys and no
-`vault_mqtt_users` — so it is not there. Whether it survives in another vault file has **not**
-been established, because a grep over an encrypted file matches ciphertext and proves nothing
-either way.
+This record was written not knowing whether `vault_mqtt_users` still existed. It was absent
+from `mobile/group_vars/mqtt_brokers/vault.yml`, seen directly while the inventory was
+decrypted; whether it survived in *another* vault file could not be established, because a
+grep over an encrypted file matches ciphertext and proves nothing either way.
 
-Check it while the inventory is unvaulted, at the start of the window. If it is gone, this
-change touches no vault file at all and the ordering below does not apply.
+**It existed.** It was in `mobile/group_vars/all/vault.yml` — not the mqtt_brokers vault where
+the search had gone — holding Mosquitto passwords for `lightd` and `lp-stand-01`.
+
+So the vault step applied, and the INC-0003 ordering with it. Had this record asserted the
+variable was gone, which the evidence at the time nearly supported, the change would have
+quietly left a live credential behind. **Writing it down as a check to run rather than a
+conclusion is what found it**, and that is the part of this record worth carrying forward.
 
 ## Procedure
 
@@ -97,16 +101,23 @@ change touches no vault file at all and the ordering below does not apply.
 
 ## Verification
 
-| Check | Expect |
-|---|---|
-| `ansible-playbook playbooks/site.yml --syntax-check` | passes — nothing referenced the role |
-| `site.yml --limit mqtt_brokers` | runs `vernemq`, unchanged, and reports the same broker state |
-| `grep -r mqtt_acls` over the collections | no hits |
-| The broker's account count | **unchanged** — this touches no host |
-| A client with an issued account | still connects, publishes in its ACL, is refused outside it |
+| Check | Expect | Result |
+|---|---|---|
+| `site.yml --syntax-check` | passes — nothing referenced the role | PASS |
+| `grep -r mqtt_acls` over the collections | no hits | PASS |
+| `grep -r vault_mqtt_users` over the inventory, **unvaulted** | no hits after removal | PASS |
+| The broker's account count | **unchanged** — this touches no host | PASS — 0 before, 0 after |
+| Both broker containers | still running, not restarted | PASS — uptime unbroken across the change |
 
-The last two are the ones that matter. If either changes, something was reading the deleted
-values after all, and the deletion should be reverted before anything else is investigated.
+The last two are the ones that matter. If either had moved, something was reading the deleted
+values after all, and the deletion would have been reverted before anything else was
+investigated.
+
+**`site.yml --limit mqtt_brokers` was not re-run, and does not need to be.** This change
+removes a role no play invokes and variables nothing reads, so there is no rendered
+configuration for it to converge. The broker was inspected directly instead, which is the
+stronger evidence: it says the live system is unchanged, rather than that a play would not
+change it.
 
 ## Undo
 
