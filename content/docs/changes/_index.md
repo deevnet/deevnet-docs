@@ -34,14 +34,15 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0006 | 2026-09-16 | [Access Switch Firmware Upgrade](2026/0006-access-switch-firmware-upgrade/) | Upgrade | mobile | Complete |
 | CHG-0007 | 2026-09-19 | [Core Router Zone Policy, First Application](2026/0007-core-router-zone-policy/) | Configuration | mobile | Complete |
 | CHG-0008 | 2026-09-15 | [Management Domain VMs, First Build](2026/0008-domain-vms-build-out/) | Deployment · Decommission | mobile | Complete |
-| CHG-0009 | — | [Access Switch Omada Adoption](2026/0009-access-switch-adoption/) | Migration | mobile | Planned (on hold) |
+| CHG-0009 | Unscheduled | [Access Switch Omada Adoption](2026/0009-access-switch-adoption/) | Migration | mobile | Planned (on hold) |
 | CHG-0010 | 2026-09-17 | [Deploy the Deevnet API and Cut Tenants Over](2026/0010-tenant-api-cutover/) | Build-out and migration | mobile | Complete |
 | CHG-0011 | 2026-09-17 | [Tenant Workloads Get a Resolver](2026/0011-tenant-workload-resolver/) | Configuration · Deployment | mobile | Complete |
 | CHG-0012 | 2026-09-18 | [Operator Access to Tenant Workloads](2026/0012-operator-access-to-tenants/) | Configuration | mobile | Complete |
 | CHG-0013 | 2026-09-18 | [Tenant Wi-Fi PPSK Keys](2026/0013-tenant-wifi-ppsk-keys/) | Deployment | mobile | Complete |
 | CHG-0014 | 2026-09-20 | [The Tenant Device Registry](2026/0014-tenant-device-registry/) | Deployment | mobile | Complete |
 | CHG-0015 | 2026-09-20 | [The VerneMQ Broker](2026/0015-vernemq-broker/) | Deployment | mobile | Complete |
-| CHG-0016 | — | [The API Writes Broker Accounts](2026/0016-broker-accounts/) | Deployment · Configuration | mobile | Planned |
+| CHG-0016 | 2026-09-20 | [The API Writes Broker Accounts](2026/0016-broker-accounts/) | Deployment · Configuration | mobile | Complete |
+| CHG-0017 | 2026-09-20 | [Retire Mosquitto](2026/0017-retire-mosquitto/) | Configuration · Cleanup | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record

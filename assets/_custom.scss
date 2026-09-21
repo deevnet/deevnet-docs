@@ -21,6 +21,7 @@
   --badge-planned: #d97706;
   --badge-deprecated: #dc2626;
   --badge-evaluating: #7c3aed;
+  --badge-orange: #ea580c;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +40,7 @@
     --badge-planned: #fbbf24;
     --badge-deprecated: #f87171;
     --badge-evaluating: #a78bfa;
+    --badge-orange: #fb923c;
   }
 }
 
@@ -298,6 +300,23 @@
     background: var(--badge-evaluating);
     color: #ffffff;
   }
+
+  // Incident substatus (inc-status shortcode): red until mitigated, orange while
+  // only mitigated, green once the cause is fixed.
+  &.inc-red {
+    background: var(--badge-deprecated);
+    color: #ffffff;
+  }
+
+  &.inc-orange {
+    background: var(--badge-orange);
+    color: #ffffff;
+  }
+
+  &.inc-green {
+    background: var(--badge-complete);
+    color: #ffffff;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -306,7 +325,10 @@
     &.status-active,
     &.status-planned,
     &.status-deprecated,
-    &.status-evaluating {
+    &.status-evaluating,
+    &.inc-red,
+    &.inc-orange,
+    &.inc-green {
       color: #0f172a;
     }
   }
