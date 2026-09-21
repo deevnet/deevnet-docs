@@ -11,6 +11,7 @@ weight: 23
 | **Date** | 2026-09-21 |
 | **Scope** | How substrate and tenant metrics are collected and stored, who may read them, how alert rules are declared and evaluated for the substrate and for each tenant, and where notifications go. Dashboards only as far as needed to read what is stored. |
 | **Extends** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/). Metrics use its store host, its authenticating proxy, its partition scheme and its tenant credentials. |
+| **Extended by** | [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): saved dashboards in Grafana, one organisation per tenant *(Proposed)* |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) §5, [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0018: Operator Access to Tenant Workloads](/docs/architecture/decisions/0018-operator-access-to-tenants/) |
 
 ---
