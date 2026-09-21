@@ -39,7 +39,7 @@ resource that does it on a tenant's behalf, and a path for the API to reach the 
 | Topic patterns | declared relative to the tenant's prefix; the API writes the prefix itself |
 | A tenant | cannot write outside its prefix, whatever it declares |
 | The API | reaches the auth database, and **nothing else on IoT Backend can** |
-| `lightd` and `lp-stand-01` | still in inventory — retiring them is CHG-0017 |
+| `lightd` and `lp-stand-01` | **now declared in EdS's own Terraform.** The inventory copies are orphaned; deleting them is [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/) |
 
 ## What this is not
 
@@ -590,6 +590,12 @@ existing sessions alone. Nothing a tenant holds is lost that a re-apply cannot r
     one that says nothing.
 
   `dv02mqt001v01` needs nothing: it is already out of inventory, named only in a comment.
+
+  **Recorded as [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/).** It turned out smaller
+  than this: EdS now declares both accounts in its own Terraform, so nothing has to be migrated
+  and the inventory copies are simply deleted. `vault_mqtt_users` may already be gone — it is
+  not in `group_vars/mqtt_brokers/vault.yml`, and whether it survives elsewhere has to be
+  checked with the inventory unvaulted.
 
   Worth its own window rather than being tacked onto this change, because removing
   `vault_mqtt_users` touches a vault file and wants the same encrypt, commit and **push** ordering
