@@ -78,14 +78,14 @@ digraph architecture {
             // Yellow boxes are virtual: each is a hypervisor (standalone
             // today, could grow into a cluster)
             subgraph cluster_mgmt {
-                label="Management + Control Plane"
+                label="Shared Services"
                 labelloc=b
                 labeljust=l
                 style=filled
                 fillcolor="#fff3cd"
 
-                SubstrateSvc [label="Management Plane\nnetwork mgmt, observability"]
-                SharedTenantSvc [label="Control Plane\nDeevnet API, DNS, secrets, broker"]
+                SubstrateSvc [label="Substrate Services\nnetwork mgmt, observability"]
+                SharedTenantSvc [label="Tenant Services\nDeevnet API, DNS, secrets, broker"]
             }
 
             subgraph cluster_tenant {
@@ -101,7 +101,7 @@ digraph architecture {
 
         // Edge devices are neither substrate nor tenant: they sit in the
         // site, attached to the substrate's access networks.
-        EdgeDev [label="Edge Devices\napplication-owned, platform-attached"]
+        EdgeDev [label="Edge Devices\nwireless\napplication-owned, platform-attached"]
 
         CoreRouter -> AccessSwitch
         AccessSwitch -> PiCompute
@@ -109,7 +109,10 @@ digraph architecture {
         // border so it stops at the box rather than reaching a node inside.
         AccessSwitch -> SubstrateSvc [lhead=cluster_mgmt]
         AccessSwitch -> TenantHV [lhead=cluster_tenant]
-        WirelessAP -> EdgeDev [minlen=2]
+        // Attachment is wireless, and the box says so. The edge is kept but
+        // invisible: without it the node has no constraints at all and dot
+        // floats it to the top of the site.
+        WirelessAP -> EdgeDev [minlen=2, style=invis]
     }
 
     EdgeRouter -> CoreRouter
