@@ -27,7 +27,7 @@ set out in NIST's incident-handling guidance (SP 800-61):
 | What happened | Summary, Impact |
 | Detection and analysis | Detection, Timeline, Symptoms, Investigation, Root Cause |
 | Recovery | Recovery |
-| After the incident | Contributing Factors, Corrective Actions, Preventive Actions, Lessons Learned |
+| After the incident | Contributing Factors, Corrective Actions, Preventive Actions, Follow-ups, Lessons Learned |
 | Links | Related Changes, Related Runbooks |
 
 ## Status
@@ -42,7 +42,7 @@ to do; the substatus says how far along it is. The substatus moves forward only.
 | **Open** | **Mitigated** | Service is restored, but the cause is not fixed — a reboot, a revert, a workaround. It can happen again. |
 | **Open** | **Remediated** | The cause is fixed. Preventive actions are not yet chosen or not yet started. |
 | **Open** | **Hardening** | Every corrective action is done. Only preventive actions or follow-ups remain. |
-| **Closed** | **Completed** | Every action is done, or explicitly declined with the reason written down. Give the date. |
+| **Closed** | **Completed** | Every corrective and preventive action is Done or Declined, and every follow-up is Done, Declined or Scheduled — see [closing](#closing). Give the date. |
 
 A record may skip a substatus — an incident whose cause is found and fixed in one move goes
 straight from Investigating to Remediated — but it never moves back. If a closed incident's fix
@@ -57,6 +57,45 @@ Remediated onward (cause fixed, only prevention left). An unknown substatus fail
 The record's header **Status** row leads with both words, for example
 *"Open · Mitigated. Service restored by a guest reboot; root cause not established."*
 
+## Actions and follow-ups
+
+A record lists its work in three tables, numbered in one sequence across all three so that
+"action 4" means one thing wherever it is cited.
+
+- **Corrective actions** fix the faults behind this incident.
+- **Preventive actions** stop this class of failure recurring, or make surviving it unnecessary.
+- **Follow-ups** are worth doing because of the incident but fix nothing in it — a missing
+  capability it exposed, a drill it showed was needed.
+
+Each row carries a badge, written `{{</* action-status "Open" */>}}`, followed by the commit, PR or
+date that settles it:
+
+| Status | Actions (corrective, preventive) | Follow-ups |
+|---|---|---|
+| **Open** — red | Not started | Not started and not planned |
+| **In Progress** — orange | Being worked | — |
+| **Scheduled** — orange | — | Planned; say where (a change record, an ADR, an issue) |
+| **Done** — green | Landed; cite the commit or PR | Landed |
+| **Declined** — grey | Deliberately not done; give the reason | Deliberately not done; give the reason |
+
+A Declined row stays in the table. The reason it was turned down is part of the record, and it is
+what stops the same idea being proposed again as if it were new.
+
+The actions drive the substatus: **Remediated** once every corrective action is Done, **Hardening**
+while only preventive actions or follow-ups are left. A status that turns out to be wrong is
+corrected in place, with the old value struck through and the reason given, not quietly
+overwritten.
+
+### Closing
+
+An incident closes when **the incident's own work is finished**: every corrective and preventive
+action is Done or Declined. Follow-ups do not hold it open, provided each one is Done, Declined, or
+**Scheduled with a link** to the change record, ADR or issue that now carries it. A Scheduled
+follow-up without a link is still Open.
+
+This keeps a record from staying open for months on work that belongs to a roadmap, while making
+sure nothing it found is dropped: whatever it hands on, it says where to.
+
 ## Writing one
 
 - **Number and file name:** the next unused `INC-NNNN`, global and never reused, like ADRs.
@@ -67,9 +106,9 @@ The record's header **Status** row leads with both words, for example
   moves, it closes — update its row on **both** index pages in the same commit as the record.
   The index is what gets read; a record that has moved on while its row has not is the index
   lying.
-- **Actions carry a status, and it is kept current.** A record whose actions are all "Open" is
+- **Actions carry a status, and it is kept current.** A record whose actions are all Open is
   a warning, not a resolution; say so plainly rather than implying the problem is behind you.
-  When an action lands, mark it done with the commit or PR that did it.
+  When an action lands, mark it Done with the commit or PR that did it.
 - **Record the wrong conclusions too.** The mistaken diagnosis reached during an incident is
   usually more instructive than the correct one reached afterwards, and it is the part that
   gets quietly dropped. It belongs under Investigation.

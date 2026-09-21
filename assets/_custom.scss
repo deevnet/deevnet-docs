@@ -317,6 +317,11 @@
     background: var(--badge-complete);
     color: #ffffff;
   }
+
+  &.inc-grey {
+    background: var(--text-muted);
+    color: #ffffff;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -328,7 +333,8 @@
     &.status-evaluating,
     &.inc-red,
     &.inc-orange,
-    &.inc-green {
+    &.inc-green,
+    &.inc-grey {
       color: #0f172a;
     }
   }

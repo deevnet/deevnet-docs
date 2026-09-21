@@ -198,10 +198,10 @@ prevented it.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Refuse to reconcile from a degraded discovery — assert the interface list and zone map are non-empty, that every `from_zone` resolved, and that `desired_rules` is non-empty before categorising | `discover_interfaces.yml`, `configure_rules.yml` | **Done** — `1bdba4a` |
-| 2 | Make deletion opt-in via `firewall_delete_unmanaged: false`, with the "LEFT IN PLACE" report, following the `opnsense_dns` / `opnsense_dhcp` precedent | `defaults/main.yml`, `configure_rules.yml` | **Done** — `1bdba4a` |
-| 3 | Protect the lifeline rules structurally — both anti-lockout rules and `trusted -> management` excluded from `rules_to_delete` even when deletion is enabled | `firewall_protected_descriptions`; mobile adds `trusted -> management` in `group_vars/all/firewall.yml` | **Done** — `1bdba4a` |
-| 6 | Correct the discovery-fix commit message before the branch is pushed | `ansible-collection-deevnet.net` | **Done** — `b6dd249` carries the correction |
+| 1 | Refuse to reconcile from a degraded discovery — assert the interface list and zone map are non-empty, that every `from_zone` resolved, and that `desired_rules` is non-empty before categorising | `discover_interfaces.yml`, `configure_rules.yml` | {{< action-status "Done" >}} `1bdba4a` |
+| 2 | Make deletion opt-in via `firewall_delete_unmanaged: false`, with the "LEFT IN PLACE" report, following the `opnsense_dns` / `opnsense_dhcp` precedent | `defaults/main.yml`, `configure_rules.yml` | {{< action-status "Done" >}} `1bdba4a` |
+| 3 | Protect the lifeline rules structurally — both anti-lockout rules and `trusted -> management` excluded from `rules_to_delete` even when deletion is enabled | `firewall_protected_descriptions`; mobile adds `trusted -> management` in `group_vars/all/firewall.yml` | {{< action-status "Done" >}} `1bdba4a` |
+| 6 | Correct the discovery-fix commit message before the branch is pushed | `ansible-collection-deevnet.net` | {{< action-status "Done" >}} `b6dd249` carries the correction |
 
 The discovery fix was held back until the guards were ready. On its own it was *more*
 dangerous than the status quo: it made all 18 rules build, and the still-ungated delete would
@@ -209,6 +209,11 @@ then have reconciled hard against whatever the config restore put back. The fix 
 merged together in `ansible-collection-deevnet.net` PR #16 on 2026-09-08.
 
 ### Open items
+
+Every open item was resolved by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) on
+2026-09-19. The log of how each was worked through, dated as it was written, is kept below.
+
+{{% details "Open items log, 2026-09-08 to 2026-09-19" %}}
 
 As recorded at the time, updated only where a later commit settles them:
 
@@ -298,16 +303,18 @@ and the read is described in
   recorded impact. No evidence remains that could raise this above a well-supported inference, and
   none is expected to appear.
 
+{{% /details %}}
+
 ## Preventive actions
 
 Actions that stop this class of failure recurring, or make surviving it unnecessary.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | ~~Done — `1bdba4a`~~ **Never worked. Replaced 2026-09-19** — see below |
-| 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | ~~Done — `1bdba4a`~~ **Could never fail as written. Fixed 2026-09-19** — `failed_when: false` set `failed: false` on every result, so the collector always saw an empty list and `cancelRollback` was always sent. Mobile also had no targets beyond the router's own ports until CHG-0007 |
-| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/runbook/change-management/) | **Done** |
-| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/recovery/console-recovery/) | **Done** |
+| 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | {{< action-status "Done" >}} 2026-09-19, by replacement. ~~Done — `1bdba4a`~~ **never worked** — see below |
+| 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | {{< action-status "Done" >}} 2026-09-19. ~~Done — `1bdba4a`~~ **could never fail as written** — `failed_when: false` set `failed: false` on every result, so the collector always saw an empty list and `cancelRollback` was always sent. Mobile also had no targets beyond the router's own ports until CHG-0007 |
+| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/runbook/change-management/) | {{< action-status "Done" >}} |
+| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/recovery/console-recovery/) | {{< action-status "Done" >}} |
 
 **Action 4 was the one that made surviving the change unnecessary — and it never existed.**
 *Corrected 2026-09-19.* OPNsense 26.7.3_11 has no `firewall/filter/savepoint`, `/cancelRollback`

@@ -88,7 +88,7 @@ Fix the faults behind this incident.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | | | Open |
+| 1 | | | {{</* action-status "Open" */>}} |
 
 ## Preventive actions
 
@@ -96,7 +96,16 @@ Stop this class of failure recurring, here or elsewhere, or make surviving it un
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| | | | Open |
+| | | | {{</* action-status "Open" */>}} |
+
+## Follow-ups
+
+Worth doing because of this incident, but fixing nothing in it. Status is Open, Scheduled, Done or
+Declined; a Scheduled follow-up links to what carries it.
+
+| # | Follow-up | Where | Status |
+|---|-----------|-------|--------|
+| | | | {{</* action-status "Open" */>}} |
 
 ## Lessons learned
 
@@ -128,7 +137,11 @@ Procedures used during recovery, and procedures written or changed because of it
   the faults that caused this incident. Preventive actions stop the same class of failure
   elsewhere, or make surviving it unnecessary. Number actions across both tables, so that "action
   4" means one thing wherever it is cited.
-- **Keep action status current.** Mark an action done with the commit or PR that did it. Until
+- **Keep action status current.** Actions are Open, In Progress, Done or Declined; follow-ups
+  are Open, Scheduled, Done or Declined — see [Actions and follow-ups](/docs/runbook/incident-management/#actions-and-follow-ups).
+  Mark an action Done with the commit or PR that did it, or Declined with the reason. The
+  incident closes when every action is Done or Declined and every follow-up is at least
+  Scheduled, with a link. Until
   every action is done, the record's status says so. Move the substatus as actions land, and
   update the row on both index pages in the same commit.
 - **Keep the record, even when it is embarrassing.** A wrong conclusion committed to git during
