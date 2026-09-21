@@ -14,10 +14,10 @@ bookCollapseSection: true
 | **Status** | Planned |
 | **Window** | Not yet scheduled |
 | **Site** | mobile |
-| **Systems** | `dv02tob001v01` (resized; runs the store), `dv02hyp001p01` (hosts `tob`), every Fedora domain VM (`nms`, `sob`, `idn`, `prv`, `tob`, `msg`), `dv02hyp001p01` and `dv02hyp002p02` (ship logs), `dv02cor002p01`, `dv02acc001p01`, `dv02wap001p01` (send syslog) |
+| **Systems** | `dv02tob001v01` and `dv02sob001v01` (destroyed), `dv02obs001v01` (new; runs the store), `dv02col001v01` (new; ADR-0023's collector, empty here), `dv02hyp001p01` (hosts all four), every Fedora domain VM (`nms`, `col`, `idn`, `prv`, `obs`, `msg`), `dv02hyp001p01` and `dv02hyp002p02` (ship logs), `dv02cor002p01`, `dv02acc001p01`, `dv02wap001p01` (send syslog) |
 | **Automation** | `deevnet.mgmt` `site.yml`: `proxmox_vm` and `data_disk` (`--tags vms`), a new `victorialogs` role, and a new shipping role; `deevnet.builder` `artifacts` for the images. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. The riskiest thing is a vmauth user entry without both tenant headers: VictoriaLogs defaults to `(0, 0)`, so that entry fails open into substrate logs. No tenant token is issued in this change, which keeps that exposure theoretical until the follow-up. |
-| **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (built `tob` empty), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (why the containers use host networking; the forced-SSH pattern the follow-up reuses) |
+| **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (built `tob` and `sob` empty), [CHG-0003](/docs/changes/2026/0003-host-rename/) (the reservation and record hazards), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (why the containers use host networking; the forced-SSH pattern the follow-up reuses) |
 | **Related incidents** | None |
 | **Related runbooks** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) |
 
@@ -27,7 +27,7 @@ bookCollapseSection: true
 
 Every host keeps its own journal, and the core router's log buffer holds about fifty seconds.
 [ADR-0022](/docs/architecture/decisions/0022-central-logging/) decides one log store on Platform:
-VictoriaLogs behind vmauth on `dv02tob001v01`, partitioned by tenant index. This change builds the
+VictoriaLogs behind vmauth on `dv02obs001v01`, which replaces `dv02tob001v01`, partitioned by tenant index. This change builds the
 store and ships the **substrate's** logs into partition `(0, 0)`.
 
 Tenants get nothing from this change directly. Their tokens, the API issuing them, and the API
@@ -38,10 +38,10 @@ follow-up adds vmauth users and nothing else.
 
 | | |
 |---|---|
-| `dv02tob001v01` | has the memory it needs and a data disk at `/srv`, and runs VictoriaLogs and vmauth as containers with host networking |
+| `dv02obs001v01` | has the memory it needs and a data disk at `/srv`, and runs VictoriaLogs and vmauth as containers with host networking |
 | VictoriaLogs HTTP | listens on `127.0.0.1` only; unreachable from any other host |
 | vmauth | listens on HTTPS with a certificate from the site CA, and refuses any request without a known bearer token |
-| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with the substrate ingest token |
+| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with its **own** ingest token |
 | Both hypervisors | ship to the syslog listener, which stores into `(0, 0)` |
 | Core router, switch, AP | send syslog to the same listener |
 | Syslog listener | reachable only from the addresses above, **measured** from one that is not |
@@ -50,9 +50,9 @@ follow-up adds vmauth users and nothing else.
 
 ## Scope
 
-**In scope:** resizing `tob`; the two images; the `victorialogs` role; the substrate ingest token
-and operator read token in the inventory vault; journal shipping from the domain VMs; syslog from the
-hypervisors and network devices; host firewall rules on `tob`.
+**In scope:** replacing `tob` and `sob` with `obs` and `col`; the two images; the `victorialogs` role; a per-host ingest token for each
+`log_shippers` host and the operator read token, in the inventory vault; journal shipping from the domain VMs; syslog from the
+hypervisors and network devices; host firewall rules on `obs`.
 
 **Out of scope:**
 - tenant ingest and read tokens, and the API writing vmauth's configuration
@@ -65,7 +65,7 @@ hypervisors and network devices; host firewall rules on `tob`.
 
 **It is not a new zone rule.** Every source already reaches Platform: `management -> platform`,
 `trusted -> platform`, and the domain VMs on Platform itself. The only new filtering is firewalld on
-`tob`.
+`obs`.
 
 **It is not authoritative data.** Losing the store loses history, not state (ADR-0022 §6). The
 data disk gets no off-host copy.
@@ -75,10 +75,10 @@ data disk gets no off-host copy.
 | Risk | Where | Guard |
 |---|---|---|
 | A vmauth user without both headers reads or writes `(0, 0)` | vmauth config | every user entry sets `AccountID` and `ProjectID`; there is no `unauthorized_user` and no `default_url`; negative tests in Verification |
-| The syslog port is reachable from a tenant | `tob` | host networking, so firewalld filters it (CHG-0016 showed a published port is not filtered); measured from a non-allowed source |
+| The syslog port is reachable from a tenant | `obs` | host networking, so firewalld filters it (CHG-0016 showed a published port is not filtered); measured from a non-allowed source |
 | A secret is written into a log | every shipping host | ADR-0022's rule: a secret never goes into a log. Spot-check the first day of `(0, 0)` for tokens and passwords |
-| The store fills `/srv` | `tob` | `-retention.maxDiskUsagePercent` drops the oldest data first |
-| Memory pressure on `tob` | `tob` | resized first; measured under the real ingest rate before Complete |
+| The store fills `/srv` | `obs` | `-retention.maxDiskUsagePercent` drops the oldest data first |
+| Memory pressure on `obs` | `obs` | built at 4 GB; measured under the real ingest rate before Complete |
 | A network device's syslog change misbehaves | router, switch, AP | each is a single setting with a noted prior value; the router's is applied through its API with a readback |
 
 ## Prerequisites
@@ -93,34 +93,60 @@ data disk gets no off-host copy.
 
 ## Procedure
 
-### Step 1: Resize `tob`
+### Step 1: Replace `tob` and `sob` with `obs` and `col`
 
-`tob` was built with 2 GB and a 32G OS disk before logging had requirements. Resizing it is approved.
+ADR-0022 put every log in one store, so the audience split in the old names no longer exists (naming
+§3.4). Both VMs are empty, so they are **replaced, not renamed**. A rename would mean following
+`runbook/lifecycle/host-rename`. A fresh build at the right size is simpler and leaves nothing
+behind.
 
-In `host_vars/dv02tob001v01/vars.yml`, under `mgmt_vm`:
+| Old | New | Role | Address (kept) | Sizing |
+|---|---|---|---|---|
+| `dv02tob001v01` | `dv02obs001v01` | observability store | `10.20.25.22`, Platform, static, no DHCP | 4 GB, data disk 100G at `/srv` |
+| `dv02sob001v01` | `dv02col001v01` | collector (ADR-0023) | `10.20.99.41`, management, **DHCP reservation** | as `sob`, 2 GB |
 
-```yaml
-  memory: 4096
-  data_disk: { device: scsi1, size: 100, storage: local-lvm-big-thin, mount: /srv }
-```
+Each new VM keeps its predecessor's address, so the old VM must be gone **before** the new one boots.
 
-**Run:**
+**Inventory, on one branch:**
+- `hosts.yml`: `observability_store` becomes **`observability_store`**, holding `dv02obs001v01`.
+  `substrate_observability` becomes **`observability_collectors`**, holding `dv02col001v01`. The
+  two are swapped in `management_plane` as well.
+- `host_vars/dv02obs001v01/vars.yml` and `host_vars/dv02col001v01/vars.yml` are copied from the old
+  files, with `env.role` updated. `obs` gets `memory: 4096` and
+  `data_disk: { device: scsi1, size: 100, storage: local-lvm-big-thin, mount: /srv }`.
+- The old `host_vars` directories are deleted.
+- `ansible-playbook playbooks/vm-identity.yml -e vm_identity_assign=true` allocates new VMIDs and
+  MACs, and writes each `identity.yml`. VMIDs 206 and 207 are **not** reused while the old VMs exist.
 
-```bash
-cd ansible-collection-deevnet.mgmt
-ansible-playbook playbooks/site.yml --tags vms --limit dv02tob001v01
-```
+**The two hazards, both from the host rename (CHG-0003):**
+1. **`col` keeps a DHCP-reserved address under a new MAC.** `opnsense_dhcp` reconciles by MAC and
+   does not prune. **Delete `sob`'s reservation on the core router first**, then run `opnsense_dhcp`
+   to add `col`'s, before `col` is built. Otherwise Kea holds two reservations for one address, and
+   `col` boots on a pool lease.
+2. **DNS A records for the old names stay unless removed.** Delete the `dv02tob001v01` and
+   `dv02sob001v01` records by hand, since `dns_delete_unmanaged` is off by default. Then run
+   `opnsense_dns` for the new names.
 
-`proxmox_vm` attaches the disk with `create: regular` and `data_disk` formats and mounts it. **The
-memory change stays pending on a running VM**: the role starts a stopped VM but never restarts a
-running one. Restart `tob` once through the hypervisor's API. It runs nothing yet, so this is
-harmless.
+**Run, in order:**
+
+1. Destroy `dv02tob001v01` and `dv02sob001v01` on `dv02hyp001p01`. Neither has data.
+2. Remove `sob`'s reservation and both old A records, then run `opnsense_dhcp` and `opnsense_dns`
+   for the new hosts.
+3. Build the new VMs:
+
+   ```bash
+   cd ansible-collection-deevnet.mgmt
+   ansible-playbook playbooks/site.yml --tags vms --limit dv02obs001v01,dv02col001v01
+   ```
 
 **Verify:**
 
-1. `free -m` on `tob` shows about 4 GB.
-2. `findmnt /srv` shows the `deevnet-data` XFS filesystem.
-3. A rerun of the same command is `changed=0` for the VM.
+1. `obs`: `free -m` shows about 4 GB, and `findmnt /srv` shows the `deevnet-data` XFS filesystem.
+2. Each new VM answers on its address and resolves by its new name.
+3. The old names no longer resolve. Kea holds exactly one reservation for `10.20.99.41`, and it is
+   `col`'s MAC.
+4. `vm-identity.yml` (audit mode) passes.
+5. A rerun of the build is `changed=0`.
 
 **Undo:** [Undo Step 1](#undo-step-1)
 
@@ -143,32 +169,44 @@ window.
 
 **Undo:** [Undo Step 2](#undo-step-2)
 
-### Step 3: Put the two tokens in the vault
+### Step 3: Put the tokens in the vault
 
-The same pattern as the broker's `vault_vernemq_*` credentials (CHG-0015):
+The same pattern as the broker's `vault_vernemq_*` credentials (CHG-0015).
+
+**One ingest token per shipping host, not one shared token.** A shared token would sit in plaintext
+on six hosts, so root on any one of them could write as all of them, and the only revocation would
+be rotating it everywhere. Per-host tokens make each host a separate vmauth user. That means one
+host can be revoked alone, and a forged line can be traced to the token that sent it.
+
+A new inventory group, **`log_shippers`**, lists the hosts that ship by journal-upload: the six
+Fedora domain VMs (`nms`, `col`, `idn`, `prv`, `obs`, `msg`). The Builder is deliberately absent
+(ADR-0022 §5). The hypervisors are absent too, because they ship by syslog and hold no token.
 
 | Variable | File | Read by |
 |---|---|---|
-| `vault_victorialogs_substrate_ingest_token` | `group_vars/all/vault.yml` | `tob` (vmauth) and every shipping host |
-| `vault_victorialogs_operator_read_token` | `group_vars/tenant_observability/vault.yml` (new) | `tob` (vmauth) |
+| `vault_log_ingest_token` | `host_vars/<host>/vault.yml`, one per `log_shippers` host (new files where absent) | that host, and `obs` (vmauth) |
+| `vault_victorialogs_operator_read_token` | `group_vars/observability_store/vault.yml` (new) | `obs` (vmauth) |
 
-1. Generate each token with `openssl rand -hex 32`, and write them into the decrypted files.
-2. **Stop.** The operator runs `make vault && git add -u && git commit && git push`, then
-   `make unvault` to continue. A new `vault.yml` needs `git add` by path, not `-u`.
+1. Generate each token with `openssl rand -hex 32`, and write them into the decrypted files. That
+   is seven tokens.
+2. **Stop.** The operator runs `make vault`, then `git add` **each file by path**, because new
+   `vault.yml` files are untracked and `-u` misses them. Then commit and push, and `make unvault`
+   to continue.
 3. Confirm the commit is on origin before Step 4 reads the tokens.
 
 A token that exists only in a decrypted working tree is one `git restore` away from gone
 (INC-0003).
 
 **Verify:**
-- `git log origin/main -- <both files>` shows the commit.
+- `git log origin/main -- <every file>` shows the commit.
 - `head -1` of each file is `$ANSIBLE_VAULT`.
+- The seven tokens are distinct.
 
 **Undo:** [Undo Step 3](#undo-step-3)
 
 ### Step 4: Deploy the store
 
-A new `victorialogs` role in `deevnet.mgmt`, and a play for `hosts: tenant_observability` in
+A new `victorialogs` role in `deevnet.mgmt`, and a play for `hosts: observability_store` in
 `site.yml` that replaces the "Observability tooling is not chosen yet" comment. The role:
 
 - runs two `podman_service` containers with `podman_service_network: host`, which is **required**,
@@ -181,14 +219,16 @@ A new `victorialogs` role in `deevnet.mgmt`, and a play for `hosts: tenant_obser
   - a UDP listener only if a device can't send over TCP; if so, record which device and why
 - runs vmauth on the host's HTTPS port with a certificate issued from the site CA, following the
   pattern of `roles/vernemq/tasks/openbao.yml`
-- writes vmauth's `-auth.config` with exactly two users, each setting **both** headers:
-  - substrate ingest: `/insert/.*` only, `AccountID: 0`, `ProjectID: 0`
-  - operator read: `/select/.*` only, with one `url_map` entry per partition to read. In this
-    change that is `(0, 0)` alone
+- writes vmauth's `-auth.config`, in which every user sets **both** headers:
+  - one ingest user per `log_shippers` host, named after the host, holding that host's
+    `vault_log_ingest_token`: `/insert/.*` only, `AccountID: 0`, `ProjectID: 0`
+  - one operator read user: `/select/.*` only, with one `url_map` entry per partition to read. In
+    this change that is `(0, 0)` alone
 - has no `unauthorized_user`
-- reads both tokens from the inventory vault and **asserts they are present**. It never generates
-  them, as the `vernemq` role doesn't generate its credentials (see Step 3)
-- adds firewalld rules on `tob`:
+- reads every token from the inventory vault (through `hostvars` for the shippers) and **asserts
+  each one is present and that no two are equal**. It never generates them, as the `vernemq` role
+  doesn't generate its credentials (see Step 3)
+- adds firewalld rules on `obs`:
   - vmauth's port from Management and Platform
   - the syslog port only from `10.20.99.1` (router), `10.20.99.10` (switch), `10.20.99.9` (AP),
     `10.20.99.21` and `10.20.99.22` (hypervisors)
@@ -196,7 +236,7 @@ A new `victorialogs` role in `deevnet.mgmt`, and a play for `hosts: tenant_obser
 **Run:**
 
 ```bash
-ansible-playbook playbooks/site.yml --limit tenant_observability
+ansible-playbook playbooks/site.yml --limit observability_store
 ```
 
 **Verify:**
@@ -210,25 +250,52 @@ ansible-playbook playbooks/site.yml --limit tenant_observability
 
 ### Step 5: Ship the Fedora domain VMs
 
-A new shipping role on `management_plane` (not the Builder):
+A new shipping role on `log_shippers`:
 - installs `systemd-journal-remote`
-- writes `/etc/systemd/journal-upload.conf` with `URL=https://<tob>/insert/journald` and
-  `Header=Authorization: Bearer <substrate ingest token>`, taken from the vault. The file is root-only
+- configures `URL=https://<obs>/insert/journald`, plus `Header=Authorization: Bearer <this host's
+  token>`, taken from the vault
 - trusts the site CA
 - enables `systemd-journal-upload`
 
 The domain VMs run systemd 259, and `Header=` needs 258 or later. Assert the version rather than
 assume it.
 
-**Verify:** each host's `_HOSTNAME` appears in `(0, 0)`, and `systemctl status
-systemd-journal-upload` is active with no retry loop.
+**How the token is kept on the host is unresolved. Settle it before writing the role.** It depends on
+which user `systemd-journal-upload.service` runs as on Fedora 44, and that has not been checked.
+- If it runs as root, a `0600 root` config file is enough.
+- If it runs as its own unprivileged or dynamic user, a `0600 root` file breaks the service, and the
+  stock `0644` exposes the token to every local user. In that case the token goes in through
+  systemd's credential passing (`LoadCredential=` in a drop-in), provided `journal-upload` can take
+  its header from a credential. If it can't, use a `0640` file owned by the service's group, if it
+  has a static one.
+
+Read the unit file from the Fedora 44 package, and record what it says here before choosing. Do not
+decide from memory.
+
+**Store and forward, not a switch-over.** The local journal stays exactly as it is and is still the
+first copy. `journal-upload` reads from it and records how far it got in a state file, so it can
+resume from that point after `obs` or the network has been down. That resume behaviour should be
+confirmed on the F44 unit (`--save-state`), not assumed. Nothing on the host changes how it logs, so
+no later change is needed to "cut over". The one loss window is local journal rotation: an outage
+longer than the journal's retention loses the lines rotated out before upload.
+
+**Verify:**
+- Each host's `_HOSTNAME` appears in `(0, 0)`, and `systemctl status systemd-journal-upload` is
+  active with no retry loop.
+- A non-root user on one host cannot read that host's token.
+- Stop vmauth for five minutes, then start it. The lines from that gap arrive, and none are
+  duplicated.
 
 **Undo:** disable the unit and remove the config.
 
 ### Step 6: Ship the hypervisors and network devices
 
 - **Hypervisors:** Debian 12 has systemd 252, so there is no `Header=`. They use rsyslog forwarding
-  over TLS to the syslog listener.
+  over TLS to the syslog listener, with a **disk-assisted action queue**. That gives them the same
+  store and forward as the VMs: rsyslog's default queue is in memory, and it is lost if rsyslog
+  restarts during an outage.
+- **Network devices** have no buffer of their own worth relying on (the router's holds about fifty
+  seconds). Lines they send while `obs` is down are lost. That is accepted: it is no worse than today.
 - **Core router:** the syslog target is set through the OPNsense API, with a readback, because
   rejected writes return HTTP 200.
 - **Switch and AP:** the syslog server setting. The AP's is through the Omada controller.
@@ -249,15 +316,17 @@ The change is Complete only when all of these pass, measured from the network, n
    workload, and the Builder), connecting to the syslog port **fails**. From the router it succeeds.
    Before trusting that failure, remove the firewalld rule and watch the same test **succeed**
    (feedback: verify in the production context).
-2. **Headers are overwritten.** From a tenant workload, send an ingest request with the substrate
-   token absent and `AccountID: 0` / `ProjectID: 0` headers set. It is refused. With the substrate
-   ingest token and forged `AccountID: 5`, the line lands in `(0, 0)`, not `(5, 0)`.
-3. **An unmatched route is refused.** The read token on a path outside its `url_map` gets an error,
+2. **Headers are overwritten.** From a tenant workload, send an ingest request with no token
+   and `AccountID: 0` / `ProjectID: 0` headers set. It is refused. With one host's ingest token and
+   a forged `AccountID: 5`, the line lands in `(0, 0)`, not `(5, 0)`.
+3. **Per-host revocation works.** Remove one host's vmauth user. That host's uploads are refused,
+   and every other host keeps shipping. Restore the user, and the host's backlog arrives.
+4. **An unmatched route is refused.** The read token on a path outside its `url_map` gets an error,
    not `(0, 0)` data.
-4. **Every source is present.** Each domain VM, both hypervisors, the router, the switch and the AP
+5. **Every source is present.** Each domain VM, both hypervisors, the router, the switch and the AP
    have at least one line in `(0, 0)`. The Builder has none.
-5. **Memory holds.** `tob`'s memory after 24 hours of real ingest is recorded here, with headroom.
-6. **No secrets.** Spot-check the first day of `(0, 0)` for tokens, PSKs and passwords.
+6. **Memory holds.** `obs`'s memory after 24 hours of real ingest is recorded here, with headroom.
+7. **No secrets.** Spot-check the first day of `(0, 0)` for tokens, PSKs and passwords.
 
 ## Undo
 
@@ -280,7 +349,7 @@ tokens until the record is closed.
 
 ### Undo Step 3
 
-Remove the two variables, then vault, commit and push again. Do this only after Step 4 is undone.
+Remove the tokens and the `log_shippers` group, then vault, commit and push again. Do this only after Step 4 is undone.
 
 ### Undo Step 2
 
@@ -288,9 +357,9 @@ Remove the two `artifacts_podman_images` entries and the tarballs.
 
 ### Undo Step 1
 
-Leave the data disk and memory in place: they cost nothing, and ADR-0023 wants `tob` too. To take
-the disk back, remove `data_disk` from inventory, unmount it, and detach it by hand. This is a
-deliberate one-off, because the role never removes a disk.
+The old VMs held nothing, so there is nothing to restore, only names. To go back, destroy the new
+VMs, restore the old inventory from git, and rebuild `tob` and `sob` the same way, reversing the
+reservation and records. Up to Step 4, going forward is always cheaper than going back.
 
 ## Outcome
 
@@ -308,7 +377,7 @@ deliberate one-off, because the role never removes a disk.
 
 - [ ] **Tenant log tokens.** A new CHG:
   - the API issues each tenant an ingest and a read token at creation and on resupply
-  - a forced-SSH writer on `tob` maintains vmauth's config (the CHG-0016 pattern:
+  - a forced-SSH writer on `obs` maintains vmauth's config (the CHG-0016 pattern:
     `roles/vernemq/tasks/writer.yml`, `internal/backend/brokerwriter/`)
   - provider fields for the two tokens
   - `max_concurrent_requests` on each tenant ingest user (ADR-0022 §6)

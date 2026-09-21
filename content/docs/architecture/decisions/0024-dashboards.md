@@ -93,12 +93,12 @@ Vendor documentation was checked on 2026-09-21.
 
 ## Decision
 
-**Option A: Grafana OSS on `dv02tob001v01`.** Each tenant gets one organisation, which the API
+**Option A: Grafana OSS on `dv02obs001v01`.** Each tenant gets one organisation, which the API
 creates. The substrate owns the data sources, and a tenant owns only its folders and dashboards.
 
 ### 1. Placement
 
-- **Grafana runs as a container on `dv02tob001v01`**, beside the stores it reads, and is reachable
+- **Grafana runs as a container on `dv02obs001v01`**, beside the stores it reads, and is reachable
   over HTTPS from the same zones as vmauth.
 - **Its database is SQLite, on the data disk, treated as rebuildable** (§6). Grafana's advice that
   *"SQLite isn't recommended for production environments"* is noted. Nothing in this database is
@@ -130,7 +130,7 @@ Further details:
 
 **This is the central restriction.** An organisation Admin can create data sources, and a data source
 is a URL that Grafana's server requests on the user's behalf. A tenant able to create one could:
-- point Grafana at any address `tob` can reach: the API, OpenBao and tenant DNS on Platform, and
+- point Grafana at any address `obs` can reach: the API, OpenBao and tenant DNS on Platform, and
   the internet
 - or swap its own read token for another value
 
@@ -199,7 +199,7 @@ and a Grafana login.
 **The API grows again.** It gains a Grafana backend: organisations, users and data sources, with
 reconcile and resupply like the others.
 
-**`tob` gets heavier.** Grafana's documented minimum is *"512 MB"* and *"1 core"*, on top of what
+**`obs` gets heavier.** Grafana's documented minimum is *"512 MB"* and *"1 core"*, on top of what
 ADR-0023 already lists.
 
 **Grafana's version is constrained by the VictoriaLogs plugin's**, which needs *"Grafana
