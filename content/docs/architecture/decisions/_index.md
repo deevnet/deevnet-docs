@@ -185,3 +185,15 @@ question is written down, not when it is answered.
   never from what the caller sends. A tenant sees substrate events because the substrate *publishes*
   them into its partition, not because a query filters the substrate's own log. v1 publishes only
   what the Deevnet API emits.
+- [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/) —
+  *Proposed.* Metrics are pulled and stored beside the logs. vmagent on the substrate observability
+  VM scrapes every substrate target from management, which reaches every zone, and writes to a
+  VictoriaMetrics cluster on the tenant observability VM behind ADR-0022's vmauth. The cluster
+  version is used because tenancy exists only there. The partitions and tenant tokens are ADR-0022's,
+  so a tenant still holds two tokens. Tenants push their own metrics, and the substrate publishes
+  each workload's resource use into the tenant's substrate partition. Tenants declare alert rules
+  through the Deevnet API. Each tenant's rules are evaluated by its own vmalert under its own read
+  token, so the partition boundary is enforced by vmauth, not by the rule's text. One Alertmanager
+  routes by a substrate-stamped tenant label to ntfy on Platform, where each tenant is limited to its
+  own topic prefix. Open: who watches the watcher, and how an off-site phone is reached. Extends
+  ADR-0022.
