@@ -27,6 +27,7 @@ digraph architecture {
     graph [
         rankdir=TB,
         splines=ortho,
+        compound=true,
         nodesep=0.6,
         ranksep=0.8,
         fontname="Helvetica",
@@ -64,10 +65,15 @@ digraph architecture {
             WirelessAP [label="Wireless AP", width=1.0]
             AccessSwitch [label="Access Switch", width=6.0]
 
+            // The AP trunks into the access switch, not the router. Pinned to
+            // the same rank so the edge draws as a straight run across, and
+            // kept inside this cluster so it stays in the substrate.
+            { rank=same; AccessSwitch -> WirelessAP }
+
             // Physical substrate compute: inventoried, cabled to the access
             // switch, and outside the yellow hypervisor boxes because it is
             // not virtualized.
-            PiCompute [label="Bare-Metal Compute\nsingle-board hosts, not virtualized"]
+            PiCompute [label="Bare-Metal Compute\nsingle-board hosts"]
 
             // Yellow boxes are virtual: each is a hypervisor (standalone
             // today, could grow into a cluster)
@@ -97,14 +103,13 @@ digraph architecture {
         // site, attached to the substrate's access networks.
         EdgeDev [label="Edge Devices\napplication-owned, platform-attached"]
 
-        CoreRouter -> WirelessAP
         CoreRouter -> AccessSwitch
         AccessSwitch -> PiCompute
-        AccessSwitch -> SubstrateSvc
-        AccessSwitch -> SharedTenantSvc
-        AccessSwitch -> TenantHV
+        // One uplink per hypervisor: lhead clips the edge at the cluster
+        // border so it stops at the box rather than reaching a node inside.
+        AccessSwitch -> SubstrateSvc [lhead=cluster_mgmt]
+        AccessSwitch -> TenantHV [lhead=cluster_tenant]
         WirelessAP -> EdgeDev [minlen=2]
-        AccessSwitch -> EdgeDev [minlen=2]
     }
 
     EdgeRouter -> CoreRouter
