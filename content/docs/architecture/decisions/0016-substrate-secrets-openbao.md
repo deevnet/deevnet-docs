@@ -12,6 +12,7 @@ weight: 16
 | **Date** | 2026-09-17 |
 | **Scope** | Where the credentials substrate services use at runtime are kept, how tenant secrets are protected at rest and in transit, and where the internal certificate authority lives |
 | **Extends** | [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), whose API holds credentials for PowerDNS, the core router, the state store and the tenant hypervisor, and stores tenant secrets |
+| **Extended by** | [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) (Proposed), the record §8 asked for on tenant namespaces |
 | **Related** | [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §9 (credential delivery), [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/), [ADR-0014: Tenant State Durability](/docs/architecture/decisions/0014-tenant-state-durability/) |
 
 ---
