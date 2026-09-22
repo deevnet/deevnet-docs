@@ -171,6 +171,10 @@ fields with `_msg` if it has one. The bridge adds:
 - **Its store credential writes only `(index, 2)` partitions.** The mechanism is open (Open question 1).
 - **It keeps no state.** A bridge outage loses device logs sent during it, unless they were published
   with QoS 1 and a persistent session, which the bridge uses (Open question 2).
+- **It is a small service written for this**, built as a container image by the container image
+  factory and deployed in the pattern ADR-0013 set. An off-the-shelf collector was considered and not
+  chosen: routing each message to its tenant's partition means setting a per-message header, which
+  their HTTP sinks do not express.
 
 ### 5. Where the store lives
 
@@ -209,15 +213,16 @@ today.
 
 ## Open questions
 
-1. **How the bridge's credential is confined to `(index, 2)`.** vmauth sets partition headers per
-   user or per `url_map` entry, not from the request. Two ways:
-   - **One vmauth user per tenant for the bridge.** The bridge holds a token per tenant. That is simple
-     and exact, but it adds a token per tenant.
-   - **One bridge user whose `url_map` routes by a header** the bridge sets per tenant. The header
-     selects the entry, and vmauth then overwrites the partition headers with that entry's values.
-     That is one token, and the confinement is in vmauth's config.
+1. ~~How the bridge's credential is confined to `(index, 2)`.~~ **Answered 2026-09-22:** *one bridge
+   user, routed per tenant.* The bridge holds **one** token and sets a tenant header per message.
+   vmauth's `url_map` matches that header and then overwrites the partition headers with that entry's
+   values, so a header the bridge sets can only select among entries the API wrote — it cannot invent a
+   partition. The API adds one entry per tenant when it creates the tenant
+   ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) builds the user and its routing; the bridge
+   fills in its token in the change after).
 
-   Either way the API, not an operator, adds the entry when it creates a tenant.
+   The alternative, a token per tenant, was not chosen: the bridge would have to hold and refresh N
+   tokens and learn about new tenants, for confinement that vmauth's config already gives.
 2. **Delivery guarantees.** QoS 1 with a persistent session keeps messages across a bridge restart.
    How much the broker queues for an offline subscriber, and for how long, is a VerneMQ setting to
    confirm against its current documentation.
@@ -246,5 +251,6 @@ today.
 - The store runs on `dv02obs001v01` (CHG-0018). It still carries ADR-0022's syslog listener and six
   substrate ingest users; removing them is the next change.
 - No tenant token exists yet: that is the tenant-token change.
-- No bridge exists.
+- No bridge exists. [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) builds the bridge user and
+  its per-tenant routing; the change after it builds the bridge.
 - No device publishes under `<tenant>/log/`.

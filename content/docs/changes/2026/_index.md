@@ -27,3 +27,4 @@ bookCollapseSection: true
 | CHG-0017 | 2026-09-20 | [Retire Mosquitto](0017-retire-mosquitto/) | Configuration · Cleanup | mobile | Complete |
 | CHG-0018 | 2026-09-21 | [The Central Log Store](0018-central-log-store/) | Deployment · Configuration | mobile | Complete |
 | CHG-0019 | 2026-09-22 | [Strip the Log Store to Tenant Scope](0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Complete |
+| CHG-0020 | Unscheduled | [The API Issues Tenant Log Tokens](0020-tenant-log-tokens/) | Deployment · Configuration | mobile | Planned |
