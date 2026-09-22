@@ -106,10 +106,23 @@ not a panic that printed and stopped, and not a reboot loop.
     writes, which would include the last minutes of logging, were lost at the hard stop.
   - `Configuring crash dump device: /dev/null`. Crash dumps are disabled, so a kernel panic could not
     have been captured either.
-- Both NICs are Realtek RTL8168/8111 on FreeBSD's `re(4)` driver. **Hypothesis only:** that driver has
-  a reputation for hanging under load, and the hang came while about 50 MB of images crossed `re0`
-  twice (management in, Platform out, on the same trunk). The first 26 MB push crossed it without
-  trouble. Nothing here confirms or rules this out.
+- **Two hypotheses. Neither is confirmed, and nothing here rules either out:**
+  1. **Thermal or load, on fanless hardware** (raised by the operator). The router is a fanless
+     ZimaBoard, and its work has grown. Since CHG-0007 it enforces 57 inter-zone rules, so every packet
+     between segments goes through pf. It routes on a stick: management → Platform traffic enters and
+     leaves on the same `re0` trunk, so that link carries every image push twice. The evening was its
+     heaviest yet: VM builds, image pushes, OpenBao calls, and DNS/DHCP API writes. A fanless board sheds
+     heat only through its case, so heat built up over the evening would show in no single command. A
+     hard lockup with no video and no keyboard response is consistent with a thermal or power stop.
+     **Against, or at least unsettled:** about 50 MB of image pushes is light work for a gigabit router,
+     so load alone should not hang a healthy box. If load was the trigger, something was already
+     marginal.
+  2. **The Realtek NIC driver.** Both NICs are Realtek RTL8168/8111 on FreeBSD's `re(4)` driver, which
+     has a reputation for hanging under load. The hang came while an image was crossing `re0`. The first
+     push, 26 MB, crossed it without trouble.
+- **Read after recovery (20:38):** 44.1 °C on the only sensor exposed, one ACPI thermal zone
+  (`hw.acpi.thermal.tz0`), not per-core. Load average 0.50, and 755 MB of 8 GB memory in use. That rules
+  out memory pressure. It says nothing about the temperature at 20:14, five minutes after a cold boot.
 
 ## Root cause
 
@@ -141,6 +154,8 @@ off-box except what firewalld allows by default.
 | # | Action | Where | Status |
 |---|--------|-------|--------|
 | 1 | Establish why the router hung. The console and local logs had nothing, so this now depends on catching a recurrence with the preventive actions below in place. | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 2 | Test both hypotheses by reproducing deliberately. In a window where losing the router is acceptable, with its console attached, push sustained traffic across VLANs (`iperf3` from a management host to a Platform host, so it crosses `re0` both ways). Record the temperature every few seconds, to somewhere that survives a hang. Then compare with the same test after a cool-down. A hang that tracks temperature points to heat; a hang at low temperature under load points to the driver or the hardware. | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 3 | Expose per-core temperatures (load `coretemp`), so a thermal reading means the CPU rather than one ACPI zone | `dv02cor002p01` | {{< action-status "Open" >}} |
 
 ## Preventive actions
 
