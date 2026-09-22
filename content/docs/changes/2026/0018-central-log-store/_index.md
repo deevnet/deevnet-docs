@@ -108,7 +108,7 @@ behind.
 Each new VM keeps its predecessor's address, so the old VM must be gone **before** the new one boots.
 
 **Inventory, on one branch:**
-- `hosts.yml`: `observability_store` becomes **`observability_store`**, holding `dv02obs001v01`.
+- `hosts.yml`: `tenant_observability` becomes **`observability_store`**, holding `dv02obs001v01`.
   `substrate_observability` becomes **`observability_collectors`**, holding `dv02col001v01`. The
   two are swapped in `management_plane` as well.
 - `host_vars/dv02obs001v01/vars.yml` and `host_vars/dv02col001v01/vars.yml` are copied from the old
