@@ -184,7 +184,8 @@ question is written down, not when it is answered.
   substrate events about that tenant. vmauth sets the partition from a bearer token the API issues,
   never from what the caller sends. A tenant sees substrate events because the substrate *publishes*
   them into its partition, not because a query filters the substrate's own log. v1 publishes only
-  what the Deevnet API emits.
+  what the Deevnet API emits. *Superseded in part by ADR-0027:* its scope, which included substrate
+  logs, and its substrate and network-device shipping.
 - [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/) —
   *Proposed.* Metrics are pulled and stored beside the logs. vmagent on the substrate observability
   VM scrapes every substrate target from management, which reaches every zone, and writes to a
@@ -240,3 +241,17 @@ question is written down, not when it is answered.
   from being starved, and the substrate stores tenant buckets without backing them up unless the
   tenant opts into replication. It also closes a gap: the store has served plain HTTP despite
   ADR-0016. Extends ADR-0007 and ADR-0014.
+- [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/) —
+  *Proposed.* The central log store is for tenants only: their workloads' logs, and their edge devices'
+  logs arriving over MQTT. The substrate's own logs are not centralized, and the syslog listener and
+  the substrate's per-host tokens go. The API still writes each tenant's events into that tenant's
+  `(index, 1)`. Device logs land in a new `(index, 2)`:
+  - a device publishes under a reserved `<tenant>/log/<device>` topic
+  - a substrate bridge beside the broker subscribes to `+/log/#` and routes each message by its
+    broker-enforced tenant prefix, which is the reliable tenant identity a generic collector lacked
+  - no new zone rule is needed, since `iot_backend -> platform` already exists
+
+  The store stays on the management hypervisor for now. It moves to the tenant hypervisor, where
+  tenant traffic would never cross the core router, only if the core router's NIC still times out
+  after its driver change *and* logging proves a noticeable share of its traffic. Supersedes ADR-0022
+  in part.

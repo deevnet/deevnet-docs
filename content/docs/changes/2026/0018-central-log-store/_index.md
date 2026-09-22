@@ -482,17 +482,24 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 - [ ] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin.
 - [x] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). Done by the operator on
   2026-09-22 and verified; see *Outcome*.
-- [ ] **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
+- [x] **Declined 2026-09-22** ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/): the store is for tenants only). *Was:* **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
   - decide how to handle the first run's full-journal backfill, which is heavy traffic across the
     router's `re0`
   - roll out one host at a time
   - never put a secret on an **ad-hoc** Ansible command line: `Invoked with` is journaled verbatim
     and would reach the store. The roles use `no_log`.
-- [ ] **Syslog from the hypervisors, switch and AP**, a new change: rsyslog with a disk-assisted queue
+- [x] **Declined 2026-09-22** (ADR-0027). *Was:* **Syslog from the hypervisors, switch and AP**, a new change: rsyslog with a disk-assisted queue
   on the hypervisors, and each device's options quoted from its current manual.
-- [ ] **Syslog from the core router**, only after INC-0004's NIC fault is resolved. That includes the
+- [x] **Declined 2026-09-22** (ADR-0027, and INC-0004 Preventive action 1). *Was:* **Syslog from the core router**, only after INC-0004's NIC fault is resolved. That includes the
   move to Realtek's vendor driver, which is INC-0004's follow-up.
 - [ ] `proxmox_vm`: the hardware task reports changed on every run (`proxmox_kvm` `update: true`).
 - [ ] Remove the test builders `dv02bld001v01` and `dv02bld002v01` (the operator's follow-up).
 - [x] **ADR-0022 acceptance.** Decided on 2026-09-22: it stays **Proposed until a shipping change is
-  complete**. A store that nothing writes to has not yet shown the design works.
+  complete**. A store that nothing writes to has not yet shown the design works. Later the same day,
+  [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) superseded it in part, making the
+  store tenants-only.
+- [ ] **Strip the store to tenant scope**, a new change (ADR-0027):
+  - remove the syslog listener and its rich rules, and the six substrate ingest users
+  - retire `log_shippers` and the per-host tokens
+  - delete branch `journal-upload-wip`
+  - clean up `nms`'s trial leftovers
