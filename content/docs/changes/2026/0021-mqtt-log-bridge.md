@@ -14,7 +14,7 @@ weight: 21
 | **Window** | Not yet scheduled |
 | **Site** | mobile |
 | **Systems** | `dv02msg001v01` (runs the bridge, beside the broker), `dv02obs001v01` (receives), the broker's auth database |
-| **Automation** | `deevnet.mgmt`: a new role, deployed beside `vernemq`. The image comes from wherever the bridge's source ends up living (see *The one open decision*) |
+| **Automation** | `deevnet.mgmt`: a new role, deployed beside `vernemq`. The image is built and staged by [deevnet-log-bridge](https://github.com/deevnet/deevnet-log-bridge) |
 | **Risk** | Low to the substrate: the bridge only reads from the broker and writes to the store. The risk it carries is a subscribe-everything account, which is why its confinement is stated and tested here. |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (built the bridge's user and routing), [CHG-0015](/docs/changes/2026/0015-vernemq-broker/) (the broker), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (how accounts are written) |
 | **Related incidents** | None |
@@ -52,19 +52,21 @@ end-to-end test with a real device.
 - tenant workload logs, which go straight to the store with the tenant's own ingest token
 - anything about `(index, 0)` or `(index, 1)`
 
-## The one open decision
+## Where the bridge's source lives — decided 2026-09-22
 
-**Where the bridge's source lives.** Three homes were considered:
+**A new repository, [deevnet-log-bridge](https://github.com/deevnet/deevnet-log-bridge)**, created on
+2026-09-22. Its first code is open for review as PR #1. Three homes were considered:
 
 | | Against it |
 |---|---|
 | `deevnet-container-image-factory` | Its README is explicit: it is for *"software the substrate runs but does not write"*, built from upstream source whose binaries we may not use. The bridge is ours. |
 | `deevnet-provisioning-api` | That repository is **provisioning-only**, and nothing at runtime depends on it. The bridge is a runtime service, and putting it there blurs the one boundary that repository exists to keep. |
-| **A new repository, `deevnet-log-bridge`** *(recommended)* | One more repository to run, and a new image build path. |
+| **A new repository, `deevnet-log-bridge`** *(chosen)* | One more repository to run, and a new image build path. |
 
-The recommendation is the new repository: it is the only option that does not weaken a boundary
-another repository is built on. **Creating it is the operator's call**, which is why this record
-names the decision rather than assuming it.
+The new repository is the only option that does not weaken a boundary another repository is built
+on, and it matches what the estate already does with software it writes: the provisioning API builds
+and stages its own image from its own repository. ADR-0027 said the factory would build it; that
+sentence is corrected.
 
 ## Design
 
@@ -111,13 +113,13 @@ reach no other partition, and a device cannot reach any partition at all.
 ## Prerequisites
 
 - [ ] CHG-0020 deployed: the bridge user exists in the store with a route per tenant
-- [ ] The source's home decided (above)
+- [x] The source's home decided (above), and the service written: PR #1 in that repository
 - [ ] At least one device publishing to `<tenant>/log/<device>`
 
 ## Procedure
 
-1. **The service**, wherever it lives: subscribe, map, post, with its configuration from the
-   environment and its two credentials from a root-only env file.
+1. **The service** — written, in review. Subscribe, map, post; configuration from the environment
+   and both credentials from a root-only env file.
 2. **The image**, built and staged like the others.
 3. **The broker account**, provisioned by the substrate with a subscribe-only grant.
 4. **The role**, deployed beside `vernemq` on the messaging VM, reaching the store over
