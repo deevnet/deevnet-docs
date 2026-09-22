@@ -12,6 +12,7 @@ weight: 22
 | **Scope** | Where substrate and tenant logs are sent and kept, how they are partitioned, who may read which partition, and which substrate events a tenant sees. Logs only: metrics and alerting are left for their own records. |
 | **Supersedes, in part** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) §5, **for logs only**. That section splits observability into a substrate store on management and a tenant store on Platform. For logs there is now one store, on Platform. Everything else in ADR-0013 stands, including both VMs. |
 | **Extended by** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/): metrics use the same store host, proxy, partitions and tenant tokens *(Proposed)*. [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): tenants read their logs in Grafana, one organisation per tenant *(Proposed)* |
+| **Superseded in part by** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/): **the scope and §5.** The store is for tenants only, the substrate and network devices don't ship to it, and the syslog listener goes. Device logs arrive over MQTT into a new `(index, 2)`. The store, proxy, partitions, tokens and §4 stand. *(Proposed)* |
 | **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): the store, *Complete 2026-09-22*. Substrate shipping and tenant tokens follow in later records. |
 | **Related** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) |
 
@@ -374,3 +375,6 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
   ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)).
 - **This record stays Proposed until a shipping change is complete**, by the operator's decision on
   2026-09-22. A store with nothing writing to it has not yet shown the design works.
+- **Superseded in part by [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)**
+  (2026-09-22): tenants only, so §5's substrate shipping and the syslog listener are withdrawn for
+  good. What remains of this record is accepted through ADR-0027, when a tenant first ships.

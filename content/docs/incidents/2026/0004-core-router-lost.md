@@ -201,8 +201,8 @@ the store, and the router's syslog is excluded until the NIC is stable.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Send the router's syslog off-box so the last lines before a hang survive it. The store exists (CHG-0018). **Enable this only once `re0` is stable**, in a later change. | later change | {{< action-status "Open" >}} |
-| 2 | Enable a crash dump device (`dumpdev`) on the router so a kernel panic leaves a dump | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 1 | Send the router's syslog off-box so the last lines before a hang survive it. **Declined** by the operator on 2026-09-22: the central store is for tenants only ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)), and no separate router log path is wanted. Evidence of the next hang is to come from the console and from crash dumps (Preventive action 2). | — | {{< action-status "Declined" >}} |
+| 2 | Enable a crash dump device (`dumpdev`) on the router so a kernel panic leaves a dump. **Now the main way the next event leaves evidence**, since off-box syslog was declined, so do it before or with the vendor-driver change. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 3 | Monitor the router's reachability, so a hang is detected by alert rather than by the operator losing a session | ADR-0023 | {{< action-status "Open" >}} |
 
 ## Follow-ups
@@ -212,7 +212,7 @@ the store, and the router's syslog is excluded until the NIC is stable.
 | 1 | After recovery, confirm the router's configuration survived: the zone policy (57 rules), Kea reservations and Unbound overrides | `dv02cor002p01` | {{< action-status "Done" >}} 2026-09-21 |
 | 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Done" >}} 2026-09-21 |
 | 3 | **Move the router from the in-tree `re(4)` driver to Realtek's vendor driver**, as its own change record, because it changes a kernel module on the site gateway and needs a reboot. Details below the table. | new CHG | {{< action-status "Open" >}} |
-| 4 | Only once `re0` is stable, send the router's syslog to the central store (Preventive action 1). The store exists (CHG-0018), and the next timeout's last lines would survive it. | later change | {{< action-status "Open" >}} |
+| 4 | Only once `re0` is stable, send the router's syslog to the central store. **Declined** on 2026-09-22 with Preventive action 1 (ADR-0027: tenants only). | — | {{< action-status "Declined" >}} |
 
 **Follow-up 3, the vendor driver, from OPNsense's own plugin source** (`opnsense/plugins`,
 `net/realtek-re`, read 2026-09-22):
