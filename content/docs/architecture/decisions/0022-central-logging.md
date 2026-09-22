@@ -12,7 +12,7 @@ weight: 22
 | **Scope** | Where substrate and tenant logs are sent and kept, how they are partitioned, who may read which partition, and which substrate events a tenant sees. Logs only: metrics and alerting are left for their own records. |
 | **Supersedes, in part** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) §5, **for logs only**. That section splits observability into a substrate store on management and a tenant store on Platform. For logs there is now one store, on Platform. Everything else in ADR-0013 stands, including both VMs. |
 | **Extended by** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/): metrics use the same store host, proxy, partitions and tenant tokens *(Proposed)*. [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): tenants read their logs in Grafana, one organisation per tenant *(Proposed)* |
-| **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/) (the store and substrate shipping, *Planned*); tenant tokens follow in a later record |
+| **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): the store, *Complete 2026-09-22*. Substrate shipping and tenant tokens follow in later records. |
 | **Related** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) |
 
 ---
@@ -335,28 +335,42 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 ## To confirm when building
 
 - That vmauth overwrites a caller-supplied `AccountID` and `ProjectID` once `headers` sets them.
-  **Confirmed in the source** (`dst.Set`, above). It still needs a live negative test, from a tenant
-  segment, before anything depends on it.
+  **Confirmed in the source** (`dst.Set`, above). **Confirmed live** in CHG-0018, from the Builder: a
+  forged `AccountID: 5` landed in `(0, 0)`, and a direct backend query showed `(5, 0)` empty. A test from
+  a tenant segment is still owed, with the tenant-token change.
 - That a `url_map` entry with no match, and no `default_url`, is refused rather than routed to
-  `(0, 0)`.
+  `(0, 0)`. **Confirmed** in CHG-0018: 400 `missing route`.
 - That `systemd-journal-upload` with `Header=` on Fedora 44 (systemd 259) delivers into the right
-  partition through vmauth.
+  partition through vmauth. **Confirmed in a one-host trial** in CHG-0018 (194,077 lines from `nms`),
+  which also found three prerequisites for the shipping change:
+  - an SELinux port label
+  - `ServerKeyFile=-` and `ServerCertificateFile=-`
+  - a `0640 root:systemd-journal` token drop-in
 - That a VictoriaLogs syslog listener can be fixed to `(0, 0)` with `-syslog.tenantID.tcp`, and that
   the core router, switch, AP and hypervisors can send to it. Check each device's syslog options
-  against its current manual, not from memory.
+  against its current manual, not from memory. **Half confirmed:** the listener is fixed to `(0, 0)`
+  and serves TLS, and `dv02hyp001p01` connects. No device has sent to it yet; that is the shipping
+  changes' job.
 - That the syslog port under host networking is filtered by firewalld, measured from a source that
-  is not allowed, as CHG-0016 measured it.
+  is not allowed, as CHG-0016 measured it. **Confirmed** in CHG-0018: the Builder is refused, and a
+  listed hypervisor connects.
 - The systemd version on `dv02hyp002p02`. Only `dv02hyp001p01` was checked.
 - That VictoriaLogs and vmauth run in the memory `obs` is given, at a realistic ingest rate. `obs` was
-  built with 2 GB before logging had requirements, and resizing it is approved.
+  built with 2 GB before logging had requirements, and resizing it is approved. **At one host's
+  volume:** 115 MB and 7 MB of the 4 GB `obs` was rebuilt with, and 32 MB of disk for about 370,000
+  lines. Re-measure at site volume.
 
 ---
 
 ## Current state
 
-- **Proposed. Nothing is built.** The stack and partition scheme were reviewed and accepted as
-  written on 2026-09-21, and every open question was answered. This record becomes Accepted when
-  [CHG-0018](/docs/changes/2026/0018-central-log-store/) completes.
-- `dv02tob001v01` and `dv02sob001v01` run only sshd. CHG-0018 replaces them with `dv02obs001v01` and
-  `dv02col001v01`.
-- No host ships its logs anywhere.
+- **Proposed.** The stack and partition scheme were reviewed and accepted as written on 2026-09-21,
+  and every open question was answered.
+- **The store is built:** [CHG-0018](/docs/changes/2026/0018-central-log-store/) (Complete
+  2026-09-22). VictoriaLogs and vmauth run on `dv02obs001v01`, and the collector VM `dv02col001v01`
+  is built and empty. Both replaced `dv02tob001v01` and `dv02sob001v01`.
+- **Nothing ships to it yet.** Making substrate hosts write to it is a later change. The core router
+  is excluded until its LAN NIC is stable
+  ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)).
+- **This record stays Proposed until a shipping change is complete**, by the operator's decision on
+  2026-09-22. A store with nothing writing to it has not yet shown the design works.

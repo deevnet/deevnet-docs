@@ -11,8 +11,8 @@ bookCollapseSection: true
 | **Date** | 2026-09-21 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. **The store is built and verified** (Steps 1–4). Step 1's last item is open: the two stale DNS A records. Steps 5 and 6 were **withdrawn** on 2026-09-22 and move to later changes (see *Scope change*). |
-| **Window** | Started 2026-09-21 19:42 |
+| **Status** | **Complete 2026-09-22.** The store is built and verified (Steps 1–4). Steps 5 and 6 were **withdrawn** on 2026-09-22 and move to later changes (see *Scope change*). |
+| **Window** | 2026-09-21 19:42 to 2026-09-22 08:09 |
 | **Site** | mobile |
 | **Systems** | `dv02tob001v01` and `dv02sob001v01` (destroyed), `dv02obs001v01` (new; runs the store), `dv02col001v01` (new; ADR-0023's collector, empty here), `dv02hyp001p01` (hosts all four), every Fedora domain VM (`nms`, `col`, `idn`, `prv`, `obs`, `msg`), `dv02hyp001p01` and `dv02hyp002p02` (ship logs), `dv02cor002p01`, `dv02acc001p01`, `dv02wap001p01` (send syslog) |
 | **Automation** | `deevnet.mgmt` `site.yml`: `proxmox_vm` and `data_disk` (`--tags vms`), a new `victorialogs` role, and a new shipping role; `deevnet.builder` `artifacts` for the images. Inventory `ansible-inventory-deevnet/mobile` |
@@ -425,6 +425,8 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 | 2026-09-21 21:19 → 2026-09-22 07:5x | 5 (trial) | `nms` shipped **194,077 lines**, its full journal backfill, then its live journal. It restarted 337 times overnight because the router kept dropping. That retry log became evidence for INC-0004. |
 | 2026-09-22 ~07:55 | — | **Scope change** (see above). On `nms`, journal-upload was stopped and disabled, and its token drop-in was removed. The package `systemd-journal-remote`, the site CA at `/etc/pki/deevnet/site-ca.pem` and the SELinux label on 8427 were left in place; each is harmless. What `nms` shipped stays in the store. |
 | 2026-09-22 | 4 | Verification 6 and 7 run; see *Verification*. The store is complete. |
+| 2026-09-22, before 08:09 | 1 | The operator removed the two stale A records with `opnsense_dns` and `dns_delete_unmanaged=true`, the run the session's classifier had blocked. Checked at 08:09:03 against the router's resolver: `dv02tob001v01` and `dv02sob001v01` no longer resolve; `dv02obs001v01` → `10.20.25.22` and `dv02col001v01` → `10.20.99.41` do. **Step 1 is complete.** |
+| 2026-09-22 08:09 | — | The operator ran `make vault`. Every `vault.yml` was checked to begin with `$ANSIBLE_VAULT`, and the 17 re-encrypted files were committed (inventory #48). **Change complete.** ADR-0022 stays **Proposed** until a shipping change completes, by the operator's decision. |
 ### Departures from the plan
 
 - **The VMs were destroyed before the new inventory was merged.** The plan said to wait, so that a
@@ -478,9 +480,8 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
   - `max_concurrent_requests` on each tenant ingest user (ADR-0022 §6)
 - [ ] **API tenant events.** The API writes each tenant event to `(0, 0)` and to `(index, 1)`.
 - [ ] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin.
-- [ ] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). The operator will run
-  `ansible-playbook playbooks/dns.yml -e dns_delete_unmanaged=true` in `deevnet.net`; its report showed
-  exactly those two unmanaged. This is the last item of Step 1, and this record is Complete after it.
+- [x] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). Done by the operator on
+  2026-09-22 and verified; see *Outcome*.
 - [ ] **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
   - decide how to handle the first run's full-journal backfill, which is heavy traffic across the
     router's `re0`
@@ -489,9 +490,9 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
     and would reach the store. The roles use `no_log`.
 - [ ] **Syslog from the hypervisors, switch and AP**, a new change: rsyslog with a disk-assisted queue
   on the hypervisors, and each device's options quoted from its current manual.
-- [ ] **Syslog from the core router**, only after INC-0004's NIC fault is resolved.
+- [ ] **Syslog from the core router**, only after INC-0004's NIC fault is resolved. That includes the
+  move to Realtek's vendor driver, which is INC-0004's follow-up.
 - [ ] `proxmox_vm`: the hardware task reports changed on every run (`proxmox_kvm` `update: true`).
 - [ ] Remove the test builders `dv02bld001v01` and `dv02bld002v01` (the operator's follow-up).
-- [ ] **ADR-0022 acceptance:** it was to become Accepted when this record is Complete. With shipping
-  withdrawn, decide whether the built and verified store is enough to accept it, or whether it waits
-  for the first shipping change.
+- [x] **ADR-0022 acceptance.** Decided on 2026-09-22: it stays **Proposed until a shipping change is
+  complete**. A store that nothing writes to has not yet shown the design works.

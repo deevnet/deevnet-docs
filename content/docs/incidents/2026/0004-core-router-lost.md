@@ -88,9 +88,10 @@ happened. Nothing alerted, because the site has no monitoring yet (ADR-0023 is P
 | ~21:25 | At the console, `dmesg` shows **`re0: watchdog timeout`**. The operator reboots the router, and afterwards still cannot get back in by the normal path. *Exact times were not recorded.* |
 | 21:10 → 07:30 | `nms`'s uploader retries whenever it loses the store, and restarts **337 times** overnight. **Every 10-minute window from 21:10 to 07:30 has failures.** They are `Failed to connect` (routing to Platform), `Could not resolve host` (the router is the resolver), and connections dying mid-stream (TLS `unexpected eof`, `Connection reset`, `No route to host`, 300-second timeouts). The longest stretches of DNS failure: 22:50–23:30, 02:50–03:40, 05:10–05:30 and 06:50–07:30. |
 | 21:10 → 07:30 | On `obs` in the same period: vmauth has **0 restarts** but logs **68 TLS handshakes that time out part-way**, and VictoriaLogs logs **4 journald streams from `nms` cut off mid-transfer**. That is the path dropping, not a server fault. |
-| 2026-09-22, morning | The operator swaps cables and reboots the router, then sees **four further `re0` watchdog timeouts** during the session. |
+| 2026-09-22, morning | The operator swaps cables and reboots the router, then sees **four further `re0` watchdog timeouts** during the session. The operator's impression is that **the cable swap may have helped**: fewer timeouts. The rate was not measured either side of the swap. |
 | 2026-09-22 07:54 | The router answers from the Builder: 443, Platform, and DNS. |
 | 2026-09-22 ~07:55 | CHG-0018 is rescoped. `nms`'s journal shipping is stopped and disabled, which removes its traffic across `re0`. **Further timeouts after this cannot be attributed to that upload.** |
+| 2026-09-22 08:09 | CHG-0018 completes with no traffic of its own crossing `re0`. |
 
 ## Symptoms
 
@@ -152,7 +153,8 @@ LAN NIC, `re0` (Realtek RTL8168/8111 on FreeBSD's `re(4)` driver), hits **watchd
 stops the interface that carries every VLAN. That is every routed path at the site, and the resolver.
 A cable swap did not stop them.
 
-**Why `re0` times out is not established:** the driver, the chip, heat, or load. **Whether the first
+**Why `re0` times out is not established:** the driver, the chip, the cabling, heat, or load. The cable
+swap may have reduced the timeouts, in the operator's impression, but it did not stop them. **Whether the first
 event, a hard hang with no video and no keyboard, was the same fault is also not established.** A NIC
 watchdog timeout does not by itself stop the console, so the first event may have been a different
 failure, or a worse form of the same one. No evidence from it survived (see Contributing factors).
@@ -192,7 +194,7 @@ the store, and the router's syslog is excluded until the NIC is stable.
 | 1 | Establish why the router hung. The console and local logs had nothing, so this now depends on catching a recurrence with the preventive actions below in place. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 2 | Test both hypotheses by reproducing deliberately. In a window where losing the router is acceptable, with its console attached, push sustained traffic across VLANs (`iperf3` from a management host to a Platform host, so it crosses `re0` both ways). Record the temperature every few seconds, to somewhere that survives a hang. Then compare with the same test after a cool-down. A hang that tracks temperature points to heat; a hang at low temperature under load points to the driver or the hardware. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 3 | Expose per-core temperatures (load `coretemp`), so a thermal reading means the CPU rather than one ACPI zone | `dv02cor002p01` | {{< action-status "Open" >}} |
-| 4 | Fix or replace the `re0` path. The candidates are unverified and need checking against current OPNsense and FreeBSD documentation before any is applied: Realtek's own driver in place of the in-tree `re(4)`; disabling hardware offloads on `re0`; or **replacing the router with hardware whose NICs are not Realtek, and that has more than two ports**, so the trunk isn't the only LAN link (the operator's preference if it recurs). | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 4 | Fix or replace the `re0` path. **First, Realtek's vendor driver in place of the in-tree `re(4)`** (Follow-up 3), which OPNsense ships for exactly this symptom. If timeouts persist after that, **replace the router with hardware whose NICs are not Realtek, and that has more than two ports**, so the trunk isn't the only LAN link (the operator's preference). Disabling hardware offloads on `re0` is a further candidate, unverified. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 5 | Capture the next watchdog timeout with context: the timestamp, `netstat -I re0` counters before and after, and the temperature. This comes from the console until off-box syslog is safe to enable. | `dv02cor002p01` | {{< action-status "Open" >}} |
 
 ## Preventive actions
@@ -209,6 +211,26 @@ the store, and the router's syslog is excluded until the NIC is stable.
 |---|-----------|-------|--------|
 | 1 | After recovery, confirm the router's configuration survived: the zone policy (57 rules), Kea reservations and Unbound overrides | `dv02cor002p01` | {{< action-status "Done" >}} 2026-09-21 |
 | 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Done" >}} 2026-09-21 |
+| 3 | **Move the router from the in-tree `re(4)` driver to Realtek's vendor driver**, as its own change record, because it changes a kernel module on the site gateway and needs a reboot. Details below the table. | new CHG | {{< action-status "Open" >}} |
+| 4 | Only once `re0` is stable, send the router's syslog to the central store (Preventive action 1). The store exists (CHG-0018), and the next timeout's last lines would survive it. | later change | {{< action-status "Open" >}} |
+
+**Follow-up 3, the vendor driver, from OPNsense's own plugin source** (`opnsense/plugins`,
+`net/realtek-re`, read 2026-09-22):
+- `PLUGIN_NAME= realtek-re`, `PLUGIN_COMMENT= Realtek re(4) vendor driver`,
+  `PLUGIN_DEPENDS= realtek-re-kmod`.
+- Its description: *"This is the official driver from Realtek and can be loaded instead of the FreeBSD
+  driver built into the GENERIC kernel if you experience issues with it (eg. watchdog timeouts), or your
+  card is not supported."* and *"Please note this driver requires a system reboot to activate."*
+- It works by a loader drop-in: `if_re_load="YES"`, `if_re_name="/boot/modules/if_re.ko"`.
+
+**Inference, to confirm in the change record:**
+- OPNsense packages plugins with an `os-` prefix, so it installs as `os-realtek-re`.
+- Removing the plugin removes that loader file, and the in-tree driver returns at the next reboot.
+  That would be the rollback.
+
+The change needs:
+- console access, because a driver that fails to attach takes the LAN down
+- the timeout rate measured before and after, so the result is a measurement, not an impression
 
 ## Lessons learned
 
