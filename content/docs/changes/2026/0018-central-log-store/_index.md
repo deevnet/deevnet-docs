@@ -11,8 +11,8 @@ bookCollapseSection: true
 | **Date** | 2026-09-21 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. Step 1 is partly done (the VMs are destroyed and the inventory is replaced); Step 3 is done |
-| **Window** | Started 2026-09-21 19:42 |
+| **Status** | **Complete 2026-09-22.** The store is built and verified (Steps 1–4). Steps 5 and 6 were **withdrawn** on 2026-09-22 and move to later changes (see *Scope change*). |
+| **Window** | 2026-09-21 19:42 to 2026-09-22 08:09 |
 | **Site** | mobile |
 | **Systems** | `dv02tob001v01` and `dv02sob001v01` (destroyed), `dv02obs001v01` (new; runs the store), `dv02col001v01` (new; ADR-0023's collector, empty here), `dv02hyp001p01` (hosts all four), every Fedora domain VM (`nms`, `col`, `idn`, `prv`, `obs`, `msg`), `dv02hyp001p01` and `dv02hyp002p02` (ship logs), `dv02cor002p01`, `dv02acc001p01`, `dv02wap001p01` (send syslog) |
 | **Automation** | `deevnet.mgmt` `site.yml`: `proxmox_vm` and `data_disk` (`--tags vms`), a new `victorialogs` role, and a new shipping role; `deevnet.builder` `artifacts` for the images. Inventory `ansible-inventory-deevnet/mobile` |
@@ -34,6 +34,20 @@ Tenants get nothing from this change directly. Their tokens, the API issuing the
 publishing tenant events into `(index, 1)` are the follow-up record. The store is built so that
 follow-up adds vmauth users and nothing else.
 
+## Scope change, 2026-09-22
+
+**This change now builds the central log store and stops there.** The operator withdrew Steps 5 and
+6, which ship logs from existing hosts, on 2026-09-22:
+
+- **Making existing substrate hosts write to the store is later work, in its own changes.** That
+  covers journal shipping from the domain VMs, and syslog from the hypervisors, switch and AP.
+- **The core router sends nothing to the store until its LAN NIC is stable.**
+  [INC-0004](/docs/incidents/2026/0004-core-router-lost/) found repeated `re0` watchdog timeouts, and
+  adding traffic across that NIC is not wanted until they stop.
+
+The plan below is left as it was written, as the template requires. The Goal rows and Steps that the
+decision withdrew are marked, and what did happen is under *Outcome*.
+
 ## Goal
 
 | | |
@@ -41,9 +55,9 @@ follow-up adds vmauth users and nothing else.
 | `dv02obs001v01` | has the memory it needs and a data disk at `/srv`, and runs VictoriaLogs and vmauth as containers with host networking |
 | VictoriaLogs HTTP | listens on `127.0.0.1` only; unreachable from any other host |
 | vmauth | listens on HTTPS with a certificate from the site CA, and refuses any request without a known bearer token |
-| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with its **own** ingest token |
-| Both hypervisors | ship to the syslog listener, which stores into `(0, 0)` |
-| Core router, switch, AP | send syslog to the same listener |
+| Every Fedora domain VM | ships its journal to `(0, 0)` through vmauth with its **own** ingest token. *Withdrawn: a later change.* The store holds a vmauth user and token for each already. |
+| Both hypervisors | ship to the syslog listener, which stores into `(0, 0)`. *Withdrawn: a later change.* |
+| Core router, switch, AP | send syslog to the same listener. *Withdrawn: a later change; the router only once its NIC is stable.* |
 | Syslog listener | reachable only from the addresses above, **measured** from one that is not |
 | The operator | reads `(0, 0)` with the operator read token, from the Builder |
 | The Builder | ships nothing (ADR-0022 §5) |
@@ -250,6 +264,9 @@ ansible-playbook playbooks/site.yml --limit observability_store
 
 ### Step 5: Ship the Fedora domain VMs
 
+> **Withdrawn from this change on 2026-09-22.** It was trialled on one host before the decision. See
+> *Outcome*. The role is kept on branch `journal-upload-wip` of the mgmt collection for the later change.
+
 A new shipping role on `log_shippers`:
 - installs `systemd-journal-remote`
 - configures `URL=https://<obs>/insert/journald`, plus `Header=Authorization: Bearer <this host's
@@ -290,6 +307,9 @@ longer than the journal's retention loses the lines rotated out before upload.
 
 ### Step 6: Ship the hypervisors and network devices
 
+> **Withdrawn from this change on 2026-09-22, and never started.** The core router is excluded until
+> INC-0004's NIC fault is resolved.
+
 - **Hypervisors:** Debian 12 has systemd 252, so there is no `Header=`. They use rsyslog forwarding
   over TLS to the syslog listener, with a **disk-assisted action queue**. That gives them the same
   store and forward as the VMs: rsyslog's default queue is in memory, and it is lost if rsyslog
@@ -310,23 +330,49 @@ config read on the router, or bounce a port that isn't in use on the switch.
 
 ## Verification
 
-The change is Complete only when all of these pass, measured from the network, not from Ansible:
+The change is Complete only when all of these pass, measured from the network, not from Ansible.
+*Results from 2026-09-21/22 are marked on each item; items 3 and 5 went with Steps 5 and 6.*
 
 1. **The syslog port is filtered.** From a source that is not on the allowed list (a tenant
    workload, and the Builder), connecting to the syslog port **fails**. From the router it succeeds.
    Before trusting that failure, remove the firewalld rule and watch the same test **succeed**
    (feedback: verify in the production context).
+   **Result: passed, with a different control.** From the Builder (not listed) the connection is
+   refused, `No route to host` from firewalld's reject, while vmauth's 8427 answers the Builder
+   normally. From `dv02hyp001p01` (listed) it connects, and `obs`'s TLS certificate is served. The
+   same port and listener behave differently only by source, which is the control the rule-removal
+   step was meant to supply, so the rule was not removed. The router was deliberately not tested (INC-0004), and
+   neither was a tenant workload.
 2. **Headers are overwritten.** From a tenant workload, send an ingest request with no token
    and `AccountID: 0` / `ProjectID: 0` headers set. It is refused. With one host's ingest token and
    a forged `AccountID: 5`, the line lands in `(0, 0)`, not `(5, 0)`.
+   **Result: passed, from the Builder rather than a tenant workload.** With no token: 401 on
+   `/select` and `/insert`, and 401 for an unknown token. A forged `AccountID: 5` with `msg`'s token
+   landed in `(0, 0)`. **Control:** querying VictoriaLogs directly on `obs`'s loopback, bypassing
+   vmauth, gives 2 marker lines for `AccountID=0` and 0 for `AccountID=5`, and `tenant_ids` lists only
+   `(0, 0)`. So the backend would have honoured the header, and vmauth replaced it.
 3. **Per-host revocation works.** Remove one host's vmauth user. That host's uploads are refused,
    and every other host keeps shipping. Restore the user, and the host's backlog arrives.
+   *Withdrawn with Step 5.*
 4. **An unmatched route is refused.** The read token on a path outside its `url_map` gets an error,
    not `(0, 0)` data.
+   **Result: passed.** 400 `missing route` for the read token on `/-/reload`, the ingest token on
+   `/select/` and `/metrics`, and the read token on `/insert/`. VictoriaLogs `:9428` and vmauth's
+   internal `:8426` do not answer off-host.
 5. **Every source is present.** Each domain VM, both hypervisors, the router, the switch and the AP
    have at least one line in `(0, 0)`. The Builder has none.
+   *Withdrawn with Steps 5 and 6.*
 6. **Memory holds.** `obs`'s memory after 24 hours of real ingest is recorded here, with headroom.
+   **Result, with one host's ingest rather than the site's:** after about 370,000 lines (`nms`'s whole
+   journal plus its overnight trickle), VictoriaLogs used 115 MB and vmauth 7 MB of the 4 GB, and the
+   data took 32 MB of the 100 GB `/srv`. Re-measure when shipping is turned on.
 7. **No secrets.** Spot-check the first day of `(0, 0)` for tokens, PSKs and passwords.
+   **Result: passed, after the first check turned out to be broken.** Across the 370,952 lines in
+   `(0, 0)`, none of the seven tokens appears, as a phrase or a substring. The 27 `password` matches are
+   all systemd unit names (`systemd-ask-password-*`). The two `key` matches are man-page `grep`
+   commands. The first pass returned zero for everything, including terms certain to be present,
+   because its filter syntax was wrong. It was redone with positive controls for the phrase,
+   substring and case-insensitive filters, and each of those controls returned hits.
 
 ## Undo
 
@@ -370,7 +416,17 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 | 2026-09-21 19:42:51, 19:43:07 | 1 | The operator destroyed `dv02sob001v01` (VMID 206) and `dv02tob001v01` (VMID 207) on `dv02hyp001p01`. Both were checked beforehand, read-only: no containers, no services beyond the base OS, nothing in `/srv`. |
 | 2026-09-21 19:43 | 1 | `vm-identity.yml` audit: 206 and 207 free on both hypervisors. Allocation gave `dv02col001v01` 206 (`02:de:20:00:00:ce`) and `dv02obs001v01` 207 (`02:de:20:00:00:cf`). |
 | 2026-09-21 | 1, 3 | Inventory [#47](https://github.com/deevnet/ansible-inventory-deevnet/pull/47): the groups become `observability_store` and `observability_collectors`, `log_shippers` is added, the host_vars move to the new names, and `obs` gets 4 GB and a 100G `/srv`. Seven tokens were generated straight into new vault files and never printed; all seven are distinct. The operator ran `make vault`; the commit was pushed, and origin was checked to hold ciphertext for every new file. |
-
+| 2026-09-21 ~19:50 | 1 | `opnsense_dns` added the `obs` and `col` A records. The run with `dns_delete_unmanaged=true`, to remove the two stale records, was **blocked by the session's permission classifier** and is left to the operator. `opnsense_dhcp` updated `col`'s reservation in place, on the unchanged MAC. It also rewrote 14 other reservations with identical values, the known idempotency defect. |
+| 2026-09-21 19:53 | 1 | Both VMs built with `--tags vms`. `obs` has 4 GB and `/srv` on the `deevnet-data` XFS disk; `col` has 2 GB. Both came up on their addresses, and the `vm-identity` audit passes. A rerun is **not** `changed=0`: `proxmox_kvm` with `update: true` reports changed every time, although the readback assertions pass. |
+| 2026-09-21 19:55–20:04 | 2 | Both images staged. The newest releases were re-checked on GitHub, so the pins are current. The command used was the builder collection's whole `site.yml`; see Departures. |
+| 2026-09-21 ~20:10 | 4 | The log store's first deploy. It **stalled at 20:14:20** while pushing the vmauth image, because the core router hung ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)). VictoriaLogs was running; vmauth and the firewall rules were not yet in place. |
+| 2026-09-21 20:44 | 4 | Deploy re-run after the router's power-cycle; it completed. The role's own check, that a request with no token is refused, passed. Then Verification 1, 2 and 4 were run from the Builder: see *Verification*. |
+| 2026-09-21 20:50–21:19 | 5 (trial) | Journal shipping trialled on `dv02nms001v01` only. Three defects were found and fixed in the role: an SELinux denial, a client-certificate default, and the token's file permissions (see Departures). By 21:19 it was uploading. |
+| 2026-09-21 21:19 → 2026-09-22 07:5x | 5 (trial) | `nms` shipped **194,077 lines**, its full journal backfill, then its live journal. It restarted 337 times overnight because the router kept dropping. That retry log became evidence for INC-0004. |
+| 2026-09-22 ~07:55 | — | **Scope change** (see above). On `nms`, journal-upload was stopped and disabled, and its token drop-in was removed. The package `systemd-journal-remote`, the site CA at `/etc/pki/deevnet/site-ca.pem` and the SELinux label on 8427 were left in place; each is harmless. What `nms` shipped stays in the store. |
+| 2026-09-22 | 4 | Verification 6 and 7 run; see *Verification*. The store is complete. |
+| 2026-09-22, before 08:09 | 1 | The operator removed the two stale A records with `opnsense_dns` and `dns_delete_unmanaged=true`, the run the session's classifier had blocked. Checked at 08:09:03 against the router's resolver: `dv02tob001v01` and `dv02sob001v01` no longer resolve; `dv02obs001v01` → `10.20.25.22` and `dv02col001v01` → `10.20.99.41` do. **Step 1 is complete.** |
+| 2026-09-22 08:09 | — | The operator ran `make vault`. Every `vault.yml` was checked to begin with `$ANSIBLE_VAULT`, and the 17 re-encrypted files were committed (inventory #48). **Change complete.** ADR-0022 stays **Proposed** until a shipping change completes, by the operator's decision. |
 ### Departures from the plan
 
 - **The VMs were destroyed before the new inventory was merged.** The plan said to wait, so that a
@@ -384,6 +440,35 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 - **Step 3 ran before Step 2.** The tokens don't depend on the images.
 - **The new vault files were created `664` despite `umask 077`.** They were set to `600` before any
   content was committed. They were plaintext on the Builder only until `make vault`.
+- **Step 2 ran the builder collection's whole `site.yml`, not only its artifacts play.** It was
+  limited to `artifact_servers`, which contains the Builder `dv00bld001p01` **and** the test builder
+  `dv02bld001v01`. So every play matching either host ran:
+  - **`dv00bld001p01`**: 14 changes. They include `enp4s0` re-applied three times, each a reconnect of
+    under a second, and libvirtd enabled.
+  - **`dv02bld001v01`**: 31 changes. It was built out as an artifact server, with nginx, firewall and
+    SELinux changes and downloads, and its hostname was set. The run failed there with ENOSPC on a temp
+    file.
+
+  The operator confirmed that `dv02bld001v01` is a test builder to be removed. A builder play is to be
+  limited to `dv00bld001p01` and run by tag.
+- **The same mistake, smaller, in the Step 5 trial.** `--limit dv02nms001v01` also ran the Omada
+  controller play on `nms`. It changed nothing. The log store and shipping plays now carry the tags
+  `log-store` and `log-shipping`, so they run on their own.
+- **Step 4 was interrupted by INC-0004** and completed on the re-run. The half-deployed state it left
+  was safe: vmauth absent, and the syslog port not yet opened.
+- **Steps 5 and 6 were withdrawn** (see *Scope change*). **Step 5 was trialled on one host before
+  that**, and the trial found three things the later change needs:
+  - **SELinux denies the connection.** `systemd_journal_upload_t` may not connect to an unlabelled
+    port (`unreserved_port_t`). Labelling 8427 as `journal_remote_port_t` on the shipping host fixes it,
+    and SELinux stays enforcing. The AVC is logged under `comm="systemd-journal"`, which is truncated,
+    so a grep for `journal-upload` misses it.
+  - **It demands a client certificate** unless `ServerKeyFile=-` and `ServerCertificateFile=-` are set,
+    per systemd-journal-upload(8).
+  - **The token has to be readable by the service.** The Fedora 44 unit is `DynamicUser=yes`, so a
+    root-only drop-in can't be read. journal-upload cannot take `Header=` from a credential. The drop-in
+    is therefore `0640 root:systemd-journal`, a group with no human members on these hosts.
+- **Verification ran from the Builder, not from a tenant workload** (items 1 and 2). A tenant-side run
+  belongs with the tenant-token change, when tenants first hold a credential for the store.
 
 ## Follow-ups
 
@@ -395,4 +480,19 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
   - `max_concurrent_requests` on each tenant ingest user (ADR-0022 §6)
 - [ ] **API tenant events.** The API writes each tenant event to `(0, 0)` and to `(index, 1)`.
 - [ ] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin.
-- [ ] ADR-0022 moves to **Accepted** when this record is Complete.
+- [x] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). Done by the operator on
+  2026-09-22 and verified; see *Outcome*.
+- [ ] **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
+  - decide how to handle the first run's full-journal backfill, which is heavy traffic across the
+    router's `re0`
+  - roll out one host at a time
+  - never put a secret on an **ad-hoc** Ansible command line: `Invoked with` is journaled verbatim
+    and would reach the store. The roles use `no_log`.
+- [ ] **Syslog from the hypervisors, switch and AP**, a new change: rsyslog with a disk-assisted queue
+  on the hypervisors, and each device's options quoted from its current manual.
+- [ ] **Syslog from the core router**, only after INC-0004's NIC fault is resolved. That includes the
+  move to Realtek's vendor driver, which is INC-0004's follow-up.
+- [ ] `proxmox_vm`: the hardware task reports changed on every run (`proxmox_kvm` `update: true`).
+- [ ] Remove the test builders `dv02bld001v01` and `dv02bld002v01` (the operator's follow-up).
+- [x] **ADR-0022 acceptance.** Decided on 2026-09-22: it stays **Proposed until a shipping change is
+  complete**. A store that nothing writes to has not yet shown the design works.
