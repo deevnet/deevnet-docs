@@ -1,9 +1,9 @@
 ---
-title: "INC-0004: Core Router Hard-Hung During CHG-0018"
+title: "INC-0004: Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts"
 weight: 4
 ---
 
-# INC-0004: Core Router Hard-Hung During CHG-0018
+# INC-0004: Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts
 
 | | |
 |---|---|
@@ -11,7 +11,7 @@ weight: 4
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (core router); by consequence, every routed path at the site. Seen from `dv00bld001p01` (the Builder). |
 | **Severity** | Site gateway lost: no routing between segments, no site DNS (the router is the resolver), the operator's normal path to the Builder cut. Same-segment traffic on management unaffected. Recovery needs console access to the router. |
-| **Status** | Open · {{< inc-status "Mitigated" >}}. Service restored by a power-cycle at about 20:33, and the configuration was verified intact. The cause is not established. |
+| **Status** | Open · {{< inc-status "Investigating" >}}. **It recurs.** After the first hang, `re0` stopped again with the box alive, and the console showed `re0: watchdog timeout`. Timeouts continued overnight and after a cable swap. The router is reachable at the time of writing, but the fault is not fixed. |
 | **Times** | EDT (UTC−4) |
 
 ---
@@ -33,6 +33,17 @@ match what was there before.
 configuration was at 19:50:49, from the `opnsense_dns` and `opnsense_dhcp` runs, 23 minutes before the
 hang. No log survives from the minutes before it: the root filesystem was not cleanly dismounted, and
 crash dumps are disabled.
+
+### It happened again, differently
+
+At about 21:19 the router's LAN stopped answering again, but this time **the box stayed alive**. The
+console responded, and `dmesg` showed **`re0: watchdog timeout`**: the LAN NIC had stopped, not the
+machine. The management → Platform path then failed intermittently all night, as `nms`'s upload retries
+and `obs`'s server logs both record. The operator swapped the cables and rebooted, and still saw four
+more watchdog timeouts by the next morning.
+
+The second event **confirms the NIC driver hypothesis for that event**. It does not establish that the
+first event, a full hard hang, had the same cause.
 
 ## Impact
 
@@ -71,6 +82,15 @@ happened. Nothing alerted, because the site has no monitoring yet (ADR-0023 is P
 | 20:35:35 | Boot completes (`OPNsense 26.7.3_11`). The LAN VLANs are up and the WAN takes `192.168.8.106` by DHCP. |
 | 20:35:59 | From the Builder, the router's 443, 22 and 53, Platform (`10.20.25.22:22`) and the trusted gateway all answer. Site DNS resolves. |
 | ~20:40 | Configuration verified read-only through the API: `opnsense_firewall` in its default report-only mode finds 57 managed rules against 57 desired, with 0 to add, update or delete. Kea has 15 reservations and Unbound 22 overrides, both unchanged. |
+| 20:44 | CHG-0018's deploy re-run completes across the router, including the vmauth image push that the first event interrupted. |
+| 20:50–21:19 | CHG-0018 trials journal shipping from `dv02nms001v01`, a management host, to `obs` on Platform. From 21:19 `nms` begins uploading its whole journal across the router: a backfill of 194,077 lines. |
+| **~21:19** | **Second event.** From the Builder, `10.20.99.1` stops answering ARP (`INCOMPLETE`, then `FAILED`), and every routed path fails. The operator reports that the router is up and **its console responds**. |
+| ~21:25 | At the console, `dmesg` shows **`re0: watchdog timeout`**. The operator reboots the router, and afterwards still cannot get back in by the normal path. *Exact times were not recorded.* |
+| 21:10 → 07:30 | `nms`'s uploader retries whenever it loses the store, and restarts **337 times** overnight. **Every 10-minute window from 21:10 to 07:30 has failures.** They are `Failed to connect` (routing to Platform), `Could not resolve host` (the router is the resolver), and connections dying mid-stream (TLS `unexpected eof`, `Connection reset`, `No route to host`, 300-second timeouts). The longest stretches of DNS failure: 22:50–23:30, 02:50–03:40, 05:10–05:30 and 06:50–07:30. |
+| 21:10 → 07:30 | On `obs` in the same period: vmauth has **0 restarts** but logs **68 TLS handshakes that time out part-way**, and VictoriaLogs logs **4 journald streams from `nms` cut off mid-transfer**. That is the path dropping, not a server fault. |
+| 2026-09-22, morning | The operator swaps cables and reboots the router, then sees **four further `re0` watchdog timeouts** during the session. |
+| 2026-09-22 07:54 | The router answers from the Builder: 443, Platform, and DNS. |
+| 2026-09-22 ~07:55 | CHG-0018 is rescoped. `nms`'s journal shipping is stopped and disabled, which removes its traffic across `re0`. **Further timeouts after this cannot be attributed to that upload.** |
 
 ## Symptoms
 
@@ -117,7 +137,8 @@ not a panic that printed and stopped, and not a reboot loop.
      **Against, or at least unsettled:** about 50 MB of image pushes is light work for a gigabit router,
      so load alone should not hang a healthy box. If load was the trigger, something was already
      marginal.
-  2. **The Realtek NIC driver.** Both NICs are Realtek RTL8168/8111 on FreeBSD's `re(4)` driver, which
+  2. **The Realtek NIC driver.** *Update: confirmed for the second event (`re0: watchdog timeout`), and
+     not yet shown for the first.* Both NICs are Realtek RTL8168/8111 on FreeBSD's `re(4)` driver, which
      has a reputation for hanging under load. The hang came while an image was crossing `re0`. The first
      push, 26 MB, crossed it without trouble.
 - **Read after recovery (20:38):** 44.1 °C on the only sensor exposed, one ACPI thermal zone
@@ -126,8 +147,15 @@ not a panic that printed and stopped, and not a reboot loop.
 
 ## Root cause
 
-Not established. The router hard-hung, and the evidence that could say why was not kept. See
-Contributing factors.
+**For the second event and the recurrences, the immediate fault is established:** the core router's
+LAN NIC, `re0` (Realtek RTL8168/8111 on FreeBSD's `re(4)` driver), hits **watchdog timeouts**. Each one
+stops the interface that carries every VLAN. That is every routed path at the site, and the resolver.
+A cable swap did not stop them.
+
+**Why `re0` times out is not established:** the driver, the chip, heat, or load. **Whether the first
+event, a hard hang with no video and no keyboard, was the same fault is also not established.** A NIC
+watchdog timeout does not by itself stop the console, so the first event may have been a different
+failure, or a worse form of the same one. No evidence from it survived (see Contributing factors).
 
 ## Recovery
 
@@ -135,9 +163,13 @@ The operator power-cycled the router at the console at about 20:33. It booted no
 DNS and the Platform path were back by 20:35:59. Its configuration was verified read-only (see the
 Timeline, ~20:40).
 
-**State left:** CHG-0018 Step 4 is half-done on `dv02obs001v01`. The VictoriaLogs container is running,
-vmauth is not deployed, and the syslog firewall rule is not added, so nothing on that host is reachable
-off-box except what firewalld allows by default.
+**First event:** CHG-0018 Step 4 was left half-done on `dv02obs001v01`. It was completed at 20:44 and
+verified.
+
+**Second event and after:** the router was rebooted by the operator, then rebooted again after a cable
+swap. It is reachable at 07:54 on 2026-09-22, but watchdog timeouts continue, so service is **not**
+considered restored. CHG-0018 was narrowed so that it adds no traffic across `re0`: nothing ships to
+the store, and the router's syslog is excluded until the NIC is stable.
 
 ## Contributing factors
 
@@ -146,8 +178,12 @@ off-box except what firewalld allows by default.
 - **The router is a single point for everything routed**, including the operator's path to the Builder
   and the site's DNS.
 - **No evidence survives a hard hang.** Crash dumps go to `/dev/null`, and logging is local only. The
-  last minutes of logs were lost with the unclean stop. Off-box syslog would have kept them, and that is
-  exactly what CHG-0018 Step 6 builds.
+  last minutes of logs were lost with the unclean stop. Off-box syslog would have kept them. CHG-0018
+  built the store, but the router's syslog is deliberately not sent there until the NIC is stable,
+  because the NIC is the path.
+- **The shipping trial added traffic across `re0` during the second event**: `nms`'s full-journal
+  backfill of 194,077 lines, and its overnight retries. It did not start the fault; the first event
+  predates it. It may have made the fault more frequent. It was stopped on 2026-09-22.
 
 ## Corrective actions
 
@@ -156,12 +192,14 @@ off-box except what firewalld allows by default.
 | 1 | Establish why the router hung. The console and local logs had nothing, so this now depends on catching a recurrence with the preventive actions below in place. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 2 | Test both hypotheses by reproducing deliberately. In a window where losing the router is acceptable, with its console attached, push sustained traffic across VLANs (`iperf3` from a management host to a Platform host, so it crosses `re0` both ways). Record the temperature every few seconds, to somewhere that survives a hang. Then compare with the same test after a cool-down. A hang that tracks temperature points to heat; a hang at low temperature under load points to the driver or the hardware. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 3 | Expose per-core temperatures (load `coretemp`), so a thermal reading means the CPU rather than one ACPI zone | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 4 | Fix or replace the `re0` path. The candidates are unverified and need checking against current OPNsense and FreeBSD documentation before any is applied: Realtek's own driver in place of the in-tree `re(4)`; disabling hardware offloads on `re0`; or **replacing the router with hardware whose NICs are not Realtek, and that has more than two ports**, so the trunk isn't the only LAN link (the operator's preference if it recurs). | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 5 | Capture the next watchdog timeout with context: the timestamp, `netstat -I re0` counters before and after, and the temperature. This comes from the console until off-box syslog is safe to enable. | `dv02cor002p01` | {{< action-status "Open" >}} |
 
 ## Preventive actions
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Send the router's syslog off-box so the last lines before a hang survive it | CHG-0018 Step 6 | {{< action-status "Open" >}} |
+| 1 | Send the router's syslog off-box so the last lines before a hang survive it. The store exists (CHG-0018). **Enable this only once `re0` is stable**, in a later change. | later change | {{< action-status "Open" >}} |
 | 2 | Enable a crash dump device (`dumpdev`) on the router so a kernel panic leaves a dump | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 3 | Monitor the router's reachability, so a hang is detected by alert rather than by the operator losing a session | ADR-0023 | {{< action-status "Open" >}} |
 
@@ -170,7 +208,7 @@ off-box except what firewalld allows by default.
 | # | Follow-up | Where | Status |
 |---|-----------|-------|--------|
 | 1 | After recovery, confirm the router's configuration survived: the zone policy (57 rules), Kea reservations and Unbound overrides | `dv02cor002p01` | {{< action-status "Done" >}} 2026-09-21 |
-| 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Open" >}} |
+| 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Done" >}} 2026-09-21 |
 
 ## Lessons learned
 

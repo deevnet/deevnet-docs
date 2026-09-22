@@ -31,6 +31,6 @@ in the runbook under [Incident Management](/docs/runbook/incident-management/).
 | INC-0001 | 2026-09-07 | [Firewall Policy Deleted, Total Connectivity Loss](2026/0001-firewall-policy-deletion/) | mobile | Empty desired set treated as authoritative by an ungated reconcile | Closed | {{< inc-status "Completed" >}} 2026-09-19 |
 | INC-0002 | 2026-09-15 | [Controller VM Silent — Running but Off the Network](2026/0002-controller-vm-network-hang/) | mobile | Not established; restored by a guest reboot | Open | {{< inc-status "Mitigated" >}} |
 | INC-0003 | 2026-09-17 | [OpenBao's Recovery Key and AppRole Destroyed by a Git Reset](2026/0003-openbao-credential-loss/) | mobile | Once-only secrets not locked in (pushed) before `git reset --hard` in a decrypted repository | Closed | {{< inc-status "Completed" >}} 2026-09-21 |
-| INC-0004 | 2026-09-21 | [Core Router Hard-Hung During CHG-0018](2026/0004-core-router-lost/) | mobile | Not established: hard hang, no evidence kept (no crash dump, local logs lost) | Open | {{< inc-status "Mitigated" >}} |
+| INC-0004 | 2026-09-21 | [Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts](2026/0004-core-router-lost/) | mobile | `re0` (Realtek) watchdog timeouts, recurring; the first event's hard hang is not yet explained | Open | {{< inc-status "Investigating" >}} |
 
 Status and substatus are defined in [Incident Management](/docs/runbook/incident-management/#status).
