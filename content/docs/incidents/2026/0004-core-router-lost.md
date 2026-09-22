@@ -1,9 +1,9 @@
 ---
-title: "INC-0004: Core Router Stopped Answering During CHG-0018"
+title: "INC-0004: Core Router Hard-Hung During CHG-0018"
 weight: 4
 ---
 
-# INC-0004: Core Router Stopped Answering During CHG-0018
+# INC-0004: Core Router Hard-Hung During CHG-0018
 
 | | |
 |---|---|
@@ -11,7 +11,7 @@ weight: 4
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (core router); by consequence, every routed path at the site. Seen from `dv00bld001p01` (the Builder). |
 | **Severity** | Site gateway lost: no routing between segments, no site DNS (the router is the resolver), the operator's normal path to the Builder cut. Same-segment traffic on management unaffected. Recovery needs console access to the router. |
-| **Status** | Open · {{< inc-status "Investigating" >}} |
+| **Status** | Open · {{< inc-status "Mitigated" >}}. Service restored by a power-cycle at about 20:33, and the configuration was verified intact. The cause is not established. |
 | **Times** | EDT (UTC−4) |
 
 ---
@@ -24,9 +24,15 @@ At about 20:14 the core router stopped answering on both its LAN (`10.20.99.1`, 
 pushing a container image to `dv02obs001v01` on Platform, a path that crosses the router. The operator,
 working from trusted, lost the Builder and came back in over the travel router's LAN.
 
-**The cause is not established.** Nothing the deploy ran was aimed at the router. The last writes to the
-router were the `opnsense_dns` and `opnsense_dhcp` runs at about 19:50, more than 20 minutes earlier. The
-router has not yet been examined at its console.
+At the console the router was **hard-hung**: no video, and the keyboard's lock light did not respond,
+so the OS was not servicing USB. A power-cycle brought it back at 20:33:34. Its configuration came back
+intact: the firewall shows no drift against inventory, and the Kea reservations and Unbound overrides
+match what was there before.
+
+**The cause is not established.** Nothing the deploy ran was aimed at the router. The last write to its
+configuration was at 19:50:49, from the `opnsense_dns` and `opnsense_dhcp` runs, 23 minutes before the
+hang. No log survives from the minutes before it: the root filesystem was not cleanly dismounted, and
+crash dumps are disabled.
 
 ## Impact
 
@@ -60,6 +66,11 @@ happened. Nothing alerted, because the site has no monitoring yet (ADR-0023 is P
 | ~20:25 | The operator reports being knocked out. Claude confirms that `10.20.99.1` does not answer ARP from the Builder, that ports 443, 22 and 53 fail, and that everything else on management answers. |
 | 20:26:49 | Re-probe: LAN still down. WAN `192.168.8.106:443` fails too, and its ARP entry is stale. |
 | 20:27 | This record opened. The operator goes to the router's console. |
+| ~20:31 | At the console: no video output, and the keyboard's lock light does not respond. The router is hard-hung. |
+| 20:33:34 | The operator power-cycles it; this is the boot time the router reports. |
+| 20:35:35 | Boot completes (`OPNsense 26.7.3_11`). The LAN VLANs are up and the WAN takes `192.168.8.106` by DHCP. |
+| 20:35:59 | From the Builder, the router's 443, 22 and 53, Platform (`10.20.25.22:22`) and the trusted gateway all answer. Site DNS resolves. |
+| ~20:40 | Configuration verified read-only through the API: `opnsense_firewall` in its default report-only mode finds 57 managed rules against 57 desired, with 0 to add, update or delete. Kea has 15 reservations and Unbound 22 overrides, both unchanged. |
 
 ## Symptoms
 
@@ -82,15 +93,38 @@ Ruled out, with evidence:
 - **The log-store deploy acting on the router.** Every task it ran is listed in its log, and none
   targets the router. It wrote files on `dv02obs001v01` and started a container there.
 
-Not yet examined: the router itself (console, uptime, logs).
+**At the console:** no video, and no response from the keyboard's lock light. That is a hard hang,
+not a panic that printed and stopped, and not a reboot loop.
+
+**After the power-cycle,** read through the API because SSH is not open to `a_autoprov`:
+- `boottime Tue Sep 22 0:33:34 UTC` (20:33:34 EDT), and `config Mon Sep 21 23:50:49 UTC` (19:50:49
+  EDT). Nothing changed the configuration after the DNS/DHCP runs.
+- The system log the API returns is the current day's file, which in UTC begins at 20:00 EDT. It holds
+  **nothing between 20:00 and this boot**, so the 14 minutes before the hang left no trace. The boot log
+  says why:
+  - `WARNING: / was not properly dismounted` and `mount pending error: blocks 816 files 22`. Unflushed
+    writes, which would include the last minutes of logging, were lost at the hard stop.
+  - `Configuring crash dump device: /dev/null`. Crash dumps are disabled, so a kernel panic could not
+    have been captured either.
+- Both NICs are Realtek RTL8168/8111 on FreeBSD's `re(4)` driver. **Hypothesis only:** that driver has
+  a reputation for hanging under load, and the hang came while about 50 MB of images crossed `re0`
+  twice (management in, Platform out, on the same trunk). The first 26 MB push crossed it without
+  trouble. Nothing here confirms or rules this out.
 
 ## Root cause
 
-Not established.
+Not established. The router hard-hung, and the evidence that could say why was not kept. See
+Contributing factors.
 
 ## Recovery
 
-*Pending: the operator is at the router's console.*
+The operator power-cycled the router at the console at about 20:33. It booted normally, and routing,
+DNS and the Platform path were back by 20:35:59. Its configuration was verified read-only (see the
+Timeline, ~20:40).
+
+**State left:** CHG-0018 Step 4 is half-done on `dv02obs001v01`. The VictoriaLogs container is running,
+vmauth is not deployed, and the syslog firewall rule is not added, so nothing on that host is reachable
+off-box except what firewalld allows by default.
 
 ## Contributing factors
 
@@ -98,24 +132,29 @@ Not established.
   (ADR-0023, Proposed).
 - **The router is a single point for everything routed**, including the operator's path to the Builder
   and the site's DNS.
+- **No evidence survives a hard hang.** Crash dumps go to `/dev/null`, and logging is local only. The
+  last minutes of logs were lost with the unclean stop. Off-box syslog would have kept them, and that is
+  exactly what CHG-0018 Step 6 builds.
 
 ## Corrective actions
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Establish why the router stopped answering, from its console and persistent logs (the in-memory buffer holds about 50 seconds) | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 1 | Establish why the router hung. The console and local logs had nothing, so this now depends on catching a recurrence with the preventive actions below in place. | `dv02cor002p01` | {{< action-status "Open" >}} |
 
 ## Preventive actions
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| | *To be decided once the cause is known* | | |
+| 1 | Send the router's syslog off-box so the last lines before a hang survive it | CHG-0018 Step 6 | {{< action-status "Open" >}} |
+| 2 | Enable a crash dump device (`dumpdev`) on the router so a kernel panic leaves a dump | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 3 | Monitor the router's reachability, so a hang is detected by alert rather than by the operator losing a session | ADR-0023 | {{< action-status "Open" >}} |
 
 ## Follow-ups
 
 | # | Follow-up | Where | Status |
 |---|-----------|-------|--------|
-| 1 | After recovery, confirm the router's configuration survived: the zone policy (57 rules), Kea reservations and Unbound overrides | `dv02cor002p01` | {{< action-status "Open" >}} |
+| 1 | After recovery, confirm the router's configuration survived: the zone policy (57 rules), Kea reservations and Unbound overrides | `dv02cor002p01` | {{< action-status "Done" >}} 2026-09-21 |
 | 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Open" >}} |
 
 ## Lessons learned
