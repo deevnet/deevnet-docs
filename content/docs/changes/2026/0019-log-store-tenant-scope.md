@@ -7,11 +7,11 @@ weight: 19
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-22 |
 | **Change type** | Configuration · Decommission |
 | **Classification** | Routine |
-| **Status** | Planned |
-| **Window** | Not yet scheduled |
+| **Status** | **Complete 2026-09-22.** |
+| **Window** | 2026-09-22 12:45 to 13:00 |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store), `dv02nms001v01` (trial leftovers) |
 | **Automation** | `deevnet.mgmt` `site.yml --tags log-store`; inventory `ansible-inventory-deevnet/mobile` |
@@ -147,13 +147,43 @@ Steps back out in reverse order. Only Step 5's clearing cannot be undone.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-22 ~12:40 | 1, 2 | Role and inventory changes made and pushed: mgmt [#40](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/40), inventory [#49](https://github.com/deevnet/ansible-inventory-deevnet/pull/49). |
+| 2026-09-22 ~12:50 | 3 | Deployed with `--tags log-store`: 8 changes. vmauth's users rewritten, VictoriaLogs recreated without the `-syslog.*` flags, **five rich rules removed**, vmauth restarted. **Before:** 7 users, 5 rich rules, 6514 listening. **After:** 1 user, 0 rich rules, nothing on 6514. |
+| 2026-09-22 ~12:55 | 3 | Verification passed; see below. |
+| 2026-09-22 ~12:58 | 4 | `nms` cleaned: `systemd-journal-remote` removed, `/etc/pki/deevnet/` removed, the SELinux label on 8427 removed. The unit was already stopped and disabled, and its drop-in removed, when CHG-0018 was rescoped. |
+| 2026-09-22 ~13:00 | 5 | **`(0, 0)` cleared**, on the operator's decision: VictoriaLogs stopped, `/srv/victorialogs/data` emptied (32 MB), started. It reads 0 lines. The store now holds nothing. |
+| 2026-09-22 | 6 | **Not done, deliberately.** See Departures. |
+
+### Verification results
+
+| | Result |
+|---|---|
+| 6514 from the Builder, and from `dv02hyp001p01` (formerly allowed) | no answer from either |
+| Rich rules for 6514 | none; the zone has no rich rules at all, and exposes only 8427 plus ssh |
+| vmauth users | 1 (`operator-read`) |
+| A **former** ingest token on `/insert/` | **401** — the users were really removed, not just unused |
+| No token on `/select/` | 401 |
+| The operator's token | reads; 0 lines after the wipe |
+| Listeners on `obs` | `0.0.0.0:8427`, `127.0.0.1:9428`, `127.0.0.1:8426` |
 
 ### Departures from the plan
 
--
+- **The branch `journal-upload-wip` was kept**, against Step 6. The operator chose to keep it: tenant
+  workloads may want journal-upload, and the branch carries working code for the three fixes. Its tip
+  is `7230461`.
+- **The vault was decrypted during the change**, so no `--ask-vault-pass` was needed. The six token
+  files were deleted with `git rm -f` because their working copies were plaintext. Nothing was lost:
+  the encrypted versions are in history, and the tokens were being retired.
+- **`(0, 0)` was cleared rather than left to age out.** It held only CHG-0018's trial. The wipe was a
+  directory removal, not a delete API: VictoriaLogs keeps deletion off unless started with
+  `-delete.enable`, which its own docs call *"good from security PoV"*, and it stays off here.
+- **`/select/tenant_ids` cannot be used through vmauth.** VictoriaLogs requires that endpoint to be
+  called with an empty `AccountID` header, and vmauth always sets one. Reaching it means querying
+  VictoriaLogs on `obs`'s loopback. Worth knowing when the tenant-token change builds the operator's
+  view.
 
 ## Follow-ups
 
+- [x] **Branch `journal-upload-wip`** kept by the operator's decision, not deleted.
 - [ ] **Tenant tokens and the API**: the store's first real writer.
 - [ ] **The MQTT bridge** (ADR-0027 §4), after ADR-0027 is accepted.
