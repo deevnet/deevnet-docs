@@ -18,7 +18,7 @@ bookCollapseSection: true
 | **Automation** | `deevnet.mgmt` `site.yml`: `proxmox_vm` and `data_disk` (`--tags vms`), a new `victorialogs` role, and a new shipping role; `deevnet.builder` `artifacts` for the images. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. The riskiest thing is a vmauth user entry without both tenant headers: VictoriaLogs defaults to `(0, 0)`, so that entry fails open into substrate logs. No tenant token is issued in this change, which keeps that exposure theoretical until the follow-up. |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (built `tob` and `sob` empty), [CHG-0003](/docs/changes/2026/0003-host-rename/) (the reservation and record hazards), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (why the containers use host networking; the forced-SSH pattern the follow-up reuses) |
-| **Related incidents** | None |
+| **Related incidents** | [INC-0004](/docs/incidents/2026/0004-core-router-lost/): the core router stopped answering at about 20:14, during Step 4 |
 | **Related runbooks** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) |
 
 ---
