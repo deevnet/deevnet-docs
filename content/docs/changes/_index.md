@@ -44,7 +44,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0016 | 2026-09-20 | [The API Writes Broker Accounts](2026/0016-broker-accounts/) | Deployment · Configuration | mobile | Complete |
 | CHG-0017 | 2026-09-20 | [Retire Mosquitto](2026/0017-retire-mosquitto/) | Configuration · Cleanup | mobile | Complete |
 | CHG-0018 | 2026-09-21 | [The Central Log Store](2026/0018-central-log-store/) | Deployment · Configuration | mobile | Complete |
-| CHG-0019 | Unscheduled | [Strip the Log Store to Tenant Scope](2026/0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Planned |
+| CHG-0019 | 2026-09-22 | [Strip the Log Store to Tenant Scope](2026/0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record

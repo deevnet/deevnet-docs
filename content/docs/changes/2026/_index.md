@@ -26,4 +26,4 @@ bookCollapseSection: true
 | CHG-0016 | 2026-09-20 | [The API Writes Broker Accounts](0016-broker-accounts/) | Deployment · Configuration | mobile | Complete |
 | CHG-0017 | 2026-09-20 | [Retire Mosquitto](0017-retire-mosquitto/) | Configuration · Cleanup | mobile | Complete |
 | CHG-0018 | 2026-09-21 | [The Central Log Store](0018-central-log-store/) | Deployment · Configuration | mobile | Complete |
-| CHG-0019 | Unscheduled | [Strip the Log Store to Tenant Scope](0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Planned |
+| CHG-0019 | 2026-09-22 | [Strip the Log Store to Tenant Scope](0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Complete |
