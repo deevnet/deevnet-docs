@@ -171,10 +171,16 @@ fields with `_msg` if it has one. The bridge adds:
 - **Its store credential writes only `(index, 2)` partitions.** The mechanism is open (Open question 1).
 - **It keeps no state.** A bridge outage loses device logs sent during it, unless they were published
   with QoS 1 and a persistent session, which the bridge uses (Open question 2).
-- **It is a small service written for this**, built as a container image by the container image
-  factory and deployed in the pattern ADR-0013 set. An off-the-shelf collector was considered and not
-  chosen: routing each message to its tenant's partition means setting a per-message header, which
-  their HTTP sinks do not express.
+- **It is a small service written for this**, in its own repository
+  ([deevnet-log-bridge](https://github.com/deevnet/deevnet-log-bridge)), building its own image as
+  the provisioning API does, and deployed in the pattern ADR-0013 set.
+
+  *Corrected 2026-09-22:* an earlier draft of this record said the container image factory would
+  build it. That factory is chartered for **third-party** software - "source we may use, binaries we
+  may not" - and its version file holds upstream's version, so software we write does not fit it.
+
+  An off-the-shelf collector was considered and not chosen: routing each message to its tenant's
+  partition means setting a per-message header, which their HTTP sinks do not express.
 
 ### 5. Where the store lives
 
