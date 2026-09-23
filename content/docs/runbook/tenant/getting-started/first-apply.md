@@ -105,6 +105,6 @@ Checks worth running once you have a workload and names:
 
 | Check | How | Expected |
 |---|---|---|
-| Names | `dig @10.20.99.1 <record>.<name>.mobile.deevnet.net +short` from a trusted seat | your address |
+| Names | `dig <record>.<name>.mobile.deevnet.net +short` from `DVNTM-TD` | your address |
 | Gateway and egress | from your workload: `ping <gateway>`, `curl -sI https://fedoraproject.org` | both answer |
 | Logs | write a line with your ingest token and read it back with your read token ([Logs](/docs/runbook/tenant/services/logs/)) | the line comes back |

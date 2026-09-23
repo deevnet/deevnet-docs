@@ -55,13 +55,11 @@ Terraform talks to the Deevnet API. Which Wi-Fi your laptop is on decides whethe
 |---|---|---|
 | **Guest** Wi-Fi | **No** — internet only | reading these docs |
 | **IoT** Wi-Fi (`DVNTM-IOT`) | **No** — that is where your *devices* go, not your laptop | nothing |
-| A **trusted seat** — the Builder, or the trusted network | **Yes** | `terraform plan` / `apply` |
+| **Tenant dev** Wi-Fi (`DVNTM-TD`) | **Yes** — the API, the state store and the broker, and the internet | `terraform plan` / `apply`, MQTT test clients |
 
-**Today, you apply from a trusted seat.** At a meetup that usually means the operator gives you a
-shell on the Builder, or puts your laptop on the trusted network for the session. Ask — it is a
-two-minute conversation, not a ticket.
+**Apply from `DVNTM-TD`, on your own laptop.** Ask the operator for its key. It reaches the three
+services your Terraform and test clients use and nothing else on the site, so there is nothing
+else to ask for.
 
-{{< hint info >}}
-**Coming soon:** a visitor/developer network that reaches the API and the broker and nothing else,
-so you can apply from your own laptop without being on the trusted network.
-{{< /hint >}}
+`DVNTM-TD` uses the site's own DNS. If your laptop has a VPN, iCloud Private Relay or a hard-coded
+DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.

@@ -7,11 +7,11 @@ weight: 22
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-23 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | Planned. Inventory is on branch `chg-0022-tenant-dev-network` in `ansible-inventory-deevnet`; nothing has reached a device. |
-| **Window** | Not yet scheduled. About an hour, including the GUI step on the router. |
+| **Status** | **Complete, 2026-09-23.** A laptop on `DVNTM-TD` took `10.20.45.50`, reached the API, the state store and the broker over TLS against the site CA, and was refused at all 12 internal targets it should not reach (21/21). `terraform plan` and an MQTT login from the segment were not run; see [Outcome](#outcome). |
+| **Window** | 2026-09-23 18:02 to 18:17 (switch to SSID); verification from a laptop afterwards |
 | **Site** | mobile |
 | **Systems** | `dv02acc001p01` (switch), `dv02cor002p01` (core router), `dv02nms001v01` (wireless controller) and `dv02wap001p01` (AP). Reached, not changed: `dv02prv001v01` (API, state store) and `dv02msg001v01` (broker). |
 | **Automation** | `deevnet.net`: `make switch`, `make opnsense`, `make migration-opnsense-firewall`, `make wireless`, run against `ansible-inventory-deevnet/mobile` |
@@ -211,20 +211,48 @@ Remove 45 from `gi1/0/4` and delete the VLAN on the switch. Revert the inventory
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 18:02 | 1 | `make switch`. VLAN 45 `tenant_dev` tagged on `gi1/0/1` and `gi1/0/4`; the VLAN table otherwise identical before and after |
+| 18:05 | 2 | VLAN device `vlan013` created on `re0`. Interface assigned in the GUI as `opt11` (`tenant_dev`), `10.20.45.1/24`; the role then reported all 10 VLAN interfaces correct |
+| 18:12 | 2 | `make dhcp`. Kea subnet `10.20.45.0/24`, pool `.50-.250`, DNS and router `10.20.45.1`. On the router: automatic outbound NAT already listed `opt11`; Unbound listens on all interfaces, default ACL allow |
+| 18:15 | 3 | Plan: ADD 8, UPDATE 0 of 57, DELETE 0. Applied; all 6 required paths still answered, no rollback. Re-plan: 0 / 0 of 65 / 0 |
+| 18:17 | 4 | Plan: one network (45), one SSID `DVNTM-TD`, no other SSID or key drift. Applied; a re-plan has nothing to create |
+| after | Verification | From a MacBook on `DVNTM-TD`: 21 passed, 0 failed (below) |
+
+**Verification, from a real client:**
+
+| Check | Result |
+|---|---|
+| Lease, DNS | `10.20.45.50`, DNS `10.20.45.1`; `api`, `tfstate`, `mqtt` resolve to `10.20.25.20`, `10.20.25.20`, `10.20.35.20` |
+| API | HTTPS on 8080 verified against the site CA, HTTP 404 on `/` |
+| State store | HTTP 403 on 9000 (no credentials) |
+| Broker | TLS on 8883 verified against the site CA |
+| Internet | `https://example.com` 200 |
+| Blocked (timeout, not refused) | Builder :22, router :443 on management, hypervisor :8006, **the router's own `10.20.45.1` on :443 and :22**, router on trusted :443, `dv02prv001v01` :22 and :8200, `dv02msg001v01` :22 and :1883, a Pi on IoT :22, eds's workload `10.20.130.10` :22 |
+| Edge router `192.168.8.1:80` | **open** - the known `!10.20.0.0/16` gap, see Follow-ups |
+
+A refused connection would have meant the packet reached the host, so the blocked checks count
+only a timeout as a pass.
 
 ### Departures from the plan
 
--
+- Step 2 was split. `make opnsense` would have carried on into the firewall role; instead
+  `make migration-opnsense-vlans` created the VLAN device, the interface was assigned, and
+  `make dhcp` ran on its own. `make dns` was not run: the segment adds no names.
+- The DHCP run also rewrote all 15 existing reservations with the values they already had. This is
+  the role's known idempotency defect (CHG-0008 follow-up), not this change.
+- Kea now listens on every interface but WAN; it had been listening on 11 of 13. Only interfaces
+  with a subnet and pool can lease, and those are unchanged apart from `10.20.45.0/24`.
+- **Not tested:** `terraform plan` from the segment (the API and state store were proven at HTTP
+  and TLS, not through Terraform), an MQTT *login* with a tenant account (the TLS handshake was
+  proven), and association to the other SSIDs afterwards (their controller config shows no drift).
 
 ## Follow-ups
 
-- [ ] When Complete: [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) gets a
-      `DVNTM-TD` row and drops its "coming soon" hint; trusted seats become the fallback. Also
+- [x] Tenant-facing pages: [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/),
       [Tenant Admission §3](/docs/runbook/substrate/tenant-admission/),
-      [Coming Soon](/docs/runbook/tenant/services/coming-soon/) (the network half),
-      troubleshooting's API-timeout row and the
-      [network reference](/docs/runbook/substrate/network/network-reference/).
+      [Coming Soon](/docs/runbook/tenant/services/coming-soon/), troubleshooting and the
+      [network reference](/docs/runbook/substrate/network/network-reference/) - updated with this record.
+- [ ] Run `terraform plan` and an MQTT login from `DVNTM-TD` the first time a tenant uses it.
 - [ ] **The internet rule is `!10.20.0.0/16`, not "not RFC 1918".** Guest, and now tenant_dev, can reach
       `192.168.0.0/16` and `172.16.0.0/12`, including the edge router's admin at `192.168.8.1`. This
       predates this change.
