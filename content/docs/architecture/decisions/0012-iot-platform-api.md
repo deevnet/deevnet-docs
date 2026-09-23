@@ -986,27 +986,33 @@ prove.
   class; the `eds` tenant holds `eds-devices` from its own `terraform apply`, and no tenant reads a
   Wi-Fi key from the substrate vault any more. `deevnet_wifi_psk.iot` was deleted rather than
   migrated away from.
-- **Written, not yet deployed: the device registry.** `deevnet_iot_device` is built in API v0.4.0
-  and the provider ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), ordered first by
-  [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/). Nothing is
-  staged or deployed, so the route still answers `501` on the live API.
-- **Not built: broker accounts.** `deevnet_iot_broker_account` answers `501`, and broker accounts
-  and topic permissions remain in substrate inventory as ADR-0010 debt, because **there is no
-  broker**. *Corrected 2026-09-20: this line previously read "VerneMQ on `dv02msg001v01` is built
-  and empty", which parses as VerneMQ being built. The **VM** is built and empty. VerneMQ has never
-  been built at all — there is no image in the artifact store and no role, and `mqtt_brokers` holds
-  no host.*
+- **Built and live: the device registry.** `deevnet_iot_device` is in the API and the provider
+  ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), ordered first by
+  [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/). *Updated
+  2026-09-23: this line read "Written, not yet deployed … the route still answers `501`", which was
+  true when written and wrong from 2026-09-20, when CHG-0014 deployed v0.4.0. The registry answers;
+  `mabell` holds `ma-bell-gw-01` in it.*
+- **Built and live: broker accounts.** The API issues a tenant's MQTT account against the broker's
+  own auth database ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)), and no broker account or
+  topic permission remains in substrate inventory — [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/)
+  deleted the last of them. Four accounts exist on the broker today: eds's two, mabell's gateway, and
+  the log bridge's, which is the only one the substrate writes rather than the API
+  ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) §4). *Updated 2026-09-23: this
+  line read "Not built … because there is no broker", which stopped being true on 2026-09-20 when
+  CHG-0015 built VerneMQ and CHG-0016 deployed the account writer.*
 - **The segment boundary is enforced.** *Updated 2026-09-20.*
   [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) completed 2026-09-19: the core router
   applies default-deny between zones, and the `platform -> management` rule the API needs is live
   rather than merely declared. A tenant's key still decides only which VLAN its devices land on —
   two tenants' devices share VLAN 30 and reach each other at Layer 2, which no zone rule can fix
   (ADR-0020, *Peer devices on a shared segment*).
-- **One rule §7 promised is still missing.** §7 says both of the API's narrow rules *"are declared
-  when the API is built"*. `platform -> management` is live; **`platform -> iot_backend` was never
-  declared.** That was harmless while the router passed everything and is not harmless now: the API
-  cannot reach the broker's auth database until it is added and applied, and an undeclared path
-  fails as a timeout inside a tenant's own `terraform apply`.
+- **Both rules §7 promised are live.** `platform -> management` and
+  `platform -> iot_backend: deevnet-api -> broker account writer` (port 22) are both in the router's
+  managed rules, confirmed against the live router on 2026-09-23. *Updated 2026-09-23: this line read
+  "One rule §7 promised is still missing", which was the finding that
+  [CHG-0016](/docs/changes/2026/0016-broker-accounts/) then fixed on 2026-09-20 — an undeclared path
+  fails as a timeout inside a tenant's own `terraform apply`, which is why it was worth recording
+  and is worth recording that it is closed.*
 - **Still open: open question 1** — whether a custom Omada role can narrow the API's own controller
   credential. It is defence in depth for §2, not tenant scoping, and it has never been checked.
   *Corrected 2026-09-19: this line previously read "open question 1 (device-to-tenant ingress)",
