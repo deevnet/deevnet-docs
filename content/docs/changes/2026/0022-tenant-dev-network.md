@@ -253,7 +253,7 @@ only a timeout as a pass.
       [Coming Soon](/docs/runbook/tenant/services/coming-soon/), troubleshooting and the
       [network reference](/docs/runbook/substrate/network/network-reference/) - updated with this record.
 - [ ] Run `terraform plan` and an MQTT login from `DVNTM-TD` the first time a tenant uses it.
-- [ ] **The internet rule is `!10.20.0.0/16`, not "not RFC 1918"** — [CHG-0023](/docs/changes/2026/0023-internet-means-internet/). Guest, and now tenant_dev, can reach
+- [x] **The internet rule is `!10.20.0.0/16`, not "not RFC 1918"** — fixed by [CHG-0023](/docs/changes/2026/0023-internet-means-internet/); `192.168.8.1` now times out from `DVNTM-TD`. Guest, and now tenant_dev, can reach
       `192.168.0.0/16` and `172.16.0.0/12`, including the edge router's admin at `192.168.8.1`. This
       predates this change.
 - [ ] Client isolation on `DVNTM-TD`, if the segment is ever offered beyond an operator-run session.
