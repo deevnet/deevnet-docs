@@ -12,6 +12,8 @@ Hardware adoption of the CaribouLite SDR HAT — a software-defined radio receiv
 built as a baked image in `deevnet-image-factory`, proven on the [Pi Lab](/docs/runbook/tenant/pi-lab/)
 bank, and graduated to dedicated hardware.
 
+The project write-up is at [Pi SDR](https://cdeever.github.io/projects/electronics/pi-sdr/).
+
 ## Purpose
 
 Software-defined radio (SDR) receiver for RF signal monitoring and experimentation. The CaribouLite HAT provides dual-channel SDR capability directly on the Pi's GPIO header.
