@@ -7,11 +7,11 @@ weight: 21
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-22 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Complete, 2026-09-23.** Deployed on `dv02msg001v01` and verified end to end: a line published with mabell's gateway credential reached that tenant's `(3, 2)` and was read back with its own token. The broker was never restarted. Two findings, both below: a payload that claims another tenant changes nothing, and an unknown partition selector falls through to the tenant's own `(index, 0)` rather than being refused. **No device firmware publishes yet**, so ADR-0027 stays Proposed.
-| **Window** | Not yet scheduled |
+| **Status** | **Complete, 2026-09-22.** Deployed on `dv02msg001v01` and verified end to end: a line published with mabell's gateway credential reached that tenant's `(3, 2)` and was read back with its own token. The broker was never restarted. Two findings, both below: a payload that claims another tenant changes nothing, and an unknown partition selector falls through to the tenant's own `(index, 0)` rather than being refused. **No device firmware publishes yet**, so ADR-0027 stays Proposed.
+| **Window** | 2026-09-22 23:08 to 23:32, in two parts: the bridge, then the API |
 | **Site** | mobile |
 | **Systems** | `dv02msg001v01` (runs the bridge, beside the broker), `dv02obs001v01` (receives), the broker's auth database |
 | **Automation** | `deevnet.mgmt`: a new role, deployed beside `vernemq`. The image is built and staged by [deevnet-log-bridge](https://github.com/deevnet/deevnet-log-bridge) |
@@ -120,8 +120,7 @@ reach no other partition, and a device cannot reach any partition at all.
 
 ## Procedure
 
-Steps 1-4 and 6 are **deployed**, 2026-09-23. Step 5 is written and in review; nothing here waits on
-it.
+All six steps are **deployed**, 2026-09-22.
 
 | | Step | Where |
 |---|---|---|
@@ -164,7 +163,7 @@ subscription rather than whether the container is up.
 
 ## Verification
 
-### Run on the substrate, 2026-09-23
+### Run on the substrate, 2026-09-22
 
 Published over TLS with **mabell's real gateway credential**, to `mabell/log/ma-bell-gw-01`. Not the
 firmware — that is still to come — but the device's own account, its own topic, and the whole path
@@ -179,7 +178,7 @@ behind it.
 | **No cross-tenant read.** mabell's read token asked for partitions `2-2`, `2-0` and `0-0` | It never reached account 2. See the finding below for what it got instead |
 | **Idempotent.** A second full run | `changed=0` |
 
-#### The reservation, on the live API (03:28Z)
+#### The reservation, on the live API (23:30)
 
 Five requests the API now refuses, each with its reason, and **none of them created anything** —
 mabell still has exactly one account:
@@ -228,18 +227,18 @@ Nothing else in the store or the broker changes.
 
 ## Outcome
 
-**Complete, 2026-09-23 03:08–03:16Z.** One run, `--tags mqtt-broker,log-bridge --limit
+**Complete, 2026-09-22 23:08–23:32.** One run, `--tags mqtt-broker,log-bridge --limit
 dv02msg001v01`: 107 tasks, 14 changed, none failed.
 
 | When | Steps | What happened |
 |---|---|---|
 | 2026-09-22 | 1, 2 | The service merged; `v0.1.0` tagged and staged. Its smoke test then found the SUBACK defect, so `v0.1.1` was tagged and staged instead |
-| 2026-09-23 03:08Z | 3, 4, 6 | The broker account and the bridge deployed in one run. **The broker was not restarted** — it is up from before the change, so no device connection was disturbed |
-| 2026-09-23 03:13Z | Verification | A real publish with mabell's gateway credential arrived in `(3, 2)` and was read back with mabell's own token |
-| 2026-09-23 03:16Z | Verification | A second run: **`changed=0`**. The guarded upsert converges rather than rewriting the password hash every run |
-| 2026-09-23 03:26Z | 5 | API **v0.7.0** deployed, and the reservation refuses all five misuses while the compliant grants still pass |
+| 2026-09-22 23:08 | 3, 4, 6 | The broker account and the bridge deployed in one run. **The broker was not restarted** — it is up from before the change, so no device connection was disturbed |
+| 2026-09-22 23:13 | Verification | A real publish with mabell's gateway credential arrived in `(3, 2)` and was read back with mabell's own token |
+| 2026-09-22 23:16 | Verification | A second run: **`changed=0`**. The guarded upsert converges rather than rewriting the password hash every run |
+| 2026-09-22 23:28 | 5 | API **v0.7.0** deployed, and the reservation refuses all five misuses while the compliant grants still pass |
 
-**Step 5 deployed at 03:26Z**, after the rest: API **v0.7.0** on `dv02prv001v01`, which refuses a
+**Step 5 deployed at 23:28**, after the rest: API **v0.7.0** on `dv02prv001v01`, which refuses a
 grant that misuses the level. It was never a prerequisite for the bridge — the bridge carries what
 the broker allows, and the only grant under `log/` was already the compliant one — so it went last
 and on its own.
