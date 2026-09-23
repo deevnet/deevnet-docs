@@ -18,11 +18,12 @@ This is the **authoritative documentation repository** for the Deevnet ecosystem
 1. **Standards** - Non-negotiable rules (naming conventions, correctness definitions)
 2. **Architecture** - System-level design intent and layer contracts
 3. **Roadmap** - Forward-looking shared intent (informational, not binding)
-4. **Implementation & Tooling** - Hardware/software platform decisions with rationale
-5. **Security & Vulnerability Management** - Trust boundaries, credential management, security posture
-6. **Inventory & Lifecycle Management** - Asset tracking, hardware lifecycle stages
-7. **Change Management, Testing, CI/CD** - How change is introduced safely
-8. **Platforms Integration** - How docs integrate into developer workflow
+4. **Implementation & Tooling** (`platforms/`) - Hardware/software selections, current and under evaluation, with rationale. No procedures
+5. **Operational Runbook** (`runbook/`) - `substrate/` for the operator (building, lifecycle, network, recovery, tenant admission); `tenant/` for tenants (getting started, services, operating, Pi Lab)
+6. **Policies & Procedures** (`policies/`) - Change management, incident management, risk management (vulnerabilities, security controls, traceability, resiliency, risk register)
+7. **Change / Incident Records** (`changes/`, `incidents/`) - Numbered records
+8. **Completed Projects** (`completed/`) - Finished projects, graduated from the Roadmap
+9. **Platforms Integration** - How docs integrate into developer workflow
 
 ## Usage by Other Repos
 

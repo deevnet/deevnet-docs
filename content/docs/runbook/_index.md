@@ -6,35 +6,23 @@ bookCollapseSection: true
 
 # Operational Runbook
 
-Step-by-step procedures for operating and maintaining Deevnet infrastructure.
+Step-by-step procedures, in two halves that are written for two different readers.
 
 <div class="section-cards">
-  <a class="section-card" href="building-recovery/">
-    <h3>Building Infrastructure</h3>
-    <p>Substrate provisioning — new builds, recovery, hardware replacement.</p>
+  <a class="section-card" href="substrate/">
+    <h3>Substrate Operations</h3>
+    <p>For the operator: building and recovering the platform, keeping it current, the network, and admitting tenants.</p>
   </a>
-  <a class="section-card" href="lifecycle/">
-    <h3>Lifecycle</h3>
-    <p>Patching, upgrades and asset lifecycle — keeping what is in service current, and retiring it.</p>
-  </a>
-  <a class="section-card" href="security/">
-    <h3>Security</h3>
-    <p>Security posture and vulnerability management.</p>
-  </a>
-  <a class="section-card" href="change-management/">
-    <h3>Change Management</h3>
-    <p>Safe change introduction and CI/CD processes.</p>
-  </a>
-  <a class="section-card" href="incident-management/">
-    <h3>Incident Management</h3>
-    <p>How an incident is recorded and followed through, and the incident record template.</p>
-  </a>
-  <a class="section-card" href="network/">
-    <h3>Network</h3>
-    <p>Important URLs — every management UI by name and IP — plus VLAN and addressing reference.</p>
-  </a>
-  <a class="section-card" href="recovery/">
-    <h3>Recovery</h3>
-    <p>Getting service back when something has failed — console access to devices the network cannot reach, and restoring the Omada controller.</p>
+  <a class="section-card" href="tenant/">
+    <h3>Tenant Operations</h3>
+    <p>For whoever is building on Deevnet: getting a tenant, using each service, and running it day to day.</p>
   </a>
 </div>
+
+The split follows the [architecture](/docs/architecture/): the substrate is run by the operator
+through Ansible, and a tenant is run by its owner through Terraform against the Deevnet API. Nothing
+in the tenant half needs substrate credentials, and nothing in the substrate half creates tenant
+content.
+
+How change and incidents are handled on either side is under
+[Policies & Procedures](/docs/policies/).

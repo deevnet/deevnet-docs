@@ -164,7 +164,7 @@ documented Open API. The command above is kept because this is a record of what 
 
 **For a rebuild today, use `make wireless`** — see
 [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) and the
-[AP recovery runbook](/docs/runbook/recovery/console-recovery/wireless-ap/). Note also that
+[AP recovery runbook](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/). Note also that
 `DVNTM-IOT` is now a PPSK SSID with no shared key.
 {{< /hint >}}
 

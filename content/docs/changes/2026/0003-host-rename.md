@@ -25,7 +25,7 @@ repos it touched. Times are local (UTC−4), from commit timestamps.
 | **Risk** | High. The first live change was DNS and DHCP (phase 8), and a Proxmox node name has no supported rename (phase 13). |
 | **Related changes** | None |
 | **Related incidents** | None |
-| **Related runbooks** | [Renaming Hosts](/docs/runbook/lifecycle/host-rename/); [Rename a Proxmox Node](/docs/runbook/lifecycle/host-rename/pve-node-rename/) |
+| **Related runbooks** | [Renaming Hosts](/docs/runbook/substrate/lifecycle/host-rename/); [Rename a Proxmox Node](/docs/runbook/substrate/lifecycle/host-rename/pve-node-rename/) |
 
 ---
 
@@ -86,7 +86,7 @@ Least risky first; each phase landed on its own and was verified before the next
 
 Phase 13 came last deliberately: the Proxmox node name is the one identifier with no supported
 rename, so it waited until the estate around it was already consistent. It followed
-[Rename a Proxmox Node](/docs/runbook/lifecycle/host-rename/pve-node-rename/):
+[Rename a Proxmox Node](/docs/runbook/substrate/lifecycle/host-rename/pve-node-rename/):
 
 | Host | Node was | Node is |
 |------|----------|---------|
@@ -113,13 +113,13 @@ three are resolved; they are recorded here because the reasoning still applies t
 
 Each phase was verified before the next began. The checks used are not recorded, except for
 phase 13, whose verification is in
-[Rename a Proxmox Node](/docs/runbook/lifecycle/host-rename/pve-node-rename/#verify).
+[Rename a Proxmox Node](/docs/runbook/substrate/lifecycle/host-rename/pve-node-rename/#verify).
 
 ## Undo
 
 Phases 2–3 were reversible with a `git revert`. Phase 8 was the first change a user could
 notice. Phase 13 has its own rollback in
-[Rename a Proxmox Node](/docs/runbook/lifecycle/host-rename/pve-node-rename/#rollback). No undo
+[Rename a Proxmox Node](/docs/runbook/substrate/lifecycle/host-rename/pve-node-rename/#rollback). No undo
 is recorded for the other phases.
 
 ---
@@ -152,4 +152,4 @@ on 2026-09-08.
 | Kea hands clients the root domain as their search domain. Fix this first, let leases renew, then apply PR #15 with `dns.yml --tags registration`. | net #14 | Open |
 | Stale `dvnt` / `dvntm` and `pve` / `pve2` tokens in the other repos | docs #19 | Open |
 | Tenant offboarding does not exist | mgmt #10 | Open |
-| Two hazards were worked around rather than fixed, and wait for the next rename | [Renaming Hosts](/docs/runbook/lifecycle/host-rename/) | Open |
+| Two hazards were worked around rather than fixed, and wait for the next rename | [Renaming Hosts](/docs/runbook/substrate/lifecycle/host-rename/) | Open |

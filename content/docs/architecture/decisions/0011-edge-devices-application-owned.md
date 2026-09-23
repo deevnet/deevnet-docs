@@ -88,7 +88,7 @@ Deevnet currently merges the two.
   EVPN VNet, and automatic DHCP exists only in Simple zones
   ([pve-docs, SDN](https://pve.proxmox.com/pve-docs/chapter-pvesdn.html)).
 - **The fabric is one hypervisor with one NIC**
-  ([Limits](/docs/architecture/limits/)).
+  ([Limits](/docs/policies/risk-management/resiliency/)).
 - **Tenants have no inbound path.**
   [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/) built egress
   only.
@@ -423,7 +423,7 @@ VLAN after authentication."* The guide doesn't state supported models, firmware,
 key limit.
 
 **The AP's model and firmware.** The AP is an EAP650-Outdoor(US) v1, per inventory and the
-[Wireless AP runbook](/docs/runbook/recovery/console-recovery/wireless-ap/). It runs firmware 1.0.4
+[Wireless AP runbook](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/). It runs firmware 1.0.4
 ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)). A TP-Link staff knowledge
 article, [Getting To Know PPSK](https://community.tp-link.com/en/business/forum/topic/620762)
 (2023-08-30, edited 2024-07-08), has this row in its table of *"original firmware version that

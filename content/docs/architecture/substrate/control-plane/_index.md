@@ -172,4 +172,4 @@ Tenant observability is unbuilt.
 
 The zone policy that makes these segment boundaries real is applied and enforcing
 ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)). The hardware limits behind it have
-not changed — see [Limits](/docs/architecture/limits/).
+not changed — see [Limits](/docs/policies/risk-management/resiliency/).

@@ -28,7 +28,7 @@ Host names follow ADR-0008. At the time the builder was `provisioner-ph01`, the 
 | **Risk** | Low to the running site. Nothing changes until an authority transition is run, and then the builder's own IP swap is the risky step. |
 | **Related changes** | [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/), which left these playbooks non-functional |
 | **Related incidents** | None |
-| **Related runbooks** | [Authority Transition](/docs/runbook/building-recovery/authority-transition/); [Configure PXE](/docs/runbook/building-recovery/build-sequence/) (`make bootstrap-auth`); [Build Network](/docs/runbook/building-recovery/build-network/) (`make core-auth`) |
+| **Related runbooks** | [Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/); [Configure PXE](/docs/runbook/substrate/building-recovery/build-sequence/) (`make bootstrap-auth`); [Build Network](/docs/runbook/substrate/building-recovery/build-network/) (`make core-auth`) |
 
 ---
 
@@ -227,7 +227,7 @@ The analysis planned the fixes in five chunks:
 
 The plan's checks are the playbooks' own validation before the IP swap (Gap 9): dnsmasq running
 and TFTP listening. After the swap, the operator reconnects at the new address and runs the
-verification in the [Authority Transition](/docs/runbook/building-recovery/authority-transition/)
+verification in the [Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/)
 runbook.
 
 ## Undo

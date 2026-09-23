@@ -105,8 +105,8 @@ by the very condition it exists for. An unreadable secret now reads as empty and
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Write down the lock-in order for a once-only secret — encrypt, commit, **push**, then delete the source file, as one action — and what must never run while the tree is decrypted, `git reset --hard` first, with the alternative for a blocked pull | [Vault Operations](/docs/runbook/building-recovery/vault-operations/) | {{< action-status "Done" >}} |
-| 2 | Put the rule on the checklist, because that is where it bites | [Change Management](/docs/runbook/change-management/) | {{< action-status "Done" >}} |
+| 1 | Write down the lock-in order for a once-only secret — encrypt, commit, **push**, then delete the source file, as one action — and what must never run while the tree is decrypted, `git reset --hard` first, with the alternative for a blocked pull | [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/) | {{< action-status "Done" >}} |
+| 2 | Put the rule on the checklist, because that is where it bites | [Change Management](/docs/policies/change-management/) | {{< action-status "Done" >}} |
 | 3 | Administer OpenBao without `site.yml --limit` on a host that would also run the `powerdns` per-tenant loop | `playbooks/openbao.yml` | {{< action-status "Done" >}} |
 | 4 | Fix the three code defects the rebuild exposed | See [Three defects the rebuild exposed](#three-defects-the-rebuild-exposed) | {{< action-status "Done" >}} |
 
@@ -117,7 +117,7 @@ by the very condition it exists for. An unreadable secret now reads as empty and
 | 5 | An audit device for OpenBao. It would not have recovered these values, but it is the only record of what a token did, and this incident is the second time its absence has been felt | ADR-0016 open question 2 | {{< action-status "Scheduled" >}} [ADR-0016 → Open questions](/docs/architecture/decisions/0016-substrate-secrets-openbao/#open-questions), question 2 |
 | 6 | A Raft snapshot, taken and copied off the VM. It would not have held the recovery key either, but it is the missing half of OpenBao's durability | ADR-0014; ADR-0016's last unconfirmed claim | {{< action-status "Scheduled" >}} [ADR-0016 §1](/docs/architecture/decisions/0016-substrate-secrets-openbao/#1-one-instance-in-the-identity-vm): a scheduled snapshot, copied off the VM |
 | 7 | Let a tenant tell when its stored secrets are gone, so ADR-0016 §6's recovery is an ordinary `terraform apply` rather than an operator's `curl` | API v0.2.5 `secrets_stored`; provider `ModifyPlan` | {{< action-status "Done" >}} 2026-09-17 |
-| 8 | Key-change drill: rotate the keys in place and watch the consumers recover | [OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/) | {{< action-status "Done" >}} 2026-09-17; to repeat on a schedule |
+| 8 | Key-change drill: rotate the keys in place and watch the consumers recover | [OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/) | {{< action-status "Done" >}} 2026-09-17; to repeat on a schedule |
 | 9 | Snapshot-restore drill: a Raft snapshot onto a fresh instance with the same seal key | ADR-0014; ADR-0016 | {{< action-status "Scheduled" >}} [ADR-0016 → To confirm when building](/docs/architecture/decisions/0016-substrate-secrets-openbao/#to-confirm-when-building); needs 6 |
 | 10 | A vault password file, so a rebuild can run without decrypting the repository — the condition that made the loss possible | ADR-0016 §2 | {{< action-status "Declined" >}} — see below |
 

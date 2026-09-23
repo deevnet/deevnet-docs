@@ -175,7 +175,7 @@ State immediately after recovery, as recorded at the time:
 - **`--check` does not protect these roles.** `ansible.builtin.uri` declares
   `check_mode: support: none`, so Ansible *skips* those tasks in check mode rather than
   previewing them. The `--check --diff` dry run required by
-  [Change Management](/docs/runbook/change-management/) would have reported zero deletions,
+  [Change Management](/docs/policies/change-management/) would have reported zero deletions,
   and then the real run deleted everything. The checklist step is not merely weak here — it is
   actively misleading.
 - **`opnsense_firewall` was the outlier in its own collection.** `opnsense_dns` and
@@ -313,8 +313,8 @@ Actions that stop this class of failure recurring, or make surviving it unnecess
 |---|--------|-------|--------|
 | 4 | Apply behind a rollback savepoint: `savepoint` → `apply/{revision}` → verify → `cancelRollback`, so the router reverts unattended if the control host loses its path | `tasks/apply_rules.yml` | {{< action-status "Done" >}} 2026-09-19, by replacement. ~~Done — `1bdba4a`~~ **never worked** — see below |
 | 5 | Add a reachability post-condition after apply — router 443/22 from management by default; sites add a host per policy-bearing segment | `firewall_verify_reachability`, `firewall_reachability_targets` | {{< action-status "Done" >}} 2026-09-19. ~~Done — `1bdba4a`~~ **could never fail as written** — `failed_when: false` set `failed: false` on every result, so the collector always saw an empty list and `cancelRollback` was always sent. Mobile also had no targets beyond the router's own ports until CHG-0007 |
-| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/runbook/change-management/) | {{< action-status "Done" >}} |
-| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/recovery/console-recovery/) | {{< action-status "Done" >}} |
+| 7 | Record in the Validation Checklist that `--check --diff` is not a dry run for the OPNsense API roles, and name the real pre-flight | [Change Management](/docs/policies/change-management/) | {{< action-status "Done" >}} |
+| 8 | Write the console-recovery procedure — DisplayPort to the OPNsense console, restore config backup | [Console Recovery](/docs/runbook/substrate/recovery/console-recovery/) | {{< action-status "Done" >}} |
 
 **Action 4 was the one that made surviving the change unnecessary — and it never existed.**
 *Corrected 2026-09-19.* OPNsense 26.7.3_11 has no `firewall/filter/savepoint`, `/cancelRollback`
@@ -383,7 +383,7 @@ family gives a usable dry run; the OPNsense one is worse only because it is quie
 
 ## Related runbooks
 
-- [Change Management](/docs/runbook/change-management/) — the validation checklist, and why
+- [Change Management](/docs/policies/change-management/) — the validation checklist, and why
   `--check --diff` is not a dry run for the network roles
-- [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/) — the
+- [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) — the
   procedure written because of this incident

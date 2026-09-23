@@ -110,7 +110,7 @@ service.eds.home.deevnet.net     — what a second instance would be called
 ```
 
 Nothing is deployed to `home` today: it is an inventory skeleton with no hosts
-([Limits](/docs/architecture/limits/)). Each instance would be built separately, against that
+([Limits](/docs/policies/risk-management/resiliency/)). Each instance would be built separately, against that
 site's own substrate, from the same tenant repository.
 
 ---

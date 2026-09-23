@@ -1,6 +1,6 @@
 ---
 title: "🔀 Change Records"
-weight: 5
+weight: 6
 bookCollapseSection: true
 aliases:
   - /docs/migrations/
@@ -17,8 +17,8 @@ reality changes. A change record is **retained**: evidence of a change made on a
 It is written once and then left alone, apart from follow-ups closing. Incidents are kept
 the same way, under [Incident Records](/docs/incidents/).
 
-New records start from the [change record template](/docs/runbook/change-management/change-record-template/).
-[Change Management](/docs/runbook/change-management/) says when a change needs one.
+New records start from the [change record template](/docs/policies/change-management/change-record-template/).
+[Change Management](/docs/policies/change-management/) says when a change needs one.
 
 ---
 

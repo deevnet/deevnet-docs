@@ -151,7 +151,7 @@ renumbering**: the MAC, the DHCP reservation and the address move together.
 
 Since this node is not clustered (below), VMID uniqueness across the substrate
 is not something Proxmox can enforce. It is enforced by the allocator in
-[Allocate VM Identity](/docs/runbook/building-recovery/vm-identity/), which
+[Allocate VM Identity](/docs/runbook/substrate/building-recovery/vm-identity/), which
 surveys every hypervisor before issuing one.
 
 This enables:
@@ -191,7 +191,7 @@ For a two-node lab environment:
 4. **Template build**: Packer, straight onto the node
 5. **VM creation**: identity allocated, then cloned from the template via Ansible
 
-The full procedure is [Build Management Plane](/docs/runbook/building-recovery/build-management-plane/).
+The full procedure is [Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.
 

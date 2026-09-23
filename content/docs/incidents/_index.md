@@ -1,6 +1,6 @@
 ---
 title: "🚨 Incident Records"
-weight: 6
+weight: 7
 bookCollapseSection: true
 aliases:
   - /docs/runbook/rca/
@@ -13,14 +13,14 @@ happened, how service came back, and what was done so it does not happen again. 
 numbered `INC-NNNN` in the order they are opened, like [ADRs](/docs/architecture/decisions/),
 and grouped by year.
 
-[Change Management](/docs/runbook/change-management/) states that *"manual changes without
+[Change Management](/docs/policies/change-management/) states that *"manual changes without
 validation are considered defects."* Most incidents are what happened when a change reached a
 live site without the validation that would have caught it. Each record is written so the next
 person meets the failure mode in a document rather than in the dark.
 
 Like [Change Records](/docs/changes/), these are **retained** information: evidence, written
 once, updated only as their actions close. How to write one, and the template, are **maintained**
-in the runbook under [Incident Management](/docs/runbook/incident-management/).
+in the runbook under [Incident Management](/docs/policies/incident-management/).
 
 ---
 
@@ -33,4 +33,4 @@ in the runbook under [Incident Management](/docs/runbook/incident-management/).
 | INC-0003 | 2026-09-17 | [OpenBao's Recovery Key and AppRole Destroyed by a Git Reset](2026/0003-openbao-credential-loss/) | mobile | Once-only secrets not locked in (pushed) before `git reset --hard` in a decrypted repository | Closed | {{< inc-status "Completed" >}} 2026-09-21 |
 | INC-0004 | 2026-09-21 | [Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts](2026/0004-core-router-lost/) | mobile | `re0` (Realtek) watchdog timeouts, recurring; the first event's hard hang is not yet explained | Open | {{< inc-status "Investigating" >}} |
 
-Status and substatus are defined in [Incident Management](/docs/runbook/incident-management/#status).
+Status and substatus are defined in [Incident Management](/docs/policies/incident-management/#status).

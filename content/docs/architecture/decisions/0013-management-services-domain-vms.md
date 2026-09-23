@@ -288,9 +288,9 @@ ADR-0011, which needs the AP adopted.
 **Descriptive pages change on acceptance, not before:**
 - the management hypervisor's platform page
 - the naming standard's §3.4 table, as each host is introduced
-- the controller runbooks: [Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/)
+- the controller runbooks: [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/)
   and the upgrade procedure
-- [Important URLs](/docs/runbook/network/important-urls/)
+- [Important URLs](/docs/runbook/substrate/network/important-urls/)
 - the tenant networking page, which still describes shared services on the management segment
 
 ---

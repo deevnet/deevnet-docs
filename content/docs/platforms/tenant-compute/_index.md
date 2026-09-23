@@ -15,7 +15,7 @@ The **tenant compute layer** provides resources for application workloads, exper
 | Component | Purpose |
 |-----------|---------|
 | **Tenant Hypervisors** | Proxmox hosts for VM-based tenant workloads |
-| **Raspberry PIs** | Edge/IoT compute for specialized workloads |
+| **[Raspberry Pi](raspberry-pi/)** | Pi 4 bank for edge/IoT and hardware projects |
 
 ---
 
@@ -25,7 +25,7 @@ Tenant compute infrastructure is:
 
 - **Tolerant of rebuilds** — Expect frequent provisioning and teardown
 - **Fast change cadence** — Experimentation and iteration encouraged
-- **Terraform-managed** — Declarative VM lifecycle (future)
+- **Terraform-managed** — declared by each tenant through the Deevnet API
 - **VLAN-isolated** — Tenant traffic separated from management plane
 
 ---
@@ -50,7 +50,7 @@ Tenant compute is deliberately separated from management plane infrastructure:
 | **Change cadence** | Slow, deliberate | Fast, experimental |
 | **Blast radius** | Must be minimized | Tolerable |
 | **Rebuild tolerance** | Low — avoid rebuilds | High — expect rebuilds |
-| **Provisioning** | Ansible | Terraform (future) |
+| **Provisioning** | Ansible | Terraform, through the Deevnet API |
 
 This separation ensures that tenant experimentation cannot impact substrate stability. If a tenant VM misbehaves or a tenant hypervisor fails, the management plane remains operational.
 

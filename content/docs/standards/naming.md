@@ -61,7 +61,7 @@ All site-specific host and service records MUST exist in the corresponding site 
 > [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/), and the estate now runs on
 > it: fixed-width hostnames, site codes, and the `home` / `mobile` zones.
 > [CHG-0003](/docs/changes/2026/0003-host-rename/) records how it got there, and
-> [Renaming Hosts](/docs/runbook/lifecycle/host-rename/) carries the two hazards still waiting for
+> [Renaming Hosts](/docs/runbook/substrate/lifecycle/host-rename/) carries the two hazards still waiting for
 > any future rename.
 
 ---

@@ -33,7 +33,7 @@ since been renamed `mobile`.
 | **Risk** | High. The builder's own network path moves mid-change, and a console cable is required. |
 | **Related changes** | [CHG-0002: Authority Transition Rework](/docs/changes/2026/0002-authority-transition-rework/), which repaired the authority transition playbooks this change left non-functional |
 | **Related incidents** | None |
-| **Related runbooks** | [Build Network](/docs/runbook/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/recovery/console-recovery/) |
+| **Related runbooks** | [Build Network](/docs/runbook/substrate/building-recovery/build-network/), whose network phase is this procedure; [Console Recovery](/docs/runbook/substrate/recovery/console-recovery/) |
 
 ---
 
@@ -73,7 +73,7 @@ The end state that counts as done:
 
 VLANs 50–52 were per-tenant segments at the time. On 2026-08-30 they were replaced by the tenant
 fabric's transport segments ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
-The [network reference](/docs/runbook/network/network-reference/) has the current table.
+The [network reference](/docs/runbook/substrate/network/network-reference/) has the current table.
 
 ## Scope
 

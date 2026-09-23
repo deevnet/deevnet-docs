@@ -6,7 +6,11 @@ bookCollapseSection: true
 
 # Implementation & Tooling
 
-Documents **implementation decisions**—hardware, operating systems, and tooling—organized by substrate architecture layer.
+Documents **hardware and software selections** — what Deevnet runs today, and what is under
+evaluation — organized by substrate architecture layer. Each page records what was chosen and why.
+
+How to *operate* what is selected here is in the [runbook](/docs/runbook/); finished projects built
+on it are under [Completed Projects](/docs/completed/).
 
 ---
 
@@ -35,7 +39,7 @@ The **management plane** provides infrastructure services for substrate manageme
 The **tenant compute layer** provides resources for application workloads:
 
 - **Tenant Hypervisors** — VM-based tenant workloads (Proxmox Node 2)
-- **Raspberry PIs** — Edge/IoT compute
+- **Raspberry Pi** — Pi 4 bank for edge/IoT and hardware projects
 
 ---
 
@@ -55,12 +59,19 @@ Each platform page documents:
 
 ---
 
+## Hardware Certification
+
+Criteria a device must meet before it is selected are being defined — see
+[Hardware Certification](hardware-certification/).
+
+---
+
 ## Technology Stack
 
 | Technology | Purpose |
 |------------|---------|
 | Ansible | Infrastructure provisioning |
-| Terraform | Tenant VM lifecycle (future) |
+| Terraform | Tenant interface — tenants declare themselves through the `deevnet/deevnet` provider |
 | Packer | OS image builds |
 | Fedora/RHEL | Primary OS (dnf-based, SELinux) |
 | Proxmox VE | Virtualization platform |

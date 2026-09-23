@@ -86,9 +86,9 @@ inference, not a vendor statement.
   [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Doing it first through
   `switch_vlans` would only be redone at adoption.
 - ⏳ Update the inventory comment on `gi1/0/2`, and the console-recovery pages
-  ([index](/docs/runbook/recovery/console-recovery/),
-  [wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/),
-  [access switch](/docs/runbook/recovery/console-recovery/access-switch/)), which call it the only
+  ([index](/docs/runbook/substrate/recovery/console-recovery/),
+  [wireless AP](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/),
+  [access switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/)), which call it the only
   spare management port.
 - ⏳ If a dumb switch is ever added for cable reach: untagged VLAN 99 devices only; the core router and
   the AP stay on their own trunk ports; declare its uplink port with a description that says what

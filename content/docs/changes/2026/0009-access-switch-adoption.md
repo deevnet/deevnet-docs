@@ -11,14 +11,14 @@ weight: 9
 | **Change type** | Migration — the switch moves from standalone to controller-managed |
 | **Classification** | Disruptive — adoption rewrites port VLANs, and the uplink is expected to drop until they are re-applied |
 | **Status** | **Planned, on hold since 2026-09-16.** Deprioritised behind the Deevnet API and the first working tenant; it is not on that path. The research below settles the route, so the work resumes from here without repeating it. |
-| **Window** | To be scheduled, with the operator on site and connected through the travel router ([Operator Access](/docs/runbook/network/operator-access/)) |
+| **Window** | To be scheduled, with the operator on site and connected through the travel router ([Operator Access](/docs/runbook/substrate/network/operator-access/)) |
 | **Site** | mobile |
 | **Systems** | Access switch `dv02acc001p01` (SG2218 hardware 1.20, firmware 1.20.24); the Omada controller (6.3.0.45) in `dv02nms001v01` |
 | **Automation** | To be written: `ansible-collection-deevnet.net` `playbooks/omada-switch.yml`, modelled on `playbooks/omada-wireless.yml`. `switch_vlans` becomes break-glass once the switch declares `switch_management: omada`. |
 | **Risk** | High. Every path to the controller crosses this switch; if adoption does not keep the management VLAN, the controller loses the switch mid-provision and the way back is a factory reset. |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — the AP, adopted the same way; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the firmware this relies on |
 | **Related incidents** | None |
-| **Related runbooks** | [Access Switch](/docs/runbook/recovery/console-recovery/access-switch/) (the reset path, and the rollback); [Operator Access](/docs/runbook/network/operator-access/); [Important URLs](/docs/runbook/network/important-urls/) |
+| **Related runbooks** | [Access Switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/) (the reset path, and the rollback); [Operator Access](/docs/runbook/substrate/network/operator-access/); [Important URLs](/docs/runbook/substrate/network/important-urls/) |
 
 ---
 
@@ -193,7 +193,7 @@ wifi and tenant VLANs, and the IoT access ports.
 - **Before adoption:** clear the Inform URL. Nothing else has changed on the switch.
 - **After adoption, controller still reaches the switch:** re-run the port apply.
 - **Controller has lost the switch:** the reset route in
-  [Access Switch](/docs/runbook/recovery/console-recovery/access-switch/): factory reset, reach it
+  [Access Switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/): factory reset, reach it
   at `192.168.0.1` or through bootstrap DHCP, then
   `switch-vlans.yml -e switch_vlans_break_glass=true`. The whole site is down meanwhile, as
   ADR-0009 already accepts for that route.

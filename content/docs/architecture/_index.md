@@ -161,4 +161,4 @@ How each site is addressed, and how hosts and tenant workloads get their address
 
 ### Limits
 
-What the hardware underneath the architecture cannot do — no out-of-band management, nothing clustered, local storage, and a single instance of every network device. Deevnet is designed to be rebuilt quickly rather than to stay up through a failure. See [Limits](limits/) for each constraint, what compensates for it, and what lifting it would take.
+What the hardware underneath the architecture cannot do — no out-of-band management, nothing clustered, local storage, and a single instance of every network device. Deevnet is designed to be rebuilt quickly rather than to stay up through a failure. See [Resiliency & Limits](/docs/policies/risk-management/resiliency/) for each constraint, what compensates for it, and what lifting it would take.
