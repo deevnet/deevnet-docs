@@ -30,3 +30,4 @@ bookCollapseSection: true
 | CHG-0020 | 2026-09-22 | [The API Issues Tenant Log Tokens](0020-tenant-log-tokens/) | Deployment · Configuration | mobile | Complete |
 | CHG-0021 | 2026-09-22 | [The MQTT Log Bridge](0021-mqtt-log-bridge/) | Deployment | mobile | Complete |
 | CHG-0022 | 2026-09-23 | [The Tenant Dev Network](0022-tenant-dev-network/) | Configuration | mobile | Complete |
+| CHG-0023 | 2026-09-23 | [Internet Means Internet](0023-internet-means-internet/) | Configuration | mobile | Planned |
