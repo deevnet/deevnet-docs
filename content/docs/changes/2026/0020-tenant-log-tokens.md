@@ -7,11 +7,11 @@ weight: 20
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-22 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Not yet scheduled |
+| **Status** | **Complete 2026-09-22.** |
+| **Window** | 2026-09-22 21:30 to 21:45 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the API), `dv02obs001v01` (the store; gains a writer), tenants `tdemo` and `eds` |
 | **Automation** | `deevnet.mgmt` `site.yml` (`deevnet_api`, `victorialogs`); `deevnet-provisioning-api`; `terraform-provider-deevnet`; inventory `mobile` |
@@ -177,13 +177,44 @@ Build and stage the API and the writer, deploy the store and the API, then:
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-22 (earlier) | 1 | The key pair was generated, the public half pinned in inventory, the private half and the bridge token vaulted and pushed. |
+| 2026-09-22 | 2, 3, 4 | API, provider, inventory and role merged (deevnet-provisioning-api#13, terraform-provider-deevnet#7, ansible-inventory-deevnet#50, ansible-collection-deevnet.mgmt#41). |
+| 2026-09-22 21:32 | 5 | API tagged **v0.6.0**, image built, image and `deevnet-log-user` staged. |
+| 2026-09-22 21:34 | 5 | Store deploy **failed**: the writer could not read `base.json`. See Departures. Fixed and redeployed: the writer is installed, its key pinned with `command=`, `restrict` and `from=10.20.25.20`, and `auth.yml` renders with the operator's user. |
+| 2026-09-22 21:36 | 5 | API deployed. `/version` answers `v0.6.0`, and all six `DEEVNET_LOG_*` variables are set. |
+| 2026-09-22 21:37–21:40 | 5 | `eds` and `tdemo` reconciled: both `ready`, both with a `log-store` step and a 64-character pair. The store's `auth.yml` went from one user to six, **with vmauth reloading in place** (0 restarts). |
+| 2026-09-22 21:42 | — | Verification, below. Then the two-author check and the outage check. |
+
+### Verification results
+
+| | Result |
+|---|---|
+| A tenant writes and reads its own partition | **passed** — `eds` wrote with its ingest token and read the line back |
+| Cross-tenant, both directions | **passed** — `tdemo` cannot see `eds`'s line, nor `eds` `tdemo`'s |
+| Ingest token used to read; read token used to write | **passed** — 400 `missing route` both ways |
+| The operator reads each tenant's partition | **passed**, with `X-Deevnet-Partition: 2-0` and `1-0` |
+| **The bridge's routing, before the bridge exists** | **passed** — the bridge token wrote `eds`'s `(2, 2)`; `eds` sees it only with the selector, not in its own `(2, 0)`; `tdemo` cannot see it; and naming a tenant that does not exist is **400**. That is CHG-0021's path proven in advance. |
+| Both authors survive | **passed** — after an Ansible run, all six users are still there |
+| A store outage is honest | **passed** — with vmauth stopped, a reconcile returns **502** naming the `log-store` step, leaves the tenant `provisioning`, and hands back **no tokens**. It returns 200 once the store is up, and the tenant is `ready`. |
+| The role is idempotent | **passed** after a fix — two consecutive runs are `changed=0` |
 
 ### Departures from the plan
 
--
+- **The first store deploy failed, and the failure was worth having.** The writer runs as its own
+  user and could not read `base.json`. The file was group-readable, but `/srv/victorialogs` and its
+  `etc/` were `0700 root:root`, and what decides this is **execute on every parent**, not read on the
+  file. Both are now `root:deevnet-logwriter 0750`.
+- **That fix then fought the directory loop.** Two tasks set the same two paths, so the role reported
+  `changed` for ever and the permissions were whichever ran last. The loop now creates only the
+  store's data directory, and `writer.yml` owns the two the writer must reach.
+- **The API play gained a tag.** `--limit` alone also runs every other play matching the host, which
+  on the provisioning VM means the state store's. It is now `--tags deevnet-api`, matching
+  `log-store` and `log-shipping`.
+- **No firewall rule was needed**, as the design said: `prv` and `obs` share the Platform segment.
 
 ## Follow-ups
 
-- [ ] **The MQTT bridge** (ADR-0027 §4), which fills in the bridge user's token.
-- [ ] **Tenant repos** pick the tokens up: `eds` ships its workloads' logs.
+- [x] **The bridge user and its routing** are built and **proven** (see Verification). The bridge
+  itself is [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/), whose service is written and merged.
+- [ ] **Tenant repos** pick the tokens up: `eds` ships its workloads' logs with `log_ingest_token`.
+- [ ] **ADR-0027 becomes Accepted** when a tenant actually ships to the store.
