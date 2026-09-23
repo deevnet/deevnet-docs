@@ -12,6 +12,9 @@ Projects that have left the [Roadmap](/docs/roadmap/) because they are **done**:
 their own hardware, and documented well enough to rebuild. Each entry records what the project is,
 how it is built and checked, and the plan it was delivered against.
 
+The Deevnet side of each project is here; write-ups of these and other projects are on
+[my projects page](https://cdeever.github.io/projects/).
+
 ---
 
 ## Projects
