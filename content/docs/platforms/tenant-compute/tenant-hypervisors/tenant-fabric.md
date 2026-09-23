@@ -83,22 +83,19 @@ The switch port for the tenant hypervisor therefore needs the **transit VLAN** a
 
 ---
 
-## Provisioning with Terraform
+## Provisioning
 
-Tenant lifecycle is managed with the **`bpg/proxmox`** Terraform provider (the API token
-`terraform-prov@pve` exists for this). Terraform owns **both** the SDN objects and the VMs, so
-the entire tenant — network and workloads — is declarative code.
+Tenant SDN objects and workloads are created by the **Deevnet API**
+([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)), which holds the
+Proxmox credential; tenants never do. A tenant declares itself through the `deevnet/deevnet`
+Terraform provider and the API builds, per tenant:
 
-Per-tenant flow:
+1. the SDN objects — EVPN zone (VRF), VNet, subnet — numbered from the tenant index it allocates;
+2. workloads cloned from the Packer-built Fedora template into the tenant's VNet;
+3. each workload's address, applied by cloud-init — derived from the index, not leased (Proxmox has
+   no DHCP on EVPN zones).
 
-1. Define the tenant's SDN objects (VRF, VNet(s), subnet, IPAM) — globally-unique numbering.
-2. Clone the Packer-built Fedora template into the tenant's VNet.
-3. cloud-init applies host config **and the address itself** — derived from the tenant index,
-   not leased (Proxmox has no DHCP on EVPN zones).
-4. Publish the tenant's DNS records into the substrate zone (tenant-owned).
-
-A "tenant" becomes a small reusable Terraform module: **VRF + VNet(s) + N VMs from template +
-DNS records**, landing on the fabric the hypervisor already provides.
+How a tenant uses this is [Tenant Operations](/docs/runbook/tenant/).
 
 ---
 
@@ -155,9 +152,8 @@ takes the default route out transit.
   node's VTEP identity and the EVPN controller. **A tenant's own zone, VNets, subnet and workloads
   are built by the Deevnet API**, declared from the tenant's own repository through the
   `deevnet/deevnet` provider
-  ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), proposed; until it
-  is deployed, tenants still apply the module by tag,
-  [ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)).
+  ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), deployed by
+  [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)).
 - ✅ Default route moved onto transit.
 - ✅ First tenant end to end — `tdemo` (index 1, `10.20.129.0/24`), addressed by cloud-init, with
   internet egress through the perimeter, its names resolving through the substrate resolver, and

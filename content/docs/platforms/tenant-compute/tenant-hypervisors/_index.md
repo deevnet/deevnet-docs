@@ -131,17 +131,11 @@ static infrastructure range and the `.200-.230` DHCP pool. Override with
 
 ---
 
-## Provisioning: Terraform (Future)
+## Provisioning
 
-Tenant VM lifecycle management is expected to transition to **Terraform**:
-
-| Capability | Purpose |
-|-----------|---------|
-| **Declarative VM definitions** | Reproducible tenant environments |
-| **Drift detection** | Detect manual changes |
-| **Lifecycle control** | Create, update, destroy per tenant |
-
-Terraform will be introduced **only for tenant workloads**, avoiding unnecessary complexity in the management plane.
+Tenant workloads are declared by each tenant in Terraform through the `deevnet/deevnet` provider
+and built by the Deevnet API; the management plane stays on Ansible. See
+[Tenant Operations](/docs/runbook/tenant/).
 
 ---
 
@@ -201,7 +195,7 @@ options considered.
 | **Overlay (EVPN/VXLAN)** | Tenant networks are virtual; no per-tenant switch change |
 | **VRF per tenant** | Tenants cannot see each other's traffic |
 | **Anycast gateway** | Tenant gateway hosted by the fabric, not the core router |
-| **Fabric IPAM / DHCP** | Address pools owned by the fabric, per tenant |
+| **Fabric IPAM** | Address space owned by the fabric, per tenant; workloads addressed by cloud-init (no DHCP on EVPN zones) |
 | **Perimeter transit** | Aggregate egress to the core router for NAT and policy |
 
 ---

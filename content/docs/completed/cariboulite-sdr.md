@@ -1,9 +1,16 @@
 ---
 title: "CaribouLite SDR"
 weight: 1
+aliases:
+  - /docs/platforms/tenant-compute/pi-production/cariboulite-sdr/
+  - /docs/roadmap/raspberry-pi/sdr/
 ---
 
-# CaribouLite SDR
+# CaribouLite SDR {{< status-badge "complete" "Complete" >}}
+
+Hardware adoption of the CaribouLite SDR HAT — a software-defined radio receiver on a Raspberry Pi,
+built as a baked image in `deevnet-image-factory`, proven on the [Pi Lab](/docs/runbook/tenant/pi-lab/)
+bank, and graduated to dedicated hardware.
 
 ## Purpose
 
@@ -134,3 +141,28 @@ These run on first boot after the hardware is detected.
 | **Firmware updates** | As released | Check CaribouLite GitHub for updates |
 | **Test validation** | Monthly | Run test scripts, verify all pass |
 | **Antenna inspection** | Quarterly | Check connections, replace worn cables |
+
+---
+
+## Project History
+
+The project was tracked on the Roadmap until it completed; its plan is kept here.
+
+### Vision & Scope
+
+Adopt the CaribouLite SDR HAT and deploy a software-defined radio platform on Raspberry Pi for RF
+signal monitoring and experimentation.
+
+**In scope:** CaribouLite hardware integration; remote SDR access via network streaming; client
+software for tuning and visualisation; a baked image via `deevnet-image-factory`.
+
+**Out of scope:** transmit capability; signal decoding and demodulation pipelines.
+
+### Milestones
+
+| Milestone | Tasks | Status |
+|---|---|---|
+| Requirements | supported frequency ranges defined; network streaming protocol defined | ✅ |
+| CaribouLite backend | base Pi image with Ansible support; CaribouLite driver installation; post-image configuration | ✅ |
+| SDR client | network streaming configuration; GQRX (or alternative) front-end setup | ✅ |
+| Documentation | build documentation; client documentation | ✅ |
