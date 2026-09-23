@@ -1,6 +1,9 @@
 ---
 title: "Tenant Admission"
 weight: 5
+aliases:
+  - /docs/runbook/tenant-provisioning/
+  - /docs/runbook/tenant/legacy-provisioning/
 ---
 
 # Tenant Admission
@@ -12,8 +15,6 @@ is [Tenant Operations](/docs/runbook/tenant/).
 
 Admission is the only substrate act a new tenant needs. The operator never edits an inventory file
 to make a tenant, and the tenant never holds a Proxmox credential, a vault password or an index.
-The older procedure that did those things is
-[Legacy Provisioning](/docs/runbook/tenant/legacy-provisioning/), kept only as history.
 
 ---
 
