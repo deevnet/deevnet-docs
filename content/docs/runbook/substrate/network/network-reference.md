@@ -23,15 +23,18 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 | IoT Vendor | 31 | 10.20.31.0/24 | 10.20.31.1 | .100-.200 |
 | IoT Backend | 35 | 10.20.35.0/24 | 10.20.35.1 | Static only |
 | Guest | 40 | 10.20.40.0/24 | 10.20.40.1 | .50-.250 |
+| Tenant Dev | 45 | 10.20.45.0/24 | 10.20.45.1 | .50-.250 |
 | Tenant Transit | 50 | 10.20.50.0/24 | 10.20.50.1 | Static only |
 | Tenant Underlay | 51 | — | — | None (unrouted) |
+| Management | 99 | 10.20.99.0/24 | 10.20.99.1 | .200-.230 (temporary; infrastructure is static or reserved) |
+| Blackhole | 999 | — | — | None (unrouted) |
 
 > Tenants are **not** VLANs. Under [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)
 > a tenant is an EVPN/VXLAN overlay owned by the tenant hypervisor's fabric, addressed from
-> `10.20.128.0/18` by fabric IPAM. The two VLANs above are the fabric's *transport*: transit to
-> the perimeter, and the VTEP underlay. Creating a tenant changes neither.
-| Management | 99 | 10.20.99.0/24 | 10.20.99.1 | .200-.230 (temporary; infrastructure is static or reserved) |
-| Blackhole | 999 | — | — | None (unrouted) |
+> `10.20.128.0/18` by fabric IPAM. The Tenant Transit and Tenant Underlay VLANs are the fabric's
+> *transport*: transit to the perimeter, and the VTEP underlay. Creating a tenant changes neither.
+> Tenant Dev is not part of the fabric: it is where a tenant's developer sits
+> ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)).
 
 ---
 
@@ -65,6 +68,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 | IoT Backend | Medium | IoT application backends (MQTT, Home Assistant, data pipelines) |
 | IoT Vendor | Very Low | Vendor-managed IoT containment zone (cloud-dependent, unauditable) |
 | IoT | Medium | Custom-developed embedded devices with controlled firmware (Pis, sensors) |
+| Tenant Dev | Low | Tenant developers' laptops: the API, state store and broker only, plus internet |
 | Guest | Untrusted | Transient visitor access (internet only) |
 
 ---

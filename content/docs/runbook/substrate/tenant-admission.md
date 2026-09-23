@@ -68,9 +68,11 @@ credential for 72 hours.
 
 ## 3. Where the tenant applies from
 
-A tenant's first apply has to reach the API. Today that means a **trusted seat** — the Builder, or a
-laptop on the trusted network — because the guest network is internet-only and the IoT network
-cannot reach the API. See
+Every apply has to reach the API, and after the first one the state store too. Give the tenant the
+**`DVNTM-TD`** key (`deevnet_wifi_psk.tenant_dev`): that segment reaches the API, the state store
+and the broker and nothing else ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)). Guest is
+internet-only and IoT cannot reach the API. A trusted seat still works, but it reaches the
+management plane, so don't offer it to a visitor. See
 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) for how the tenant side
 reads this.
 

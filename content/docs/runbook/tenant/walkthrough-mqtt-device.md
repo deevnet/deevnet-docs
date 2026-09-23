@@ -20,7 +20,7 @@ The tenant in this walkthrough is called **`bench1`**. Use your own name everywh
 {{< hint info >}}
 **Assumed done:** [admission](/docs/runbook/tenant/getting-started/admission/) and a
 [first apply](/docs/runbook/tenant/getting-started/first-apply/), so you have a tenant and
-`DEEVNET_API_TOKEN` is your tenant token. You are applying from a trusted seat
+`DEEVNET_API_TOKEN` is your tenant token. You are applying from `DVNTM-TD`
 ([why](/docs/runbook/tenant/getting-started/before-you-start/#where-you-need-to-sit-on-the-network)).
 {{< /hint >}}
 

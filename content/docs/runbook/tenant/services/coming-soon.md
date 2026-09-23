@@ -64,11 +64,12 @@ operator installs your code for you. **Planned:** a workload fetches a Deevnet-s
 what to run at boot, so declaring the workload is enough to have it running your code.
 [ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)
 
-## A visitor network and a downloadable provider
+## A downloadable provider
 
 {{< status-badge "planned" "Coming soon" >}}
 
-**Today:** you apply from a trusted seat, with a provider built from source
-([Before you start](/docs/runbook/tenant/getting-started/before-you-start/)). **Planned:** a
-network for visitors that reaches the API and the broker and nothing else, and the provider served
-from the site's artifact server.
+**Today:** you build the provider from source
+([Before you start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)).
+**Planned:** the provider served from the site's artifact server. The other half of this item, a
+network that reaches the API and the broker and nothing else, is live as `DVNTM-TD`
+([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)).
