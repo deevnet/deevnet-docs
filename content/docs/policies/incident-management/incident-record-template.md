@@ -1,6 +1,8 @@
 ---
 title: "Incident Record Template (INC)"
 weight: 1
+aliases:
+  - /docs/runbook/incident-management/incident-record-template/
 ---
 
 # Incident Record Template (INC)
@@ -32,7 +34,7 @@ weight: NNNN
 | **Site** | |
 | **Systems** | Devices, hosts and roles involved, by inventory name |
 | **Severity** | What was lost, and what recovery required |
-| **Status** | Open · Triage / Investigating / Mitigated / Remediated / Hardening — or Closed · Completed YYYY-MM-DD. See [Status](/docs/runbook/incident-management/#status) |
+| **Status** | Open · Triage / Investigating / Mitigated / Remediated / Hardening — or Closed · Completed YYYY-MM-DD. See [Status](/docs/policies/incident-management/#status) |
 | **Times** | Timezone used in this record |
 
 ---
@@ -138,7 +140,7 @@ Procedures used during recovery, and procedures written or changed because of it
   elsewhere, or make surviving it unnecessary. Number actions across both tables, so that "action
   4" means one thing wherever it is cited.
 - **Keep action status current.** Actions are Open, In Progress, Done or Declined; follow-ups
-  are Open, Scheduled, Done or Declined — see [Actions and follow-ups](/docs/runbook/incident-management/#actions-and-follow-ups).
+  are Open, Scheduled, Done or Declined — see [Actions and follow-ups](/docs/policies/incident-management/#actions-and-follow-ups).
   Mark an action Done with the commit or PR that did it, or Declined with the reason. The
   incident closes when every action is Done or Declined and every follow-up is at least
   Scheduled, with a link. Until

@@ -1,7 +1,9 @@
 ---
 title: "Incident Management"
-weight: 7
+weight: 2
 bookCollapseSection: true
+aliases:
+  - /docs/runbook/incident-management/
 ---
 
 # Incident Management

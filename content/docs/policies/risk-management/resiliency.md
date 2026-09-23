@@ -1,11 +1,17 @@
 ---
-title: "Limits"
-weight: 7
+title: "Resiliency & Limits"
+weight: 4
+aliases:
+  - /docs/architecture/limits/
 ---
 
-# Limits
+# Resiliency & Limits
 
-The rest of this section describes the architecture as designed. This page describes what the
+This page is the resiliency half of [Risk Management](/docs/policies/risk-management/): the risks
+Deevnet **accepts** by running on the hardware it does, stated so the acceptance is deliberate. The
+larger ones are also tracked in the [risk register](/docs/policies/risk-management/risk-register/).
+
+The [architecture](/docs/architecture/) describes the platform as designed. This page describes what the
 hardware underneath it cannot do.
 
 Both are true at once, and the second is the easier one to forget, because the first reads
@@ -28,7 +34,7 @@ When a device is misconfigured badly enough to lose its own management path, rec
 **physical**: a monitor and a USB keyboard, at the device. Different devices need different
 cables — mini DisplayPort for the core router, a DisplayPort→HDMI adapter for the hypervisors
 — which is a real operational cost at the moment you can least afford one. See
-[Console Recovery](/docs/runbook/recovery/console-recovery/).
+[Console Recovery](/docs/runbook/substrate/recovery/console-recovery/).
 
 The nearest substitute is Wake-on-LAN, declared per host (`wol: true`) and driven by
 `playbooks/wol.yml`. It is strictly one-way: it can wake a powered-down node, but it cannot
@@ -112,7 +118,7 @@ perfectly well without a controller.
 **A caveat about deployment mode, not architecture.** In production the builder sits on the
 management segment, so automation runs from *behind* the policy it edits. The builder's own
 design allows it to be attached elsewhere — but that does not rescue a router with no rules
-loaded, which stays a [console job](/docs/runbook/recovery/console-recovery/core-router/).
+loaded, which stays a [console job](/docs/runbook/substrate/recovery/console-recovery/core-router/).
 {{< /hint >}}
 
 ## One site has hardware
@@ -149,7 +155,7 @@ The compensating controls are real, and they are the reason the trade works:
   mirrors and boot infrastructure, provisions any site it is attached to, and is defined as a
   role any suitable host can assume. This is the mechanism behind *rebuild, not failover* —
   without it the rest of this page would be much harder to accept.
-- **Recovery is documented per device.** [Console Recovery](/docs/runbook/recovery/console-recovery/)
+- **Recovery is documented per device.** [Console Recovery](/docs/runbook/substrate/recovery/console-recovery/)
   covers the router, the hypervisors, the switch and the AP, including which cable each needs.
 - **The blast radius is understood.** [Network segmentation](/docs/architecture/network-segmentation/)
   bounds what a compromised or misbehaving segment can reach, which matters more when there is

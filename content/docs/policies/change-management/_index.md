@@ -1,7 +1,9 @@
 ---
 title: "Change Management"
-weight: 6
+weight: 1
 bookCollapseSection: true
+aliases:
+  - /docs/runbook/change-management/
 ---
 
 # Change Management & CI/CD
@@ -74,7 +76,7 @@ changes — execution starts, it completes, it is rolled back or abandoned — i
 the record. The index is what gets read; a record that has moved on while its row has not is the
 index lying. When a change goes wrong in a way that affects service,
 the incident gets its own record under [Incident Records](/docs/incidents/) — see
-[Incident Management](/docs/runbook/incident-management/).
+[Incident Management](/docs/policies/incident-management/).
 
 ---
 
@@ -88,7 +90,7 @@ Before applying changes:
 - [ ] Changes committed to version control
 - [ ] Rollback plan documented (for disruptive changes)
 - [ ] **Any once-only secret the change produces is encrypted, committed and pushed before the
-      change continues** — see [Vault Operations](/docs/runbook/building-recovery/vault-operations/)
+      change continues** — see [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/)
 
 {{< hint warning >}}
 **A secret a change generates is not safe until it is pushed.** An OpenBao init, a device token a
@@ -99,7 +101,7 @@ only then delete whatever the change wrote it to.
 While the inventory is decrypted, `git reset --hard`, `git restore .` and `git clean -fd` destroy
 plaintext with no way back — it was never staged, so it is not in the object database. CHG-0010 lost
 OpenBao's recovery key and Ansible's AppRole that way and had to rebuild the service.
-[Vault Operations](/docs/runbook/building-recovery/vault-operations/) has the procedure.
+[Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/) has the procedure.
 {{< /hint >}}
 
 {{< hint danger >}}
@@ -131,7 +133,7 @@ a total loss of site connectivity — see
    carrying your management path — the router's console, and for the switch, which has no
    console port, the reset button and a laptop. The automation host sits behind both, so a change that
    severs it also removes your ability to undo it —
-   [Console Recovery](/docs/runbook/recovery/console-recovery/) is what you follow if it does.
+   [Console Recovery](/docs/runbook/substrate/recovery/console-recovery/) is what you follow if it does.
 {{< /hint >}}
 
 ---
