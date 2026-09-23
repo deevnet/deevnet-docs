@@ -10,7 +10,7 @@ weight: 21
 | **Date** | Unscheduled |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress, 2026-09-22.** Everything is built and in review: the service, its smoke test, the broker account, the deploy role, the inventory, and the API's reservation of the `log` level. Nothing is deployed. Building it found one defect in the bridge itself, described under [What the smoke test changed](#what-the-smoke-test-changed). |
+| **Status** | **Complete, 2026-09-23.** Deployed on `dv02msg001v01` and verified end to end: a line published with mabell's gateway credential reached that tenant's `(3, 2)` and was read back with its own token. The broker was never restarted. Two findings, both below: a payload that claims another tenant changes nothing, and an unknown partition selector falls through to the tenant's own `(index, 0)` rather than being refused. **No device firmware publishes yet**, so ADR-0027 stays Proposed.
 | **Window** | Not yet scheduled |
 | **Site** | mobile |
 | **Systems** | `dv02msg001v01` (runs the bridge, beside the broker), `dv02obs001v01` (receives), the broker's auth database |
@@ -120,7 +120,8 @@ reach no other partition, and a device cannot reach any partition at all.
 
 ## Procedure
 
-Every step below is **built and in review** as of 2026-09-22. None is deployed.
+Steps 1-4 and 6 are **deployed**, 2026-09-23. Step 5 is written and in review; nothing here waits on
+it.
 
 | | Step | Where |
 |---|---|---|
@@ -131,7 +132,7 @@ Every step below is **built and in review** as of 2026-09-22. None is deployed.
 | 5 | **Reserve `log` in the API's topic validation** (ADR-0027 §3) | `deevnet-provisioning-api` PR #14 |
 | 6 | The inventory: the `log_bridges` group, the account password, and the store token moved to `all` because two hosts need it | inventory PR |
 
-**The order to deploy in**, because two of these depend on each other:
+**The order it was deployed in**, because two of these depend on each other:
 
 1. merge `deevnet-log-bridge` #2, then tag `v0.1.1` and `make stage` — the role pins that version and
    will not find a tarball for it before then
@@ -163,35 +164,46 @@ subscription rather than whether the container is up.
 
 ## Verification
 
-### Already run, off the substrate (2026-09-22)
+### Run on the substrate, 2026-09-23
+
+Published over TLS with **mabell's real gateway credential**, to `mabell/log/ma-bell-gw-01`. Not the
+firmware — that is still to come — but the device's own account, its own topic, and the whole path
+behind it.
+
+| | Result |
+|---|---|
+| **A line arrives.** | It is in `(3, 2)` within seconds, read back with mabell's own token, carrying `tenant=mabell`, `device=ma-bell-gw-01` and the topic |
+| **A lying payload changes nothing.** A message whose JSON said `"tenant":"eds","device":"lp-stand-01"` | landed in **mabell's** partition as `tenant=mabell`, `device=ma-bell-gw-01`. The topic decides; the payload is content |
+| **A restart loses nothing.** The bridge was stopped, a QoS 1 message published, the bridge started | **It arrived.** The broker held it for the offline persistent session and redelivered on reconnect — see ADR-0027 open question 2, now answered by measurement |
+| **The broker is unaffected.** | The device connected and published normally while the bridge was stopped, and the broker container was never restarted by this change |
+| **No cross-tenant read.** mabell's read token asked for partitions `2-2`, `2-0` and `0-0` | It never reached account 2. See the finding below for what it got instead |
+| **Idempotent.** A second full run | `changed=0` |
+
+#### Finding: an unknown selector falls through, it does not refuse
+
+Asking with a partition selector the token has no route for — mabell's token asking for `2-2` —
+returns **that tenant's own `(3, 0)`**, not a refusal. The `_stream_id` says so: every row came back
+under account 3.
+
+The security property holds: a tenant cannot reach another's partitions, which is what matters. But
+the behaviour is worth knowing before someone debugs it: vmauth's `url_map` matches the selector
+entries first and a request that matches none falls to the catch-all, which is the tenant's own
+`(index, 0)`. There is no way to express "refuse an unknown value of this header" in the same config
+that must also serve a request carrying no header at all, which is the ordinary case.
+
+### Run off the substrate, 2026-09-22
 
 Against a throwaway VerneMQ and its auth database, with the real binary and the real account
 statement — 13 checks, all passing, and each one sabotaged to watch it fail:
 
 | | |
 |---|---|
-| The account statement writes the row, and **reports nothing the second time** | the idempotence guard, so `site.yml` neither reports changed for ever nor rewrites the password hash on every run |
+| The account statement writes the row, and **reports nothing the second time** | the idempotence guard |
 | The broker accepts `+/log/#` | the open risk in this design, now closed |
 | A device's log line reaches the store, under the tenant **from the topic**, with the device as a field | |
 | A non-log topic the same device published is **not** carried | the scope of `+/log/#`, in one check |
 | The credential is refused from another client id | the pin works |
 | The account connects, may **not** publish, may **not** subscribe outside the log level | |
-
-Also checked against the live estate: every value the role derives (broker `ssl://10.20.35.20:8883`,
-store `https://dv02obs001v01.mobile.deevnet.net:8427`, both credentials present), and that the
-messaging VM **resolves and reaches** the store on 8427 over `iot_backend -> platform`.
-
-### Still to run, on the substrate
-
-1. **A real device's line arrives.** Publish from `lp-stand-01` to `eds/log/lp-stand-01`; read it
-   back with eds's read token from `(2, 2)`.
-2. **The other tenant sees nothing.** `tdemo`'s read token returns nothing for it.
-3. **A lying payload changes nothing.** Publish `{"tenant":"tdemo","_msg":"x"}` to `eds/log/…`; it
-   lands in eds's partition.
-4. **The bridge cannot publish.** Its account is refused when it tries.
-5. **A restart loses nothing** that was published with QoS 1 while it was down, within whatever the
-   broker's queue actually holds — measured, and written down here.
-6. **The broker is unaffected** by the bridge being stopped: a device still connects and publishes.
 
 ## Undo
 
@@ -200,18 +212,44 @@ Nothing else in the store or the broker changes.
 
 ## Outcome
 
-*Completed after the change has run.*
+**Complete, 2026-09-23 03:08–03:16Z.** One run, `--tags mqtt-broker,log-bridge --limit
+dv02msg001v01`: 107 tasks, 14 changed, none failed.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-09-22 | 1, 2 | The service merged; `v0.1.0` tagged and staged. Its smoke test then found the SUBACK defect, so `v0.1.1` was tagged and staged instead |
+| 2026-09-23 03:08Z | 3, 4, 6 | The broker account and the bridge deployed in one run. **The broker was not restarted** — it is up from before the change, so no device connection was disturbed |
+| 2026-09-23 03:13Z | Verification | A real publish with mabell's gateway credential arrived in `(3, 2)` and was read back with mabell's own token |
+| 2026-09-23 03:16Z | Verification | A second run: **`changed=0`**. The guarded upsert converges rather than rewriting the password hash every run |
+
+Step 5, reserving `log` in the API's topic validation, is written and open for review. It is not a
+prerequisite for anything here: the bridge carries what the broker allows, and today the only grant
+under `log/` is mabell's, which is the compliant shape.
+
+### What the account looks like on the broker
+
+```
+substrate-log-bridge | cid=deevnet-log-bridge | pub=[] | sub=[{"pattern": "+/log/#"}]
+```
+
+Beside three tenant accounts, all with `cid=*` and their own prefixes. It is the only row with a
+pinned client id and the only one with no publish grant.
 
 ### Departures from the plan
 
--
+- **`v0.1.1`, not `v0.1.0`.** Testing the account off the substrate found a defect in the bridge
+  itself — see [What the smoke test changed](#what-the-smoke-test-changed) — and the version that
+  deployed is the one that reads the SUBACK.
+- **The live "the bridge cannot publish" check was not run.** Its client id is pinned, so a second
+  client using it would evict the running bridge to prove something the smoke test already proves
+  against a throwaway broker, and the deployed row has an empty publish list. Recorded as covered
+  off-substrate rather than claimed here.
 
 ## Follow-ups
 
+- [ ] **The firmware.** Nothing publishes under `log/` by itself yet: mabell's gateway holds the
+  grant and logs to serial only, and its MQTT client is unused. Until a device does this on its own,
+  ADR-0027 stays Proposed.
 - [ ] **eds has no `log/` grant yet.** mabell's gateway has one; adding eds's stand is a change in
   that tenant's own Terraform, not here.
 - [ ] Per-device rate limiting, if a device proves chatty (ADR-0027 open question 3).

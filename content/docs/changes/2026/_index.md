@@ -28,4 +28,4 @@ bookCollapseSection: true
 | CHG-0018 | 2026-09-21 | [The Central Log Store](0018-central-log-store/) | Deployment · Configuration | mobile | Complete |
 | CHG-0019 | 2026-09-22 | [Strip the Log Store to Tenant Scope](0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Complete |
 | CHG-0020 | 2026-09-22 | [The API Issues Tenant Log Tokens](0020-tenant-log-tokens/) | Deployment · Configuration | mobile | Complete |
-| CHG-0021 | Unscheduled | [The MQTT Log Bridge](0021-mqtt-log-bridge/) | Deployment | mobile | In progress |
+| CHG-0021 | 2026-09-23 | [The MQTT Log Bridge](0021-mqtt-log-bridge/) | Deployment | mobile | **Complete** |

@@ -229,9 +229,15 @@ today.
 
    The alternative, a token per tenant, was not chosen: the bridge would have to hold and refresh N
    tokens and learn about new tenants, for confinement that vmauth's config already gives.
-2. **Delivery guarantees.** QoS 1 with a persistent session keeps messages across a bridge restart.
-   How much the broker queues for an offline subscriber, and for how long, is a VerneMQ setting to
-   confirm against its current documentation.
+2. ~~**Delivery guarantees.**~~ **Measured 2026-09-23** ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)):
+   the bridge was stopped, a QoS 1 message published to `mabell/log/ma-bell-gw-01`, and the bridge
+   started again — **the message arrived**. The broker held it for the offline persistent session and
+   redelivered on reconnect.
+
+   What is still not established is the *bound*: how many messages VerneMQ will hold for an offline
+   session and for how long is a setting on the broker, and the answer above is one message over
+   about ten seconds. A device that logs steadily through a long outage is a different measurement,
+   and the honest statement today is that a short restart loses nothing.
 3. **Rate limiting per device.** Only vmauth's per-user concurrency exists (ADR-0022 §6). A chatty
    device fills its own tenant's partition. Whether the bridge needs a per-device rate limit is open.
 
@@ -253,19 +259,31 @@ today.
 
 ## Current state
 
-*Updated 2026-09-22.*
+*Updated 2026-09-23.*
 
-- **Proposed**, and it stays Proposed until a tenant is really shipping.
+- **Proposed**, and it stays Proposed until a device ships its own logs. What exists is the whole
+  path, proven with a device's real credential — not the device.
 - The store runs on `dv02obs001v01`. [CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/)
   stripped it to this record's scope: the syslog listener and the six substrate ingest users are
   gone, and `(0, 0)` was cleared.
-- **Tenant tokens exist.** [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) is deployed: the
-  API issues each tenant an ingest and a read token and writes the vmauth users and routes for
-  `(index, 0..2)`, including the bridge's per-tenant route. eds, tdemo and mabell hold theirs.
-- **The bridge is built and in review, not deployed**
-  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)). Its account, its deploy role and §3's
-  reservation of the `log` level are written; the routing it depends on was proven against the live
-  store before the bridge existed.
-- **No device publishes under `<tenant>/log/` yet.** mabell's gateway is granted
-  `mabell/log/ma-bell-gw-01`, but its firmware does not use it. That is the last link, and it is work
-  in each device's own repository.
+- **Tenant tokens are issued.** [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/): the API gives
+  each tenant an ingest and a read token and writes the vmauth users and routes for `(index, 0..2)`,
+  including the bridge's per-tenant route. eds, tdemo and mabell hold theirs.
+- **The bridge is deployed** on `dv02msg001v01`
+  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/), 2026-09-23). It holds `+/log/#`, cannot
+  publish, and carries a line from `mabell/log/ma-bell-gw-01` into `(3, 2)` where mabell reads it
+  with its own token. A payload claiming another tenant changes nothing.
+- **§3's reservation of the `log` level** is written and in review in the API. Until it merges,
+  nothing but review stops a tenant granting something else under `log/`; the only grant that exists
+  is the compliant one.
+- **No device firmware publishes yet.** mabell's gateway holds `mabell/log/ma-bell-gw-01` and logs to
+  serial; eds's stand has no `log/` grant at all. That is the last link, and it is work in each
+  device's own repository.
+
+### What reading a partition you have no route for does
+
+Worth knowing before it is debugged: a read token asking for another tenant's partition is **not
+refused** — vmauth's `url_map` matches the selector entries first, and a request matching none falls
+to the catch-all, which is that token's own `(index, 0)`. So the caller gets **its own** logs back.
+The boundary holds; the error does not exist. There is no way to express "refuse an unknown value of
+this header" in a configuration that must also serve the ordinary request carrying no header at all.
