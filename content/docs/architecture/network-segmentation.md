@@ -21,7 +21,7 @@ Network segmentation divides each substrate into isolated broadcast domains with
 
 ## Segment Model
 
-Each substrate implements nine segment types:
+Each substrate implements ten segment types:
 
 | Segment | Purpose | Trust Level |
 |---------|---------|-------------|
@@ -33,6 +33,7 @@ Each substrate implements nine segment types:
 | IoT Vendor | Vendor-managed/untrusted IoT containment | Very Low |
 | IoT | Custom-developed embedded devices with controlled firmware | Medium |
 | IoT Backend | IoT application backends | Medium |
+| Tenant Dev | Tenant developers' laptops: the tenant-facing services and nothing else | Low |
 | Guest | Transient visitor access | Untrusted |
 
 ### Management Segment
@@ -179,6 +180,24 @@ The IoT backend segment hosts application backends that process IoT data — MQT
 - Medium trust — hosts are managed but handle untrusted input
 - Static DHCP only
 
+### Tenant Dev Segment
+
+The tenant dev segment is where a tenant's developer works from. It reaches the services a tenant
+consumes from its own laptop, and nothing else inside the site.
+
+**Typical inhabitants:**
+- A tenant developer's laptop, running the tenant's infrastructure-as-code and test clients
+
+**Properties:**
+- May reach the tenant-facing services only: the onboarding API, the tenant state store and the
+  message broker, each by host and port
+- No access to management, trusted, storage, IoT or any tenant's workloads
+- Internet access
+- Dynamic DHCP only (no static mappings)
+- A shared key, not per-tenant keys: the segment identifies no tenant. The API's credentials do that
+
+Without it, a tenant must work from a trusted seat, which reaches far more than the tenant needs.
+
 ### Guest Segment
 
 The guest segment provides network access for transient devices without substrate access.
@@ -220,6 +239,9 @@ graph TB
     Trusted -->|user access| IoT
 
     IoT -->|sensor data| IoTBackend
+    TenantDev[Tenant Dev<br>Low Trust] -->|API, state store| Platform
+    TenantDev -->|broker| IoTBackend
+    Mgmt -->|manages| TenantDev
     IoTBackend -->|shared services| Platform
 
     Tenant -.->|no access| Guest[Guest<br>Untrusted<br>Internet only]
@@ -237,6 +259,7 @@ graph TB
 - **Platform is broadly reachable** — Management, trusted, tenant, and IoT backend segments can reach platform services
 - **IoT Vendor is fully contained** — Outbound internet only; no access to any internal segment
 - **IoT Backend accepts IoT traffic** — Inbound from IoT, outbound to platform; no direct management access
+- **Tenant Dev reaches tenant-facing services only** — Named hosts and ports on platform and IoT backend; nothing else internal
 - **Guest has no substrate access** — Guest segment routes only to internet gateway
 
 ---
@@ -271,7 +294,7 @@ The transition is explicit — segment configuration is part of the authority ha
 
 ## Summary
 
-1. Sites use nine segment types: Management, Trusted, Storage, Platform, Tenant transit, IoT Vendor, IoT, IoT Backend, Guest — plus the underlay and blackhole segments, which carry no routed traffic
+1. Sites use ten segment types: Management, Trusted, Storage, Platform, Tenant transit, IoT Vendor, IoT, IoT Backend, Tenant Dev, Guest — plus the underlay and blackhole segments, which carry no routed traffic
 2. Segments form a trust hierarchy with default-deny routing between them
 3. Each site implements segmentation independently
 4. Core router provides VLAN routing, firewall zones, and per-segment DHCP
