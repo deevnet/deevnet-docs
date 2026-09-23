@@ -46,7 +46,7 @@ New records start from the [change record template](/docs/runbook/change-managem
 | CHG-0018 | 2026-09-21 | [The Central Log Store](2026/0018-central-log-store/) | Deployment · Configuration | mobile | Complete |
 | CHG-0019 | 2026-09-22 | [Strip the Log Store to Tenant Scope](2026/0019-log-store-tenant-scope/) | Configuration · Decommission | mobile | Complete |
 | CHG-0020 | 2026-09-22 | [The API Issues Tenant Log Tokens](2026/0020-tenant-log-tokens/) | Deployment · Configuration | mobile | Complete |
-| CHG-0021 | 2026-09-23 | [The MQTT Log Bridge](2026/0021-mqtt-log-bridge/) | Deployment | mobile | Complete |
+| CHG-0021 | 2026-09-22 | [The MQTT Log Bridge](2026/0021-mqtt-log-bridge/) | Deployment | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record

@@ -229,7 +229,7 @@ today.
 
    The alternative, a token per tenant, was not chosen: the bridge would have to hold and refresh N
    tokens and learn about new tenants, for confinement that vmauth's config already gives.
-2. ~~**Delivery guarantees.**~~ **Measured 2026-09-23** ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)):
+2. ~~**Delivery guarantees.**~~ **Measured 2026-09-22** ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)):
    the bridge was stopped, a QoS 1 message published to `mabell/log/ma-bell-gw-01`, and the bridge
    started again — **the message arrived**. The broker held it for the offline persistent session and
    redelivered on reconnect.
@@ -259,7 +259,7 @@ today.
 
 ## Current state
 
-*Updated 2026-09-23.*
+*Updated 2026-09-22.*
 
 - **Proposed**, and it stays Proposed until a device ships its own logs. What exists is the whole
   path, proven with a device's real credential — not the device.
@@ -270,12 +270,13 @@ today.
   each tenant an ingest and a read token and writes the vmauth users and routes for `(index, 0..2)`,
   including the bridge's per-tenant route. eds, tdemo and mabell hold theirs.
 - **The bridge is deployed** on `dv02msg001v01`
-  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/), 2026-09-23). It holds `+/log/#`, cannot
+  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/), 2026-09-22). It holds `+/log/#`, cannot
   publish, and carries a line from `mabell/log/ma-bell-gw-01` into `(3, 2)` where mabell reads it
   with its own token. A payload claiming another tenant changes nothing.
-- **§3's reservation of the `log` level** is written and in review in the API. Until it merges,
-  nothing but review stops a tenant granting something else under `log/`; the only grant that exists
-  is the compliant one.
+- **§3's reservation of the `log` level is enforced.** API v0.7.0 refuses a device account any
+  publish under `log/` but its own, any subscribe there at all, and a workload account any publish
+  there — including filters that reach the level without naming it, like a device asking to
+  subscribe to `#`. Checked against the live API; the grants that exist all pass.
 - **No device firmware publishes yet.** mabell's gateway holds `mabell/log/ma-bell-gw-01` and logs to
   serial; eds's stand has no `log/` grant at all. That is the last link, and it is work in each
   device's own repository.
