@@ -20,7 +20,7 @@ aliases:
 | **Risk** | A newer controller's database cannot be opened by an older one |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (the AP) and [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) (the switch), both split out of this record |
 | **Related incidents** | None |
-| **Related runbooks** | [Omada Controller Upgrade](/docs/runbook/lifecycle/omada-controller-upgrade/); [Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/) |
+| **Related runbooks** | [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/); [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/) |
 
 ---
 
@@ -70,7 +70,7 @@ The phases' plans, baselines, risks and undo moved to those records intact.
 
 ## Procedure
 
-Followed [Omada Controller Upgrade](/docs/runbook/lifecycle/omada-controller-upgrade/): stage the
+Followed [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/): stage the
 image while the controller runs; stop it cleanly; snapshot the data; recreate the container on
 the new image; verify; pin inventory. Then 6.2.14.11 was staged as the fallback and rehearsed.
 
@@ -81,7 +81,7 @@ log; `a_autoprov` logging in over the API and listing the site.
 
 ## Undo
 
-[Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/): restore the
+[Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/): restore the
 pre-upgrade snapshot, and start it on 6.2.14.11, or on 6.1 as the last resort. Anything
 configured on 6.3 since the snapshot is lost.
 

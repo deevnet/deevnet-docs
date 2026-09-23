@@ -48,7 +48,7 @@ anything here:
   interface as VLAN sub-interfaces of a VLAN-aware bridge. There is no bonding and no NIC
   redundancy: a failed port, cable or NIC takes the host off the network.
 
-See [Limits](/docs/architecture/limits/) for the full picture of what the hardware cannot do.
+See [Limits](/docs/policies/risk-management/resiliency/) for the full picture of what the hardware cannot do.
 
 ---
 

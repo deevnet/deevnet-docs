@@ -57,7 +57,7 @@ Configure the site in the controller's UI, and let its database be the record.
 Rejected. The controller's database would become the only copy of the network's configuration. It
 is also one-way across upgrades — a newer controller's database cannot be opened by an older one —
 so losing it, or falling back a version, loses configuration
-([Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/)). That runs
+([Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/)). That runs
 against the substrate's premise that everything is declared in git and rebuilt from it.
 
 ### B — Inventory owns it, applied over the CLI; the controller only watches
@@ -139,7 +139,7 @@ What must exist before automation can do anything:
 4. Verify reachability.
 
 For a switch already in service, adoption is done **as a planned rebuild**: factory reset, adopt,
-provision from inventory. The [console-recovery procedure](/docs/runbook/recovery/console-recovery/access-switch/)
+provision from inventory. The [console-recovery procedure](/docs/runbook/substrate/recovery/console-recovery/access-switch/)
 already treats a reset as legitimate, because everything worth keeping is in inventory. A new
 site, a recovery and an adoption then follow the same path.
 

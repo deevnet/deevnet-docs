@@ -70,7 +70,8 @@ Roadmaps are **informational**, not binding contracts.
 ---
 
 ### 4. Implementation & Tooling
-Documents **hardware and software platform decisions**, including rationale and trade-offs.
+Documents **hardware and software selections** — current, and under evaluation — including
+rationale and trade-offs. How to operate them is in the Operational Runbook.
 
 Includes:
 - Operating system choices (e.g., why Fedora)
@@ -84,10 +85,15 @@ This section answers the question:
 
 ---
 
-### 5. Security & Vulnerability Management
-Documents **security posture, assumptions, and lifecycle practices**.
+### 5. Risk Management (Policies & Procedures)
+Documents **how Deevnet manages risk** — part of the Policies & Procedures section, beside Change
+Management and Incident Management.
 
 Includes:
+- Vulnerability tracking, checks before production, and patch evaluation
+- Security controls: segmentation, isolation, encryption, credentials
+- Traceability of decisions and changes
+- Resiliency, the limits of the hardware, and a risk register
 - Trust boundaries and threat assumptions
 - Credential and key management philosophy
 - Vulnerability monitoring and response expectations
@@ -111,7 +117,7 @@ This section ensures infrastructure ages intentionally, not accidentally.
 
 ---
 
-### 7. Change Management, Automated Testing, and CI/CD
+### 7. Change Management, Automated Testing, and CI/CD (Policies & Procedures)
 Defines how **change is introduced safely** into the Deevnet ecosystem.
 
 Includes:
@@ -130,7 +136,19 @@ Manual changes without validation are considered defects.
 
 ---
 
-### 8. Platforms Integration & Tooling
+### 8. Operational Runbook
+Step-by-step procedures, split into **Substrate Operations** (the operator: building, lifecycle,
+network, recovery, tenant admission) and **Tenant Operations** (whoever builds on Deevnet: getting
+a tenant, using each service, running it).
+
+---
+
+### 9. Completed Projects
+Projects that are built, running on their own hardware, and documented — graduated from the Roadmap.
+
+---
+
+### 10. Platforms Integration & Tooling
 Documents how documentation and standards integrate into the developer workflow.
 
 Includes:

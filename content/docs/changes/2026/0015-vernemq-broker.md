@@ -17,7 +17,7 @@ weight: 15
 | **Automation** | `deevnet.mgmt` `playbooks/site.yml --limit mqtt_brokers`, new role `vernemq`; image from the new `deevnet-container-image-factory` |
 | **Risk** | Low — a new service on a VM that is built and empty. Nothing existing is rewritten. The broker has never served a client, so there is nothing to interrupt. |
 | **Related changes** | [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/) (the device registry a broker account references), [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (built the messaging VM), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) (the zone policy this runs under) |
-| **Related incidents** | [INC-0003](/docs/runbook/incident-management/) — its lesson is built into the certificate logic |
+| **Related incidents** | [INC-0003](/docs/policies/incident-management/) — its lesson is built into the certificate logic |
 | **Related runbooks** | None yet |
 
 ---

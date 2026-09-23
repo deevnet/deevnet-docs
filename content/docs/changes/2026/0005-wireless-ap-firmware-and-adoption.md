@@ -18,7 +18,7 @@ weight: 5
 | **Risk** | High. The AP's 1.3.3 hop cannot be undone, and adoption replaces the AP's own configuration with the controller's. |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the hand-set SSIDs this retires; [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — the controller upgrade this was split from; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch, deliberately separate |
 | **Related incidents** | [INC-0002](/docs/incidents/2026/0002-controller-vm-network-hang/) — the controller VM was silent at the start of this window; Phase 0 recovered it before the change could run |
-| **Related runbooks** | [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) (the reset-and-recover path); [Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/); [Important URLs](/docs/runbook/network/important-urls/) |
+| **Related runbooks** | [Wireless AP](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/) (the reset-and-recover path); [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/); [Important URLs](/docs/runbook/substrate/network/important-urls/) |
 
 ---
 
@@ -174,7 +174,7 @@ WPA-Personal in the `Default` WLAN group. A second plan run reports nothing to a
 ### Phase 2 — Factory reset, then firmware 1.0.4 → 1.2.5 → 1.3.3 → 1.3.11
 
 The AP's standalone login is unknown and not recoverable, so this is the **reset-first** route
-from [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) steps 2–4, not the
+from [Wireless AP](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/) steps 2–4, not the
 in-place hops originally planned. Wireless is down from the reset until phase 4 completes.
 
 1. **Check the AP's switch port before resetting anything.** A drifted trunk looks exactly like a
@@ -205,7 +205,7 @@ in-place hops originally planned. Wireless is down from the reset until phase 4 
    `vault_wap_standalone_password`. Phase 4 fails on an undefined variable without them.
 2. Confirm site **autoUpgrade is off** in the controller UI — the guard against the controller
    flashing the AP on its own once it is adopted, and not assertable from the API.
-3. Per [Omada Controller Upgrade → step 2](/docs/runbook/lifecycle/omada-controller-upgrade/#2-record-stop-snapshot):
+3. Per [Omada Controller Upgrade → step 2](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/#2-record-stop-snapshot):
    stop the controller cleanly, archive `/opt/omada-controller`, and start it again. That gives a
    recovery point on 6.3 from just before any device is adopted.
 
@@ -300,7 +300,7 @@ downgrade path is recorded for 1.2.5 either.
 
 **Forget** the AP in the controller. It resets to factory defaults, and the SSIDs are then set
 by hand again, as [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/port-migration/#step-13-ap-ssid-configuration)
-did, by the [Wireless AP](/docs/runbook/recovery/console-recovery/wireless-ap/) recovery path.
+did, by the [Wireless AP](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/) recovery path.
 To undo the controller's side as well, restore the phase 3 snapshot.
 
 ---

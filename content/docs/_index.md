@@ -25,7 +25,11 @@ Implementation details live in their respective repositories. This repository de
   </a>
   <a class="section-card" href="runbook/">
     <h3>Operational Runbook</h3>
-    <p>Provisioning, patching, security, inventory, and change management.</p>
+    <p>Substrate operations for the operator, and tenant operations for whoever builds on Deevnet.</p>
+  </a>
+  <a class="section-card" href="policies/">
+    <h3>Policies &amp; Procedures</h3>
+    <p>Change management, incident management, and risk management.</p>
   </a>
   <a class="section-card" href="changes/">
     <h3>Change Records</h3>
@@ -38,6 +42,10 @@ Implementation details live in their respective repositories. This repository de
   <a class="section-card" href="roadmap/">
     <h3>Roadmap</h3>
     <p>Forward-looking project plans with progress tracking.</p>
+  </a>
+  <a class="section-card" href="completed/">
+    <h3>Completed Projects</h3>
+    <p>Projects that are built, running on their own hardware, and documented.</p>
   </a>
   <a class="section-card" href="github/">
     <h3>Code Repositories</h3>

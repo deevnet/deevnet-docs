@@ -19,7 +19,7 @@ weight: 8
 | **Related decisions** | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) — the domain VMs this builds, and §6's fold-in of tenant DNS and state, which this record carries out; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) — the API whose shell is deployed; [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) — the controller's manual floor |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — waits for the network management VM this builds; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy these VMs are placed to survive |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — why the router record prune is previewed and gated |
-| **Related runbooks** | [VM Identity](/docs/runbook/building-recovery/vm-identity/); [Console Recovery → Access Switch](/docs/runbook/recovery/console-recovery/access-switch/) |
+| **Related runbooks** | [VM Identity](/docs/runbook/substrate/building-recovery/vm-identity/); [Console Recovery → Access Switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/) |
 
 ---
 

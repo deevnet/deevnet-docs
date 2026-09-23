@@ -148,5 +148,5 @@ of `omada-wireless.yml`. CHG-0005 then proceeded on the recovered controller.
 
 ## Related runbooks
 
-- [Omada Controller Recovery](/docs/runbook/recovery/omada-controller-recovery/) — for the
+- [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/) — for the
   controller container; this incident was one layer below it, in the guest itself.

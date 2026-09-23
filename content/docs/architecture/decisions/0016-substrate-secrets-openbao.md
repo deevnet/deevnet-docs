@@ -133,7 +133,7 @@ talk to the secrets manager in the scope decided here (§8).
   file on the Builder would make shell access to the Builder equivalent to holding every secret here,
   including for anything running there on an operator's behalf. The cost is that a change needing
   vaulted values cannot run unattended, and that cost is accepted: see
-  [Vault Operations](/docs/runbook/building-recovery/vault-operations/) for the practice that makes a
+  [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/) for the practice that makes a
   short decrypted window safe.
 - **The root token is not kept in use.** After bootstrap, Ansible works through its own AppRole, and
   the root token is revoked. A new root is generated with the recovery keys when needed.
@@ -249,7 +249,7 @@ reads every secret. The key gets the same care as the vault password.
     tenants' Terraform and the provider trust that CA from the delivered file, with no system trust
     store change.
 - **Confirmed on 2026-09-17 by the key-change drill**
-  ([OpenBao Drills](/docs/runbook/recovery/substrate-secrets-drills/)), on the live site:
+  ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)), on the live site:
   - **A rotated PKI root is picked up.** The `deevnet_api` role compares the CA the host holds with
     `pki/cert/ca`, reissues, and restarts before its own readiness check; `openbao` refetches the CA to
     the control node. Expiry alone does not catch a rotation, because the new root carries the same

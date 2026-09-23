@@ -18,7 +18,7 @@ weight: 6
 | **Risk** | High. The switch reboot takes the builder, the controller and Ansible offline with everything else. |
 | **Related changes** | [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — this was its phase 2 until 2026-09-11 |
 | **Related incidents** | None |
-| **Related runbooks** | [Access Switch → Firmware upgrade](/docs/runbook/recovery/console-recovery/access-switch/#firmware-upgrade); [Operator Access](/docs/runbook/network/operator-access/); [Important URLs](/docs/runbook/network/important-urls/) |
+| **Related runbooks** | [Access Switch → Firmware upgrade](/docs/runbook/substrate/recovery/console-recovery/access-switch/#firmware-upgrade); [Operator Access](/docs/runbook/substrate/network/operator-access/); [Important URLs](/docs/runbook/substrate/network/important-urls/) |
 
 ---
 
@@ -58,10 +58,10 @@ configuration change.
 
 - [x] Firmware 1.20.24 mirrored and pinned by sha256; it matched on 2026-09-10.
 - [x] Operator on site, connected to the builder through the travel router rather than the switch,
-  per [Operator Access](/docs/runbook/network/operator-access/). The SSH session survives the reboot,
+  per [Operator Access](/docs/runbook/substrate/network/operator-access/). The SSH session survives the reboot,
   and its tunnel carries the switch's web UI (`https://localhost:8443`) for the upload.
   **Backup:** a laptop on the operator port `gi1/0/2`
-  ([Operator Access → Backup](/docs/runbook/network/operator-access/#backup-the-operator-port)).
+  ([Operator Access → Backup](/docs/runbook/substrate/network/operator-access/#backup-the-operator-port)).
   That path goes through the switch, so it's fine for the backup and the upload, but it drops at
   the reboot along with everything else.
 - [x] The `.bin` downloaded to the laptop beforehand, with sha256
@@ -85,7 +85,7 @@ configuration change.
 
 ## Procedure
 
-Follow [Access Switch → Firmware upgrade](/docs/runbook/recovery/console-recovery/access-switch/#firmware-upgrade):
+Follow [Access Switch → Firmware upgrade](/docs/runbook/substrate/recovery/console-recovery/access-switch/#firmware-upgrade):
 
 1. **Record where it starts** — capture system info, image info and the running config.
 2. **Upload into the backup image** from `https://10.20.99.10` (`https://localhost:8443` through the
@@ -107,7 +107,7 @@ The builder has two uplinks. Only one of them goes through the switch.
 On 2026-09-16, `enp1s0` was checked on its own: it pings `1.1.1.1`, reaches
 `https://api.anthropic.com` over HTTPS, and `192.168.8.1` resolves public names. An operator
 session to the builder over the travel router's wireless doesn't touch the switch, so it
-survives the reboot. See [Operator Access](/docs/runbook/network/operator-access/).
+survives the reboot. See [Operator Access](/docs/runbook/substrate/network/operator-access/).
 
 **What happened on 2026-09-16:** when the switch rebooted, `enp4s0` lost its link, and in the
 same second NetworkManager logged `set 'enp1s0' (enp1s0) as default for IPv4 routing and DNS`.
@@ -155,7 +155,7 @@ ping 10.20.99.10
 ## Undo
 
 1.20.1 stays on flash. Point the boot configuration back at it and reboot —
-[Access Switch → Rollback](/docs/runbook/recovery/console-recovery/access-switch/#rollback). The
+[Access Switch → Rollback](/docs/runbook/substrate/recovery/console-recovery/access-switch/#rollback). The
 configuration is kept.
 
 ---

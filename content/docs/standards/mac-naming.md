@@ -131,7 +131,7 @@ hypervisor layer prevents the same VMID existing twice.
 Two VMs sharing a VMID would share a MAC, and the DHCP reservation for it would
 flip between their two addresses on every run. Substrate-wide uniqueness is
 therefore enforced by the allocator described in
-[Allocate VM Identity](/docs/runbook/building-recovery/vm-identity/), which
+[Allocate VM Identity](/docs/runbook/substrate/building-recovery/vm-identity/), which
 surveys every hypervisor before answering and refuses to allocate from a partial
 survey.
 

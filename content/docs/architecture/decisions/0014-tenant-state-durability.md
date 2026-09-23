@@ -12,7 +12,7 @@ weight: 14
 | **Scope** | How the tenant state store's contents survive losing the host, disk or hypervisor they live on, and how that copy is kept apart from the platform API's database, which the state restores |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/0007-terraform-state-custody/), which offered the store and recorded its durability as *"the weakest part of the decision"*; [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/), whose §1 and §6 put the store and the API's database in one VM |
 | **Extended by** | [ADR-0026: Object Storage](/docs/architecture/decisions/0026-object-storage/) — the store is defined by a contract, runs pgsty/silo, and also offers tenant buckets *(Proposed)* |
-| **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §4 and §5, [Substrate Storage](/docs/architecture/substrate/storage/), [Limits](/docs/architecture/limits/) |
+| **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §4 and §5, [Substrate Storage](/docs/architecture/substrate/storage/), [Limits](/docs/policies/risk-management/resiliency/) |
 
 ---
 
@@ -86,7 +86,7 @@ Read on `dv02prv001v01` and in the automation on 2026-09-16:
   every VM disk on it."*
   ([Hypervisor Storage](/docs/roadmap/infrastructure/mobile/hypervisor-storage/)).
 - **Nothing copies it off the host.** The `proxmox_vm` role attaches data disks with
-  `backup: false`, and [Limits](/docs/architecture/limits/) records that *"No collection carries
+  `backup: false`, and [Limits](/docs/policies/risk-management/resiliency/) records that *"No collection carries
   off-box backup automation"*.
 - **Versioning is on** for the `tf-state` bucket, as ADR-0007 said.
 - **The bucket holds no state yet.** The old store VM, `dv02tst001v01`, was wiped rather than
@@ -247,7 +247,7 @@ that cost for the store: the tenant needs its own copy that meets §3.
 **ADR-0012 §5's promise becomes true of the platform, not just of the API.** Losing the provisioning
 VM, or the management hypervisor's disk, costs a restore and an apply, not a device visit.
 
-**Deevnet gets its first off-box copy of anything.** [Limits](/docs/architecture/limits/) lists
+**Deevnet gets its first off-box copy of anything.** [Limits](/docs/policies/risk-management/resiliency/) lists
 *"On-box backups only"*, and says off-box config backup automation is *"the smallest item on this
 list, and the one with the best return"*. This covers the store and the API's database only. Router configuration
 and everything else stay as they are.

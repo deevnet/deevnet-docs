@@ -18,7 +18,7 @@ Close the gap between what inventory declares and what the substrate actually ru
 
 ## Project Vision & Scope
 
-The substrate is meant to be reconstructible from its declarations. [Building Infrastructure](/docs/runbook/building-recovery/) states that any host can be wiped and rebuilt from source control, and [Naming and Addressing](/docs/architecture/naming-and-addressing/) makes a host's address "a fact about its declaration, not about the order it booted in".
+The substrate is meant to be reconstructible from its declarations. [Building Infrastructure](/docs/runbook/substrate/building-recovery/) states that any host can be wiped and rebuilt from source control, and [Naming and Addressing](/docs/architecture/naming-and-addressing/) makes a host's address "a fact about its declaration, not about the order it booted in".
 
 That holds for creation. It does not hold for deletion. Removing a host from inventory today is a one-way half-operation: the declaration disappears, the live state stays.
 

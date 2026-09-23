@@ -19,7 +19,7 @@ weight: 7
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the segmentation that declared this policy |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — its open items are this change |
 | **Related decisions** | [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) — attachment by trust class depends on this policy; its [Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14) is where the pre-change state was first read |
-| **Related runbooks** | [Change Management](/docs/runbook/change-management/#validation-checklist); [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/) |
+| **Related runbooks** | [Change Management](/docs/policies/change-management/#validation-checklist); [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) |
 
 ---
 
@@ -31,7 +31,7 @@ weight: 7
 (`10.20.30.100`) reached **the Builder on the management segment**. The policy declared in inventory
 permits `iot -> iot_backend` and nothing else — no `iot -> management`, no `iot -> tenant_transit`.
 
-This was previously established by a read-only audit ([INC-0001](/docs/runbook/incident-management/)).
+This was previously established by a read-only audit ([INC-0001](/docs/policies/incident-management/)).
 It has now been shown from a real client, which is stronger evidence. The IoT segment is not a
 containment boundary in any sense the network enforces, and tenant Wi-Fi keys — which now work — put
 devices onto that segment.
@@ -283,7 +283,7 @@ is why phase 2 does not run without one.
   stands in for it as a reachability target, and the `1883` rows in
   [Verification](#verification) are marked not tested.
 - [ ] **Config backup downloaded** from **System → Configuration → Backups → Download** and kept
-  off the router ([Console Recovery](/docs/runbook/recovery/console-recovery/#before-you-need-any-of-this)).
+  off the router ([Console Recovery](/docs/runbook/substrate/recovery/console-recovery/#before-you-need-any-of-this)).
 - [ ] **Console kit at the rack:** mini DisplayPort cable, USB keyboard, and a monitor not on the
   affected network.
 - [ ] **Vault decrypted before walking over**, including the router's root password in
@@ -411,7 +411,7 @@ recovery step.
    pre-run revision and re-applied, and its failure message says whether the paths came back. If
    they did not, the apply is probably not what broke them — check the target hosts.
 2. **If the control host's own path is lost:** the revert cannot be sent from here. Follow
-   [Console Recovery → Core Router](/docs/runbook/recovery/console-recovery/core-router/) and
+   [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) and
    restore the revision the run printed before applying — under **Restore a backup**, matched by
    its `config-<timestamp>.xml` name. A copy of that configuration is also on the control host,
    under `migration-logs/`.
