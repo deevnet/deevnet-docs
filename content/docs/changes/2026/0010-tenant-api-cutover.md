@@ -18,7 +18,7 @@ weight: 10
 | **Risk** | Medium. OpenBao becomes a service everything else needs to start, and its seal key is the root of the whole arrangement. The API gains write access to tenant DNS, the resolver, the state store and the tenant hypervisor. |
 | **Related decisions** | [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) — what the API builds and what a tenant holds; [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) — where the credentials live; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5 and §9; [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) — built the VMs this deploys into, and created eds's zones, key and state credential; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy this adds two rules to, still unapplied |
-| **Related runbooks** | [Provisioning a Tenant](/docs/runbook/tenant/legacy-provisioning/) — replaced by this change's step 9 |
+| **Related runbooks** | Provisioning a Tenant (the inventory-driven procedure, removed from the docs 2026-09-23; in git history as `runbook/tenant/legacy-provisioning.md`) — replaced by this change's step 9 and, today, [Tenant Admission](/docs/runbook/substrate/tenant-admission/) |
 
 ---
 
