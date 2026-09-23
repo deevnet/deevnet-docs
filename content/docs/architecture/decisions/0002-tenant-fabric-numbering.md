@@ -51,6 +51,9 @@ dock mode, home already routes `10.20.0.0/16` to mobile, and that single route k
 tenants for free. A second `/16` would need its own route, at every point that already carries
 the first.
 
+> *Note, 2026-09-23:* home dock mode has been dropped; the sites are not connected. The
+> one-aggregate property still stands: any future link between sites routes one prefix per site.
+
 ### Repurpose VLANs 50/51 as tenant fabric transport
 
 The 50–59 band is redefined from "tenant segments" to **tenant fabric transport** — still

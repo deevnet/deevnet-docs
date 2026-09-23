@@ -114,9 +114,7 @@ now reads `timeout`. From a trusted seat: `nc -vz 192.168.8.1 80` still succeeds
 ## Follow-ups
 
 - [ ] Apply on home when that site is next built; its internet rules have been wrong since CHG-0007.
-- [ ] **Home dock mode.** [Naming and Addressing](/docs/architecture/naming-and-addressing/) says a
-      docked mobile and home "can communicate with full visibility". Before this change that was true
-      only because the internet rule passed to anything outside `10.20.0.0/16`, which let guest reach
-      all of home too. Now only management and trusted reach `10.10.0.0/16`. Dock mode isn't in use
-      (mobile is behind `dv02edg001p01`). When it is, declare the cross-site flows it needs as zone
-      policies, and correct that sentence.
+- [x] **Home dock mode.** Its "full visibility" between a docked mobile and home rested on the old
+      internet rule. Resolved 2026-09-23 by dropping dock mode: the sites aren't connected, and a
+      link would be declared with its own policy when there is a reason for one
+      ([Naming and Addressing](/docs/architecture/naming-and-addressing/#wan-operation)).
