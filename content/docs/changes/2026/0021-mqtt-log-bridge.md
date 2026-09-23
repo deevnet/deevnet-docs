@@ -10,7 +10,7 @@ weight: 21
 | **Date** | Unscheduled |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **In progress, 2026-09-22.** Everything is built and in review: the service, its smoke test, the broker account, the deploy role, the inventory, and the API's reservation of the `log` level. Nothing is deployed. Building it found one defect in the bridge itself, described under [What the smoke test changed](#what-the-smoke-test-changed). |
 | **Window** | Not yet scheduled |
 | **Site** | mobile |
 | **Systems** | `dv02msg001v01` (runs the bridge, beside the broker), `dv02obs001v01` (receives), the broker's auth database |
@@ -112,22 +112,76 @@ reach no other partition, and a device cannot reach any partition at all.
 
 ## Prerequisites
 
-- [ ] CHG-0020 deployed: the bridge user exists in the store with a route per tenant
-- [x] The source's home decided (above), and the service written: PR #1 in that repository
-- [ ] At least one device publishing to `<tenant>/log/<device>`
+- [x] CHG-0020 deployed: the bridge user exists in the store with a route per tenant
+- [x] The source's home decided (above), and the service written: PR #1 in that repository, merged
+- [ ] At least one device publishing to `<tenant>/log/<device>`. **mabell's gateway is granted
+  `mabell/log/ma-bell-gw-01` and eds's stand is not granted anything under `log/` yet**; neither
+  device's firmware publishes there, which is the work in each device's own repository.
 
 ## Procedure
 
-1. **The service** — written, in review. Subscribe, map, post; configuration from the environment
-   and both credentials from a root-only env file.
-2. **The image**, built and staged like the others.
-3. **The broker account**, provisioned by the substrate with a subscribe-only grant.
-4. **The role**, deployed beside `vernemq` on the messaging VM, reaching the store over
-   `iot_backend -> platform`, which is already declared.
-5. **Reserve `log` in the API's topic validation**, so a tenant cannot grant a device something
-   under `log/` that the bridge would then carry for it (ADR-0027 §3).
+Every step below is **built and in review** as of 2026-09-22. None is deployed.
+
+| | Step | Where |
+|---|---|---|
+| 1 | **The service.** Subscribe, map, post; configuration from the environment, both credentials from a root-only env file | `deevnet-log-bridge`, PR #1 — **merged** |
+| 2 | **The image**, built and staged like the others | `make stage`; `v0.1.0` is staged, **`v0.1.1` is what the role pins** — see below |
+| 3 | **The broker account**, provisioned by the substrate with a subscribe-only grant | `deevnet.mgmt` PR #43, in the `vernemq` role |
+| 4 | **The role**, deployed beside `vernemq`, reaching the store over `iot_backend -> platform` | `deevnet.mgmt` PR #43, the new `log_bridge` role |
+| 5 | **Reserve `log` in the API's topic validation** (ADR-0027 §3) | `deevnet-provisioning-api` PR #14 |
+| 6 | The inventory: the `log_bridges` group, the account password, and the store token moved to `all` because two hosts need it | inventory PR |
+
+**The order to deploy in**, because two of these depend on each other:
+
+1. merge `deevnet-log-bridge` #2, then tag `v0.1.1` and `make stage` — the role pins that version and
+   will not find a tarball for it before then
+2. merge the inventory
+3. `ansible-playbook playbooks/site.yml --tags mqtt-broker,log-bridge --limit dv02msg001v01` — the
+   broker play writes the account, and the bridge play deploys the container that uses it, in that
+   order within one run
+
+### What the smoke test changed
+
+The bridge's account is the one account on the broker that no tenant prefix confines, and `+/log/#`
+is a shape nothing else uses. Whether VerneMQ's PostgreSQL ACL honours a single-level wildcard at the
+**first** level was not a thing to find out on the live broker, so `smoke-test.sh` stands up a
+throwaway broker and database, writes the account with the same statement the role writes, and runs
+the real binary against it.
+
+**It does work** — one pattern covers every tenant, and the account is confined to it. Then the same
+test, run against an account whose ACL did *not* cover the filter, found something worse than the
+question it was asked:
+
+> A broker that refuses a filter answers `0x80` for it in an otherwise **successful** SUBACK and
+> leaves the connection up. The client library does not call that an error.
+
+The bridge logged `subscribed`, carried nothing, and reported itself healthy — and the deploy role's
+verification keyed on exactly that log line, so a refused subscription would have deployed green.
+`v0.1.1` reads the SUBACK: a refused filter is logged as a refusal with the reason, and `/healthz`
+answers `503` until the subscription is real. The role now asks the bridge whether it *holds* its
+subscription rather than whether the container is up.
 
 ## Verification
+
+### Already run, off the substrate (2026-09-22)
+
+Against a throwaway VerneMQ and its auth database, with the real binary and the real account
+statement — 13 checks, all passing, and each one sabotaged to watch it fail:
+
+| | |
+|---|---|
+| The account statement writes the row, and **reports nothing the second time** | the idempotence guard, so `site.yml` neither reports changed for ever nor rewrites the password hash on every run |
+| The broker accepts `+/log/#` | the open risk in this design, now closed |
+| A device's log line reaches the store, under the tenant **from the topic**, with the device as a field | |
+| A non-log topic the same device published is **not** carried | the scope of `+/log/#`, in one check |
+| The credential is refused from another client id | the pin works |
+| The account connects, may **not** publish, may **not** subscribe outside the log level | |
+
+Also checked against the live estate: every value the role derives (broker `ssl://10.20.35.20:8883`,
+store `https://dv02obs001v01.mobile.deevnet.net:8427`, both credentials present), and that the
+messaging VM **resolves and reaches** the store on 8427 over `iot_backend -> platform`.
+
+### Still to run, on the substrate
 
 1. **A real device's line arrives.** Publish from `lp-stand-01` to `eds/log/lp-stand-01`; read it
    back with eds's read token from `(2, 2)`.
@@ -158,5 +212,7 @@ Nothing else in the store or the broker changes.
 
 ## Follow-ups
 
+- [ ] **eds has no `log/` grant yet.** mabell's gateway has one; adding eds's stand is a change in
+  that tenant's own Terraform, not here.
 - [ ] Per-device rate limiting, if a device proves chatty (ADR-0027 open question 3).
 - [ ] The device firmware that publishes these logs, in each device's own repository.
