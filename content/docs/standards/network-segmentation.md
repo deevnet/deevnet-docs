@@ -130,6 +130,21 @@ The IoT backend segment hosts application backends that process IoT data.
 - IoT backend segment MUST use static DHCP mappings only
 - IoT backend segment SHOULD validate and sanitize all input from IoT devices
 
+### 10. Tenant Dev Segment
+
+The tenant dev segment is where a tenant's developer works from: the laptop that runs the tenant's
+infrastructure-as-code and its test clients.
+
+- Tenant dev segment MUST reach only the tenant-facing services (the onboarding API, the tenant
+  state store and the message broker), each by host **and** port, never a whole segment
+- Tenant dev segment MUST NOT route to management, trusted, storage, IoT, IoT vendor or tenant
+  segments
+- Tenant dev segment MAY have internet access
+- Tenant dev segment MUST use dynamic DHCP only (no static mappings)
+- Tenant dev segment MUST NOT identify a tenant: its credential is shared, and the services
+  authenticate the tenant themselves
+- A tenant SHOULD NOT need a trusted seat to use the tenant-facing services when this segment exists
+
 ---
 
 ## Inter-Segment Communication
@@ -205,6 +220,8 @@ The following inter-segment flows are permitted when explicitly configured:
 | IoT Backend | Platform | Shared service access (DNS, NTP) |
 | IoT | IoT Backend | Sensor data, MQTT publish |
 | IoT | Internet | Outbound only |
+| Tenant Dev | Platform, IoT Backend | The tenant-facing services only, by host and port |
+| Tenant Dev | Internet | Outbound only |
 | Guest | Internet gateway | Outbound only |
 
 ### Prohibited Flows
@@ -216,6 +233,7 @@ The following flows MUST NOT be permitted:
 - IoT to management (unless explicitly required for specific devices)
 - IoT vendor to any internal segment (full containment)
 - IoT backend to management (must go through platform)
+- Tenant dev to any internal segment beyond its named services
 
 ---
 
@@ -225,7 +243,7 @@ The following flows MUST NOT be permitted:
 - DHCP scopes MUST NOT overlap
 - Management, trusted, storage, platform, and IoT backend segments SHOULD use static DHCP mappings
 - Tenant segments SHOULD use static mappings for known hosts
-- IoT and guest segments MAY use dynamic pools
+- IoT, tenant dev and guest segments MAY use dynamic pools
 - IoT vendor segment MAY use dynamic pools
 
 ---
