@@ -253,10 +253,19 @@ today.
 
 ## Current state
 
-- **Proposed.**
-- The store runs on `dv02obs001v01` (CHG-0018). It still carries ADR-0022's syslog listener and six
-  substrate ingest users; removing them is the next change.
-- No tenant token exists yet: that is the tenant-token change.
-- No bridge exists. [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) builds the bridge user and
-  its per-tenant routing; the change after it builds the bridge.
-- No device publishes under `<tenant>/log/`.
+*Updated 2026-09-22.*
+
+- **Proposed**, and it stays Proposed until a tenant is really shipping.
+- The store runs on `dv02obs001v01`. [CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/)
+  stripped it to this record's scope: the syslog listener and the six substrate ingest users are
+  gone, and `(0, 0)` was cleared.
+- **Tenant tokens exist.** [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) is deployed: the
+  API issues each tenant an ingest and a read token and writes the vmauth users and routes for
+  `(index, 0..2)`, including the bridge's per-tenant route. eds, tdemo and mabell hold theirs.
+- **The bridge is built and in review, not deployed**
+  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)). Its account, its deploy role and §3's
+  reservation of the `log` level are written; the routing it depends on was proven against the live
+  store before the bridge existed.
+- **No device publishes under `<tenant>/log/` yet.** mabell's gateway is granted
+  `mabell/log/ma-bell-gw-01`, but its firmware does not use it. That is the last link, and it is work
+  in each device's own repository.
