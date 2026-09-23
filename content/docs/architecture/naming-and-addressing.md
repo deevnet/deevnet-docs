@@ -49,8 +49,8 @@ per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
 | `10.20.255.0/24` | Tenant fabric loopbacks / VTEP identity |
 
 home mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
-exactly **one aggregate per site** to route — which matters in home dock mode, where home already
-routes `10.20.0.0/16` to mobile and that route keeps covering tenants unchanged.
+exactly **one aggregate per site**: anything that ever has to route to a site routes one prefix,
+and that prefix keeps covering its tenants unchanged.
 
 So the third octet also tells you which side of the line an address is on: below `128` is a
 substrate segment, `128` and above is a tenant overlay.
@@ -87,28 +87,19 @@ Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive
 
 ---
 
-## WAN Operation Modes
+## WAN Operation
 
-The mobile site operates in two WAN modes depending on physical location:
-
-### Travel Mode
-
-mobile operates behind `dv02edg001p01` (travel router) with outbound NAT to upstream networks (hotel, tethered phone, etc.).
+mobile operates the same way wherever it is: behind `dv02edg001p01` (travel router), with outbound
+NAT to whatever upstream is available (home, a hotel, a tethered phone).
 
 - `dv02edg001p01` WAN: DHCP from upstream
-- `dv02edg001p01` LAN: 192.168.8.0/24 (unchanged, travel-router-local)
+- `dv02edg001p01` LAN: 192.168.8.0/24 (travel-router-local)
 - All mobile traffic NATs through `dv02edg001p01`
 
-### Home Dock Mode
-
-When mobile is co-located with home, the mobile WAN connects to home's trusted segment:
-
-- mobile WAN IP: assigned from 10.10.10.0/24 (home trusted)
-- home routes 10.20.0.0/16 to mobile's WAN IP
-- NAT is disabled on mobile's WAN — traffic flows with clean source IPs
-- Both sites can communicate with full visibility
-
-This allows mobile devices to be reachable from home without double-NAT, while mobile retains its own addressing and can undock at any time.
+There is no connectivity between sites. mobile plugged in at home is just another client of home's
+upstream, and neither site routes to the other. Linking the sites is a decision for when there is a
+reason to, and would be made as a declared site link with its own policy, not by renumbering or by
+turning NAT off.
 
 ---
 

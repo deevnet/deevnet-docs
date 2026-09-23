@@ -20,7 +20,7 @@ type: docs
 **A cloud you can carry.** Set it up on-premise, anywhere, and get:
 
 - **Portable network addressing.** Its address space and DNS zone travel with the case: the same
-  addresses and names on the road or docked at home, with no renumbering.
+  addresses and names on the road or at home, with no renumbering.
 - **IoT as a Service.** Per-device Wi-Fi keys, scoped MQTT accounts and a device registry, all from
   Terraform. *(in&nbsp;development)*
 - **Self-service tenants.** Isolated networks, DNS zones and state storage, from the tenant's own
