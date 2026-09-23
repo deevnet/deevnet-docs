@@ -179,6 +179,22 @@ behind it.
 | **No cross-tenant read.** mabell's read token asked for partitions `2-2`, `2-0` and `0-0` | It never reached account 2. See the finding below for what it got instead |
 | **Idempotent.** A second full run | `changed=0` |
 
+#### The reservation, on the live API (03:28Z)
+
+Five requests the API now refuses, each with its reason, and **none of them created anything** —
+mabell still has exactly one account:
+
+| Asked for | Answer |
+|---|---|
+| a device publishing `log/ma-bell-gw-02` | `400` — *a device account may publish only log/ma-bell-gw-01 under the reserved log level* |
+| a device publishing `log/+` | `400` — same |
+| a device subscribing `log/#` | `400` — *a device account may not subscribe under the reserved log level* |
+| a device subscribing `#` | `400` — same. It reaches the log space **without naming it**, which is the case a prefix test would have let through |
+| a workload publishing `log/backend` | `400` — *only a device account may publish under log/* |
+
+And the compliant shapes still pass: mabell's real grant and eds's workload account both re-applied
+cleanly, no password reissued, and `terraform plan` for mabell is `No changes`.
+
 #### Finding: an unknown selector falls through, it does not refuse
 
 Asking with a partition selector the token has no route for — mabell's token asking for `2-2` —
@@ -221,10 +237,12 @@ dv02msg001v01`: 107 tasks, 14 changed, none failed.
 | 2026-09-23 03:08Z | 3, 4, 6 | The broker account and the bridge deployed in one run. **The broker was not restarted** — it is up from before the change, so no device connection was disturbed |
 | 2026-09-23 03:13Z | Verification | A real publish with mabell's gateway credential arrived in `(3, 2)` and was read back with mabell's own token |
 | 2026-09-23 03:16Z | Verification | A second run: **`changed=0`**. The guarded upsert converges rather than rewriting the password hash every run |
+| 2026-09-23 03:26Z | 5 | API **v0.7.0** deployed, and the reservation refuses all five misuses while the compliant grants still pass |
 
-Step 5, reserving `log` in the API's topic validation, is written and open for review. It is not a
-prerequisite for anything here: the bridge carries what the broker allows, and today the only grant
-under `log/` is mabell's, which is the compliant shape.
+**Step 5 deployed at 03:26Z**, after the rest: API **v0.7.0** on `dv02prv001v01`, which refuses a
+grant that misuses the level. It was never a prerequisite for the bridge — the bridge carries what
+the broker allows, and the only grant under `log/` was already the compliant one — so it went last
+and on its own.
 
 ### What the account looks like on the broker
 
@@ -247,6 +265,12 @@ pinned client id and the only one with no publish grant.
 
 ## Follow-ups
 
+- [ ] **The bridge's password hash is `$2a$06$`, the API's accounts are `$2a$12$`.** pgcrypto's
+  `gen_salt('bf')` defaults to cost 6, and the role takes the default where the API asks for 12
+  (ADR-0012 §8). Not a practical risk — the password is 48 random characters — but it is an
+  inconsistency, and worth knowing that **fixing it needs more than changing the call**: the role's
+  idempotence guard verifies with `crypt(pw, stored)`, which succeeds whatever cost the stored hash
+  used, so a cost change alone never rewrites an existing row.
 - [ ] **The firmware.** Nothing publishes under `log/` by itself yet: mabell's gateway holds the
   grant and logs to serial only, and its MQTT client is unused. Until a device does this on its own,
   ADR-0027 stays Proposed.
