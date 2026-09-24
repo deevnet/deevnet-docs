@@ -13,6 +13,12 @@ is how to use it.
 The idea is **the SD card is the product**. You develop on a bank Pi; when the project works, the
 card moves to dedicated hardware and the bank Pi returns to the pool.
 
+{{< hint info >}}
+Not this page: taking your tenant's **backend** home on a Pi of your own (the `pi-backend` image,
+with no Deevnet access) is [Take it home on a Pi](/docs/runbook/tenant/take-it-home/). Bank Pis
+are Deevnet's and carry the automation user; a take-home card is yours.
+{{< /hint >}}
+
 ---
 
 ## Image Factory Integration
