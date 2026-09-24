@@ -12,6 +12,7 @@ Reference and day-2 procedures for the site network.
 
 - [Important URLs](important-urls/) — every management interface and service endpoint, by DNS name and by IP
 - [Operator Access](operator-access/) — SSH to the builder through the travel router, with tunnels to the management web UIs
+- [Segment Check](segment-check/) — from a laptop on each SSID, confirm the segment reaches what policy allows and nothing else
 - [Network Reference](network-reference/) — VLAN assignments, subnets, gateways and DHCP ranges for each site
 
 Building the network from scratch is part of [Building Infrastructure](/docs/runbook/substrate/building-recovery/build-network/).

@@ -5,6 +5,22 @@ weight: 2
 
 # Troubleshooting
 
+## Is it the network?
+
+If Terraform or an MQTT client times out, check the network before anything else. From your laptop
+on `DVNTM-TD`:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/deevnet/ansible-collection-deevnet.net/main/scripts/segment-check.sh
+bash segment-check.sh DVNTM-TD
+```
+
+It checks your address and DNS, the provisioning API, the state store and the broker (each over the
+site CA), the internet, and that the rest of the site is correctly out of reach. Turn off any VPN
+or iCloud Private Relay first. **All passing** means the network is fine and the problem is on the
+Terraform or client side (below). **Anything failing:** send the whole output to the operator; the
+fix is on the substrate, not in your repo.
+
 ## Terraform side
 
 | Symptom | What it means |
