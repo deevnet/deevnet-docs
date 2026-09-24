@@ -10,7 +10,7 @@ weight: 24
 | **Date** | 2026-09-24 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1–4 are done and verified live: Grafana is on `obs`, the API is v0.8.0, and `tdemo`, `eds` and `mabell` have their organisations. The rebuild drill passed. **Step 5, the two `tenant_dev` rules, is not applied yet.** See [Outcome](#outcome). |
+| **Status** | **In progress.** Steps 1–4 are done and verified live: Grafana is on `obs`, the API is v0.8.0, and `tdemo`, `eds` and `mabell` have their organisations. The rebuild drill passed. Step 5 (the two `tenant_dev` rules) was applied by the operator on 2026-09-24: 68 rules, no drift. **Verification 3 from a `DVNTM-TD` laptop and from IoT remains.** See [Outcome](#outcome). |
 | **Window** | 2026-09-24 14:52 to 15:03 EDT (steps 1–4 and the drill) |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, beside the log store), `dv02prv001v01` (the API, v0.8.0), `dv02cor002p01` (two `tenant_dev` rules). Artifact mirror on `dv00bld001p01`. |
@@ -194,7 +194,8 @@ Live, 2026-09-24 (EDT):
 | 15:01 | Verification 1 | As each tenant: one organisation, its own, as `Editor`. The three UIDs answer. `POST /api/datasources` gets `403`. Through Grafana, `mabell` reads its 4 device lines from CHG-0021, including the `liar-…` line filed under `mabell`, and `eds` reads its own line |
 | 15:02 | Verification 2 | The Dashboards page's Terraform, as `tdemo` from the Builder (not from `DVNTM-TD`, whose rules wait on step 5): applied, the next plan was clean, then destroyed |
 | 15:03 | Verification 4 | Rebuild drill: Grafana stopped, its data moved to `/srv/grafana/data.drill-20260924`, the role re-run and the tenants reconciled. The organisations came back as 2, 3 and 4 with **the same passwords**, and the data sources and the log reads work again |
-| — | 5 | **Not applied.** The plan showed exactly the two new rules, with none to delete. The apply was refused by the automated session's permission classifier, so it is the operator's to run |
+| — | 5 | The plan showed exactly the two new rules, with none to delete. The automated session's permission classifier refused the apply |
+| later | 5 | **Applied by the operator**, together with CHG-0025's rule. The re-plan shows 0 to add and 68 rules present, with no drift |
 
 What was done, and tested off the site:
 
@@ -243,7 +244,8 @@ What was done, and tested off the site:
 
 ## Follow-ups
 
-- [ ] Step 5 (`tenant_dev` rules), then Verification 3 from a `DVNTM-TD` laptop and from IoT
+- [x] Step 5 (`tenant_dev` rules), applied by the operator
+- [ ] Verification 3 from a `DVNTM-TD` laptop and from IoT (`segment-check.sh DVNTM-TD` covers it)
 - [ ] Hand `tdemo`, `eds` and `mabell` their dashboard passwords (in the operator's reconcile
       output of 2026-09-24)
 - [ ] Remove `/srv/grafana/data.drill-20260924` on `obs` once no one needs it
