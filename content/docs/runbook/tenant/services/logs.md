@@ -32,6 +32,11 @@ topic:   bench1/log/pico-1
 payload: {"level":"info","msg":"boot ok, rssi -61"}
 ```
 
+**Numbers in a JSON payload are fields you can graph.** A device that logs
+`{"msg":"reading","temp_c":21.5}` can have its temperature charted on your
+[dashboards](/docs/runbook/tenant/services/dashboards/) with
+`temp_c:* | stats by (device) avg(temp_c) temp_c` — no metrics service needed.
+
 The tenant is taken from the topic's first level and the device from its last — never from the
 payload, so a device cannot write into another tenant's logs by claiming to be one.
 
@@ -42,11 +47,19 @@ The store is VictoriaLogs behind an authenticating proxy. From a workload:
 ```bash
 curl -sS --cacert site-ca.pem \
   -H "Authorization: Bearer $LOG_INGEST_TOKEN" \
+  -H "Content-Type: application/stream+json" \
   --data-binary '{"_msg":"backend started","app":"backend"}' \
   "$LOG_ENDPOINT/insert/jsonline"
 ```
 
 The ingest token writes only to `(index, 0)`.
+
+{{< hint warning >}}
+**Send the `Content-Type` header.** Without it the store answers `200` and **keeps nothing**: curl's
+`--data-binary` defaults to `application/x-www-form-urlencoded`, and VictoriaLogs v1.52.0 does not
+read that body as JSON lines. Checked against the version the site runs: the same line with the
+header is stored, without it it is not. Every client library that posts here needs the header too.
+{{< /hint >}}
 
 ## Reading back
 
@@ -61,10 +74,11 @@ curl -sS --cacert site-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
   "$LOG_ENDPOINT/select/logsql/query" --data-urlencode 'query=*'
 ```
 
+**Or read them in Grafana:** your organisation has all three partitions wired in as data sources
+([Dashboards](/docs/runbook/tenant/services/dashboards/)).
+
 ## What it does not do yet
 
-- **No dashboard.** Reading is by query; Grafana per tenant is
-  [coming](/docs/runbook/tenant/services/coming-soon/#dashboards)
 - **Device logging is proven end to end with a real tenant's credentials, but no shipped firmware
   logs this way yet.** The store is built and deployed; ADR-0027 stays Proposed until a device's
   firmware ships using it. You may be the first

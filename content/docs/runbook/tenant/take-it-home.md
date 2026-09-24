@@ -9,6 +9,10 @@ The meetup ends and the mobile kit packs up. Your app and your devices worked ag
 you want them to keep working at home. This page moves them onto a **Raspberry Pi of your own**,
 flashed from the image factory's `pi-backend` image, and the card is yours when you leave.
 
+**Bring your own SD card and laptop.** The card is flashed at the meetup and goes home in your Pi;
+the laptop is where you prototyped, and where your Terraform state, `kit.env` and firmware live.
+Nothing of yours stays on Deevnet's equipment.
+
 ```
  at the meetup                                  at home
  ─────────────                                  ───────
@@ -39,6 +43,15 @@ the environment, under these names:
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
 | `LOG_SELECT_HEADER` | `X-Deevnet-Partition` | the same |
 | `LOG_DEVICE_PARTITION` | `<index>-2` | the same, if you keep the index |
+| `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
+| `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the card's |
+| `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the card's |
+| `GRAFANA_CA_CERT` | `site-ca.pem` (Deevnet's) | `site-ca.pem` (the card's) |
+
+The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
+`TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
+([Dashboards](/docs/runbook/tenant/services/dashboards/#dashboards-as-code)). The dashboards' data
+sources have the same UIDs on both, so **the same dashboard code applies to both**.
 
 While you are still on Deevnet, have Terraform write the file for you:
 
@@ -55,6 +68,11 @@ output "kit_env" {
     LOG_READ_TOKEN=${deevnet_tenant.this.log_read_token}
     LOG_SELECT_HEADER=${deevnet_tenant.this.log_select_header}
     LOG_DEVICE_PARTITION=${deevnet_tenant.this.index}-2
+    GRAFANA_URL=${deevnet_tenant.this.dashboard_url}
+    GRAFANA_AUTH=${deevnet_tenant.this.dashboard_username}:${deevnet_tenant.this.dashboard_password}
+    GRAFANA_ORG_ID=${deevnet_tenant.this.dashboard_org_id}
+    TF_VAR_grafana_org_id=${deevnet_tenant.this.dashboard_org_id}
+    GRAFANA_CA_CERT=site-ca.pem
   EOT
 }
 ```

@@ -1,6 +1,6 @@
 ---
 title: "State Store"
-weight: 6
+weight: 7
 ---
 
 # State Store {{< status-badge "active" "Available" >}}

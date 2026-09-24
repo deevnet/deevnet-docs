@@ -70,8 +70,9 @@ credential for 72 hours.
 ## 3. Where the tenant applies from
 
 Every apply has to reach the API, and after the first one the state store too. Give the tenant the
-**`DVNTM-TD`** key (`deevnet_wifi_psk.tenant_dev`): that segment reaches the API, the state store
-and the broker and nothing else ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)). Guest is
+**`DVNTM-TD`** key (`deevnet_wifi_psk.tenant_dev`): that segment reaches the API, the state store,
+the broker, the log store and Grafana, and nothing else
+([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Guest is
 internet-only and IoT cannot reach the API. A trusted seat still works, but it reaches the
 management plane, so don't offer it to a visitor. See
 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) for how the tenant side
@@ -87,6 +88,7 @@ reads this.
 | DNS | `<tenant>.<site>.deevnet.net` and its reverse, delegated, with a TSIG key the tenant writes records with |
 | State | a bucket prefix and keys in the state store |
 | Logs | partitions `(index, 0..2)`, an ingest and a read token, and the vmauth routes that separate them from every other tenant ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)) |
+| Dashboards | a Grafana organisation named for the tenant, one Editor login, and three log data sources carrying its read token, with fixed UIDs ([ADR-0024](/docs/architecture/decisions/0024-dashboards/)). A delete renames the emptied organisation `deleted-<tenant>-<id>`, because Grafana 13 cannot delete one |
 | Devices, if declared | a PPSK per trust class, registry entries, and MQTT accounts confined to the tenant's own topic prefix |
 
 The index is the tenant's number in all of it — subnet, VXLAN VNI, log account — so it is allocated

@@ -23,19 +23,13 @@ identity. [ADR-0021](/docs/architecture/decisions/0021-tenant-secrets/)
 
 {{< status-badge "planned" "Coming soon" >}}
 
-**Today:** none; logs are the only telemetry the platform stores for you. **Planned:** the platform
-scrapes and stores your workloads' metrics in a partition of your own, you declare alert rules that
-run under your own token, and notifications go out through a platform push service.
+**Today:** logs are the only telemetry the platform stores for you, though a numeric field in a
+device's JSON log line can already be [graphed](/docs/runbook/tenant/services/dashboards/#a-starter-dashboard).
+**Planned:** your workloads push metrics into a partition of your own (the platform never scrapes a
+tenant workload), you declare alert rules that run under your own token, and notifications go out
+through a platform push service. Your Grafana organisation gains metrics data sources beside the
+log ones.
 [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/)
-
-## Dashboards
-
-{{< status-badge "planned" "Coming soon" >}}
-
-**Today:** read [logs](/docs/runbook/tenant/services/logs/) by query. **Planned:** a Grafana
-organisation per tenant with your log and metrics data sources already wired in; you are an Editor
-of your own organisation and manage dashboards with the Terraform `grafana` provider.
-[ADR-0024](/docs/architecture/decisions/0024-dashboards/)
 
 ## Identity
 
