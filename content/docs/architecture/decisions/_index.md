@@ -208,7 +208,7 @@ question is written down, not when it is answered.
   the offline mirror, using the same login. A password, unlike a service-account token, can be
   restored from tenant state after a rebuild. Dashboards are re-derivable from code, and ones built
   only by clicking are not kept. Perses was considered: it is pre-1.0 and has no Terraform provider.
-  **Amended by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)** (built, not yet deployed):
+  **Amended by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)** (deployed 2026-09-24):
   three log data sources with fixed UIDs, the same on the take-home Pi; port 3000; the password is
   re-minted by the API like the log tokens; and three Grafana 13 behaviours the design now works
   around.

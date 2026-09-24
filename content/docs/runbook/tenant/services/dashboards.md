@@ -39,8 +39,9 @@ the operator for the password. After that, your state keeps it.
 
 ## Logging in
 
-Open `dashboard_url` in a browser on `DVNTM-TD`, the trusted network, or from a workload, and sign
-in with `dashboard_username` and `dashboard_password`. The certificate is the site CA's, the same
+Open `dashboard_url` in a browser on the trusted network or from a workload, and sign in with
+`dashboard_username` and `dashboard_password`. From `DVNTM-TD` it opens once
+[CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)'s last step lands. The certificate is the site CA's, the same
 one as the broker's and the log store's.
 
 ## Dashboards as code

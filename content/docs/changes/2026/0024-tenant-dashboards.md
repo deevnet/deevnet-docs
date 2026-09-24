@@ -7,11 +7,11 @@ weight: 24
 
 | | |
 |---|---|
-| **Date** | Unscheduled. Code complete 2026-09-24; the deploy steps are the operator's |
+| **Date** | 2026-09-24 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned.** Secrets vaulted and pushed, artifacts mirrored, and every code change built and tested off the site, against the same Grafana, VictoriaLogs and vmauth versions the site runs. Nothing is deployed: the automated session that built it was not permitted to change live hosts. See [Outcome](#outcome). |
-| **Window** | — |
+| **Status** | **In progress.** Steps 1–4 are done and verified live: Grafana is on `obs`, the API is v0.8.0, and `tdemo`, `eds` and `mabell` have their organisations. The rebuild drill passed. **Step 5, the two `tenant_dev` rules, is not applied yet.** See [Outcome](#outcome). |
+| **Window** | 2026-09-24 14:52 to 15:03 EDT (steps 1–4 and the drill) |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, beside the log store), `dv02prv001v01` (the API, v0.8.0), `dv02cor002p01` (two `tenant_dev` rules). Artifact mirror on `dv00bld001p01`. |
 | **Automation** | `deevnet.builder` `site.yml --tags container-images,fetched-artifacts`; `deevnet.mgmt` `site.yml --tags dashboards` and `--tags deevnet-api`; `deevnet.net` `make migration-opnsense-firewall`. Inventory `ansible-inventory-deevnet/mobile` |
@@ -79,8 +79,9 @@ can already be graphed.
 - [x] `grafana/grafana:13.2.2` and the plugin zip mirrored on the Builder:
   `deevnet.builder site.yml --limit dv00bld001p01 --tags container-images,fetched-artifacts`.
   The zip matched upstream's published sha1 and is pinned by sha256.
-- [ ] PRs merged: inventory, `deevnet.mgmt`, `deevnet.builder`, API, provider
-- [ ] Vault decrypted, collections built
+- [x] PRs merged: inventory #54, `deevnet.mgmt` #46 and #47, `deevnet.builder` #19, API #16, provider #8,
+  image factory #9
+- [x] Vault decrypted, collections built
 
 ## Procedure
 
@@ -182,7 +183,18 @@ The log store is untouched.
 
 ## Outcome
 
-*Nothing has run on the site yet.*
+Live, 2026-09-24 (EDT):
+
+| When | Step | What happened |
+|---|---|---|
+| 14:52 | 1 | API tagged `v0.8.0` and staged. The first `make stage` failed with the Builder's `/home` full (podman storage, the known 20 GB limit); dangling images were pruned and it passed. Provider tagged `v0.4.0` |
+| 14:54 | 2 | Grafana deployed. **The plugin check failed**: see the first departure below. Fixed in mgmt #47 and redeployed. The plugin loads at 0.32.0 with signature `valid`, an unauthenticated `/api/org` gets `401`, and a second run is `changed=0` |
+| 14:58 | 3 | API v0.8.0 deployed, and the role confirmed the running version |
+| 15:00 | 4 | `tdemo`, `eds` and `mabell` reconciled: all `ready`, with a `dashboards` step and organisations 2, 3 and 4 |
+| 15:01 | Verification 1 | As each tenant: one organisation, its own, as `Editor`. The three UIDs answer. `POST /api/datasources` gets `403`. Through Grafana, `mabell` reads its 4 device lines from CHG-0021, including the `liar-…` line filed under `mabell`, and `eds` reads its own line |
+| 15:02 | Verification 2 | The Dashboards page's Terraform, as `tdemo` from the Builder (not from `DVNTM-TD`, whose rules wait on step 5): applied, the next plan was clean, then destroyed |
+| 15:03 | Verification 4 | Rebuild drill: Grafana stopped, its data moved to `/srv/grafana/data.drill-20260924`, the role re-run and the tenants reconciled. The organisations came back as 2, 3 and 4 with **the same passwords**, and the data sources and the log reads work again |
+| — | 5 | **Not applied.** The plan showed exactly the two new rules, with none to delete. The apply was refused by the automated session's permission classifier, so it is the operator's to run |
 
 What was done, and tested off the site:
 
@@ -194,9 +206,18 @@ What was done, and tested off the site:
 | 2026-09-24 | End to end, off the site | VictoriaLogs v1.52.0 and vmauth v1.152.0, configured by the real `deevnet-log-user` renderer, plus Grafana 13.2.2, in one pod. The API's client created the tenant. As the tenant's login, `deevnet-logs-workloads` returned only the `(7,0)` line, `deevnet-logs-devices` only the `(7,2)` line, and `deevnet-logs-platform` nothing. The partition header and the CA pass through the plugin |
 | 2026-09-24 | Tenant Terraform, off the site | `grafana` provider v4.46.0: the example applied, and the next plan was clean |
 | 2026-09-24 | The role's mechanics, off the site | The plugin unpacked with Python's `zipfile` and the role's `chmod`s loads with signature `valid`. The role's full `GF_*` set starts with no errors. `grafana cli admin reset-admin-password` resets the admin |
-| 2026-09-24 | Deploy | **Not run.** The session's permission classifier refused the live deploy to `obs`, so no live host was changed |
+| 2026-09-24 | Pi image | Built from local inputs and booted under nspawn and qemu: all six services active, the same data sources and UIDs, a `temp_c` series graphed, and the Terraform applied from the card's `kit.env` |
 
 ### Departures from the plan, and what was found
+
+- **The role's plugin marker broke the plugin's signature.** The role recorded the unpacked version
+  in a file **inside** the plugin's directory. Grafana checks that directory against the plugin's
+  signed manifest, so an extra file makes the signature "modified" and the plugin refuses to load.
+  The off-site test had unpacked the plugin without the marker, so it passed. The marker now sits
+  beside the plugins directory (mgmt #47).
+- **Verification 3 (from `DVNTM-TD` and IoT) and 5 (deleting a throwaway tenant) were not run live.**
+  Verification 3 needs step 5. The delete path is covered by the API's integration test against
+  Grafana 13.2.2.
 
 - **Grafana 13 ignores `OrgId` on user create when `users.auto_assign_org` is off.** It then makes
   every new user a personal organisation named for its login, which is the tenant's own name. With
@@ -222,7 +243,9 @@ What was done, and tested off the site:
 
 ## Follow-ups
 
-- [ ] Steps 1–5 and the Verification, by the operator
-- [ ] Hand `tdemo`, `eds` and `mabell` their dashboard passwords
+- [ ] Step 5 (`tenant_dev` rules), then Verification 3 from a `DVNTM-TD` laptop and from IoT
+- [ ] Hand `tdemo`, `eds` and `mabell` their dashboard passwords (in the operator's reconcile
+      output of 2026-09-24)
+- [ ] Remove `/srv/grafana/data.drill-20260924` on `obs` once no one needs it
 - [ ] When grafana/grafana#127404 ships: upgrade, and delete the `deleted-*` organisations
 - [ ] ADR-0024 → Accepted once this is Complete
