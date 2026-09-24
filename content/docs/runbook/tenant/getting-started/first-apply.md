@@ -35,7 +35,7 @@ deevnet-tenant-<name>/
 terraform {
   required_version = ">= 1.5"
   required_providers {
-    deevnet = { source = "deevnet/deevnet", version = "~> 0.3" }
+    deevnet = { source = "deevnet/deevnet", version = "~> 0.4" }
   }
 }
 

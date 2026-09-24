@@ -189,8 +189,9 @@ consumes from its own laptop, and nothing else inside the site.
 - A tenant developer's laptop, running the tenant's infrastructure-as-code and test clients
 
 **Properties:**
-- May reach the tenant-facing services only: the onboarding API, the tenant state store and the
-  message broker, each by host and port
+- May reach the tenant-facing services only: the onboarding API, the tenant state store, the
+  message broker, the tenant log store, tenant dashboards and the read-only tenant downloads, each
+  by host and port
 - No access to management, trusted, storage, IoT or any tenant's workloads
 - Internet access
 - Dynamic DHCP only (no static mappings)
