@@ -99,8 +99,8 @@ own card of 8 GB or more.
    (the operator has it at the meetup).
 2. In **OS customisation** set a hostname (say `bench1`), your own user and password, your home
    Wi-Fi, and enable SSH. The image has no user of its own.
-3. Write the card. Before you eject it, open the boot partition from your laptop and edit
-   **`deevnet-kit.txt`**:
+3. Write the card. Before you eject it, open the boot partition from your laptop. **`README.txt`**
+   there is this page's short version, and stays on the card. Edit **`deevnet-kit.txt`**:
 
    ```
    tenant=bench1
@@ -122,8 +122,18 @@ carries no `GRAFANA_*` lines.
 ```bash
 ssh you@bench1.local
 sudo deevnet-kit status
+sudo deevnet-kit selftest                 # the card, end to end: every check ok?
 sudo deevnet-kit export ~/deevnet-kit     # kit.env + site-ca.pem, the Pi's side of the table above
 ```
+
+**The self-test** runs by itself after every boot, and `status` shows the last result. It checks:
+- every service;
+- TLS on 8883, 8427 and 3000;
+- a device log line sent over MQTT (through a throwaway account) and read back;
+- an app log line sent and read back;
+- your Grafana login, data sources and dashboard, including the device line read back through Grafana.
+
+If a check fails, it names it. Each run leaves two log lines marked `deevnet-kit selftest`.
 
 Copy `~/deevnet-kit/` to your laptop. That is everything your app needs.
 
@@ -203,6 +213,8 @@ there. The data source UIDs are the same, so every panel finds its data. A dashb
 by clicking on Deevnet does not come along; export it into your repository first.
 
 In a browser: `https://<hostname>.local:3000`, with the user and password from `GRAFANA_AUTH`.
+Your organisation opens with a **"Start here"** dashboard: a temperature graph from device log
+lines, your device logs and your app logs. It is yours to change; the card never overwrites it.
 
 ## 7. Check it
 
