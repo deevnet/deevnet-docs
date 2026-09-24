@@ -59,6 +59,8 @@ read it to use this guide.
 3. **Services** — one page per service, when you need the details
 4. **Operating** — [Day 2](operating/day-2/) and [Troubleshooting](operating/troubleshooting/)
 5. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
+6. **[Take it home on a Pi](take-it-home/)** — after the meetup: your app and devices on a Pi of
+   your own, same topics and tokens, no Deevnet behind it
 
 The operator's side of all this — admitting your name — is
 [Tenant Admission](/docs/runbook/substrate/tenant-admission/).
