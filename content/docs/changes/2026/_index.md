@@ -32,3 +32,4 @@ bookCollapseSection: true
 | CHG-0022 | 2026-09-23 | [The Tenant Dev Network](0022-tenant-dev-network/) | Configuration | mobile | Complete |
 | CHG-0023 | 2026-09-23 | [Internet Means Internet](0023-internet-means-internet/) | Configuration | mobile | Complete |
 | CHG-0024 | 2026-09-24 | [Tenant Dashboards](0024-tenant-dashboards/) | Deployment · Configuration | mobile | In progress |
+| CHG-0025 | 2026-09-24 | [Tenant Downloads](0025-tenant-downloads/) | Deployment · Configuration | mobile | In progress |

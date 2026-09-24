@@ -58,12 +58,14 @@ operator installs your code for you. **Planned:** a workload fetches a Deevnet-s
 what to run at boot, so declaring the workload is enough to have it running your code.
 [ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)
 
-## A downloadable provider
+## A tenant devbox
 
 {{< status-badge "planned" "Coming soon" >}}
 
-**Today:** you build the provider from source
-([Before you start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)).
-**Planned:** the provider served from the site's artifact server. The other half of this item, a
-network that reaches the API and the broker and nothing else, is live as `DVNTM-TD`
-([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)).
+**Today:** you install the [tools](/docs/runbook/tenant/getting-started/before-you-start/#tools) on
+your own laptop, with the provider and the large downloads served by the site. **Planned:** a
+development workload, built from an image with the tools already on it, that you launch in your own
+tenant network, so the Terraform and CLI half needs nothing on your laptop. Flashing a device or an
+SD card still needs your laptop's USB. It waits on
+[`ssh_keys`](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) and on
+[code delivery](#code-delivery-to-workloads).

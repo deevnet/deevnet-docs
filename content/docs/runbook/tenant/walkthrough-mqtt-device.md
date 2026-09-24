@@ -119,13 +119,23 @@ The ESP32 takes the PEM text as-is.
 
 ## 3a. Pico W — MicroPython
 
-Needs MicroPython 1.23 or later (for `ssl.SSLContext`), and `umqtt.simple` from `mip`:
+Needs MicroPython 1.23 or later (for `ssl.SSLContext`; the site's
+[tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads) has the
+Pico W firmware: hold BOOTSEL, plug in, and copy the `.uf2` onto the drive that appears), and
+`umqtt.simple` from `mip`:
 
 ```python
 import mip; mip.install("umqtt.simple")      # once, while on any network with internet
 ```
 
-Copy `site-ca.der` and this `main.py` to the board:
+Copy `site-ca.der` and this `main.py` to the board, from your laptop with
+[`mpremote`](/docs/runbook/tenant/getting-started/before-you-start/#tools) (or Thonny's Files pane):
+
+```bash
+mpremote cp site-ca.der main.py :      # then: mpremote reset
+```
+
+The `main.py`:
 
 ```python
 import machine, network, ssl, time, json
@@ -244,7 +254,8 @@ how often each cause turns out to be the one — and please tell the operator, s
 ## 4. The backend
 
 The backend subscribes to every device's telemetry and can publish commands back. The quickest one
-is `mosquitto_sub` on the workload:
+is `mosquitto_sub`, on the workload as below, or on your laptop on `DVNTM-TD` with the client tools
+from [Tools](/docs/runbook/tenant/getting-started/before-you-start/#tools):
 
 ```bash
 sudo dnf install -y mosquitto        # the client tools

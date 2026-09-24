@@ -619,7 +619,11 @@ construction, but it reverses "the API generates" and wasn't chosen.
   come from `terraform providers mirror`. Deevnet's own release archives are placed into the same
   layout, because that command only documents downloading from registries.
 - **Reaching it.** The Builder uses the mirror locally, and laptops and CI copy it from the
-  artifact server.
+  artifact server. *Amended by [CHG-0025](/docs/changes/2026/0025-tenant-downloads/):* the artifact
+  server is on management, which a tenant laptop on `DVNTM-TD` must not reach, so tenants get the
+  prebuilt provider (and the `grafana` provider) from the read-only **tenant downloads** on
+  Platform, or from the provider's GitHub release, installed into the implicit local mirror by
+  `install-provider.sh`.
 - **Integrity comes from the tenant's committed lock file, not from the transport.** Terraform
   *"will also verify that each package it installs matches at least one of the checksums it
   previously recorded in the lock file"*

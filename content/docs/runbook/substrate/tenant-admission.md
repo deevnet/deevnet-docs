@@ -25,7 +25,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | The API | `https://api.mobile.deevnet.net:8080`, reachable from the Builder |
 | The operator token | `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault |
 | The site CA | `ansible-collection-deevnet.mgmt/.openbao/site-ca.pem` on the control node |
-| The provider | the tenant will need `deevnet/deevnet` at the current tag (0.3.x) in the filesystem mirror of whatever seat it applies from. The workstation role installs it; `make mirror` in `terraform-provider-deevnet` does it by hand |
+| The provider | the tenant installs `deevnet/deevnet` 0.4.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before a meetup, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
 ---
 

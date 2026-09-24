@@ -35,7 +35,7 @@ because you changed code and forgot to apply.
 
 ## Upgrading the provider
 
-The provider is pinned by your `required_providers` constraint (`~> 0.3`), and `init` locks the
+The provider is pinned by your `required_providers` constraint (`~> 0.4`), and `init` locks the
 exact version. A new provider version only takes effect after:
 
 ```bash

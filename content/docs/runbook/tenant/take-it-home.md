@@ -92,11 +92,15 @@ passwords. Keep those passwords on the Pi and nothing needs reflashing but the h
 
 ## 1. Flash the card
 
-You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards) and your
-own card of 8 GB or more.
+You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards), your
+own card of 8 GB or more, and the take-home tools in
+[Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#tools). At the site, the
+image and Pi Imager are in the
+[tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads) `pi/`
+and `tools/`; check the image against its `.sha256` before flashing.
 
 1. In **Raspberry Pi Imager** choose *Use custom* and pick `raspios-bookworm-mobile-pi-backend.img.xz`
-   (the operator has it at the meetup).
+   (from the tenant downloads' `pi/`).
 2. In **OS customisation** set a hostname (say `bench1`), your own user and password, your home
    Wi-Fi, and enable SSH. The image has no user of its own.
 3. Write the card. Before you eject it, open the boot partition from your laptop. **`README.txt`**

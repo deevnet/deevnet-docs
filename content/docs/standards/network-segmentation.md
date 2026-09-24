@@ -136,7 +136,8 @@ The tenant dev segment is where a tenant's developer works from: the laptop that
 infrastructure-as-code and its test clients.
 
 - Tenant dev segment MUST reach only the tenant-facing services (the onboarding API, the tenant
-  state store and the message broker), each by host **and** port, never a whole segment
+  state store, the message broker, the tenant log store, tenant dashboards and the read-only tenant
+  downloads), each by host **and** port, never a whole segment
 - Tenant dev segment MUST NOT route to management, trusted, storage, IoT, IoT vendor or tenant
   segments
 - Tenant dev segment MAY have internet access
