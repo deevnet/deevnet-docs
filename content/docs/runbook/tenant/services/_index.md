@@ -16,6 +16,7 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 | [Wi-Fi keys](wifi-keys/) | `deevnet_iot_wifi_key` | {{< status-badge "active" "Available" >}} |
 | [Devices & MQTT](devices-and-mqtt/) | `deevnet_iot_device`, `deevnet_iot_broker_account` | {{< status-badge "active" "Available" >}} |
 | [Logs](logs/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
+| [Dashboards](dashboards/) | attributes of `deevnet_tenant`; dashboards with the `grafana` provider | {{< status-badge "active" "Available" >}} |
 | [State store](state-store/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
 | [Coming soon](coming-soon/) | — | {{< status-badge "planned" "Coming soon" >}} |
 

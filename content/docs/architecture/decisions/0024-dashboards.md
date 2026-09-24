@@ -7,7 +7,7 @@ weight: 24
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Proposed. Built and deployed by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), which amends it (see [As built](#as-built-chg-0024)); Accepted when that change is Complete |
 | **Date** | 2026-09-21 |
 | **Scope** | How the operator and each tenant view their metrics and logs as dashboards, how people log in to do it, how dashboards are declared as code, and what a tenant may and may not configure. Not alerting, which ADR-0023 decides. |
 | **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organisation per tenant as the likely shape |
@@ -237,8 +237,54 @@ ADR-0023 already lists.
 
 ---
 
+## As built (CHG-0024)
+
+Where [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) departs from the decision above, this
+section is the one that holds. The rest stands.
+
+- **§2: three data sources, all logs, with fixed UIDs.** There is no metrics store yet (ADR-0023 is
+  unbuilt), and ADR-0027 added the device partition `(index, 2)`. Every tenant organisation has:
+
+  | UID | Reads |
+  |---|---|
+  | `deevnet-logs-workloads` | `(index, 0)` |
+  | `deevnet-logs-platform` | `(index, 1)` |
+  | `deevnet-logs-devices` | `(index, 2)`, the default |
+
+  Each carries the read token as `Authorization: Bearer` and its partition as
+  `X-Deevnet-Partition: <index>-<n>`, in `secureJsonData`, with the site CA. **The UIDs are the
+  contract.** They are the same in every organisation, on every site, and on the take-home Pi, so a
+  dashboard moves unchanged. The metrics data sources join them in ADR-0023's change. The
+  Prometheus data source is still built into Grafana 13.2.2.
+- **§1: port 3000.** The image runs as an unprivileged uid, so it does not bind 443. `obs` has 4 GB.
+- **§3: "new users are not added to the main organisation"** holds because the API names the
+  tenant's organisation when it creates the login. `auto_assign_org` must stay **on**: with it
+  off, Grafana 13 ignores the named organisation and makes a personal one named for the login.
+- **§4: organisation 1 holds no data sources.** ADR-0027 made the store tenants-only, so there is
+  no substrate data to show.
+- **§5: the password is re-minted, not resupplied.** Like the log tokens (CHG-0020), the API seals
+  it, returns it on create and on reconcile, and mints a new one if it is lost. The server is told
+  what it is, so nothing depends on the tenant's copy. Tenant Terraform must set `org_id` **on each
+  resource**: under basic auth the provider (v4.46.0) ignores its own `org_id` and sends
+  organisation 1.
+- **Deleting a tenant cannot delete its organisation on Grafana 13**
+  ([grafana/grafana#127386](https://github.com/grafana/grafana/issues/127386)). The API removes the
+  data sources and the login, then renames the organisation `deleted-<tenant>-<id>`.
+
+### To confirm when building: answers
+
+| Item | Answer |
+|---|---|
+| An Editor can't create data sources or read their secure fields | **Confirmed.** `POST /api/datasources` is `403`; the token is never in what the server returns |
+| Contact points are unavailable with unified alerting off | Not tested |
+| The provider with basic auth and `org_id` manages folders and dashboards, and is refused elsewhere | **Confirmed, with the per-resource `org_id` above.** Organisation 1 is refused (`403`) |
+| The plugin's build is signed and installs offline from a local zip | **Confirmed.** 0.32.0, signature `valid`, with plugin downloads disabled |
+| The Prometheus data source through vmauth | Not applicable until the metrics store exists |
+
 ## Current state
 
-- **Proposed. Nothing is built.**
-- No Grafana runs anywhere.
-- The stores in ADR-0022 and ADR-0023 are not built either.
+- **Proposed. Deployed 2026-09-24** by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)
+  (In progress: its `tenant_dev` rules are still to apply). Grafana 13.2.2 runs on `obs`, the API
+  is v0.8.0, and `tdemo`, `eds` and `mabell` each have an organisation. A rebuild drill restored all
+  three with the same passwords.
+- The metrics store of ADR-0023 is not built.

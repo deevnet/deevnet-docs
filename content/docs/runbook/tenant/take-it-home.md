@@ -9,16 +9,22 @@ The meetup ends and the mobile kit packs up. Your app and your devices worked ag
 you want them to keep working at home. This page moves them onto a **Raspberry Pi of your own**,
 flashed from the image factory's `pi-backend` image, and the card is yours when you leave.
 
+**Bring your own SD card and laptop.** The card is flashed at the meetup and goes home in your Pi;
+the laptop is where you prototyped, and where your Terraform state, `kit.env` and firmware live.
+Nothing of yours stays on Deevnet's equipment.
+
 ```
  at the meetup                                  at home
  ─────────────                                  ───────
  devices ──TLS 8883──▶ mqtt.mobile.deevnet.net   devices ──TLS 8883──▶ your Pi (Mosquitto)
  app     ──TLS 8427──▶ Deevnet log store         app     ──TLS 8427──▶ your Pi (VictoriaLogs)
+ you     ──TLS 3000──▶ Deevnet Grafana           you     ──TLS 3000──▶ your Pi (Grafana)
          <tenant>/…  <tenant>/log/<device>               <tenant>/…  <tenant>/log/<device>   ← unchanged
 ```
 
 The Pi keeps the **app contract**: the same ports, the same topic prefix, the same reserved `log`
-level, the same ingest and read tokens with the same partition header. What changes is the host
+level, the same ingest and read tokens with the same partition header, and a Grafana organisation
+with the same three data source UIDs. What changes is the host
 name, the CA and the secrets. **Nothing on the Pi belongs to Deevnet.** It has no Deevnet account,
 key or route, and its CA and tokens are generated on the card the first time it boots.
 
@@ -39,6 +45,15 @@ the environment, under these names:
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
 | `LOG_SELECT_HEADER` | `X-Deevnet-Partition` | the same |
 | `LOG_DEVICE_PARTITION` | `<index>-2` | the same, if you keep the index |
+| `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
+| `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the card's |
+| `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the card's |
+| `GRAFANA_CA_CERT` | `site-ca.pem` (Deevnet's) | `site-ca.pem` (the card's) |
+
+The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
+`TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
+([Dashboards](/docs/runbook/tenant/services/dashboards/#dashboards-as-code)). The dashboards' data
+sources have the same UIDs on both, so **the same dashboard code applies to both**.
 
 While you are still on Deevnet, have Terraform write the file for you:
 
@@ -55,6 +70,11 @@ output "kit_env" {
     LOG_READ_TOKEN=${deevnet_tenant.this.log_read_token}
     LOG_SELECT_HEADER=${deevnet_tenant.this.log_select_header}
     LOG_DEVICE_PARTITION=${deevnet_tenant.this.index}-2
+    GRAFANA_URL=${deevnet_tenant.this.dashboard_url}
+    GRAFANA_AUTH=${deevnet_tenant.this.dashboard_username}:${deevnet_tenant.this.dashboard_password}
+    GRAFANA_ORG_ID=${deevnet_tenant.this.dashboard_org_id}
+    TF_VAR_grafana_org_id=${deevnet_tenant.this.dashboard_org_id}
+    GRAFANA_CA_CERT=site-ca.pem
   EOT
 }
 ```
@@ -72,7 +92,8 @@ passwords. Keep those passwords on the Pi and nothing needs reflashing but the h
 
 ## 1. Flash the card
 
-You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit) and a card of 8 GB or more.
+You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards) and your
+own card of 8 GB or more.
 
 1. In **Raspberry Pi Imager** choose *Use custom* and pick `raspios-bookworm-mobile-pi-backend.img.xz`
    (the operator has it at the meetup).
@@ -93,8 +114,10 @@ You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit) and a card of 8 GB or more.
 ## 2. First boot
 
 Boot the Pi at home. Imager's first boot runs and reboots; then `deevnet-kit` runs **once**. It
-generates the card's CA and certificate, the log tokens and the bridge's credentials, and starts
-the broker, the log store and the bridge.
+generates the card's CA and certificate, the log tokens, the bridge's credentials and Grafana's
+secrets, and starts the broker, the log store, the bridge and Grafana. Grafana's first start takes a
+minute or two; then `deevnet-kit dashboards` creates your organisation. Until it has, `kit.env`
+carries no `GRAFANA_*` lines.
 
 ```bash
 ssh you@bench1.local
@@ -161,7 +184,27 @@ quadlets, so it is a plain unit.
 
 Or run the app on your laptop with `~/deevnet-kit/kit.env`; the Pi does not mind.
 
-## 6. Check it
+## 6. Bring your dashboards
+
+Your dashboards on Deevnet are Terraform (the
+[Dashboards](/docs/runbook/tenant/services/dashboards/#dashboards-as-code) page). Apply the same
+configuration against the Pi, with the Pi's `kit.env` in the environment:
+
+```bash
+set -a; . ~/deevnet-kit/kit.env; set +a
+export GRAFANA_CA_CERT=~/deevnet-kit/site-ca.pem
+terraform -chdir=dashboards init
+terraform -chdir=dashboards apply
+```
+
+Use a **separate state** from your Deevnet one, as above (its own directory, or a workspace):
+the Pi is a different Grafana, and your Deevnet state would try to update objects that are not
+there. The data source UIDs are the same, so every panel finds its data. A dashboard you built only
+by clicking on Deevnet does not come along; export it into your repository first.
+
+In a browser: `https://<hostname>.local:3000`, with the user and password from `GRAFANA_AUTH`.
+
+## 7. Check it
 
 ```bash
 set -a; . ~/deevnet-kit/kit.env; set +a
@@ -184,7 +227,7 @@ curl -sS --cacert ~/deevnet-kit/site-ca.pem -H "Authorization: Bearer $LOG_READ_
 | `<tenant>.mobile.deevnet.net` DNS | `<hostname>.local`, and the Pi's address for devices |
 | Wi-Fi keys on `DVNTM-IOT` | Your own Wi-Fi |
 | The device registry | Device names are checked for shape only |
-| Terraform state and the API token | Nothing to apply: `deevnet-kit` is the whole control plane |
+| Terraform state and the API token | Nothing to apply: `deevnet-kit` is the whole control plane. Only your dashboards are still Terraform, against the Pi's Grafana |
 
 Your Deevnet tenant is untouched by any of this. Destroy it when you are done
 ([Day 2](/docs/runbook/tenant/operating/day-2/)), or keep prototyping there. The two do not share a secret.
@@ -195,13 +238,20 @@ Your Deevnet tenant is untouched by any of this. Destroy it when you are done
 - **A subscription outside your grant** is refused in the SUBACK on Deevnet. On the Pi it is
   accepted and nothing is delivered. Either way no message crosses.
 - **Revocation** is immediate on the Pi and takes effect on the next connect on Deevnet.
+- **You are Grafana's admin on the Pi** (`grafana_admin_password` in `/etc/deevnet-kit/kit.json`).
+  Your tenant login is still an Editor, so the same Terraform runs on both.
+- **Memory.** Grafana wants about 512 MB. On a 512 MB Zero 2 W, turn it off:
+  `sudo systemctl disable --now grafana deevnet-kit-dashboards`.
 
 {{< hint warning >}}
 **Proven under emulation, not yet on a Pi.** The image was built with `make pi-backend` and
 booted under emulation. First boot ran. All four services came up. Every check on this page
 passed against the booted card: accounts, a refused device grant, telemetry reaching the
 backend, device logs arriving in `4-2`, a forged device's line never arriving, and the file
-permissions. A real Pi on real Wi-Fi, with Imager's customisation, has not been run. If a
+permissions. The Grafana build (2026-09-24) passed the same way: all six services active, the
+tenant an Editor in its own organisation only, the three data sources with their UIDs, a
+temperature series graphed from a device's log lines, and the Dashboards page's Terraform applied
+from the card's `kit.env` with a clean plan after. A real Pi on real Wi-Fi, with Imager's customisation, has not been run. If a
 step fails there, tell the operator so this page can say "tested".
 {{< /hint >}}
 
