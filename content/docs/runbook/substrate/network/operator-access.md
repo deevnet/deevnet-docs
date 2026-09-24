@@ -7,11 +7,26 @@ aliases:
 
 # Operator Access
 
-Reaching the builder and the management web UIs from an operator laptop, through the travel
-router rather than through the site network.
+Reaching the builder and the management web UIs from an operator laptop. There are three ways
+in, and which one to use depends on what is broken.
 
-The management segment (VLAN 99) is not reachable from wireless clients. The builder is on it,
-and it also has a second interface, `enp1s0`, on the travel router's LAN. A laptop on the travel
+| Path | Laptop on | Goes through | Use it for |
+|---|---|---|---|
+| **Trusted Wi-Fi** | `DVNTM` (trusted, `10.20.10.0/24`) | the AP, the switch and the core router | everyday work: SSH to the builder at `10.20.99.95`, and the management UIs directly |
+| **Travel router** (below) | `192.168.8.0/24` | the builder's `enp1s0` only | work that takes down the switch, the AP or the router's trusted side |
+| **Operator port** ([below](#backup-the-operator-port)) | `gi1/0/2`, untagged VLAN 99 | the switch only | the travel router or `enp1s0` is the problem |
+
+**Trusted reaches management by a declared lab exception**, the `trusted -> management` pass in the
+zone policy. The [standard](/docs/standards/network-segmentation/) allows it: the trusted segment
+*"MAY access management services for administration purposes"*. It is also protected from
+deletion (`firewall_protected_descriptions`), because it is the operator's own path. A dedicated
+jump host would be purer, but it would be one more thing to build and keep running for a lab this
+size, and that isn't worth it. No other SSID reaches management;
+[Segment Check](/docs/runbook/substrate/network/segment-check/) verifies both from a client.
+
+## Through the travel router
+
+The builder has a second interface, `enp1s0`, on the travel router's LAN. A laptop on the travel
 router's network (its wireless, or a LAN port) can SSH to the builder there and tunnel every
 management UI through that one session.
 
@@ -31,7 +46,7 @@ The builder's `enp1s0` address comes from DHCP. If it has changed, read it on th
 
 ---
 
-## SSH config
+### SSH config
 
 On the laptop, in `~/.ssh/config`:
 
@@ -70,7 +85,7 @@ ssh builder-mgmt
 - **The Omada controller uses the same port on both ends** (`8043`), so any link the controller
   builds with its own port still works through the tunnel.
 
-## Agent forwarding
+### Agent forwarding
 
 `ForwardAgent yes` lets commands on the builder use the laptop's keys, for example to SSH on to
 hosts as `a_autoprov` or to reach GitHub. The private keys stay on the laptop, as
@@ -84,7 +99,7 @@ ssh-add ~/.ssh/<github> ~/.ssh/<automation>    # on the laptop
 ssh-add -l                                     # on the builder: both keys should be listed
 ```
 
-## Web UIs through the tunnel
+### Web UIs through the tunnel
 
 | Service | Browse | Target |
 |---|---|---|
