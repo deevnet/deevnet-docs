@@ -10,7 +10,7 @@ weight: 26
 | **Date** | 2026-09-25 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress.** Everything is built and verified. The last step is the operator's: vault, commit and push the image-factory AppRole's credentials, then delete the hand-off file. |
+| **Status** | **Complete, 2026-09-25.** Builds fetch the Proxmox token per run from OpenBao as the read-only image-factory AppRole, and nothing on the Builder holds a build secret on disk. The AppRole's credentials are vaulted and pushed (inventory #56); the hand-off file is deleted. |
 | **Window** | 2026-09-25 05:15 to 05:30 EDT |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao: one mount, one policy, one AppRole, two KV entries). The Builder (`dv00bld001p01`): three plaintext env files deleted |
@@ -88,9 +88,9 @@ template build would change the hypervisor.
 
 ## Follow-ups
 
-- [ ] The operator vaults `vault_openbao_image_factory_role_id` / `_secret_id`
-      (`group_vars/all/vault.yml`), commits and **pushes**, then deletes
-      `ansible-collection-deevnet.mgmt/.openbao/image-factory-approle.json`
+- [x] The operator vaulted `vault_openbao_image_factory_role_id` / `_secret_id`
+      (`group_vars/all/vault.yml`); committed and **pushed**, with ciphertext checked on origin
+      (inventory #56); then `.openbao/image-factory-approle.json` was deleted
 - [ ] Later: narrow the Proxmox token itself. `terraform-prov@pve` has `Administrator` at `/`
       ([Build a Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/),
       Step 7)

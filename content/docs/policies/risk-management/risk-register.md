@@ -28,7 +28,7 @@ it) or *transfer*.
 | R-07 | **No automated vulnerability tracking or scanning.** Advisories are followed by hand | Medium | Medium | Reduce — feeds, scanning, CI | [Vulnerability Management](/docs/policies/risk-management/vulnerability-management/) | Open — planned |
 | R-08 | **Tenant enrollment tokens are handed over by hand.** The designed age-encrypted delivery is not built | Low | Medium | Reduce — build the delivery; meanwhile admit close to use (72h expiry, single use) | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §9 | Open |
 | R-09 | **Broker accounts are not bound to a client id.** A leaked device password works from any client id | Low | Medium | Accept — revoke by `-replace`; topic confinement still holds | [Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/) | Accepted |
-| R-10 | **Build secrets rendered to plaintext files.** The Proxmox API token was written to `build/pve-env/*.env` for Packer and the fabric, and the files outlived every build | Medium | High | Reduce — fetch per run from OpenBao, never to disk | [CHG-0026](/docs/changes/2026/0026-build-secrets/) | Reduced |
+| R-10 | **Build secrets rendered to plaintext files.** The Proxmox API token was written to `build/pve-env/*.env` for Packer and the fabric, and the files outlived every build | Medium | High | Reduce — fetch per run from OpenBao, never to disk | [CHG-0026](/docs/changes/2026/0026-build-secrets/) | Closed — CHG-0026 Complete |
 
 ---
 
