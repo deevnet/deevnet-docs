@@ -100,31 +100,67 @@ image and Pi Imager are in the
 and `tools/`; check the image against its `.sha256` before flashing.
 
 1. In **Raspberry Pi Imager** choose *Use custom* and pick `raspios-bookworm-mobile-pi-backend.img.xz`
-   (from the tenant downloads' `pi/`).
-2. In **OS customisation** set a hostname (say `bench1`), your own user and password, your home
-   Wi-Fi, and enable SSH. The image has no user of its own.
-3. Write the card. Before you eject it, open the boot partition from your laptop. **`README.txt`**
-   there is this page's short version, and stays on the card. Edit **`deevnet-kit.txt`**:
+   (from the tenant downloads' `pi/`). **Imager 2.x offers no OS customisation for a custom image**,
+   so skip it: the boot partition does the same job in step 3.
+2. Write the card, and leave it in the reader. The boot partition (`bootfs`) opens on your laptop.
+   **`README.txt`** there is this page's short version, and stays on the card.
+3. **On the boot partition:**
+   - **Name your tenant** in `deevnet-kit.txt`:
 
-   ```
-   tenant=bench1
-   index=4
-   ```
+     ```
+     tenant=bench1
+     index=4
+     ```
 
-   Use your Deevnet tenant's name and index (`terraform output`, or `deevnet_tenant.this.index`).
-   With the same index, `LOG_DEVICE_PARTITION` does not change either. Left empty, the tenant is
-   `pi` with index 1.
+     Use your Deevnet tenant's name and index (`terraform output`, or `deevnet_tenant.this.index`).
+     With the same index, `LOG_DEVICE_PARTITION` doesn't change either. Left empty, the tenant is
+     `pi` with index 1.
+   - **Create your login, and turn on SSH:**
+
+     ```bash
+     cd /Volumes/bootfs                      # macOS; on Linux, wherever bootfs mounted
+     touch ssh                               # enables SSH on first boot
+     echo "you:$(openssl passwd -6)" > userconf.txt    # asks for the password twice
+     ```
+
+     `userconf.txt` is one line, `username:password-hash`. Raspberry Pi OS creates that user on first
+     boot and deletes the file. The username is yours to choose, and the image has no user of its
+     own. **macOS's own `openssl` can't make that hash** (LibreSSL has no `-6`). Use Homebrew's
+     (`brew install openssl`, then `$(brew --prefix openssl)/bin/openssl passwd -6`), or run the
+     command on any Linux machine and paste the result.
+
+### How you sign in: your choice
+
+Every option works from the same `userconf.txt` user. Pick whichever you like:
+
+| | Set up | Signing in |
+|---|---|---|
+| **Password only** | nothing more | `ssh you@<pi>`, then type the password |
+| **A key you already have** | once, after first boot: `ssh-copy-id -i ~/.ssh/id_ed25519.pub you@<pi>` | no password |
+| **A new key, just for this Pi** | `ssh-keygen -t ed25519 -f ~/.ssh/my-pi`, then `ssh-copy-id -i ~/.ssh/my-pi.pub you@<pi>` | `ssh -i ~/.ssh/my-pi you@<pi>` |
+
+`ssh-copy-id` asks for the password once, and installs the **public** key for that user on the Pi.
+The name at the end of a public key is only a label, so a key made as `alice` works for a Pi user
+called `bench1`. Password sign-in stays on in every case. Turning it off
+(`PasswordAuthentication no`) is your call once a key works.
+
+If your version of Imager does offer OS customisation for the image, you can use it instead of
+`userconf.txt` and `ssh`. Both routes end the same way.
 
 ## 2. First boot
 
-Boot the Pi at home. Imager's first boot runs and reboots; then `deevnet-kit` runs **once**. It
+Boot the Pi at home, wired or on Wi-Fi you've set up. First boot creates your user, grows the
+filesystem and reboots once. Then `deevnet-kit` runs **once**. It
 generates the card's CA and certificate, the log tokens, the bridge's credentials and Grafana's
 secrets, and starts the broker, the log store, the bridge and Grafana. Grafana's first start takes a
 minute or two; then `deevnet-kit dashboards` creates your organisation. Until it has, `kit.env`
 carries no `GRAFANA_*` lines.
 
+The hostname is `raspberrypi` unless you changed it. Find the Pi's address on your router's
+client list, or use `raspberrypi.local` from a laptop on the same network.
+
 ```bash
-ssh you@bench1.local
+ssh you@<pi>
 sudo deevnet-kit status
 sudo deevnet-kit selftest                 # the card, end to end: every check ok?
 sudo deevnet-kit export ~/deevnet-kit     # kit.env + site-ca.pem, the Pi's side of the table above
@@ -138,6 +174,13 @@ sudo deevnet-kit export ~/deevnet-kit     # kit.env + site-ca.pem, the Pi's side
 - your Grafana login, data sources and dashboard, including the device line read back through Grafana.
 
 If a check fails, it names it. Each run leaves two log lines marked `deevnet-kit selftest`.
+
+**If the Pi's address changes after first boot,** for example because your router later gives it a
+different lease, the certificate no longer names the address your devices dial. `status` says so.
+Run `sudo deevnet-kit regen-certs`. It reissues the certificate from the same card CA, so no device
+needs a new CA. On a network where the Pi's MAC has a DHCP reservation, the first boot can still
+land on a pool address if an older OS on the same Pi holds the reserved lease. It moves once that
+lease expires.
 
 Copy `~/deevnet-kit/` to your laptop. That is everything your app needs.
 
@@ -260,15 +303,13 @@ Your Deevnet tenant is untouched by any of this. Destroy it when you are done
   `sudo systemctl disable --now grafana deevnet-kit-dashboards`.
 
 {{< hint warning >}}
-**Proven under emulation, not yet on a Pi.** The image was built with `make pi-backend` and
-booted under emulation. First boot ran. All four services came up. Every check on this page
-passed against the booted card: accounts, a refused device grant, telemetry reaching the
-backend, device logs arriving in `4-2`, a forged device's line never arriving, and the file
-permissions. The Grafana build (2026-09-24) passed the same way: all six services active, the
-tenant an Editor in its own organisation only, the three data sources with their UIDs, a
-temperature series graphed from a device's log lines, and the Dashboards page's Terraform applied
-from the card's `kit.env` with a clean plan after. A real Pi on real Wi-Fi, with Imager's customisation, has not been run. If a
-step fails there, tell the operator so this page can say "tested".
+**First real Pi, 2026-09-25.** A Pi 4 flashed with this image, set up with `userconf.txt` and
+`ssh` as above, booted cleanly. The broker, log store and Grafana all came up on the card's own
+certificate, and the self-test passed **14 of 15**. The failure is Grafana's "device log readable
+through Grafana" check: on real hardware Grafana reports the VictoriaLogs plugin as **not
+registered**, although it loads under emulation. The cause is being investigated; until it's
+fixed, read device logs with the `curl` in step 7. Earlier, under emulation, every check on this
+page passed.
 {{< /hint >}}
 
 The image is built by `make pi-backend` in `deevnet-image-factory` (`docs/pi-backend.md`), and
