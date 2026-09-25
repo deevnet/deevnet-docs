@@ -162,7 +162,10 @@ pveum acl modify / --roles Administrator --tokens 'terraform-prov@pve!tf-prov-to
 ```
 
 Put the printed value into `host_vars/dv02hyp001p01/vault.yml` as `vault_proxmox_token_secret`
-straight away, then run `make vault`.
+straight away, then run `make vault`, commit and push. Then run
+`ansible-playbook playbooks/site.yml --tags openbao` in `ansible-collection-deevnet.mgmt`, so the
+builds read the new token from OpenBao
+([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
 
 **Not recreated:** the node also has a user `packer-prov@pve` with `Administrator` at `/` and no
 token. The image factory's Packer builds use the vault token above.
@@ -190,7 +193,9 @@ Management stays untagged.
 ## Step 9: Template and VMs
 
 1. **Template.** In `deevnet-image-factory`, run `make proxmox-fedora-pve1`. It builds the Fedora
-   template directly onto the node.
+   template directly onto the node, fetching its credentials per run
+   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)). If OpenBao isn't
+   rebuilt yet, prefix it with `PVE_CREDS_SOURCE=inventory`.
 2. **Orphaned volumes.** If the data disk survived, the old VMs' volumes are still in `vgbigdata`,
    and `lvs vgbigdata` lists them (`vm-<vmid>-disk-N`). Decide what to keep before rebuilding.
    A rebuilt VM gets new volumes. `lvremove` an orphan only once you're sure nothing on it is

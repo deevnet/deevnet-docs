@@ -158,6 +158,10 @@ and it leaves the older key version readable for anything missed.
 
 ## Finish
 
+Also check the build path still works: `eval "$(make -s -C deevnet-image-factory pve2-env)"` exits 0
+and prints the exports. It logs in as the image-factory AppRole and reads
+`image-factory/proxmox/<node>` ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
+
 Both plays `changed=0`, `/readyz` `200`, every tenant name resolving forward, every reverse record
 naming its workload, and both tenants' plans clean.
 

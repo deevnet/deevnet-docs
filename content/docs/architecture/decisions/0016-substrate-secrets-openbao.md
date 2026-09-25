@@ -272,4 +272,9 @@ reads every secret. The key gets the same care as the vault password.
   AppRoles for the API and for Ansible. The root token is revoked.
 - The API holds one AppRole instead of five backend credentials, its TLS certificate comes from the
   site CA, and both live tenants were admitted with response-wrapped enrollment tokens.
+- **Build-time secrets** ([CHG-0026](/docs/changes/2026/0026-build-secrets/)): a second KV mount,
+  `image-factory`, holds each hypervisor's Proxmox token at `proxmox/<node>`. A third AppRole,
+  `image-factory`, can only read it, with 15-minute three-use tokens. The image factory's Packer
+  builds and the tenant fabric's Terraform fetch it per run, and nothing on the Builder holds it on
+  disk ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
 - What §8 left out is still out: no tenant namespaces, no dynamic database credentials.
