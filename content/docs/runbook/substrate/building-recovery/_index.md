@@ -93,6 +93,7 @@ flowchart TD
 - [Stage Artifacts](online-preparation/) — Fetch artifacts from internet sources
 - [Seed Inventory](inventory-setup/) — Define MAC addresses and host definitions
 - [Vault Operations](vault-operations/) — Decrypt secrets for automation
+- [Build-Time Secrets](build-secrets/) — How Packer and the fabric's Terraform get the Proxmox token, and how to rotate it
 
 ### Build
 

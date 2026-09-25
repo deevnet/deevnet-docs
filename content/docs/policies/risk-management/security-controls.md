@@ -44,6 +44,7 @@ transit, IoT, IoT vendor and guest
 | MQTT broker | TLS only; no plaintext listener | — |
 | Log store | TLS through an authenticating proxy | on the observability VM's disk |
 | Substrate secrets | — | ansible-vault in the inventory; OpenBao for runtime secrets ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)) |
+| Build secrets (the Proxmox token for Packer and the fabric) | TLS to OpenBao | OpenBao's runtime copy; the inventory vault is authoritative. Never on disk on the Builder |
 | Terraform state store | **plain HTTP today** — see the [register](/docs/policies/risk-management/risk-register/) | on one disk |
 | Wi-Fi | WPA2 with a per-tenant key (PPSK) on the IoT SSID | — |
 
@@ -59,6 +60,11 @@ because nothing Deevnet serves is public.
 - **A credential a change generates is encrypted, committed and pushed before its source is
   deleted.** Losing one has cost a rebuild
   ([INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/))
+- **Build and deploy secrets are fetched per run, never rendered to a file.** Packer and the
+  substrate's Terraform get their credentials from OpenBao, under a read-only identity with minute-long
+  tokens. They go into the build's own process environment, never onto a command line
+  ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/),
+  [CHG-0026](/docs/changes/2026/0026-build-secrets/))
 - **Tenant credentials are issued, not chosen**, and the tenant's own state is their authoritative
   copy; the API keeps hashes where it can
 - The long-term direction — short-lived credentials, identity held by the client — is the

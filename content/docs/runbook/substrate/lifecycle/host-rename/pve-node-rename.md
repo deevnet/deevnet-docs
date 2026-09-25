@@ -160,10 +160,13 @@ another host's `mgmt_vm` block.
 | `deevnet-tenant-fabric` | the fabric's `proxmox_node` default in `variables.tf` |
 
 {{< hint warning >}}
-**A stale Terraform node name fails silently.** `TF_VAR_proxmox_node` from the rendered env file
-overrides the `variables.tf` default, so when the two disagree the apply reports no changes rather
-than an error. It was caught only by checking PVE's own config afterwards. Keep the default correct
-so a stale environment shows up as a plan diff.
+**A stale Terraform node name fails silently.** `TF_VAR_proxmox_node` overrides the
+`variables.tf` default, so when the two disagree the apply reports no changes rather than an error.
+It was caught only by checking PVE's own config afterwards. It used to come from a rendered env
+file that was never refreshed. Since [CHG-0026](/docs/changes/2026/0026-build-secrets/) it is
+fetched each run for `PVE_HOST` (the fabric's default is the node's inventory name), so after a
+rename, update `PVE_HOST`, `PVE1_NODE`/`PVE2_NODE` and the inventory, then run `--tags openbao` so
+OpenBao holds the token under the new node name.
 {{< /hint >}}
 
 Applying the fabric after the rename rewrites the SDN objects that embed the node name — the fabric
