@@ -34,3 +34,4 @@ bookCollapseSection: true
 | CHG-0024 | 2026-09-24 | [Tenant Dashboards](0024-tenant-dashboards/) | Deployment · Configuration | mobile | In progress |
 | CHG-0025 | 2026-09-24 | [Tenant Downloads](0025-tenant-downloads/) | Deployment · Configuration | mobile | Complete |
 | CHG-0026 | 2026-09-25 | [Build Secrets Off the Disk](0026-build-secrets/) | Configuration | mobile | Complete |
+| CHG-0027 | 2026-09-25 | [A Switch Port for dv02rpi004p01](0027-rpi004-switch-port/) | Configuration | mobile | Complete |

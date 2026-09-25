@@ -52,6 +52,7 @@ New records start from the [change record template](/docs/policies/change-manage
 | CHG-0024 | 2026-09-24 | [Tenant Dashboards](2026/0024-tenant-dashboards/) | Deployment · Configuration | mobile | In progress |
 | CHG-0025 | 2026-09-24 | [Tenant Downloads](2026/0025-tenant-downloads/) | Deployment · Configuration | mobile | Complete |
 | CHG-0026 | 2026-09-25 | [Build Secrets Off the Disk](2026/0026-build-secrets/) | Configuration | mobile | Complete |
+| CHG-0027 | 2026-09-25 | [A Switch Port for dv02rpi004p01](2026/0027-rpi004-switch-port/) | Configuration | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record
