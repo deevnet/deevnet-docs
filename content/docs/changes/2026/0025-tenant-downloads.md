@@ -10,7 +10,7 @@ weight: 25
 | **Date** | 2026-09-24 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress.** The downloads server is live on `obs` and verified from the Builder. `downloads.mobile.deevnet.net` resolves. Its `tenant_dev` rule was applied by the operator with CHG-0024's two (68 rules, no drift). **What remains is the check from a Mac on `DVNTM-TD`.** |
+| **Status** | **Complete, 2026-09-24.** Tenant downloads are live at `https://downloads.mobile.deevnet.net:8443/`. The prebuilt provider and both scripts were proven on a Mac on `DVNTM-TD`: segment-check 29/29, and `tenant-check.sh` all ok after `install-provider.sh`. IoT cannot reach it (15/15). |
 | **Window** | 2026-09-24 18:58 to 19:10 EDT |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the new `tenant-downloads` container), `dv02cor002p01` (one DNS alias, one rule), `dv00bld001p01` (the curated tree) |
@@ -79,7 +79,7 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
 | 19:08 | 3 | CNAME added; `downloads.mobile.deevnet.net` resolves to `10.20.25.22` |
 | 19:09 | 4 | Firewall plan: exactly three to add (CHG-0024's two and this one), nothing else. The automated session may not apply core-router rules |
 | later | 4 | **Applied by the operator.** The re-plan shows 0 to add and 68 rules, with no drift |
-| 19:59 | — | From a tenant laptop on `DVNTM-TD`: `tenant-check.sh` first reported the provider missing, then `install-provider.sh` installed it from the site and every check passed. `segment-check.sh DVNTM-TD` passed 29/29: `downloads` resolves, `:8443` is reachable over verified TLS, and `obs`'s SSH is blocked |
+| 19:59 | — | From a Mac on `DVNTM-TD`: `tenant-check.sh` first reported the provider missing, then `install-provider.sh` installed it from the site and every check passed. `segment-check.sh DVNTM-TD` passed 29/29: `downloads` resolves, `:8443` is reachable over verified TLS, and `obs`'s SSH is blocked |
 
 ### Departures from the plan
 
@@ -91,9 +91,9 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
 ## Follow-ups
 
 - [x] Apply the three `tenant_dev` rules (with CHG-0024's two), by the operator
-- [x] From a `DVNTM-TD` laptop: `tenant-check.sh`, `install-provider.sh` and
+- [x] From a Mac on `DVNTM-TD`: `tenant-check.sh`, `install-provider.sh` and
       `segment-check.sh DVNTM-TD`, all passing
-- [ ] From IoT: `segment-check.sh DVNTM-IOT` with net #37's `obs` checks
+- [x] From IoT: `segment-check.sh DVNTM-IOT` 15/15, with `obs` `:8427`, `:3000` and `:8443` blocked
 - [ ] MinIO's image can no longer be pulled from quay.io. Keep the mirrored tarball, and weigh this
       in [ADR-0026](/docs/architecture/decisions/0026-object-storage/)
 - [ ] Before each meetup: restage anything that changed, then run `--tags tenant-downloads`
