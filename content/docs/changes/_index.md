@@ -50,7 +50,7 @@ New records start from the [change record template](/docs/policies/change-manage
 | CHG-0022 | 2026-09-23 | [The Tenant Dev Network](2026/0022-tenant-dev-network/) | Configuration | mobile | Complete |
 | CHG-0023 | 2026-09-23 | [Internet Means Internet](2026/0023-internet-means-internet/) | Configuration | mobile | Complete |
 | CHG-0024 | 2026-09-24 | [Tenant Dashboards](2026/0024-tenant-dashboards/) | Deployment · Configuration | mobile | In progress |
-| CHG-0025 | 2026-09-24 | [Tenant Downloads](2026/0025-tenant-downloads/) | Deployment · Configuration | mobile | In progress |
+| CHG-0025 | 2026-09-24 | [Tenant Downloads](2026/0025-tenant-downloads/) | Deployment · Configuration | mobile | Complete |
 
 Records are numbered `CHG-NNNN` in the order they are opened, like
 [ADRs](/docs/architecture/decisions/): the number is global, never reused, and is how a record

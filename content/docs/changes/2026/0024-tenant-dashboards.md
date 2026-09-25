@@ -10,7 +10,7 @@ weight: 24
 | **Date** | 2026-09-24 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1–4 are done and verified live: Grafana is on `obs`, the API is v0.8.0, and `tdemo`, `eds` and `mabell` have their organisations. The rebuild drill passed. Step 5 (the two `tenant_dev` rules) was applied by the operator on 2026-09-24: 68 rules, no drift. **Verification 3 from a `DVNTM-TD` laptop and from IoT remains.** See [Outcome](#outcome). |
+| **Status** | **In progress.** Deployed and verified: Grafana on `obs`, API v0.8.0, and `tdemo`/`eds`/`mabell` organisations; the rebuild drill passed; `tenant_dev` rules applied (68, no drift); `DVNTM-TD` 29/29 from a Mac; IoT blocked (15/15). **Remaining: hand the three tenants their dashboard passwords.** See [Outcome](#outcome). |
 | **Window** | 2026-09-24 14:52 to 15:03 EDT (steps 1–4 and the drill) |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, beside the log store), `dv02prv001v01` (the API, v0.8.0), `dv02cor002p01` (two `tenant_dev` rules). Artifact mirror on `dv00bld001p01`. |
@@ -196,7 +196,8 @@ Live, 2026-09-24 (EDT):
 | 15:03 | Verification 4 | Rebuild drill: Grafana stopped, its data moved to `/srv/grafana/data.drill-20260924`, the role re-run and the tenants reconciled. The organisations came back as 2, 3 and 4 with **the same passwords**, and the data sources and the log reads work again |
 | — | 5 | The plan showed exactly the two new rules, with none to delete. The automated session's permission classifier refused the apply |
 | later | 5 | **Applied by the operator**, together with CHG-0025's rule. The re-plan shows 0 to add and 68 rules present, with no drift |
-| 19:59 | Verification 3 | From a laptop on `DVNTM-TD` (lease `10.20.45.51`): `segment-check.sh DVNTM-TD` **29/29**. The log store `:8427` and Grafana `:3000` are reachable over verified TLS; everything else on the site is still blocked, including SSH to `obs`. `tenant-check.sh` passed every check. From `DVNTM-IOT`: **12/12**, but that profile did not yet try `obs`'s ports; the checks were added in net #37 and need one more IoT run |
+| 20:10 | Verification 3 | From `DVNTM-IOT`, re-run with net #37's checks: **15/15**. `obs` `:8427` and `:3000` are blocked from IoT |
+| 19:59 | Verification 3 | From a Mac on `DVNTM-TD` (lease `10.20.45.51`): `segment-check.sh DVNTM-TD` **29/29**. The log store `:8427` and Grafana `:3000` are reachable over verified TLS; everything else on the site is still blocked, including SSH to `obs`. `tenant-check.sh` passed every check. From `DVNTM-IOT`: **12/12**, but that profile did not yet try `obs`'s ports; the checks were added in net #37 and need one more IoT run |
 
 What was done, and tested off the site:
 
@@ -247,7 +248,7 @@ What was done, and tested off the site:
 
 - [x] Step 5 (`tenant_dev` rules), applied by the operator
 - [x] Verification 3 from `DVNTM-TD`: 29/29
-- [ ] Verification 3 from IoT: re-run `segment-check.sh DVNTM-IOT` (net #37 added the `obs` checks)
+- [x] Verification 3 from IoT: 15/15
 - [ ] Hand `tdemo`, `eds` and `mabell` their dashboard passwords (in the operator's reconcile
       output of 2026-09-24)
 - [ ] Remove `/srv/grafana/data.drill-20260924` on `obs` once no one needs it
