@@ -79,6 +79,7 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
 | 19:08 | 3 | CNAME added; `downloads.mobile.deevnet.net` resolves to `10.20.25.22` |
 | 19:09 | 4 | Firewall plan: exactly three to add (CHG-0024's two and this one), nothing else. The automated session may not apply core-router rules |
 | later | 4 | **Applied by the operator.** The re-plan shows 0 to add and 68 rules, with no drift |
+| 19:59 | — | From a tenant laptop on `DVNTM-TD`: `tenant-check.sh` first reported the provider missing, then `install-provider.sh` installed it from the site and every check passed. `segment-check.sh DVNTM-TD` passed 29/29: `downloads` resolves, `:8443` is reachable over verified TLS, and `obs`'s SSH is blocked |
 
 ### Departures from the plan
 
@@ -90,8 +91,9 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
 ## Follow-ups
 
 - [x] Apply the three `tenant_dev` rules (with CHG-0024's two), by the operator
-- [ ] From a `DVNTM-TD` laptop, **on a Mac** (untested): `segment-check.sh DVNTM-TD` and
-      `tenant-check.sh`
+- [x] From a `DVNTM-TD` laptop: `tenant-check.sh`, `install-provider.sh` and
+      `segment-check.sh DVNTM-TD`, all passing
+- [ ] From IoT: `segment-check.sh DVNTM-IOT` with net #37's `obs` checks
 - [ ] MinIO's image can no longer be pulled from quay.io. Keep the mirrored tarball, and weigh this
       in [ADR-0026](/docs/architecture/decisions/0026-object-storage/)
 - [ ] Before each meetup: restage anything that changed, then run `--tags tenant-downloads`
