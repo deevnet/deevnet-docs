@@ -19,6 +19,10 @@ Implementation details live in their respective repositories. This repository de
     <h3>Standards</h3>
     <p>Naming conventions, correctness definitions, and identity rules.</p>
   </a>
+  <a class="section-card" href="policies/">
+    <h3>Policies &amp; Procedures</h3>
+    <p>Change management, incident management, and risk management.</p>
+  </a>
   <a class="section-card" href="platforms/">
     <h3>Implementation & Tooling</h3>
     <p>Hardware selections, OS choices, and technology stack rationale.</p>
@@ -26,10 +30,6 @@ Implementation details live in their respective repositories. This repository de
   <a class="section-card" href="runbook/">
     <h3>Operational Runbook</h3>
     <p>Substrate operations for the operator, and tenant operations for whoever builds on Deevnet.</p>
-  </a>
-  <a class="section-card" href="policies/">
-    <h3>Policies &amp; Procedures</h3>
-    <p>Change management, incident management, and risk management.</p>
   </a>
   <a class="section-card" href="changes/">
     <h3>Change Records</h3>

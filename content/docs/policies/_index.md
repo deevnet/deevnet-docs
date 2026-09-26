@@ -1,6 +1,6 @@
 ---
 title: "📜 Policies & Procedures"
-weight: 5
+weight: 3
 bookCollapseSection: true
 ---
 
