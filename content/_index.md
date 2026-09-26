@@ -15,16 +15,16 @@ type: docs
 
 ## Why I built this
 
-> I organize the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org) meetup
-> group. I originally built the Mobile Factory to have a portable network for multi-device IoT
-> development: something I could carry to a meetup and set up, so a room full of boards, sensors and
-> laptops had a network to work on together.
+> I'm a member of the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org). I
+> built the Mobile Factory for my own projects: I wanted to build things on site at meetups, and that
+> meant bringing my own network. Then I wanted to make it something everyone else could use too.
 >
-> It grew from there into a reference implementation for infrastructure automation. The network, the
-> services and the images it runs are all built from code, and everything can be rebuilt from
-> scratch.
+> Like any good engineer, I couldn't just build the thing. First I had to build the thing that builds
+> the thing. So the network, the services and the images it runs are all automated and built from
+> code, and everything can be rebuilt from scratch. Somewhere along the way it became a reference
+> implementation for infrastructure automation.
 >
-> The whole thing is bundled in the base of a Bauer modular toolkit, so the device components and tools
+> It's all bundled in the base of a Bauer modular toolkit, so the device components and tools
 > come on site with it, ready for hardware hacks and prototyping.
 >
 > — Chris Deever
