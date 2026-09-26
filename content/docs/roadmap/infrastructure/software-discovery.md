@@ -3,13 +3,13 @@ title: "Software Discovery"
 weight: 7
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 8
+tasks_planned: 12
 ---
 
 # Software Discovery
 
-Scan the site for what software is actually running, so the
-[Software Catalog](/docs/platforms/software-catalog/) is kept from evidence instead of by hand.
+Know what software is actually running, and hear about what upstream has released for it. This is
+the [Discovery](/docs/policies/lifecycle-management/discovery/) stage of Lifecycle Management, built.
 
 {{< overall-progress >}}
 
@@ -70,3 +70,15 @@ One collector per kind of system, each read-only:
   the inventory pin, with every mismatch called out.
 - ⏳ Run it as part of [Build Verification](/docs/roadmap/infrastructure/mobile/management-plane/),
   and after any change record that upgrades something, so the catalog is updated in the same change.
+
+## Release and advisory sources ⏳
+
+The other half of discovery: hearing about new versions from the place that publishes them.
+
+- ⏳ Record each catalog item's **release source** and **advisory source**, as two new catalog
+  columns. For OPNsense, one entry covers its bundled services too.
+- ⏳ Watch them: one place that gathers every source (feeds where they exist, a checked list where
+  they don't), with each source's last-seen release.
+- ⏳ Triage each new release as Discovery defines it (patch, new line, end of life, archived,
+  advisory, or nothing relevant), and record the outcome, so nothing is triaged twice.
+- ⏳ Record end-of-life dates for the lines in use, and surface any within six months.
