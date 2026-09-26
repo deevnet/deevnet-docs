@@ -63,7 +63,7 @@ Each platform page documents:
 
 What each selection was tested against, by item: its current verdict, and every evaluation behind it,
 for hardware and software. See [Certification](certification/). The process and criteria are the
-[Certification](/docs/policies/certification/) policy.
+[Certification](/docs/policies/lifecycle-management/certification/) policy.
 
 ---
 

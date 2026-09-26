@@ -27,8 +27,8 @@ The records these procedures produce live in their own sections:
     <h3>Risk Management</h3>
     <p>Vulnerabilities, security controls, traceability, resiliency, and the risk register.</p>
   </a>
-  <a class="section-card" href="certification/">
-    <h3>Certification</h3>
-    <p>What hardware and software must demonstrate before they are relied on, and the record template.</p>
+  <a class="section-card" href="lifecycle-management/">
+    <h3>Lifecycle Management</h3>
+    <p>From selection to retirement, including certification: what hardware and software must demonstrate before they are relied on.</p>
   </a>
 </div>

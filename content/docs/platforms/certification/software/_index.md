@@ -7,7 +7,7 @@ bookCollapseSection: true
 # Software Certifications
 
 Release lines certified for a role, by layer. How a line is certified, and the criteria, are in
-[Software Certification](/docs/policies/certification/software-certification/).
+[Software Certification](/docs/policies/lifecycle-management/certification/software-certification/).
 
 | Layer | Items |
 |---|---|

@@ -7,7 +7,7 @@ bookCollapseSection: true
 # Hardware Certifications
 
 Models certified for a role, by layer. How a model is certified, and the criteria, are in
-[Hardware Certification](/docs/policies/certification/hardware-certification/).
+[Hardware Certification](/docs/policies/lifecycle-management/certification/hardware-certification/).
 
 | Layer | Items |
 |---|---|

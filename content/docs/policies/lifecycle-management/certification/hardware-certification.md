@@ -20,7 +20,7 @@ such as the NIC chipset.
 
 It is evaluated **with the software it will run**: the OS and driver are part of what is tested,
 because a NIC's maturity depends on the driver. The record names the software it was tested with.
-That software's own certification is separate ([Software Certification](/docs/policies/certification/software-certification/)).
+That software's own certification is separate ([Software Certification](/docs/policies/lifecycle-management/certification/software-certification/)).
 
 ---
 
