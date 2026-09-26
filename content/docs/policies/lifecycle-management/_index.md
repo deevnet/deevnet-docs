@@ -19,12 +19,14 @@ service, and what has to be true at each stage. How to carry out each stage is i
 | **1. Select** | A need is met by a selection, with its rationale and alternatives | This section | Its [Implementation & Tooling](/docs/platforms/) page, or an [ADR](/docs/architecture/decisions/) |
 | **2. Certify** | The selection is tested against the criteria before anything relies on it | [Certification](certification/) | [Certification records](/docs/platforms/certification/) |
 | **3. Deploy** | It goes in through a change that cites the certification | [Change Management](/docs/policies/change-management/) | A [change record](/docs/changes/), and the [Software Catalog](/docs/platforms/software-catalog/) |
-| **4. Operate and patch** | It stays on a certified line. Patches are applied within the line, and advisories are watched | [Vulnerability Management](/docs/policies/risk-management/vulnerability-management/) | Change records, and the catalog |
-| **5. Upgrade** | A new line is certified **before** the change that moves to it | [Certification](certification/), then [Change Management](/docs/policies/change-management/) | A new certification revision, then a change record of type Upgrade |
-| **6. Retire** | It is removed through a change: its configuration, secrets, artifacts and records of it in inventory, not just stopped | [Change Management](/docs/policies/change-management/) | A change record (e.g. [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/)); removed from the catalog; its certification marked Superseded |
+| **4. Discover** | What is running is checked against the catalog, and each item's upstream is watched for releases, end of life and advisories. Each finding is triaged into one of the stages below | [Discovery](discovery/) | The catalog; findings in change records, certifications or the risk register |
+| **5. Patch** | It stays on a certified line. Patches are applied within the line, after their notes are read | [Vulnerability Management](/docs/policies/risk-management/vulnerability-management/), [Change Management](/docs/policies/change-management/) | Change records, and the catalog |
+| **6. Upgrade** | A new line is certified **before** the change that moves to it | [Certification](certification/), then [Change Management](/docs/policies/change-management/) | A new certification revision, then a change record of type Upgrade |
+| **7. Retire** | It is removed through a change: its configuration, secrets, artifacts and records of it in inventory, not just stopped | [Change Management](/docs/policies/change-management/) | A change record (e.g. [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/)); removed from the catalog; its certification marked Superseded |
 
-Stages 2 and 5 are where certification sits. It is the gate between choosing something and relying
-on it, and it is passed again each time the thing moves to a new line.
+Stages 2 and 6 are where certification sits. It is the gate between choosing something and relying
+on it, and it is passed again each time the thing moves to a new line. Stage 4 is what notices that
+a new line, a patch or an end of life has arrived.
 
 ---
 

@@ -16,7 +16,7 @@ driver that watchdog-times out under load
 edition was archived while in use ([ADR-0026](/docs/architecture/decisions/0026-object-storage/)).
 Certification moves those discoveries to before the thing is relied on.
 
-Certification is stages 2 and 5 of [Lifecycle Management](/docs/policies/lifecycle-management/):
+Certification is stages 2 and 6 of [Lifecycle Management](/docs/policies/lifecycle-management/):
 the gate between choosing something and relying on it, passed again at every new line.
 
 This section is the **process**. The certifications themselves are records, kept under
