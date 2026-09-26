@@ -36,10 +36,11 @@ electronics workbench and supplies come on site with it, ready for hardware hack
 ## Come build with it
 
 **If you're local to Columbus, Ohio**, come to a [CARPE](https://carpe-tech.org) meetup and get
-[hands-on](https://carpe-tech.org/hands-on/). Bring your
-laptop ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) says what to have
-on it), breadboard, microcontrollers and sensors, and you can rapidly prototype a multi-device project
-with the backend services already running:
+[hands-on](https://carpe-tech.org/hands-on/). Bring your own breadboard, microcontrollers and
+sensors, or borrow devices at the meetup; the only hard requirement is your laptop
+([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) says what to have on
+it). Either way, you can rapidly prototype a multi-device project with the backend services already
+running:
 
 - **Messaging and logging are already decided**, with an opinionated approach:
   [MQTT with an account per device](/docs/runbook/tenant/services/devices-and-mqtt/), and
