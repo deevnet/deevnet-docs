@@ -290,8 +290,8 @@ curl -sS --cacert ~/deevnet-kit/site-ca.pem -H "Authorization: Bearer $LOG_READ_
 | The device registry | Device names are checked for shape only |
 | Terraform state and the API token | Nothing to apply: `deevnet-kit` is the whole control plane. Only your dashboards are still Terraform, against the Pi's Grafana |
 
-Your Deevnet tenant is untouched by any of this. Destroy it when you are done
-([Day 2](/docs/runbook/tenant/operating/day-2/)), or keep prototyping there. The two do not share a secret.
+Your Deevnet tenant is untouched by any of this. Destroy it with `terraform destroy` when you are done, or keep
+prototyping there. The two do not share a secret.
 
 ## Where it differs, for the careful
 

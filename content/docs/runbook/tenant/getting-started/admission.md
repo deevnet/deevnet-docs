@@ -36,5 +36,4 @@ Treat it like a password until it is spent. Once it is spent it is worthless, an
 credential is the tenant token in your Terraform state.
 
 If the operator gets `409`, the name is already taken — by someone else, or by you last time. A
-tenant that already exists does not need admitting again; it needs its own token (see
-[Day 2](/docs/runbook/tenant/operating/day-2/)).
+tenant that already exists does not need admitting again; it needs its own token.

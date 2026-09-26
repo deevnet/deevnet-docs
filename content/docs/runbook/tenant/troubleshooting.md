@@ -1,6 +1,7 @@
 ---
 title: "Troubleshooting"
-weight: 2
+weight: 8
+aliases: ["/docs/runbook/tenant/operating/troubleshooting/"]
 ---
 
 # Troubleshooting

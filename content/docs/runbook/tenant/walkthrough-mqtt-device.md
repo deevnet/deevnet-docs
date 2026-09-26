@@ -244,7 +244,7 @@ void loop() {
 **Both sketches are written against the platform's documented contract, not yet run on these
 boards.** The broker, the TLS certificate chain, the topic confinement and the log path have each
 been proven with other clients; these exact sketches have not. If one fails, the
-[troubleshooting](/docs/runbook/tenant/operating/troubleshooting/#device-side) table is ordered by
+[troubleshooting](/docs/runbook/tenant/troubleshooting/#device-side) table is ordered by
 how often each cause turns out to be the one — and please tell the operator, so this page can say
 "tested".
 {{< /hint >}}
@@ -301,4 +301,4 @@ workload by the operator while you watch.
 | Device logs | read partition 2 ([Logs](/docs/runbook/tenant/services/logs/#reading-back)) | your `boot ok` line, attributed to the device |
 
 That is a working tenant: a device, a backend, and logs, declared in one file and rebuildable from
-it. From here: [Day 2](/docs/runbook/tenant/operating/day-2/).
+it. If something doesn't work: [Troubleshooting](/docs/runbook/tenant/troubleshooting/).
