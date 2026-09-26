@@ -11,10 +11,6 @@ keep working, with no Deevnet behind them. The Pi is flashed from the image fact
 image and runs your tenant's back-end services itself, so it can go anywhere: home, a classroom, a
 project that outlives the site.
 
-**You need your own SD card and your laptop.** The card is flashed from Deevnet and belongs to you
-afterward; the laptop is where your Terraform state, `kit.env` and firmware live. Nothing of yours
-stays on Deevnet's equipment.
-
 ```
  on Deevnet                                     on your Pi
  ──────────                                     ──────────
@@ -94,8 +90,8 @@ passwords. Keep those passwords on the Pi and nothing needs reflashing but the h
 
 ## 1. Flash the card
 
-You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards), your
-own card of 8 GB or more, and the Pi image tools in
+You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards), a
+card of 8 GB or more, and the Pi image tools in
 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#tools). At the site, the
 image and Pi Imager are in the
 [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads) `pi/`
