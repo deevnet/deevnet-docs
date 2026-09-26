@@ -66,6 +66,13 @@ Criteria a device must meet before it is selected are being defined — see
 
 ---
 
+## Software Catalog
+
+Every piece of software in use, with its version, license and support model, grouped by layer, including
+the services bundled inside OPNsense: see [Software Catalog](software-catalog/).
+
+---
+
 ## Technology Stack
 
 | Technology | Purpose |
