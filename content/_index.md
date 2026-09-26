@@ -21,7 +21,7 @@ type: docs
 > laptops had a network to work on together.
 >
 > It grew from there into a reference implementation for infrastructure automation. The network, the
-> services and the images it runs are all built from code, and the whole thing can be rebuilt from
+> services and the images it runs are all built from code, and everything can be rebuilt from
 > scratch.
 >
 > The whole thing is bundled in the base of a Bauer modular toolkit, so the device components and tools
