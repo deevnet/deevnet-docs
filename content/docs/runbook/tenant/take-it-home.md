@@ -23,7 +23,7 @@ Nothing of yours stays on Deevnet's equipment.
 ```
 
 The Pi keeps the **app contract**: the same ports, the same topic prefix, the same reserved `log`
-level, the same ingest and read tokens with the same partition header, and a Grafana organisation
+level, the same ingest and read tokens with the same partition header, and a Grafana organization
 with the same three data source UIDs. What changes is the host
 name, the CA and the secrets. **Nothing on the Pi belongs to Deevnet.** It has no Deevnet account,
 key or route, and its CA and tokens are generated on the card the first time it boots.
@@ -100,7 +100,7 @@ image and Pi Imager are in the
 and `tools/`; check the image against its `.sha256` before flashing.
 
 1. In **Raspberry Pi Imager** choose *Use custom* and pick `raspios-bookworm-mobile-pi-backend.img.xz`
-   (from the tenant downloads' `pi/`). **Imager 2.x offers no OS customisation for a custom image**,
+   (from the tenant downloads' `pi/`). **Imager 2.x offers no OS customization for a custom image**,
    so skip it: the boot partition does the same job in step 3.
 2. Write the card, and leave it in the reader. The boot partition (`bootfs`) opens on your laptop.
    **`README.txt`** there is this page's short version, and stays on the card.
@@ -144,7 +144,7 @@ The name at the end of a public key is only a label, so a key made as `alice` wo
 called `bench1`. Password sign-in stays on in every case. Turning it off
 (`PasswordAuthentication no`) is your call once a key works.
 
-If your version of Imager does offer OS customisation for the image, you can use it instead of
+If your version of Imager does offer OS customization for the image, you can use it instead of
 `userconf.txt` and `ssh`. Both routes end the same way.
 
 ## 2. First boot
@@ -153,7 +153,7 @@ Boot the Pi at home, wired or on Wi-Fi you've set up. First boot creates your us
 filesystem and reboots once. Then `deevnet-kit` runs **once**. It
 generates the card's CA and certificate, the log tokens, the bridge's credentials and Grafana's
 secrets, and starts the broker, the log store, the bridge and Grafana. Grafana's first start takes a
-minute or two; then `deevnet-kit dashboards` creates your organisation. Until it has, `kit.env`
+minute or two; then `deevnet-kit dashboards` creates your organization. Until it has, `kit.env`
 carries no `GRAFANA_*` lines.
 
 The hostname is `raspberrypi` unless you changed it. Find the Pi's address on your router's
@@ -260,7 +260,7 @@ there. The data source UIDs are the same, so every panel finds its data. A dashb
 by clicking on Deevnet does not come along; export it into your repository first.
 
 In a browser: `https://<hostname>.local:3000`, with the user and password from `GRAFANA_AUTH`.
-Your organisation opens with a **"Start here"** dashboard: a temperature graph from device log
+Your organization opens with a **"Start here"** dashboard: a temperature graph from device log
 lines, your device logs and your app logs. It is yours to change; the card never overwrites it.
 
 ## 7. Check it

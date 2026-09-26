@@ -27,7 +27,7 @@ identity. [ADR-0021](/docs/architecture/decisions/0021-tenant-secrets/)
 device's JSON log line can already be [graphed](/docs/runbook/tenant/services/dashboards/#a-starter-dashboard).
 **Planned:** your workloads push metrics into a partition of your own (the platform never scrapes a
 tenant workload), you declare alert rules that run under your own token, and notifications go out
-through a platform push service. Your Grafana organisation gains metrics data sources beside the
+through a platform push service. Your Grafana organization gains metrics data sources beside the
 log ones.
 [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/)
 

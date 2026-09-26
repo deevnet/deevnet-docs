@@ -7,9 +7,9 @@ weight: 6
 
 ## What you get
 
-A **Grafana organisation of your own**, with your logs already wired in
+A **Grafana organization of your own**, with your logs already wired in
 ([ADR-0024](/docs/architecture/decisions/0024-dashboards/)). Your login is an **Editor** there, and
-a member of no other organisation. You build folders and dashboards. The platform owns the data
+a member of no other organization. You build folders and dashboards. The platform owns the data
 sources.
 
 | Data source UID | Reads | |
@@ -21,7 +21,7 @@ sources.
 Each one reads with your tenant's own log read token, so it sees exactly what your token sees and
 nothing more ([Logs](/docs/runbook/tenant/services/logs/)).
 
-**The UIDs are the same in every tenant's organisation, on every site, and on the
+**The UIDs are the same in every tenant's organization, on every site, and on the
 [take-home Pi](/docs/runbook/tenant/take-it-home/).** A dashboard that names them moves between
 those places unchanged. Name data sources by these UIDs, never by the numeric id Grafana shows.
 
@@ -30,7 +30,7 @@ The login comes back as attributes of your tenant:
 | Attribute | |
 |---|---|
 | `dashboard_url` | where Grafana is |
-| `dashboard_org_id` | your organisation |
+| `dashboard_org_id` | your organization |
 | `dashboard_username` | your tenant's name |
 | `dashboard_password` | sensitive; in your state, like your log tokens |
 
@@ -90,7 +90,7 @@ resource "grafana_dashboard" "devices" {
 
 {{< hint warning >}}
 **Put `org_id` on every resource.** Under a username and password, the provider ignores its own
-`org_id` setting and `GRAFANA_ORG_ID`, and sends organisation 1, which you are not a member of. Every
+`org_id` setting and `GRAFANA_ORG_ID`, and sends organization 1, which you are not a member of. Every
 create then fails with `403 ... folders:create`. Tested with provider v4.46.0 against Grafana 13.2.2.
 {{< /hint >}}
 
@@ -162,7 +162,7 @@ way.
 ## Keep dashboards in code
 
 **A dashboard built only by clicking is not kept.** The platform treats Grafana's own database as
-rebuildable: after a rebuild your organisation, login and data sources come back, and your
+rebuildable: after a rebuild your organization, login and data sources come back, and your
 dashboards come back on your next `terraform apply`. A dashboard you built in the UI does not
 come back. Export it (*Share → Export → Save to file*) into your repository and declare it as
 above.
@@ -174,4 +174,4 @@ above.
 - **Grafana alerting.** It is off. Alerting is a
   [coming](/docs/runbook/tenant/services/coming-soon/#metrics-and-alerting) platform service.
 - **Metrics.** There is no metrics store yet. Graph numbers from your logs, as above.
-- **Share a dashboard with another tenant.** Organisations don't share. Copy it through code.
+- **Share a dashboard with another tenant.** Organizations don't share. Copy it through code.

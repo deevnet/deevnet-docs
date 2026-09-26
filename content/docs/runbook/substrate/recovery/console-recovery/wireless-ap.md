@@ -201,7 +201,7 @@ http://artifacts.mobile.deevnet.net/firmware/eap650-outdoor/
 Take the `.bin`, not the `.zip` — the AP's web UI wants the payload, and the extracted
 `EAP650-Outdoorv1_<ver>_[<build>]_up_signed.bin` files are served alongside the archives. The
 `v1` in the name is the hardware match for EAP650-Outdoor(US) v1.0; TP-Link's own page notes
-`Vx.0 = Vx.6/Vx.8`, so a file labelled V1.6 is correct for this unit.
+`Vx.0 = Vx.6/Vx.8`, so a file labeled V1.6 is correct for this unit.
 
 ### Reaching the AP to upload
 

@@ -72,7 +72,7 @@ only**: the substrate's own logs are not centralized.
   ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/))
 - ✅ Edge-device logs over MQTT into `(index, 2)`, through the MQTT log bridge
   ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
-- 🔄 Deploy log visualization: Grafana OSS, one organisation per tenant, deployed and verified
+- 🔄 Deploy log visualization: Grafana OSS, one organization per tenant, deployed and verified
   ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Done when the tenants have their
   passwords and CHG-0024 closes
 - ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/0022-central-logging/) §6)

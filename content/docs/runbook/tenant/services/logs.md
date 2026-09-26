@@ -74,7 +74,7 @@ curl -sS --cacert site-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
   "$LOG_ENDPOINT/select/logsql/query" --data-urlencode 'query=*'
 ```
 
-**Or read them in Grafana:** your organisation has all three partitions wired in as data sources
+**Or read them in Grafana:** your organization has all three partitions wired in as data sources
 ([Dashboards](/docs/runbook/tenant/services/dashboards/)).
 
 ## What it does not do yet

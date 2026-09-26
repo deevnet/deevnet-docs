@@ -125,7 +125,7 @@ curl -sk -o /dev/null -w '%{http_code}\n' https://localhost:8006/
 ```
 
 {{< hint info >}}
-**`ls /etc/pve/nodes/<new>` is not the check.** pmxcfs does not materialise a node directory in a
+**`ls /etc/pve/nodes/<new>` is not the check.** pmxcfs does not materialize a node directory in a
 listing until something has been written into it, so waiting on the directory to appear — an
 `ansible.builtin.wait_for` on the path, for instance — times out on a rename that actually
 succeeded. `readlink -f /etc/pve/local` is the authoritative answer to "what does this node think

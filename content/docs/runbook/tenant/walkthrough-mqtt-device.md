@@ -297,7 +297,7 @@ workload by the operator while you watch.
 | Device on Wi-Fi | serial console | an address in `10.20.30.0/24` |
 | Device on the broker | serial console | no connect error; the backend sees telemetry every 10 s |
 | Commands reach the device | `mosquitto_pub` above | the device prints `command: blink` |
-| Confinement | change the device's topic to `other/…` | nothing arrives — the broker drops or disconnects an unauthorised publish |
+| Confinement | change the device's topic to `other/…` | nothing arrives — the broker drops or disconnects an unauthorized publish |
 | Device logs | read partition 2 ([Logs](/docs/runbook/tenant/services/logs/#reading-back)) | your `boot ok` line, attributed to the device |
 
 That is a working tenant: a device, a backend, and logs, declared in one file and rebuildable from

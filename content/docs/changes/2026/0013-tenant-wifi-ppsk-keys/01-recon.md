@@ -76,7 +76,7 @@ It also confirmed the list returns `security`, so the play's new drift check cos
 ### Whether a profile may be created empty is *not* answerable from the spec
 
 `PpskProfile` requires `ppsk` to be **present** but sets no `minItems`, so `{"profileName": "…",
-"ppsk": []}` is schema-valid. Whether the controller accepts it is runtime behaviour, and the
+"ppsk": []}` is schema-valid. Whether the controller accepts it is runtime behavior, and the
 running controller is ground truth, not the schema — as `ip-setting` already demonstrated in
 CHG-0005.
 
@@ -85,7 +85,7 @@ creates the profile with one random seed key and deletes that key by name in the
 state; the seed never persists and is never reported.
 
 **Settled by phase 2, 2026-09-18: this controller accepts an empty key list.** The fallback was
-never exercised. It stays in the play anyway — that is one controller's behaviour at one firmware
+never exercised. It stays in the play anyway — that is one controller's behavior at one firmware
 level, not a documented guarantee.
 
 ## Two things the spec says that the controller may not mean

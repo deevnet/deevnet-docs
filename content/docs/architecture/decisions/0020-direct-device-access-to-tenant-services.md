@@ -248,7 +248,7 @@ interface — which is option B. The "structural containment" claim was not a pr
 ever had.
 
 **2026-09-19 — the dedicated segment was unnecessary.** The second draft kept a dedicated
-`iot_contained` segment with its own VLAN, its own SSID, prescribed DHCP and DNS behaviour, an
+`iot_contained` segment with its own VLAN, its own SSID, prescribed DHCP and DNS behavior, an
 exact firewall rule and a named VM placement. All of it is removed. It was invented to buy
 containment that the zone policy delivers anyway, and separation between device classes that carry
 **identical trust** — splitting a trust class by purpose is the same error as splitting it by

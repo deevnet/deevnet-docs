@@ -12,7 +12,7 @@ its platform page or ADR; this page is the list.
 **This page is the system of record for versions.** Other pages name the software and link here
 instead of stating its version. They keep a version only where the context needs it:
 - a change or incident record, which states what was true at the time
-- a behaviour tied to a version, such as "Grafana 13 cannot delete an organisation"
+- a behavior tied to a version, such as "Grafana 13 cannot delete an organization"
 - a minimum requirement, such as MicroPython 1.23 or later
 - a literal value in a procedure, such as a firmware upgrade chain or an image tag
 

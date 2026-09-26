@@ -161,7 +161,7 @@ prose.
 **Onboarding grows a step, and gains a place to fail.** Allocating the index, issuing the key, the
 egress and now the attachment are one Ansible run driven from one declared list — but a tenant
 repository is created by hand, and nothing yet checks that it was created from the reference
-implementation rather than by copying a neighbour.
+implementation rather than by copying a neighbor.
 
 **`terraform init` now needs GitHub and an SSH agent.** Mitigating fact: the module is vendored into
 `.terraform/modules/` on first init and is not re-fetched by `plan` or `apply`. The dependency is

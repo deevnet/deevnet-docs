@@ -157,7 +157,7 @@ the second bug that writing the tests uncovered in the first version of it.
 took three attempts, and the reason is a defect that is recorded but **not fixed** — see below.
 
 **A second defect, found by phase 5 and left open.** `omada-wireless.yml` creates the PPSK profile
-empty; the AP does not honour a key added to a profile that was empty when the SSID was provisioned
+empty; the AP does not honor a key added to a profile that was empty when the SSID was provisioned
 to it, until the SSID's security configuration is re-pushed. **On a fresh site the first tenant's key
 is therefore dead on arrival.** The workaround used here was `update-basic-config` plus a
 force-provision; the preferred fix is to seed the profile with the existing placeholder key so it is

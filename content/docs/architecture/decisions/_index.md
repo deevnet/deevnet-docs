@@ -62,7 +62,7 @@ question is written down, not when it is answered.
   site `/16` rather than a second aggregate.
 - [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/) —
   tenant egress needs transit forwarding and a default route inside each tenant VRF; Proxmox's own
-  exit-node behaviour routes around the perimeter rather than through it.
+  exit-node behavior routes around the perimeter rather than through it.
 - [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/0004-tenant-dns-publication/) —
   each tenant publishes into its own zone, delegated from the substrate zone and served by a
   substrate-run PowerDNS, written by the tenant over RFC 2136 with a TSIG key scoped to that zone.
@@ -202,9 +202,9 @@ question is written down, not when it is answered.
   own topic prefix. Open: who watches the watcher, and how an off-site phone is reached. Extends
   ADR-0022.
 - [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/) —
-  *Proposed.* Grafana OSS on the tenant observability VM, with one organisation per tenant, because
-  free Grafana has no data-source permissions inside an organisation. The API creates each tenant's
-  organisation, its four data sources, which carry the tenant's read token, and one login. A tenant
+  *Proposed.* Grafana OSS on the tenant observability VM, with one organization per tenant, because
+  free Grafana has no data-source permissions inside an organization. The API creates each tenant's
+  organization, its four data sources, which carry the tenant's read token, and one login. A tenant
   is an Editor, never an Admin, so it can build dashboards but can't create a data source. A data
   source is a URL Grafana's server would request. Grafana's own alerting is off, since alerting is
   ADR-0023's. Tenants declare dashboards with the `grafana/grafana` Terraform provider, served from
@@ -213,7 +213,7 @@ question is written down, not when it is answered.
   only by clicking are not kept. Perses was considered: it is pre-1.0 and has no Terraform provider.
   **Amended by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)** (deployed 2026-09-24):
   three log data sources with fixed UIDs, the same on the take-home Pi; port 3000; the password is
-  re-minted by the API like the log tokens; and three Grafana 13 behaviours the design now works
+  re-minted by the API like the log tokens; and three Grafana 13 behaviors the design now works
   around.
   Extends ADR-0023.
 - [ADR-0025: Identity Directory](/docs/architecture/decisions/0025-identity-directory/) —
@@ -223,7 +223,7 @@ question is written down, not when it is answered.
   Omada controller's admin SSO accepts only SAML, which rules out the lighter providers, and only
   Keycloak and Zitadel draw a real boundary between tenants. Tenant people reach substrate UIs by
   brokering through `deevnet`, which stamps the tenant claim itself, so a tenant realm can't claim
-  another tenant. Grafana OSS maps that claim to the tenant's organisation. Host login uses
+  another tenant. Grafana OSS maps that claim to the tenant's organization. Host login uses
   short-lived SSH certificates from OpenBao, never a directory lookup, and the core router keeps
   local accounts. The rebuild path never waits on the directory, and every consumer keeps a
   break-glass account. Users' credentials exist nowhere else, an accepted exception to ADR-0010 §4

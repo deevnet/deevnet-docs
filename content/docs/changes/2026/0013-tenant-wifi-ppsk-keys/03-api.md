@@ -96,7 +96,7 @@ the fix ships.
 1. **`modifyPPSKProfile` with the remaining keys** (an empty list when the last one goes). Simplest,
    and plausible given that creation accepts an empty list — but **untested**, and it is a
    read-modify-write over a list that holds *every* tenant's key, so a failure part-way could lose
-   another tenant's. It would need serialising.
+   another tenant's. It would need serializing.
 2. **Keep one unusable placeholder.** Add a placeholder key with a freshly generated psk that is
    never returned or stored, then delete the real one — so the profile never goes below one entry.
    Respects the controller's stated invariant whatever `modifyPPSKProfile` does, and self-cleans:
@@ -120,7 +120,7 @@ that name as a key is refused.
 *only* key also does delete-then-add, so that delete was refused for the same reason, and the code
 comment asserted the path was safe. It was not. Both paths now go through one `guardMinimum` helper.
 The stand-in controller in the unit tests was changed to **enforce the real `-34044` rule**, so the
-fix is tested against the controller's behaviour rather than against an assumption about it.
+fix is tested against the controller's behavior rather than against an assumption about it.
 
 ### Verified on the real controller after deploying v0.3.1
 

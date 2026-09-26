@@ -100,7 +100,7 @@ happened. Nothing alerted, because the site has no monitoring yet (ADR-0023 is P
 - TCP 443, 22 and 53 to `10.20.99.1` fail. DNS: `communications error to 10.20.99.1#53: timed out`.
 - Every routed destination fails, for example `10.20.25.22:22` and `10.20.10.1:443`.
 - On the same segment, `10.20.99.9`, `.10`, `.21`, `.22`, `.40`, `.41` and `.97` all answer.
-- WAN side: `192.168.8.106` (`re1`, MAC `00:e0:4c:29:1e:4f`) was in the Builder's neighbour table as
+- WAN side: `192.168.8.106` (`re1`, MAC `00:e0:4c:29:1e:4f`) was in the Builder's neighbor table as
   STALE, and TCP 443 to it fails. The WAN may not listen on 443 by design, so this only suggests that the
   whole box is down, not just its LAN.
 

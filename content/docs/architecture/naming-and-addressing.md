@@ -132,7 +132,7 @@ along that chain was decided at runtime.
 ### Reservations, Not Static Configuration
 
 Substrate hosts are addressed by **reservation**: they ask for an address, and the address service
-always gives them the same one because it recognises their hardware address. They are not configured
+always gives them the same one because it recognizes their hardware address. They are not configured
 with an address locally.
 
 This looks like a detour — why not just configure the address on the host? — but it puts the
@@ -260,7 +260,7 @@ The same split appears in how records get written.
 | **Source of truth** | Inventory | The tenant's own IaC |
 | **Written by** | Substrate automation, reconciling | The tenant, at deploy time |
 | **Transport** | The resolver's own configuration interface | Dynamic update, over the network |
-| **Authorisation** | Access to the substrate repository | A credential scoped to that tenant's zones |
+| **Authorization** | Access to the substrate repository | A credential scoped to that tenant's zones |
 | **Blast radius of a mistake** | The substrate zone | That tenant's zone only |
 
 The tenant's credential is the part that makes the boundary real. It is issued per tenant and

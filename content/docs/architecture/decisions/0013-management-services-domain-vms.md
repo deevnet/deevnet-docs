@@ -198,7 +198,7 @@ All run on `dv02hyp001p01`. Host names are proposed (§4).
 - **Retired codes:** `tdn`, `tst` and `mqt` retire when their services fold into `idn`, `prv` and
   `msg`.
 
-### 5. Observability comes in two flavours
+### 5. Observability comes in two flavors
 
 > **Note, 2026-09-21.** Overtaken for logs by ADR-0022 and for metrics by ADR-0023, both Proposed:
 > one store on Platform (`obs`) and one collector on management (`col`), replacing `tob` and `sob`

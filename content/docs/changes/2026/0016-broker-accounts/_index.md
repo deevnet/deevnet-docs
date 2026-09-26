@@ -324,7 +324,7 @@ not tied to a client id and a tenant does not declare one. The plugin's lookup i
 `WHERE mountpoint=$1 AND (client_id=$2 OR client_id='*') AND username=$3`; the password still has to
 match.
 
-Both behaviours are correct for their rows. The record should not leave a reader expecting the
+Both behaviors are correct for their rows. The record should not leave a reader expecting the
 first from an API-issued account.
 
 ## Procedure
@@ -345,7 +345,7 @@ first from an API-issued account.
    the password as a sensitive computed attribute — the tenant's state holds the authoritative copy.
 9. **Deploy** the API, then issue an account through tenant Terraform.
 
-## pg_hba: defence in depth, and a dependency worth watching
+## pg_hba: defense in depth, and a dependency worth watching
 
 The auth database restricts who may authenticate, by source address, in its own `pg_hba.conf`. This
 is **deployed and proven** — from the Builder, which is not a permitted source:
@@ -355,7 +355,7 @@ FATAL: no pg_hba.conf entry for host "10.20.99.95", user "deevnet_api", database
 FATAL: no pg_hba.conf entry for host "10.20.99.95", user "vernemq",     database "vernemq"
 ```
 
-**It is defence in depth and does not satisfy ADR-0012 §7 on its own.** A client refused here has
+**It is defense in depth and does not satisfy ADR-0012 §7 on its own.** A client refused here has
 still reached the port and spoken the PostgreSQL protocol; what it cannot do is authenticate. Under
 C the port is unpublished, so nothing off this host reaches it at all — `pg_hba` is the second lock,
 not the first, and it stays that way if the port is ever published for some later reason.
@@ -364,7 +364,7 @@ not the first, and it stays that way if the port is ever published for some late
 
 **C's isolation of PostgreSQL is that the port is not published.** Nothing off this host has a route
 to it, so there is no address to filter and no authentication to attempt. That property depends on
-no podman behaviour at all — only on the port staying unpublished.
+no podman behavior at all — only on the port staying unpublished.
 
 This is worth stating because the paragraph below is easy to misread as a dependency of C. It is
 not.
@@ -377,7 +377,7 @@ Two narrower places:
    appeared as the gateway address and the rich rule's failure could have been misdiagnosed as a
    source-matching problem rather than a wrong-chain problem. Knowing the real address was
    preserved is what made the DNAT-plus-forward explanation the only one left.
-2. **`pg_hba` as defence in depth, in the world where a port is published again.** `pg_hba` can
+2. **`pg_hba` as defense in depth, in the world where a port is published again.** `pg_hba` can
    only distinguish callers if it sees their real addresses. Measured on this host: a connection
    from the Builder appeared in the database container's own `/proc/net/tcp` as `10.20.99.95`.
 
@@ -385,7 +385,7 @@ So: if a future podman release starts masquerading hostport traffic, every exter
 to the gateway address and `pg_hba` stops distinguishing anyone — **silently**, with no error and no
 log. Under C that changes nothing, because nothing reaches the port. It would matter the moment
 anyone published it again, which is exactly when nobody would be thinking about podman's NAT
-behaviour. The Builder regression test below is what would catch it.
+behavior. The Builder regression test below is what would catch it.
 
 ## Verification
 
@@ -466,7 +466,7 @@ would prove nothing.
 |---|---|---|
 | `8883` | **reachable** | if not, the zone path is broken and the rest of the test is meaningless |
 | `5432` | **closed** | if reachable, the database is exposed to every zone the policy admits to IoT Backend — which includes VLAN 30 |
-| `psql` as `deevnet_api` | `no pg_hba.conf entry for host …` | under C this should not even connect; if it *authenticates*, a port has been published **and** podman has started masquerading, and the defence-in-depth layer is gone |
+| `psql` as `deevnet_api` | `no pg_hba.conf entry for host …` | under C this should not even connect; if it *authenticates*, a port has been published **and** podman has started masquerading, and the defense-in-depth layer is gone |
 
 The third row is the early warning for the podman dependency above. The first two are cheap enough
 to run on any change to the host.
@@ -498,7 +498,7 @@ test account was revoked afterwards; the registry and the broker database both r
 | | |
 |---|---|
 | `internal/brokeracct` | the wire contract both ends share |
-| `cmd/deevnet-broker-account` | the writer: fixed config path, never reads `SSH_ORIGINAL_COMMAND`, parameterised SQL only |
+| `cmd/deevnet-broker-account` | the writer: fixed config path, never reads `SSH_ORIGINAL_COMMAND`, parameterized SQL only |
 | `internal/backend/brokerwriter` | the SSH transport: pinned host key, bounded at connect and session |
 | `deevnet_iot_broker_account` | the API resource and the provider resource |
 | `deevnet.mgmt` `vernemq` | installs the writer, pins the API's key, restricts sshd |

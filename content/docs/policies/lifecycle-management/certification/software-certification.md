@@ -36,7 +36,7 @@ matching the [Software Catalog](/docs/platforms/software-catalog/#core-router-op
 | **Automation** | Installed and configured from code, through an API or CLI the automation can drive; a second run changes nothing ([Correctness](/docs/standards/correctness/) §7.2) |
 | **Offline supply** | The artifact can be pinned, checksummed and mirrored, and installs with no internet ([Correctness](/docs/standards/correctness/) §5.4) |
 | **Upgrade and rollback** | The path from the current line is known; rollback is tested, or the step is declared irreversible |
-| **Behaviour the role depends on** | The specific features the role uses work on this line, tested rather than read from the release notes |
+| **Behavior the role depends on** | The specific features the role uses work on this line, tested rather than read from the release notes |
 | **Security** | The line receives security fixes, and advisories have a channel the operator watches ([Vulnerability Management](/docs/policies/risk-management/vulnerability-management/)) |
 | **Support and lifetime** | Support model, and the line's end-of-life date, if it has one |
 | **License** | Compatible with how Deevnet uses it; recorded in the [Software Catalog](/docs/platforms/software-catalog/) |

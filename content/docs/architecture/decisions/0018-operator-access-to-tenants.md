@@ -92,7 +92,7 @@ fabric exit node, and the zone policy permits `management` and `trusted` to reac
   transit segment, because rules are rendered from each zone's subnet. The tenant overlay is a
   different address space and is not covered by them.
 
-### What this does not authorise
+### What this does not authorize
 
 **It is not a delivery mechanism for tenant code.** [ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)
 holds: tenant application code is pulled by the workload, not pushed by the substrate. The

@@ -10,11 +10,11 @@ weight: 9
 | **Date** | Unscheduled |
 | **Change type** | Migration — the switch moves from standalone to controller-managed |
 | **Classification** | Disruptive — adoption rewrites port VLANs, and the uplink is expected to drop until they are re-applied |
-| **Status** | **Planned, on hold since 2026-09-16.** Deprioritised behind the Deevnet API and the first working tenant; it is not on that path. The research below settles the route, so the work resumes from here without repeating it. |
+| **Status** | **Planned, on hold since 2026-09-16.** Deprioritized behind the Deevnet API and the first working tenant; it is not on that path. The research below settles the route, so the work resumes from here without repeating it. |
 | **Window** | To be scheduled, with the operator on site and connected through the travel router ([Operator Access](/docs/runbook/substrate/network/operator-access/)) |
 | **Site** | mobile |
 | **Systems** | Access switch `dv02acc001p01` (SG2218 hardware 1.20, firmware 1.20.24); the Omada controller (6.3.0.45) in `dv02nms001v01` |
-| **Automation** | To be written: `ansible-collection-deevnet.net` `playbooks/omada-switch.yml`, modelled on `playbooks/omada-wireless.yml`. `switch_vlans` becomes break-glass once the switch declares `switch_management: omada`. |
+| **Automation** | To be written: `ansible-collection-deevnet.net` `playbooks/omada-switch.yml`, modeled on `playbooks/omada-wireless.yml`. `switch_vlans` becomes break-glass once the switch declares `switch_management: omada`. |
 | **Risk** | High. Every path to the controller crosses this switch; if adoption does not keep the management VLAN, the controller loses the switch mid-provision and the way back is a factory reset. |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — the AP, adopted the same way; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the firmware this relies on |
 | **Related incidents** | None |
@@ -85,7 +85,7 @@ All read-only.
 
 ## Research: what adoption does to a configured switch
 
-Quotes are verbatim. Anything not quoted is inference, and is labelled as such.
+Quotes are verbatim. Anything not quoted is inference, and is labeled as such.
 
 **Configuration kept on adoption.** TP-Link, [How to Maintain Management VLAN and Port Settings
 When Adopting Switches on Omada Network V6](https://support.omadanetworks.com/en/document/110873/)

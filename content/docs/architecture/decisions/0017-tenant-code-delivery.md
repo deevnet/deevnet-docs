@@ -60,7 +60,7 @@ tenant applications, and that is now a decision to be kept rather than a wall to
 
 Two things still make a pull the only sound answer. **No path runs the other way** — a tenant can
 reach out only through the egress it already has, and no tenant can reach another. And **a pull is
-the only form that generalises**: it works for a tenant at any site under any ownership, whereas a
+the only form that generalizes**: it works for a tenant at any site under any ownership, whereas a
 push works only where the operator happens to own the tenant too.
 
 **So delivery is a pull, initiated from inside the workload** — now by decision rather than by
@@ -157,7 +157,7 @@ what made a Proxmox implementation detail look like a tenant-facing decision.
   contract inherits `cicustom`'s problems, including that it is a readable file.
 
 **1b. Deevnet-shaped.** The tenant declares configuration to the Deevnet API in a Deevnet-owned
-schema. The API decides how to realise it.
+schema. The API decides how to realize it.
 
 - **For:** the tenant never learns that Proxmox exists, consistent with everything else it
   declares; the substrate may change mechanism freely; the API can validate, constrain and reject —
@@ -173,7 +173,7 @@ tenant and workload name.
 - **Against:** rigid — one container, no configuration, no environment, no registry choice. A
   naming convention is a weak contract to hang a platform on.
 
-### Part 2 — How does the substrate realise it?
+### Part 2 — How does the substrate realize it?
 
 **2a. cloud-init user-data via `cicustom`.** The API renders the declaration into user-data and
 places it as a snippet.
@@ -325,7 +325,7 @@ same category as a container image already on disk.
 5. **Per-workload or per-tenant configuration?** Per-workload is more flexible; per-tenant defaults
    would spare repetition for a tenant with many similar workloads.
 6. **What is the blast radius of tenant-supplied configuration?** It runs as root in the tenant's
-   own guest, which is the tenant's business — but it is realised by the substrate, and that path
+   own guest, which is the tenant's business — but it is realized by the substrate, and that path
    should be reviewed rather than assumed safe.
 
 ---

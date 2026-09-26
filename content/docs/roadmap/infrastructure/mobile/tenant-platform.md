@@ -71,7 +71,7 @@ defined as code rather than as hand-maintained node state.
 - ✅ Tenant egress through the perimeter: transit forwarding and a default route inside each
   tenant VRF, both code-managed
   ([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)). Proxmox's
-  own exit-node behaviour would have routed tenants *around* the perimeter onto the management
+  own exit-node behavior would have routed tenants *around* the perimeter onto the management
   segment.
 - ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
 
@@ -139,7 +139,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Logs: ingest and read tokens, and device logs over MQTT
   ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/),
   [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
-- 🔄 Dashboards: a Grafana organisation per tenant, live; closes when the tenants have their
+- 🔄 Dashboards: a Grafana organization per tenant, live; closes when the tenants have their
   passwords ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
 - ✅ A tenant dev network, `DVNTM-TD`, reaching only the API, the state store, the broker, logs,
   Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))

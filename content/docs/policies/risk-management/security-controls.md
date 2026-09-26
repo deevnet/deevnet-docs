@@ -5,7 +5,7 @@ weight: 2
 
 # Security Controls
 
-The controls that bound what a mistake or a compromise can reach. Each is summarised here with the
+The controls that bound what a mistake or a compromise can reach. Each is summarized here with the
 record that decided or built it; the design itself lives in those records.
 
 ---
@@ -19,7 +19,7 @@ transit, IoT, IoT vendor and guest
 - **Default deny between zones.** The core router allows only the inter-zone flows that are
   declared in inventory, and removes anything it did not declare
   ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/))
-- **Joining a network is not authorisation.** A device on the IoT network still needs a credential
+- **Joining a network is not authorization.** A device on the IoT network still needs a credential
   for every service it uses
   ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/))
 - **Guest is internet-only**; IoT reaches the broker and the internet, not tenant workloads or

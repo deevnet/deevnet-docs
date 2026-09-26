@@ -123,7 +123,7 @@ Each tenant is issued an access key scoped by policy to its own prefix, from the
 same onboarding act as its TSIG key. This is ADR-0004 §3's argument transplanted: **a tenant is
 refused another tenant's state by the server**, not because its Terraform declines to ask.
 
-Repository permissions already separate tenants under ADR-0006, so this is defence in depth rather
+Repository permissions already separate tenants under ADR-0006, so this is defense in depth rather
 than the only control — but it is what keeps the boundary true if two tenants ever share an operator.
 
 ### 5. The invariant survives regardless
@@ -139,7 +139,7 @@ code.**
 
 **Locking exists now, and it is the thing that actually justifies this.** Verified rather than
 claimed: with an apply holding the lock, a `.tflock` object appears in the bucket and a concurrent
-operation fails with *Error acquiring the state lock*. The store honours the conditional write
+operation fails with *Error acquiring the state lock*. The store honors the conditional write
 Terraform's S3-native locking requires.
 
 Worth being clear about what this fixes, because it is not what it first appears. The local backend
@@ -165,7 +165,7 @@ decline the store still rely on it.
 **A second per-tenant secret now exists.** Onboarding issues a TSIG key and a state credential; both
 live in the same vault and are issued in the same act, but the per-tenant secret count has doubled.
 
-**`extended-services.md` §5 is honoured, not amended** — for the second time, and by the same
+**`extended-services.md` §5 is honored, not amended** — for the second time, and by the same
 reasoning ADR-0004 used. That is now a pattern rather than a one-off: substrate services that serve
 tenants are Ansible-provisioned and may be Terraform-consumed.
 

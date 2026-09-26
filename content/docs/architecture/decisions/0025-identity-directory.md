@@ -151,7 +151,7 @@ So:
   copied from anything the tenant realm asserts, so a tenant realm's administrator can't make its
   users claim another tenant. This is the pattern ADR-0023 uses when the substrate stamps the tenant
   label on alerts.
-- **Grafana maps that claim to the tenant's organisation** with `org_attribute_path` and
+- **Grafana maps that claim to the tenant's organization** with `org_attribute_path` and
   `org_mapping`, at Editor. ADR-0024's restriction still holds.
 - **ADR-0024's per-tenant Grafana login becomes machine-only**, used by the tenant's Terraform.
   People sign in through the directory.
@@ -254,7 +254,7 @@ local break-glass account.
 - That a client secret can be set by the API on create, and set again on resupply.
 - That a claim `deevnet` stamps from the broker can't be overridden by anything the tenant realm
   sends. Test it, don't assume it.
-- That Grafana OSS's `org_mapping` places a brokered user in the right organisation at Editor, and
+- That Grafana OSS's `org_mapping` places a brokered user in the right organization at Editor, and
   in no other.
 - That OpenBao's SSH secrets engine signs certificates as described on the deployed version, and
   that the site's sshd accepts them.

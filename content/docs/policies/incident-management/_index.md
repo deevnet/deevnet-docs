@@ -21,7 +21,7 @@ record says what was intended, and the incident record says what it cost and why
 ## The record
 
 Each incident gets one page, following the [template](incident-record-template/). The sections
-follow the incident-handling lifecycle — detect, analyse, contain and recover, then learn — as
+follow the incident-handling lifecycle — detect, analyze, contain and recover, then learn — as
 set out in NIST's incident-handling guidance (SP 800-61):
 
 | Stage | Sections |
@@ -50,8 +50,8 @@ A record may skip a substatus — an incident whose cause is found and fixed in 
 straight from Investigating to Remediated — but it never moves back. If a closed incident's fix
 turns out not to have worked, open a new incident and link the old one.
 
-On the [Incident Records](/docs/incidents/) index the substatus is a coloured badge, written
-`{{</* inc-status "Mitigated" */>}}`. The colour follows from the substatus and says how exposed
+On the [Incident Records](/docs/incidents/) index the substatus is a colored badge, written
+`{{</* inc-status "Mitigated" */>}}`. The color follows from the substatus and says how exposed
 the site still is: **red** for Triage and Investigating (cause unknown, service may be down),
 **orange** for Mitigated (service back, cause not fixed, so it can recur), **green** from
 Remediated onward (cause fixed, only prevention left). An unknown substatus fails the build.
@@ -78,7 +78,7 @@ date that settles it:
 | **In Progress** — orange | Being worked | — |
 | **Scheduled** — orange | — | Planned; say where (a change record, an ADR, an issue) |
 | **Done** — green | Landed; cite the commit or PR | Landed |
-| **Declined** — grey | Deliberately not done; give the reason | Deliberately not done; give the reason |
+| **Declined** — gray | Deliberately not done; give the reason | Deliberately not done; give the reason |
 
 A Declined row stays in the table. The reason it was turned down is part of the record, and it is
 what stops the same idea being proposed again as if it were new.

@@ -3,14 +3,14 @@ title: "ADR-0024: Dashboards"
 weight: 24
 ---
 
-# ADR-0024: Dashboards Are Grafana, One Organisation per Tenant, Declared as Code
+# ADR-0024: Dashboards Are Grafana, One Organization per Tenant, Declared as Code
 
 |  |  |
 |--|--|
 | **Status** | Proposed. Built and deployed by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), which amends it (see [As built](#as-built-chg-0024)); Accepted when that change is Complete |
 | **Date** | 2026-09-21 |
 | **Scope** | How the operator and each tenant view their metrics and logs as dashboards, how people log in to do it, how dashboards are declared as code, and what a tenant may and may not configure. Not alerting, which ADR-0023 decides. |
-| **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organisation per tenant as the likely shape |
+| **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organization per tenant as the likely shape |
 | **Extended by** | [ADR-0025: Identity Directory](/docs/architecture/decisions/0025-identity-directory/): people sign in to Grafana through the directory, and the per-tenant login becomes machine-only *(Proposed)* |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/) §4, §7, [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) |
 
@@ -48,26 +48,26 @@ Vendor documentation was checked on 2026-09-21.
 | | Grafana OSS | Perses | vmui and the VictoriaLogs UI only |
 |---|---|---|---|
 | **License** | AGPLv3 | Apache 2.0 | Apache 2.0 |
-| **Tenant boundary** | organisations | projects, with roles per project | none |
+| **Tenant boundary** | organizations | projects, with roles per project | none |
 | **Tenant manages dashboards in Terraform** | yes, the `grafana/grafana` provider | no provider found | no |
 | **Maturity** | long-established | CNCF sandbox, pre-1.0 (v0.54.0) | — |
 | **Logs and metrics** | built-in Prometheus data source; a VictoriaLogs plugin (Apache 2.0) | `prometheus` and `victorialogs` plugins | built in |
 
-### A — Grafana OSS, one organisation per tenant *(chosen)*
+### A — Grafana OSS, one organization per tenant *(chosen)*
 
-- **An organisation is a real boundary:** *"The member of one organization cannot view dashboards
+- **An organization is a real boundary:** *"The member of one organization cannot view dashboards
   assigned to another organization."* A user can be in several, so the operator can be in all of
   them.
-- **Inside an organisation there is no data-source boundary.** Data-source permissions are
+- **Inside an organization there is no data-source boundary.** Data-source permissions are
   *"Available in Grafana Enterprise and Grafana Cloud"*. In OSS, *"data sources in an organization
-  can be queried by any user in that organization."* That is why the organisation, not the data
+  can be queried by any user in that organization."* That is why the organization, not the data
   source, is the tenant boundary.
 - **A Terraform provider exists.** `grafana/grafana` takes an `org_id` and `auth` as a token or
   `username:password`. Its `grafana_folder` and `grafana_dashboard` resources work inside one
-  organisation.
+  organization.
 - **Against:**
   - AGPLv3. Running it unmodified inside the site creates no obligation.
-  - Organisations must be created with server-admin basic auth. *"You can't authenticate to the
+  - Organizations must be created with server-admin basic auth. *"You can't authenticate to the
     Admin Organizations HTTP API with service account tokens."*
 
 ### B — Perses
@@ -93,7 +93,7 @@ Vendor documentation was checked on 2026-09-21.
 
 ## Decision
 
-**Option A: Grafana OSS on `dv02obs001v01`.** Each tenant gets one organisation, which the API
+**Option A: Grafana OSS on `dv02obs001v01`.** Each tenant gets one organization, which the API
 creates. The substrate owns the data sources, and a tenant owns only its folders and dashboards.
 
 ### 1. Placement
@@ -104,16 +104,16 @@ creates. The substrate owns the data sources, and a tenant owns only its folders
   *"SQLite isn't recommended for production environments"* is noted. Nothing in this database is
   meant to be authoritative.
 
-### 2. One organisation per tenant, built by the API
+### 2. One organization per tenant, built by the API
 
 When the API creates a tenant (ADR-0015), it also creates:
-- **an organisation** named for the tenant
+- **an organization** named for the tenant
 - **four data sources in it**, each carrying the tenant's ADR-0022 read token as a bearer header in
   Grafana's encrypted `secureJsonData`:
   - metrics `(index, 0)` and `(index, 1)`, using Grafana's built-in Prometheus data source against
     `/select/<index>:<project>/prometheus`
   - logs `(index, 0)` and `(index, 1)`, using the VictoriaLogs plugin
-- **one Grafana login for the tenant**, with the Editor role in that organisation only
+- **one Grafana login for the tenant**, with the Editor role in that organization only
 
 Further details:
 - **The API holds Grafana's server-admin credential in OpenBao KV**, beside its other backend
@@ -126,9 +126,9 @@ Further details:
   mirrored on the artifact server, because Grafana can install *"by extracting the archive into the
   plugin directory"*.
 
-### 3. A tenant is an Editor, never an Admin, of its own organisation
+### 3. A tenant is an Editor, never an Admin, of its own organization
 
-**This is the central restriction.** An organisation Admin can create data sources, and a data source
+**This is the central restriction.** An organization Admin can create data sources, and a data source
 is a URL that Grafana's server requests on the user's behalf. A tenant able to create one could:
 - point Grafana at any address `obs` can reach: the API, OpenBao and tenant DNS on Platform, and
   the internet
@@ -142,15 +142,15 @@ So:
 - **The four data sources are the substrate's**, created and repaired by the API.
 - **Grafana's own alerting is turned off.** Alerting is ADR-0023's, and Grafana's contact points
   would re-open the webhook question.
-- **Anonymous access stays off**, and new users are not added to the main organisation.
+- **Anonymous access stays off**, and new users are not added to the main organization.
 
 ### 4. The operator
 
-- **Organisation 1 is the operator's and holds no tenant data.** Its data sources use the
+- **Organization 1 is the operator's and holds no tenant data.** Its data sources use the
   operator's read token, including `/select/multitenant/` for metrics.
-- **Substrate dashboards are provisioned from files by Ansible** into organisation 1. That is
+- **Substrate dashboards are provisioned from files by Ansible** into organization 1. That is
   Grafana's file provisioning with `orgId`.
-- **The operator is a server admin**, able to enter any tenant's organisation to help debug.
+- **The operator is a server admin**, able to enter any tenant's organization to help debug.
   Entering is visible to the tenant as a member.
 
 ### 5. Login and dashboards as code
@@ -159,7 +159,7 @@ So:
   tenant creation, returns it in the create response, and keeps it restorable from tenant state, as
   every other tenant credential (ADR-0012 §4).
 - **The tenant's Terraform uses the same login.** The `grafana/grafana` provider takes basic auth
-  as `username:password`, with `org_id` set to the tenant's organisation. The tenant manages
+  as `username:password`, with `org_id` set to the tenant's organization. The tenant manages
   `grafana_folder` and `grafana_dashboard`, and its Editor role prevents it managing
   `grafana_data_source`.
 - **The provider comes from the site's offline mirror** (ADR-0012 §7), fetched with `terraform
@@ -174,7 +174,7 @@ So:
 ### 6. Dashboards are re-derivable; clicks are not
 
 - **What survives a Grafana rebuild:**
-  - organisations, logins and data sources, which the API recreates on reconcile
+  - organizations, logins and data sources, which the API recreates on reconcile
   - tenant dashboards, which the tenant's next apply recreates
   - substrate dashboards, which Ansible re-provisions
 - **What doesn't: a dashboard built only in the UI.** That is stated plainly to tenants, as ADR-0010
@@ -196,7 +196,7 @@ in v1.
 **A tenant holds a third observability credential.** It now has ADR-0022's ingest and read tokens
 and a Grafana login.
 
-**The API grows again.** It gains a Grafana backend: organisations, users and data sources, with
+**The API grows again.** It gains a Grafana backend: organizations, users and data sources, with
 reconcile and resupply like the others.
 
 **`obs` gets heavier.** Grafana's documented minimum is *"512 MB"* and *"1 core"*, on top of what
@@ -211,25 +211,25 @@ ADR-0023 already lists.
 
 1. **Should a tenant have two logins,** one for people and one for its Terraform? It would separate
    rotation and audit at the cost of another credential.
-2. **Should a tenant be able to share a dashboard with another tenant?** Organisations don't share.
+2. **Should a tenant be able to share a dashboard with another tenant?** Organizations don't share.
    A copy through code is the answer today.
 3. **PostgreSQL instead of SQLite**, if Grafana's own state ever becomes more than rebuildable.
-4. **Should the operator's presence in a tenant's organisation be announced?** For example, an event
+4. **Should the operator's presence in a tenant's organization be announced?** For example, an event
    published to the tenant's `(index, 1)` log partition when the operator enters.
 
 ## What would reopen this
 
 - **Perses reaching 1.0 with a Terraform provider.** It is Apache-licensed and project-scoped, which
-  fits this model without the organisation workaround.
-- **Needing data-source permissions inside one organisation**, for example several teams per tenant.
-  That is an Enterprise feature, so it would be a licence decision.
+  fits this model without the organization workaround.
+- **Needing data-source permissions inside one organization**, for example several teams per tenant.
+  That is an Enterprise feature, so it would be a license decision.
 
 ## To confirm when building
 
 - That an Editor in Grafana OSS can't create, edit, or read the secure fields of data sources, and
   can't create alerting contact points once unified alerting is off.
 - That the `grafana/grafana` provider, with basic auth and `org_id`, manages folders and dashboards
-  in that organisation for a non-admin member, and is refused elsewhere.
+  in that organization for a non-admin member, and is refused elsewhere.
 - That the VictoriaLogs plugin's catalog build is signed, so no unsigned-plugin exception is needed,
   and that it installs from a local zip with no internet.
 - That the built-in Prometheus data source queries `/select/<index>:<project>/prometheus` through
@@ -243,7 +243,7 @@ Where [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) departs from the de
 section is the one that holds. The rest stands.
 
 - **§2: three data sources, all logs, with fixed UIDs.** There is no metrics store yet (ADR-0023 is
-  unbuilt), and ADR-0027 added the device partition `(index, 2)`. Every tenant organisation has:
+  unbuilt), and ADR-0027 added the device partition `(index, 2)`. Every tenant organization has:
 
   | UID | Reads |
   |---|---|
@@ -253,23 +253,23 @@ section is the one that holds. The rest stands.
 
   Each carries the read token as `Authorization: Bearer` and its partition as
   `X-Deevnet-Partition: <index>-<n>`, in `secureJsonData`, with the site CA. **The UIDs are the
-  contract.** They are the same in every organisation, on every site, and on the take-home Pi, so a
+  contract.** They are the same in every organization, on every site, and on the take-home Pi, so a
   dashboard moves unchanged. The metrics data sources join them in ADR-0023's change. The
   Prometheus data source is still built into Grafana 13.2.2.
 - **§1: port 3000.** The image runs as an unprivileged uid, so it does not bind 443. `obs` has 4 GB.
-- **§3: "new users are not added to the main organisation"** holds because the API names the
-  tenant's organisation when it creates the login. `auto_assign_org` must stay **on**: with it
-  off, Grafana 13 ignores the named organisation and makes a personal one named for the login.
-- **§4: organisation 1 holds no data sources.** ADR-0027 made the store tenants-only, so there is
+- **§3: "new users are not added to the main organization"** holds because the API names the
+  tenant's organization when it creates the login. `auto_assign_org` must stay **on**: with it
+  off, Grafana 13 ignores the named organization and makes a personal one named for the login.
+- **§4: organization 1 holds no data sources.** ADR-0027 made the store tenants-only, so there is
   no substrate data to show.
 - **§5: the password is re-minted, not resupplied.** Like the log tokens (CHG-0020), the API seals
   it, returns it on create and on reconcile, and mints a new one if it is lost. The server is told
   what it is, so nothing depends on the tenant's copy. Tenant Terraform must set `org_id` **on each
   resource**: under basic auth the provider (v4.46.0) ignores its own `org_id` and sends
-  organisation 1.
-- **Deleting a tenant cannot delete its organisation on Grafana 13**
+  organization 1.
+- **Deleting a tenant cannot delete its organization on Grafana 13**
   ([grafana/grafana#127386](https://github.com/grafana/grafana/issues/127386)). The API removes the
-  data sources and the login, then renames the organisation `deleted-<tenant>-<id>`.
+  data sources and the login, then renames the organization `deleted-<tenant>-<id>`.
 
 ### To confirm when building: answers
 
@@ -277,7 +277,7 @@ section is the one that holds. The rest stands.
 |---|---|
 | An Editor can't create data sources or read their secure fields | **Confirmed.** `POST /api/datasources` is `403`; the token is never in what the server returns |
 | Contact points are unavailable with unified alerting off | Not tested |
-| The provider with basic auth and `org_id` manages folders and dashboards, and is refused elsewhere | **Confirmed, with the per-resource `org_id` above.** Organisation 1 is refused (`403`) |
+| The provider with basic auth and `org_id` manages folders and dashboards, and is refused elsewhere | **Confirmed, with the per-resource `org_id` above.** Organization 1 is refused (`403`) |
 | The plugin's build is signed and installs offline from a local zip | **Confirmed.** 0.32.0, signature `valid`, with plugin downloads disabled |
 | The Prometheus data source through vmauth | Not applicable until the metrics store exists |
 
@@ -285,6 +285,6 @@ section is the one that holds. The rest stands.
 
 - **Proposed. Deployed 2026-09-24** by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)
   (In progress: its `tenant_dev` rules are still to apply). Grafana 13.2.2 runs on `obs`, the API
-  is v0.8.0, and `tdemo`, `eds` and `mabell` each have an organisation. A rebuild drill restored all
+  is v0.8.0, and `tdemo`, `eds` and `mabell` each have an organization. A rebuild drill restored all
   three with the same passwords.
 - The metrics store of ADR-0023 is not built.

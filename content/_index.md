@@ -63,7 +63,7 @@ A tenant declares what it needs in its own Terraform and gets:
   API, with no one touching the controller.
 - **MQTT.** Broker accounts scoped to the tenant's own topics, and a registry of its devices.
 - **Logs and dashboards.** Its workloads' and devices' logs in a store only it can read, and its own
-  Grafana organisation to chart them.
+  Grafana organization to chart them.
 - **Isolated workloads.** Its own network, DNS zone and state storage, rebuilt from its code.
 
 ## What makes it a factory

@@ -255,7 +255,7 @@ the SSID, because everything here is deletable and the playbook's creation is no
 So the controller side of [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)
 question 3 — per-device keys, each bound to the device's trust-class VLAN — is available through
 documented calls, not UI-only. **What is unproven is the device side:** whether the
-EAP650-Outdoor on 1.3.11 honours a PPSK profile in practice.
+EAP650-Outdoor on 1.3.11 honors a PPSK profile in practice.
 
 1. Create one PPSK profile with two test keys: one `vlan: 30`, one `vlan: 31`.
 2. Create `DVNTM-IOT` in the `Default` WLAN group with `security: 4` and

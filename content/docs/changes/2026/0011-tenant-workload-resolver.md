@@ -54,7 +54,7 @@ and so it passed with the broken value.
 - A tenant's own names still resolve from inside its workload.
 - `/etc/resolv.conf` inside 2040 and 2080 names 10.20.50.1.
 - A newly created workload gets 10.20.50.1 without any further action.
-- The core router still forwards tenant zones to 10.20.25.21 — that behaviour is unchanged.
+- The core router still forwards tenant zones to 10.20.25.21 — that behavior is unchanged.
 
 ## Scope
 

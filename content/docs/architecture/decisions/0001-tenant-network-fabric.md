@@ -218,7 +218,7 @@ silently absorbed:
 - Tenant workloads are addressed by **cloud-init, not fabric DHCP**. Proxmox implements SDN DHCP
   in the *Simple* zone plugin only; EVPN zones have none. Seam 2's IPAM half stands, its DHCP half
   does not — see [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/).
-- Egress needs node-local state Proxmox will not model, and Proxmox's own exit-node behaviour
+- Egress needs node-local state Proxmox will not model, and Proxmox's own exit-node behavior
   routes *around* the perimeter rather than through it. See
   [ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/), which also
   refines build requirement #2: *no hand-carried node state*, not *no node state*.

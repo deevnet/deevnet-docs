@@ -69,7 +69,7 @@ This is the step automation cannot do for you. Ansible reaches the switch at the
 derived from inventory (10.20.99.10), and a factory-reset switch is not there yet.
 
 Connect your laptop directly to a switch port and give yourself an address on the switch's
-default subnet — the same manoeuvre the
+default subnet — the same maneuver the
 [AP procedure](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/) uses:
 
 ```bash

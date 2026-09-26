@@ -169,6 +169,6 @@ Two node-local settings the Ansible role owns, because Proxmox models neither
   leaves and is answered but the replies are never forwarded back in — 100% loss in the VM while
   the SNAT counter climbs.
 - **A default route inside each tenant VRF**, merged through `/etc/frr/frr.conf.local`. Proxmox's
-  own exit-node behaviour lets a VRF lookup fall through to the node's main table, which reaches
+  own exit-node behavior lets a VRF lookup fall through to the node's main table, which reaches
   the management segment on-link and unSNATed. The explicit default is what makes *every*
   non-connected destination leave via the perimeter.

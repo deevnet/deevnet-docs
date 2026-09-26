@@ -82,7 +82,7 @@ not false-positive on the three shared-key SSIDs.
 **The question phase 1 could not answer: this controller ACCEPTS a PPSK profile with an empty key
 list.** `POST .../ppsk-profile` with `{"profileName": "DVNTM-IOT", "ppsk": []}` returned
 `errorCode 0`, and the seed-and-delete fallback was skipped. The fallback stays in the play — it is
-one controller's behaviour, not a documented guarantee, and the schema is silent — but it has never
+one controller's behavior, not a documented guarantee, and the schema is silent — but it has never
 had to run here.
 
 {{< hint warning >}}

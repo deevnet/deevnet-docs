@@ -42,7 +42,7 @@ store stops being an empty box.
 | The read token | reads `(index, 0)`, `(index, 1)` and `(index, 2)`, and nothing else |
 | Cross-tenant | one tenant's token cannot read or write another's partition, **measured** |
 | `auth.yml` | has the operator's user, both users per tenant, and survives an Ansible run and a writer run in either order |
-| The API | refuses to issue when the store is unreachable, with the reason, rather than issuing a token nothing honours |
+| The API | refuses to issue when the store is unreachable, with the reason, rather than issuing a token nothing honors |
 
 ## Scope
 
@@ -101,8 +101,8 @@ with a token nothing holds.
 | Risk | Where | Guard |
 |---|---|---|
 | A generated `auth.yml` drops the operator or a tenant | `obs` | one renderer, two callers, same inputs; the writer validates the rendered file before replacing it, and reloads only after |
-| A token is issued that the store does not honour | API | the row is written `provisioning` first; the writer runs; only then `ready`. A writer failure returns 502 **with** the credential, as broker accounts do |
-| The store is down during a tenant apply | tenant | the API returns the reason; the tenant's apply fails cleanly rather than storing a token nothing honours |
+| A token is issued that the store does not honor | API | the row is written `provisioning` first; the writer runs; only then `ready`. A writer failure returns 502 **with** the credential, as broker accounts do |
+| The store is down during a tenant apply | tenant | the API returns the reason; the tenant's apply fails cleanly rather than storing a token nothing honors |
 | The writer leaks a token into a log | `obs` | it echoes one JSON response and never the request; detail goes to stderr for the API's log |
 | An Ansible run and a writer run race | `obs` | the writer writes a temp file and renames it; the role does the same |
 
@@ -169,7 +169,7 @@ Build and stage the API and the writer, deploy the store and the API, then:
 
 - Redeploy the previous API image and the previous role.
 - The writer's `authorized_keys` entry is removed by clearing `victorialogs_writer_public_key`.
-- Tenant rows can stay: a token nothing honours is inert, and re-running the writer restores them.
+- Tenant rows can stay: a token nothing honors is inert, and re-running the writer restores them.
 
 ## Outcome
 

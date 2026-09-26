@@ -63,7 +63,7 @@ The operator decides the verdict.
 
 ---
 
-## How the records are organised
+## How the records are organized
 
 Records are **by item, not by date**, so a reader finds a thing by what it is, and its history
 doesn't get in the way.

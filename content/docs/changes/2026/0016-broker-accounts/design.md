@@ -100,7 +100,7 @@ knows which tenant authenticated; if it is compromised, tenant scoping is alread
 no check in this program recovers it.
 
 That is accepted, not solved. A second tenant-identity mechanism here — per-tenant keys, signed
-requests — would duplicate authorisation the API already performs, and site the duplicate where
+requests — would duplicate authorization the API already performs, and site the duplicate where
 there is less context to perform it well. The boundary belongs at the API, and this program is not
 the place to rebuild it.
 
@@ -155,7 +155,7 @@ the API answer a tenant honestly instead of guessing.
 
 **What the API does with each outcome:**
 
-| Outcome | API behaviour |
+| Outcome | API behavior |
 |---|---|
 | Exit 0, `ok: true` | success; return the account to the tenant |
 | Exit non-zero, `ok: false` with an `error` | a definite refusal; surface the error, do not retry |
@@ -196,7 +196,7 @@ command="/usr/local/bin/deevnet-broker-account",restrict,from="10.20.25.20" ssh-
 
 **A real program with a strict schema. Not a shell script.** A shell script reading JSON from a
 network peer is where the injection bug will be. It parses into typed fields, rejects unknown keys,
-bounds every length, and builds SQL only through parameterised queries — it never interpolates a
+bounds every length, and builds SQL only through parameterized queries — it never interpolates a
 caller's string into a statement.
 
 ---
@@ -211,7 +211,7 @@ not left open.
 
 **PostgreSQL remains network-unpublished.** The host-side listener exists only on `127.0.0.1`, so
 nothing off this host has a route to it: there is no segment exposure to filter, and podman's DNAT
-behaviour never enters the picture. The security property CHG-0016 exists to protect — *not
+behavior never enters the picture. The security property CHG-0016 exists to protect — *not
 reachable from the network* — holds exactly.
 
 The wording matters only because podman would describe this as a published port. It is, in podman's
@@ -294,7 +294,7 @@ Carried from review, and binding on any later change to the writer. None of thes
 - No PTY, no forwarding of any kind, no general shell
 - A **dedicated unprivileged account**, not `root` and not `a_autoprov`
 - A **strict typed input schema**, unknown keys rejected, **every field length-bounded**
-- **Parameterised SQL only** — no caller string is ever interpolated into a statement
+- **Parameterized SQL only** — no caller string is ever interpolated into a statement
 - **Only the existing least-privilege `deevnet_api` database role**, which holds
   `SELECT, INSERT, UPDATE, DELETE` on `vmq_auth_acl` and nothing else
 

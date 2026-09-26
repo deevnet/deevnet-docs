@@ -54,7 +54,7 @@ controller's client list. That is the whole chain working: eds asked for a key i
 got back an SSID and a password, and a device flashed with them landed on the IoT segment — no
 operator touching the controller, no tenant key in the substrate vault.
 
-The client appeared as `EE-8A-79-8B-94-AC`, a **randomised MAC** (macOS private Wi-Fi address).
+The client appeared as `EE-8A-79-8B-94-AC`, a **randomized MAC** (macOS private Wi-Fi address).
 Worth knowing: that is a second, independent reason MAC binding would have been useless here — the
 address you would bind to is not stable.
 
@@ -88,7 +88,7 @@ result.
 This is the finding, and it matters more than the fix above.
 
 `omada-wireless.yml` creates the PPSK profile **empty**, the SSID binds to it, and the API adds keys
-afterwards. The AP evidently does not honour a key added to a profile that was empty when the SSID
+afterwards. The AP evidently does not honor a key added to a profile that was empty when the SSID
 was provisioned to it — until something re-pushes the SSID's security configuration. **So on a fresh
 site the first tenant's key is dead on arrival**, which is exactly what happened here.
 

@@ -278,7 +278,7 @@ It doesn't decide whether state should hold them. That stays with ADR-0012.
      Builder is away reopens C's window.
    - **A small dedicated storage device** on the management segment. It meets §3 cleanly, but it is
      new hardware and a new host class.
-2. **Should ADR-0012 §4 be revisited in favour of Option E** before ADR-0012 is accepted? If it
+2. **Should ADR-0012 §4 be revisited in favor of Option E** before ADR-0012 is accepted? If it
    is, §1 and §3 of this record relax back towards C, because state would no longer hold anything
    that isn't re-derivable.
 3. **Does the fabric's state need the same treatment?** ADR-0007 reserved a prefix for it in the

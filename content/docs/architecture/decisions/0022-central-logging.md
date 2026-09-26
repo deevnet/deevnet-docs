@@ -12,7 +12,7 @@ weight: 22
 | **Date** | 2026-09-21 |
 | **Scope** | Where substrate and tenant logs are sent and kept, how they are partitioned, who may read which partition, and which substrate events a tenant sees. Logs only: metrics and alerting are left for their own records. |
 | **Supersedes, in part** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) §5, **for logs only**. That section splits observability into a substrate store on management and a tenant store on Platform. For logs there is now one store, on Platform. Everything else in ADR-0013 stands, including both VMs. |
-| **Extended by** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/): metrics use the same store host, proxy, partitions and tenant tokens *(Proposed)*. [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): tenants read their logs in Grafana, one organisation per tenant *(Proposed)* |
+| **Extended by** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/): metrics use the same store host, proxy, partitions and tenant tokens *(Proposed)*. [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): tenants read their logs in Grafana, one organization per tenant *(Proposed)* |
 | **Superseded in part by** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/): **the scope and §5.** The store is for tenants only, the substrate and network devices don't ship to it, and the syslog listener goes. Device logs arrive over MQTT into a new `(index, 2)`. The store, proxy, partitions, tokens and §4 stand. *(Proposed)* |
 | **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): the store, *Complete 2026-09-22*. [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/): tenant tokens. [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/): device logs over MQTT. Substrate shipping was withdrawn by ADR-0027. |
 | **Related** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) |
@@ -135,7 +135,7 @@ Vendor documentation was checked on 2026-09-21. Quotes are from the vendor's own
   - It can't receive syslog or journald itself, so every host needs Alloy or another collector.
   - Free Grafana has no data-source permissions: *"data sources in an organization can be queried by
     any user in that organization"*. Isolating tenants in the UI therefore means one Grafana
-    organisation per tenant.
+    organization per tenant.
 - **VictoriaLogs** fits and takes RFC 5424 syslog over TLS and `systemd-journal-upload` natively. A
   substrate host therefore needs no new agent: rsyslog and journal-upload are distribution packages.
   However:
@@ -194,7 +194,7 @@ tenant identifier already derives from (ADR-0002):
   - a read token, which may read `(index, 0)` and `(index, 1)` and nothing else
 - **One read token reaches two partitions through `url_map`.** vmauth can set headers per
   `url_map` entry, not only per user. The read user has exactly two entries, one per ProjectID, and
-  no `default_url`, so a request that matches neither is refused. The tenant's Grafana organisation
+  no `default_url`, so a request that matches neither is refused. The tenant's Grafana organization
   (ADR-0024) holds two datasources with the same token: one for its own logs, one for the substrate's
   events about it.
 - **The API issues both when it creates the tenant**, like every other tenant credential
@@ -283,7 +283,7 @@ OpenBao, and it puts a rule on the substrate: **a secret never goes into a log**
 is not a secret store.
 
 **The API writes one more backend**, and gains the tenant's log tokens as issued secrets, with the
-same resupply behaviour as the others.
+same resupply behavior as the others.
 
 **A noisy tenant can shorten everyone's history.** The store's limits are one disk cap and one
 retention period, shared by all. A tenant that ships heavily, within its concurrency cap, pushes
@@ -292,7 +292,7 @@ VictoriaLogs has per-tenant quotas, or if it happens.
 
 **The operator reads one partition at a time.** VictoriaLogs has no query that spans tenants: its
 roadmap lists *"Multitenant querying: an endpoint that reads across tenants and returns per-row
-tenant fields"*, not yet released. The operator's Grafana organisation has a datasource per
+tenant fields"*, not yet released. The operator's Grafana organization has a datasource per
 partition. The API's tenant events land in `(0, 0)` as well, so the substrate's own view is complete
 without crossing tenants.
 
@@ -321,7 +321,7 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 | # | Question | Answer |
 |---|---|---|
 | 1 | Can the operator query across tenants? | **No: one partition at a time.** VictoriaLogs has no cross-tenant query; it is on the vendor's roadmap, unreleased. The API's tenant events already land in `(0, 0)`, so the substrate view needs no copy. Revisit when multi-tenant querying ships. See Consequences. |
-| 2 | Tenant UI | **Grafana, one organisation per tenant**, as [ADR-0024](/docs/architecture/decisions/0024-dashboards/) decides. The `victoriametrics-logs-datasource` plugin sets `AccountID` and `ProjectID` per datasource, and vmauth overwrites them from the token regardless. No UI is built with the store. |
+| 2 | Tenant UI | **Grafana, one organization per tenant**, as [ADR-0024](/docs/architecture/decisions/0024-dashboards/) decides. The `victoriametrics-logs-datasource` plugin sets `AccountID` and `ProjectID` per datasource, and vmauth overwrites them from the token regardless. No UI is built with the store. |
 | 3 | Third-party services' tenant events | **Deferred.** v1 publishes only the API's events. A collector that maps PowerDNS and VerneMQ lines to a tenant gets its own record, and only once those lines are shown to identify the tenant reliably. |
 | 4 | Per-tenant retention and quotas | **A disk cap and a concurrency cap; no per-tenant quota.** VictoriaLogs has none: per-tenant quotas are on its roadmap as Enterprise. §6 sets the store's disk cap and a `max_concurrent_requests` per tenant ingest token. The residual risk is accepted; see Consequences. |
 | 5 | Workload identity | **Deferred: one ingest token per tenant in v1.** Per-workload tokens, allowing per-workload revocation, wait for ADR-0021's delivery path. |
