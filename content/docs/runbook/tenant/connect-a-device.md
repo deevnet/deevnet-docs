@@ -1,10 +1,10 @@
 ---
-title: "Connect a Device to the IoT SSID"
+title: "Connect Device to Wi-Fi"
 weight: 6
 aliases: ["/docs/runbook/tenant/project-kits/"]
 ---
 
-# Connect a Device to the IoT SSID
+# Connect Device to Wi-Fi
 
 Any Wi-Fi board you flash, such as a Pico W or an ESP32, joins the site's **IoT SSID** with your
 tenant's Wi-Fi key. It makes no difference whether the device is your own or a pre-wired kit

@@ -14,8 +14,7 @@ and you want a device or a service running on the platform without learning how 
 built.
 
 A picture to keep in mind: the mobile kit is set up at a [CARPE](https://carpe-tech.org/) meetup, and you want a Pico W or an ESP32
-on your bench to send messages to a backend. This section walks from "I have nothing" to that, and
-then covers running it afterwards.
+on your bench to send messages to a backend. This section walks from "I have nothing" to that.
 
 ---
 
@@ -58,12 +57,12 @@ read it to use this guide.
 2. **[Walkthrough: a Pico W or ESP32 talking to a backend](walkthrough-mqtt-device/)** — the whole
    thing end to end, in one Terraform file and two short firmware sketches
 3. **Services** — one page per service, when you need the details
-4. **Operating** — [Day 2](operating/day-2/) and [Troubleshooting](operating/troubleshooting/)
-5. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
-6. **[Connect a device to the IoT SSID](connect-a-device/)** — your tenant's Wi-Fi key onto a
-   Pico W, an ESP32 or a borrowed kit
-7. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and devices on a Pi of
+4. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
+5. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
+   ESP32 or a borrowed kit
+6. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and devices on a Pi of
    your own, same topics and tokens, no Deevnet behind it
+7. **[Troubleshooting](troubleshooting/)** — when something doesn't work
 
 The operator's side of all this — admitting your name — is
 [Tenant Admission](/docs/runbook/substrate/tenant-admission/).
