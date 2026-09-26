@@ -12,7 +12,7 @@ The bootstrap node is the **management plane** for standing up a Deevnet site. I
 
 Goals:
 - **Self-contained** — All automation, artifacts, and services on one device
-- **Portable** — Move between sites (mobile, home) as needed
+- **Portable** — Can move between sites as needed
 - **Independent** — Can operate independently of the site network
 - **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
 - **Disposable authority** — Hands off control to Core Router once the site is running
@@ -21,11 +21,7 @@ Goals:
 
 ---
 
-## Hardware Platforms
-
-{{% tabs "bootstrap-node-hardware" %}}
-
-{{% tab "mobile — Developer Workstation" %}}
+## Hardware Platform
 
 **Site**: mobile (mobile)
 
@@ -48,39 +44,6 @@ The mobile site uses a portable developer workstation (laptop) as its bootstrap 
 - **Sufficient resources**: Meets bootstrap node requirements
 - **Dual-purpose**: Serves as both workstation and bootstrap node
 
-{{% /tab %}}
-
-{{% tab "home — AOOSTAR N1 PRO" %}}
-
-**Site**: home (home)
-
-The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the home site. Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
-
-![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | AOOSTAR N1 PRO |
-| **CPU** | Intel N150 (upgraded N100 variant) |
-| **Memory** | 12GB LPDDR5 |
-| **Storage** | 1TB NVMe SSD |
-| **Ethernet** | 2x 2.5GbE (Intel i226-V) |
-| **Form factor** | Mini PC |
-| **Cooling** | Active (fan) |
-
-### Selection Rationale
-
-- **Dual 2.5GbE NICs** for upstream + substrate connectivity (bootstrap requirement)
-- **Compact form factor** for dedicated always-on bootstrap role
-- **12GB RAM** sufficient for artifact serving and Ansible execution
-- **1TB storage** for ISOs, images, and boot artifacts
-- **Intel i226-V NICs** for reliable network performance
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 
@@ -102,7 +65,7 @@ The bootstrap node is provisioned via PXE from another bootstrap node, or manual
 
 {{< mermaid >}}
 graph LR
-    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>mobile/home]
+    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>mobile]
 {{< /mermaid >}}
 
 - **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
@@ -123,7 +86,7 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 | **[Workstation](workstation-role/)** | Developer tools, users, Ansible controller |
 | **[Artifacts](artifacts-role/)** | Air-gapped artifact serving (ISOs, packages, images) |
 | **[PXE](pxe-role/)** | Network boot infrastructure (TFTP, GRUB configs) |
-| **[Network Controller](network-controller-role/)** | Switch and AP management (Omada/UniFi) |
+| **[Network Controller](network-controller-role/)** | Switch and AP management (Omada) |
 
 ---
 
@@ -144,11 +107,11 @@ Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-locatio
 All Deevnet repositories are checked out to a standard location:
 
 ```
-~/home/
+~/dvnt/
 ├── ansible-collection-deevnet.builder/   # Provisioning roles
 ├── ansible-collection-deevnet.mgmt/      # Management plane and centralized services
 ├── ansible-collection-deevnet.net/       # Network device configuration
-├── ansible-inventory-deevnet/            # Host inventory (home, mobile)
+├── ansible-inventory-deevnet/            # Host inventory (mobile)
 ├── deevnet-image-factory/                # Packer image builds
 ├── deevnet-tenant-fabric/                # Tenant EVPN fabric (hypervisor readiness)
 ├── deevnet-tenant-tdemo/                 # The demo tenant

@@ -1,51 +1,40 @@
 ---
-title: "Deevnet Infrastructure Platform"
+title: "Deevnet IoT as a Service"
 type: docs
 ---
 
 <div class="landing-hero">
 
-# Deevnet Infrastructure Platform
+# Deevnet IoT as a Service
 
-<p class="subtitle"><em>Infrastructure. Automated. Reproducible. Documented.</em></p>
+<p class="subtitle"><em>Mobile Factory</em></p>
 
 </div>
 
-{{% columns %}}
+<img src="20260210_160235.jpg" alt="The Deevnet Mobile Factory kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
-### Deevnet Mobile (mobile)
+**A cloud you can carry.** The Mobile Factory is a case of hardware that is carried to a site, set up,
+and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
+its own Terraform and gets:
 
-<img src="20260210_160235.jpg" alt="Deevnet Mobile kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
+- **A network for its devices.** Per-device Wi-Fi keys on the IoT network, issued to the tenant, with no
+  one touching the controller.
+- **MQTT.** Broker accounts scoped to the tenant's own topics, and a registry of its devices.
+- **Logs and dashboards.** Its workloads' and devices' logs in a store only it can read, and its own
+  Grafana organisation to chart them.
+- **Isolated workloads.** Its own network, DNS zone and state storage, rebuilt from its code.
 
-**A cloud you can carry.** Set it up on-premise, anywhere, and get:
+## What makes it a factory
 
-- **Portable network addressing.** Its address space and DNS zone travel with the case: the same
-  addresses and names on the road or at home, with no renumbering.
-- **IoT as a Service.** Per-device Wi-Fi keys, scoped MQTT accounts and a device registry, all from
-  Terraform. *(in&nbsp;development)*
-- **Self-service tenants.** Isolated networks, DNS zones and state storage, from the tenant's own
-  code.
-- **Works offline.** Builds and rebuilds itself from code, with no internet needed.
-- **A bench for its devices.** Prototype embedded hardware right beside the platform.
+- **It builds everything from code**: its network, its services and the images it runs, and it works
+  offline once it is set up.
+- **It produces what tenants take away**: the take-home Pi kit, which reproduces the same services on a
+  single Raspberry Pi, and the prebuilt provider and tools a developer needs on their own laptop.
+- **It travels.** Its address space and DNS zone move with the case, so it is the same factory wherever
+  it is set up, with no renumbering.
 
-<small>In the case: router, switch, wireless AP, Proxmox hypervisors, Raspberry Pis, and
-breadboards and components.</small>
-
-
-<--->
-
-### Deevnet Home (home)
-
-<img src="20230509_181137.jpg" alt="Deevnet Home rack" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
-
-A **home infrastructure** deployment supporting various functions:
-
-- Permanent compute and storage
-- Home automation and IoT backends
-- Development and CI/CD environments
-- Media and personal services
-
-{{% /columns %}}
+<small>In the case: router, switch, wireless AP, two Proxmox hypervisors, Raspberry Pis, and a bench
+of breadboards and components for prototyping devices.</small>
 
 ---
 
@@ -60,13 +49,17 @@ A **home infrastructure** deployment supporting various functions:
     <h3>Standards</h3>
     <p>Non-negotiable rules for naming, correctness, and identity.</p>
   </a>
+  <a class="section-card" href="docs/policies/">
+    <h3>Policies & Procedures</h3>
+    <p>Change, incident, risk and lifecycle management, including certification.</p>
+  </a>
   <a class="section-card" href="docs/platforms/">
     <h3>Implementation & Tooling</h3>
-    <p>Hardware and software platform decisions with rationale.</p>
+    <p>Hardware and software selections with rationale, the software catalog, and certifications.</p>
   </a>
   <a class="section-card" href="docs/runbook/">
     <h3>Operational Runbook</h3>
-    <p>Step-by-step procedures for operating and maintaining infrastructure.</p>
+    <p>Step-by-step procedures for operating the factory, and guides for its tenants.</p>
   </a>
   <a class="section-card" href="docs/changes/">
     <h3>Change Records</h3>
@@ -88,9 +81,15 @@ A **home infrastructure** deployment supporting various functions:
 
 ---
 
-## Adaptability
+## One instance of Deevnet
 
-While this project targets specific hardware, the patterns, automation, and documentation are designed to be **adaptable to any infrastructure**. The standards and architecture defined here can be applied to your own collection of devices and networks.
+This site documents the Mobile Factory, the mobile instance of Deevnet. **Architecture, Standards and
+Policies** are written for any Deevnet site. **Implementation & Tooling, the Runbook, the records and
+the Roadmap** are this instance's. Another site would be its own instance, and would more likely run
+a variant of the take-home kit than a factory of its own.
+
+The patterns, automation and documentation are meant to be adaptable: the standards and architecture
+can be applied to your own collection of devices and networks.
 
 ---
 

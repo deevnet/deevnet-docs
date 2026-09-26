@@ -25,7 +25,7 @@ Each site is assigned a /16 block from the 10.0.0.0/8 RFC1918 space:
 
 | Site | Address Block |
 |------|---------------|
-| **home** | 10.10.0.0/16 |
+| **home** (reserved, not built) | 10.10.0.0/16 |
 | **mobile** | 10.20.0.0/16 |
 
 The addressing pattern is: `10.{site_id}.{vlan_id}.0/24`
@@ -48,7 +48,7 @@ per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
 | `10.20.128.0/18` | Tenant overlay subnets — `10.20.{128+n}.0/24` for tenant index `n` |
 | `10.20.255.0/24` | Tenant fabric loopbacks / VTEP identity |
 
-home mirrors this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
+The reserved home block would mirror this in `10.10.0.0/16`. Keeping tenants inside the site block means there is still
 exactly **one aggregate per site**: anything that ever has to route to a site routes one prefix,
 and that prefix keeps covering its tenants unchanged.
 
@@ -69,7 +69,7 @@ substrate segment, `128` and above is a tenant overlay.
 
 Each subnet uses `.1` as the gateway address:
 
-- `10.10.30.1` — home IoT segment gateway
+- `10.20.30.1` — mobile IoT segment gateway
 - `10.20.99.1` — mobile management segment gateway
 
 ### Host Addressing Ranges
@@ -96,8 +96,8 @@ NAT to whatever upstream is available (home, a hotel, a tethered phone).
 - `dv02edg001p01` LAN: 192.168.8.0/24 (travel-router-local)
 - All mobile traffic NATs through `dv02edg001p01`
 
-There is no connectivity between sites. mobile plugged in at home is just another client of home's
-upstream, and neither site routes to the other. Linking the sites is a decision for when there is a
+There is no connectivity between sites. Wherever mobile is set up, it is just another client of that
+location's upstream, and no site routes to another. Linking the sites is a decision for when there is a
 reason to, and would be made as a declared site link with its own policy, not by renumbering or by
 turning NAT off.
 

@@ -16,7 +16,10 @@ Deevnet's infrastructure architecture is inspired by patterns used in large-scal
 
 However, Deevnet operates at a much smaller scale than hyperscale cloud providers. Instead of modeling multiple global regions and availability zones, the architecture focuses on independent infrastructure sites that can be built, operated, and reprovisioned entirely from code.
 
-This approach preserves the architectural principles of cloud infrastructure while remaining practical for a home and portable lab environment.
+This approach preserves the architectural principles of cloud infrastructure while remaining practical for a portable site: the Mobile Factory, which this documentation describes.
+
+The principles, site model and layers on these pages are written for any Deevnet site. The
+[Decision Records](decisions/) are this instance's decisions.
 
 ---
 
@@ -132,8 +135,8 @@ A **site** is an independent infrastructure deployment with its own IP address s
 
 | Site | Purpose | Address Block | DNS Zone |
 |------|---------|---------------|----------|
-| **home** | Production home infrastructure (always-on, stable) | 10.10.0.0/16 | home.deevnet.net |
-| **mobile** | Mobile/portable lab for development, testing, and demos | 10.20.0.0/16 | mobile.deevnet.net |
+| **mobile** | The Mobile Factory: IoT as a Service, portable. The site this documentation describes | 10.20.0.0/16 | mobile.deevnet.net |
+| **home** | Reserved for a home site. **Not built** | 10.10.0.0/16 | home.deevnet.net |
 
 ### Builder
 

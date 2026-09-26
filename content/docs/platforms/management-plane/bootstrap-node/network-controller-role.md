@@ -13,23 +13,24 @@ The network controller role deploys **centralized management software** for swit
 
 ## Controllers
 
-| Site | Controller | Managed Devices |
-|------|------------|-----------------|
-| **mobile** | TP-Link Omada SDN | SG2218 switch, EAP650-Outdoor AP |
-| **home** | Ubiquiti UniFi Network | USW-24-G2, US-8 switches, UAP-AC-M APs |
+| Controller | Managed Devices |
+|------------|-----------------|
+| TP-Link Omada SDN | EAP650-Outdoor AP (adopted); the SG2218 switch is standalone until [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/) |
 
-Both controllers run on the bootstrap node because they must be available for initial network configuration before VLANs exist.
+The controller must be available for initial network configuration, before VLANs exist, so the
+bootstrap node can run it. Since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) it runs
+on `dv02nms001v01`, and the bootstrap node keeps a stopped cold spare for when that VM is down.
 
 ---
 
 ## Deployment
 
-| Attribute | Omada (mobile) | UniFi (home) |
-|-----------|---------------|--------------|
-| **Container runtime** | Podman | Podman |
-| **Web UI port** | 8043 (HTTPS) | 8443 (HTTPS) |
-| **Discovery** | L2 discovery | L2 discovery |
-| **systemd unit** | omada-controller.service | unifi-controller.service |
+| Attribute | Omada |
+|-----------|-------|
+| **Container runtime** | Podman |
+| **Web UI port** | 8043 (HTTPS) |
+| **Discovery** | L2 discovery |
+| **systemd unit** | omada-controller.service |
 
 ### Air-Gapped Installation
 

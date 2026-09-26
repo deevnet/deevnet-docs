@@ -1,6 +1,6 @@
 baseURL = "https://deevnet.github.io/deevnet-docs/"
 languageCode = "en-us"
-title = "Deevnet Infrastructure Platform"
+title = "Deevnet IoTaaS"
 theme = "hugo-book"
 
 # Enable git-based last modified dates
@@ -29,7 +29,7 @@ enableGitInfo = true
   # /docs/... render literally and 404 on the project Pages site.
   BookPortableLinks = true
   # Set site description for SEO
-  description = "Authoritative documentation for the Deevnet ecosystem"
+  description = "Documentation for Deevnet IoT as a Service: Mobile Factory"
 
 [markup]
   [markup.goldmark]

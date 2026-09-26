@@ -144,7 +144,7 @@ The following `vault.yml` files exist across the inventory:
 | `mobile/group_vars/deevnet_api/vault.yml` | Deevnet API operator token, database password, token MAC key, Proxmox token (mobile) |
 | `mobile/host_vars/dv02hyp001p01/vault.yml` | dv02hyp001p01 secrets (mobile) |
 | `mobile/host_vars/dv02hyp002p02/vault.yml` | dv02hyp002p02 secrets (mobile) |
-| `home/group_vars/all/vault.yml` | Site-wide secrets (home) |
+| `home/group_vars/all/vault.yml` | The skeleton of the reserved home site, which is not built. `make vault` still finds it |
 
 This list is descriptive, not a definition. `make vault` and `make unvault` discover their targets
 with `find . -name 'vault.yml'`, so a new file is picked up without being added here — regenerate

@@ -15,11 +15,7 @@ graph LR
     A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
 {{< /mermaid >}}
 
-## Hardware Platforms
-
-{{% tabs "core-router-hardware" %}}
-
-{{% tab "mobile — ZimaBoard 832" %}}
+## Hardware Platform
 
 **Site**: mobile (mobile) {{< status-badge "active" "Active" >}}
 
@@ -50,44 +46,6 @@ The ZimaBoard 832 is a compact x86 single-board server used as the core router f
 - **Passive cooling** (fanless, silent) for noise-sensitive environments
 - **x86 architecture** supports OPNsense natively
 
-{{% /tab %}}
-
-{{% tab "home — ODYSSEY X86J4125864" %}}
-
-**Site**: home (home) {{< status-badge "active" "Active" >}}
-
-The ODYSSEY X86J4125864 is an x86 single-board computer used as the core router for the home site. It provides more compute headroom and expansion options compared to the mobile router.
-
-![Seeed Studio ODYSSEY X86J4125864](odyssey-x86j4125864.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | ODYSSEY X86J4125864 |
-| **CPU** | Intel Celeron J4125 quad-core (2.0-2.7GHz) |
-| **Memory** | 8GB LPDDR4 |
-| **Storage** | 64GB eMMC |
-| **Ethernet** | 2x Gigabit LAN (Realtek) |
-| **Expansion** | M.2 B-Key, M.2 M-Key, SATA III |
-| **USB** | 4x USB (2x USB 3.0, 2x USB 2.0) |
-| **Video** | HDMI 2.0a + DP 1.2a (4K/60Hz) |
-| **Wireless** | Wi-Fi 802.11ac, Bluetooth 5.0 |
-| **Power** | ~10-12W typical, 12V DC |
-| **Cooling** | Active (included fan) |
-| **Co-processor** | ATSAMD21 (Arduino compatible) |
-
-### Selection Rationale
-
-- **Dual Gigabit Ethernet** for WAN/LAN separation
-- **x86 architecture** supports OPNsense natively
-- **Sufficient compute** for home network routing
-- **M.2 slots** for expansion (future 10GbE, NVMe)
-- **eMMC storage** for reliable boot
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 

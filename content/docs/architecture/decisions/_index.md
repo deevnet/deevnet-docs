@@ -17,6 +17,9 @@ is marked `Superseded` and linked forward — records are never rewritten to hid
 The descriptive architecture, platform, and roadmap pages are kept current; the decision log
 is kept honest.
 
+These are the **Mobile Factory's** decisions. The architecture pages above them describe any Deevnet
+site; a record here decides how this instance is built, and may not hold for another.
+
 Not every follow-on decision is a reversal. A record is often found to be **correct but
 incomplete** — it settled the question it asked and left an adjacent one unanswered, usually
 because building the thing is what exposed the gap. That case gets its own record, which

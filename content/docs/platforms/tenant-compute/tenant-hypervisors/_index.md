@@ -17,7 +17,6 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 | Site | Hardware | Notes |
 |------|----------|-------|
 | **mobile** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
-| **home** | TBD | Desktop or rack-mounted server |
 
 ### Selection Rationale
 

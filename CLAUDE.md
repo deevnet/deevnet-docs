@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the **authoritative documentation repository** for the Deevnet ecosystem. It contains no code—only documentation that defines standards, architecture, and policies that apply across all Deevnet repositories.
 
+## This Instance
+
+This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone `mobile.deevnet.net`), published as **Deevnet IoTaaS** (Deevnet IoT as a Service). Architecture, Standards and Policies & Procedures are written for any Deevnet site; Implementation & Tooling, the Runbook, the change and incident records, and the Roadmap are this instance's. The home site is not built: its site code, zone and address space stay reserved in the standards, and its old documentation is archived at the git tag `archive/home-site-2026-09`. Don't add home-site content; a future site would be its own instance.
+
 ## Key Principles
 
 - **Standards are authoritative**: If a project conflicts with standards defined here, standards win

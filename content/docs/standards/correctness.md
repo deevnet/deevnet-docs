@@ -90,11 +90,11 @@ Hosts typically have multiple network interfaces (e.g., wired Ethernet, WiFi, ma
 - Assigned IP (L3 identity, per interface)
 - DNS name (human/contract identity, per interface)
 
-A host's **canonical identity** is the name used to refer to the host as a logical unit (e.g., `node01.home.deevnet.net`). Individual interfaces are named to reflect their role:
+A host's **canonical identity** is the name used to refer to the host as a logical unit (e.g., `node01.mobile.deevnet.net`). Individual interfaces are named to reflect their role:
 
-- `node01.home.deevnet.net` — canonical host identity (typically the primary interface)
-- `node01-mgmt.home.deevnet.net` — management/IPMI interface
-- `node01-stor.home.deevnet.net` — storage network interface
+- `node01.mobile.deevnet.net` — canonical host identity (typically the primary interface)
+- `node01-mgmt.mobile.deevnet.net` — management/IPMI interface
+- `node01-stor.mobile.deevnet.net` — storage network interface
 
 All interface-to-identity mappings are **Config-as-Code**, version-controlled, and auditable.
 
@@ -170,8 +170,8 @@ If DNS is wrong, everything else is wrong.
 ### 4.2 Site-Scoped Names Are Mandatory
 Every infrastructure service MUST have a site-scoped name:
 
-- `artifacts.home.deevnet.net`
 - `artifacts.mobile.deevnet.net`
+- `pxe.mobile.deevnet.net`
 
 Global aliases are optional but must never replace site-scoped truth.
 

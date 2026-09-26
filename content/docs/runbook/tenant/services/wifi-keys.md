@@ -35,8 +35,8 @@ terraform output -json device_wifi
 ```
 
 **One key per tenant per trust class**, not per device: every device you flash uses the same key.
-Read the SSID from the output rather than hardcoding `DVNTM-IOT` — the same trust class is
-`DVNT-IOT` at the home site.
+Read the SSID from the output rather than hardcoding `DVNTM-IOT`: another site would name the same
+trust class differently.
 
 | Trust class | For | Available at mobile |
 |---|---|---|

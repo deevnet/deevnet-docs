@@ -16,6 +16,15 @@ that apply **across all Deevnet repositories**.
 
 This repository defines **what Deevnet is**, **how it is meant to work**, and **what “correct” means**, independent of any single implementation.
 
+### This instance
+This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone
+`mobile.deevnet.net`), which delivers IoT as a Service. **Architecture, Standards and Policies &
+Procedures** are written for any Deevnet site. **Implementation & Tooling, the Operational Runbook,
+the change and incident records, and the Roadmap** are this instance's. Another site would be its own
+instance of this documentation.
+The site is published as **Deevnet IoTaaS** (Deevnet IoT as a Service: Mobile Factory). The home site
+is not built. Its documentation is archived at the git tag `archive/home-site-2026-09`.
+
 ---
 
 ## Scope

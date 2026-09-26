@@ -16,11 +16,7 @@ graph LR
 
 ---
 
-## Hardware Platforms
-
-{{% tabs "access-switch-hardware" %}}
-
-{{% tab "mobile — SG2218" %}}
+## Hardware Platform
 
 **Site**: mobile (mobile)
 
@@ -69,114 +65,14 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 | **VLAN tagging** | 802.1Q trunk to core router |
 | **Port isolation** | Separates trust zones at L2 |
 
-{{% /tab %}}
-
-{{% tab "home — USW-24-G2" %}}
-
-**Site**: home (home) — Primary switch
-
-The USW-24-G2 is a 24-port managed Gigabit switch from Ubiquiti's UniFi product line. It serves as the primary access switch for the home site.
-
-![Ubiquiti UniFi USW-24-G2](ubiquiti-usw-24-g2.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | Ubiquiti UniFi USW-24-G2 |
-| **Ports** | 24x Gigabit RJ45 |
-| **Uplinks** | 2x SFP (1Gbps) |
-| **Switching Capacity** | 52 Gbps |
-| **MAC Table** | 16K entries |
-| **Power** | 17W max |
-| **Dimensions** | 442 x 200 x 44mm |
-| **Mounting** | Rackmount (1U) |
-| **Cooling** | Fanless |
-
-### Selection Rationale
-
-- **Port density**: 24 ports for home infrastructure
-- **UniFi ecosystem**: Centralized management via UniFi controller
-- **VLAN support**: Full 802.1Q VLAN capabilities
-- **Fanless**: Silent operation for home environment
-- **SFP uplinks**: Fiber connectivity to core router (future)
-
-### Management
-
-| Attribute | Value |
-|-----------|-------|
-| **Controller** | UniFi Network Application |
-| **CLI** | SSH access (limited) |
-| **Web UI** | Controller-managed |
-| **Automation** | UniFi API |
-
-### Roles
-
-| Role | Description |
-|------|-------------|
-| **L2 switching** | Primary switching for substrate hosts |
-| **VLAN tagging** | 802.1Q trunk to core router |
-| **Port profiles** | Per-port VLAN assignment |
-
-{{% /tab %}}
-
-{{% tab "home — US-8" %}}
-
-**Site**: home (home) — Secondary switch
-
-The US-8 is an 8-port managed Gigabit switch used for expanding connectivity in areas away from the primary switch.
-
-![Ubiquiti UniFi US-8](ubiquiti-us-8.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | Ubiquiti UniFi US-8 |
-| **Ports** | 8x Gigabit RJ45 |
-| **Switching Capacity** | 16 Gbps |
-| **MAC Table** | 8K entries |
-| **Power** | 5W max |
-| **Dimensions** | 184 x 103 x 29mm |
-| **Mounting** | Desktop |
-| **Cooling** | Fanless |
-
-### Selection Rationale
-
-- **Compact**: Desktop form factor for distributed placement
-- **UniFi ecosystem**: Managed by same controller as primary switch
-- **Low power**: Efficient for always-on operation
-- **VLAN support**: Extends VLANs to secondary locations
-
-### Management
-
-| Attribute | Value |
-|-----------|-------|
-| **Controller** | UniFi Network Application |
-| **CLI** | SSH access (limited) |
-| **Web UI** | Controller-managed |
-| **Automation** | UniFi API |
-
-### Roles
-
-| Role | Description |
-|------|-------------|
-| **L2 switching** | Secondary switching for remote hosts |
-| **VLAN tagging** | Extends VLANs from primary switch |
-| **Uplink** | Connects to USW-24-G2 via trunk |
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 
 ## Configuration Management
 
-| Site | Controller | Automation |
-|------|------------|------------|
-| **mobile** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
-| **home** | UniFi Network | UniFi API (manual currently) |
+| Controller | Automation |
+|------------|------------|
+| None: standalone, not yet adopted into Omada ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold) | `deevnet.net` `switch_vlans` over SSH CLI |
 
 ### VLAN Configuration
 
