@@ -49,7 +49,7 @@ the backend services already running:
   [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) says what to have on it.
 
 **If you're not local**, [the code](/docs/github/) and these docs are open. Use them and adapt them
-for your own lab, or, these days, have your AI agents adapt them for you.
+for your own lab, or, these days, have your favorite AI agents adapt them for you.
 
 ## Features
 
