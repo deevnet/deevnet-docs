@@ -16,11 +16,7 @@ graph LR
 
 ---
 
-## Hardware Platforms
-
-{{% tabs "access-point-hardware" %}}
-
-{{% tab "mobile — EAP650-Outdoor" %}}
+## Hardware Platform
 
 **Site**: mobile (mobile)
 
@@ -69,82 +65,27 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 | **SSID-to-VLAN mapping** | Multiple SSIDs mapped to VLANs |
 | **Band steering** | Directs capable clients to 5GHz |
 
-{{% /tab %}}
-
-{{% tab "home — UAP-AC-M" %}}
-
-**Site**: home (home) — 2 units
-
-The UAP-AC-M is a compact Wi-Fi 5 mesh-capable access point from Ubiquiti's UniFi product line. Two units provide coverage throughout the home site.
-
-![Ubiquiti UniFi UAP-AC-M](ubiquiti-uap-ac-m.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | Ubiquiti UniFi UAP-AC-M |
-| **Wi-Fi Standard** | Wi-Fi 5 (802.11ac) |
-| **Bands** | Dual-band (2.4GHz + 5GHz) |
-| **Speed** | AC1200 (300 + 867 Mbps) |
-| **Antennas** | 2x2 MIMO (external) |
-| **Ethernet** | 1x Gigabit RJ45 |
-| **Power** | 802.3af PoE (8.5W max) |
-| **Weatherproofing** | Outdoor rated (IPX5) |
-| **Mounting** | Wall/pole mount |
-| **Mesh** | Wireless uplink capable |
-
-### Selection Rationale
-
-- **VLAN capable**: Supports VLAN tagging per SSID for network segmentation
-- **API manageable**: UniFi controller provides REST API for automation
-- **Mesh capable**: Wireless uplink for flexible placement
-- **UniFi ecosystem**: Matches home switches (USW-24-G2, US-8)
-- **Compact**: Low-profile design for unobtrusive mounting
-- **PoE powered**: Single cable for power and data
-
-### Management
-
-| Attribute | Value |
-|-----------|-------|
-| **Controller** | UniFi Network Application |
-| **VLAN Support** | Yes — per-SSID VLAN tagging |
-| **API** | Yes — UniFi controller REST API |
-| **Automation** | UniFi API (manual currently) |
-
-### Roles
-
-| Role | Description |
-|------|-------------|
-| **Wireless access** | Provides Wi-Fi 5 connectivity for clients |
-| **SSID-to-VLAN mapping** | Multiple SSIDs mapped to VLANs |
-| **Mesh backhaul** | Wireless uplink between units (if needed) |
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 
 ## VLAN and API Capability Summary
 
-Both access points meet the core selection criteria:
+The EAP650-Outdoor meets the core selection criteria:
 
-| Requirement | EAP650-Outdoor (mobile) | UAP-AC-M (home) |
-|-------------|------------------------|-----------------|
-| **VLAN tagging** | ✓ Per-SSID | ✓ Per-SSID |
-| **API management** | ✓ Omada REST API | ✓ UniFi REST API |
-| **Controller-managed** | ✓ Omada SDN | ✓ UniFi Network |
-| **PoE powered** | ✓ 802.3at | ✓ 802.3af |
+| Requirement | EAP650-Outdoor |
+|-------------|----------------|
+| **VLAN tagging** | ✓ Per-SSID |
+| **API management** | ✓ Omada REST API |
+| **Controller-managed** | ✓ Omada SDN |
+| **PoE powered** | ✓ 802.3at |
 
 ---
 
 ## Configuration Management
 
-| Site | Controller | Automation |
-|------|------------|------------|
-| **mobile** | Omada SDN | `deevnet.net` Ansible collection (Omada API) |
-| **home** | UniFi Network | UniFi API (manual currently) |
+| Controller | Automation |
+|------------|------------|
+| Omada SDN | `deevnet.net` Ansible collection (Omada API) |
 
 ### SSID Design
 

@@ -121,10 +121,10 @@ design allows it to be attached elsewhere — but that does not rescue a router 
 loaded, which stays a [console job](/docs/runbook/substrate/recovery/console-recovery/core-router/).
 {{< /hint >}}
 
-## One site has hardware
+## One site
 
-`home` exists as an inventory skeleton with no hosts. There is no second site to fail over to,
-and no cross-site redundancy of any kind.
+Only the Mobile Factory is built. There is no second site to fail over to, and no cross-site
+redundancy of any kind.
 
 The mobile rack also travels, which makes availability partly a physical question: anything
 depending on the substrate stops when the rack leaves the building. That is not a fault, but
@@ -176,5 +176,5 @@ is a choice rather than a surprise.
 | Single switch / single-homed hosts | A second switch, second NICs, and LACP or MLAG |
 | Rebuild path collapses to one physical node | A second detachable builder — the provisioner is already a role, so this is hardware rather than design |
 | Single Omada controller | A second controller instance, or accepting that device management is best-effort |
-| One populated site | Hardware in `home`, which the inventory skeleton is already shaped for |
+| One site | A second site, built as its own instance |
 | On-box backups only | Off-box config backup automation — the smallest item on this list, and the one with the best return |

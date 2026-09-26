@@ -9,7 +9,7 @@ weight: 1
 
 The **builder** is responsible for provisioning and configuring all substrate infrastructure.
 
-Every Deevnet Infrastructure Platform site needs a way to be created from scratch:
+Every Deevnet site needs a way to be created from scratch:
 
 > *How do you provision infrastructure when no infrastructure exists yet?*
 
@@ -25,7 +25,7 @@ The builder answers this by providing:
 
 **Self-Contained** — The builder carries everything needed to stand up a substrate: IaC/CaC definitions, OS images, network boot infrastructure, and Git repositories.
 
-**Portable** — A single builder can provision any site. The same builder serves mobile or home — no site-specific hardware required.
+**Portable** — A single builder can provision any site. The same builder serves any site — no site-specific hardware required.
 
 **Air-Gapped Capable** — Once artifacts are staged, the builder can provision without upstream internet. No external dependencies during build.
 

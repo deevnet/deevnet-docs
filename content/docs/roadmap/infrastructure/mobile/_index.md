@@ -1,5 +1,5 @@
 ---
-title: "DVNTM (Mobile Site)"
+title: "Mobile Factory"
 weight: 1
 bookCollapseSection: true
 tasks_completed: 47
@@ -7,9 +7,9 @@ tasks_in_progress: 15
 tasks_planned: 66
 ---
 
-# DVNTM (Mobile Site)
+# Mobile Factory
 
-Builder infrastructure, network automation, and core services for the mobile (mobile) site.
+Builder infrastructure, network automation, core services and the tenant platform for the Mobile Factory, the mobile site.
 
 {{< overall-progress >}}
 

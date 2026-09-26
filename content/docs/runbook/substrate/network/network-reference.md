@@ -38,24 +38,6 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 
 ---
 
-## home VLAN Assignments
-
-| Segment | VLAN ID | Subnet | Gateway | DHCP |
-|---------|---------|--------|---------|------|
-| Trusted | 10 | 10.10.10.0/24 | 10.10.10.1 | .100-.200 |
-| Storage | 20 | 10.10.20.0/24 | 10.10.20.1 | Static only |
-| Platform | 25 | 10.10.25.0/24 | 10.10.25.1 | Static only |
-| IoT | 30 | 10.10.30.0/24 | 10.10.30.1 | .100-.200 |
-| IoT Vendor | 31 | 10.10.31.0/24 | 10.10.31.1 | .100-.200 |
-| IoT Backend | 35 | 10.10.35.0/24 | 10.10.35.1 | Static only |
-| Guest | 40 | 10.10.40.0/24 | 10.10.40.1 | .50-.250 |
-| Tenant Transit | 50 | 10.10.50.0/24 | 10.10.50.1 | Static only |
-| Tenant Underlay | 51 | — | — | None (unrouted) |
-| Management | 99 | 10.10.99.0/24 | 10.10.99.1 | Static only |
-| Blackhole | 999 | — | — | None (unrouted) |
-
----
-
 ## Segment Purpose Summary
 
 | Segment | Trust Level | Purpose |

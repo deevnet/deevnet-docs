@@ -20,7 +20,7 @@ This section includes:
 - Required validation before changes are applied
 - Automated testing expectations by layer
 - CI/CD pipeline responsibilities
-- Guardrails that prevent unsafe changes from reaching production sites
+- Guardrails that prevent unsafe changes from reaching a site
 
 ---
 
@@ -146,5 +146,4 @@ Future enhancements:
 
 - GitHub Actions for syntax validation
 - Automated testing in mobile site
-- Promotion workflow (mobile → home)
 

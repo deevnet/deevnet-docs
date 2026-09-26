@@ -28,7 +28,7 @@ This naming standard applies to:
 A site is a self-contained infrastructure boundary that hosts systems and workloads.
 
 Current sites:
-- home — home site, site code `01`
+- home — home site, site code `01` (reserved, not built)
 - mobile — mobile site, site code `02`
 
 Site names are treated as environment identifiers, not workloads.
@@ -104,7 +104,7 @@ Examples:
 | Code | Site |
 |------|------|
 | `00` | No site — an appliance that moves between sites |
-| `01` | Home |
+| `01` | Home (reserved, not built) |
 | `02` | Mobile |
 
 A host that belongs to no site MUST use `00`. Site codes are allocated deliberately and MUST NOT be
@@ -231,8 +231,8 @@ service.site.deevnet.net
 Examples:
 - artifacts.mobile.deevnet.net
 - pxe.mobile.deevnet.net
-- dns.home.deevnet.net
-- vault.home.deevnet.net
+- dns.mobile.deevnet.net
+- vault.mobile.deevnet.net
 
 These records SHOULD be CNAMEs pointing to host A records.
 
@@ -273,7 +273,7 @@ tenant.site.deevnet.net
 
 Examples:
 - grooveiq.mobile.deevnet.net
-- vintronics.home.deevnet.net
+- vintronics.mobile.deevnet.net
 
 ---
 

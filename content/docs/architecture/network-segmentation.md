@@ -269,7 +269,7 @@ graph TB
 
 Network segmentation is substrate-scoped:
 
-- Each site (home, mobile) implements segmentation independently
+- Each site implements segmentation independently
 - No cross-site segment dependencies
 - The same segment model applies to all sites
 - Implementation details (VLAN IDs, IP ranges) vary per site

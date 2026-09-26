@@ -86,7 +86,7 @@ The namespace is a fixed three-octet prefix plus a three-octet suffix whose
 |-----|--------|
 | `02` | Locally administered prefix |
 | `DD` | Deevnet identifier (`de`) |
-| `EE` | Environment — the site octet of [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/): `20` = mobile, `10` = home |
+| `EE` | Environment — the site octet of [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/): `20` = mobile, `10` = home (reserved, not built) |
 
 The environment octet is **derived from the addressing plan**, not restated, so
 the namespace follows the environment with no second place to edit. Because it

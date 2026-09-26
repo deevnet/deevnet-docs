@@ -41,17 +41,17 @@ OPNsense has served well for production routing. The lack of automated installat
 
 ## N100 Router Hardware Evaluation
 
-A future hardware evaluation. The current core routers (ZimaBoard 832 for mobile, ODYSSEY X86J4125864 for home) are general-purpose SBCs repurposed as routers. Purpose-built Intel N100 router appliances offer better performance, more Ethernet ports, and a form factor designed for the role.
+A future hardware evaluation. The current core router (ZimaBoard 832) is a general-purpose SBC repurposed as a router. Purpose-built Intel N100 router appliances offer better performance, more Ethernet ports, and a form factor designed for the role.
 
 ### Why N100 Router Appliances?
 
-| Attribute | Current (Zima / Odyssey) | N100 Appliance |
+| Attribute | Current (ZimaBoard 832) | N100 Appliance |
 |-----------|--------------------------|----------------|
-| **CPU** | Celeron N3450 / J4125 | Intel N100 (4C, 3.4GHz boost) |
+| **CPU** | Celeron N3450 | Intel N100 (4C, 3.4GHz boost) |
 | **Ethernet** | 2x 1GbE | 4x 2.5GbE (typical) |
 | **TDP** | 6-12W | 6W |
-| **Cooling** | Passive / Active fan | Fanless (typical) |
-| **NVMe** | Via M.2 (Odyssey only) | Built-in M.2 slot |
+| **Cooling** | Passive | Fanless (typical) |
+| **NVMe** | None built in (PCIe x4 expansion only) | Built-in M.2 slot |
 | **Form factor** | SBC (not router-specific) | Mini PC / firewall appliance |
 | **Purpose** | General-purpose | Built for routing/firewall |
 
@@ -94,5 +94,4 @@ This provisioning model is part of the N100 evaluation, not the current MVP appr
 | Hardware research | Pending |
 | OPNsense NVMe imaging workflow | Pending |
 | Procurement | Pending |
-| Validation (mobile first) | Pending |
-| Production cutover (home) | Pending |
+| Validation | Pending |

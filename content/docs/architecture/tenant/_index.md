@@ -95,7 +95,7 @@ service.tenant.site.deevnet.net
 | **Contains** | Network, compute, management and control planes | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
 | **Provisioning** | Automation-first | Terraform-first |
-| **Example** | `mobile`, `home` | `eds`, `tdemo` |
+| **Example** | `mobile` | `eds`, `tdemo` |
 
 ---
 
@@ -109,7 +109,7 @@ service.eds.mobile.deevnet.net   — the instance that exists
 service.eds.home.deevnet.net     — what a second instance would be called
 ```
 
-Nothing is deployed to `home` today: it is an inventory skeleton with no hosts
+Only `mobile` is built today; `home` is a reserved zone
 ([Limits](/docs/policies/risk-management/resiliency/)). Each instance would be built separately, against that
 site's own substrate, from the same tenant repository.
 

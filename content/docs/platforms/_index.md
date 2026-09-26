@@ -53,7 +53,7 @@ Each platform page documents:
 | Section | Content |
 |---------|---------|
 | **Purpose** | Role in the substrate |
-| **Hardware** | mobile vs home hardware selections |
+| **Hardware** | The hardware selected for the role |
 | **Operating System** | OS choice and automation capability |
 | **Roles** | Services or functions provided |
 

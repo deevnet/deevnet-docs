@@ -11,18 +11,14 @@ Network controllers provide **centralized management** for switches and access p
 
 {{< mermaid >}}
 graph LR
-    A[Bootstrap Node<br>hosts controller] <--> B[Network Controller<br>Omada/UniFi] <--> C[Switches & APs<br>managed devices]
+    A[Bootstrap Node<br>hosts controller] <--> B[Network Controller<br>Omada] <--> C[Switches & APs<br>managed devices]
 {{< /mermaid >}}
 
 Both controllers run on the **bootstrap node** as containerized services, providing management capability during initial network configuration.
 
 ---
 
-## Software Platforms
-
-{{% tabs "network-controller-software" %}}
-
-{{% tab "mobile — Omada SDN" %}}
+## Software Platform
 
 **Site**: mobile (mobile)
 
@@ -92,64 +88,3 @@ provisioning VM only.
 an AP connected or dropped; it will not tell you afterwards whether a client briefly lost its
 association. If that matters for a change, watch a client directly while the change runs.
 
-{{% /tab %}}
-
-{{% tab "home — UniFi Network" %}}
-
-**Site**: home (home)
-
-The UniFi Network Application manages all Ubiquiti UniFi devices in the home site, including the USW-24-G2 and US-8 switches, and both UAP-AC-M access points.
-
-### Software
-
-| Attribute | Value |
-|-----------|-------|
-| **Software** | UniFi Network Application |
-| **Deployment** | Podman container on bootstrap node |
-| **Web UI** | Port 8443 (HTTPS) |
-| **Discovery** | L2 discovery or manual adoption |
-
-### Managed Devices
-
-| Device | Type | Quantity |
-|--------|------|----------|
-| USW-24-G2 | Access Switch (primary) | 1 |
-| US-8 | Access Switch (secondary) | 1 |
-| UAP-AC-M | Access Point | 2 |
-
-### Capabilities
-
-| Feature | Description |
-|---------|-------------|
-| **VLAN Management** | Create networks, assign port profiles |
-| **SSID Configuration** | Create WLANs, map to networks, set security |
-| **Firmware Updates** | Centralized firmware management |
-| **REST API** | Automation via UniFi API |
-| **Zero-touch Provisioning** | Devices auto-discover and adopt |
-
-### Automation
-
-The UniFi controller provides a REST API. Automation is currently manual but planned:
-
-| Component | Status |
-|-----------|--------|
-| Switch ports | Manual (API available) |
-| VLANs/Networks | Manual (API available) |
-| WLANs | Manual (API available) |
-
-{{% /tab %}}
-
-{{% /tabs %}}
-
----
-
-## Controller Comparison
-
-| Feature | Omada SDN (mobile) | UniFi Network (home) |
-|---------|-------------------|----------------------|
-| **Managed switches** | SG2218 | USW-24-G2, US-8 |
-| **Managed APs** | EAP650-Outdoor | UAP-AC-M (x2) |
-| **Web UI port** | 8043 | 8443 |
-| **API** | REST | REST |
-| **Ansible support** | `deevnet.net` collection | Planned |
-| **Container runtime** | Podman | Podman |

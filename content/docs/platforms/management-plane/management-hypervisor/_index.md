@@ -12,11 +12,7 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 ---
 
-## Hardware Platforms
-
-{{% tabs "management-hypervisor-hardware" %}}
-
-{{% tab "mobile — Dell Optiplex 7050 MFF" %}}
+## Hardware Platform
 
 **Site**: mobile (mobile)
 
@@ -45,26 +41,6 @@ The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used
 - **Intel VT-x/VT-d** for Proxmox virtualization support
 - **Intel I219-LM NIC** for reliable network connectivity
 
-{{% /tab %}}
-
-{{% tab "home — TBD" %}}
-
-**Site**: home (home)
-
-Hardware selection for the home site management hypervisor is pending.
-
-### Requirements
-
-| Attribute | Requirement | Rationale |
-|-----------|-------------|-----------|
-| **RAM** | 32GB minimum | Multiple management VMs |
-| **Storage** | 1TB SSD | VM images, local storage |
-| **CPU** | Modern x86_64 with VT-x | Virtualization support |
-| **NICs** | Gigabit Ethernet | Substrate network connectivity |
-
-{{% /tab %}}
-
-{{% /tabs %}}
 
 ---
 

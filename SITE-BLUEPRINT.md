@@ -26,7 +26,7 @@ make server
 ```toml
 baseURL = "https://deevnet.github.io/deevnet-docs/"
 languageCode = "en-us"
-title = "Deevnet Infrastructure Platform"
+title = "Deevnet IoTaaS"
 theme = "hugo-book"
 
 # Git-based "last modified" dates in the footer (requires fetch-depth: 0 in CI)
@@ -40,7 +40,7 @@ enableGitInfo = true
   BookRepo = "https://github.com/deevnet/deevnet-docs"
   BookMenuBundle = "/menu"      # Folder for sidebar menu resources
   BookSection = "docs"          # Root section displayed on the homepage
-  description = "Authoritative documentation for the Deevnet ecosystem"
+  description = "Documentation for Deevnet IoT as a Service: Mobile Factory"
 
 [markup]
   [markup.goldmark]

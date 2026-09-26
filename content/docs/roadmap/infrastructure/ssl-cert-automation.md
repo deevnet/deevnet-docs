@@ -56,9 +56,9 @@ Internal CA infrastructure for issuing trusted certificates.
 
 SSL certificates for core infrastructure web UIs.
 
-- ⏳ Proxmox VE admin UI (pve.home.deevnet.net)
-- ⏳ OPNsense admin UI (opnsense.home.deevnet.net)
-- ⏳ Omada Controller UI (omada.home.deevnet.net)
+- ⏳ Proxmox VE admin UI (pve.mobile.deevnet.net)
+- ⏳ OPNsense admin UI (opnsense.mobile.deevnet.net)
+- ⏳ Omada Controller UI (omada.mobile.deevnet.net)
 
 ---
 

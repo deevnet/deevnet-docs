@@ -38,9 +38,3 @@ artifacts.mgmt.deevnet.net       CNAME provisioner-01.mgmt.deevnet.net
 pxe.mgmt.deevnet.net             CNAME provisioner-01.mgmt.deevnet.net
 tftp.mgmt.deevnet.net            CNAME provisioner-01.mgmt.deevnet.net
 ```
-
----
-
-## home (Production)
-
-_Placeholder — implementation details to be documented when home site is built._
