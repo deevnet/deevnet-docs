@@ -1,21 +1,23 @@
 ---
-title: "Take It Home on a Pi"
+title: "Convert a Tenant to a Pi Image"
 weight: 7
+aliases: ["/docs/runbook/tenant/take-it-home/"]
 ---
 
-# Take It Home on a Pi
+# Convert a Tenant to a Raspberry Pi Image
 
-The meetup ends and the mobile kit packs up. Your app and your devices worked against Deevnet, and
-you want them to keep working at home. This page moves them onto a **Raspberry Pi of your own**,
-flashed from the image factory's `pi-backend` image, and the card is yours when you leave.
+This page converts a tenant into a standalone **Raspberry Pi image**: your app and your devices
+keep working, with no Deevnet behind them. The Pi is flashed from the image factory's `pi-backend`
+image and runs your tenant's back-end services itself, so it can go anywhere: home, a classroom, a
+project that outlives the site.
 
-**Bring your own SD card and laptop.** The card is flashed at the meetup and goes home in your Pi;
-the laptop is where you prototyped, and where your Terraform state, `kit.env` and firmware live.
-Nothing of yours stays on Deevnet's equipment.
+**You need your own SD card and your laptop.** The card is flashed from Deevnet and belongs to you
+afterward; the laptop is where your Terraform state, `kit.env` and firmware live. Nothing of yours
+stays on Deevnet's equipment.
 
 ```
- at the meetup                                  at home
- ─────────────                                  ───────
+ on Deevnet                                     on your Pi
+ ──────────                                     ──────────
  devices ──TLS 8883──▶ mqtt.mobile.deevnet.net   devices ──TLS 8883──▶ your Pi (Mosquitto)
  app     ──TLS 8427──▶ Deevnet log store         app     ──TLS 8427──▶ your Pi (VictoriaLogs)
  you     ──TLS 3000──▶ Deevnet Grafana           you     ──TLS 3000──▶ your Pi (Grafana)
@@ -83,9 +85,9 @@ output "kit_env" {
 terraform output -raw kit_env > kit.env
 ```
 
-If the app runs with that file on Deevnet, the Pi's `kit.env` runs it at home.
+If the app runs with that file on Deevnet, the Pi's `kit.env` runs it on the Pi.
 
-**Before you leave**, save `terraform output -json flash`: it holds your devices' broker
+**Before you convert**, save `terraform output -json flash`: it holds your devices' broker
 passwords. Keep those passwords on the Pi and nothing needs reflashing but the host name and the CA.
 
 ---
@@ -93,7 +95,7 @@ passwords. Keep those passwords on the Pi and nothing needs reflashing but the h
 ## 1. Flash the card
 
 You need a Raspberry Pi 3, 4, 5 or Zero 2 W (64-bit; a Pi 4 or 5 if you want dashboards), your
-own card of 8 GB or more, and the take-home tools in
+own card of 8 GB or more, and the Pi image tools in
 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#tools). At the site, the
 image and Pi Imager are in the
 [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads) `pi/`
@@ -149,7 +151,7 @@ If your version of Imager does offer OS customization for the image, you can use
 
 ## 2. First boot
 
-Boot the Pi at home, wired or on Wi-Fi you've set up. First boot creates your user, grows the
+Boot the Pi where it will live, wired or on Wi-Fi you've set up. First boot creates your user, grows the
 filesystem and reboots once. Then `deevnet-kit` runs **once**. It
 generates the card's CA and certificate, the log tokens, the bridge's credentials and Grafana's
 secrets, and starts the broker, the log store, the bridge and Grafana. Grafana's first start takes a
@@ -217,7 +219,7 @@ Two lines change in the firmware from the [walkthrough](/docs/runbook/tenant/wal
 - **The CA.** Replace `site-ca.pem`/`site-ca.der` with the card's (`~/deevnet-kit/site-ca.pem`;
   `openssl x509 -in site-ca.pem -outform der -out site-ca.der` for the Pico).
 
-And the Wi-Fi: your home network instead of `DVNTM-IOT`. The username, the password and every topic
+And the Wi-Fi: the Pi's network instead of `DVNTM-IOT`. The username, the password and every topic
 stay the same.
 
 The certificate names the Pi's addresses at the time it was issued. If the address changes,
@@ -280,7 +282,7 @@ curl -sS --cacert ~/deevnet-kit/site-ca.pem -H "Authorization: Bearer $LOG_READ_
 
 ## What does not come along
 
-| On Deevnet | At home |
+| On Deevnet | On your Pi |
 |---|---|
 | Workload VMs | Your app runs on the Pi or your laptop |
 | `<tenant>.mobile.deevnet.net` DNS | `<hostname>.local`, and the Pi's address for devices |

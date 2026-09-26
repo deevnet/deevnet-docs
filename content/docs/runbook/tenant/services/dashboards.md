@@ -22,7 +22,7 @@ Each one reads with your tenant's own log read token, so it sees exactly what yo
 nothing more ([Logs](/docs/runbook/tenant/services/logs/)).
 
 **The UIDs are the same in every tenant's organization, on every site, and on the
-[take-home Pi](/docs/runbook/tenant/take-it-home/).** A dashboard that names them moves between
+[tenant Pi image](/docs/runbook/tenant/tenant-to-pi-image/).** A dashboard that names them moves between
 those places unchanged. Name data sources by these UIDs, never by the numeric id Grafana shows.
 
 The login comes back as attributes of your tenant:
@@ -57,7 +57,7 @@ export GRAFANA_CA_CERT=site-ca.pem
 export TF_VAR_grafana_org_id=<dashboard_org_id>
 ```
 
-The [`kit_env` output](/docs/runbook/tenant/take-it-home/#the-one-rule-configure-from-the-environment)
+The [`kit_env` output](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment)
 writes all four for you.
 
 ```hcl

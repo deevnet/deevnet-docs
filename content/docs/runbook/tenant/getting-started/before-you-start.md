@@ -46,7 +46,7 @@ From the operator, at [admission](/docs/runbook/tenant/getting-started/admission
 
 Plus the board itself (a Pico W or an ESP32) and a USB **data** cable.
 
-**To [take it home on a Pi](/docs/runbook/tenant/take-it-home/):**
+**To [convert your tenant to a Pi image](/docs/runbook/tenant/tenant-to-pi-image/):**
 
 | Tool | Why | macOS | Fedora | Debian / Ubuntu |
 |---|---|---|---|---|
@@ -85,7 +85,7 @@ at **`https://downloads.mobile.deevnet.net:8443/`**. It is read-only and verifie
 | `providers/grafana/<version>/` | the Terraform `grafana` provider, for [dashboards](/docs/runbook/tenant/services/dashboards/) |
 | `terraform/<version>/` | Terraform itself |
 | `tools/` | Raspberry Pi Imager (macOS, Linux) and MicroPython for the Pico W |
-| `pi/` | the [take-home](/docs/runbook/tenant/take-it-home/) Pi image and its sha256 |
+| `pi/` | the [tenant Pi](/docs/runbook/tenant/tenant-to-pi-image/) image and its sha256 |
 
 ---
 
