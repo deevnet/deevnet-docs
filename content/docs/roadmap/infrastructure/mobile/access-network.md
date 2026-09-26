@@ -3,7 +3,7 @@ title: "Access Network"
 weight: 8
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 3
+tasks_planned: 5
 ---
 
 # Access Network
@@ -67,8 +67,9 @@ inference, not a vendor statement.
 
 **What works instead:**
 - **Preferred: use the managed switch's free ports.**
-  - The SG2218 has 16 RJ45 ports, and `gi1/0/5`–`gi1/0/12` are not declared. Undeclared ports sit
-    on untagged VLAN 1, which isn't routed.
+  - The SG2218 has 16 RJ45 ports, and `gi1/0/6`–`gi1/0/12` are not declared (`gi1/0/5` became
+    `dv02rpi004p01`'s IoT port in [CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/)).
+    Undeclared ports sit on untagged VLAN 1, which isn't routed.
   - The claim that `gi1/0/2` is the only spare management port is only true because nothing else is
     declared.
   - A labeled block of VLAN 99 access ports gives the tidier path with no new hardware, no single
@@ -93,3 +94,15 @@ inference, not a vendor statement.
 - ⏳ If a dumb switch is ever added for cable reach: untagged VLAN 99 devices only; the core router and
   the AP stay on their own trunk ports; declare its uplink port with a description that says what
   is behind it.
+
+## Unused ports ⏳
+
+[CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) found a Pi powered, cabled and silent,
+because its port was undeclared and sat in VLAN 1. An undeclared port looks dead to whatever is
+plugged in, rather than refusing it.
+
+- ⏳ Declare every unused port into the blackhole VLAN (999), so a device plugged into one is
+  visibly refused. A change of its own. The
+  [Network Segmentation](/docs/standards/network-segmentation/) standard requires 999 only as the
+  trunk native VLAN, so this also means amending the standard
+- ⏳ Declare `dv02rpi003p01`'s port before it is cabled; it has none
