@@ -3,7 +3,7 @@ title: "Tenant Platform"
 weight: 4
 tasks_completed: 2
 tasks_in_progress: 5
-tasks_planned: 0
+tasks_planned: 1
 ---
 
 # Tenant Platform
@@ -147,6 +147,24 @@ What a tenant can declare today beyond networks, workloads and names, each throu
   site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
 - ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
+
+## Windows tenant laptops ⏳
+
+A tenant developer needs Terraform, the `deevnet/deevnet` provider and the `grafana` provider on their
+laptop. Terraform runs on Windows, but the provider's prebuilt releases are built for macOS and Linux
+only, and `install-provider.sh` and `tenant-check.sh` are bash. Today a Windows laptop can't be a
+tenant without building the provider from source.
+
+- ⏳ Cross-compile the provider for Windows (`amd64` and `arm64`): add `windows` to the GoReleaser
+  targets in `terraform-provider-deevnet`
+- ⏳ Mirror the Windows zips, and the `grafana` provider's, in the
+  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/)
+- ⏳ Install on Windows without bash: a PowerShell `install-provider.ps1` that puts both providers in
+  Terraform's plugin directory and checks them against `SHA256SUMS`, and a Windows equivalent of
+  `tenant-check.sh`
+- ⏳ [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) gains the Windows
+  path, proven from a Windows laptop on `DVNTM-TD`. WSL2 very likely works today with the Linux
+  build, but is untested
 
 ---
 
