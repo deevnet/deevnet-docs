@@ -59,10 +59,11 @@ Each platform page documents:
 
 ---
 
-## Hardware Certification
+## Certification
 
-Criteria a device must meet before it is selected are being defined — see
-[Hardware Certification](hardware-certification/).
+What each selection was tested against, by item: its current verdict, and every evaluation behind it,
+for hardware and software. See [Certification](certification/). The process and criteria are the
+[Certification](/docs/policies/certification/) policy.
 
 ---
 

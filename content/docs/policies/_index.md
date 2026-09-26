@@ -11,7 +11,8 @@ identified and accepted. The [runbook](/docs/runbook/) says *how to do* a thing;
 *what has to be true* while doing it, and what gets written down afterwards.
 
 The records these procedures produce live in their own sections:
-[Change Records](/docs/changes/) and [Incident Records](/docs/incidents/).
+[Change Records](/docs/changes/), [Incident Records](/docs/incidents/), and
+[Certification](/docs/platforms/certification/) under Implementation & Tooling.
 
 <div class="section-cards">
   <a class="section-card" href="change-management/">
@@ -25,5 +26,9 @@ The records these procedures produce live in their own sections:
   <a class="section-card" href="risk-management/">
     <h3>Risk Management</h3>
     <p>Vulnerabilities, security controls, traceability, resiliency, and the risk register.</p>
+  </a>
+  <a class="section-card" href="certification/">
+    <h3>Certification</h3>
+    <p>What hardware and software must demonstrate before they are relied on, and the record template.</p>
   </a>
 </div>
