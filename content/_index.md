@@ -13,6 +13,22 @@ type: docs
 
 <img src="20260210_160235.jpg" alt="The Deevnet Mobile Factory kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
+## Why I built this
+
+> I organize the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org) meetup
+> group. I originally built the Mobile Factory to have a portable network for multi-device IoT
+> development: something I could carry to a meetup and set up, so a room full of boards, sensors and
+> laptops had a network to work on together.
+>
+> It grew from there into a reference implementation for infrastructure automation. The network, the
+> services and the images it runs are all built from code, and the whole thing can be rebuilt from
+> scratch.
+>
+> The mobile Bauer toolkit travels with it, so device components and tools can be brought on site for
+> hardware hacks and prototyping.
+>
+> — Chris Deever
+
 **A cloud you can carry.** The Mobile Factory is a case of hardware that is carried to a site, set up,
 and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
 its own Terraform and gets:
