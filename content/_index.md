@@ -50,7 +50,7 @@ running:
 - **No public cloud.** Your devices talk to services in the room. There's no cloud account to sign
   up for, and nothing leaves the site.
 - **Bring a microSD card**, and you can take your backend home with you, to run on a Pi of your own
-  ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)).
+  ([Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/)).
 
 **If you're not local**, [the code](/docs/github/) and these docs are open. Use them and adapt them
 for your own lab, or, these days, have your favorite AI agents adapt them for you.

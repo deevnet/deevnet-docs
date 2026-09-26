@@ -86,7 +86,7 @@ one controller's behavior, not a documented guarantee, and the schema is silent 
 had to run here.
 
 {{< hint warning >}}
-**Qualified by [phase 5](../05-device/), 2026-09-18.** The controller accepts an empty profile, but
+**Qualified by [phase 5](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/05-device/), 2026-09-18.** The controller accepts an empty profile, but
 the **AP will not authenticate against a profile that was empty when the SSID was provisioned to
 it**. So acceptance was never the question that mattered, and recording it here as a settled useful
 fact was a mistake. The SSID had to have its security configuration re-pushed before any key worked.

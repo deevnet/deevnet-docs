@@ -18,7 +18,7 @@ weight: 24
 | **Risk** | Low. Grafana is new and nothing depends on it, and the API change adds one step after the log store's. Most likely to go wrong: the API deployed before Grafana, which fails every tenant's `dashboards` step until Grafana is up. The firewall apply has the usual guard ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)). |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (the read token the data sources carry), [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/) (the segment gaining two rules) |
 | **Related incidents** | [INC-0004](/docs/incidents/) is open against the core router's `re0`. Don't apply the firewall while that NIC is misbehaving. |
-| **Related runbooks** | [Dashboards](/docs/runbook/tenant/services/dashboards/), [Tenant Admission](/docs/runbook/substrate/tenant-admission/), [Take It Home on a Pi](/docs/runbook/tenant/take-it-home/) |
+| **Related runbooks** | [Dashboards](/docs/runbook/tenant/services/dashboards/), [Tenant Admission](/docs/runbook/substrate/tenant-admission/), [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
 
 ---
 
