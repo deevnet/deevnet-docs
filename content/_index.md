@@ -24,12 +24,12 @@ type: docs
 > services and the images it runs are all built from code, and the whole thing can be rebuilt from
 > scratch.
 >
-> The mobile Bauer toolkit travels with it, so device components and tools can be brought on site for
-> hardware hacks and prototyping.
+> The whole thing is bundled in the base of a Bauer modular toolkit, so the device components and tools
+> come on site with it, ready for hardware hacks and prototyping.
 >
 > — Chris Deever
 
-**A cloud you can carry.** The Mobile Factory is a case of hardware that is carried to a site, set up,
+**A cloud you can carry.** The Mobile Factory is bundled in the base of a modular toolkit that is carried to a site, set up,
 and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
 its own Terraform and gets:
 
@@ -49,8 +49,8 @@ its own Terraform and gets:
 - **It travels.** Its address space and DNS zone move with the case, so it is the same factory wherever
   it is set up, with no renumbering.
 
-<small>In the case: router, switch, wireless AP, two Proxmox hypervisors, Raspberry Pis, and a bench
-of breadboards and components for prototyping devices.</small>
+<small>In the toolkit's base: router, switch, wireless AP, two Proxmox hypervisors and Raspberry Pis.
+The rest of the toolkit carries the breadboards, components and tools for prototyping devices.</small>
 
 ---
 
