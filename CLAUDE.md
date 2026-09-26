@@ -33,3 +33,4 @@ Other Deevnet repositories include this as a Git submodule at `docs/deevnet/` an
 
 - **No "See Also" sections**: Cross-references are unstable during active development. Focus on content, not links.
 - **Placeholder sections OK**: Create structure with TBD/placeholder content to establish document organization.
+- **Versions live in the Software Catalog** (`content/docs/platforms/software-catalog.md`), the system of record. Elsewhere, name the software and link to the catalog instead of stating a version. Keep a version only where the context needs it: change and incident records (what was true at the time), a behaviour tied to a version, a minimum requirement, or a literal value in a procedure (a firmware chain, an image tag). A change that upgrades something updates the catalog.

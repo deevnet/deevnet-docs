@@ -254,8 +254,8 @@ sudo ip addr del 192.168.0.1/24 dev enp4s0
 ## 6. Reapply the SSIDs
 
 The controller provisions all four SSIDs. Since
-[CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) the AP runs 1.3.11 and is
-adopted, so nothing here is configured in the AP's standalone UI — that route was only ever a
+[CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) the AP runs firmware the controller can configure
+([current version](/docs/platforms/software-catalog/#switching-wireless-and-edge)) and is adopted, so nothing here is configured in the AP's standalone UI — that route was only ever a
 workaround for firmware 1.0.4, which Omada would not push VLAN configuration to.
 
 From `ansible-collection-deevnet.net`, with the inventory vault decrypted:

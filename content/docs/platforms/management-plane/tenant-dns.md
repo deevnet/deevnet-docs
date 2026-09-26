@@ -17,7 +17,7 @@ implementation: what runs, and the specifics that are not guessable from the des
 
 | | |
 |---|---|
-| **Service** | PowerDNS Authoritative 4.9.17 |
+| **Service** | PowerDNS Authoritative ([version](/docs/platforms/software-catalog/#domain-vms)) |
 | **Backend** | SQLite (`gsqlite3`) |
 | **Runtime** | Podman container, `pdns-auth`, managed by a systemd unit |
 | **Host** | `dv02tdn001v01` on the management hypervisor (dv02hyp001p01) |

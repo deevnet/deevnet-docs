@@ -98,7 +98,7 @@ Both core routers run OPNsense, providing a consistent firewall and routing plat
 | Attribute | Value |
 |-----------|-------|
 | **OS** | OPNsense |
-| **Version** | 24.x |
+| **Version** | [Software Catalog](/docs/platforms/software-catalog/#core-router-opnsense-dv02cor002p01), with the bundled services in use |
 | **Base** | FreeBSD |
 
 ---
