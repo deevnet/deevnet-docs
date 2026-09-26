@@ -16,7 +16,8 @@ card moves to dedicated hardware and the bank Pi returns to the pool.
 {{< hint info >}}
 Not this page: taking your tenant's **backend** home on a Pi of your own (the `pi-backend` image,
 with no Deevnet access) is [Take it home on a Pi](/docs/runbook/tenant/take-it-home/). Bank Pis
-are Deevnet's and carry the automation user; a take-home card is yours.
+are Deevnet's and carry the automation user; a take-home card is yours. A pre-wired microcontroller project to borrow is a
+[Project Kit](/docs/runbook/tenant/project-kits/).
 {{< /hint >}}
 
 ---
