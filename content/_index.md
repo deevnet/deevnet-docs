@@ -35,7 +35,8 @@ electronics workbench and supplies come on site with it, ready for hardware hack
 
 ## Come build with it
 
-**If you're local to Columbus, Ohio**, come to a [CARPE](https://carpe-tech.org) meetup. Bring your
+**If you're local to Columbus, Ohio**, come to a [CARPE](https://carpe-tech.org) meetup and get
+[hands-on](https://carpe-tech.org/hands-on/). Bring your
 laptop ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) says what to have
 on it), breadboard, microcontrollers and sensors, and you can rapidly prototype a multi-device project
 with the backend services already running:
