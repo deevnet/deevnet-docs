@@ -13,21 +13,23 @@ type: docs
 
 <img src="20260210_160235.jpg" alt="The Deevnet Mobile Factory kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
+**A cloud you can carry.** The Mobile Factory is a portable IoT platform, bundled in the base of a
+toolkit. Set it up on site, and the people in the room get a network for their devices, MQTT
+messaging, and logs and dashboards, all declared from their own Terraform, with no public cloud.
+
 ## Why I built this
 
-> I'm a member of the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org). I
-> built the Mobile Factory for my own projects: I wanted to build things on site at meetups, and that
-> meant bringing my own network. Then I wanted to make it something everyone else could use too.
->
-> Like any good engineer, I couldn't just build the thing. First I had to build the thing that builds
-> the thing. So the network, the services and the images it runs are all automated and built from
-> code, and everything can be rebuilt from scratch. Somewhere along the way it became a reference
-> implementation for infrastructure automation.
->
-> It's all bundled in the base of a Bauer modular toolkit, so the device components and tools
-> come on site with it, ready for hardware hacks and prototyping.
->
-> — Chris Deever
+I'm a member of the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org). I built
+the Mobile Factory for my own projects: I wanted to build things on site at meetups, and that meant
+bringing my own network. Then I wanted to make it something everyone else could use too.
+
+Like any good engineer, I couldn't just build the thing. First I had to build the thing that builds
+the thing. So the network, the services and the images it runs are all automated and built from code,
+and everything can be rebuilt from scratch. Somewhere along the way it became a reference
+implementation for infrastructure automation.
+
+It's all bundled in the base of a Bauer modular toolkit, so the device components and tools come on
+site with it, ready for hardware hacks and prototyping.
 
 ## What it does for you at a CARPE meetup
 
@@ -48,12 +50,12 @@ It isn't just for me. Bring a board and an idea, and the factory gives you the r
     ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)), or use the whole factory as a
     pattern for your own home lab. [The code](/docs/github/) and these docs are open.
 
-**A cloud you can carry.** The Mobile Factory is bundled in the base of a modular toolkit that is carried to a site, set up,
-and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
-its own Terraform and gets:
+## Features
 
-- **A network for its devices.** Per-device Wi-Fi keys on the IoT network, issued to the tenant, with no
-  one touching the controller.
+A tenant declares what it needs in its own Terraform and gets:
+
+- **A network for its devices.** Its own Wi-Fi key on the IoT network, issued to the tenant by the
+  API, with no one touching the controller.
 - **MQTT.** Broker accounts scoped to the tenant's own topics, and a registry of its devices.
 - **Logs and dashboards.** Its workloads' and devices' logs in a store only it can read, and its own
   Grafana organisation to chart them.
@@ -65,7 +67,7 @@ its own Terraform and gets:
   offline once it is set up.
 - **It produces what tenants take away**: the take-home Pi kit, which reproduces the same services on a
   single Raspberry Pi, and the prebuilt provider and tools a developer needs on their own laptop.
-- **It travels.** Its address space and DNS zone move with the case, so it is the same factory wherever
+- **It travels.** Its address space and DNS zone move with the toolkit, so it is the same factory wherever
   it is set up, with no renumbering.
 
 <small>In the toolkit's base: router, switch, wireless AP, two Proxmox hypervisors and Raspberry Pis.
