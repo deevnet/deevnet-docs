@@ -1,9 +1,9 @@
 ---
-title: "Access Point"
+title: "Wireless Access Point"
 weight: 4
 ---
 
-# Access Point
+# Wireless Access Point
 
 ## Purpose
 
@@ -158,8 +158,15 @@ One SSID per trust class, each carrying one VLAN. The names come from `wifi_ssid
 | `DVNTM-IOT` | 30 (IoT) | **PPSK** (`security: 4`) | **one key per tenant**, issued by the Deevnet API |
 | `DVNTM-IOTV` | 31 (IoT Vendor) | WPA-Personal | one shared key, from the vault |
 | `DVNTM-GUEST` | 40 (guest) | WPA-Personal + guest isolation | one shared key, from the vault |
+| `DVNTM-TD` | 45 (tenant dev) | WPA-Personal | one shared key, from the vault. No client isolation between laptops ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) |
 
-There is deliberately **no management SSID**. The management segment is reached over the wire.
+**No SSID carries the management segment.** The operator reaches management from `DVNTM`,
+through the zone policy's declared `trusted -> management` exception. That makes the trusted
+Wi-Fi the everyday administration path
+([Operator Access](/docs/runbook/substrate/network/operator-access/)). Strictly, a dedicated jump
+host would be the more correct design: one audited entry point instead of a whole segment allowed
+in. For a lab this size it isn't built. Every other SSID is refused at management, which
+[Segment Check](/docs/runbook/substrate/network/segment-check/) verifies from a client.
 
 **On `DVNTM-IOT` the key decides the VLAN.** It is a PPSK SSID, so each key in its profile carries
 its own VLAN binding, and a device lands on the VLAN of the key it was flashed with — proven on this
