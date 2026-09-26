@@ -14,7 +14,7 @@ type: docs
 <img src="20260210_160235.jpg" alt="The Deevnet Mobile Factory kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
 **A cloud you can carry.** The Mobile Factory is a portable IoT platform, bundled in the base of a
-toolkit. Set it up on site, and the people in the room get a network for their devices, MQTT
+modular toolkit. Set it up on site, and the people in the room get a network for their devices, MQTT
 messaging, and logs and dashboards, all declared from their own Terraform, with no public cloud.
 
 ## Why I built this
@@ -23,7 +23,7 @@ I'm a member of the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carp
 the Mobile Factory for my own projects: I wanted to build things on site at meetups, and that meant
 bringing my own network. Then I wanted to make it something everyone else could use too.
 
-Like any good engineer, I couldn't just build the thing. First I had to build the thing that builds
+Like a typical engineer, I couldn't just build the thing. First I had to build the thing that builds
 the thing. So the network, the services and the images it runs are all automated and built from code,
 and everything can be rebuilt from scratch. Somewhere along the way it became a reference
 implementation for infrastructure automation.
@@ -31,24 +31,25 @@ implementation for infrastructure automation.
 It's all bundled in the base of a Bauer modular toolkit, so the device components and tools come on
 site with it, ready for hardware hacks and prototyping.
 
-## What it does for you at a CARPE meetup
+## Come build with it
 
-It isn't just for me. Bring a board and an idea, and the factory gives you the rest:
+**If you're local to Columbus, Ohio**, come to a [CARPE](https://carpe-tech.org) meetup. Bring your
+breadboard, microcontrollers and sensors, and you can rapidly prototype a multi-device project with
+the backend services already running:
 
-- **Rapid prototyping.** Messaging and logging are already decided, with an opinionated approach:
+- **Messaging and logging are already decided**, with an opinionated approach:
   [MQTT with an account per device](/docs/runbook/tenant/services/devices-and-mqtt/), and
   [logs](/docs/runbook/tenant/services/logs/) you can chart in your own
-  [dashboards](/docs/runbook/tenant/services/dashboards/). You spend the evening on your device and
-  what it does, not on standing up a broker.
-- **No public cloud.** Your devices talk to services in the room, which you declare in your own
-  Terraform. There's no cloud account to sign up for, no IoT platform to learn, and nothing leaves
-  the site.
-- **Shareable two ways:**
-  - **On site, during a meetup.** Join the tenant dev network and apply your tenant
-    ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/)).
-  - **At home, as an example.** Take your backend home on a Pi of your own
-    ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)), or use the whole factory as a
-    pattern for your own home lab. [The code](/docs/github/) and these docs are open.
+  [dashboards](/docs/runbook/tenant/services/dashboards/). You spend the evening on your devices and
+  what they do, not on standing up a broker.
+- **No public cloud.** Your devices talk to services in the room. There's no cloud account to sign
+  up for, and nothing leaves the site.
+- **Bring a microSD card**, and you can take your backend home with you, to run on a Pi of your own
+  ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)). Bring a laptop too:
+  [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) says what to have on it.
+
+**If you're not local**, [the code](/docs/github/) and these docs are open. Use them and adapt them
+for your own lab, or, these days, have your AI agents adapt them for you.
 
 ## Features
 
