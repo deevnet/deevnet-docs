@@ -21,7 +21,7 @@ Host names follow ADR-0008. At the time the builder was `provisioner-ph01`, the 
 | **Date** | 2026-03-26 |
 | **Change type** | Configuration |
 | **Classification** | Structural — playbook, role and inventory changes |
-| **Status** | Complete. Analysed and fixed on 2026-03-26. |
+| **Status** | Complete. Analyzed and fixed on 2026-03-26. |
 | **Site** | mobile, and the builder's multi-site design |
 | **Systems** | Builder `dv00bld001p01`: the `bootstrap` role and `bootstrap-authoritative.yml` / `core-authoritative.yml` in `ansible-collection-deevnet.builder`; `disable-` / `enable-opnsense-services.yml` in `ansible-collection-deevnet.net`; `group_vars/bootstrap_nodes.yml` |
 | **Automation** | Builder `f5d38d6`, net `d37a95f`, inventory `9600744`, docs `9e0b967` |

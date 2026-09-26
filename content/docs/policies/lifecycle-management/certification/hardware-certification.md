@@ -34,7 +34,7 @@ That software's own certification is separate ([Software Certification](/docs/po
 | **Recovery** | Console access, which cable, and whether it survives a factory reset from code |
 | **Network** | NIC chipset and driver maturity on the chosen OS; sustained throughput without errors |
 | **Management** | An API or CLI the automation can drive; firmware upgrade path |
-| **Power and thermals** | Draw, behaviour on power loss, sustained load in the mobile case |
+| **Power and thermals** | Draw, behavior on power loss, sustained load in the mobile case |
 | **Longevity** | Vendor support window, firmware cadence, spare availability |
 
 ---

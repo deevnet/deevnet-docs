@@ -73,7 +73,7 @@ state durable.
 
 Vendor documentation and repositories were checked on 2026-09-21.
 
-| | Conditional writes (`use_lockfile`) | Versioning | Tenant isolation | Hard quotas | Replication | Licence | Weight | Verdict |
+| | Conditional writes (`use_lockfile`) | Versioning | Tenant isolation | Hard quotas | Replication | License | Weight | Verdict |
 |---|---|---|---|---|---|---|---|---|
 | **MinIO community, as is** | yes | yes | IAM policies | yes | yes | AGPLv3 | small | Rejected: archived, no fixes |
 | **pgsty/silo** (maintained MinIO fork) | yes, the same code | yes | IAM policies, as today | yes | yes | AGPLv3 | small | **Chosen** |
@@ -90,7 +90,7 @@ Vendor documentation and repositories were checked on 2026-09-21.
   It would suit tenant buckets, and it can't hold state.
 - **pgsty/silo is the least change:**
   - It is not affiliated with MinIO, Inc.
-  - It is compatible with MinIO's S3 behaviour and on-disk format.
+  - It is compatible with MinIO's S3 behavior and on-disk format.
   - It commits to *"a release every one to two months, at most a quarter apart"* and *"a public
     advisory for every fix"*. Its first release closed four CVEs.
   - Its stated scope is *"No new features — just supply chain continuity"*.
@@ -125,7 +125,7 @@ readings of a documentation page:
 | 5 | **Asynchronous replication** of a bucket to a second instance (ADR-0014) |
 | 6 | **TLS** from the site CA; path-style addressing |
 | 7 | An **admin API** the Deevnet API can drive: users, policies, buckets, quotas, replication |
-| 8 | It runs **offline** from staged artifacts, under a licence that doesn't need to phone home |
+| 8 | It runs **offline** from staged artifacts, under a license that doesn't need to phone home |
 
 - **The API's state-store backend stays behind its existing interface.** Changing engines later
   means a new backend implementation, not a new tenant contract.

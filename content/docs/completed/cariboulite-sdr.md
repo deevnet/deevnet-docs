@@ -156,7 +156,7 @@ Adopt the CaribouLite SDR HAT and deploy a software-defined radio platform on Ra
 signal monitoring and experimentation.
 
 **In scope:** CaribouLite hardware integration; remote SDR access via network streaming; client
-software for tuning and visualisation; a baked image via `deevnet-image-factory`.
+software for tuning and visualization; a baked image via `deevnet-image-factory`.
 
 **Out of scope:** transmit capability; signal decoding and demodulation pipelines.
 

@@ -90,7 +90,7 @@ mgmt_vm:
   vmid: "{{ deevnet_assigned_vmid | default(0) }}"
 ```
 
-A VMID of `0` is how the allocator recognises a host that still needs one.
+A VMID of `0` is how the allocator recognizes a host that still needs one.
 
 **Do not hand-edit `identity.yml`.** The MAC is a pure function of the VMID, and
 the audit fails if the two disagree. To change either value, delete the file and

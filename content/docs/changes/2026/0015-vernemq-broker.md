@@ -81,7 +81,7 @@ release carries `vmq_diversity 2.2.0`, `epgsql 4.7.1`, `bcrypt 1.2.2` and `vmq_s
 
 ## Verification
 
-Run `images/vernemq/smoke-test.sh` from the image factory for the behavioural half; it stands the
+Run `images/vernemq/smoke-test.sh` from the image factory for the behavioral half; it stands the
 broker up against a throwaway database and checks all of this. On the real host:
 
 | Check | Expect |
@@ -139,7 +139,7 @@ Zero accounts is correct: the API provisions them and that is CHG-0016.
 ### It took three runs, and both failures were preflight
 
 Neither failure created anything. The role asserts before it builds, so the first two runs stopped
-with no database, no container and no certificate — which is the behaviour those asserts exist for.
+with no database, no container and no certificate — which is the behavior those asserts exist for.
 
 **Run 1** failed on *"Fail early if OpenBao is not configured"*. The role reads
 `vernemq_openbao_addr` and `vernemq_openbao_ca_local` from inventory and nothing supplied them.

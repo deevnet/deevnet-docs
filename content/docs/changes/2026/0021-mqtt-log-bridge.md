@@ -143,7 +143,7 @@ All six steps are **deployed**, 2026-09-22.
 ### What the smoke test changed
 
 The bridge's account is the one account on the broker that no tenant prefix confines, and `+/log/#`
-is a shape nothing else uses. Whether VerneMQ's PostgreSQL ACL honours a single-level wildcard at the
+is a shape nothing else uses. Whether VerneMQ's PostgreSQL ACL honors a single-level wildcard at the
 **first** level was not a thing to find out on the live broker, so `smoke-test.sh` stands up a
 throwaway broker and database, writes the account with the same statement the role writes, and runs
 the real binary against it.
@@ -201,7 +201,7 @@ returns **that tenant's own `(3, 0)`**, not a refusal. The `_stream_id` says so:
 under account 3.
 
 The security property holds: a tenant cannot reach another's partitions, which is what matters. But
-the behaviour is worth knowing before someone debugs it: vmauth's `url_map` matches the selector
+the behavior is worth knowing before someone debugs it: vmauth's `url_map` matches the selector
 entries first and a request that matches none falls to the catch-all, which is the tenant's own
 `(index, 0)`. There is no way to express "refuse an unknown value of this header" in the same config
 that must also serve a request carrying no header at all, which is the ordinary case.

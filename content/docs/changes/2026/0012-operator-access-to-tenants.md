@@ -34,7 +34,7 @@ it, an operator on the Builder or on a desktop can reach any tenant workload dir
 
 [ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) is the decision; it
 records what this does to the "no inbound path" property and what it deliberately does not
-authorise.
+authorize.
 
 ### Why one route covers every tenant
 
@@ -208,7 +208,7 @@ name in both directions.
 
   That decision paid for itself during the change. The role's own asserts caught two faults that a
   hand-made change would have walked into: a gateway outside its zone's subnet, which OPNsense
-  accepts and then silently ignores; and the interfaces export labelling its JSON as `text/html`, so
+  accepts and then silently ignores; and the interfaces export labeling its JSON as `text/html`, so
   `.json` is never populated. The second is the same trap `opnsense_firewall` documents, where it
   produced a run that reported converged while applying nothing. By hand, it would have looked like
   it worked.

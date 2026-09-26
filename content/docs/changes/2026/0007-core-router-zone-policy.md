@@ -108,7 +108,7 @@ anti-lockout on the untagged LAN, and bogon and private blocks on WAN. **None al
 to reach its gateway's DHCP server.** The only automatic DHCP rules are the client rules on WAN.
 *Observed on the rule listing; not from vendor documentation.*
 
-**Field behaviour, for the role fix.** On a blank rule template, the router defaults `protocol`,
+**Field behavior, for the role fix.** On a blank rule template, the router defaults `protocol`,
 `source_net` and `destination_net` to `any`, and `ipprotocol` to `inet`. Existing rules read back
 as `any`, not as empty strings.
 
@@ -199,7 +199,7 @@ anything is written. B's first apply proves nothing, and its second apply has no
 
 ## The guard that was not there (2026-09-19)
 
-Phase 1's preparation read the router's field behaviour rather than assuming it, and found that
+Phase 1's preparation read the router's field behavior rather than assuming it, and found that
 **this change's principal safety mechanism does not exist.**
 
 `opnsense_firewall` requested a rollback savepoint, applied to that revision, and sent
@@ -455,7 +455,7 @@ store have moved to the domain VMs — `dv02idn001v01` `10.20.25.21` and `dv02to
 this row was written for has been designed out; the [follow-up](#follow-ups) about where
 tenant-facing services live is settled in practice and only needs recording.
 
-### Router field behaviour, read 2026-09-19
+### Router field behavior, read 2026-09-19
 
 Read from `dv02cor002p01` before the role was changed, so none of the fixes rests on inference:
 

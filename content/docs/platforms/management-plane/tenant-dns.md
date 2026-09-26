@@ -104,7 +104,7 @@ pdnsutil replace-rrset tdemo.mobile.deevnet.net @ NS 3600 dv02tdn001v01.mobile.d
 literal placeholder `a.misconfigured.dns.server.invalid` as its SOA primary.
 
 Setting it fixes zones created **afterwards only**. An existing zone's SOA is a stored row, not
-something synthesised at query time, so the apex of existing zones has to be reconciled explicitly —
+something synthesized at query time, so the apex of existing zones has to be reconciled explicitly —
 which is why the role does that on every run rather than at creation
 ([ADR-0005](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/)).
 

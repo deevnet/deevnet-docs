@@ -47,7 +47,7 @@ host on exactly one segment; a domain needing two segments becomes two domains.
 
 ### Provisioning — the Deevnet API
 
-The API is the control plane's centre of gravity, and the thing that most distinguishes today's
+The API is the control plane's center of gravity, and the thing that most distinguishes today's
 architecture from what preceded it. **A tenant is created by asking the API, not by an operator
 running substrate automation**
 ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)).

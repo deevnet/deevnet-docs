@@ -54,7 +54,7 @@ bash segment-check.sh DVNTM-TD        # join the SSID first, then name it
 
 **Hosts that are switched off.** A REACH against a host that is off fails, and a BLOCK against one
 **passes whatever the policy says**, because a dead host times out too. The IoT Pis are often off,
-so their lines are labelled: `fails-if-off` on REACH from trusted, and `if-on` on BLOCK elsewhere,
+so their lines are labeled: `fails-if-off` on REACH from trusted, and `if-on` on BLOCK elsewhere,
 meaning that pass proves nothing unless the Pi is running. The broker host is always on and is the
 dependable check on the IoT side.
 
@@ -92,4 +92,4 @@ the script runs on a bare laptop. **Change them in the same PR as the policy.** 
 the policy either fails a correct change or, worse, never checks the new flow.
 
 Targets should be hosts that are always on. The broker, the provisioning host, the Builder, the
-router, the hypervisor and eds's workload are. The Pis are not, and are labelled accordingly.
+router, the hypervisor and eds's workload are. The Pis are not, and are labeled accordingly.

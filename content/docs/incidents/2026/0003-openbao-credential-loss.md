@@ -12,13 +12,13 @@ weight: 3
 | **Systems** | OpenBao on `dv02idn001v01`; the Deevnet API on `dv02prv001v01`; the inventory repository `ansible-inventory-deevnet` |
 | **Severity** | Provisioning only. OpenBao kept running and self-unsealing, the Deevnet API kept serving, and both live tenants — `tdemo` and `eds` — were unaffected throughout, including during the rebuild. No client-facing outage. |
 | **Status** | **Closed · Completed 2026-09-21.** The cause was a lock-in failure, and the corrective action is the policy: a once-only secret a change generates is encrypted, committed and **pushed** before the change goes any further. That is written into Vault Operations and the change-management checklist (actions 1–2). The rebuild itself was within [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)'s scope — it ran twice, not once. The follow-ups it prompted are improvements rather than incident work, and each is carried by [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/). |
-| **Cause** | `git reset --hard` run in a repository whose vault files were decrypted, eight minutes after an initialisation wrote once-only credentials into one of them |
+| **Cause** | `git reset --hard` run in a repository whose vault files were decrypted, eight minutes after an initialization wrote once-only credentials into one of them |
 
 ---
 
 ## Summary
 
-During [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/), step 3 initialised OpenBao. That run
+During [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/), step 3 initialized OpenBao. That run
 produces three values that exist nowhere else: the **recovery key**, and the **role ID and secret ID
 of Ansible's AppRole**. It writes them to `.openbao/<host>-init.json` on the control node, and the
 change record instructs the operator to move them into the inventory vault and delete that file.
@@ -41,7 +41,7 @@ the ability to *administer* OpenBao:
 
 - Ansible could no longer authenticate, so the `openbao` and `deevnet_api` roles would fail on their
   next run.
-- The root token had been revoked at the end of the same initialisation, by design.
+- The root token had been revoked at the end of the same initialization, by design.
 - A new root token requires the recovery key.
 
 The instance was working and permanently unadministrable.
@@ -67,7 +67,7 @@ already described, and the seal key being intact made it straightforward:
 
 1. The API was stopped and the Raft directory **moved aside, not deleted**
    (`/srv/openbao/data.unadministrable-2026-09-17`).
-2. `playbooks/openbao.yml` re-initialised on empty storage: new recovery key, new AppRoles, new PKI
+2. `playbooks/openbao.yml` re-initialized on empty storage: new recovery key, new AppRoles, new PKI
    root, new Transit key, root token revoked.
 3. **The three values were encrypted, committed and pushed before anything else was done**, and only
    then was the init file deleted.

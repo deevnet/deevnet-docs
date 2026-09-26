@@ -198,7 +198,7 @@ That line, not a new one, decides the tooling:
 
 No Terraform state is introduced for substrate, so
 `architecture/substrate/management-plane/extended-services.md` §5 — *"Terraform is intentionally
-not used for management-plane workloads"* — is honoured rather than amended.
+not used for management-plane workloads"* — is honored rather than amended.
 
 The instance runs on **hv01**, the management hypervisor, as a container on a shared host for
 substrate services that serve tenants. It does not run on hv02: a service every tenant depends on

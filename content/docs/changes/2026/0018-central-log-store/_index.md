@@ -264,7 +264,7 @@ ansible-playbook playbooks/site.yml --limit observability_store
 
 ### Step 5: Ship the Fedora domain VMs
 
-> **Withdrawn from this change on 2026-09-22.** It was trialled on one host before the decision. See
+> **Withdrawn from this change on 2026-09-22.** It was trialed on one host before the decision. See
 > *Outcome*. The role is kept on branch `journal-upload-wip` of the mgmt collection for the later change.
 
 A new shipping role on `log_shippers`:
@@ -291,7 +291,7 @@ decide from memory.
 
 **Store and forward, not a switch-over.** The local journal stays exactly as it is and is still the
 first copy. `journal-upload` reads from it and records how far it got in a state file, so it can
-resume from that point after `obs` or the network has been down. That resume behaviour should be
+resume from that point after `obs` or the network has been down. That resume behavior should be
 confirmed on the F44 unit (`--save-state`), not assumed. Nothing on the host changes how it logs, so
 no later change is needed to "cut over". The one loss window is local journal rotation: an outage
 longer than the journal's retention loses the lines rotated out before upload.
@@ -350,7 +350,7 @@ The change is Complete only when all of these pass, measured from the network, n
    `/select` and `/insert`, and 401 for an unknown token. A forged `AccountID: 5` with `msg`'s token
    landed in `(0, 0)`. **Control:** querying VictoriaLogs directly on `obs`'s loopback, bypassing
    vmauth, gives 2 marker lines for `AccountID=0` and 0 for `AccountID=5`, and `tenant_ids` lists only
-   `(0, 0)`. So the backend would have honoured the header, and vmauth replaced it.
+   `(0, 0)`. So the backend would have honored the header, and vmauth replaced it.
 3. **Per-host revocation works.** Remove one host's vmauth user. That host's uploads are refused,
    and every other host keeps shipping. Restore the user, and the host's backlog arrives.
    *Withdrawn with Step 5.*
@@ -421,7 +421,7 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 | 2026-09-21 19:55–20:04 | 2 | Both images staged. The newest releases were re-checked on GitHub, so the pins are current. The command used was the builder collection's whole `site.yml`; see Departures. |
 | 2026-09-21 ~20:10 | 4 | The log store's first deploy. It **stalled at 20:14:20** while pushing the vmauth image, because the core router hung ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)). VictoriaLogs was running; vmauth and the firewall rules were not yet in place. |
 | 2026-09-21 20:44 | 4 | Deploy re-run after the router's power-cycle; it completed. The role's own check, that a request with no token is refused, passed. Then Verification 1, 2 and 4 were run from the Builder: see *Verification*. |
-| 2026-09-21 20:50–21:19 | 5 (trial) | Journal shipping trialled on `dv02nms001v01` only. Three defects were found and fixed in the role: an SELinux denial, a client-certificate default, and the token's file permissions (see Departures). By 21:19 it was uploading. |
+| 2026-09-21 20:50–21:19 | 5 (trial) | Journal shipping trialed on `dv02nms001v01` only. Three defects were found and fixed in the role: an SELinux denial, a client-certificate default, and the token's file permissions (see Departures). By 21:19 it was uploading. |
 | 2026-09-21 21:19 → 2026-09-22 07:5x | 5 (trial) | `nms` shipped **194,077 lines**, its full journal backfill, then its live journal. It restarted 337 times overnight because the router kept dropping. That retry log became evidence for INC-0004. |
 | 2026-09-22 ~07:55 | — | **Scope change** (see above). On `nms`, journal-upload was stopped and disabled, and its token drop-in was removed. The package `systemd-journal-remote`, the site CA at `/etc/pki/deevnet/site-ca.pem` and the SELinux label on 8427 were left in place; each is harmless. What `nms` shipped stays in the store. |
 | 2026-09-22 | 4 | Verification 6 and 7 run; see *Verification*. The store is complete. |
@@ -456,10 +456,10 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
   `log-store` and `log-shipping`, so they run on their own.
 - **Step 4 was interrupted by INC-0004** and completed on the re-run. The half-deployed state it left
   was safe: vmauth absent, and the syslog port not yet opened.
-- **Steps 5 and 6 were withdrawn** (see *Scope change*). **Step 5 was trialled on one host before
+- **Steps 5 and 6 were withdrawn** (see *Scope change*). **Step 5 was trialed on one host before
   that**, and the trial found three things the later change needs:
-  - **SELinux denies the connection.** `systemd_journal_upload_t` may not connect to an unlabelled
-    port (`unreserved_port_t`). Labelling 8427 as `journal_remote_port_t` on the shipping host fixes it,
+  - **SELinux denies the connection.** `systemd_journal_upload_t` may not connect to an unlabeled
+    port (`unreserved_port_t`). Labeling 8427 as `journal_remote_port_t` on the shipping host fixes it,
     and SELinux stays enforcing. The AVC is logged under `comm="systemd-journal"`, which is truncated,
     so a grep for `journal-upload` misses it.
   - **It demands a client certificate** unless `ServerKeyFile=-` and `ServerCertificateFile=-` are set,

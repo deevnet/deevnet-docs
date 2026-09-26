@@ -180,7 +180,7 @@ classes, but this site serves only `iot`, so the served-class check refuses the 
 the guard is never reached. Unit-tested only, and it will stay that way until a second class is
 served here.
 
-### One behaviour worth recording
+### One behavior worth recording
 
 `GET /v1/tenants/<unknown>/devices` as the operator returns **`200` with an empty list**, not `404`.
 That is not particular to devices: `wifi-keys` and `workloads` answer the same way, and only the
@@ -192,13 +192,13 @@ is unaffected.
 
 - **Stage 2 is redirected at the broker.** *Decided 2026-09-20.* The next step was to be the
   per-device credential of ADR-0020 §2, which needs a new ADR because the mechanism is deliberately
-  open. It is deferred in favour of the **VerneMQ broker** (ADR-0012 §8), because the first real
+  open. It is deferred in favor of the **VerneMQ broker** (ADR-0012 §8), because the first real
   consumer — the eds vertical, `lightd → palette → lightd → mqtt01 → stand` — is publish/subscribe,
   and ADR-0020 §1 keeps MQTT preferred wherever pub/sub fits. The broker needs **no new ADR**:
   ADR-0012 §8 decided the broker, §10 its topic confinement and §3 the `deevnet_iot_broker_account`
   resource. This registry is a prerequisite for that resource, which takes an optional device and
   checks its trust class.
-- **ADR-0021 — the device credential — is deferred, not cancelled.** It is still what ADR-0020 §5's
+- **ADR-0021 — the device credential — is deferred, not canceled.** It is still what ADR-0020 §5's
   invariant needs for a non-MQTT device-facing service, and stage 3 cannot start without it.
 - **The rendezvous service** (ADR-0020 §5) stays unstarted until a real consumer decides its
   protocol surface, which ADR-0020's implementation notes require.

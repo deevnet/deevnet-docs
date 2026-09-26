@@ -45,8 +45,8 @@ In rough order of how often each is the cause:
 |---|---|
 | Never joins Wi-Fi | the PSK is the one from `terraform output`, not an older one; the SSID is the output's (`DVNTM-IOT` on the mobile kit); the board is 2.4 GHz-capable and in range |
 | Joins, but the broker connection fails at TLS | the CA is `site-ca.pem` (DER for MicroPython); you connect by **name**, `mqtt.mobile.deevnet.net`, not by IP — the certificate is for the name; the ESP32 has a sane clock |
-| TLS works, `CONNACK` refused (not authorised) | username is `<tenant>-<name>`; the password is from the *current* state — a `-replace` issued a new one |
-| Connected, but publishes vanish | the topic must be the **granted** one, `<tenant>/…`, exactly. An unauthorised publish is dropped or disconnects the client — it is not an error you will see |
+| TLS works, `CONNACK` refused (not authorized) | username is `<tenant>-<name>`; the password is from the *current* state — a `-replace` issued a new one |
+| Connected, but publishes vanish | the topic must be the **granted** one, `<tenant>/…`, exactly. An unauthorized publish is dropped or disconnects the client — it is not an error you will see |
 | Connected, subscribed, but nothing arrives | a refused subscription is also silent. Compare your topic with `granted_subscribe` |
 | Keeps reconnecting | two devices with the same client id — the broker drops the older one each time |
 | Log lines missing | the device publishes to `<tenant>/log/<its own device name>` and nothing else under `log/`; read partition `<index>-2`, not the default |

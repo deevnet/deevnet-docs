@@ -43,7 +43,7 @@ is real, and no existing record addresses it.
 
 ### What was verified before deciding
 
-This record rests on reading the Proxmox source rather than inferring from behaviour. Unless marked
+This record rests on reading the Proxmox source rather than inferring from behavior. Unless marked
 otherwise, each statement below was read from
 [`EvpnPlugin.pm`](https://git.proxmox.com/?p=pve-network.git;a=blob_plain;f=src/PVE/Network/SDN/Zones/EvpnPlugin.pm;hb=HEAD)
 or from this estate's own code.

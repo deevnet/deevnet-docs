@@ -71,7 +71,7 @@ a client device proves who it is; it does not merely assert it.
 
 ## Two ways to consume a service
 
-Both are the same shape — authenticated, owner-scoped, dialled out to from both sides. They differ
+Both are the same shape — authenticated, owner-scoped, dialed out to from both sides. They differ
 in protocol semantics, and the choice belongs to the service, not to the tenant.
 
 | | Brokered messaging | Direct service access |

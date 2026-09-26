@@ -550,7 +550,7 @@ construction, but it reverses "the API generates" and wasn't chosen.
   inventory.
 - **The existing guard already fits.** ADR-0009's automation never deletes objects inventory
   doesn't declare (§7), so it leaves the keys in place already. What changes is its report: it has
-  to recognise API-owned keys as expected rather than list them as drift. *Built 2026-09-18:* it
+  to recognize API-owned keys as expected rather than list them as drift. *Built 2026-09-18:* it
   **names the profiles whose contents it is not inspecting** rather than counting their keys,
   because counting would mean calling `getPPSKProfileDetail`, which returns every tenant's password
   in plaintext. Live tenant credentials have no business in Ansible memory or output.
@@ -930,7 +930,7 @@ stops that VLAN reaching another.
 
 ## Open questions
 
-1. **Can a custom Omada role narrow the API's own controller credential?** This is defence in depth
+1. **Can a custom Omada role narrow the API's own controller credential?** This is defense in depth
    for §2, not tenant scoping. It wasn't checked.
 2. **Where does the API's database live, and how is it backed up?** *Answered 2026-09-14:* with the
    API, as a container in the provisioning VM on the management hypervisor (§7). How it's backed up is deferred.
@@ -1018,9 +1018,9 @@ prove.
   fails as a timeout inside a tenant's own `terraform apply`, which is why it was worth recording
   and is worth recording that it is closed.*
 - **Still open: open question 1** — whether a custom Omada role can narrow the API's own controller
-  credential. It is defence in depth for §2, not tenant scoping, and it has never been checked.
+  credential. It is defense in depth for §2, not tenant scoping, and it has never been checked.
   *Corrected 2026-09-19: this line previously read "open question 1 (device-to-tenant ingress)",
-  which mislabelled it — ingress is ADR-0011's open question 5, now answered by
+  which mislabeled it — ingress is ADR-0011's open question 5, now answered by
   [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/). The real
   open question 1 was consequently tracked nowhere.* The same unchecked item is also recorded at
   ADR-0010 and ADR-0011 open question 3.

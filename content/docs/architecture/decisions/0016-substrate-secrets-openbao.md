@@ -231,7 +231,7 @@ reads every secret. The key gets the same care as the vault password.
 
 - **Checked on 2026-09-17 against `quay.io/openbao/openbao:2.6.2`, in a container on the Builder:**
   - A raw 32-byte key file is accepted by the static seal. The server reported `"type":"static"`, was
-    initialised with one recovery share, and **came back unsealed after a restart** with no operator.
+    initialized with one recovery share, and **came back unsealed after a restart** with no operator.
   - KV v2 read and write, Transit encrypt and decrypt (ciphertext `vault:v1:…`), PKI root generation
     and certificate issue for `api.mobile.deevnet.net` with an IP SAN.
   - An AppRole with a policy naming only its KV path, the Transit key and one PKI role read its KV

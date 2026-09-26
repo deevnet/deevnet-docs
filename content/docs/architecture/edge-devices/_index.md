@@ -41,7 +41,7 @@ and both are wrong.
 
 | Axis | Owned by | What it covers |
 |------|----------|----------------|
-| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behaviour |
+| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
 | **Identity** | The platform | Only what it must know to attach, authenticate and account for a device |
 | **Attachment** | The substrate, chosen by **trust class** | The access segment, over Wi-Fi or a switch port |
 | **Access** | Platform services, scoped per owner | Rendezvous services the device and the application both reach; per-device permissions |

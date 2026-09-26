@@ -55,8 +55,8 @@ See [Limits](/docs/policies/risk-management/resiliency/) for the full picture of
 ## The tenant fabric
 
 The tenant hypervisor runs an **EVPN/VXLAN fabric** local to itself — a single-member fabric today,
-modelled so that gaining a second member is additive rather than a redesign. It carries a real VTEP
-identity and an underlay even with no peers, so adding a node later is "add a neighbour" rather
+modeled so that gaining a second member is additive rather than a redesign. It carries a real VTEP
+identity and an underlay even with no peers, so adding a node later is "add a neighbor" rather
 than "invent an underlay after the fact."
 
 The fabric is where tenant isolation actually lives: one VRF per tenant, with an anycast gateway

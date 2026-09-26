@@ -169,7 +169,7 @@ tenant's network (§11).
 - **Why the fabric too:** the database is the registry, but the fabric is where a collision does
   damage. After the database is lost, zones built from the old allocations are still there. An
   allocator that only asked its own database would hand those numbers out again.
-- **Allocation is serialised** in the database, so two concurrent creates can't take the same index.
+- **Allocation is serialized** in the database, so two concurrent creates can't take the same index.
 
 ### 4. The API generates secrets; the tenant's state holds the authoritative copy
 
@@ -290,7 +290,7 @@ site's API and gets whatever index is free there.
   `modules/tenant` builds today: the EVPN zone on the fabric's controller, the tenant's VNets, and
   the subnet with SNAT through the exit node. Then it applies SDN.
 - **Numbers come from the index** (ADR-0002), as they do now.
-- **SDN apply is cluster-wide, so the API serialises it.** One apply runs at a time, across tenants.
+- **SDN apply is cluster-wide, so the API serializes it.** One apply runs at a time, across tenants.
   The fabric's own Terraform must not apply while a tenant step does.
 
 ### 12. The API builds workloads
@@ -390,7 +390,7 @@ is renamed.
 5. **Workload shape.** Which templates a tenant may choose, and whether cores, memory and disk have
    per-tenant limits.
 6. **The fabric and tenant SDN apply.** Does the fabric's Terraform move behind the same
-   serialisation, or is it applied only when no tenant step is running?
+   serialization, or is it applied only when no tenant step is running?
 
 ## To confirm when building
 

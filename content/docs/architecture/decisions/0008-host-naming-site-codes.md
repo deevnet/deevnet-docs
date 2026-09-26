@@ -42,7 +42,7 @@ an NS record cannot point at a CNAME. `ansible_fqdn`, `ansible_hostname` and
 | Container hostnames | `inventory_hostname` |
 
 So the name a host announces itself by — to a syslog collector, a metrics scrape, a backup
-catalogue, a restored VM on another node — is `hv01`, with no site in it. Two sites running the
+catalog, a restored VM on another node — is `hv01`, with no site in it. Two sites running the
 same automation would produce two hosts that are indistinguishable on the wire.
 
 ### Three things make now the cheapest moment
@@ -173,7 +173,7 @@ permits but a good deal of tooling still mishandles.
 **The form letter sits between the two digit runs deliberately.** Every field boundary except
 `dv|02` is then a letter-to-digit transition, which the eye catches without knowing the widths.
 The alternative — sequence and version adjacent, form last — puts a five-digit run with a
-non-obvious 3+2 split at the centre of the name, where `dv02hyp00101p` gives a reader nothing to
+non-obvious 3+2 split at the center of the name, where `dv02hyp00101p` gives a reader nothing to
 tell them it is not sequence `010` version `1`.
 
 `c` is reserved and unused: nothing is a first-class container host today, since PowerDNS and MinIO
@@ -283,7 +283,7 @@ defined in that site's inventory. The
 [home site roadmap](https://github.com/deevnet/deevnet-docs/blob/archive/home-site-2026-09/content/docs/roadmap/infrastructure/home/builder.md) (archived) describes a permanent, always-on
 provisioning node dedicated to the home site.
 
-This record settles it in favour of the roaming appliance, and site code `00` is what makes that
+This record settles it in favor of the roaming appliance, and site code `00` is what makes that
 expressible. A host that moves between sites cannot honestly carry either site's code; `00` says
 it belongs to none.
 
@@ -598,7 +598,7 @@ as if it were a namespace. They need fixing whenever this is executed, and three
 now:
 
 - **Both core routers claim the same service names.** `core-rt01` and `core-rt02` each declare
-  `gateway`, `dns` and `dhcp` as CNAMEs in one zone. The DNS role categorises aliases by name
+  `gateway`, `dns` and `dhcp` as CNAMEs in one zone. The DNS role categorizes aliases by name
   alone, so which host wins is a function of ordering. A live collision, inside one site, with no
   guard — and evidence that the pipeline has no collision detection to extend across sites.
 - **The DNS role's default domain is a site literal.** `dns_domain` defaults to

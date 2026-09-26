@@ -136,7 +136,7 @@ cd ansible-collection-deevnet.mgmt
 ansible-playbook playbooks/site.yml --skip-tags vms --limit dv02idn001v01
 ```
 
-The first run initialises it, enables KV, Transit, PKI and AppRole, generates the site CA, hands
+The first run initializes it, enables KV, Transit, PKI and AppRole, generates the site CA, hands
 Ansible its own AppRole and **revokes the root token**.
 
 **Verify:**

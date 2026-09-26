@@ -45,7 +45,7 @@ read it to use this guide.
 | [Wi-Fi keys](services/wifi-keys/) | A per-tenant key on the IoT SSID, landing your devices on the IoT network | {{< status-badge "active" "Available" >}} |
 | [Devices & MQTT](services/devices-and-mqtt/) | A device registry and TLS MQTT accounts confined to your own topics | {{< status-badge "active" "Available" >}} |
 | [Logs](services/logs/) | Your own log partitions: workload logs, and device logs arriving over MQTT | {{< status-badge "active" "Available" >}} |
-| [Dashboards](services/dashboards/) | A Grafana organisation of your own with your logs wired in; dashboards as code | {{< status-badge "active" "Available" >}} |
+| [Dashboards](services/dashboards/) | A Grafana organization of your own with your logs wired in; dashboards as code | {{< status-badge "active" "Available" >}} |
 | [State store](services/state-store/) | An S3 backend for your Terraform state | {{< status-badge "active" "Available" >}} |
 | [Secrets, metrics, identity, object storage, code delivery](services/coming-soon/) | Designed, not yet built | {{< status-badge "planned" "Coming soon" >}} |
 

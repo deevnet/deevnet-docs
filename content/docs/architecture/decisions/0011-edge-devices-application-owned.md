@@ -168,7 +168,7 @@ and serves it through scoped platform services.
 
 | Axis | Owned by | What it covers |
 |---|---|---|
-| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behaviour |
+| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
 | **Identity** | The platform | Only what it must know to attach, authenticate and account for a device |
 | **Attachment** | The substrate, chosen by **trust class** | The access segment (IoT or IoT Vendor), over Wi-Fi or a switch port |
 | **Access** | Platform services, scoped per owner | Rendezvous services on IoT Backend, such as the broker; per-device permissions |
@@ -395,7 +395,7 @@ This was a pre-acceptance check of the assumptions above, run from the control h
 - read-only API calls to the core router
 - TCP and ICMP probes
 
-Vendor statements are quoted as written. Anything inferred is labelled.
+Vendor statements are quoted as written. Anything inferred is labeled.
 
 ### Wireless: per-key VLANs (PPSK)
 

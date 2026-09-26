@@ -105,7 +105,7 @@ three octets**:
 An earlier draft of this standard encoded role, node group and instance index
 into those three octets. That was dropped: role encoding requires a
 hand-maintained registry mapping roles to numbers, which is precisely the
-error-prone artefact deterministic addressing is meant to remove. The VMID is a
+error-prone artifact deterministic addressing is meant to remove. The VMID is a
 registry that already exists, that the hypervisor already enforces uniqueness
 on, and that a management VM must declare anyway.
 

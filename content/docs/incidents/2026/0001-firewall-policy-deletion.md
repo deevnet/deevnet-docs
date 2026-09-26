@@ -66,7 +66,7 @@ Nothing detected the outage while it was happening:
 - All five IoT hosts went silent from management — the actual signal — and it was attributed
   to the hosts being powered off.
 
-The record does not say when the outage was first recognised as one.
+The record does not say when the outage was first recognized as one.
 
 ## Timeline
 
@@ -198,7 +198,7 @@ prevented it.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Refuse to reconcile from a degraded discovery — assert the interface list and zone map are non-empty, that every `from_zone` resolved, and that `desired_rules` is non-empty before categorising | `discover_interfaces.yml`, `configure_rules.yml` | {{< action-status "Done" >}} `1bdba4a` |
+| 1 | Refuse to reconcile from a degraded discovery — assert the interface list and zone map are non-empty, that every `from_zone` resolved, and that `desired_rules` is non-empty before categorizing | `discover_interfaces.yml`, `configure_rules.yml` | {{< action-status "Done" >}} `1bdba4a` |
 | 2 | Make deletion opt-in via `firewall_delete_unmanaged: false`, with the "LEFT IN PLACE" report, following the `opnsense_dns` / `opnsense_dhcp` precedent | `defaults/main.yml`, `configure_rules.yml` | {{< action-status "Done" >}} `1bdba4a` |
 | 3 | Protect the lifeline rules structurally — both anti-lockout rules and `trusted -> management` excluded from `rules_to_delete` even when deletion is enabled | `firewall_protected_descriptions`; mobile adds `trusted -> management` in `group_vars/all/firewall.yml` | {{< action-status "Done" >}} `1bdba4a` |
 | 6 | Correct the discovery-fix commit message before the branch is pushed | `ansible-collection-deevnet.net` | {{< action-status "Done" >}} `b6dd249` carries the correction |

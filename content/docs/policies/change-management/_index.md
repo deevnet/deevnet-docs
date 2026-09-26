@@ -109,7 +109,7 @@ OpenBao's recovery key and Ansible's AppRole that way and had to rebuild the ser
 the switch role will show you what a run is about to do — and they fail to in two different
 ways.
 
-| Roles | Module | Behaviour under `--check` |
+| Roles | Module | Behavior under `--check` |
 |---|---|---|
 | `opnsense_firewall`, `opnsense_dns`, `opnsense_dhcp`, `opnsense_vlans` | `ansible.builtin.uri` | Declares `check_mode: support: none`, so Ansible **skips** every writing task. The run reports nothing pending and no diff, whatever the real run would do — including deletions. |
 | `switch_vlans` | `ansible.netcommon.cli_command` | Supports check mode but accepts only `show` commands, so every configuration line **fails**: `Only show commands are supported when using check_mode`. |
