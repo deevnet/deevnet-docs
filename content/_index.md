@@ -29,6 +29,25 @@ type: docs
 >
 > — Chris Deever
 
+## What it does for you at a CARPE meetup
+
+It isn't just for me. Bring a board and an idea, and the factory gives you the rest:
+
+- **Rapid prototyping.** Messaging and logging are already decided, with an opinionated approach:
+  [MQTT with an account per device](/docs/runbook/tenant/services/devices-and-mqtt/), and
+  [logs](/docs/runbook/tenant/services/logs/) you can chart in your own
+  [dashboards](/docs/runbook/tenant/services/dashboards/). You spend the evening on your device and
+  what it does, not on standing up a broker.
+- **No public cloud.** Your devices talk to services in the room, which you declare in your own
+  Terraform. There's no cloud account to sign up for, no IoT platform to learn, and nothing leaves
+  the site.
+- **Shareable two ways:**
+  - **On site, during a meetup.** Join the tenant dev network and apply your tenant
+    ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/)).
+  - **At home, as an example.** Take your backend home on a Pi of your own
+    ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)), or use the whole factory as a
+    pattern for your own home lab. [The code](/docs/github/) and these docs are open.
+
 **A cloud you can carry.** The Mobile Factory is bundled in the base of a modular toolkit that is carried to a site, set up,
 and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
 its own Terraform and gets:
