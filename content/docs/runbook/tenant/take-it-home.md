@@ -1,6 +1,6 @@
 ---
 title: "Take It Home on a Pi"
-weight: 6
+weight: 7
 ---
 
 # Take It Home on a Pi
