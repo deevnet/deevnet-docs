@@ -25,31 +25,35 @@ Goals:
 
 **Site**: mobile (mobile)
 
-The mobile site uses a portable developer workstation (laptop) as its bootstrap node. Dual-NIC capability is achieved via built-in Ethernet or USB adapter.
+The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the mobile site, `dv00bld001p01` (the Builder). Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
+
+![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
 
 ### Hardware
 
 | Attribute | Value |
 |-----------|-------|
-| **Type** | Developer workstation (laptop) |
-| **NICs** | Dual-NIC (built-in + USB adapter) |
-| **Storage** | 500GB+ |
-| **RAM** | 16GB+ |
-| **CPU** | Modern x86_64 |
+| **Model** | AOOSTAR N1 PRO |
+| **CPU** | Intel N150 (upgraded N100 variant) |
+| **Memory** | 12GB LPDDR5 |
+| **Storage** | 1TB NVMe SSD |
+| **Ethernet** | 2x 2.5GbE (Intel i226-V) |
+| **Form factor** | Mini PC |
+| **Cooling** | Active (fan) |
 
 ### Selection Rationale
 
-- **Portability**: Already carried for development work
-- **Dual-NIC capable**: Upstream + substrate connectivity
-- **Sufficient resources**: Meets bootstrap node requirements
-- **Dual-purpose**: Serves as both workstation and bootstrap node
-
+- **Dual 2.5GbE NICs** for upstream + substrate connectivity (bootstrap requirement)
+- **Compact form factor** for dedicated always-on bootstrap role
+- **12GB RAM** sufficient for artifact serving and Ansible execution
+- **1TB storage** for ISOs, images, and boot artifacts
+- **Intel i226-V NICs** for reliable network performance
 
 ---
 
 ## Operating System
 
-Both bootstrap nodes run Fedora Workstation, configured via the `deevnet.builder` Ansible collection.
+The bootstrap node runs Fedora Workstation, configured via the `deevnet.builder` Ansible collection.
 
 | Attribute | Value |
 |-----------|-------|
