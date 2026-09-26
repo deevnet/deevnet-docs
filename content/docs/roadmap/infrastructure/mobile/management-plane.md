@@ -3,7 +3,7 @@ title: "Extended Management Plane"
 weight: 3
 tasks_completed: 10
 tasks_in_progress: 9
-tasks_planned: 18
+tasks_planned: 23
 ---
 
 # Extended Management Plane
@@ -78,6 +78,22 @@ only**: the substrate's own logs are not centralized.
 - ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/0022-central-logging/) §6)
 - Not pursued: shipping the substrate hosts' logs. CHG-0018 started it and CHG-0019 removed it
   under ADR-0027. Not counted
+
+**Deferred from ADR-0022's v1.** Each waits on something named, rather than being unplanned:
+
+- ⏳ Tenant events from services the site doesn't write. v1 publishes only the Deevnet API's events
+  into a tenant's `(index, 1)`. A collector that maps PowerDNS and VerneMQ lines to a tenant gets its
+  own record, once those lines are shown to identify the tenant reliably (Open question 3)
+- ⏳ Per-workload ingest tokens, so one workload can be revoked alone. v1 issues one per tenant.
+  Waits on [ADR-0021](/docs/architecture/decisions/0021-tenant-secrets/)'s delivery path (Open
+  question 5)
+- ⏳ Per-tenant quotas. v1 has one disk cap and one retention period, so a noisy tenant shortens
+  everyone's history. Revisit when VictoriaLogs has per-tenant quotas, or if it happens (Open
+  question 4)
+- ⏳ Operator queries across tenants. v1 reads one partition at a time. Revisit when VictoriaLogs
+  ships multi-tenant querying (Open question 1)
+- ⏳ Re-measure `obs`'s memory and disk at site volume. Measured so far at one host's volume, before
+  tenants shipped
 
 ---
 

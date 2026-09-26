@@ -7,13 +7,14 @@ weight: 22
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted, as narrowed by ADR-0027 |
+| **Accepted** | 2026-09-26, by the operator. What stands after [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) is built and in use: the store, vmauth, the partitions and the API-issued tenant tokens ([CHG-0018](/docs/changes/2026/0018-central-log-store/) to [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)). Tenants read it through Grafana since [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/). The v1 deferrals are on the [Extended Management Plane](/docs/roadmap/infrastructure/mobile/management-plane/) roadmap. |
 | **Date** | 2026-09-21 |
 | **Scope** | Where substrate and tenant logs are sent and kept, how they are partitioned, who may read which partition, and which substrate events a tenant sees. Logs only: metrics and alerting are left for their own records. |
 | **Supersedes, in part** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/0013-management-services-domain-vms/) §5, **for logs only**. That section splits observability into a substrate store on management and a tenant store on Platform. For logs there is now one store, on Platform. Everything else in ADR-0013 stands, including both VMs. |
 | **Extended by** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/0023-metrics-and-alerting/): metrics use the same store host, proxy, partitions and tenant tokens *(Proposed)*. [ADR-0024: Dashboards](/docs/architecture/decisions/0024-dashboards/): tenants read their logs in Grafana, one organisation per tenant *(Proposed)* |
 | **Superseded in part by** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/): **the scope and §5.** The store is for tenants only, the substrate and network devices don't ship to it, and the syslog listener goes. Device logs arrive over MQTT into a new `(index, 2)`. The store, proxy, partitions, tokens and §4 stand. *(Proposed)* |
-| **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): the store, *Complete 2026-09-22*. Substrate shipping and tenant tokens follow in later records. |
+| **Built by** | [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): the store, *Complete 2026-09-22*. [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/): tenant tokens. [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/): device logs over MQTT. Substrate shipping was withdrawn by ADR-0027. |
 | **Related** | [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/0002-tenant-fabric-numbering/), [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/0010-tenants-consume-platform-services/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/0016-substrate-secrets-openbao/), [ADR-0021: Tenant Secrets](/docs/architecture/decisions/0021-tenant-secrets/) |
 
 ---
@@ -337,8 +338,10 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 
 - That vmauth overwrites a caller-supplied `AccountID` and `ProjectID` once `headers` sets them.
   **Confirmed in the source** (`dst.Set`, above). **Confirmed live** in CHG-0018, from the Builder: a
-  forged `AccountID: 5` landed in `(0, 0)`, and a direct backend query showed `(5, 0)` empty. A test from
-  a tenant segment is still owed, with the tenant-token change.
+  forged `AccountID: 5` landed in `(0, 0)`, and a direct backend query showed `(5, 0)` empty.
+  **Confirmed with tenant tokens** in [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/):
+  `tdemo`'s token given `eds`'s partition headers never reached `eds`'s line, in either direction.
+  That record doesn't say which segment the test ran from.
 - That a `url_map` entry with no match, and no `default_url`, is refused rather than routed to
   `(0, 0)`. **Confirmed** in CHG-0018: 400 `missing route`.
 - That `systemd-journal-upload` with `Header=` on Fedora 44 (systemd 259) delivers into the right
@@ -365,16 +368,21 @@ Vendor documentation was re-checked the same day, against VictoriaLogs v1.52.0.
 
 ## Current state
 
-- **Proposed.** The stack and partition scheme were reviewed and accepted as written on 2026-09-21,
-  and every open question was answered.
+*Updated 2026-09-26.*
+
+- **Accepted, as narrowed by ADR-0027.** The stack and partition scheme were reviewed and accepted as
+  written on 2026-09-21, and every open question was answered. The operator accepted the record on
+  2026-09-26. The condition was that the v1 deferrals (Open questions 1, 3, 4 and 5, and re-measuring
+  `obs` at site volume) each have a roadmap item. They are on the
+  [Extended Management Plane](/docs/roadmap/infrastructure/mobile/management-plane/) roadmap.
 - **The store is built:** [CHG-0018](/docs/changes/2026/0018-central-log-store/) (Complete
   2026-09-22). VictoriaLogs and vmauth run on `dv02obs001v01`, and the collector VM `dv02col001v01`
   is built and empty. Both replaced `dv02tob001v01` and `dv02sob001v01`.
-- **Nothing ships to it yet.** Making substrate hosts write to it is a later change. The core router
-  is excluded until its LAN NIC is stable
-  ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)).
-- **This record stays Proposed until a shipping change is complete**, by the operator's decision on
-  2026-09-22. A store with nothing writing to it has not yet shown the design works.
+- **Tenants ship to it.** [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) gave each tenant
+  an ingest and a read token, and a tenant wrote and read its own partition.
+  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/) carries device logs over MQTT into
+  `(index, 2)`, and [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) put Grafana in front of
+  it. This met the 2026-09-22 condition that a store with nothing writing to it stays Proposed.
 - **Superseded in part by [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)**
   (2026-09-22): tenants only, so §5's substrate shipping and the syslog listener are withdrawn for
-  good. What remains of this record is accepted through ADR-0027, when a tenant first ships.
+  good. Everything else in this record stands.
