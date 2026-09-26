@@ -13,7 +13,42 @@ type: docs
 
 <img src="20260210_160235.jpg" alt="The Deevnet Mobile Factory kit" style="max-height: 220px; border-radius: 8px; margin-bottom: 0.8rem;" />
 
-**A cloud you can carry.** The Mobile Factory is a case of hardware that is carried to a site, set up,
+## Why I built this
+
+> I organize the [Columbus Arduino and Raspberry Pi Enthusiasts](https://carpe-tech.org) meetup
+> group. I originally built the Mobile Factory to have a portable network for multi-device IoT
+> development: something I could carry to a meetup and set up, so a room full of boards, sensors and
+> laptops had a network to work on together.
+>
+> It grew from there into a reference implementation for infrastructure automation. The network, the
+> services and the images it runs are all built from code, and everything can be rebuilt from
+> scratch.
+>
+> The whole thing is bundled in the base of a Bauer modular toolkit, so the device components and tools
+> come on site with it, ready for hardware hacks and prototyping.
+>
+> — Chris Deever
+
+## What it does for you at a CARPE meetup
+
+It isn't just for me. Bring a board and an idea, and the factory gives you the rest:
+
+- **Rapid prototyping.** Messaging and logging are already decided, with an opinionated approach:
+  [MQTT with an account per device](/docs/runbook/tenant/services/devices-and-mqtt/), and
+  [logs](/docs/runbook/tenant/services/logs/) you can chart in your own
+  [dashboards](/docs/runbook/tenant/services/dashboards/). You spend the evening on your device and
+  what it does, not on standing up a broker.
+- **No public cloud.** Your devices talk to services in the room, which you declare in your own
+  Terraform. There's no cloud account to sign up for, no IoT platform to learn, and nothing leaves
+  the site.
+- **Shareable two ways:**
+  - **On site, during a meetup.** Join the tenant dev network and apply your tenant
+    ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/)).
+  - **At home, as an example.** Take your backend home on a Pi of your own
+    ([Take It Home on a Pi](/docs/runbook/tenant/take-it-home/)), or use the whole factory as a
+    pattern for your own home lab. [The code](/docs/github/) and these docs are open.
+
+**A cloud you can carry.** The Mobile Factory is bundled in the base of a modular toolkit that is carried to a site, set up,
 and then builds and runs IoT services for the people who use it. A tenant declares what it needs in
 its own Terraform and gets:
 
@@ -33,8 +68,8 @@ its own Terraform and gets:
 - **It travels.** Its address space and DNS zone move with the case, so it is the same factory wherever
   it is set up, with no renumbering.
 
-<small>In the case: router, switch, wireless AP, two Proxmox hypervisors, Raspberry Pis, and a bench
-of breadboards and components for prototyping devices.</small>
+<small>In the toolkit's base: router, switch, wireless AP, two Proxmox hypervisors and Raspberry Pis.
+The rest of the toolkit carries the breadboards, components and tools for prototyping devices.</small>
 
 ---
 
