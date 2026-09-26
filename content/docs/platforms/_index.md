@@ -25,7 +25,7 @@ The **network layer** provides connectivity, routing, and network services:
 - **Edge Router** — Upstream connectivity (ISP/travel router)
 - **Core Router** — Internal routing, firewall, DNS, DHCP, gateway
 - **Access Switch** — Layer 2 connectivity, VLAN tagging
-- **Access Point** — Wireless connectivity
+- **Wireless Access Point** — Wireless connectivity
 
 ### Management Plane
 
