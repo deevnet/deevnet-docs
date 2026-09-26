@@ -48,7 +48,7 @@ Reset only when the switch is unreachable by every route, or its configuration i
 | | |
 |---|---|
 | Device | `dv02acc001p01`, TP-Link Omada SG2218, hardware 1.20 |
-| Firmware | `1.20.24 Build 20260509` since 2026-09-16 ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)), in `image1.bin`; `1.20.1` kept in `image2.bin`. See [firmware upgrade](#firmware-upgrade). |
+| Firmware | Running version: [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge). The previous build is kept in the other image slot as the rollback. See [firmware upgrade](#firmware-upgrade). |
 | Managed address | 10.20.99.10, gateway 10.20.99.1 |
 | Uplink to router | `gigabitEthernet 1/0/1`, native VLAN 999 |
 | Builder port | `gigabitEthernet 1/0/16`, access VLAN 99 |

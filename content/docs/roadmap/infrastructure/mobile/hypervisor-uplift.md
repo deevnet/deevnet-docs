@@ -19,7 +19,7 @@ tenant fabric, not routine patching — PVE 9 is what makes the EVPN underlay ma
 
 ## Project Vision & Scope
 
-Both hypervisors currently run **PVE 8.4.1**. PVE 9 is based on Debian 13 (Trixie), so this is a
+Both hypervisors ran **PVE 8.4.1** when this project was opened. PVE 9 is based on Debian 13 (Trixie), so this is a
 major-version distribution upgrade on each node, not a package update.
 
 **In Scope**
@@ -119,7 +119,7 @@ The tenant fabric is no longer blocked, and its underlay is defined as code rath
 hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
 [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/).
 
-**dv02hyp001p01 remains on 8.4.1.** It carries the management plane, so it needs its own maintenance
+**dv02hyp001p01 remains on PVE 8.4** ([current version](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01)). It carries the management plane, so it needs its own maintenance
 window; nothing in the tenant fabric waits on it. Nor does tenant DNS
 ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)) — cloning a template and
 running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on dv02hyp002p02.

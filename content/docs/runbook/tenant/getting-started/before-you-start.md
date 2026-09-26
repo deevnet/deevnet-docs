@@ -105,7 +105,8 @@ It installs `deevnet/deevnet` **and** the `grafana` provider, and checks every d
 its `SHA256SUMS`. **Off-site,** `bash install-provider.sh --github` fetches the same prebuilt
 provider from the
 [GitHub release](https://github.com/deevnet/terraform-provider-deevnet/releases). **From
-source** (needs Go and make): clone the repository, `git checkout v0.4.1`, then `make mirror`.
+source** (needs Go and make): clone the repository, check out the latest tag
+(`git checkout "$(git describe --tags --abbrev=0)"`), then `make mirror`.
 
 Pin it in your configuration:
 

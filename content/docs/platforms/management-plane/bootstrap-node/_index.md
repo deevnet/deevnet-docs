@@ -91,7 +91,7 @@ Both bootstrap nodes run Fedora Workstation, configured via the `deevnet.builder
 | Attribute | Value |
 |-----------|-------|
 | **OS** | Fedora Workstation |
-| **Version** | Fedora 43+ |
+| **Version** | [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms) |
 | **Collection** | `deevnet.builder` applied |
 
 The bootstrap node is provisioned via PXE from another bootstrap node, or manually installed and then configured via Ansible self-application.

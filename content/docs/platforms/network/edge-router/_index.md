@@ -58,7 +58,7 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 | Attribute | Value |
 |-----------|-------|
 | **OS** | OpenWrt |
-| **Version** | 23.05-SNAPSHOT |
+| **Version** | [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge) |
 | **Base** | GL-iNet firmware (OpenWrt fork) |
 
 ### Roles

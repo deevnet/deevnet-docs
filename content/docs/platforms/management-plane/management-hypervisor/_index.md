@@ -75,8 +75,8 @@ Both management hypervisors run Proxmox VE.
 | Attribute | Value |
 |-----------|-------|
 | **OS** | Proxmox VE |
-| **Version** | PVE 8.4.1 |
-| **Base** | Debian 12 (Bookworm) |
+| **Version** | [Software Catalog](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01) |
+| **Base** | Debian |
 
 ### Automation Capability
 

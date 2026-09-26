@@ -56,7 +56,7 @@ specification.
 
 Stand up the single-member fabric on dv02hyp002p02.
 
-**No longer gated** — dv02hyp002p02 runs PVE 9.2.11 and serves `/cluster/sdn/fabrics`, so the underlay is
+**No longer gated** — dv02hyp002p02 runs PVE 9 and serves `/cluster/sdn/fabrics`, so the underlay is
 defined as code rather than as hand-maintained node state.
 
 - ✅ Substrate transport: `tenant_transit` (VLAN 50) and `tenant_underlay` (VLAN 51) in inventory;

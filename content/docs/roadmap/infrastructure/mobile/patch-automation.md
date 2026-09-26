@@ -1,9 +1,9 @@
 ---
 title: "Patch Automation"
 weight: 2
-tasks_completed: 0
+tasks_completed: 2
 tasks_in_progress: 0
-tasks_planned: 16
+tasks_planned: 14
 ---
 
 # Patch Automation
@@ -41,12 +41,12 @@ Define and implement consistent patching strategies across all substrate compone
 
 ---
 
-## Firmware Upgrades ⏳
+## Firmware Upgrades ✅
 
 Device firmware updates required for full automation coverage.
 
-- ⏳ EAP650-Outdoor AP firmware update (1.0.4 → latest) — current firmware doesn't accept VLAN config from Omada 6.1 controller, requiring manual standalone UI configuration
-- ⏳ SG2218 Access Switch firmware update — evaluate newer firmware for improved CLI compatibility and Omada integration
+- ✅ EAP650-Outdoor AP firmware update, so the controller can push VLAN configuration to it ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/))
+- ✅ SG2218 Access Switch firmware update ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Adoption into Omada is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold
 
 ---
 

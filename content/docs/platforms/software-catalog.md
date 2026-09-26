@@ -9,6 +9,17 @@ Every piece of software the mobile site runs or is built with: the version in us
 who supports it. Grouped by substrate layer, like the rest of this section. Why each was chosen is on
 its platform page or ADR; this page is the list.
 
+**This page is the system of record for versions.** Other pages name the software and link here
+instead of stating its version. They keep a version only where the context needs it:
+- a change or incident record, which states what was true at the time
+- a behaviour tied to a version, such as "Grafana 13 cannot delete an organisation"
+- a minimum requirement, such as MicroPython 1.23 or later
+- a literal value in a procedure, such as a firmware upgrade chain or an image tag
+
+When a change upgrades something, it updates this page. Versions are gathered by hand today:
+[Software Discovery](/docs/roadmap/infrastructure/software-discovery/) is the roadmap item for
+scanning the site instead.
+
 *As of 2026-09-26.*
 
 ---
@@ -228,7 +239,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 - **`dv02hyp001p01`'s Proxmox VE:** "8.4.1" on the platform page and roadmap, but "8.4.21" in
   [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (2026-09-15). One is a typo.
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
-- **Not recorded:** the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
+- **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
   and `pkg info`, which `opnsense-diag.sh` already collects); whether `os-wol` is installed; the
   GL.iNet firmware; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
   Fedora release; the OS on `dv02rpi001p01` to `…003p01`.
@@ -243,13 +254,12 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 **Unmaintained software still running:** MinIO (archived upstream; [ADR-0026](/docs/architecture/decisions/0026-object-storage/))
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
 
-**Other pages that disagree with this one:**
-- [Core Router](/docs/platforms/network/core-router/): OPNsense "24.x".
+**Other pages that disagree with this one** (facts, not versions):
 - [Network Controllers](/docs/platforms/network/network-controllers/): the controller "on the
   bootstrap node". It moved to `dv02nms001v01` in CHG-0008.
 - [Access Switch](/docs/platforms/network/access-switch/): managed by "Omada API". It is standalone,
   configured over CLI, and its adoption ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/))
   is on hold.
-- [Change Management](/docs/policies/change-management/): controller "6.1".
-- The PXE role page's example shows Fedora 43, and the Proxmox ISO build still defaults to 8.4-1.
+- The Proxmox ISO build and [Build a Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)
+  still default to `PVE_ISO_VERSION=8.4-1`, while the tenant hypervisor runs 9.
 - CHG-0018 says the hypervisors run Debian 12. `dv02hyp002p02` runs Debian 13.
