@@ -11,9 +11,10 @@ instead of an evening of wiring. Then you change it: the firmware is a starting 
 project.
 
 The kits themselves, what's in them, how they're wired and their reference firmware, belong to
-[CARPE](https://carpe-tech.org/) and live in the [carpe-tech](https://github.com/carpe-tech) GitHub
-organisation. This page is the Deevnet side: how any kit is borrowed into your tenant and handed
-back.
+[CARPE](https://carpe-tech.org/): the kit list is on CARPE's
+[Hands-On](https://carpe-tech.org/hands-on/) page, and wiring and firmware live in the
+[carpe-tech](https://github.com/carpe-tech) GitHub organisation. This page is the Deevnet side: how
+any kit is borrowed into your tenant and handed back.
 
 {{< hint info >}}
 Not this page: a **bank Pi** to develop on is the [Pi Lab](/docs/runbook/tenant/pi-lab/), and taking
