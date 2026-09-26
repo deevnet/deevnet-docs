@@ -1,9 +1,9 @@
 ---
 title: "Tenant Platform"
 weight: 4
-tasks_completed: 1
-tasks_in_progress: 3
-tasks_planned: 2
+tasks_completed: 2
+tasks_in_progress: 5
+tasks_planned: 0
 ---
 
 # Tenant Platform
@@ -33,9 +33,18 @@ How tenant traffic is isolated, routed, and addressed.
   Proxmox's SDN DNS integration targets a PowerDNS API; the core router runs Unbound, so it does
   not fit as-is.
 
-## Define tenant contracts ⏳
+## Define tenant contracts 🔄
 
 The interface every tenant must satisfy to be rebuildable against the substrate.
+
+**In practice, the contract is now the Deevnet API and its Terraform provider**
+([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), deployed by
+[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)). A tenant is admitted with a single-use
+enrollment token, then declares itself, its workloads and its names through one provider. It holds
+no Proxmox credential, no vault access and no index. What it may consume is
+[ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)'s, and the tenant
+runbook describes each service. What is still missing is the boundary written down as one
+specification.
 
 - What a tenant **supplies** as code: network attachment, DNS records, compute/resource
   declaration, naming.
@@ -66,20 +75,18 @@ defined as code rather than as hand-maintained node state.
   segment.
 - ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
 
-## Tenant DNS publication ⏳
+## Tenant DNS publication ✅
 
-The one part of the tenant contract still undecided: how a tenant authors its own records and
-publishes them into the substrate zone so `service.tenant.site.deevnet.net` resolves.
+How a tenant authors its own records and publishes them into the substrate zone so
+`service.tenant.site.deevnet.net` resolves.
 
-Framed in [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) — problem and
-constraints stated, decision open.
-
-- Proxmox SDN can register records itself, but only against a PowerDNS API — the core router runs
-  Unbound, so it does not fit without a shim. Its registration is also tied to IPAM allocation,
-  which the tenant module bypasses by addressing from cloud-init, so a backend alone would publish
-  nothing.
-- The substrate's own DNS is inventory-driven Ansible, which is the opposite of tenant-owned.
-- The last open part of the tenant contract.
+- **Decided:** RFC 2136 updates with a per-zone TSIG key, into substrate-run PowerDNS, reached
+  through the core router's forward
+  ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+- Proven end to end with `tdemo` (below), and since
+  [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) issued through the Deevnet API.
+- Workloads resolve through the tenant-transit resolver, not the authoritative server
+  ([CHG-0011](/docs/changes/2026/0011-tenant-workload-resolver/)).
 
 ## Tenant provisioning tooling 🔄
 
@@ -108,10 +115,38 @@ Prove the whole path with a real tenant.
   forward.
 - ✅ Moved to its own repository with an empty plan as the acceptance gate: same state, same
   resource addresses, same running VM, same records, zero API mutations.
-- ⏳ Inter-tenant isolation — needs a second tenant to test against. Note the *state* half is
-  already server-enforced: a tenant's credential is refused for another tenant's prefix.
+- 🔄 Inter-tenant isolation. There are now three tenants (`tdemo`, `eds`, `mabell`), and every
+  platform service's isolation is **measured**: state (a credential is refused for another tenant's
+  prefix), devices (`404` for another tenant's,
+  [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), broker topics
+  ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)), logs in both directions
+  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/)) and dashboards
+  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Still untested: network isolation
+  between two tenants' workloads.
 - ⏳ Rebuild-from-scratch drill — now re-scoped to the reference implementation: create a throwaway
   tenant repository from `examples/tenant/`, apply, verify, destroy. Run at each module MAJOR tag.
+
+## Platform services for tenants 🔄
+
+What a tenant can declare today beyond networks, workloads and names, each through the provider.
+
+- ✅ Wi-Fi keys: a PPSK key per tenant on `DVNTM-IOT`
+  ([CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/))
+- ✅ Device registry ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/))
+- ✅ MQTT: VerneMQ, with broker accounts the API writes
+  ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/),
+  [CHG-0016](/docs/changes/2026/0016-broker-accounts/))
+- ✅ Logs: ingest and read tokens, and device logs over MQTT
+  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/),
+  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
+- 🔄 Dashboards: a Grafana organisation per tenant, live; closes when the tenants have their
+  passwords ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
+- ✅ A tenant dev network, `DVNTM-TD`, reaching only the API, the state store, the broker, logs,
+  Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
+- ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
+  site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
+- ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
+  ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 
 ---
 

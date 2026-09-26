@@ -175,7 +175,7 @@ question is written down, not when it is answered.
   to keep one running. Its blast radius now covers tenant secrets, and an audit device and a proven
   snapshot restore are preconditions for accepting this record. Extends ADR-0016; depends on ADR-0017.
 - [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) —
-  *Proposed.* One log store for the substrate and every tenant, on Platform, because every zone
+  *Accepted* (2026-09-26), as narrowed by ADR-0027. One log store for the substrate and every tenant, on Platform, because every zone
   with something to log can already push there and management accepts traffic only from trusted.
   It supersedes, for logs only, ADR-0013 §5's split into two stores. VictoriaLogs runs behind vmauth
   on the tenant observability VM. It was chosen over Logstash with OpenSearch, which needs 4 GB or
