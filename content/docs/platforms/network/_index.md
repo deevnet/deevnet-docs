@@ -34,11 +34,11 @@ Network devices collectively provide:
 
 ## Automation
 
-Network infrastructure is configured via Ansible:
+Network infrastructure is configured via Ansible, from the `deevnet.net` collection:
 
-| Device | Collection | Notes |
-|--------|------------|-------|
-| Core Router | `vyos.vyos` (target) | VyOS CLI-based automation |
-| Core Router | `deevnet.net` (current) | OPNsense API-based automation |
-| Access Switch | Omada controller | TP-Link SDN management |
-| Access Point | Omada controller | TP-Link SDN management |
+| Device | How | Notes |
+|--------|-----|-------|
+| Core Router | OPNsense REST API | One role per service, run in order by `playbooks/opnsense.yml`: VLAN interfaces, firewall rules and aliases (pf), DNS (Unbound), DHCP (Kea), gateways and routes. Interface IP configuration has no API (as of 25.7), so the VLAN role pauses while it is done in the GUI. The bundled services in use are in the [Software Catalog](/docs/platforms/software-catalog/#core-router-opnsense-dv02cor002p01) |
+| Access Switch | SSH CLI (`switch_vlans`) | Standalone. Adoption into the Omada controller is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold |
+| Access Point | Omada controller Open API (`omada-wireless.yml`) | Adopted; the controller provisions the SSIDs and PPSK keys from inventory |
+| Edge Router | None | Not managed by automation |
