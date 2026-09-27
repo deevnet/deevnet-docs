@@ -72,6 +72,26 @@ Reach these by SSH as `a_autoprov`.
 | Omada controller downloads and release notes | `https://support.omadanetworks.com/us/product/omada-software-controller/?resourceType=download` |
 | SG2218 (hardware 1.20) firmware | `https://support.omadanetworks.com/us/product/sg2218/v1.20/?resourceType=download` |
 
+### Checkouts on the Builder
+
+Every repository is checked out side by side under `/srv/dvnt/` on `dv00bld001p01`. Playbooks run from there reach the site the Builder is connected to, because the inventory is site-specific.
+
+```
+/srv/dvnt/
+├── ansible-collection-deevnet.builder/   # Builder, PXE and artifact roles
+├── ansible-collection-deevnet.mgmt/      # Management-plane and control-plane services
+├── ansible-collection-deevnet.net/       # Network device configuration
+├── ansible-inventory-deevnet/            # Host inventory (mobile)
+├── deevnet-container-image-factory/      # Source-built service images
+├── deevnet-image-factory/                # Packer OS image builds
+├── deevnet-log-bridge/                   # MQTT-to-log-store bridge
+├── deevnet-provisioning-api/             # The Deevnet API
+├── deevnet-tenant-fabric/                # Tenant EVPN fabric (hypervisor readiness)
+├── deevnet-tenant-tdemo/                 # The demo tenant
+├── terraform-provider-deevnet/           # Tenant Terraform provider
+└── deevnet-docs/                         # This documentation
+```
+
 ---
 
 VLANs, subnets and DHCP ranges are in [Network Reference](network-reference/). Names come from

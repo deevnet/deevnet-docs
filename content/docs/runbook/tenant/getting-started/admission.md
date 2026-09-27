@@ -10,7 +10,9 @@ does for you; everything after it you do yourself.
 
 ## Pick a name
 
-- 1 to 8 characters, lowercase letters and digits, **starting with a letter** — `^[a-z][a-z0-9]{0,7}$`
+- 1 to 8 characters, lowercase letters and digits, **starting with a letter** — `^[a-z][a-z0-9]{0,7}$`.
+  The limit is the tenant hypervisor's: your network's SDN zone ID is your name verbatim, and
+  Proxmox caps zone IDs at 8 characters
 - It becomes your DNS zone (`<name>.mobile.deevnet.net`), your MQTT topic prefix (`<name>/…`) and
   the name of your network. Pick something you will not mind seeing everywhere
 - `sensors`, `bench1`, `ptv` are fine; `Pico-Demo` and `meetupproject` are not

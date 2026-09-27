@@ -12,4 +12,4 @@ Release lines evaluated for the Management Plane layer. Each item page shows its
 
 | Item | Role | Current |
 |---|---|---|
-| *None yet.* | | |
+| [Substrate package mirror](package-mirror/) | Artifact server | {{< status-badge "planned" "Not yet evaluated" >}} Candidate; nothing built |

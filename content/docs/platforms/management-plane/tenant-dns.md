@@ -20,13 +20,15 @@ implementation: what runs, and the specifics that are not guessable from the des
 | **Service** | PowerDNS Authoritative ([version](/docs/platforms/software-catalog/#domain-vms)) |
 | **Backend** | SQLite (`gsqlite3`) |
 | **Runtime** | Podman container, `pdns-auth`, managed by a systemd unit |
-| **Host** | `dv02tdn001v01` on the management hypervisor (dv02hyp001p01) |
-| **Address** | `10.20.99.30`, DHCP reservation keyed on its declared MAC |
+| **Host** | `dv02idn001v01`, the identity domain VM, on the management hypervisor (dv02hyp001p01) |
+| **Address** | `10.20.25.21`, on the platform segment, DHCP reservation keyed on its declared MAC |
 | **Operator alias** | `tdns.mobile.deevnet.net` |
 | **Provisioned by** | `deevnet.mgmt`, role `powerdns` |
 
 It runs on the **management** hypervisor, not the tenant one: a service every tenant depends on does
-not belong inside the tenant compute domain.
+not belong inside the tenant compute domain. It shares the identity VM with OpenBao
+([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)); the `tenant_dns`
+inventory group keeps it movable to its own host.
 
 ### Host networking, not published ports
 
@@ -95,7 +97,7 @@ produces `zone.zone` rather than the apex. The apex is `@`:
 pdnsutil replace-rrset tdemo.mobile.deevnet.net tdemo.mobile.deevnet.net NS 3600 ...
 
 # right
-pdnsutil replace-rrset tdemo.mobile.deevnet.net @ NS 3600 dv02tdn001v01.mobile.deevnet.net
+pdnsutil replace-rrset tdemo.mobile.deevnet.net @ NS 3600 dv02idn001v01.mobile.deevnet.net
 ```
 
 ### `default-soa-content`, and it is not retroactive
@@ -112,16 +114,19 @@ which is why the role does that on every run rather than at creation
 
 `tdns` is a host **alias** on the resolver, so it resolves as a CNAME, and RFC 2181 §10.3 forbids an
 NS record pointing at an alias. The apex NS names the host's own address record,
-`dv02tdn001v01.mobile.deevnet.net`. `tdns` remains an operator convenience and the value tenants
+`dv02idn001v01.mobile.deevnet.net`. `tdns` remains an operator convenience and the value tenants
 point their updates at — neither of which is a delegation.
 
 ---
 
 ## Deliberate configuration choices
 
-**The HTTP API is off.** Its key is global to the server, so exposing it would give any holder write
-access to every tenant's zone — the reason ADR-0004 chose dynamic update over the API. Zone and key
-administration is done with `pdnsutil`, which reads the database directly.
+**The HTTP API is on for the Deevnet API alone.** Its key is global to the server, so any holder can
+write every tenant's zone — the reason ADR-0004 chose dynamic update for tenants. The key is given
+only to the Deevnet API ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)
+§6), and `webserver-allow-from` refuses every address but the API host's. Tenants still publish over
+RFC 2136 with a TSIG key bound to their own zone. With no API key in the vault the role turns the
+API off, and `pdnsutil` is the only way in.
 
 **AXFR is disabled.** No secondary exists yet. When one is added, it is allowed by address rather
 than by opening transfers generally.
@@ -132,49 +137,28 @@ than by opening transfers generally.
 
 ## Zone lifecycle
 
-Onboarding a tenant creates, per tenant, a forward and a reverse zone:
+The Deevnet API creates a tenant's zones on admission and re-ensures them on every reconcile, through
+the PowerDNS HTTP API. For each tenant it ensures:
 
-```bash
-pdnsutil create-zone      tdemo.mobile.deevnet.net
-pdnsutil import-tsig-key  tdemo hmac-sha256 <secret from vault>
-pdnsutil set-meta         tdemo.mobile.deevnet.net TSIG-ALLOW-DNSUPDATE tdemo
-pdnsutil set-meta         tdemo.mobile.deevnet.net ALLOW-DNSUPDATE-FROM 10.20.99.0/24
-pdnsutil replace-rrset    tdemo.mobile.deevnet.net @ NS  3600 dv02tdn001v01.mobile.deevnet.net
-```
+- a forward zone, `<tenant>.<site>.deevnet.net`, and its reverse zone
+- a TSIG key named for the tenant
+- `TSIG-ALLOW-DNSUPDATE`, binding that key to the tenant's zones only
+- `ALLOW-DNSUPDATE-FROM`, the management, trusted and tenant-transit subnets
+- the apex NS, `dv02idn001v01.mobile.deevnet.net`
 
-All of it is driven from the declared tenant list, so it is one automation run rather than a
-checklist.
-
-TSIG secrets are **imported from the vault, never generated on the server**. A generated key would
-not survive a rebuild, and every tenant's IaC would need re-issuing.
+**The TSIG secret comes from the API, never generated on the server.** A generated key would not
+survive a rebuild, and every tenant's IaC would need re-issuing. After a rebuild, a reconcile puts
+the same keys back.
 
 The apex SOA is reconciled rather than replaced wholesale: the serial is carried forward and bumped
 when the content actually changes. Resetting it would make the zone look permanently stale to any
 future secondary; bumping it unconditionally would churn it on every run.
 
----
-
-## Verifying it
-
-```bash
-# the service itself
-dig @10.20.99.30 tdemo.mobile.deevnet.net SOA
-dig @10.20.99.30 tdemo.mobile.deevnet.net NS
-
-# through the resolver, which is what clients actually do
-dig @10.20.99.1 tdemo.mobile.deevnet.net SOA
-
-# what the server actually holds
-podman exec pdns-auth pdnsutil list-all-zones
-podman exec pdns-auth pdnsutil list-zone tdemo.mobile.deevnet.net
-```
-
 A healthy apex names the server, not the placeholder:
 
 ```
-tdemo.mobile.deevnet.net  3600 IN NS   dv02tdn001v01.mobile.deevnet.net.
-tdemo.mobile.deevnet.net  3600 IN SOA  dv02tdn001v01.mobile.deevnet.net hostmaster.tdemo... 1 ...
+tdemo.mobile.deevnet.net  3600 IN NS   dv02idn001v01.mobile.deevnet.net.
+tdemo.mobile.deevnet.net  3600 IN SOA  dv02idn001v01.mobile.deevnet.net. hostmaster.tdemo.mobile.deevnet.net. ...
 ```
 
-The namespace boundary is worth testing rather than assuming: an update signed with one tenant's key
-and aimed at another tenant's zone must be REFUSED by the server.
+To check the service, see [Verify Site → Tenant DNS](/docs/runbook/substrate/building-recovery/build-verification/#tenant-dns).

@@ -50,16 +50,52 @@ No automated install exists. Manual USB install required.
 
 1. Create bootable USB with OPNsense image
 2. Boot from USB and complete installer
-3. Apply configuration via `deevnet.net` Ansible collection:
+3. Apply configuration from the `deevnet.net` collection (see [Applying Configuration](#applying-configuration)):
    ```bash
-   cd ~/home/ansible-collection-deevnet.net
-   ansible-playbook playbooks/site.yml --limit routers
+   cd ansible-collection-deevnet.net
+   make opnsense
    ```
 
 ### Future Options
 
 - USB installer with embedded config.xml
 - Alternative whitebox solution
+
+---
+
+## Applying Configuration
+
+Every managed network device is configured from the `deevnet.net` collection. Run the targets from the collection root:
+
+| Device | Target | Playbook | How it reaches the device |
+|--------|--------|----------|---------------------------|
+| Core Router | `make opnsense` | `playbooks/opnsense.yml` | OPNsense REST API |
+| Access Switch | `make switch` | `playbooks/switch-vlans.yml` | SSH CLI (`switch_vlans`), standalone only |
+| Wireless AP | `make wireless` | `playbooks/omada-wireless.yml` | Omada controller Open API |
+| Edge Router | — | — | Not managed by automation |
+
+### Core Router
+
+`playbooks/opnsense.yml` runs one role per service, in dependency order: VLAN interfaces, firewall rules and aliases, DNS (Unbound), DHCP (Kea), then gateways and routes.
+
+- **Interface IPs have no API** (as of OPNsense 25.7). The VLAN role pauses while you set them in the GUI; continue once they are saved.
+- **Firewall writes are opt-in.** The firewall role reports drift and only writes with `-e firewall_apply=true`.
+
+### Access Switch
+
+`make switch` applies VLANs, trunks and access ports over the CLI to a **standalone** switch. Once a switch is adopted into the Omada controller the role refuses to run without `-e switch_vlans_break_glass=true`. Adoption is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold.
+
+### Wireless
+
+`make wireless` applies the LAN networks, PPSK profiles, SSIDs and the AP's name and address from inventory.
+
+- By default it **plans without writing**.
+- `APPLY=1` writes.
+- `ADOPT=1` writes and also adopts a pending AP.
+
+Change wireless configuration only this way, never in the controller UI. Tenant Wi-Fi keys are the exception: the Deevnet API issues them per tenant.
+
+**The controller's event log records device events, not client associations.** It tells you that an AP connected or dropped, but not whether a client briefly lost its association. If that matters for a change, watch a client directly while `make wireless` runs.
 
 ---
 
@@ -76,7 +112,7 @@ Create VLAN sub-interfaces on OPNsense and VLANs in the switch database. Non-dis
 See [VLAN Foundation](/docs/changes/2026/0001-flat-network-to-vlans/vlan-foundation/) for detailed steps.
 
 ```bash
-cd ~/home/ansible-collection-deevnet.net
+cd ansible-collection-deevnet.net
 make migration-opnsense-vlans    # OPNsense VLAN interfaces
 make migration-switch-vlans      # Switch VLAN database
 make migration-switch-trunk      # Trunk uplink with tagged VLANs
@@ -124,7 +160,7 @@ The WoL playbook registers all hosts with `wol: true` in their inventory interfa
 After the network is segmented and Core Router is handling DNS/DHCP, transition the bootstrap node to TFTP-only mode:
 
 ```bash
-cd ~/home/ansible-collection-deevnet.builder
+cd ansible-collection-deevnet.builder
 make core-auth
 ```
 

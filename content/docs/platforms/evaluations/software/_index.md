@@ -14,6 +14,6 @@ Release lines evaluated for a role, by layer. How a line is evaluated, and the c
 | Layer | Items |
 |---|---|
 | [Network](network/) | [VyOS](network/vyos/) (on hold) |
-| [Management Plane](management-plane/) | none yet |
+| [Management Plane](management-plane/) | [Substrate package mirror](management-plane/package-mirror/) (candidate) |
 | [Tenant Compute](tenant-compute/) | none yet |
 | [Build & Automation Tooling](tooling/) | none yet |

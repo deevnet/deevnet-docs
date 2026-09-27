@@ -106,14 +106,4 @@ The platform segment has reservations only and no pool at all.
 
 ## Authority Transition
 
-Per the [Correctness Standard](/docs/standards/correctness/#52-authority-modes-are-explicit):
-
-1. During initial provisioning, the bootstrap node provides DNS/DHCP
-2. Core router is provisioned and configured via Ansible
-3. Authority explicitly transitions to core router
-4. Bootstrap node's dnsmasq is disabled
-5. Core router becomes the production DNS/DHCP server
-
-{{% hint warning %}}
-**This transition is explicit, not automatic.** Running two DNS/DHCP authorities simultaneously will cause conflicts.
-{{% /hint %}}
+The core router is the production DNS/DHCP authority. During a greenfield build or a full recovery, the Builder's dnsmasq holds authority instead, and the two are never authoritative at once. The model is in [Builder → Authority Transition](/docs/architecture/builder/#authority-transition). To move authority in either direction, see the [Authority Transition runbook](/docs/runbook/substrate/building-recovery/authority-transition/).

@@ -104,6 +104,25 @@ curl --cacert $CA -X POST -H "Authorization: Bearer $OPERATOR_TOKEN" \
 The tenant ends `ready`, and every step succeeded. A `502` names the backend that is down
 (recorded: [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/)).
 
+### Tenant DNS
+
+The table row above proves the server answers. To look further:
+
+```bash
+# through the resolver, which is what clients actually do
+dig @10.20.99.1 tdemo.mobile.deevnet.net SOA
+
+# the apex names the server, never a.misconfigured.dns.server.invalid
+dig +short @10.20.25.21 tdemo.mobile.deevnet.net NS
+
+# what the server actually holds (on dv02idn001v01)
+sudo podman exec pdns-auth pdnsutil list-all-zones
+sudo podman exec pdns-auth pdnsutil list-zone tdemo.mobile.deevnet.net
+```
+
+The namespace boundary is worth testing rather than assuming: an update signed with one tenant's key
+and aimed at another tenant's zone must be REFUSED by the server.
+
 ---
 
 ## PXE infrastructure

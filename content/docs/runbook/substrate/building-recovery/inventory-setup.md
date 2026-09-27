@@ -145,6 +145,24 @@ the VM's first boot: [Allocate VM Identity](vm-identity/).
 
 ---
 
+## Workstation Users
+
+Hosts in the `workstations` group get the operator accounts listed in `dev_users`, in `group_vars/workstations.yml`:
+
+```yaml
+dev_users:
+  - name: cdeever
+    primary_group: cdeever
+    extra_groups:
+      - wheel
+    home: /home/cdeever
+    github_keys_url: "https://github.com/cdeever.keys"
+```
+
+The `workstation` role in `deevnet.builder` creates each account and installs its SSH keys from `github_keys_url`.
+
+---
+
 ## Host Variables Reference
 
 | Path | Purpose |

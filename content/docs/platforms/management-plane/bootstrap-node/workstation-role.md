@@ -47,17 +47,7 @@ Configures the HashiCorp RPM repository and installs:
 
 ## Configuration
 
-Define users in inventory (`group_vars` or `host_vars`):
-
-```yaml
-dev_users:
-  - name: cdeever
-    primary_group: cdeever
-    extra_groups:
-      - wheel
-    home: /home/cdeever
-    github_keys_url: "https://github.com/cdeever.keys"
-```
+Users come from `dev_users` in inventory (`group_vars/workstations.yml`). See [Seed Inventory → Workstation users](/docs/runbook/substrate/building-recovery/inventory-setup/#workstation-users).
 
 ---
 

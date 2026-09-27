@@ -264,6 +264,15 @@ Two things this is **not**, both verified by rebuilding the VM from scratch each
 `next_server` is empty on the subnet. Check the OFFER's `siaddr` in a capture before
 changing anything else.
 
+### TFTP requests arrive, but transfers fail
+
+Check that the files exist on the artifact server, then fetch one by hand from another host on the segment:
+
+```bash
+ls -la /srv/tftp/grubx64.efi /srv/tftp/grub.cfg-*
+tftp 10.20.99.95 -c get grubx64.efi /tmp/test.efi   # expect about 1.2 MB
+```
+
 ### It boots the interactive menu instead of installing
 
 The MAC-pinned GRUB config is missing, or the firmware's `$net_default_mac` format has no
