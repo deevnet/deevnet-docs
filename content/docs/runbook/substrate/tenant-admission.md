@@ -25,7 +25,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | The API | `https://api.mobile.deevnet.net:8080`, reachable from the Builder |
 | The operator token | `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault |
 | The site CA | `ansible-collection-deevnet.mgmt/.openbao/site-ca.pem` on the control node |
-| The provider | the tenant installs `deevnet/deevnet` 0.4.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
+| The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
 ---
 
@@ -40,14 +40,23 @@ curl -sS --cacert site-ca.pem \
 ```
 
 ```json
-{ "name": "mabell", "enrollment_token": "s.…", "expires_at": "2026-09-26T…Z" }
+{ "name": "mabell", "enrollment_token": "s.…", "expires_at": "2026-09-26T…Z",
+  "wifi": { "ssid": "DVNTM-TD", "psk": "…" } }
 ```
+
+`wifi` is the tenant's own `DVNTM-TD` key
+([ADR-0029](/docs/architecture/decisions/tenant-networking/0029-tenant-developer-network-keys/)): a
+tenant needs that network to reach the API at all, so its first key comes with the admission. Add
+`"mac":"AA-BB-CC-00-11-22"` to the request to bind it to one laptop. When the tenant creates itself,
+the key becomes its own Wi-Fi key `admission`.
 
 | | |
 |---|---|
 | The name | `^[a-z][a-z0-9]{0,7}$` — it becomes a PVE SDN zone ID, a DNS label and a state-store user |
 | The token | single-use, expires after `DEEVNET_ENROLLMENT_TTL` (72h by default) |
-| A name already registered | answers `409`. Admission creates nothing; it only authorizes |
+| A name already registered | answers `409`. Admission creates nothing but that key; it only authorizes |
+| Admitting the name again | issues a new key; the one handed over before stops working |
+| An admission never used | `DELETE /v1/admissions/<name>` revokes its key. The token itself just expires |
 
 ## 2. Hand over four things
 
@@ -71,7 +80,7 @@ credential for 72 hours.
 ## 3. Where the tenant applies from
 
 Every apply has to reach the API, and after the first one the state store too. Give the tenant the
-**`DVNTM-TD`** key (`deevnet_wifi_psk.tenant_dev`): that segment reaches the API, the state store,
+**`DVNTM-TD`** key, the one in the admission's `wifi`, not a shared one: that segment reaches the API, the state store,
 the broker, the log store, Grafana and SSH on tenant workloads, and nothing else
 ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Guest is
 internet-only and IoT cannot reach the API. A trusted seat still works, but it reaches the

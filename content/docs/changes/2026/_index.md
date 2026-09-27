@@ -9,7 +9,7 @@ bookCollapseSection: true
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
 | CHG-0030 | 2026-09-27 | [The State Store Over TLS](0030-state-store-tls/) | Configuration | mobile | Complete |
-| CHG-0029 | 2026-09-27 | [One Key per Tenant on DVNTM-TD](0029-tenant-developer-network-keys/) | Configuration | mobile | In progress |
+| CHG-0029 | 2026-09-27 | [One Key per Tenant on DVNTM-TD](0029-tenant-developer-network-keys/) | Configuration | mobile | Complete |
 | CHG-0028 | 2026-09-27 | [Tenants Log In to Their Own Workloads](0028-tenant-workload-login/) | Deployment | mobile | Complete |
 | CHG-0027 | 2026-09-25 | [A Switch Port for dv02rpi004p01](0027-rpi004-switch-port/) | Configuration | mobile | Complete |
 | CHG-0026 | 2026-09-25 | [Build Secrets Off the Disk](0026-build-secrets/) | Configuration | mobile | Complete |
