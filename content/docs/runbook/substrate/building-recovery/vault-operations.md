@@ -116,9 +116,50 @@ rather than leaving it open across a session.
 
 ---
 
+## Example vaults
+
+Beside every `vault.yml` is a plaintext `vault.example.yml`: the same keys with every value empty,
+and a comment on each key saying what it is and how it is generated. They are how a new site finds
+out which secrets it needs without decrypting anyone else's vaults.
+
+### Starting a new site's vaults
+
+```bash
+cd ansible-inventory-deevnet
+make empty-vault SITE=<site>    # vault.yml from every example under <site>/
+```
+
+It **never overwrites a vault**: a `vault.yml` that already exists is skipped and reported as
+`kept`, and the copy itself is `--no-clobber`. Running it again is safe. Then fill in each value,
+following its comment, and encrypt before committing anything:
+
+```bash
+make vault
+```
+
+A secret that is shown only once (a Proxmox token, an OpenBao init) follows
+[Secrets a change produces](#secrets-a-change-produces): encrypted, committed and pushed before
+going further.
+
+### Keeping the examples current
+
+When a vault gains or loses a key, regenerate the examples and commit them in the same change:
+
+```bash
+make unvault
+make vault-examples             # rewrites every vault.example.yml from the decrypted vaults
+make vault
+```
+
+The generator empties every value and writes nothing if a comment holds something that looks like a
+secret. `scripts/vault-examples.yml` lists comment paragraphs that stay only in the encrypted vault,
+and hints for keys whose vault has no comment. Read the diff before committing: the files are public.
+
+---
+
 ## Pre-commit Guard
 
-The `hooks/pre-commit` script runs automatically on every commit. It checks each staged `vault.yml` file by inspecting the staged blob (`git show ":$file"`), not the working tree. If any staged vault file does not begin with `$ANSIBLE_VAULT`, the commit is rejected with an error message.
+The `hooks/pre-commit` script runs automatically on every commit. It checks each staged `vault.yml` file by inspecting the staged blob (`git show ":$file"`), not the working tree. If any staged vault file does not begin with `$ANSIBLE_VAULT`, the commit is rejected with an error message. It also rejects any staged `vault.example.yml` that carries a value: examples hold keys only.
 
 If your commit is blocked:
 
@@ -142,6 +183,8 @@ The following `vault.yml` files exist across the inventory:
 | `mobile/group_vars/network_controllers/vault.yml` | Omada controller credentials (mobile) |
 | `mobile/group_vars/openbao/vault.yml` | OpenBao's bootstrap secrets: the static seal key, Ansible's AppRole, the recovery key (mobile) |
 | `mobile/group_vars/deevnet_api/vault.yml` | Deevnet API operator token, database password, token MAC key, Proxmox token (mobile) |
+| `mobile/group_vars/mqtt_brokers/vault.yml` | The broker's Erlang cookie, its database passwords, the log bridge's broker account (mobile) |
+| `mobile/group_vars/observability_store/vault.yml` | The log store's operator read token, Grafana's secret key (mobile) |
 | `mobile/host_vars/dv02hyp001p01/vault.yml` | dv02hyp001p01 secrets (mobile) |
 | `mobile/host_vars/dv02hyp002p02/vault.yml` | dv02hyp002p02 secrets (mobile) |
 | `home/group_vars/all/vault.yml` | The skeleton of the reserved home site, which is not built. `make vault` still finds it |
