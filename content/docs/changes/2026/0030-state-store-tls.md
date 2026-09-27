@@ -178,15 +178,29 @@ deploy the API again.
 
 ## Outcome
 
-*Completed after the change has run.*
+Run from the Builder on 2026-09-27. **One check remains: `segment-check.sh DVNTM-TD` from a
+computer on `DVNTM-TD`**, the first step of the next tenant's own run.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 12:41 | Start | Record In progress. `/home` on the Builder was 92% full; pruned one dangling image (2.4 GB free) |
+| 12:42 | 1 | API tagged `v0.9.0` (`75fdf40`) and staged; provider tagged `0.5.0` and staged with the scripts. Both carry the CHG-0028 and CHG-0029 code too, off until their own switches |
+| ~12:50 | 2 | inventory #62 merged. `site.yml --tags tenant-state`: ok=45 changed=11 failed=0. The role's health check passed over `https://127.0.0.1:9000` against the site CA, and `mc alias set local https://127.0.0.1:9000` passed, so `podman exec` does inherit `SSL_CERT_FILE`. From the Builder: `Verify return code: 0 (ok)`; SANs `tfstate.mobile.deevnet.net`, `dv02prv001v01.mobile.deevnet.net`, `10.20.25.20`, `127.0.0.1`; issuer the site CA; expires 2026-12-26. `https` health `200`; plain `http` gets only `400 Client sent an HTTP request to an HTTPS server` |
+| ~13:00 | 3 | mgmt #53 merged (version bump). `site.yml --tags deevnet-api`: ok=77 changed=9 failed=0. `/version` is `v0.9.0`, `/readyz` `200`; env has `MINIO_ADMIN_TLS=true`, `MINIO_ADMIN_CACERT`, `DEEVNET_STATE_ENDPOINT=https://…`; CHG-0028/0029 settings unchanged. Operator-created `tprobe` (index 4): `201`, and its own state credentials put, read and deleted an object in `tenants/tprobe/` over TLS and got `403` in `tenants/eds/`. Deleted: `204`, then `404` |
+| ~13:10 | 4 | eds and tdemo backends to `https` + `custom_ca_bundle` (eds and tdemo PRs merged). `terraform init -reconfigure` succeeded against the store over TLS for both; `plan` shows only `state_endpoint` `http` → `https`, no resource changes |
+| ~13:20 | 5 | net #39 merged. `site.yml --tags tenant-downloads`: ok=34 changed=1 failed=0. Downloads serve provider `0.4.1` and `0.5.0`; the served `tenant-check.sh`, run from the Builder, reports the API, the state store, the broker, the log store, Grafana and downloads all `TLS verified` |
 
 ### Departures from the plan
 
--
+- **The API version bump was missing from the procedure.** The `deevnet_api` role pins
+  `deevnet_api_version` (it was `v0.8.0`), so step 3 as written would have redeployed the old API
+  without the TLS client. Added as mgmt #53 before step 3.
+- **mabell was not affected.** Its state was never moved into the store (its backend block is
+  commented out), so step 4 was eds and tdemo only.
+- **tdemo needed `terraform init -upgrade`.** Its local lock file pinned the provider build `0.1.0`,
+  which was no longer installed. Nothing to do with TLS.
+- **The Builder's own Terraform plugin mirror** holds provider `0.1.0` to `0.4.0` only; the tenants
+  install from the downloads site, so it was not updated here.
 
 ## Follow-ups
 
