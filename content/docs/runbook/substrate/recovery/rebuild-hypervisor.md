@@ -55,12 +55,9 @@ After Build Management Plane's Steps 1 to 8, running **every** Step 8 tag on thi
 5. **Each tenant's network:** reconcile every tenant through the API
    ([Tenant Admission → Operator-only calls](/docs/runbook/substrate/tenant-admission/#operator-only-calls)).
    A reconcile rebuilds the tenant's zone, VNet and subnet on the fabric, with the same index.
-6. **Each tenant's workloads.** A reconcile does **not** rebuild workloads. The API rebuilds a
-   workload's VM, with the same VMID, MAC and address, whenever that workload is applied again.
-   But a tenant's plain `terraform apply` sees no change, because the API's registry still lists
-   the workload. How a tenant forces that re-apply has not been exercised, and it is on the
-   [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/) roadmap. Anything a
-   workload kept on its own disk is gone unless the tenant keeps it elsewhere.
+6. **Tell each tenant.** A reconcile does **not** rebuild workloads, and a tenant's plain apply does
+   not either. What a tenant does is
+   [After a Site Rebuild](/docs/runbook/tenant/recovery/after-a-site-rebuild/) in the tenant guide.
 
 ---
 

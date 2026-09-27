@@ -219,6 +219,8 @@ What the site hands a tenant developer, from the [tenant downloads](/docs/change
 
 ## Deevnet's Own Software
 
+What each piece does, where it runs and what it holds is in [Deevnet Software](/docs/platforms/deevnet-software/).
+
 | Repository | Version | License | What it builds |
 |---|---|---|---|
 | `deevnet-provisioning-api` | tag **v0.8.1**, deployed **v0.8.0** | **No license file** | The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag) |
