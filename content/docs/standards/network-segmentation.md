@@ -38,7 +38,7 @@ The management segment contains infrastructure management plane systems.
 - Single-NIC hypervisors SHOULD use VLAN trunking or firewall rules to isolate management access
 - Management segment MUST NOT contain end-user workloads or personal devices
 - Management segment SHOULD contain IPMI/BMC interfaces
-- Where a host's management interface is **not** its primary, that interface MUST be named with the `-mgmt` interface code ([ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) §3.6). Where it is the primary, it carries the host's root name and takes no suffix.
+- Where a host's management interface is **not** its primary, that interface MUST be named with the `-mgmt` interface code ([ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/) §3.6). Where it is the primary, it carries the host's root name and takes no suffix.
 
 ### 2. Trusted Segment
 
@@ -59,13 +59,13 @@ The storage segment isolates storage protocol traffic.
 - Storage segment SHOULD exist when dedicated storage traffic is needed
 - Storage segment MAY be omitted in minimal sites
 - Storage segment MUST NOT carry non-storage traffic
-- Hosts in storage segment MUST name that interface with the `-stor` interface code ([ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) §3.6)
+- Hosts in storage segment MUST name that interface with the `-stor` interface code ([ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/) §3.6)
 - Storage segment MAY use jumbo frames when all participants support them
 
 ### 4. Tenant Networks
 
 Tenant networks provide workload isolation per tenant. Since
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) they are **overlays owned by
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/) they are **overlays owned by
 the tenant compute domain**, not VLANs owned by the core router. The isolation requirements are
 unchanged; where they are enforced is not.
 
@@ -75,7 +75,7 @@ unchanged; where they are enforced is not.
 - Tenant networks MAY access shared services via explicit policy at the perimeter
 - Each tenant MUST have its own address allocation and DHCP scope, served by **fabric IPAM**
 - Tenant identifiers and subnets MUST be allocated from the globally-unique scheme in
-  [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)
+  [ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/)
 - A tenant MUST NOT require a VLAN, a switch change, or a core router change to create
 
 The core router sees only the aggregate **tenant transit** network and acts as its perimeter. It
@@ -172,9 +172,9 @@ rule can observe or constrain it. This is a property of the topology, not a gap 
 
 The IoT segment is the current instance: it carries devices belonging to different owners, and the
 site's access point offers no client isolation that preserves the service reachability those
-devices need. See [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)
+devices need. See [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/)
 open question 4 for the hardware position, and
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 for the
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5 for the
 control that holds instead.
 
 ### Reachability and Permission
@@ -203,7 +203,7 @@ host firewall rather than by the zone rule, which cannot distinguish one port fr
 
 This is the same reasoning as [Intra-Segment Traffic](#intra-segment-traffic) applied one layer
 out, and the service half of it is
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5:
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5:
 *"Network policy decides which segments may speak; only the service decides who is speaking."*
 
 ### Permitted Flows

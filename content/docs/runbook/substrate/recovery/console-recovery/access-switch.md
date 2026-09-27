@@ -116,7 +116,7 @@ assignments, the hostname and the default gateway, and commits to flash via the
 (`switch_management: omada`), the controller applies this same inventory, and `switch-vlans.yml`
 refuses to run against the switch. It becomes break-glass: for when the controller cannot be used,
 after the switch has been returned to standalone, with `-e switch_vlans_break_glass=true`. See
-[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
+[ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/).
 {{< /hint >}}
 
 {{< hint info >}}

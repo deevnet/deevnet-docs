@@ -1,6 +1,6 @@
 ---
 title: "INC-0004: Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts"
-weight: 4
+weight: -4
 ---
 
 # INC-0004: Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts
@@ -201,7 +201,7 @@ the store, and the router's syslog is excluded until the NIC is stable.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Send the router's syslog off-box so the last lines before a hang survive it. **Declined** by the operator on 2026-09-22: the central store is for tenants only ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)), and no separate router log path is wanted. Evidence of the next hang is to come from the console and from crash dumps (Preventive action 2). | — | {{< action-status "Declined" >}} |
+| 1 | Send the router's syslog off-box so the last lines before a hang survive it. **Declined** by the operator on 2026-09-22: the central store is for tenants only ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)), and no separate router log path is wanted. Evidence of the next hang is to come from the console and from crash dumps (Preventive action 2). | — | {{< action-status "Declined" >}} |
 | 2 | Enable a crash dump device (`dumpdev`) on the router so a kernel panic leaves a dump. **Now the main way the next event leaves evidence**, since off-box syslog was declined, so do it before or with the vendor-driver change. | `dv02cor002p01` | {{< action-status "Open" >}} |
 | 3 | Monitor the router's reachability, so a hang is detected by alert rather than by the operator losing a session | ADR-0023 | {{< action-status "Open" >}} |
 

@@ -1,6 +1,6 @@
 ---
 title: "CHG-0005: Wireless AP Firmware and Omada Adoption"
-weight: 5
+weight: -5
 ---
 
 # CHG-0005: Wireless AP Firmware and Omada Adoption
@@ -13,8 +13,8 @@ weight: 5
 | **Status** | **Complete, 2026-09-15.** The AP runs 1.3.11, is adopted and Connected, and serves the three controller-provisioned SSIDs; `DVNTM` was verified on a client landing on 10.20.10.x. PPSK with per-key VLAN binding was **proven on the AP** (phase 6) and then torn down, leaving `DVNTM-IOT` for a follow-up that provisions per-device keys from inventory. |
 | **Window** | 2026-09-15, one operator window. Operator on site at the AP; the AP was reached and adopted through the builder on VLAN 99, so no laptop on `gi1/0/2` was needed. |
 | **Site** | mobile |
-| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, now a container in the network management VM `dv02nms001v01` on `dv02hyp001p01` (moved off `dv00bld001p01`) ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). **Not** the access switch. |
-| **Automation** | Firmware mirrored by inventory #22. Networks, SSIDs and AP settings by `ansible-collection-deevnet.net` `playbooks/omada-wireless.yml`, through the documented Open API ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)). |
+| **Systems** | AP `dv02wap001p01` (EAP650-Outdoor v1); the Omada controller, now a container in the network management VM `dv02nms001v01` on `dv02hyp001p01` (moved off `dv00bld001p01`) ([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)). **Not** the access switch. |
+| **Automation** | Firmware mirrored by inventory #22. Networks, SSIDs and AP settings by `ansible-collection-deevnet.net` `playbooks/omada-wireless.yml`, through the documented Open API ([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/)). |
 | **Risk** | High. The AP's 1.3.3 hop cannot be undone, and adoption replaces the AP's own configuration with the controller's. |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the hand-set SSIDs this retires; [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) — the controller upgrade this was split from; [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) — the switch, deliberately separate |
 | **Related incidents** | [INC-0002](/docs/incidents/2026/0002-controller-vm-network-hang/) — the controller VM was silent at the start of this window; Phase 0 recovered it before the change could run |
@@ -32,7 +32,7 @@ nowhere but on the device.
 This change took the AP to 1.3.11, adopted it into the controller (on 6.3.0.45 since
 [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)), and had the controller provision
 the SSIDs from inventory through its documented Open API, per
-[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
+[ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/).
 
 **The access switch is not touched.** It stays standalone, configured by `switch_vlans`, as
 ADR-0009 allows for a switch that has not been adopted. Its firmware is
@@ -82,7 +82,7 @@ home site.
 ## Prerequisites
 
 - [ ] **The network management VM exists** (`dv02nms001v01`, on `dv02hyp001p01`), running the controller container, per
-  [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) (added
+  [ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) (added
   2026-09-14). This change adopts the AP into that controller, not the one on the Builder, so the AP
   is adopted once.
   - The items below that name the controller (the Owner account, the Open API client, site
@@ -113,7 +113,7 @@ home site.
   Open API spec 6.3.0.45 publishes, and `getSiteEntity` does not return it, so no play can assert
   it. The site has **no upgrade schedules** either (`getUpgradeScheduleList`).
 - [x] **Wi-Fi keys and client isolation for `DVNTM-IOT` decided.** Both are now settled in
-  [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/), which matters
+  [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/), which matters
   because `omada-wireless.yml` creates SSIDs and never rewrites one: whatever phase 1 creates is
   what stays.
   - **Keys (question 3, decided 2026-09-15):** per-device PPSK keys, each bound to the device's
@@ -252,7 +252,7 @@ the SSID, because everything here is deletable and the playbook's creation is no
 - Site-scoped endpoints `createPPSKProfile`, `addPSKsToPPSKProfile`, `getPPSKProfiles`,
   `deletePPSKProfile`, and `SsidPpskSettingOpenApiVO.ppskProfileId` to bind a profile to an SSID.
 
-So the controller side of [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)
+So the controller side of [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/)
 question 3 — per-device keys, each bound to the device's trust-class VLAN — is available through
 documented calls, not UI-only. **What is unproven is the device side:** whether the
 EAP650-Outdoor on 1.3.11 honors a PPSK profile in practice.
@@ -329,7 +329,7 @@ SSIDs are gone — the last device-only piece of the site's network config is no
 VLAN 31) was created through the documented Open API and bound to a temporary `DVNTM-IOT` SSID. A
 spare client joined with each key in turn and landed on the matching subnet — `10.20.30.100` with
 the VLAN-30 key, `10.20.31.100` with the VLAN-31 key. **The key decides the VLAN on this AP**, so
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) question 3 (per-device
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) question 3 (per-device
 PPSK keys, each pinned to a trust-class VLAN) is proven on real hardware, and the shared-key
 fallback is not needed. The test SSID, its profile and the temporary VLAN-30 network were then
 deleted, returning the controller to its post-adoption state.
@@ -349,7 +349,7 @@ deleted, returning the controller to its post-adoption state.
   SSID from inventory, and the `iot` skip is gone. **One thing changed from what this follow-up
   assumed:** the keys are not per-device and they do not come from inventory. They are one per
   tenant per trust class, issued by the Deevnet API into a profile inventory creates empty
-  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, amended). The `pskSetting`
+  ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3, amended). The `pskSetting`
   workaround this record found was needed exactly as described.
 - [x] **Done by [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/), 2026-09-18.**
       Retire `playbooks/migration/13-omada-ssids.yml`, which used undocumented calls, once

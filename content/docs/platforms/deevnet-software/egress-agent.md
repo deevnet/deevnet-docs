@@ -6,7 +6,7 @@ weight: 4
 # Tenant Egress Agent
 
 Keeps a default route inside every tenant VRF on the fabric exit node, so each tenant's internet
-traffic leaves through the perimeter ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) §7).
+traffic leaves through the perimeter ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §7).
 Proxmox does not model that route, and the alternative was to give the API root on a hypervisor.
 Instead the node pulls the tenant list and renders the route itself.
 

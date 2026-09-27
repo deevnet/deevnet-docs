@@ -49,13 +49,13 @@ The Omada SDN Controller manages all TP-Link Omada devices in the mobile site, i
 
 The controller is driven through its **documented Open API** — the spec the running controller
 serves at `/v3/api-docs` — and not through the undocumented internal API
-([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) §3). Inventory is
+([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/) §3). Inventory is
 the only declaration of site structure; the controller applies it.
 
 | What | How |
 |---|---|
 | LAN networks, PPSK profiles, SSIDs, the AP's name and address | `deevnet.net` `omada-wireless.yml` ([how to run it](/docs/runbook/substrate/building-recovery/build-network/#wireless)) |
-| Tenant Wi-Fi keys inside a PPSK profile | the Deevnet API, per tenant ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3) |
+| Tenant Wi-Fi keys inside a PPSK profile | the Deevnet API, per tenant ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3) |
 | Switch ports and VLANs | not yet adopted — see [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/) |
 
 #### Two Open API clients, on purpose

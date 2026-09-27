@@ -162,10 +162,9 @@ another host's `mgmt_vm` block.
 {{< hint warning >}}
 **A stale Terraform node name fails silently.** `TF_VAR_proxmox_node` overrides the
 `variables.tf` default, so when the two disagree the apply reports no changes rather than an error.
-It was caught only by checking PVE's own config afterwards. It used to come from a rendered env
-file that was never refreshed. Since [CHG-0026](/docs/changes/2026/0026-build-secrets/) it is
-fetched each run for `PVE_HOST` (the fabric's default is the node's inventory name), so after a
-rename, update `PVE_HOST`, `PVE1_NODE`/`PVE2_NODE` and the inventory, then run `--tags openbao` so
+Check PVE's own config afterwards. The node name is fetched each run for `PVE_HOST`,
+whose default in the fabric is the node's inventory name
+([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)), so after a rename, update `PVE_HOST`, `PVE1_NODE`/`PVE2_NODE` and the inventory, then run `--tags openbao` so
 OpenBao holds the token under the new node name.
 {{< /hint >}}
 

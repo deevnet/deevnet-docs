@@ -1,6 +1,6 @@
 ---
 title: "CHG-0019: Strip the Log Store to Tenant Scope"
-weight: 19
+weight: -19
 ---
 
 # CHG-0019: Strip the Log Store to Tenant Scope
@@ -18,13 +18,13 @@ weight: 19
 | **Risk** | Low. It only removes things: a listener nothing sends to, users no host holds a live config for, and a trial's leftovers. The one irreversible step is optional: clearing `(0, 0)`. |
 | **Related changes** | [CHG-0018](/docs/changes/2026/0018-central-log-store/) (built what this removes) |
 | **Related incidents** | [INC-0004](/docs/incidents/2026/0004-core-router-lost/) |
-| **Related runbooks** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/) |
+| **Related runbooks** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) |
 
 ---
 
 ## Summary
 
-[ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) makes the central log store
+[ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) makes the central log store
 tenants-only. CHG-0018 built it for ADR-0022's wider scope, so it still carries parts only substrate
 shipping needed:
 - an unauthenticated syslog listener on 6514 and its five source rules

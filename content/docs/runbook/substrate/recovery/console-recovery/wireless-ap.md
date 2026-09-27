@@ -278,7 +278,7 @@ touch them, so no device needs reflashing.
 
 If the **profile itself** is lost, the SSID comes back empty and each tenant runs one
 `terraform apply`, which restores **the same key it already holds** — the tenant's state is the
-authoritative copy ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5). Still no
+authoritative copy ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §5). Still no
 device visit. Do not hand-create keys in the controller UI to "fix" this: the API owns them, and a
 hand-made key is one nothing will ever clean up.
 {{< /hint >}}

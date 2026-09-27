@@ -1,6 +1,6 @@
 ---
 title: "CHG-0022: The Tenant Dev Network"
-weight: 22
+weight: -22
 ---
 
 # CHG-0022: The Tenant Dev Network

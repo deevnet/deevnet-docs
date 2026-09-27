@@ -5,7 +5,8 @@ weight: 5
 
 # Network Segmentation
 
-Defines the network segmentation model for Deevnet sites.
+Each site's substrate is divided into segments by purpose and trust, one VLAN each. Traffic between
+segments is routed through the core router and denied unless a rule allows it.
 
 ---
 
@@ -89,7 +90,7 @@ The storage segment isolates storage protocol traffic from other network activit
 ### Tenant Fabric Transport
 
 **A tenant is not a VLAN.** Since
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/), a tenant's network is an
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/), a tenant's network is an
 EVPN/VXLAN overlay owned by the tenant hypervisor's own fabric, with its own anycast gateway and
 its own VRF. The core router never sees a tenant subnet, and **creating a tenant adds no segment
 here** — which is the whole point of the model.
@@ -112,7 +113,7 @@ workload sits on either — workloads live in the overlay, at `10.20.128.0/18`.
   from another even if it wanted to
 - The core router holds **one** aggregate route into the overlay, so that operators on management
   and trusted can reach tenant workloads
-  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). Devices, other
+  ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)). Devices, other
   tenants and the outside world still have no path in.
 
 ### Platform Segment
@@ -294,13 +295,3 @@ Segmentation behavior differs between authority modes:
 During bootstrap, the provisioner operates on a flat network to PXE boot and configure hosts. Once the core router is configured with VLAN interfaces and the switch is configured for trunking, the substrate transitions to full segmentation.
 
 The transition is explicit — segment configuration is part of the authority handoff from builder to core router.
-
----
-
-## Summary
-
-1. Sites use ten segment types: Management, Trusted, Storage, Platform, Tenant transit, IoT Vendor, IoT, IoT Backend, Tenant Dev, Guest — plus the underlay and blackhole segments, which carry no routed traffic
-2. Segments form a trust hierarchy with default-deny routing between them
-3. Each site implements segmentation independently
-4. Core router provides VLAN routing, firewall zones, and per-segment DHCP
-5. Bootstrap mode uses flat networking; production mode uses full segmentation

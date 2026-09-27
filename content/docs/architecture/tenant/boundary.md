@@ -26,8 +26,8 @@ page is about the line between them: what crosses it, in which direction, and wh
 The split is deliberate. A tenant is created and destroyed often enough that its tooling must track
 what it owns and remove it cleanly. The substrate is configured, not created, and should not pay for
 that. So the two are declared differently — the substrate as procedural configuration, the tenant
-declaratively ([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/),
-[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)).
+declaratively ([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/),
+[ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)).
 
 ---
 
@@ -52,12 +52,12 @@ them, and never writes into what the tenant owns — its records, its state, its
 
 Everything in a tenant's life is its own, except its beginning. **Admission** registers the tenant's
 name and issues a single-use enrollment token, delivered encrypted to the tenant
-([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)). The tenant's first apply
+([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)). The tenant's first apply
 spends it, and receives its own token in exchange.
 
 After that, nothing a tenant does needs the operator: adding a workload, publishing a name, issuing
 a device key are all the tenant's own changes
-([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
+([ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)).
 
 ---
 
@@ -65,7 +65,7 @@ a device key are all the tenant's own changes
 
 A tenant chooses nothing that could collide with another tenant or with the substrate. For a tenant
 at index `n` on `mobile`, everything derives from that one number
-([ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)):
+([ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/)):
 
 | Object | Derivation | `eds` (index 2) |
 |--------|-----------|-----------------|
@@ -86,12 +86,12 @@ the reference tenant with the name changed.
 The substrate builds a tenant's infrastructure. Three things stay the tenant's own:
 
 - **Its application.** The substrate does not deliver it; a workload pulls it
-  ([ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)). The line is between
+  ([ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)). The line is between
   *operating* a machine and *owning what runs on it*, and it is a rule rather than a physical fact
   now that operators can reach tenant workloads
-  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)).
+  ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)).
 - **Custody of its state.** The site offers a state store; the tenant may keep its state elsewhere
-  instead ([ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/)).
+  instead ([ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/)).
 - **Its devices.** A tenant declares the devices it owns through the same interface, but a device
   never joins the tenant's network ([Edge Devices](/docs/architecture/edge-devices/)).
 

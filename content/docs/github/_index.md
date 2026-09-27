@@ -67,7 +67,7 @@ All repositories are designed to be cloned into a common parent directory (typic
 A tenant is **not** a directory inside a substrate repo. Each one is
 `deevnet-tenant-<name>`, and that repository is the tenant: its network, its workloads and its DNS
 records are declared there and rebuilt from there
-([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)).
+([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/)).
 
 The split is what makes the tenant contract real rather than aspirational — a tenant's recurring
 lifecycle touches no substrate repository at all. New tenants are created by copying

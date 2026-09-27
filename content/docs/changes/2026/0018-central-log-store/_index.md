@@ -1,6 +1,6 @@
 ---
 title: "CHG-0018: The Central Log Store"
-weight: 18
+weight: -18
 bookCollapseSection: true
 ---
 
@@ -19,14 +19,14 @@ bookCollapseSection: true
 | **Risk** | Medium. The riskiest thing is a vmauth user entry without both tenant headers: VictoriaLogs defaults to `(0, 0)`, so that entry fails open into substrate logs. No tenant token is issued in this change, which keeps that exposure theoretical until the follow-up. |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (built `tob` and `sob` empty), [CHG-0003](/docs/changes/2026/0003-host-rename/) (the reservation and record hazards), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (why the containers use host networking; the forced-SSH pattern the follow-up reuses) |
 | **Related incidents** | [INC-0004](/docs/incidents/2026/0004-core-router-lost/): the core router stopped answering at about 20:14, during Step 4 |
-| **Related runbooks** | [ADR-0022: Central Logging](/docs/architecture/decisions/0022-central-logging/) |
+| **Related runbooks** | [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/) |
 
 ---
 
 ## Summary
 
 Every host keeps its own journal, and the core router's log buffer holds about fifty seconds.
-[ADR-0022](/docs/architecture/decisions/0022-central-logging/) decides one log store on Platform:
+[ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) decides one log store on Platform:
 VictoriaLogs behind vmauth on `dv02obs001v01`, which replaces `dv02tob001v01`, partitioned by tenant index. This change builds the
 store and ships the **substrate's** logs into partition `(0, 0)`.
 
@@ -482,7 +482,7 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 - [ ] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin.
 - [x] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). Done by the operator on
   2026-09-22 and verified; see *Outcome*.
-- [x] **Declined 2026-09-22** ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/): the store is for tenants only). *Was:* **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
+- [x] **Declined 2026-09-22** ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/): the store is for tenants only). *Was:* **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:
   - decide how to handle the first run's full-journal backfill, which is heavy traffic across the
     router's `re0`
   - roll out one host at a time
@@ -496,7 +496,7 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 - [ ] Remove the test builders `dv02bld001v01` and `dv02bld002v01` (the operator's follow-up).
 - [x] **ADR-0022 acceptance.** Decided on 2026-09-22: it stays **Proposed until a shipping change is
   complete**. A store that nothing writes to has not yet shown the design works. Later the same day,
-  [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) superseded it in part, making the
+  [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) superseded it in part, making the
   store tenants-only.
 - [ ] **Strip the store to tenant scope**, a new change (ADR-0027):
   - remove the syslog listener and its rich rules, and the six substrate ingest users

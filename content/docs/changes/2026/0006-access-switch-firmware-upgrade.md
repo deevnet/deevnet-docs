@@ -1,6 +1,6 @@
 ---
 title: "CHG-0006: Access Switch Firmware Upgrade"
-weight: 6
+weight: -6
 ---
 
 # CHG-0006: Access Switch Firmware Upgrade
@@ -28,7 +28,7 @@ The access switch ran firmware 1.20.1, from January 2024. Current for its hardwa
 from May 2026: one hop, with no minimum prior version and nothing irreversible. This change is
 the firmware only. The switch stays standalone, configured by `switch_vlans`. Adopting it into
 the controller is a later change under
-[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
+[ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/).
 
 It was phase 2 of [CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/) until the
 AP work was split out to go first.

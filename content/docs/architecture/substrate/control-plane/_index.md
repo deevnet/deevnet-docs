@@ -32,85 +32,52 @@ restart among them must never take tenant name resolution with it.
 
 ---
 
-## Domains
+## Services and where they sit
 
-Services are grouped into **domains** by what they are for
-([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)). Each domain is one
-host on exactly one segment; a domain needing two segments becomes two domains.
+| Service | Segment | Why there |
+|---|---|---|
+| **Provisioning API**, and the **state store** offered to tenant infrastructure code | Platform | Tenants reach it across the tenant perimeter |
+| **Tenant name service**: one delegated zone per tenant | Platform | Tenants write their own records |
+| **Secret store**: the substrate's runtime credentials, the encryption of tenant secrets, the internal CA | Platform | The provisioning API and tenant-facing services read from it |
+| **Tenant observability**: logs, dashboards | Platform | Tenants read their own |
+| **Device messaging**: the message broker and its authentication store | IoT Backend | It serves **devices**, and devices can reach IoT Backend and nothing else inside the substrate |
 
-| Domain | Segment | Holds | Decided in |
-|--------|---------|-------|------------|
-| **Provisioning** | Platform | The **Deevnet API**, which creates and builds tenants; the **state store** offered to tenant infrastructure code | [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/) |
-| **Identity** | Platform | **Tenant authoritative DNS**, one delegated zone per tenant; the **secret store** holding the substrate's runtime credentials and internal CA | [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/), [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) |
-| **Tenant observability** | Platform | Logs and metrics tenants share | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) |
-| **Device messaging** | IoT Backend | The **message broker** devices connect to and its authentication store; later, other device rendezvous services | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/), [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) |
+**Services are placed by audience.** Each sits on exactly one segment, chosen by who uses it; a
+service that would need two segments becomes two services. How these are packaged into VMs is
+[Domain VMs](/docs/platforms/management-plane/domain-vms/).
 
-### Provisioning — the Deevnet API
+### The provisioning API
 
-The API is the control plane's center of gravity, and the thing that most distinguishes today's
-architecture from what preceded it. **A tenant is created by asking the API, not by an operator
-running substrate automation**
-([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)).
+The API is the control plane's center of gravity. **A tenant is created by asking the API, not by an
+operator running substrate automation**
+([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)).
 
-- **It is the only registry.** A tenant's index — the single number every other identifier derives
-  from — is allocated by the API against its own database and against the live fabric. Nothing is
-  recorded in a hand-maintained list.
-- **It builds what a tenant needs**: the tenant's network in the fabric, its DNS zone and key, its
-  state credential, its workloads, and the names in front of them.
-- **A tenant holds no substrate credential.** It is admitted with a single-use enrollment token and
-  trades it for a token of its own on first apply. It never holds a Proxmox credential, a vault
-  password or a controller login.
-- **It fronts services that cannot scope a tenant themselves.** The wireless controller and the
-  broker have no per-tenant confinement of their own, so the API holds their credentials and scopes
-  every call ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/)).
-- **It provisions; it is never in a device's or a workload's data path.** Devices talk to the
-  broker and the wireless network. Workloads talk to whatever they were built to talk to. An API
-  outage stops new provisioning and stops nothing else.
+- **It is the only registry.** A tenant's index, from which every other identifier derives, is
+  allocated by the API against its own records and the live fabric.
+- **It builds what a tenant needs**: its network, its name zone and key, its state credential, its
+  workloads and the names in front of them.
+- **It fronts services that cannot confine a tenant themselves**, such as the wireless controller
+  and the broker. The API holds their credentials and scopes every call, so no tenant holds a
+  hypervisor, vault or controller credential
+  ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/)).
+- **It provisions; it is never in a data path.** An API outage stops new provisioning and nothing
+  else.
 
-The **state store** beside it is offered, not mandated: a tenant may keep custody of its own
-Terraform state. A dependency a tenant chooses is acceptable in a way an inherited one is not.
-
-### Identity
-
-- **Each tenant gets a delegated zone** under the site zone and writes its own records into it over
-  RFC 2136, with a key scoped to that zone. The core network's resolver forwards the zone here, so
-  tenant records never enter the resolver's own configuration.
-- **The secret store holds the substrate's runtime credentials**, the encryption of tenant secrets
-  at rest, the internal certificate authority, and the single-use enrollment tokens the API issues
-  ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)).
-- **Device secrets and signing keys never enter it.** Those belong to the application that owns the
-  device ([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) §4).
-
-### Tenant observability
-
-- Tenants reach it across the tenant perimeter, as they do the rest of the Platform segment.
-- It is deliberately separate from substrate observability, which sits on management where tenants
-  cannot reach it. Same function, different audience, therefore a different host.
+The state store beside it is offered, not mandated: a tenant may keep custody of its own state
+([ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/)).
 
 ### Device messaging
 
-This domain serves **devices**, not tenants — which is why it sits on IoT Backend rather than
-Platform, and why it is described here rather than with tenants.
-
-- **It sits where devices can reach it.** The IoT segment may reach IoT Backend; it may reach
-  nothing else inside the substrate.
-- **The broker authenticates from its own store**, which lives beside it, so losing the
-  provisioning domain never disconnects a device.
 - **It is a rendezvous, not a route.** A device has no path to a tenant and a tenant has no inbound
-  path, so both sides dial out to a service here and meet in the middle. The broker is the instance
-  that exists; the shape is general
-  ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/)).
-- **Only devices in the IoT trust class get an account.** The IoT Vendor segment is isolated from
-  every internal segment, so an account for one of its devices could never be used.
-- **The broker's authentication store is never reachable from the network.** Not from a device, not
-  from the Builder, and not from the API that writes to it. Provisioning reaches it through a
-  constrained program on its own host, invoked over an existing surface, rather than by opening a
-  database to the segment ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)).
-- **The provisioning path names as little as possible.** An account's username and its topic scope
-  are *derived* from the tenant rather than accepted from the caller, so a malformed request fails
-  closed instead of writing a grant outside that tenant's prefix. The limit is honest: this catches
-  a bug in the caller, not a compromised one. Tenant identity is established where the tenant
-  authenticates, and is not rebuilt further down.
+  path, so both dial out to a service here and meet in the middle
+  ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/)).
+- **The broker authenticates from its own store**, which is never reachable from the network.
+  Losing the provisioning API never disconnects a device.
+- **An account's scope is derived from its tenant**, not accepted from the caller, so a malformed
+  request fails closed instead of granting outside that tenant's space.
+- **Device secrets and signing keys never enter the substrate's secret store.** They belong to the
+  application that owns the device
+  ([ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) §4).
 
 ---
 
@@ -121,7 +88,7 @@ The control plane sits above the network and the builder, and below everything t
 ```
 tenants, edge devices
         │  consume
-control plane  ── Deevnet API · tenant DNS · secrets · broker · tenant observability
+control plane  ── provisioning API · tenant names · secrets · broker · tenant observability
         │  depends on
 network  ── routing, firewall, resolution, addressing
         │  built by
@@ -147,29 +114,9 @@ The control plane is correct when:
 - **No host serves both planes.** A service tenants or devices reach never shares a host with a
   service the substrate runs for itself.
 - **Creating a tenant requires no substrate commit.** Onboarding may; nothing that recurs may
-  ([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
+  ([ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)).
 - **Every service confines its callers itself.** Zone policy grants a whole segment, so a service
   that trusts a caller because it arrived from the expected VLAN has no boundary at all
-  ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5).
+  ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5).
 - **No tenant holds a credential that could reach around the API** to the services it fronts.
 - **A rebuild of any one domain is a fresh install plus an apply**, not a migration.
-
----
-
-## Current state
-
-Mostly built. The provisioning domain is real — the Deevnet API creates tenants today, and `eds`
-and `tdemo` were both built through it. Tenant DNS and the state store are running.
-
-Device messaging is now real too. The broker is deployed and serving TLS
-([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)), the device registry behind it answers rather
-than `501` ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), and a tenant can be issued
-an MQTT account through the API ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)), which a real
-client then used to connect over TLS and publish inside its own prefix. What does not exist yet is an
-application on the other side of that rendezvous to consume it.
-
-Tenant observability is unbuilt.
-
-The zone policy that makes these segment boundaries real is applied and enforcing
-([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)). The hardware limits behind it have
-not changed — see [Limits](/docs/policies/risk-management/resiliency/).

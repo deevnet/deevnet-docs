@@ -1,6 +1,6 @@
 ---
 title: "CHG-0017: Retire Mosquitto"
-weight: 17
+weight: -17
 ---
 
 # CHG-0017: Retire Mosquitto

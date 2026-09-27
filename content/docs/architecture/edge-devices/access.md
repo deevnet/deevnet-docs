@@ -16,7 +16,7 @@ Two facts define the whole answer, and neither is negotiable:
 
 - **A tenant has no inbound path.** The fabric provides egress only; nothing outside a tenant can
   open a connection into it
-  ([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)).
+  ([ADR-0003](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/)).
 - **A device has no route to tenant space.** Its segment's policy permits device-facing platform
   services, and nothing else. Adding a path from the IoT segment into the tenant overlay would give
   *every* device reach into *every* tenant, which is exactly the isolation the model exists to
@@ -56,7 +56,7 @@ per-owner segment too, since an owner's own devices still share Layer 2 with eac
 
 **Authorization is therefore carried by a credential the device proves, at or above the transport
 layer** — never by its address
-([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §2).
+([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §2).
 
 {{< hint info >}}
 This is about **authorization** identity, and it does not contradict
@@ -79,7 +79,7 @@ in protocol semantics, and the choice belongs to the service, not to the tenant.
 | **For** | Commands, events, telemetry, state publication | Request/response, streaming, existing application protocols |
 | **Protocol** | MQTT publish/subscribe | HTTP, WebSocket, TCP, UDP |
 | **Scoping** | Per-device account, topics under the owner's prefix | Per-device credential mapped to permitted services |
-| **Decided in** | [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) | [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) |
+| **Decided in** | [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) | [ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) |
 | **Built?** | **Built** — broker, device registry and per-device accounts ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/), [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/), [CHG-0016](/docs/changes/2026/0016-broker-accounts/)) | Contract accepted, mechanism deferred |
 
 **Messaging is preferred wherever publish/subscribe fits.** It gives store-and-forward and fan-out
@@ -97,7 +97,7 @@ choose. What it may *not* have is a route into its own tenant network to get the
 **It does not put the device on the tenant's network.** The device is never a member of
 `10.20.{128+n}.0/24`, never uses the tenant's anycast gateway, and is never Layer 2 adjacent to a
 tenant workload. Extending the tenant overlay to the access network was examined in detail and
-rejected — see [ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/) for why,
+rejected — see [ADR-0019](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/) for why,
 including why the hardware could not do it cleanly even if the architecture allowed it.
 
 **It does not multi-home tenant workloads onto device segments.** A workload with a leg on the

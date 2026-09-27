@@ -1,6 +1,6 @@
 ---
 title: "CHG-0021: The MQTT Log Bridge"
-weight: 21
+weight: -21
 ---
 
 # CHG-0021: The MQTT Log Bridge
@@ -18,13 +18,13 @@ weight: 21
 | **Risk** | Low to the substrate: the bridge only reads from the broker and writes to the store. The risk it carries is a subscribe-everything account, which is why its confinement is stated and tested here. |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (built the bridge's user and routing), [CHG-0015](/docs/changes/2026/0015-vernemq-broker/) (the broker), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (how accounts are written) |
 | **Related incidents** | None |
-| **Related runbooks** | [ADR-0027 §3, §4](/docs/architecture/decisions/0027-tenant-log-store/) |
+| **Related runbooks** | [ADR-0027 §3, §4](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) |
 
 ---
 
 ## Summary
 
-[ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) says a tenant's edge devices report
+[ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) says a tenant's edge devices report
 their logs over MQTT, and that a substrate bridge carries them into that tenant's `(index, 2)`
 partition. CHG-0020 built everything on the store's side: the bridge's user exists, with one route
 per tenant, selected by a header. What is missing is the bridge.

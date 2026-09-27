@@ -5,12 +5,11 @@ weight: 1
 
 # Tenant Networking
 
-Defines the network isolation model for tenant workloads.
-
-> The model on this page was established by
-> [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/).
-> It supersedes an earlier model in which the core router owned a physical VLAN, gateway, and
-> DHCP scope for every tenant.
+A tenant's network is a **virtual overlay** of its own, owned by the tenant fabric rather than by any
+physical VLAN, and default-deny toward every other tenant. The core router is only the
+**perimeter**: NAT, internet egress and tenant↔management policy, on one transit network. The model
+is decided in
+[ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/).
 
 ---
 
@@ -146,7 +145,7 @@ Each tenant network has its own subnet and gateway, **owned by the tenant fabric
   There is no DHCP on a tenant network
 - The core router learns **one aggregate route** to the tenant overlay, so that the substrate's
   operator networks can reach tenant workloads
-  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). It holds no
+  ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)). It holds no
   per-tenant state: tenant traffic still arrives already SNATed by the fabric exit node, and
   per-tenant isolation is enforced inside the fabric
 
@@ -176,16 +175,3 @@ graph TB
     tenant -->|egress via| transit
     transit -->|perimeter policy at| substrate
 {{< /mermaid >}}
-
----
-
-## Summary
-
-1. A tenant network is a **virtual overlay** owned by the tenant fabric — not a physical VLAN
-2. Tenant Layer 3 (gateway, routing, isolation, addressing) lives in the tenant compute domain
-3. The core router is the **perimeter**: NAT, internet egress, and tenant↔management policy on a
-   transit network — it does not route between tenants
-4. Default-deny between tenants; explicit allow in IaC
-5. Tenant DNS follows `service.tenant.site.deevnet.net`, in a zone of the tenant's own, separate
-   from the substrate zone
-6. Addressing and identifiers use a globally-unique plan so the fabric can grow to a cluster

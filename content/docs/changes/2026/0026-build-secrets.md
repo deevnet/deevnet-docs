@@ -1,6 +1,6 @@
 ---
 title: "CHG-0026: Build Secrets Off the Disk"
-weight: 26
+weight: -26
 ---
 
 # CHG-0026: Build Secrets Off the Disk

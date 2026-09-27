@@ -202,7 +202,7 @@ both must be treated as one. Two rules follow:
   bump with nothing in the configuration changing at all.
 
 Where Deevnet's own state lives, and what enforces this, is
-[ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/).
+[ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/).
 
 ---
 

@@ -10,7 +10,7 @@ weight: 2
 Your own zone, `<name>.mobile.deevnet.net`, and its reverse zone, served authoritatively by the
 platform and delegated from the site resolver — so anything that resolves through the site
 (workloads, trusted seats) finds your names. **You write the records; the platform never writes one
-on your behalf** ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+on your behalf** ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)).
 
 ## Declare a record
 

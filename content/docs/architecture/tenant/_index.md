@@ -59,7 +59,7 @@ not a physical VLAN on the core router. The tenant owns its own Layer 3 — subn
 and isolation — while the core router acts only as the **perimeter** (NAT, internet egress, and
 tenant↔management policy on a transit boundary). Creating a tenant creates a virtual network; it
 requires **no change to physical switching**. This is the model established by
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/); see
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/); see
 [Networking](/docs/architecture/tenant/networking/) for the full model.
 
 ### Code Is the Source of Truth
@@ -67,7 +67,7 @@ requires **no change to physical switching**. This is the model established by
 Every tenant supplies the **IaC and CaC** needed to rebuild itself from scratch against the
 substrate, and it supplies them from **its own repository** — `deevnet-tenant-<name>`, not a
 directory inside a substrate repo
-([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)). Nothing about a tenant is
+([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/)). Nothing about a tenant is
 precious hand-clicked state: its workloads and the names in front of them are declared in the
 tenant's own code, and the network they land on is built for it by the control plane from that same
 declaration. Rebuilding a tenant reconstitutes it whole — network, workloads, and records — which
@@ -130,9 +130,9 @@ A tenant is defined by the **contract** it satisfies with the substrate — a cl
 what the tenant declares and what the substrate builds for it.
 
 The line between those two moved with
-[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/). A tenant used to
-declare its own network, derive every identifier from an index it was issued, and hold a Proxmox
-credential to build with. It now **asks the Deevnet API**, and the API builds all of that on its
+[ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/). A tenant used to
+declare its own network, derive every identifier from an index it was issued, and hold a hypervisor
+credential to build with. It now **asks the provisioning API**, and the API builds all of that on its
 behalf. The tenant is left declaring only what is genuinely its own:
 
 | The tenant declares | The substrate builds and guarantees |
@@ -151,7 +151,7 @@ Two properties of that interface matter more than the rows themselves:
 - **Nothing recurring needs a substrate commit.** Onboarding a tenant is a substrate act;
   everything after it — adding a workload, publishing a name, issuing a device key — is the
   tenant's own change
-  ([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
+  ([ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)).
 
 Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
 changing the substrate. See [Substrate and Tenant](/docs/architecture/tenant/boundary/) for the

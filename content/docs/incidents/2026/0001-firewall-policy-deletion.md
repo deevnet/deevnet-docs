@@ -1,6 +1,6 @@
 ---
 title: "INC-0001: Firewall Policy Deleted, Total Connectivity Loss"
-weight: 1
+weight: -1
 aliases:
   - /docs/incidents/2026/2026-09-07-firewall-policy-deletion/
   - /docs/runbook/rca/2026-09-07-firewall-policy-deletion/
@@ -255,7 +255,7 @@ Added 2026-09-14. The router's rules were read through its API, read-only, from 
 The full listing is in
 [CHG-0007 → Pre-change state](/docs/changes/2026/0007-core-router-zone-policy/#pre-change-state-read-2026-09-14),
 and the read is described in
-[ADR-0011 → Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#the-core-router-enforces-no-segment-boundary).
+[ADR-0011 → Validation](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/#the-core-router-enforces-no-segment-boundary).
 
 - **Audit what the restore put back: settled.** The restore put back **allow-all**, not the declared
   policy:

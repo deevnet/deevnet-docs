@@ -1,6 +1,6 @@
 ---
 title: "CHG-0027: A Switch Port for dv02rpi004p01"
-weight: 27
+weight: -27
 ---
 
 # CHG-0027: A Switch Port for dv02rpi004p01

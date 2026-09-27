@@ -1,6 +1,6 @@
 ---
 title: "CHG-0020: The API Issues Tenant Log Tokens"
-weight: 20
+weight: -20
 ---
 
 # CHG-0020: The API Issues Tenant Log Tokens
@@ -18,7 +18,7 @@ weight: 20
 | **Risk** | Medium. The API gains a second backend, so a fault there fails a tenant's `terraform apply`. The store's `auth.yml` gains a second author, and getting that wrong would drop the operator's user or a tenant's. |
 | **Related changes** | [CHG-0018](/docs/changes/2026/0018-central-log-store/) (built the store), [CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/) (made it tenants-only), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) (the forced-SSH pattern this copies) |
 | **Related incidents** | None |
-| **Related runbooks** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/0027-tenant-log-store/), [ADR-0022 §3](/docs/architecture/decisions/0022-central-logging/) |
+| **Related runbooks** | [ADR-0027: Tenant Log Store](/docs/architecture/decisions/platform-services/0027-tenant-log-store/), [ADR-0022 §3](/docs/architecture/decisions/platform-services/0022-central-logging/) |
 
 ---
 

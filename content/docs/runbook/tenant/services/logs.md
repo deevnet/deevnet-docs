@@ -8,7 +8,7 @@ weight: 5
 ## What you get
 
 Three log **partitions** of your own in the platform log store, and two tokens
-([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)):
+([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)):
 
 | Partition | What lands there | How it gets there |
 |---|---|---|

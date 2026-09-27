@@ -1,6 +1,6 @@
 ---
 title: "CHG-0016: The API Writes Broker Accounts"
-weight: 16
+weight: -16
 bookCollapseSection: true
 ---
 
@@ -25,7 +25,7 @@ bookCollapseSection: true
 
 The broker runs and holds **zero accounts**. `deevnet_iot_broker_account` answers `501`, so a tenant
 has no way to be issued one, and the broker has nothing to authenticate. This is the last piece of
-[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3's version 1.
+[ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3's version 1.
 
 Most of the work is already done and proven. The database exists with VerneMQ's own schema, the
 Deevnet API's credential on it exists and **has been used** — CHG-0015 provisioned an account with
@@ -53,7 +53,7 @@ the API nowhere in the picture.
 `iot -> iot_backend`. This gives it an account to present when it gets there.
 
 **It is not the device-facing direct service.** That is
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/)'s Option E,
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/)'s Option E,
 still unbuilt and still waiting on a real consumer.
 
 ---

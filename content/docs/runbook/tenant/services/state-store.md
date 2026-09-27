@@ -8,7 +8,7 @@ weight: 7
 ## What you get
 
 An S3-compatible place for your Terraform state, with a key prefix only your credentials can reach
-([ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/)). It is **offered, not
+([ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/)). It is **offered, not
 required** — keeping state yourself is a valid choice, as long as you keep it carefully: it holds
 every credential your tenant was issued.
 
@@ -65,9 +65,9 @@ The reference tenant's `make state-backend` prints the block and both keys for y
 
 - **It is plain HTTP today**, inside the site. Your state crosses the platform network
   unencrypted in transit; the design says TLS
-  ([ADR-0026](/docs/architecture/decisions/0026-object-storage/))
+  ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
 - **It has no second copy.** The store lives on one disk
-  ([ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/), Proposed). Keep a copy
+  ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), Proposed). Keep a copy
   of anything you cannot re-issue
 - It is for state, not application data. Buckets for your workloads are
   [coming](/docs/runbook/tenant/services/coming-soon/#object-storage)

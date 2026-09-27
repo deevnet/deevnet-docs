@@ -10,7 +10,7 @@ aliases:
 
 The operator's half of creating a tenant. The operator **admits a name**; the tenant then declares
 everything else itself, through the Deevnet API
-([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)). The tenant's half
+([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)). The tenant's half
 is [Tenant Operations](/docs/runbook/tenant/).
 
 Admission is the only substrate act a new tenant needs. The operator never edits an inventory file
@@ -87,8 +87,8 @@ reads this.
 | Network | an EVPN zone and VRF on the tenant hypervisor, one VNet, a `/24` from `10.20.128.0/18`, anycast `.1`, SNAT at the exit node |
 | DNS | `<tenant>.<site>.deevnet.net` and its reverse, delegated, with a TSIG key the tenant writes records with |
 | State | a bucket prefix and keys in the state store |
-| Logs | partitions `(index, 0..2)`, an ingest and a read token, and the vmauth routes that separate them from every other tenant ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)) |
-| Dashboards | a Grafana organization named for the tenant, one Editor login, and three log data sources carrying its read token, with fixed UIDs ([ADR-0024](/docs/architecture/decisions/0024-dashboards/)). A delete renames the emptied organization `deleted-<tenant>-<id>`, because Grafana 13 cannot delete one |
+| Logs | partitions `(index, 0..2)`, an ingest and a read token, and the vmauth routes that separate them from every other tenant ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)) |
+| Dashboards | a Grafana organization named for the tenant, one Editor login, and three log data sources carrying its read token, with fixed UIDs ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)). A delete renames the emptied organization `deleted-<tenant>-<id>`, because Grafana 13 cannot delete one |
 | Devices, if declared | a PPSK per trust class, registry entries, and MQTT accounts confined to the tenant's own topic prefix |
 
 The index is the tenant's number in all of it — subnet, VXLAN VNI, log account — so it is allocated

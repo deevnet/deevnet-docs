@@ -1,6 +1,6 @@
 ---
 title: "CHG-0010: Deploy the Deevnet API and Cut Tenants Over"
-weight: 10
+weight: -10
 ---
 
 # CHG-0010: Deploy the Deevnet API and Cut Tenants Over
@@ -16,7 +16,7 @@ weight: 10
 | **Systems** | `dv02idn001v01` (OpenBao, tenant DNS), `dv02prv001v01` (the API, its database, the state store), `dv02hyp002p02` (the tenant hypervisor and exit node), `dv02cor002p01` (the resolver's delegations) |
 | **Automation** | `deevnet.mgmt` `openbao`, `powerdns`, `minio`, `deevnet_api`; `deevnet.net` `tenant_egress_agent`; `deevnet-provisioning-api` **v0.2.4** (v0.2.0 as planned, then four defects the run and the rebuild found); `terraform-provider-deevnet` v0.1.0; the tenant repositories `deevnet-tenant-tdemo` and `eds` |
 | **Risk** | Medium. OpenBao becomes a service everything else needs to start, and its seal key is the root of the whole arrangement. The API gains write access to tenant DNS, the resolver, the state store and the tenant hypervisor. |
-| **Related decisions** | [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) — what the API builds and what a tenant holds; [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) — where the credentials live; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5 and §9; [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) |
+| **Related decisions** | [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) — what the API builds and what a tenant holds; [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) — where the credentials live; [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §5 and §9; [ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/) |
 | **Related changes** | [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) — built the VMs this deploys into, and created eds's zones, key and state credential; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy this adds two rules to, still unapplied |
 | **Related runbooks** | Provisioning a Tenant (the inventory-driven procedure, removed from the docs 2026-09-23; in git history as `runbook/tenant/legacy-provisioning.md`) — replaced by this change's step 9 and, today, [Tenant Admission](/docs/runbook/substrate/tenant-admission/) |
 

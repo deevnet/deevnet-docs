@@ -1,6 +1,6 @@
 ---
 title: "CHG-0007: Core Router Zone Policy, First Application"
-weight: 7
+weight: -7
 ---
 
 # CHG-0007: Core Router Zone Policy, First Application
@@ -18,7 +18,7 @@ weight: 7
 | **Risk** | High. The policy has never been applied as a whole, and the last unguarded run of this role took the site down. **The savepoint that was to guard phase 2 does not exist** — see [The guard that was not there](#the-guard-that-was-not-there-2026-09-19). |
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the segmentation that declared this policy |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — its open items are this change |
-| **Related decisions** | [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) — attachment by trust class depends on this policy; its [Validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14) is where the pre-change state was first read |
+| **Related decisions** | [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) — attachment by trust class depends on this policy; its [Validation](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/#validation-2026-09-14) is where the pre-change state was first read |
 | **Related runbooks** | [Change Management](/docs/policies/change-management/#validation-checklist); [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) |
 
 ---
@@ -57,7 +57,7 @@ the policy is live — 56 managed rules, no allow-all, enforcement observed from
 the automation created and two it didn't
 ([Pre-change state](#pre-change-state-read-2026-09-14)). No segment boundary on the site was
 enforced. That included:
-- the IoT segment [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)
+- the IoT segment [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/)
   depends on
 - the guest and IoT Vendor containment the segmentation standard requires
 
@@ -156,9 +156,9 @@ Layer 3 today."*
 
 Intra-segment separation is a different mechanism with a different owner — AP client isolation and
 switch port isolation, tracked as
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) open question 4, which
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) open question 4, which
 is still unproven. The control that does hold between owners is credentials, not the network:
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 requires
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5 requires
 every device-facing service to authenticate its callers per device, precisely because zone policy
 grants a whole zone.
 
@@ -559,7 +559,7 @@ confirmed in the other direction by ping from the control host.
 |---|---|---|
 | `10.20.99.95:22` — the Builder | **7 packets blocked**, `Default deny / state violation rule` on `vlan04` | not declared |
 | `10.20.99.22:8006` — Proxmox | **33 blocked** | not declared |
-| `10.20.130.10:80` — **eds, on the tenant overlay** | **30 blocked** | not declared, and [ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §4 forbids declaring it |
+| `10.20.130.10:80` — **eds, on the tenant overlay** | **30 blocked** | not declared, and [ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §4 forbids declaring it |
 | `10.20.30.255:137` — NetBIOS broadcast | 18 blocked | not declared |
 | `10.20.35.0/24` — iot_backend | no blocks | `iot -> iot_backend` |
 | internet | no blocks | `iot -> internet` |
@@ -617,7 +617,7 @@ policy did its part; the AP dropped it.
 So the guest segment is contained by two overlapping mechanisms, and the zone policy's share is not
 separately observable without turning isolation off — which is not worth doing to satisfy a test.
 Recorded as **contained, attribution shared**, rather than as a clean pass for this change. The
-same read produced [evidence for ADR-0011 open question 4](/docs/architecture/decisions/0011-edge-devices-application-owned/),
+same read produced [evidence for ADR-0011 open question 4](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/),
 which is the more useful outcome.
 
 #### IoT Vendor: full containment, and the cleanest result of the change
@@ -654,7 +654,7 @@ the router, not traffic from a client.
 
 `dig @10.20.31.1 dv00bld001p01.mobile.deevnet.net` from the vendor segment returned
 **`10.20.99.95`**. The gateway-service DNS rule works, and the result is
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §5 made
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5 made
 concrete: the client resolves the Builder's name while being unable to reach it. Resolution and
 reachability are separate, and a service that treats the first as evidence of entitlement has no
 boundary.
@@ -690,7 +690,7 @@ generated by the same loop, but they have not each been exercised.
   `10.20.25.21` and tenant observability `10.20.25.22`, both reached by the declared
   `tenant_transit -> platform` rule. This follow-up was written when they sat on management and
   depended on allow-all; CHG-0008 moved them, and phase 1 confirmed the old addresses are dead.
-  [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) placed its API on platform for
+  [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) placed its API on platform for
   the same reason.
 - [ ] **Four verification rows are untested, not passed.** The broker's `1883` (VerneMQ is not
   deployed), a wired IoT host (`10.20.30.11` is off), a DHCP *renewal* on trusted as opposed to the

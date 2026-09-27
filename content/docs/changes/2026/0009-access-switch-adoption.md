@@ -1,6 +1,6 @@
 ---
 title: "CHG-0009: Access Switch Omada Adoption"
-weight: 9
+weight: -9
 ---
 
 # CHG-0009: Access Switch Omada Adoption
@@ -26,7 +26,7 @@ weight: 9
 
 The access switch is standalone. Its configuration is declared in inventory and applied over its
 CLI by `switch_vlans`.
-[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) decides that the
+[ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/) decides that the
 controller applies that inventory through its documented Open API instead, as it already does for
 the AP since CHG-0005. This change adopts the switch and moves its port configuration to the
 controller.

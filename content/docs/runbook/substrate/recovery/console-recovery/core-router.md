@@ -122,36 +122,18 @@ Read the reporting tasks in the output rather than trusting `changed=0`, and see
 preview any of it.
 
 {{< hint warning >}}
-**`opnsense_firewall` is guarded — but not by a savepoint.** *Corrected 2026-09-19, when the
-guards met the live router in [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/).*
+**`opnsense_firewall` is guarded, but it has no savepoint.** It reports by default and writes
+nothing without `-e firewall_apply=true`, refuses a broken discovery, withholds deletions unless
+`firewall_delete_unmanaged=true`, protects the operator path, checks the API's `result` rather than
+the HTTP status, and verifies reachability afterwards.
 
-What holds: it reports by default and writes nothing without `-e firewall_apply=true`, refuses a
-broken discovery, withholds deletions unless `firewall_delete_unmanaged=true`, protects the
-operator path, checks the API's `result` rather than the HTTP status, and verifies reachability
-afterwards.
-
-**What does not exist is the rollback savepoint this page used to promise.** OPNsense has no
-`firewall/filter/savepoint`, `/cancelRollback` or `/revert` endpoint — each answers
-`404 "Endpoint not found"`. In its place the role records the configuration revision from before
-the run, downloads the configuration to the control host, and reverts over the API if a path is
-lost **and the router still answers**.
+OPNsense has no firewall savepoint or automatic rollback: `firewall/filter/savepoint`,
+`/cancelRollback` and `/revert` each answer `404 "Endpoint not found"`. Instead, the role records the
+configuration revision from before the run, downloads the configuration to the control host, and
+reverts over the API if a path is lost **and the router still answers**.
 
 **If the control host's own path is what broke, nothing reverts on its own.** No timer will fix
 it, and waiting is not a recovery step. That case is this page. The run prints the revision id
 before it writes anything — `config-<timestamp>.xml` — and that is what to pick under *Restore a
 backup*.
 {{< /hint >}}
-
----
-
-## Related
-
-- [Core router platform](/docs/platforms/network/core-router/) — what the device is and what it serves
-
-## Background
-
-This procedure was written after 2026-09-07, when an `opnsense_firewall` run deleted every
-managed filter rule on this router — including both anti-lockout rules — and the mini
-DisplayPort cable was the only remaining way in. The
-[INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) has the full
-analysis and the actions taken.

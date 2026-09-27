@@ -105,7 +105,7 @@ No other plugins are used. The collection has no plugin-install tasks.
 ### Domain VMs
 
 Every domain VM is **Fedora 44** from the template `fedora-server-44-1.7`, and runs its services as
-Podman containers ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)).
+Podman containers ([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
 Image tags are pinned in the role defaults and mirrored on the Builder as tarballs.
 
 | Component | VM | Version | License | Support | Version source |
@@ -116,7 +116,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | **PowerDNS Authoritative** | `dv02idn001v01` | **4.9.17** | GPL-2.0 | Community, commercial available (PowerDNS) | Pin |
 | **Deevnet API** | `dv02prv001v01` | **v0.8.0** | No license file | In-house | Pin; deployed 2026-09-24 ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
 | **PostgreSQL** | `dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth) | **17.11** | PostgreSQL License | Community | Pin |
-| **MinIO** | `dv02prv001v01` (Terraform state) | **RELEASE.2025-09-07T16-13-09Z** | AGPL-3.0 | **Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled | Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/0026-object-storage/) |
+| **MinIO** | `dv02prv001v01` (Terraform state) | **RELEASE.2025-09-07T16-13-09Z** | AGPL-3.0 | **Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled | Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/) |
 | **Omada Software Controller** | `dv02nms001v01` | 6.3.0.45 | See [Network](#switching-wireless-and-edge) | | |
 | **VerneMQ** | `dv02msg001v01` | **2.2.0**, built from source | Apache-2.0 (source). Upstream binaries carry an EULA, which is why it is built here | Community, commercial available (Octavo Labs) | Pin; observed 2026-09-20 ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)) |
 | **MQTT log bridge** | `dv02msg001v01` | **v0.1.1** | not checked (its repository isn't in this workspace) | In-house | Pin; deployed 2026-09-22 ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)) |
@@ -126,7 +126,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | victoriametrics-logs-datasource plugin | `dv02obs001v01` | **0.32.0** | not checked | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-24 |
 | **nginx** (tenant downloads) | `dv02obs001v01` | **1.29.1-alpine** | BSD-2-Clause | Community, commercial available (F5) | Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)) |
 | `deevnet-log-user` | `dv02obs001v01` | Built from the API's tag; deployed as `-latest` | No license file | In-house | Not pinned |
-| (collector) | `dv02col001v01` | Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/) | | | |
+| (collector) | `dv02col001v01` | Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) | | | |
 
 ### Builder (`dv00bld001p01`) and the provisioner VMs
 
@@ -256,7 +256,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 **Licenses:** `deevnet.mgmt` and `deevnet.net` declare MIT in `galaxy.yml` and ship an Apache-2.0
 `LICENSE`. The API, the provider and the tenant repositories have no license file.
 
-**Unmaintained software still running:** MinIO (archived upstream; [ADR-0026](/docs/architecture/decisions/0026-object-storage/))
+**Unmaintained software still running:** MinIO (archived upstream; [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
 
 **Other pages that disagree with this one** (facts, not versions):

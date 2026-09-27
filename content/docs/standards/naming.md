@@ -58,7 +58,7 @@ Each site has its own sub-zone:
 All site-specific host and service records MUST exist in the corresponding site zone.
 
 > **Adopted 2026-09-05.** This standard was updated on acceptance of
-> [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/), and the estate now runs on
+> [ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/), and the estate now runs on
 > it: fixed-width hostnames, site codes, and the `home` / `mobile` zones.
 > [CHG-0003](/docs/changes/2026/0003-host-rename/) records how it got there, and
 > [Renaming Hosts](/docs/runbook/substrate/lifecycle/host-rename/) carries the two hazards still waiting for
@@ -71,7 +71,7 @@ All site-specific host and service records MUST exist in the corresponding site 
 ### 3.1 Hostname Format
 
 Hosts MUST use a fixed-width hostname of exactly **thirteen characters**, per
-[ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/):
+[ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/):
 
 ```
 dv{NN}{rrr}{sss}{f}{gg}
@@ -142,15 +142,14 @@ The role is a three-letter mnemonic and is **mandatory** — there is no unprefi
 
 The domain-VM codes (`nms`, `col`, `obs`, `prv`, `idn`, `msg`) name what a VM's containers are
 for, not which product runs in them
-([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)).
+([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
 
 **Retired, never reused:** `tdn` (Tenant DNS, folded into `idn`), `tst` (Tenant state, folded into
 `prv`) and `mqt` (MQTT broker, folded into `msg`), by
 [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/). `sob` (Substrate observability) and `tob` (Tenant observability) are
 retired by [CHG-0018](/docs/changes/2026/0018-central-log-store/), because
-[ADR-0022](/docs/architecture/decisions/0022-central-logging/) put every log in one store and the
-audience split in their names no longer holds. `obs` and `col` replace them. Until CHG-0018 is
-Complete, the old hosts still exist under the old codes.
+[ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) put every log in one store and the
+audience split in their names no longer holds. `obs` and `col` replace them.
 
 Mnemonics are allocated deliberately, like tenant indices. A new class MUST have its code added
 here in the same change that introduces the host.

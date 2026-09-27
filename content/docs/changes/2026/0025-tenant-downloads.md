@@ -1,6 +1,6 @@
 ---
 title: "CHG-0025: Tenant Downloads"
-weight: 25
+weight: -25
 ---
 
 # CHG-0025: Tenant Downloads
@@ -95,5 +95,5 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
       `segment-check.sh DVNTM-TD`, all passing
 - [x] From IoT: `segment-check.sh DVNTM-IOT` 15/15, with `obs` `:8427`, `:3000` and `:8443` blocked
 - [ ] MinIO's image can no longer be pulled from quay.io. Keep the mirrored tarball, and weigh this
-      in [ADR-0026](/docs/architecture/decisions/0026-object-storage/)
+      in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
 - [ ] Before each meetup: restage anything that changed, then run `--tags tenant-downloads`

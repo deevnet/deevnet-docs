@@ -32,7 +32,7 @@ The roles themselves — what each does, and where it sits in the network — ar
 | [Tenant hypervisor](/docs/architecture/substrate/compute/#compute-by-purpose) | Dell OptiPlex 7060 Micro, Proxmox VE | [Tenant Hypervisors](tenant-compute/tenant-hypervisors/) |
 | [Tenant fabric](/docs/architecture/tenant/networking/) | Proxmox SDN, EVPN/VXLAN | [Tenant Fabric](tenant-compute/tenant-hypervisors/tenant-fabric/) |
 | [Pi lab](/docs/architecture/substrate/compute/#the-pi-lab) | Raspberry Pi 4 | [Raspberry Pi](tenant-compute/raspberry-pi/) |
-| [Tenant DNS](/docs/architecture/substrate/control-plane/#identity) | PowerDNS Authoritative | [Tenant DNS](management-plane/tenant-dns/) |
+| [Tenant DNS](/docs/architecture/substrate/control-plane/#services-and-where-they-sit) | PowerDNS Authoritative | [Tenant DNS](management-plane/tenant-dns/) |
 
 The software this site wrote for itself — the Deevnet API, the Terraform provider tenants use, and
 the runtime tools around them — is [Deevnet Software](deevnet-software/). Everything else the

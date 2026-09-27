@@ -1,6 +1,6 @@
 ---
 title: "CHG-0013: Tenant Wi-Fi PPSK Keys"
-weight: 13
+weight: -13
 bookCollapseSection: true
 ---
 
@@ -53,12 +53,12 @@ scope.
 
 **It does not isolate tenants from each other.** Every IoT device shares VLAN 30 whatever tenant
 owns it. The key decides which VLAN a device lands on, not which tenants it can reach. That is
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) question 4's accepted
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) question 4's accepted
 position — isolation is best effort, credentials first — and until the broker's topic scoping exists,
 two tenants' devices can reach each other at Layer 3.
 
 **It does not register devices.** A key is per tenant per trust class, not per device; see
-[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3, amended for this change.
+[ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3, amended for this change.
 
 ## Scope
 
@@ -178,7 +178,7 @@ does not exist.
 VLAN 30 whatever tenant owns it, so a tenant's key decides where its devices land, not who they can
 reach. Two tenants' devices can talk to each other at Layer 3 today.
 
-- This is [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) question 4's
+- This is [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) question 4's
   accepted position — best effort, credentials first — but "best effort" is currently **no effort**:
   the isolation half of CHG-0005 phase 6 was never run.
 - The documented route is Guest Network plus an EAP ACL permit, and it is awkward: Omada's
@@ -193,7 +193,7 @@ reach. Two tenants' devices can talk to each other at Layer 3 today.
 device has nothing to talk to: VerneMQ on `dv02msg001v01` is built and empty, and no eds service is
 packaged — there is no Containerfile. Standing up the broker, packaging the services and flashing the
 LP stand against them is its own piece of work, and it is what
-[ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3's device registry and broker
+[ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3's device registry and broker
 accounts are for. This change deliberately stops at the network credential.
 
 **The `DVNTM-IOTV` conversion still needs its own change record.** It has a shared key and devices on

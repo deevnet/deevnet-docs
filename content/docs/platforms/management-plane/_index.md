@@ -17,6 +17,7 @@ What the management plane is, and what belongs to it, is in
 |------|-----------|------|
 | Builder | AOOSTAR N1 PRO, Fedora | [Bootstrap Node](bootstrap-node/) |
 | Management hypervisor | Dell OptiPlex 7050 Micro, Proxmox VE | [Management Hypervisor](management-hypervisor/) |
+| Management and control plane services | One VM per domain | [Domain VMs](domain-vms/) |
 | Tenant DNS | PowerDNS Authoritative | [Tenant DNS](tenant-dns/) |
 
 The other domain services are listed, with versions, in the

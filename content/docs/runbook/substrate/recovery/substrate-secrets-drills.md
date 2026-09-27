@@ -13,7 +13,7 @@ site on 2026-09-17; every command below is one that was actually issued.
 | Drill | What changes | What it proves | Destructive? |
 |---|---|---|---|
 | **Key change** | a new PKI issuer and a new Transit key version | the site survives keys it has never seen before | No — every step reverses |
-| **Snapshot restore** | the instance is replaced and its data restored | the data survives at all ([ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/)) | Yes, on a scratch instance |
+| **Snapshot restore** | the instance is replaced and its data restored | the data survives at all ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/)) | Yes, on a scratch instance |
 
 **Why both.** A snapshot restore brings back the *same* issuer and the *same* Transit key, so nothing
 about a changed key is exercised — a certificate still verifies and a stored secret still decrypts.
@@ -142,7 +142,7 @@ curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
 
 4. **`terraform apply` reseals it.** The tenant sends the copies from its own state, which are the
    authoritative ones
-   ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) §4). No operator call
+   ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §4). No operator call
    is needed: the resupply is an ordinary apply, on each tenant.
 
 **Verify:** the stored columns carry the new key version, and `secrets_stored` is true again.
@@ -177,7 +177,7 @@ that was not applied during the drill would.
 
 ## Snapshot restore
 
-Still unproven, and it is [ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)'s
+Still unproven, and it is [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)'s
 last unconfirmed claim. The shape: take a Raft snapshot, stand up a fresh instance with **the same
 seal key** from the vault, restore into it, and confirm KV, Transit and PKI come back and the API
 decrypts its stored secrets. Run it on a scratch instance rather than the live one — the seal key is
