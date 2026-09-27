@@ -14,8 +14,8 @@ management hypervisor, `dv02hyp001p01`.
 This covers the **hypervisors themselves**. Putting an OS on the VMs that run on top of them is
 [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/).
 
-Everything below comes from inventory or from code, except three manual steps: booting the ISO,
-running the first bootstrap script at the console, and creating the API token.
+Everything below comes from inventory or from code, except three manual steps: installing Proxmox
+from the ISO, running the first bootstrap script at the console, and creating the API token.
 
 ---
 
@@ -55,39 +55,39 @@ A node's disks have different owners, and a rebuild treats them differently.
   recreates them.
 
 {{< hint danger >}}
-**Pin the install disk.** Unpinned, the Proxmox installer takes the first disk it finds, and on a
-node with a data disk that can be the data disk. The ISO built in Step 2 selects the disk by the
-`proxmox_install_disk_serial` recorded in inventory, and the build warns when none is given.
+**Install onto the OS disk.** On a node with a data disk, the installer may offer the data disk
+first. Identify the OS disk by the `proxmox_install_disk_serial` recorded in inventory before you
+confirm.
 {{< /hint >}}
 
-## Step 2: Build the install ISO
+## Step 2: Stage the installer
 
-In `deevnet-image-factory`, on the Builder:
+Write the Proxmox VE ISO the Builder staged under `isos/proxmox` to a USB stick. **Install the
+version the node was running**; upgrading is a separate change
+([Hypervisor Platform Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/)).
 
-```bash
-make proxmox-pve-iso-container          # once
-make proxmox-pve-iso-ext4 \
-    PVE_ISO_VERSION=8.4-1 \
-    PVE_HOSTNAME=dv02hyp001p01.mobile.deevnet.net \
-    PVE_DISK_SERIAL='SAMSUNG_SSD_PM871b_M.2_2280_512GB_S3TZNB0K409229' \
-    PVE_ROOT_PASSWORD_HASH="$(openssl passwd -6)"
-```
+{{< hint info >}}
+`deevnet-image-factory` has an unattended ISO build (`make proxmox-pve-iso-ext4`) with the settings
+below in an embedded answer file. It is unfinished and has not installed either node, so the
+install is manual. Finishing it is on the [Builder roadmap](/docs/roadmap/infrastructure/mobile/builder/).
+{{< /hint >}}
 
-- **Install the version the node was running.** Upgrading is a separate change
-  ([Hypervisor Platform Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/)).
-- **The ext4 answer file reproduces `dv02hyp001p01`'s OS disk:** 8G swap, 16G left free in the
-  volume group, and the installer's default root and `data` sizes.
-- **The hostname must be the inventory name.** A Proxmox node is not safely renamable afterwards.
+## Step 3: Install (manual)
 
-**Which serial string to use.** `PVE_DISK_SERIAL` is the disk's udev `ID_SERIAL`, and for a SATA disk
-that is model plus serial. It's the `/dev/disk/by-id/ata-…` name with the `ata-` prefix dropped.
-`lsblk`'s SERIAL column, `S3TZNB0K409229` here, is the short form and does not match. Proxmox's
-example filter is `ID_SERIAL='KIOXIA_KCMYXVUG1T60*'`. To list what the installer sees, run
-`proxmox-auto-install-assistant device-info -t disk` inside the container.
+Boot the USB stick and run the graphical installer with these settings. They reproduce
+`dv02hyp001p01`'s OS disk:
 
-## Step 3: Install
+| Setting | Value |
+|---|---|
+| Target disk | The OS disk, identified by `proxmox_install_disk_serial` — never the data disk |
+| Filesystem | ext4 |
+| `swapsize` | 8 GB |
+| `minfree` | 16 GB left free in the volume group |
+| `hdsize`, `maxroot`, `maxvz` | Installer defaults |
+| Hostname (FQDN) | The inventory name, e.g. `dv02hyp001p01.mobile.deevnet.net`. **A Proxmox node is not safely renamable afterwards** |
+| Network | Whatever the installer detects. Step 4 replaces it from inventory |
 
-Boot the ISO from USB. The install is unattended, and the node reboots into Proxmox.
+The node reboots into Proxmox.
 
 ## Step 4: Network, hostname, resolver (console)
 

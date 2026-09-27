@@ -37,7 +37,7 @@ Read-only. Surveys every hypervisor, audits every MAC in inventory, prints the
 next free VMID, and writes nothing:
 
 ```bash
-cd ~/home/ansible-collection-deevnet.mgmt
+cd ansible-collection-deevnet.mgmt
 make vm-identity
 ```
 

@@ -1,12 +1,12 @@
 ---
 title: "Builder & Core Services"
 weight: 1
-tasks_completed: 30
-tasks_in_progress: 0
-tasks_planned: 0
+tasks_completed: 29
+tasks_in_progress: 1
+tasks_planned: 1
 ---
 
-# Builder & Core Services ✅
+# Builder & Core Services 🔄
 
 Builder infrastructure, network automation, and core services required to provision and rebuild the mobile (mobile) site from bare metal.
 
@@ -58,9 +58,19 @@ Core infrastructure for building and deploying the substrate.
 - ✅ Image Packaging - Proxmox installer
 - ✅ Image Packaging - Raspberry Pi Base Image
 - ✅ Bootstrap Node Provisioning Playbook
-- ✅ Proxmox Automated Install via PXE
 - ✅ Full Air-Gap Support (Fedora Mirror)
 {{% /details %}}
+
+---
+
+## Unattended Hypervisor Install 🔄
+
+Both Proxmox nodes were installed by hand from the standard ISO, and a rebuild is still manual
+([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)).
+
+- 🔄 Unattended ISO in `deevnet-image-factory`: an embedded answer file with the install disk pinned
+  by serial builds, but has never installed a node
+- ⏳ Install a hypervisor from it, and make it the runbook's install step
 
 ---
 

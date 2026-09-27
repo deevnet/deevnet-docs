@@ -77,7 +77,7 @@ The storage segment isolates storage protocol traffic from other network activit
 
 **Typical inhabitants:**
 - NAS storage interfaces
-- Hypervisor storage interfaces (`dv02hyp001p01-stor`, `dv02hyp002p02-stor`)
+- Hypervisor storage interfaces
 - Backup target interfaces
 
 **Properties:**

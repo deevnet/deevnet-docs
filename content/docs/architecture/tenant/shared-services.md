@@ -106,7 +106,7 @@ writing a device's broker account.
 ## 2. What a Tenant Can Consume
 
 The services themselves — what each domain holds, which segment it sits on, and why — are described
-in [Control Plane](/docs/architecture/substrate/control-plane/). From a tenant's side, four of them
+in [Control Plane](/docs/architecture/substrate/control-plane/). From a tenant's side, these
 matter:
 
 | Service | What the tenant gets | Declared in the tenant's code as |
@@ -114,7 +114,10 @@ matter:
 | **The Deevnet API** | Its own existence: index, network, workloads, names, and the credentials for the rest | `deevnet_tenant`, `deevnet_workload`, `deevnet_dns_record` |
 | **Tenant DNS** | A delegated zone under the site zone, and a key scoped to it | `deevnet_dns_record`, or RFC 2136 directly |
 | **State store** | An S3-compatible bucket, scoped to the tenant's own prefix | A Terraform `backend "s3"` block — or nothing, if the tenant keeps custody |
-| **Device messaging** | A broker account for a device the tenant owns, scoped to the tenant's topics | `deevnet_iot_broker_account` *(decided; the broker is not built)* |
+| **Device messaging** | A device registry, and a broker account for each device the tenant owns, scoped to the tenant's topics | `deevnet_iot_device`, `deevnet_iot_broker_account` |
+| **Wi-Fi keys** | A key on the IoT SSID that lands the tenant's devices on the IoT segment | `deevnet_iot_wifi_key` |
+| **Logs** | Partitions of its own in the tenant log store, with an ingest and a read token | Outputs of `deevnet_tenant` |
+| **Dashboards** | A Grafana organization of its own, with its logs wired in | Outputs of `deevnet_tenant` |
 
 Two things a tenant does **not** get, and should not expect:
 

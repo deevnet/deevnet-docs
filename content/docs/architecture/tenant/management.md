@@ -21,33 +21,35 @@ Tenant management provides:
 
 ## Tenant Lifecycle
 
+A tenant's whole lifecycle runs through the Deevnet API. The operator admits it once; everything
+after that is the tenant's own Terraform ([Building](/docs/architecture/tenant/building/)).
+
 ### Create
 
-Creating a new tenant involves:
+1. **Admission** — the operator registers the tenant's name, and the API issues a single-use
+   enrollment token. This is the only substrate act in a tenant's life.
+2. **First apply** — the tenant's Terraform spends the token, and the API builds everything the
+   tenant is entitled to, numbered from the index it allocates: the fabric overlay network, the
+   DNS zone and its update key, a state store prefix, log partitions and their tokens, and a
+   dashboards organization. It returns the tenant's own token.
 
-1. **Define the tenant's network** — a virtual overlay in the tenant fabric (subnet, anycast gateway, isolation), declared in the tenant's own code — from a globally-unique addressing plan
-2. **Attach perimeter policy** — the core router's transit policy for the tenant's egress and shared-service access
-3. **Provision workloads and DNS** — deploy VMs and publish DNS records via Terraform
-4. **Configure observability** — set up log/metric collection for the tenant
+No perimeter rule is added. The core router sees tenants only in aggregate, so a new tenant needs no
+router or switch change ([Networking → Perimeter handoff](/docs/architecture/tenant/networking/#perimeter-handoff)).
 
 ### Update
 
-Updating a tenant may include:
-- Adding or removing VMs
-- Changing resource allocations
-- Updating firewall rules
-- Modifying DNS records
-
-Updates are applied via Terraform for tenant resources, automation for network configuration.
+Adding or removing workloads, names, Wi-Fi keys, devices and broker accounts is a
+`terraform apply` against the tenant's own repository. None of it needs the operator.
 
 ### Destroy
 
-Destroying a tenant:
+1. **The tenant destroys its own resources** — workloads first. The API refuses to remove a tenant
+   while it still has workloads.
+2. **The tenant is deleted** — the API revokes its Wi-Fi keys and removes its dashboards, log
+   tokens, network, DNS zone and resolver forwarding, and state store access, then its registry
+   entry.
 
-1. **Destroy tenant resources** — Terraform destroys VMs, the tenant's fabric overlay network, and DNS records
-2. **Withdraw perimeter policy** — remove the tenant's transit rules on the core router
-3. **Archive data** — back up logs and metrics if required
-4. **Release identifiers** — return the tenant's subnet and network identifiers to the globally-unique pool
+A tenant's index is never reused while that tenant exists.
 
 ---
 
@@ -55,25 +57,21 @@ Destroying a tenant:
 
 ### Logs
 
-Tenant logs are:
-- Collected by management plane observability stack
-- Tagged with tenant identifier
-- Queryable by tenant scope
-- Retained per tenant policy
+Each tenant has its own partitions in the tenant log store, run by the control plane: workload logs,
+and device logs arriving over MQTT. It writes and reads them with tokens of its own, and no other
+tenant's token reaches them ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)).
 
-### Metrics
+### Dashboards
 
-Tenant metrics include:
-- VM resource utilization (CPU, memory, disk, network)
-- Application-level metrics (if instrumented)
-- Network traffic volumes
+Each tenant has a Grafana organization of its own, with its logs already wired in as data sources
+([ADR-0024](/docs/architecture/decisions/0024-dashboards/)).
 
-### Alerting
+### Metrics and alerting
 
-Alerts may be configured:
-- Per-tenant thresholds
-- Tenant-specific notification channels
-- Escalation policies
+Tenants have no metrics store or alerting yet. The design is
+[ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/), and building it is part of the
+[Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/)
+roadmap project.
 
 ---
 
@@ -94,9 +92,10 @@ Each tenant is an isolated security domain:
 | **Tenant admin** | Specific tenant(s), scoped access |
 
 Access is controlled via:
-- SSH key distribution
-- Jump host access policies
-- Firewall rules
+- API tokens: the operator's, and one per tenant
+- The SSH keys a tenant declares for its own workloads
+- Zone policy on the core router, and the operator route into tenant networks
+  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/))
 
 ---
 
@@ -113,7 +112,7 @@ Tenant management is distinct from substrate management:
 
 The substrate's [Shared Tenant Services](/docs/architecture/tenant/shared-services/)
 provide what tenants consume (DNS zone, state store, observability), and the core network provides
-the perimeter for tenant egress. Tenant DHCP and addressing are owned by the tenant fabric, not the substrate.
+the perimeter for tenant egress. Tenant addressing is owned by the tenant fabric, not the core router.
 
 ---
 
@@ -123,8 +122,11 @@ the perimeter for tenant egress. Tenant DHCP and addressing are owned by the ten
 
 A problem in one tenant should not affect others:
 - Network isolation via the tenant fabric (per-tenant routing domains)
-- Resource quotas (future)
 - Independent lifecycle
+
+There are no per-tenant resource quotas: one tenant's workloads can use up the tenant hypervisor.
+Quotas are on the [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/)
+roadmap.
 
 ### No Shared State
 

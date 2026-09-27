@@ -30,8 +30,7 @@ rebuild recreates it, and then improves it.
 - What happens to guest disks, and guest configuration, when a node's OS disk is rebuilt
 
 **Out of Scope**
-- Shared storage across nodes, which is still a planned addition to
-  [Substrate Storage](/docs/architecture/substrate/storage/)
+- Shared storage across nodes: the [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/) project
 - The VM disk model (OS disk versus data disk), which that page already defines
 
 ---

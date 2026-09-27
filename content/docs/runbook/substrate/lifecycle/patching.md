@@ -12,42 +12,27 @@ Day 2 maintenance and security updates for substrate hosts.
 
 ---
 
-## Status: Planned
+## How patching is done today
 
-This section will document:
+No role or playbook applies updates. A patch is a change, and goes through
+[Change Management](/docs/policies/change-management/) like any other: a change record, the
+update applied to the host, and verification afterwards. How a patch is chosen is
+[Vulnerability Management](/docs/policies/risk-management/vulnerability-management/).
 
-- Online patching (hosts with internet access)
-- Offline patching (air-gapped site)
-- Local dnf mirror setup for full air-gap
-
----
-
-## Decision Required
-
-Post-install updates currently require internet access. Options:
-
-| Option | Pros | Cons |
-|--------|------|------|
-| Accept internet required | Simple, no extra storage | Not true air-gap |
-| Full local dnf mirror | True air-gap | ~200GB per Fedora release |
-| Hybrid (security only) | Balanced | Complex to maintain |
+| What | Where it comes from | Procedure |
+|------|---------------------|-----------|
+| OS packages, at install | The staged install tree on the artifact server — no internet needed | [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/) |
+| OS packages, after install | Public Fedora (or Debian, for Proxmox) mirrors — the host needs internet access | Per change record |
+| Omada controller | A staged image on the artifact server | [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/) |
+| Switch and AP firmware | Firmware staged on the artifact server | Per change record: [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) (switch), [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (AP) |
 
 ---
 
-## Current State
+## What is not covered
 
-Install-time packages come from ISO/cdrom (air-gap ready).
-
-Post-install `dnf update` reaches public Fedora mirrors unless a local mirror is configured.
-
----
-
-## Future Work
-
-When this decision is made, document:
-
-1. Mirror setup (if local)
-2. Update frequency and process
-3. Rollback procedures
-4. Security advisory monitoring
-
+**Post-install updates need the internet.** There is no local package mirror, so an air-gapped site
+cannot patch its hosts. The options (accept internet access, a full local mirror at roughly 200 GB
+per Fedora release, or security updates only) are recorded in the
+[Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/)
+candidate. Maintenance windows, patch testing, rollback criteria and automated patching are the
+[Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/) roadmap project.

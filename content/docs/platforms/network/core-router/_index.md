@@ -26,6 +26,7 @@ The core router runs OPNsense.
 | **OS** | OPNsense |
 | **Version** | [Software Catalog](/docs/platforms/software-catalog/#core-router-opnsense-dv02cor002p01), with the bundled services in use |
 | **Base** | FreeBSD |
+| **Installation** | Manual, from USB. OPNsense has no network or unattended install; see [Build Network](/docs/runbook/substrate/building-recovery/build-network/) |
 
 ---
 

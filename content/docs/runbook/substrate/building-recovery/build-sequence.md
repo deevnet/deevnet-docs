@@ -16,7 +16,7 @@ Configure PXE boot authority before provisioning hosts.
 For initial site build or full recovery, the bootstrap node provides DNS/DHCP/TFTP for the management subnet.
 
 ```bash
-cd ~/home/ansible-collection-deevnet.builder
+cd ansible-collection-deevnet.builder
 make bootstrap-auth
 ```
 

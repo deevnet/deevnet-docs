@@ -31,8 +31,8 @@ The management hypervisor runs Proxmox VE.
 
 ### Automation Capability
 
-- **Installation**: Unattended ISO install from `deevnet-image-factory` (embedded answer file,
-  install disk pinned by serial), then two bootstrap scripts rendered from inventory
+- **Installation**: manual, from the standard Proxmox VE ISO. An unattended ISO (embedded answer
+  file, install disk pinned by serial) is [unfinished work](/docs/roadmap/infrastructure/mobile/builder/) in `deevnet-image-factory`
 - **Post-install**: Ansible: `deevnet.builder` (`proxmox_node_base`, `proxmox_node_storage`) and
   `deevnet.net` (`proxmox_node_network`, bridge only on this node)
 - **VM provisioning**: Ansible-only (no Terraform for management plane)
@@ -98,7 +98,7 @@ its own web UI. Why nothing is clustered is in
 
 ## Provisioning Workflow
 
-The node is installed unattended from the image factory's ISO, finished by Ansible, and given a
+The node is installed by hand from the Proxmox VE ISO, finished by Ansible, and given a
 Packer-built template that management VMs are cloned from. The procedure is
 [Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
 

@@ -49,7 +49,7 @@ The substrate (Core Router, hypervisors, network infrastructure) is stateless. A
 This means:
 - No substrate snapshots or backups to maintain
 - No state synchronization concerns
-- Any host can be wiped and rebuilt at any time
+- Any host can be wiped and rebuilt at any time, and the Builder, hypervisors and management-plane VMs are, once per Fedora release ([Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule))
 - Hardware replacement is straightforward
 
 **Application tenants are different.** Tenant workloads may have stateful data (databases, user files, etc.) that requires backup and recovery procedures. A tenant rebuilds itself from its own repository and state; see [Tenant Operations](/docs/runbook/tenant/).
@@ -68,7 +68,7 @@ flowchart TD
     D["<b>4. Configure PXE</b><br/><code>make bootstrap-auth</code>"]:::transition
     E["<b>5. Build Core Router</b><br/>Manual OPNsense USB install"]:::manual
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
-    G["<b>7. Build Management Plane</b><br/>Install and configure Proxmox hypervisors"]
+    G["<b>7. Build Management Plane</b><br/>Manual Proxmox install, then Ansible"]:::manual
     H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
     I["<b>9. Build Management-Plane VMs</b><br/>Clone from template, or PXE netboot"]
     J["<b>10. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
@@ -111,6 +111,7 @@ flowchart TD
 ### Reference
 
 - [Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
+- [Repave the Builder](repave-builder/) — Reinstall the hardware Builder from a temporary builder VM, over PXE
 - [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---
@@ -120,7 +121,7 @@ flowchart TD
 | Component | Method | Status |
 |-----------|--------|--------|
 | Proxmox VM template | kickstart + cdrom | Ready |
-| Proxmox VE bare metal | embedded answer file | Ready |
+| Proxmox VE bare metal | manual install from the staged ISO | Manual |
 | Fedora packages (install) | local mirror/ISO | Ready |
 | Core Router | manual USB install | Manual — accepted prereq |
 
@@ -129,5 +130,7 @@ flowchart TD
 ## Known Gaps
 
 **Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Evaluations](/docs/platforms/evaluations/).
+
+**Hypervisors** - Proxmox VE is installed by hand from the ISO staged on the artifact server. An unattended ISO with an embedded answer file exists in `deevnet-image-factory` but is unfinished and has not installed either node; it is on the [Builder roadmap](/docs/roadmap/infrastructure/mobile/builder/).
 
 **Post-Install Updates** - See [Patching](/docs/runbook/substrate/lifecycle/patching/) for day 2 considerations.

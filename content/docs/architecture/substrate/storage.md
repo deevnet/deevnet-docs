@@ -5,19 +5,9 @@ weight: 3
 
 # Substrate Storage
 
-Defines the shared and persistent storage model for Deevnet sites.
-
----
-
-## Status
-
-**Shared** storage is a **planned future addition** to the substrate. This document will be expanded as the storage architecture is defined.
-
----
-
-## Intent
-
-Shared storage will provide persistent volumes for substrate consumers — the management and control planes, and the workloads that run on the substrate — independent of any single compute host.
+How the substrate stores data today: every disk a virtual machine has lives on the local storage of
+the hypervisor that runs it, split into an OS disk and a data disk with different owners and
+lifetimes.
 
 ---
 
@@ -52,6 +42,19 @@ and the filesystem would need tooling in the image and a first-boot step in ever
 ### State does not live on the OS disk
 
 Because the OS disk is replaced on every image rebuild, anything worth keeping belongs somewhere
-else: on a data disk, or on shared storage. This is the same stateless principle the substrate
+else: on a data disk. This is the same stateless principle the substrate
 applies to hosts — the image is a build artifact, and a VM must be reconstructible from its
 declaration plus its data, never from the accumulated contents of its root filesystem.
+
+---
+
+## Local, not shared
+
+Every disk is local to one hypervisor. A data disk outlives its VM, but not its host: losing a
+hypervisor's storage loses every disk on it, and nothing can be moved to another host while it is
+down ([Compute → Nothing is clustered](/docs/architecture/substrate/compute/#nothing-is-clustered)).
+The storage segment exists in the segment model for storage traffic, and nothing sits on it yet.
+
+Storage that outlives a single host — persistent volumes for the management and control planes and
+for tenant workloads — is the [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/)
+roadmap project.

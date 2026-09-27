@@ -66,25 +66,26 @@ infrastructure:
 env:
   interfaces:
     eth0:
-      ip: 192.168.10.23
+      ip: 10.20.99.23
       purpose: mgmt
       segment: management
       dns:
         host_a_record: true
         dhcp_reservation: true
-        cnames:
-          - dv02hyp003p01
 ```
 
 ### 3. Apply configuration
 
 ```bash
-cd ~/home/ansible-collection-deevnet.builder
-make rebuild
+# DNS record and DHCP reservation on the core router
+cd ansible-collection-deevnet.net
+make dns
+make dhcp
+
+# PXE boot config on the Builder, if the host will network-boot
+cd ansible-collection-deevnet.builder
 ansible-playbook playbooks/site.yml --limit bootstrap_nodes
 ```
-
-This generates PXE configs and pushes DNS/DHCP to Core Router.
 
 ---
 
@@ -136,7 +137,7 @@ mgmt_vm:
 Then allocate the identity, which writes `identity.yml`:
 
 ```bash
-cd ~/home/ansible-collection-deevnet.mgmt
+cd ansible-collection-deevnet.mgmt
 make vm-identity-assign
 ```
 

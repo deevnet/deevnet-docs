@@ -57,14 +57,14 @@ realization and the single-node-to-cluster trajectory.
 
 The tenant fabric hands off to the core router at a **perimeter transit boundary**. The core
 router keeps no VLAN interface per tenant, does not route between individual tenants, and does not
-serve tenant DHCP; it sees only the
+address tenant workloads; it sees only the
 **transit network** and provides perimeter services on it:
 
 | Function | Owned by |
 |----------|----------|
 | Tenant subnet, gateway, inter-tenant routing | Tenant fabric |
 | Tenant isolation (per-tenant routing domains) | Tenant fabric |
-| Tenant IPAM and DHCP | Tenant fabric |
+| Tenant addressing | Tenant fabric, derived from the tenant's index |
 | Outbound NAT / internet egress | Core router (perimeter) |
 | Tenant ↔ management-plane policy | Core router (perimeter) |
 
@@ -94,9 +94,11 @@ service.tenant.site.deevnet.net
 - `service.eds.mobile.deevnet.net` — the name in front of the workload
 - `app.eds.mobile.deevnet.net` — the workload's own name
 
-Internal tenant records are **owned by the tenant** and created as part of tenant provisioning,
-then **published into the substrate zone** so tenant service names resolve consistently. This
-aligns with the stateless-substrate model: rebuilding a tenant restores its own records.
+Internal tenant records are **owned by the tenant**, written by the tenant's own IaC into the
+tenant's zone. The zone is its own, served by the substrate's tenant authoritative service and
+kept separate from the substrate zone; the substrate resolver forwards queries for it
+([Naming and Addressing → Two Naming Authorities](/docs/architecture/naming-and-addressing/#two-naming-authorities)).
+This aligns with the stateless-substrate model: rebuilding a tenant restores its own records.
 
 ---
 
@@ -135,18 +137,18 @@ management segment directly. See
 
 ---
 
-## Per-Tenant Addressing and DHCP
+## Per-Tenant Addressing
 
-Each tenant network has its own subnet, gateway, and DHCP scope, **served by the tenant fabric**:
+Each tenant network has its own subnet and gateway, **owned by the tenant fabric**:
 
 - The tenant's gateway (`.1`) is the fabric's anycast gateway for that subnet
-- IPAM and DHCP are owned by the fabric
+- Workload addresses are **derived from the tenant's index and applied at first boot**, not leased.
+  There is no DHCP on a tenant network
 - The core router learns **one aggregate route** to the tenant overlay, so that the substrate's
   operator networks can reach tenant workloads
   ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). It holds no
   per-tenant state: tenant traffic still arrives already SNATed by the fabric exit node, and
   per-tenant isolation is enforced inside the fabric
-- Static assignments may be used for tenant VMs with deterministic identity requirements
 
 Tenant subnets, network identifiers, and routing-domain identifiers are allocated from a
 **globally-unique** plan so that additional fabric members can join later without collision.
@@ -180,10 +182,10 @@ graph TB
 ## Summary
 
 1. A tenant network is a **virtual overlay** owned by the tenant fabric — not a physical VLAN
-2. Tenant Layer 3 (gateway, routing, isolation, DHCP) lives in the tenant compute domain
+2. Tenant Layer 3 (gateway, routing, isolation, addressing) lives in the tenant compute domain
 3. The core router is the **perimeter**: NAT, internet egress, and tenant↔management policy on a
    transit network — it does not route between tenants
 4. Default-deny between tenants; explicit allow in IaC
-5. Tenant DNS follows `service.tenant.site.deevnet.net`, owned by the tenant and published to the
-   substrate zone
+5. Tenant DNS follows `service.tenant.site.deevnet.net`, in a zone of the tenant's own, separate
+   from the substrate zone
 6. Addressing and identifiers use a globally-unique plan so the fabric can grow to a cluster
