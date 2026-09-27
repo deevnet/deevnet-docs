@@ -1,6 +1,6 @@
 ---
 title: "Evaluations"
-weight: 5
+weight: 7
 bookCollapseSection: true
 aliases:
   - /docs/platforms/certification/
