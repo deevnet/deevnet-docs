@@ -7,11 +7,11 @@ weight: -28
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-27 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Unscheduled |
+| **Status** | In progress |
+| **Window** | 2026-09-27, started 13:11 |
 | **Site** | mobile |
 | **Systems** | `dv02hyp002p02` (a new `fedora-tenant-44-*` template), `dv02prv001v01` (the API), `dv02cor002p01` (one rule), `dv02obs001v01` (tenant downloads: the new provider), the eds and tdemo workloads (rebuilt) |
 | **Automation** | `deevnet-image-factory` `make proxmox-fedora-tenant`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`; `deevnet.mgmt` `site.yml --tags deevnet-api` and `--tags tenant-downloads`; `deevnet.net` `make migration-opnsense-firewall`. Inventory `ansible-inventory-deevnet/mobile` |
