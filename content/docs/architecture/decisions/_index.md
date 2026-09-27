@@ -63,7 +63,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Tenant Model](tenant-model/)
 
 - [ADR-0028: Tenant Workload Login](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/) —
-  *Proposed.* Answers ADR-0018's open question 3. A tenant logs in to its own workloads with a public
+  *Accepted* (2026-09-27). Answers ADR-0018's open question 3. A tenant logs in to its own workloads with a public
   key it supplies through `ssh_keys`; the private key never leaves the tenant, so the substrate holds
   nothing to leak or recover. Keys land on a tenant account the API reports as `login_user`, with
   passwordless sudo. Tenant workloads clone a separate `fedora-tenant-*` template whose build removes
@@ -130,7 +130,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Tenant Networking](tenant-networking/)
 
 - [ADR-0029: Tenant Developer Network Keys](/docs/architecture/decisions/tenant-networking/0029-tenant-developer-network-keys/) —
-  *Proposed.* Replaces `DVNTM-TD`'s shared key, which let one tenant decrypt another's traffic,
+  *Accepted* (2026-09-27). Replaces `DVNTM-TD`'s shared key, which let one tenant decrypt another's traffic,
   including Terraform state over plain HTTP. Each tenant gets its own PPSK key: the first comes with
   its admission, because a laptop needs `DVNTM-TD` to reach the API at all, and it becomes the
   tenant's own key `admission` when the tenant creates itself. A tenant issues itself more as trust

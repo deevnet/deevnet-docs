@@ -7,7 +7,7 @@ weight: -29
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-09-27): built and proven by [CHG-0029](/docs/changes/2026/0029-tenant-developer-network-keys/) |
 | **Date** | 2026-09-27 |
 | **Scope** | How a tenant developer's laptop gets onto `DVNTM-TD`, how one tenant is kept from another there, and how that access ends. Not what the segment may reach (CHG-0022, CHG-0024, ADR-0028 §5). |
 | **Amends** | [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)'s design note *"A shared key, not PPSK"*; [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §10 (what an admission hands over) |

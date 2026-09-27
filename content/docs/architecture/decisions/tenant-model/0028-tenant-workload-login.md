@@ -7,7 +7,7 @@ weight: -28
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-09-27): built and proven by [CHG-0028](/docs/changes/2026/0028-tenant-workload-login/) |
 | **Date** | 2026-09-27 |
 | **Scope** | How a tenant gets a shell on a workload it owns: which account, which key, which template, and from where. Not how code arrives unattended (ADR-0017), and not people's identities (ADR-0025). |
 | **Answers** | [ADR-0018: Operator Access to Tenants](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/), open question 3 |
