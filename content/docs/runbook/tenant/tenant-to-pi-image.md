@@ -40,6 +40,7 @@ the environment, under these names:
 | `MQTT_HOST` | `mqtt.mobile.deevnet.net` | `<hostname>.local` |
 | `MQTT_PORT` | `8883` | `8883` |
 | `MQTT_CA_FILE` | `site-ca.pem` (Deevnet's) | `site-ca.pem` (the card's) |
+| `MQTT_USERNAME`, `MQTT_PASSWORD` | your app's broker account | the same: you re-create it with the same password |
 | `LOG_ENDPOINT` | `log_endpoint` | `https://<hostname>.local:8427` |
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
 | `LOG_SELECT_HEADER` | `X-Deevnet-Partition` | the same |
@@ -64,6 +65,8 @@ output "kit_env" {
     MQTT_HOST=mqtt.mobile.deevnet.net
     MQTT_PORT=8883
     MQTT_CA_FILE=site-ca.pem
+    MQTT_USERNAME=${deevnet_iot_broker_account.backend.username}
+    MQTT_PASSWORD=${deevnet_iot_broker_account.backend.password}
     LOG_ENDPOINT=${deevnet_tenant.this.log_endpoint}
     LOG_INGEST_TOKEN=${deevnet_tenant.this.log_ingest_token}
     LOG_READ_TOKEN=${deevnet_tenant.this.log_read_token}
@@ -81,6 +84,11 @@ output "kit_env" {
 ```bash
 terraform output -raw kit_env > kit.env
 ```
+
+`deevnet_iot_broker_account.backend` is your app's own broker account (the walkthrough's `backend`), a workload account with no
+`device` ([Devices and MQTT](/docs/runbook/tenant/services/devices-and-mqtt/)). Your app logs in
+with it on Deevnet, and on the Pi you re-create it with the same password (step 3), so those two
+lines are the same on both.
 
 If the app runs with that file on Deevnet, the Pi's `kit.env` runs it on the Pi.
 
@@ -114,6 +122,20 @@ and `tools/`; check the image against its `.sha256` before flashing.
      Use your Deevnet tenant's name and index (`terraform output`, or `deevnet_tenant.this.index`).
      With the same index, `LOG_DEVICE_PARTITION` doesn't change either. Left empty, the tenant is
      `pi` with index 1.
+   - **Name the card, and give it Wi-Fi** if it won't be on a cable, in the same file:
+
+     ```
+     hostname=bench1
+     wifi_ssid=YourNetwork
+     wifi_psk=YourPassword
+     wifi_country=US
+     ```
+
+     The card becomes `bench1.local`, and its certificate names it. Set a name at a meetup: two
+     cards left unnamed both answer to `raspberrypi.local`. Wi-Fi needs all three lines; the Pi
+     keeps its radio off until it has a country. The Wi-Fi password is removed from
+     `deevnet-kit.txt` once it has been applied, because anyone holding the card can read that
+     partition.
    - **Create your login, and turn on SSH:**
 
      ```bash
@@ -144,19 +166,22 @@ called `bench1`. Password sign-in stays on in every case. Turning it off
 (`PasswordAuthentication no`) is your call once a key works.
 
 If your version of Imager does offer OS customization for the image, you can use it instead of
-`userconf.txt` and `ssh`. Both routes end the same way.
+`userconf.txt`, `ssh` and the Wi-Fi lines. Both routes end the same way.
 
 ## 2. First boot
 
-Boot the Pi where it will live, wired or on Wi-Fi you've set up. First boot creates your user, grows the
-filesystem and reboots once. Then `deevnet-kit` runs **once**. It
-generates the card's CA and certificate, the log tokens, the bridge's credentials and Grafana's
+Boot the Pi where it will live, on a cable or with the Wi-Fi lines above (this is your own Pi on
+your own network; Deevnet's tenant networks themselves are Wi-Fi only). First boot creates your
+user, grows the filesystem and reboots once. Then `deevnet-kit` runs **once**. It sets the host
+name and joins the Wi-Fi, then generates the card's CA and certificate (naming that host name and
+address), the log tokens, the bridge's credentials and Grafana's
 secrets, and starts the broker, the log store, the bridge and Grafana. Grafana's first start takes a
 minute or two; then `deevnet-kit dashboards` creates your organization. Until it has, `kit.env`
 carries no `GRAFANA_*` lines.
 
-The hostname is `raspberrypi` unless you changed it. Find the Pi's address on your router's
-client list, or use `raspberrypi.local` from a computer on the same network.
+The card is `<hostname>.local` from a computer on the same network (`raspberrypi.local` if you left
+`hostname=` empty), or find its address on your router's client list. Each card makes its own SSH
+host keys on first boot, so your computer will ask you to accept it once.
 
 ```bash
 ssh you@<pi>
@@ -190,20 +215,23 @@ On Deevnet your `deevnet_iot_broker_account` resources made the accounts. On the
 a device account may publish only its own `log/<device>`, and a device account may not read the
 log space.
 
-For each account in your Terraform, pass the same name, device and patterns. Pass the password
-from `flash` to keep it:
+For each account in your Terraform, pass the same name, device and patterns, and keep its
+password: put it on the first line of a file and pass `--password-file`, so it stays out of your
+shell history. For devices the password is in `flash`; for your app it is `MQTT_PASSWORD` in your
+Deevnet `kit.env`.
 
 ```bash
 sudo deevnet-kit account add pico-1 --device pico-1 \
   --publish sensors/pico-1/telemetry --publish log/pico-1 \
   --subscribe sensors/pico-1/command \
-  --password '<flash.mqtt.pico-1.pass>'
+  --password-file pico-1.pw
 
 sudo deevnet-kit account add backend \
-  --subscribe 'sensors/+/telemetry' --publish 'sensors/+/command'
+  --subscribe 'sensors/+/telemetry' --publish 'sensors/+/command' \
+  --password-file backend.pw
 ```
 
-Without `--password` a new one is generated and printed **once**. The username is
+Without a password a new one is generated and printed **once**. The username is
 `<tenant>-<name>`, as on Deevnet. `deevnet-kit account list` and `deevnet-kit account rm NAME` do
 the rest. Removing an account disconnects any client still using it.
 
@@ -225,17 +253,28 @@ certificate from the same CA, so no device needs a new CA.
 
 ## 5. Run your app on the Pi
 
-Build your app as a container image (arm64) and run it with the example unit:
+Your app runs on the Pi as a container. Build it for the Pi on your computer, and copy the image
+across over SSH; no registry is involved:
 
 ```bash
-sudo deevnet-kit export /opt/my-app
-sudo cp /opt/deevnet-kit/examples/my-app.service /etc/systemd/system/
-sudoedit /etc/systemd/system/my-app.service        # set IMAGE=
-sudo systemctl daemon-reload && sudo systemctl enable --now my-app
+podman build --platform linux/arm64 -t my-app .
+podman save my-app | ssh you@bench1.local sudo podman load
 ```
 
-The unit uses host networking and points the app at `localhost`, because a container cannot
-resolve `.local` names. The certificate covers `localhost`. Podman on Bookworm is 4.3, which has no
+On the Pi, export the app's settings **with its broker login**. `--app` checks the password against
+the account from step 3 before it writes anything, so `kit.env` can't carry one the broker refuses.
+Then install the example unit, which runs `localhost/my-app:latest`:
+
+```bash
+sudo deevnet-kit export /opt/my-app --app backend --password-file backend.pw
+shred -u backend.pw
+sudo cp /opt/deevnet-kit/examples/my-app.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now my-app
+sudo journalctl -u my-app -f
+```
+
+The unit uses host networking and points the app's broker, log store and Grafana at `localhost`,
+because a container cannot resolve `.local` names. The certificate covers `localhost`. Podman on Bookworm is 4.3, which has no
 quadlets, so it is a plain unit.
 
 Or run the app on your computer with `~/deevnet-kit/kit.env`; the Pi does not mind.
