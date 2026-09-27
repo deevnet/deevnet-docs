@@ -56,12 +56,12 @@ the [Pi Lab](/docs/runbook/tenant/pi-lab/).
 The bootloader EEPROM version is not recorded. The OS on each Pi is in the
 [Software Catalog](/docs/platforms/software-catalog/#raspberry-pi).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Pi bank |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

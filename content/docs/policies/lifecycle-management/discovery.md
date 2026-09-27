@@ -7,7 +7,7 @@ weight: 2
 
 Stage 4 of [Lifecycle Management](/docs/policies/lifecycle-management/): knowing what is actually
 running, and learning what upstream has released for it. Discovery doesn't change anything. What it
-finds starts another stage: a patch, a certification, an upgrade or a retirement.
+finds starts another stage: a patch, an evaluation, an upgrade or a retirement.
 
 ---
 
@@ -42,8 +42,8 @@ Deevnet has to hear about both from the place that publishes them, not by chance
 
 | Finding | Goes to |
 |---|---|
-| A patch within a certified line | [Patch](/docs/policies/lifecycle-management/): read its notes, and re-check a criterion if they touch one |
-| A new line | [Certification](/docs/policies/lifecycle-management/certification/), then an upgrade change |
+| A patch within an approved line | [Patch](/docs/policies/lifecycle-management/): read its notes, and re-check a criterion if they touch one |
+| A new line | [Evaluation](/docs/policies/lifecycle-management/evaluation/), then an upgrade change |
 | End of life announced for a line in use | Plan the upgrade or the retirement, with a date |
 | Upstream archived or abandoned | A risk entry, and a replacement decision (as [ADR-0026](/docs/architecture/decisions/0026-object-storage/) did for MinIO) |
 | A security advisory | [Vulnerability Management](/docs/policies/risk-management/vulnerability-management/), which assesses and records it |

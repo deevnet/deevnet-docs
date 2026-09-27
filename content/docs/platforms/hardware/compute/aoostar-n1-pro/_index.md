@@ -55,12 +55,12 @@ it the upstream and site connections the bootstrap role needs.
 The BIOS version is in the
 [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Builder (bootstrap node) |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

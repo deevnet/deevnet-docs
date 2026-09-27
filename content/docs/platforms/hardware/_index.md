@@ -9,8 +9,8 @@ bookCollapseSection: true
 # Hardware
 
 The physical boxes the mobile site runs on: one page per model, with its specs, why it was chosen,
-which hosts it is, how it is cabled and powered, how to reach its console, and whether it is
-certified. How each box is configured for its role is on the role pages that follow in
+which hosts it is, how it is cabled and powered, how to reach its console, and whether it has
+been evaluated. How each box is configured for its role is on the role pages that follow in
 [Implementation & Tooling](/docs/platforms/), and every firmware and software version is in the
 [Software Catalog](/docs/platforms/software-catalog/).
 
@@ -35,10 +35,11 @@ The full switch port map is on the [SG2218](network/tp-link-sg2218/#port-map) pa
 
 ---
 
-## Certification
+## Evaluation
 
-Each model page is also its certification record: its current verdict, and the evaluations behind
-it. What certification requires is the
-[Hardware Certification](/docs/policies/lifecycle-management/certification/hardware-certification/)
+Each model page is also its evaluation record: its current verdict, and the evaluations behind it.
+The criteria are in the
+[Hardware Evaluation](/docs/policies/lifecycle-management/evaluation/hardware-evaluation/)
 policy. Everything above predates the policy and is
-{{< status-badge "planned" "Not yet certified" >}}.
+{{< status-badge "planned" "Not yet evaluated" >}}. Candidates not yet in service are under
+[Evaluations](/docs/platforms/evaluations/).

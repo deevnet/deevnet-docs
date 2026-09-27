@@ -60,12 +60,12 @@ Each platform page documents:
 
 ---
 
-## Certification
+## Evaluations
 
-What each software selection was tested against, by item: its current verdict, and every evaluation
-behind it. See [Certification](certification/). Hardware is certified on its model's
-[Hardware](/docs/platforms/hardware/) page. The process and criteria are the
-[Certification](/docs/policies/lifecycle-management/certification/) policy.
+What each selection was checked against, by item: its current verdict, and every evaluation behind
+it, plus the candidates being considered. See [Evaluations](evaluations/). Hardware in service is
+evaluated on its model's [Hardware](/docs/platforms/hardware/) page. The process and criteria are the
+[Evaluation](/docs/policies/lifecycle-management/evaluation/) policy.
 
 ---
 
@@ -86,5 +86,5 @@ the services bundled inside OPNsense: see [Software Catalog](software-catalog/).
 | Fedora/RHEL | Primary OS (dnf-based, SELinux) |
 | Proxmox VE | Virtualization platform |
 | OPNsense | Router platform |
-| VyOS | Under evaluation (see [Evaluations](/docs/platforms/evaluations/)) |
+| VyOS | On hold (see [Evaluations](/docs/platforms/evaluations/)) |
 | TP-Link Omada | Switch and AP management |

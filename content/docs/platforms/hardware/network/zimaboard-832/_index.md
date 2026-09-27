@@ -40,7 +40,7 @@ cooling suit a portable site.
 **The Realtek NICs are an open problem.** The LAN NIC, `re0`, has recurring watchdog timeouts on
 FreeBSD's `re(4)` driver: [INC-0004](/docs/incidents/2026/0004-core-router-lost/). A replacement
 with non-Realtek NICs is being considered: the
-[N100 router evaluation](/docs/platforms/evaluations/#n100-router-hardware-evaluation).
+[N100 router appliance](/docs/platforms/evaluations/hardware/n100-router-appliance/).
 {{% /hint %}}
 
 ## In Service
@@ -65,12 +65,12 @@ with non-Realtek NICs is being considered: the
 The BIOS version is not recorded. OPNsense is in the
 [Software Catalog](/docs/platforms/software-catalog/#core-router-opnsense-dv02cor002p01).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Core router |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

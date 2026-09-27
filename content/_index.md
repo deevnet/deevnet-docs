@@ -93,11 +93,11 @@ The rest of the toolkit carries the breadboards, components and tools for protot
   </a>
   <a class="section-card" href="docs/policies/">
     <h3>Policies & Procedures</h3>
-    <p>Change, incident, risk and lifecycle management, including certification.</p>
+    <p>Change, incident, risk and lifecycle management, including evaluation criteria.</p>
   </a>
   <a class="section-card" href="docs/platforms/">
     <h3>Implementation & Tooling</h3>
-    <p>The hardware, one page per model, software selections with rationale, the software catalog, and certifications.</p>
+    <p>The hardware, one page per model, software selections with rationale, the software catalog, and evaluations.</p>
   </a>
   <a class="section-card" href="docs/runbook/">
     <h3>Operational Runbook</h3>

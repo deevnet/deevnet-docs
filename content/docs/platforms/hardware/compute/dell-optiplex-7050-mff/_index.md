@@ -57,12 +57,12 @@ The tenant hypervisor is its successor, the [OptiPlex 7060 Micro](../dell-optipl
 The BIOS version is in the
 [Software Catalog](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Management hypervisor |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

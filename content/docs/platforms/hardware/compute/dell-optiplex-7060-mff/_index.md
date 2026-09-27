@@ -48,12 +48,12 @@ repurposed enterprise desktop, 32GB for many VMs, compact, low-power, and Intel 
 The BIOS version is in the
 [Software Catalog](/docs/platforms/software-catalog/#tenant-hypervisor-dv02hyp002p02).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Tenant hypervisor |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 
