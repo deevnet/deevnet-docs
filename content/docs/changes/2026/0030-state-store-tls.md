@@ -7,11 +7,11 @@ weight: -30
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-27 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Unscheduled |
+| **Status** | In progress |
+| **Window** | 2026-09-27, started 12:41 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (MinIO, the Deevnet API), `dv02idn001v01` (OpenBao issues one certificate), the tdemo, eds and mabell backends |
 | **Automation** | `deevnet.mgmt` `site.yml --tags tenant-state` and `--tags deevnet-api`, `--tags tenant-downloads`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
