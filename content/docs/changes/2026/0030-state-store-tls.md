@@ -10,8 +10,8 @@ weight: -30
 | **Date** | 2026-09-27 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | In progress |
-| **Window** | 2026-09-27, started 12:41 |
+| **Status** | **Complete, 2026-09-27.** The state store serves TLS only, from the site CA; every client verifies it. Proven from `DVNTM-TD` (29/29). |
+| **Window** | 2026-09-27, 12:41 to 13:06 |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (MinIO, the Deevnet API), `dv02idn001v01` (OpenBao issues one certificate), the tdemo, eds and mabell backends |
 | **Automation** | `deevnet.mgmt` `site.yml --tags tenant-state` and `--tags deevnet-api`, `--tags tenant-downloads`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
@@ -178,8 +178,7 @@ deploy the API again.
 
 ## Outcome
 
-Run from the Builder on 2026-09-27. **One check remains: `segment-check.sh DVNTM-TD` from a
-computer on `DVNTM-TD`**, the first step of the next tenant's own run.
+Run from the Builder on 2026-09-27, and verified last from a computer on `DVNTM-TD`.
 
 | When | Steps | What happened |
 |---|---|---|
@@ -189,6 +188,46 @@ computer on `DVNTM-TD`**, the first step of the next tenant's own run.
 | ~13:00 | 3 | mgmt #53 merged (version bump). `site.yml --tags deevnet-api`: ok=77 changed=9 failed=0. `/version` is `v0.9.0`, `/readyz` `200`; env has `MINIO_ADMIN_TLS=true`, `MINIO_ADMIN_CACERT`, `DEEVNET_STATE_ENDPOINT=https://…`; CHG-0028/0029 settings unchanged. Operator-created `tprobe` (index 4): `201`, and its own state credentials put, read and deleted an object in `tenants/tprobe/` over TLS and got `403` in `tenants/eds/`. Deleted: `204`, then `404` |
 | ~13:10 | 4 | eds and tdemo backends to `https` + `custom_ca_bundle` (eds and tdemo PRs merged). `terraform init -reconfigure` succeeded against the store over TLS for both; `plan` shows only `state_endpoint` `http` → `https`, no resource changes |
 | ~13:20 | 5 | net #39 merged. `site.yml --tags tenant-downloads`: ok=34 changed=1 failed=0. Downloads serve provider `0.4.1` and `0.5.0`; the served `tenant-check.sh`, run from the Builder, reports the API, the state store, the broker, the log store, Grafana and downloads all `TLS verified` |
+
+| 13:06 | Verification | From a computer on `DVNTM-TD` (`10.20.45.50`): `segment-check.sh DVNTM-TD` **29 passed, 0 failed**, the state store `REACH https://tfstate.mobile.deevnet.net:9000 - HTTP 403 (TLS verified)` among them. Log below |
+
+{{< details "segment-check.sh DVNTM-TD, 2026-09-27 13:06" >}}
+```text
+Segment check: DVNTM-TD (from 10.20.45.50)
+== Address and DNS
+  PASS  lease 10.20.45.50
+  PASS  api.mobile.deevnet.net -> 10.20.25.20
+  PASS  tfstate.mobile.deevnet.net -> 10.20.25.20
+  PASS  mqtt.mobile.deevnet.net -> 10.20.35.20
+  PASS  downloads.mobile.deevnet.net -> 10.20.25.22
+  PASS  REACH https://api.mobile.deevnet.net:8080 - HTTP 404 (TLS verified)
+  PASS  REACH https://tfstate.mobile.deevnet.net:9000 - HTTP 403 (TLS verified)
+  PASS  mqtt.mobile.deevnet.net:8883 TLS verified
+  PASS  dv02obs001v01.mobile.deevnet.net:8427 TLS verified
+  PASS  REACH https://dv02obs001v01.mobile.deevnet.net:3000 - HTTP 302 (TLS verified)
+  PASS  REACH https://downloads.mobile.deevnet.net:8443 - HTTP 200 (TLS verified)
+  PASS  internet (https://example.com 200)
+  PASS  BLOCK obs-ssh(platform) 10.20.25.22:22
+  PASS  BLOCK Builder-ssh(management) 10.20.99.95:22
+  PASS  BLOCK router-GUI(management) 10.20.99.1:443
+  PASS  BLOCK hypervisor-PVE(management) 10.20.99.21:8006
+  PASS  BLOCK router-GUI-on-own-gateway 10.20.45.1:443
+  PASS  BLOCK router-ssh-on-own-gateway 10.20.45.1:22
+  PASS  BLOCK router-on-trusted 10.20.10.1:443
+  PASS  BLOCK prv-ssh(platform) 10.20.25.20:22
+  PASS  BLOCK prv-other-port(platform) 10.20.25.20:8200
+  PASS  BLOCK msg-ssh(iot_backend) 10.20.35.20:22
+  PASS  BLOCK broker-plaintext(iot_backend) 10.20.35.20:1883
+  PASS  BLOCK tenant-workload 10.20.130.10:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.11:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.12:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.13:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.14:22
+  PASS  BLOCK edge-router-admin(CHG-0023) 192.168.8.1:80
+
+RESULT: DVNTM-TD - 29 passed, 0 failed
+```
+{{< /details >}}
 
 ### Departures from the plan
 
@@ -205,3 +244,5 @@ computer on `DVNTM-TD`**, the first step of the next tenant's own run.
 ## Follow-ups
 
 - [ ] The console on `:9001`: decide whether it should be reachable at all.
+- [ ] `segment-check.sh` expects `DVNTM-TD` → tenant workload `:22` to be **blocked**; CHG-0028 opens
+      it, and must flip that check in the same change.
