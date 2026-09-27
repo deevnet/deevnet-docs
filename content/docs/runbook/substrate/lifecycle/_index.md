@@ -1,6 +1,6 @@
 ---
 title: "Lifecycle"
-weight: 3
+weight: 4
 bookCollapseSection: true
 aliases:
   - /docs/runbook/lifecycle/

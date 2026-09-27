@@ -20,7 +20,7 @@ person meets the failure mode in a document rather than in the dark.
 
 Like [Change Records](/docs/changes/), these are **retained** information: evidence, written
 once, updated only as their actions close. How to write one, and the template, are **maintained**
-in the runbook under [Incident Management](/docs/policies/incident-management/).
+in the runbook under [Incident Management](/docs/runbook/substrate/incident-management/).
 
 ---
 

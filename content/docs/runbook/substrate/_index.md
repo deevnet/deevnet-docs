@@ -19,6 +19,10 @@ with inventory and vault access.
     <h3>Change Management</h3>
     <p>Making a change: change types, the validation checklist, and the change record template.</p>
   </a>
+  <a class="section-card" href="incident-management/">
+    <h3>Incident Management</h3>
+    <p>Recording an incident: the record's sections, keeping it current, and the incident record template.</p>
+  </a>
   <a class="section-card" href="lifecycle/">
     <h3>Lifecycle</h3>
     <p>Patching, upgrades and asset lifecycle — keeping what is in service current, and retiring it.</p>

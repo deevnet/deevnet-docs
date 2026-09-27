@@ -31,7 +31,7 @@ weight: -7
 (`10.20.30.100`) reached **the Builder on the management segment**. The policy declared in inventory
 permits `iot -> iot_backend` and nothing else — no `iot -> management`, no `iot -> tenant_transit`.
 
-This was previously established by a read-only audit ([INC-0001](/docs/policies/incident-management/)).
+This was previously established by a read-only audit ([INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/)).
 It has now been shown from a real client, which is stronger evidence. The IoT segment is not a
 containment boundary in any sense the network enforces, and tenant Wi-Fi keys — which now work — put
 devices onto that segment.

@@ -152,7 +152,7 @@ Steps are backed out in reverse order. Name the point where undo stops being pra
   plan as it was and say what happened under **Outcome**. The plan and the outcome together
   are the record.
 - **Link the incident** in the header table if the change caused one, and link the change from
-  the [incident record](/docs/policies/incident-management/incident-record-template/).
+  the [incident record](/docs/runbook/substrate/incident-management/incident-record-template/).
 - **Retrospective records** — written for a change made before it had a record — say so in a
   note at the top, name their sources (plan, logs, git), and say "not recorded" where the
   sources are silent, rather than filling the gap.
