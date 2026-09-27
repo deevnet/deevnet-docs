@@ -5,21 +5,21 @@ weight: 1
 
 # Before You Start
 
-## What to bring
+Three things come before your first apply: a development environment with the tools installed, the
+few things the operator gives you at [admission](/docs/runbook/tenant/getting-started/admission/),
+and a Wi-Fi connection to the tenant development network.
 
-**A Mac or a Linux laptop, and your own SD card** if you'll take your backend home. Everything
-below can be installed before the meetup. At the meetup, the provider, Terraform, Pi Imager,
-MicroPython and the take-home image come from the site's
-[tenant downloads](#tenant-downloads) rather than the venue's internet.
+## Your development environment
 
-From the operator, at [admission](/docs/runbook/tenant/getting-started/admission/):
+- **A computer running macOS or Linux, with Wi-Fi.** Tenants reach Deevnet over Wi-Fi only (see
+  [Connecting](#connecting-wi-fi-only)).
+- **For devices:** the board itself (a Pico W or an ESP32) and a USB **data** cable.
+- **To move your tenant onto a Pi of your own:** a Raspberry Pi, a microSD card of 8 GB or more, and
+  a card reader.
 
-| | |
-|---|---|
-| An enrollment token | one-time, bound to your tenant name, valid 72 hours |
-| The API endpoint | `https://api.mobile.deevnet.net:8080` |
-| The `DVNTM-TD` Wi-Fi key | the network you work from ([below](#where-you-need-to-sit-on-the-network)) |
-| The site CA | `site-ca.pem`, the certificate authority for everything Deevnet serves over TLS. Check its SHA-256 fingerprint: `ED:ED:43:04:B8:40:8A:CE:14:FE:B8:AB:6C:B6:43:BC:A5:56:84:E8:26:A3:C2:75:CD:BD:EB:70:DF:E5:2D:5C` |
+Everything under [Tools](#tools) can be installed before you reach the site. The provider,
+Terraform, Pi Imager, MicroPython and the Pi image are also served on the site's own
+[tenant downloads](#tenant-downloads), so they don't depend on the internet connection there.
 
 ---
 
@@ -44,8 +44,6 @@ From the operator, at [admission](/docs/runbook/tenant/getting-started/admission
 | Thonny *or* the Arduino IDE with PubSubClient | editing firmware (Pico / ESP32) | thonny.org / arduino.cc | the same | the same |
 | `dig`, `python3` | name checks, scripting | `brew install bind`; `python3` built in | `sudo dnf install bind-utils python3` | `sudo apt install dnsutils python3` |
 
-Plus the board itself (a Pico W or an ESP32) and a USB **data** cable.
-
 **To [convert your tenant to a Pi image](/docs/runbook/tenant/tenant-to-pi-image/):**
 
 | Tool | Why | macOS | Fedora | Debian / Ubuntu |
@@ -55,19 +53,53 @@ Plus the board itself (a Pico W or an ESP32) and a USB **data** cable.
 | `.local` names | `<hostname>.local` | built in | `sudo dnf install nss-mdns avahi` | `sudo apt install libnss-mdns avahi-daemon` |
 | Podman or Docker with arm64 builds | builds your app for the Pi | `brew install podman` | `sudo dnf install podman qemu-user-static` | `sudo apt install podman qemu-user-static` |
 
-### Check your laptop
+### Check your development environment
 
 `tenant-check.sh` checks all of the above. For each missing tool it prints the command that installs
-it on your laptop. Run it at home with `--offline`; on `DVNTM-TD` it also checks every service you'll
-use:
+it on your computer. Run it anywhere with `--offline`; on `DVNTM-TD` it also checks every service
+you'll use:
 
 ```bash
-bash tenant-check.sh --offline      # at home: the tools only
+bash tenant-check.sh --offline      # anywhere: the tools only
 bash tenant-check.sh                # on DVNTM-TD: tools and the site's services
 ```
 
 It is in [tenant downloads](#tenant-downloads) `scripts/`, and attached to every
 [provider release](https://github.com/deevnet/terraform-provider-deevnet/releases).
+
+---
+
+## What the operator gives you
+
+At [admission](/docs/runbook/tenant/getting-started/admission/):
+
+| | |
+|---|---|
+| An enrollment token | one-time, bound to your tenant name, valid 72 hours |
+| The API endpoint | `https://api.mobile.deevnet.net:8080` |
+| The `DVNTM-TD` Wi-Fi key | the network you work from ([below](#connecting-wi-fi-only)) |
+| The site CA | `site-ca.pem`, the certificate authority for everything Deevnet serves over TLS. Check its SHA-256 fingerprint: `ED:ED:43:04:B8:40:8A:CE:14:FE:B8:AB:6C:B6:43:BC:A5:56:84:E8:26:A3:C2:75:CD:BD:EB:70:DF:E5:2D:5C` |
+
+---
+
+## Connecting: Wi-Fi only
+
+**Deevnet's tenant networks are Wi-Fi only.** There are no wired ports for tenants, on the switch or
+anywhere else: your computer joins over Wi-Fi, and so do your devices. Terraform talks to the
+Deevnet API, and which Wi-Fi your computer is on decides whether it can:
+
+| Your computer is on | Reaches the API? | Use it for |
+|---|---|---|
+| **Guest** Wi-Fi | **No** — internet only | reading these docs |
+| **IoT** Wi-Fi (`DVNTM-IOT`) | **No** — that is where your *devices* go, not your computer | nothing |
+| **Tenant dev** Wi-Fi (`DVNTM-TD`) | **Yes** — the tenant-facing services and the internet | `terraform plan` / `apply`, MQTT test clients |
+
+**Work from `DVNTM-TD`.** Its key comes from the operator. It reaches the services your Terraform,
+test clients and browser use (the API, the state store, the broker, the log store, Grafana and the
+tenant downloads) and nothing else on the site.
+
+`DVNTM-TD` uses the site's own DNS. If your computer has a VPN, iCloud Private Relay or a hard-coded
+DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.
 
 ---
 
@@ -118,20 +150,3 @@ deevnet = {
 ```
 
 ---
-
-## Where you need to sit on the network
-
-Terraform talks to the Deevnet API. Which Wi-Fi your laptop is on decides whether it can:
-
-| Your laptop is on | Reaches the API? | Use it for |
-|---|---|---|
-| **Guest** Wi-Fi | **No** — internet only | reading these docs |
-| **IoT** Wi-Fi (`DVNTM-IOT`) | **No** — that is where your *devices* go, not your laptop | nothing |
-| **Tenant dev** Wi-Fi (`DVNTM-TD`) | **Yes** — the tenant-facing services and the internet | `terraform plan` / `apply`, MQTT test clients |
-
-**Apply from `DVNTM-TD`, on your own laptop.** Ask the operator for its key. It reaches the
-services your Terraform, test clients and browser use (the API, the state store, the broker, the
-log store, Grafana and the tenant downloads) and nothing else on the site.
-
-`DVNTM-TD` uses the site's own DNS. If your laptop has a VPN, iCloud Private Relay or a hard-coded
-DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.

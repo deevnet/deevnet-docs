@@ -63,9 +63,9 @@ what to run at boot, so declaring the workload is enough to have it running your
 {{< status-badge "planned" "Coming soon" >}}
 
 **Today:** you install the [tools](/docs/runbook/tenant/getting-started/before-you-start/#tools) on
-your own laptop, with the provider and the large downloads served by the site. **Planned:** a
+your own computer, with the provider and the large downloads served by the site. **Planned:** a
 development workload, built from an image with the tools already on it, that you launch in your own
-tenant network, so the Terraform and CLI half needs nothing on your laptop. Flashing a device or an
-SD card still needs your laptop's USB. It waits on
+tenant network, so the Terraform and CLI half needs nothing on your computer. Flashing a device or
+an SD card still needs your computer's USB. It waits on
 [`ssh_keys`](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) and on
 [code delivery](#code-delivery-to-workloads).

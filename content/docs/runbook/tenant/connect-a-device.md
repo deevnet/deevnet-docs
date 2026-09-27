@@ -8,9 +8,7 @@ aliases: ["/docs/runbook/tenant/project-kits/"]
 
 Any Wi-Fi board you flash, such as a Pico W or an ESP32, joins the site's **IoT SSID** with your
 tenant's Wi-Fi key. It makes no difference whether the device is your own or a pre-wired kit
-borrowed at a meetup (CARPE keeps those on its
-[Example Project Kits](https://carpe-tech.org/hands-on/project-kits/) page): once your key is on
-it, it is one of your devices.
+someone lent you: once your key is on it, it is one of your devices.
 
 This page covers only getting the device onto the network. Talking to the broker comes after, in
 [Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/), and the

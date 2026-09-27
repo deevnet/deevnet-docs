@@ -8,7 +8,8 @@ bookCollapseSection: true
 
 Three steps, in order:
 
-1. [Before you start](before-you-start/) — what to bring, and where you need to sit on the network
+1. [Before you start](before-you-start/) — your development environment and its tools, what the
+   operator gives you, and connecting over Wi-Fi
 2. [Admission](admission/) — the operator admits your tenant name and hands you a one-time token
 3. [First apply](first-apply/) — one Terraform resource creates your tenant
 

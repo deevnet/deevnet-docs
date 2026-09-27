@@ -21,7 +21,7 @@ The tenant in this walkthrough is called **`bench1`**. Use your own name everywh
 **Assumed done:** [admission](/docs/runbook/tenant/getting-started/admission/) and a
 [first apply](/docs/runbook/tenant/getting-started/first-apply/), so you have a tenant and
 `DEEVNET_API_TOKEN` is your tenant token. You are applying from `DVNTM-TD`
-([why](/docs/runbook/tenant/getting-started/before-you-start/#where-you-need-to-sit-on-the-network)).
+([why](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only)).
 {{< /hint >}}
 
 ---
@@ -128,7 +128,7 @@ Pico W firmware: hold BOOTSEL, plug in, and copy the `.uf2` onto the drive that 
 import mip; mip.install("umqtt.simple")      # once, while on any network with internet
 ```
 
-Copy `site-ca.der` and this `main.py` to the board, from your laptop with
+Copy `site-ca.der` and this `main.py` to the board, from your computer with
 [`mpremote`](/docs/runbook/tenant/getting-started/before-you-start/#tools) (or Thonny's Files pane):
 
 ```bash
@@ -254,7 +254,7 @@ how often each cause turns out to be the one — and please tell the operator, s
 ## 4. The backend
 
 The backend subscribes to every device's telemetry and can publish commands back. The quickest one
-is `mosquitto_sub`, on the workload as below, or on your laptop on `DVNTM-TD` with the client tools
+is `mosquitto_sub`, on the workload as below, or on your computer on `DVNTM-TD` with the client tools
 from [Tools](/docs/runbook/tenant/getting-started/before-you-start/#tools):
 
 ```bash
@@ -284,8 +284,8 @@ A real backend is the same thing in code — `paho-mqtt` in Python, with `tls_se
 **Getting the backend onto the workload goes through the operator today.** Workload SSH keys do not
 work yet and code delivery is not built
 ([Coming soon](/docs/runbook/tenant/services/coming-soon/#code-delivery-to-workloads)). Until then,
-the operator installs it for you — at a meetup, that is the `mosquitto_sub` above, run on your
-workload by the operator while you watch.
+the operator installs it for you: for this walkthrough, that is the `mosquitto_sub` above, run on
+your workload by the operator while you watch.
 {{< /hint >}}
 
 ---
