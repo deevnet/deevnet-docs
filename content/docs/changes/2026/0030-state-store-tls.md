@@ -81,8 +81,8 @@ No client can skip verification.
 
 - [ ] PRs merged: `deevnet-provisioning-api`, `terraform-provider-deevnet`,
       `ansible-collection-deevnet.mgmt`, `ansible-collection-deevnet.net` and
-      `ansible-inventory-deevnet` (all `chg-0030-state-store-tls`), and `deevnet-tenant-tdemo`
-      `chg-0030-state-store-tls`
+      `ansible-inventory-deevnet` (all `chg-0030-state-store-tls`). tdemo's `backend.tf` already
+      names `https` and the site CA (the reference-tenant rework, `deevnet-tenant-tdemo` #7)
 - [ ] Vault decrypted, collections built
 
 ## Procedure
@@ -138,8 +138,9 @@ ansible-playbook playbooks/site.yml --tags deevnet-api --limit dv02prv001v01
 
 ### Step 4: The tenants' backends
 
-**Run:** in tdemo, and in the eds and mabell repositories, change the backend's endpoint to
-`https://tfstate.mobile.deevnet.net:9000`, add `custom_ca_bundle = "site-ca.pem"`, then:
+**Run:** in the eds and mabell repositories, change the backend's endpoint to
+`https://tfstate.mobile.deevnet.net:9000` and add `custom_ca_bundle = "site-ca.pem"`. tdemo's
+`backend.tf` already has both. Then, in all three:
 
 ```bash
 terraform init -reconfigure
