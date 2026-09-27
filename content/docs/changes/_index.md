@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0029 | Unscheduled | [One Key per Tenant on DVNTM-TD](2026/0029-tenant-developer-network-keys/) | Configuration | mobile | Planned |
 | CHG-0028 | Unscheduled | [Tenants Log In to Their Own Workloads](2026/0028-tenant-workload-login/) | Deployment | mobile | Planned |
 | CHG-0027 | 2026-09-25 | [A Switch Port for dv02rpi004p01](2026/0027-rpi004-switch-port/) | Configuration | mobile | Complete |
 | CHG-0026 | 2026-09-25 | [Build Secrets Off the Disk](2026/0026-build-secrets/) | Configuration | mobile | Complete |

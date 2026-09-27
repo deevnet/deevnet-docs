@@ -129,6 +129,14 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Networking](tenant-networking/)
 
+- [ADR-0029: Tenant Developer Network Keys](/docs/architecture/decisions/tenant-networking/0029-tenant-developer-network-keys/) —
+  *Proposed.* Replaces `DVNTM-TD`'s shared key, which let one tenant decrypt another's traffic,
+  including Terraform state over plain HTTP. Each tenant gets its own PPSK key: the first comes with
+  its admission, because a laptop needs `DVNTM-TD` to reach the API at all, and it becomes the
+  tenant's own key `admission` when the tenant creates itself. A tenant issues itself more as trust
+  class `tenant_dev`, optionally bound to a laptop's MAC. Deleting a tenant revokes them. Two EAP ACLs
+  isolate the laptops; that filters IP, not ARP, so every service on the segment must be TLS. Guest
+  mode, a shared WPA3 key and a MAC allow-list were rejected.
 - [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/) —
   *Accepted.* Re-opens ADR-0011 Option B for a variation it never considered: a VLAN range reserved
   once, so tenant creation needs no switch change. The variation is real and defeats two of Option
