@@ -57,7 +57,7 @@ new `DVNTM-TD` profile is the first test of that fix.
 
 **In scope:**
 - The SSID's conversion to PPSK, the profile, isolation and the vault key's removal.
-- API `v0.10.0` and provider `0.6.0`.
+- API `v0.9.0` and provider `0.5.0`, shared with CHG-0028 and CHG-0030.
 - Keys for the three existing tenants.
 - The tenant-facing pages.
 
@@ -145,19 +145,25 @@ ansible-playbook playbooks/omada-wireless.yml -e omada_apply=true \
 
 **Run:**
 
+**One release carries all three changes.** The API and provider on `main` hold the code for
+CHG-0028, CHG-0029 and CHG-0030 together, and each behavior is off until that change's own role or
+inventory switch turns it on. So the first of the three to run tags and stages API `v0.9.0` and
+provider `0.5.0`, and the others deploy that same release. If it is already staged, skip the tag.
+
 ```bash
-cd deevnet-provisioning-api && git tag v0.10.0 && git push origin v0.10.0 && make stage
-cd ../terraform-provider-deevnet && git tag v0.6.0 && git push origin v0.6.0 && make stage
+cd deevnet-provisioning-api && git tag v0.9.0 && git push origin v0.9.0 && make stage   # unless staged
+cd ../terraform-provider-deevnet && git tag v0.5.0 && git push origin v0.5.0 && make stage   # unless staged
 cd ../ansible-collection-deevnet.mgmt
 ansible-playbook playbooks/site.yml --tags deevnet-api --limit dv02prv001v01
 ansible-playbook playbooks/site.yml --tags tenant-downloads --limit dv02obs001v01
 ```
 
-**Verify:** the API reports `v0.10.0`, migration 0008 applied, and its environment has
+**Verify:** the API reports `v0.9.0` or later, migration 0008 applied, and its environment has
 `DEEVNET_ADMISSION_WIFI_CLASS=tenant_dev`. Its trust classes include `tenant_dev=DVNTM-TD:45`.
 
-**Undo:** redeploy `v0.8.1` (or `v0.9.0` if CHG-0028 has run). Migration 0008 only adds, so the older
-API ignores it.
+**Undo:** unset the switch: take `wifi_security` off `tenant_dev` in inventory and redeploy the
+API role, so the API serves no `tenant_dev` class and admissions issue no key. Migration 0008 only
+adds, so nothing needs reverting in the database.
 
 ### Step 5: Prove it with real laptops
 

@@ -46,7 +46,7 @@ No client can skip verification.
   `400 Client sent an HTTP request to an HTTPS server`, and no data.
 - The certificate names `tfstate.mobile.deevnet.net`, `dv02prv001v01.mobile.deevnet.net`, the host
   address and `127.0.0.1`, and is issued by the site CA.
-- The API reports `v0.11.0`. A tenant create and delete (throwaway `tprobe`) succeed, which proves
+- The API reports `v0.9.0` or later. A tenant create and delete (throwaway `tprobe`) succeed, which proves
   the admin client works over TLS.
 - `terraform plan` works from tdemo, eds and mabell with the `https` endpoint and
   `custom_ca_bundle`.
@@ -89,11 +89,16 @@ No client can skip verification.
 
 ### Step 1: Stage the API and provider
 
+**One release carries all three changes.** The API and provider on `main` hold the code for
+CHG-0028, CHG-0029 and CHG-0030 together, and each behavior is off until that change's own role or
+inventory switch turns it on. So the first of the three to run tags and stages API `v0.9.0` and
+provider `0.5.0`, and the others deploy that same release. If it is already staged, skip the tag.
+
 **Run:**
 
 ```bash
-cd deevnet-provisioning-api && git tag v0.11.0 && git push origin v0.11.0 && make stage
-cd ../terraform-provider-deevnet && git tag v0.6.1 && git push origin v0.6.1 && make stage
+cd deevnet-provisioning-api && git tag v0.9.0 && git push origin v0.9.0 && make stage   # unless staged
+cd ../terraform-provider-deevnet && git tag v0.5.0 && git push origin v0.5.0 && make stage   # unless staged
 ```
 
 **Verify:** both artifacts are on the Builder.
@@ -126,7 +131,7 @@ ansible-playbook playbooks/site.yml --tags tenant-state --limit dv02prv001v01
 ansible-playbook playbooks/site.yml --tags deevnet-api --limit dv02prv001v01
 ```
 
-**Verify:** the API reports `v0.11.0`, and its environment has `MINIO_ADMIN_TLS=true`,
+**Verify:** the API reports `v0.9.0` or later, and its environment has `MINIO_ADMIN_TLS=true`,
 `MINIO_ADMIN_CACERT` and `DEEVNET_STATE_ENDPOINT=https://…`. Admit, create and delete `tprobe`.
 
 **Undo:** [Undo Step 3](#undo-step-3)

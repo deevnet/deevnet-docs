@@ -89,6 +89,11 @@ rule, rebuilding the two existing workloads, the tenant guide's login pages.
 
 ### Step 1: Build and stage the API and provider
 
+**One release carries all three changes.** The API and provider on `main` hold the code for
+CHG-0028, CHG-0029 and CHG-0030 together, and each behavior is off until that change's own role or
+inventory switch turns it on. So the first of the three to run tags and stages API `v0.9.0` and
+provider `0.5.0`, and the others deploy that same release. If it is already staged, skip the tag.
+
 **Run** (on `main` after the merges):
 
 ```bash
