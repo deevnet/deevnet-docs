@@ -137,7 +137,7 @@ decision has to be kept.
 3. **Should tenant workloads stop trusting the substrate's automation key?** The correct end state
    is a per-tenant or per-operator key that a tenant could in principle rotate. Deferred
    deliberately; see the CHG-0012 follow-up. *Answered by
-   [ADR-0028](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/) (Proposed):
+   [ADR-0028](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/) (Accepted):
    tenant workloads carry no `a_autoprov`, and the operator gets in with a key the tenant adds.*
 
 ---
