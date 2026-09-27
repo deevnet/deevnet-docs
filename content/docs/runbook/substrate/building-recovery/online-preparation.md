@@ -28,7 +28,7 @@ The builder node (with internet access) stages artifacts to the artifact server 
 From builder node with internet:
 
 ```bash
-cd ~/home/ansible-collection-deevnet.builder
+cd ansible-collection-deevnet.builder
 make rebuild
 ansible-playbook playbooks/site.yml --limit artifact_servers
 ```

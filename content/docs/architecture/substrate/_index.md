@@ -24,7 +24,7 @@ block-beta
     ctp["Control Plane"]:1 ctpd["Deevnet API · Tenant DNS · Secrets · Broker"]:1
 {{< /mermaid >}}
 
-¹ Shared storage is a planned future addition.
+¹ Storage is each hypervisor's local disks. Shared storage is on the roadmap: [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/).
 
 ### Network
 

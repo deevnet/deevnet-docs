@@ -2,9 +2,9 @@
 title: "Mobile Factory"
 weight: 1
 bookCollapseSection: true
-tasks_completed: 47
-tasks_in_progress: 15
-tasks_planned: 67
+tasks_completed: 46
+tasks_in_progress: 16
+tasks_planned: 75
 ---
 
 # Mobile Factory

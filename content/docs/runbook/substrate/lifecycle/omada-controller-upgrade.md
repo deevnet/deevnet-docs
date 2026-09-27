@@ -7,7 +7,7 @@ aliases:
 
 # Omada Controller Upgrade
 
-How the Omada controller on the builder is upgraded to a new version in place, keeping its
+How the Omada controller on `dv02nms001v01` is upgraded to a new version in place, keeping its
 data. Each upgrade is a change: open a [change record](/docs/policies/change-management/change-record-template/)
 of type **Upgrade**. Its steps are the ones below.
 
@@ -16,11 +16,15 @@ If an upgrade goes wrong, or the controller's data is damaged, see
 
 | | |
 |---|---|
-| Runs as | `mbentley/omada-controller` under podman, `omada-controller.service`, on `dv00bld001p01` |
+| Runs as | `mbentley/omada-controller` under podman, `omada-controller.service`, on `dv02nms001v01` |
 | Data | `/opt/omada-controller` (`data`, `work`, `logs`) |
-| Snapshots | `/opt/omada-controller-backup/` |
+| Snapshots | `/opt/omada-controller-backup/`. It does not exist yet on `dv02nms001v01`: step 2 creates it |
 | Images | Tarballs on the artifact server, declared in `artifacts_podman_images` (`group_vars/artifact_servers.yml`) |
 | Version pin | `omada_image_tag` in `group_vars/network_controllers/vars.yml` |
+
+The steps were written and run on the Builder, where the controller ran until
+[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) ([CHG-0004](/docs/changes/2026/0004-omada-controller-upgrade/)).
+The container, unit and paths are the same on `dv02nms001v01`, and no upgrade has been run there yet.
 
 {{< hint danger >}}
 **An upgrade is one-way.** The first start on a new version upgrades the database, and an
@@ -70,6 +74,7 @@ What matters is that `/opt/omada-controller/logs/mongod.log` ends with
 `mongod shutdown complete`. Confirm that before archiving:
 
 ```bash
+sudo mkdir -p -m 0700 /opt/omada-controller-backup
 sudo tar --selinux --xattrs --acls -czpf \
   /opt/omada-controller-backup/omada-<current-version>-data-<date>.tar.gz -C /opt omada-controller
 ```

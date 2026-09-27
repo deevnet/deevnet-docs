@@ -36,8 +36,8 @@ The host is `dv02hyp002p02`.
 
 ### Automation Capability
 
-- **Installation**: Manual ISO install (no PXE support for Proxmox)
-- **Post-install**: Ansible configuration via `deevnet.builder` collection
+- **Installation**: manual, from the standard Proxmox VE ISO ([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)). An unattended ISO is [unfinished work](/docs/roadmap/infrastructure/mobile/builder/) in `deevnet-image-factory`
+- **Post-install**: Ansible: `deevnet.builder` (node baseline, storage) and `deevnet.net` (`proxmox_node_network`: the bridge, transit routing and tenant egress)
 - **VM provisioning**: the Deevnet API, on behalf of each tenant's Terraform
 - **Templates**: Packer-built Fedora templates stored locally
 

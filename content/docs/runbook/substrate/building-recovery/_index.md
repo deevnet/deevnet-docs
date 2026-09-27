@@ -68,7 +68,7 @@ flowchart TD
     D["<b>4. Configure PXE</b><br/><code>make bootstrap-auth</code>"]:::transition
     E["<b>5. Build Core Router</b><br/>Manual OPNsense USB install"]:::manual
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
-    G["<b>7. Build Management Plane</b><br/>Install and configure Proxmox hypervisors"]
+    G["<b>7. Build Management Plane</b><br/>Manual Proxmox install, then Ansible"]:::manual
     H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
     I["<b>9. Build Management-Plane VMs</b><br/>Clone from template, or PXE netboot"]
     J["<b>10. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
@@ -120,7 +120,7 @@ flowchart TD
 | Component | Method | Status |
 |-----------|--------|--------|
 | Proxmox VM template | kickstart + cdrom | Ready |
-| Proxmox VE bare metal | embedded answer file | Ready |
+| Proxmox VE bare metal | manual install from the staged ISO | Manual |
 | Fedora packages (install) | local mirror/ISO | Ready |
 | Core Router | manual USB install | Manual — accepted prereq |
 
@@ -129,5 +129,7 @@ flowchart TD
 ## Known Gaps
 
 **Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Evaluations](/docs/platforms/evaluations/).
+
+**Hypervisors** - Proxmox VE is installed by hand from the ISO staged on the artifact server. An unattended ISO with an embedded answer file exists in `deevnet-image-factory` but is unfinished and has not installed either node; it is on the [Builder roadmap](/docs/roadmap/infrastructure/mobile/builder/).
 
 **Post-Install Updates** - See [Patching](/docs/runbook/substrate/lifecycle/patching/) for day 2 considerations.

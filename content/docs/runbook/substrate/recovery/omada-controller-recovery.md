@@ -8,19 +8,24 @@ aliases:
 
 # Omada Controller Recovery
 
-Getting the Omada controller on the builder back when an upgrade goes wrong or its data is
-damaged. Everything here restores from a data snapshot. How snapshots are taken, and how
-upgrades are done, is in [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/).
+The site's Omada controller runs on `dv02nms001v01`. The Builder keeps a stopped copy as a cold
+fallback. How upgrades are done, and how snapshots are taken, is in
+[Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/).
 
-| | |
-|---|---|
-| Runs as | `mbentley/omada-controller` under podman, `omada-controller.service`, on `dv00bld001p01` |
-| Data | `/opt/omada-controller` (`data`, `work`, `logs`) |
-| Current | `6.3.0.45` since 2026-09-10. TP-Link released it on 2026-09-04. |
-| Fallback | `6.2.14.11`, staged and rehearsed |
-| Last resort | `6.1.0.19`, what ran before |
-| Snapshot | `/opt/omada-controller-backup/omada-6.1.0.19-data-2026-09-10.tar.gz` |
-| Web UI | `https://10.20.99.95:8043/independent/index.html#login` (6.3 moved it from `/login`) |
+| | Live controller | Builder's cold copy |
+|---|---|---|
+| Host | `dv02nms001v01`, 10.20.99.40 | `dv00bld001p01`, 10.20.99.95 |
+| Runs as | `omada-controller` container (`mbentley/omada-controller:6.3.0.45`), `deevnet.mgmt` role `omada_controller` | The same container name, stopped |
+| Data | `/opt/omada-controller` (`data`, `work`, `logs`) | `/opt/omada-controller`, as of the move to `dv02nms001v01` |
+| Snapshots | **None** | `/opt/omada-controller-backup/omada-6.1.0.19-data-2026-09-10.tar.gz`, from before the 6.3 upgrade |
+| Web UI | `https://omada.mobile.deevnet.net:8043/` | Only while it is started |
+
+{{< hint warning >}}
+**The live controller has no snapshot.** Nothing on `dv02nms001v01` can be restored from. The
+procedures below restore the **Builder's** copy from its one snapshot, which predates the 6.3
+upgrade and everything configured since. Giving the live controller a recovery path is on the
+[roadmap](/docs/roadmap/infrastructure/mobile/management-plane/).
+{{< /hint >}}
 
 {{< hint danger >}}
 **A controller cannot open a database that a newer one has upgraded.** Starting an older image
@@ -28,7 +33,7 @@ on the current data is therefore not a way back. Every path here starts from a s
 **anything configured since that snapshot was taken is lost**: adoptions, networks, SSIDs,
 accounts.
 
-Today's only snapshot predates the 6.3 upgrade. Falling back is cheap while 6.3 is new and has
+The only snapshot predates the 6.3 upgrade. Falling back is cheap while 6.3 is new and has
 had little configured on it, and it gets more expensive with every change. If 6.3 is going to be
 abandoned, decide early — ideally during the first adoptions, not months later.
 {{< /hint >}}

@@ -3,7 +3,7 @@ title: "Extended Management Plane"
 weight: 3
 tasks_completed: 10
 tasks_in_progress: 9
-tasks_planned: 23
+tasks_planned: 24
 ---
 
 # Extended Management Plane
@@ -117,6 +117,17 @@ only**: the substrate's own logs are not centralized.
 - ⏳ Deploy alerting service
 - ⏳ Define alert rules for infrastructure
 - ⏳ Configure notification channels (email, webhook, etc.)
+
+---
+
+## Network Management ⏳
+
+The Omada controller runs on `dv02nms001v01` since
+[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/), with no snapshot of its data there.
+
+- ⏳ Give the live controller a recovery path: snapshot its data on `dv02nms001v01`, or prove that
+  a fresh controller rebuilt from inventory (`make wireless`, then re-adoption) is enough, and make
+  that the [recovery runbook](/docs/runbook/substrate/recovery/omada-controller-recovery/)
 
 ---
 

@@ -3,7 +3,7 @@ title: "Tenant Platform"
 weight: 4
 tasks_completed: 2
 tasks_in_progress: 5
-tasks_planned: 1
+tasks_planned: 2
 ---
 
 # Tenant Platform
@@ -147,6 +147,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
   site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
 - ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
+- ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node
 
 ## Windows tenant laptops ⏳
 
