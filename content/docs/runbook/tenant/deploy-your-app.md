@@ -18,6 +18,12 @@ names later carry your app onto [a Pi of your own](/docs/runbook/tenant/tenant-t
 A workload trusts exactly the SSH **public** keys you declare in `ssh_keys`, on one account,
 `tenant`, which has passwordless sudo. The private key never leaves your computer.
 
+**Started from the [reference tenant](https://github.com/deevnet/deevnet-tenant-tdemo)?** It already
+declares the `backend` workload: put your key in `terraform.tfvars` as
+`ssh_keys = ["ssh-ed25519 AAAA… you@computer"]` (a list, even of one), and `terraform output backend`
+prints the address and the `ssh` line. Its workload is optional, so its address in Terraform is
+`deevnet_workload.backend[0]`. Written by hand, the same thing is:
+
 ```hcl
 resource "deevnet_workload" "backend" {
   tenant   = deevnet_tenant.this.name
@@ -39,7 +45,8 @@ ssh-keygen -lf ~/.ssh/id_ed25519.pub        # the key you declared
 ```
 
 A key is written when the workload is built. To add or change one later, change `ssh_keys` and
-replace the workload: `terraform apply -replace=deevnet_workload.backend`. A workload boots straight
+replace the workload: `terraform apply -replace=deevnet_workload.backend`
+(`-replace='deevnet_workload.backend[0]'` in the reference tenant). A workload boots straight
 to ready, so that takes under a minute.
 
 ## 2. Log in
@@ -47,7 +54,7 @@ to ready, so that takes under a minute.
 From your computer on `DVNTM-TD`:
 
 ```bash
-terraform output backend_login                        # ssh tenant@backend.<tenant>.mobile.deevnet.net
+terraform output backend        # reference tenant; backend_login if you wrote the block above
 ssh tenant@backend.bench1.mobile.deevnet.net 'id; sudo -n true && echo sudo-ok'
 ```
 
