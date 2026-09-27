@@ -18,7 +18,7 @@ graph LR
 
 ## Hardware
 
-[TP-Link Omada SG2218](/docs/hardware/network/tp-link-sg2218/): specs, the port map, power and console.
+[TP-Link Omada SG2218](/docs/platforms/hardware/network/tp-link-sg2218/): specs, the port map, power and console.
 
 ---
 

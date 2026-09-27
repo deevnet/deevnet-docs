@@ -1,5 +1,7 @@
 ---
 title: "Dell OptiPlex 7060 Micro"
+aliases:
+  - /docs/hardware/compute/dell-optiplex-7060-mff/
 weight: 3
 bookCollapseSection: true
 ---

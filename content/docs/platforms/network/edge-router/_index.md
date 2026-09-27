@@ -20,7 +20,7 @@ graph LR
 
 ## Hardware
 
-[GL-iNet GL-AXT1800 Slate AX](/docs/hardware/network/gl-inet-slate-ax/): specs, cabling, power and console.
+[GL-iNet GL-AXT1800 Slate AX](/docs/platforms/hardware/network/gl-inet-slate-ax/): specs, cabling, power and console.
 
 ---
 

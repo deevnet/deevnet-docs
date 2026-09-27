@@ -1,5 +1,7 @@
 ---
 title: "Dell OptiPlex 7050 Micro"
+aliases:
+  - /docs/hardware/compute/dell-optiplex-7050-mff/
 weight: 2
 bookCollapseSection: true
 ---

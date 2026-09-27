@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 Documents **what each role runs and how it is configured** — what Deevnet runs today, and what is
 under evaluation — organized by substrate architecture layer. Each page records what was chosen and
-why. The physical boxes themselves are under [Hardware](/docs/hardware/).
+why. The section opens with [Hardware](hardware/): the physical boxes, one page per model.
 
 How to *operate* what is selected here is in the [runbook](/docs/runbook/); finished projects built
 on it are under [Completed Projects](/docs/completed/).
@@ -54,7 +54,7 @@ Each platform page documents:
 | Section | Content |
 |---------|---------|
 | **Purpose** | Role in the substrate |
-| **Hardware** | A link to the model's page under [Hardware](/docs/hardware/) |
+| **Hardware** | A link to the model's page under [Hardware](/docs/platforms/hardware/) |
 | **Operating System** | OS choice and automation capability |
 | **Roles** | Services or functions provided |
 
@@ -64,7 +64,7 @@ Each platform page documents:
 
 What each software selection was tested against, by item: its current verdict, and every evaluation
 behind it. See [Certification](certification/). Hardware is certified on its model's
-[Hardware](/docs/hardware/) page. The process and criteria are the
+[Hardware](/docs/platforms/hardware/) page. The process and criteria are the
 [Certification](/docs/policies/lifecycle-management/certification/) policy.
 
 ---

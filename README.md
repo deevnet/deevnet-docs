@@ -19,7 +19,7 @@ This repository defines **what Deevnet is**, **how it is meant to work**, and **
 ### This instance
 This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone
 `mobile.deevnet.net`), which delivers IoT as a Service. **Architecture, Standards and Policies &
-Procedures** are written for any Deevnet site. **Implementation & Tooling, Hardware, the Operational Runbook,
+Procedures** are written for any Deevnet site. **Implementation & Tooling, the Operational Runbook,
 the change and incident records, and the Roadmap** are this instance's. Another site would be its own
 instance of this documentation.
 The site is published as **Deevnet IoTaaS** (Deevnet IoT as a Service: Mobile Factory). The home site
@@ -80,8 +80,8 @@ Roadmaps are **informational**, not binding contracts.
 
 ### 4. Implementation & Tooling
 Documents **what each role runs** — current, and under evaluation — including rationale and
-trade-offs. How to operate them is in the Operational Runbook. The physical boxes, one page per
-model, are in the **Hardware** section.
+trade-offs. How to operate them is in the Operational Runbook. It opens with **Hardware**: the
+physical boxes, one page per model.
 
 Includes:
 - Operating system choices (e.g., why Fedora)

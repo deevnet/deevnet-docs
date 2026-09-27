@@ -21,7 +21,7 @@ Goals:
 
 ## Hardware
 
-[Raspberry Pi 4 Model B](/docs/hardware/compute/raspberry-pi-4/): four units: specs, switch ports and console.
+[Raspberry Pi 4 Model B](/docs/platforms/hardware/compute/raspberry-pi-4/): four units: specs, switch ports and console.
 
 ---
 

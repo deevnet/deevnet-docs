@@ -1,5 +1,7 @@
 ---
 title: "AOOSTAR N1 PRO"
+aliases:
+  - /docs/hardware/compute/aoostar-n1-pro/
 weight: 1
 bookCollapseSection: true
 ---
@@ -43,7 +45,7 @@ it the upstream and site connections the bootstrap role needs.
 | NIC | Use | Connects to |
 |---|---|---|
 | `enp4s0` (inventory `eth0`) | Management | Switch `gi1/0/16`, access, VLAN 99 |
-| `enp1s0` (inventory `eth1`) | Upstream | The [edge router](/docs/hardware/network/gl-inet-slate-ax/)'s LAN, directly |
+| `enp1s0` (inventory `eth1`) | Upstream | The [edge router](/docs/platforms/hardware/network/gl-inet-slate-ax/)'s LAN, directly |
 
 - **Wake-on-LAN:** enabled on both wired NICs.
 - **Power and console:** not documented. There is no console recovery page for the Builder yet.

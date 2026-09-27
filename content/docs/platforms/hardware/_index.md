@@ -1,6 +1,8 @@
 ---
-title: "🔩 Hardware"
-weight: 5
+title: "Hardware"
+aliases:
+  - /docs/hardware/
+weight: 1
 bookCollapseSection: true
 ---
 
@@ -8,7 +10,7 @@ bookCollapseSection: true
 
 The physical boxes the mobile site runs on: one page per model, with its specs, why it was chosen,
 which hosts it is, how it is cabled and powered, how to reach its console, and whether it is
-certified. How each box is configured for its role is in
+certified. How each box is configured for its role is on the role pages that follow in
 [Implementation & Tooling](/docs/platforms/), and every firmware and software version is in the
 [Software Catalog](/docs/platforms/software-catalog/).
 
