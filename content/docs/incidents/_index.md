@@ -1,6 +1,6 @@
 ---
 title: "🚨 Incident Records"
-weight: 7
+weight: 8
 bookCollapseSection: true
 aliases:
   - /docs/runbook/rca/

@@ -21,22 +21,7 @@ Goals:
 
 ## Hardware
 
-**Site**: mobile (mobile)
-
-| Quantity | Model | RAM | Notes |
-|----------|-------|-----|-------|
-| 4 | Raspberry Pi 4 Model B | 8GB | Development bank |
-
-![Raspberry Pi 4](raspberry-pi-4.webp)
-
-### Selection Rationale
-
-| Attribute | Value | Rationale |
-|-----------|-------|-----------|
-| **Model** | Pi 4 Model B | Mature platform, broad software support |
-| **RAM** | 8GB | Maximum available, supports heavier workloads |
-| **Quantity** | 4 units | Enables clustering experiments (K3s, etc.) |
-| **Form factor** | Standard Pi | Compatible with cases, HATs, accessories |
+[Raspberry Pi 4 Model B](/docs/hardware/compute/raspberry-pi-4/): four units: specs, switch ports and console.
 
 ---
 

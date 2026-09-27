@@ -14,11 +14,9 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 
 ## Hardware
 
-| Site | Hardware | Notes |
-|------|----------|-------|
-| **mobile** | Dell Optiplex 7050 MFF | Repurposed enterprise desktop |
+[Dell OptiPlex 7060 Micro](/docs/hardware/compute/dell-optiplex-7060-mff/): specs, cabling, power and console.
 
-### Selection Rationale
+### Requirements
 
 | Attribute | Requirement | Rationale |
 |-----------|-------------|-----------|
@@ -43,37 +41,6 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 - **Post-install**: Ansible configuration via `deevnet.builder` collection
 - **VM provisioning**: Terraform (future) for declarative lifecycle
 - **Templates**: Packer-built Fedora templates stored locally
-
----
-
-## Dell Optiplex 7050 MFF
-
-**Site**: mobile (mobile)
-
-The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the tenant hypervisor for the mobile site. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
-
-![Dell Optiplex 7050 MFF](dell-optiplex-7050-mff.jpg)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | Dell Optiplex 7050 Micro Form Factor |
-| **CPU** | Intel i7-6700T (4-core/8-thread, 2.8-3.6GHz, 35W TDP) |
-| **Memory** | 32GB DDR4 |
-| **Storage** | 1TB NVMe/SATA SSD |
-| **Ethernet** | 1x Gigabit (Intel I219-LM) |
-| **Form factor** | Micro Form Factor (MFF) |
-| **Power** | ~35W TDP |
-
-### Selection Rationale
-
-- **Repurposed enterprise desktop** - reliable, well-supported hardware
-- **32GB RAM** meets tenant hypervisor requirements for multiple VMs
-- **Compact form factor** suitable for mobile lab placement
-- **Low power consumption** for always-on operation
-- **Intel VT-x/VT-d** for Proxmox virtualization support
-- **Intel I219-LM NIC** for reliable network connectivity
 
 ---
 

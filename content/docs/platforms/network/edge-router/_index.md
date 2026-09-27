@@ -18,38 +18,13 @@ graph LR
 
 ---
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile)
+[GL-iNet GL-AXT1800 Slate AX](/docs/hardware/network/gl-inet-slate-ax/): specs, cabling, power and console.
 
-The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge router for the mobile site. It provides upstream connectivity when traveling — connecting to hotel Wi-Fi, tethered phones, or any available network.
+---
 
-![GL-iNet GL-AXT1800 Slate AX](gl-axt1800-slate-ax.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | GL-iNet GL-AXT1800 (Slate AX) |
-| **CPU** | IPQ6000 1.2GHz quad-core |
-| **Memory** | 512MB DDR3L |
-| **Storage** | 128MB NAND Flash |
-| **Ethernet** | 3x Gigabit (1 WAN, 2 LAN) |
-| **Wi-Fi** | Wi-Fi 6 (802.11ax) dual-band, 1800Mbps |
-| **USB** | USB 3.0 |
-| **Power** | USB-C, <8.75W max |
-| **Dimensions** | 125 x 82 x 36mm |
-| **Weight** | 245g |
-
-### Selection Rationale
-
-- **Portability**: Compact form factor with retractable antennas fits in a laptop bag
-- **Flexible upstream**: Can connect via Ethernet, Wi-Fi repeater, or USB tethering
-- **OpenWrt-based**: Runs standard OpenWrt with full package ecosystem
-- **VPN capable**: WireGuard and OpenVPN at near-gigabit speeds
-- **Power efficient**: Runs from USB-C power bank if needed
-
-### Operating System
+## Operating System
 
 | Attribute | Value |
 |-----------|-------|
@@ -57,7 +32,7 @@ The GL-AXT1800 Slate AX is a portable Wi-Fi 6 travel router used as the edge rou
 | **Version** | [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge) |
 | **Base** | GL-iNet firmware (OpenWrt fork) |
 
-### Roles
+## Roles
 
 | Role | Description |
 |------|-------------|

@@ -15,43 +15,15 @@ graph LR
     A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
 {{< /mermaid >}}
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile) {{< status-badge "active" "Active" >}}
-
-The ZimaBoard 832 is a compact x86 single-board server used as the core router for the mobile site. Its low power consumption and passive cooling make it ideal for portable deployments.
-
-![ZimaBoard 832](zimaboard-832.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | ZimaBoard 832 |
-| **CPU** | Intel Celeron N3450 quad-core (1.1-2.2GHz) |
-| **Memory** | 8GB LPDDR4 |
-| **Storage** | 32GB eMMC |
-| **Ethernet** | 2x Gigabit LAN |
-| **Expansion** | PCIe x4, 2x SATA 6.0 Gb/s |
-| **USB** | 2x USB 3.0 |
-| **Video** | Mini DisplayPort (4K/60Hz) |
-| **Power** | 6W TDP, 12V DC barrel jack |
-| **Cooling** | Passive (aluminum case heatsink) |
-
-### Selection Rationale
-
-- **Compact x86 form factor** fits mobile site
-- **Dual Gigabit Ethernet** for WAN/LAN separation
-- **Low power consumption** (<6W TDP) suitable for always-on operation
-- **Passive cooling** (fanless, silent) for noise-sensitive environments
-- **x86 architecture** supports OPNsense natively
-
+[ZimaBoard 832](/docs/hardware/network/zimaboard-832/): specs, cabling, power and console.
 
 ---
 
 ## Operating System
 
-Both core routers run OPNsense, providing a consistent firewall and routing platform across sites.
+The core router runs OPNsense.
 
 | Attribute | Value |
 |-----------|-------|

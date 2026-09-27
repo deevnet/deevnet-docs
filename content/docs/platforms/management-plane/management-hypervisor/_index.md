@@ -12,41 +12,15 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 ---
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile)
-
-The Dell Optiplex 7050 Micro Form Factor is a repurposed enterprise desktop used as the management hypervisor for the mobile site. Its compact size, low power consumption, and Intel virtualization support make it well-suited for always-on infrastructure workloads.
-
-![Dell Optiplex 7050 MFF](dell-optiplex-7050-mff.jpg)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | Dell Optiplex 7050 Micro Form Factor |
-| **CPU** | Intel i7-6700T (4-core/8-thread, 2.8-3.6GHz, 35W TDP) |
-| **Memory** | 32GB DDR4 |
-| **Storage** | 1TB NVMe/SATA SSD |
-| **Ethernet** | 1x Gigabit (Intel I219-LM) |
-| **Form factor** | Micro Form Factor (MFF) |
-| **Power** | ~35W TDP |
-
-### Selection Rationale
-
-- **Repurposed enterprise desktop** - reliable, well-supported hardware
-- **32GB RAM** meets management hypervisor requirements for multiple VMs
-- **Compact form factor** suitable for mobile lab placement
-- **Low power consumption** for always-on operation
-- **Intel VT-x/VT-d** for Proxmox virtualization support
-- **Intel I219-LM NIC** for reliable network connectivity
-
+[Dell OptiPlex 7050 Micro](/docs/hardware/compute/dell-optiplex-7050-mff/): specs, cabling, power and console.
 
 ---
 
 ## Operating System
 
-Both management hypervisors run Proxmox VE.
+The management hypervisor runs Proxmox VE.
 
 | Attribute | Value |
 |-----------|-------|

@@ -16,39 +16,13 @@ graph LR
 
 ---
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile)
+[TP-Link Omada SG2218](/docs/hardware/network/tp-link-sg2218/): specs, the port map, power and console.
 
-The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It provides VLAN support and can be configured via SSH or the Omada controller.
+---
 
-![TP-Link Omada SG2218](tplink-sg2218.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | TP-Link Omada SG2218 |
-| **Ports** | 16x Gigabit RJ45 |
-| **Uplinks** | 2x SFP (1Gbps) |
-| **PoE** | None — the AP runs from its own injector |
-| **Switching Capacity** | 36 Gbps |
-| **MAC Table** | 8K entries |
-| **Jumbo Frames** | 9216 bytes |
-| **Power** | 8.65W max |
-| **Dimensions** | 294 x 180 x 44mm |
-| **Mounting** | Desktop or rack (1U) |
-
-### Selection Rationale
-
-- **VLAN support**: 802.1Q VLAN tagging for network segmentation
-- **SSH access**: CLI configuration for automation
-- **Omada SDN**: Centralized management via Omada controller
-- **Compact**: Fits mobile site form factor
-- **SFP uplinks**: Future 1G fiber connectivity option
-- **Fanless**: Silent operation (passive cooling)
-
-### Management
+## Management
 
 | Attribute | Value |
 |-----------|-------|
@@ -57,7 +31,7 @@ The SG2218 is a managed Gigabit switch from TP-Link's Omada SDN product line. It
 | **Web UI** | Standalone or controller-managed |
 | **Automation** | Omada API via `deevnet.net` collection |
 
-### Roles
+## Roles
 
 | Role | Description |
 |------|-------------|
