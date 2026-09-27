@@ -4,7 +4,7 @@ weight: 1
 bookCollapseSection: true
 tasks_completed: 46
 tasks_in_progress: 16
-tasks_planned: 75
+tasks_planned: 76
 ---
 
 # Mobile Factory

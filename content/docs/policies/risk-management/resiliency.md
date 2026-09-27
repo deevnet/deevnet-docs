@@ -109,10 +109,10 @@ that duplication is real. For a substrate-level one it collapses to the third co
 physical node you can detach and carry, and there is exactly one of those at the moment it
 matters most.
 
-One production role is genuinely single-instance: `dv00bld001p01` is the only
-`network_controllers` member, so the Omada controller has no second copy. That costs wireless
-and switch *management* rather than wireless or switching — adopted devices keep forwarding
-perfectly well without a controller.
+One production role is genuinely single-instance: the Omada controller runs only on
+`dv02nms001v01`, and the Builder's stopped copy holds data from before the move, with no snapshot
+of the live controller anywhere. That costs wireless and switch *management* rather than wireless or
+switching — adopted devices keep forwarding perfectly well without a controller.
 
 {{< hint info >}}
 **A caveat about deployment mode, not architecture.** In production the builder sits on the
@@ -161,9 +161,40 @@ The compensating controls are real, and they are the reason the trade works:
   bounds what a compromised or misbehaving segment can reach, which matters more when there is
   no redundancy to absorb a mistake.
 
+- **Rebuilds are exercised on a schedule** (below), so the rebuild path is known to work before it
+  is needed.
+
 The honest summary: **Deevnet is designed to be rebuilt quickly, not to stay up through a
 failure.** Recovery time is a rebuild, and for a lab that is the right trade — as long as it
 is a choice rather than a surprise.
+
+## Rebuilds are exercised on a schedule
+
+*Recovery time is a rebuild* holds only while rebuilds work, and a rebuild path that is not
+exercised decays: a package moves, a URL changes, a manual step creeps in. So rebuilding is
+routine, not an emergency procedure.
+
+**What must be true:**
+- Every host the substrate rebuilds from code is rebuilt from scratch **once per Fedora release**
+  (about every six months), when the site moves to that release:
+  - the Builder, [repaved](/docs/runbook/substrate/building-recovery/repave-builder/) from the
+    builder VM;
+  - both hypervisors ([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/));
+  - every management-plane VM, from the new release's template
+    ([Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/)).
+- Each rebuild is a [change record](/docs/policies/change-management/), which records how long it
+  took and every step that was not in the runbook.
+- A step that was not in the runbook is a finding. The runbook or the automation is fixed in that
+  change, or in a follow-up it names.
+- The core router, the switch and the AP are **not** on this schedule: their installs are manual
+  or factory resets. They are rebuilt in the [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/).
+
+**Today:** rebuilds happen when something needs one. The Builder in service was built over PXE
+from the builder VM, and the builder VMs by template clone and by PXE. No scheduled round has been
+run yet; the first is on the [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/)
+roadmap.
+
+---
 
 ## What it would take to lift each limit
 

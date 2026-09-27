@@ -3,7 +3,7 @@ title: "Full Site Rebuild"
 weight: 4
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 6
+tasks_planned: 7
 ---
 
 # Full Site Rebuild
@@ -41,3 +41,11 @@ Perform a complete tear-down and rebuild of the mobile (mobile) site to validate
 - ⏳ Rebuild management plane (Proxmox, extended services)
 - ⏳ Apply fixes and iterate until all steps are accounted for
 - ⏳ Tag all deevnet repos with a coordinated release version
+
+## Scheduled Rebuilds ⏳
+
+[Resiliency](/docs/policies/risk-management/resiliency/) requires the Builder, both hypervisors and
+every management-plane VM to be rebuilt once per Fedora release.
+
+- ⏳ Run the first scheduled round, each rebuild as a change record, and fold every unrecorded
+  step back into the runbook

@@ -49,7 +49,7 @@ The substrate (Core Router, hypervisors, network infrastructure) is stateless. A
 This means:
 - No substrate snapshots or backups to maintain
 - No state synchronization concerns
-- Any host can be wiped and rebuilt at any time
+- Any host can be wiped and rebuilt at any time, and the Builder, hypervisors and management-plane VMs are, once per Fedora release ([Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule))
 - Hardware replacement is straightforward
 
 **Application tenants are different.** Tenant workloads may have stateful data (databases, user files, etc.) that requires backup and recovery procedures. A tenant rebuilds itself from its own repository and state; see [Tenant Operations](/docs/runbook/tenant/).

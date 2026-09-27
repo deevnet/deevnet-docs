@@ -17,9 +17,11 @@ configuration to it.
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
 
-The PXE half of this procedure is the one proven on a VM in
+The Builder is repaved once per Fedora release, as part of the scheduled rebuilds that
+[Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule)
+requires, and whenever it is lost. This is how the Builder in service was built: over PXE, from the builder VM. The network-boot
+mechanics it shares with any PXE build, and their failure modes, are in
 [Build a Management-Plane VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-vm/#approach-b--pxe-netboot).
-The whole sequence has not yet been run against the hardware Builder.
 
 ---
 
