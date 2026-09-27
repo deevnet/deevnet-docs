@@ -1,11 +1,12 @@
 ---
-title: "Build Management Plane"
+title: "Build a Hypervisor"
 weight: 11
 aliases:
   - /docs/runbook/building-recovery/build-management-plane/
+  - /docs/runbook/substrate/building-recovery/build-management-plane/
 ---
 
-# Build Management Plane
+# Build a Hypervisor
 
 Install and configure a Proxmox VE hypervisor, from bare metal to a node that automation can build
 VMs on. It applies to a new node, and to a rebuild of an existing one. The worked example is the

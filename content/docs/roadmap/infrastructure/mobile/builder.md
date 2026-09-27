@@ -66,7 +66,7 @@ Core infrastructure for building and deploying the substrate.
 ## Unattended Hypervisor Install 🔄
 
 Both Proxmox nodes were installed by hand from the standard ISO, and a rebuild is still manual
-([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)).
+([Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/)).
 
 - 🔄 Unattended ISO in `deevnet-image-factory`: an embedded answer file with the install disk pinned
   by serial builds, but has never installed a node

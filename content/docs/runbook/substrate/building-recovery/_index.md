@@ -68,7 +68,7 @@ flowchart TD
     D["<b>4. Configure PXE</b><br/><code>make bootstrap-auth</code>"]:::transition
     E["<b>5. Build Core Router</b><br/>Manual OPNsense USB install"]:::manual
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
-    G["<b>7. Build Management Plane</b><br/>Manual Proxmox install, then Ansible"]:::manual
+    G["<b>7. Build Hypervisors</b><br/>Manual Proxmox install, then Ansible"]:::manual
     H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
     I["<b>9. Build Management-Hypervisor VMs</b><br/>Clone from template, or PXE netboot"]
     J["<b>10. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
@@ -99,7 +99,7 @@ flowchart TD
 
 - [Configure PXE](build-sequence/) — Enter bootstrap-authoritative mode (`make bootstrap-auth`)
 - [Build Network](build-network/) — Core Router install, network segmentation, transition to core-authoritative (`make core-auth`)
-- [Build Management Plane](build-management-plane/) — Install and configure the Proxmox hypervisors
+- [Build a Hypervisor](build-hypervisor/) — Install and configure the Proxmox hypervisors
 - [Allocate VM Identity](vm-identity/) — Derive management-VM MACs from their VMID before first boot
 - [Build a Management-Hypervisor VM](build-management-hypervisor-vm/) — Put an OS on the VM, by template clone or PXE netboot
 

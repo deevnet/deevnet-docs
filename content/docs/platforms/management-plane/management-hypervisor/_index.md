@@ -100,6 +100,6 @@ its own web UI. Why nothing is clustered is in
 
 The node is installed by hand from the Proxmox VE ISO, finished by Ansible, and given a
 Packer-built template that management VMs are cloned from. The procedure is
-[Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
+[Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.

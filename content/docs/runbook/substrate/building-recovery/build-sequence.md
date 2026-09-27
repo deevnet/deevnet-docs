@@ -47,7 +47,7 @@ systemctl status tftp.socket
 
 Proceed directly to:
 - [Build Network](/docs/runbook/substrate/building-recovery/build-network/) for Core Router rebuild
-- [Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/) for hypervisor rebuild
+- [Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/) for hypervisor rebuild
 - [Tenant Operations](/docs/runbook/tenant/) for tenant rebuild — each tenant re-applies from its own repository
 
 ---

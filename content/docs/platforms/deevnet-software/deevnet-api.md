@@ -56,7 +56,7 @@ run:
 **Its Proxmox access is declared in inventory** (`proxmox_node_access` in
 `host_vars/dv02hyp002p02/vars.yml`) and recreated by `deevnet.builder`'s `proxmox_node_access` role;
 only the token is issued by hand
-([Build Management Plane → Step 7](/docs/runbook/substrate/building-recovery/build-management-plane/#step-7-proxmox-access-token-manual)).
+([Build a Hypervisor → Step 7](/docs/runbook/substrate/building-recovery/build-hypervisor/#step-7-proxmox-access-token-manual)).
 
 | Role | Privileges | Granted at |
 |---|---|---|
