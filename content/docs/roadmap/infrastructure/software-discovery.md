@@ -57,7 +57,7 @@ One collector per kind of system, each read-only:
   packages in use (Kea, Unbound) and every installed `os-*` plugin. `opnsense-diag.sh` already
   gathers the first.
 - ⏳ **Hypervisors:** `pveversion -v`, which covers Proxmox VE, the kernel, FRR and the SDN packages.
-- ⏳ **Domain VMs and the Builder:** `/etc/os-release`, the kernel, the Podman version, and the image
+- ⏳ **Substrate service VMs and the Builder:** `/etc/os-release`, the kernel, the Podman version, and the image
   of every running container, read from the container and not from the unit file.
 - ⏳ **Network devices:** the switch's `show system-info`, and the controller and AP versions from
   the Omada Open API.

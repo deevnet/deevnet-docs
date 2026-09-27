@@ -36,7 +36,7 @@ The host is `dv02hyp002p02`.
 
 ### Automation Capability
 
-- **Installation**: manual, from the standard Proxmox VE ISO ([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)). An unattended ISO is [unfinished work](/docs/roadmap/infrastructure/mobile/builder/) in `deevnet-image-factory`
+- **Installation**: manual, from the standard Proxmox VE ISO ([Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/)). An unattended ISO is [unfinished work](/docs/roadmap/infrastructure/mobile/builder/) in `deevnet-image-factory`
 - **Post-install**: Ansible: `deevnet.builder` (node baseline, storage) and `deevnet.net` (`proxmox_node_network`: the bridge, transit routing and tenant egress)
 - **VM provisioning**: the Deevnet API, on behalf of each tenant's Terraform
 - **Templates**: Packer-built Fedora templates stored locally
@@ -110,5 +110,5 @@ implements it with Proxmox SDN — see [Tenant Fabric (SDN)](tenant-fabric/).
 
 Tenant workload MACs are **derived by the Deevnet API** from the tenant's index, like the rest of a
 tenant's identifiers ([Tenant → The Tenant Contract](/docs/architecture/tenant/#the-tenant-contract)).
-Management-plane VMs follow the inventory-defined policy on the
+Management-hypervisor VMs follow the inventory-defined policy on the
 [Management Hypervisor](/docs/platforms/management-plane/management-hypervisor/#deterministic-mac-addressing).

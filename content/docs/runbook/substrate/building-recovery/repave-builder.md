@@ -12,7 +12,7 @@ configuration to it.
 
 | | |
 |---|---|
-| Temporary builder | `dv02bld001v01`: a management-plane VM on `dv02hyp001p01`, 10.20.99.97, with a 250G data disk at `/srv` |
+| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, with a 250G data disk at `/srv` |
 | Target | `dv00bld001p01`: the AOOSTAR N1 PRO, 10.20.99.95, management NIC `enp4s0` (inventory `eth0`) |
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
@@ -21,7 +21,7 @@ The Builder is repaved once per Fedora release, as part of the scheduled rebuild
 [Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule)
 requires, and whenever it is lost. This is how the Builder in service was built: over PXE, from the builder VM. The network-boot
 mechanics it shares with any PXE build, and their failure modes, are in
-[Build a Management-Plane VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-vm/#approach-b--pxe-netboot).
+[Build a Management-Hypervisor VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-b--pxe-netboot).
 
 ---
 
@@ -49,8 +49,8 @@ where automation runs from.
 ## Step 1: Stand up the temporary builder
 
 `dv02bld001v01` is declared in inventory, with its identity allocated (VMID 202). Build it as a
-management-plane VM by template clone
-([Build a Management-Plane VM → Approach A](/docs/runbook/substrate/building-recovery/build-management-vm/#approach-a--clone-from-template)),
+management-hypervisor VM by template clone
+([Build a Management-Hypervisor VM → Approach A](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-a--clone-from-template)),
 then clone the repositories into `/srv/dvnt` on it and apply the builder roles to it alone:
 
 ```bash
@@ -102,14 +102,14 @@ Check before booting anything: `dig +short artifacts.mobile.deevnet.net` resolve
 
 On the Builder's console, choose a **UEFI** network boot from `enp4s0`, the management NIC. Watch
 the boot chain on the temporary builder, as in
-[The boot chain](/docs/runbook/substrate/building-recovery/build-management-vm/#the-boot-chain).
+[The boot chain](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#the-boot-chain).
 The install is unattended and ends with the host fetching `keys/ssh/a_autoprov_rsa.pub`.
 
 **Stop it reinstalling.** The MAC-pinned GRUB config boots straight into the install, so before the
 Builder's next network boot, either set its firmware to boot from disk first, or remove its
 `bootstrap_grub_mac_configs` entry, re-run the `grub-mac` tag and delete its leftover `grub.cfg-*`
 files on the temporary builder
-([Pin the boot order](/docs/runbook/substrate/building-recovery/build-management-vm/#pin-the-boot-order--do-not-skip-this)).
+([Pin the boot order](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#pin-the-boot-order--do-not-skip-this)).
 
 The installed host comes up on its DHCP reservation, `10.20.99.95`, with the hostname
 `builder-node`. Confirm `ssh a_autoprov@10.20.99.95` works; a failed key fetch leaves a host that

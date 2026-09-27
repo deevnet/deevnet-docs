@@ -1,15 +1,18 @@
 ---
-title: "Domain VMs"
+title: "Substrate Service VMs"
+aliases:
+  - /docs/platforms/management-plane/domain-vms/
 weight: 3
 ---
 
-# Domain VMs
+# Substrate Service VMs
 
-How the [management plane](/docs/architecture/substrate/management-plane/) and
-[control plane](/docs/architecture/substrate/control-plane/) services are packaged onto hosts. The
-architecture places each service on a segment by audience; this page groups those services into
-**domains** by what they are for, and gives each domain a VM on the
-[management hypervisor](/docs/platforms/management-plane/management-hypervisor/)
+The VMs on the [management hypervisor](/docs/platforms/management-plane/management-hypervisor/)
+that run the substrate's own services, for both the
+[management plane](/docs/architecture/substrate/management-plane/) and the
+[control plane](/docs/architecture/substrate/control-plane/). The architecture places each service on
+a segment by audience. This page groups those services into **domains** by what they are for, and
+gives each domain one VM
 ([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
 
 ---
@@ -27,8 +30,8 @@ From inventory: each host's group memberships, and the `deevnet.mgmt` roles `sit
 | Tenant observability | Control | `dv02obs001v01`, 10.20.25.22 | Platform | VictoriaLogs behind vmauth; Grafana; tenant downloads |
 | Device messaging | Control | `dv02msg001v01`, 10.20.35.20 | IoT Backend | VerneMQ and its account writer; the [log bridge](/docs/platforms/deevnet-software/log-bridge/) |
 
-Every domain VM runs Fedora from the site template, with its services as Podman containers under
-systemd ([Software Catalog → Domain VMs](/docs/platforms/software-catalog/#domain-vms)).
+Every service VM runs Fedora from the site template, with its services as Podman containers under
+systemd ([Software Catalog → Substrate Service VMs](/docs/platforms/software-catalog/#substrate-service-vms)).
 
 In inventory, the group `management_plane` means *a VM on the management hypervisor with an
 allocated identity*, whichever plane it serves. It is what the VM identity allocator scans, not a
@@ -49,6 +52,6 @@ statement about audience.
 - **Services with different audiences never share a host.** The substrate's own services change
   often, and a restart among them must not take down something tenants or devices depend on.
 
-How a domain VM is built is [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/).
+How a service VM is built is [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/).
 What each loses when its host is rebuilt is in
 [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/#management-hypervisor-dv02hyp001p01).

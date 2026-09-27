@@ -104,10 +104,10 @@ Then apply configuration as above.
 
 ---
 
-## Management-Plane VMs Are Different
+## Management-Hypervisor VMs Are Different
 
 Everything above assumes a MAC is a hardware fact you can read off a NIC. A
-management-plane VM has no NIC to read until something creates one, so its MAC
+management-hypervisor VM has no NIC to read until something creates one, so its MAC
 is **derived from its Proxmox VMID** and written into inventory by a tool rather
 than typed in by hand.
 
@@ -170,7 +170,7 @@ The `workstation` role in `deevnet.builder` creates each account and installs it
 |------|---------|
 | `infrastructure.form` | Device type (hv, rt, sw, ap, etc.) |
 | `infrastructure.interfaces.<iface>.mac` | MAC address |
-| `mgmt_vm.vmid` | Proxmox VMID (management-plane VMs only; source of the MAC) |
+| `mgmt_vm.vmid` | Proxmox VMID (management-hypervisor VMs only; source of the MAC) |
 | `env.interfaces.<iface>.ip` | IP address (or `dhcp`) |
 | `env.interfaces.<iface>.segment` | Network segment name |
 | `env.interfaces.<iface>.dns.host_a_record` | Create DNS A record |

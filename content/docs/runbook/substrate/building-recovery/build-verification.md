@@ -76,7 +76,7 @@ fails.
 
 ## Management-plane services
 
-The domain VMs, and one check each.
+The substrate service VMs, and one check each.
 
 | Service | Host | Check | Expected |
 |---|---|---|---|

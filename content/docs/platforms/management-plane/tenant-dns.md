@@ -17,10 +17,10 @@ implementation: what runs, and the specifics that are not guessable from the des
 
 | | |
 |---|---|
-| **Service** | PowerDNS Authoritative ([version](/docs/platforms/software-catalog/#domain-vms)) |
+| **Service** | PowerDNS Authoritative ([version](/docs/platforms/software-catalog/#substrate-service-vms)) |
 | **Backend** | SQLite (`gsqlite3`) |
 | **Runtime** | Podman container, `pdns-auth`, managed by a systemd unit |
-| **Host** | `dv02idn001v01`, the identity domain VM, on the management hypervisor (dv02hyp001p01) |
+| **Host** | `dv02idn001v01`, the identity service VM, on the management hypervisor (dv02hyp001p01) |
 | **Address** | `10.20.25.21`, on the platform segment, DHCP reservation keyed on its declared MAC |
 | **Operator alias** | `tdns.mobile.deevnet.net` |
 | **Provisioned by** | `deevnet.mgmt`, role `powerdns` |

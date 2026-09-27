@@ -7,9 +7,9 @@ bookCollapseSection: true
 # Management Hypervisor
 
 Fills the **management hypervisor** role — the host for the site's management and control plane
-domain VMs. See [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
-The host is `dv02hyp001p01`; the domain VMs it carries are listed in the
-[Software Catalog](/docs/platforms/software-catalog/#domain-vms).
+substrate service VMs. See [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
+The host is `dv02hyp001p01`; the service VMs it carries are listed in the
+[Software Catalog](/docs/platforms/software-catalog/#substrate-service-vms).
 
 ---
 
@@ -54,12 +54,12 @@ Templates are built using Packer and stored locally on each hypervisor. New VMs 
 
 ## Deterministic MAC Addressing
 
-For management-plane VMs, network identity must be stable and reproducible.
+For management-hypervisor VMs, network identity must be stable and reproducible.
 
 ### Policy
 
 - Proxmox does **not** generate deterministic MAC addresses automatically
-- All management-plane VMs explicitly define MAC addresses
+- All management-hypervisor VMs explicitly define MAC addresses
 - A MAC is **derived from the VM's Proxmox VMID** inside the locally
   administered `02:de:<site octet>` namespace, then written into
   version-controlled inventory
@@ -100,6 +100,6 @@ its own web UI. Why nothing is clustered is in
 
 The node is installed by hand from the Proxmox VE ISO, finished by Ansible, and given a
 Packer-built template that management VMs are cloned from. The procedure is
-[Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
+[Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.

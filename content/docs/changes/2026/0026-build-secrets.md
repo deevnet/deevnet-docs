@@ -92,5 +92,5 @@ template build would change the hypervisor.
       (`group_vars/all/vault.yml`); committed and **pushed**, with ciphertext checked on origin
       (inventory #56); then `.openbao/image-factory-approle.json` was deleted
 - [ ] Later: narrow the Proxmox token itself. `terraform-prov@pve` has `Administrator` at `/`
-      ([Build a Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/),
+      ([Build a Management Plane](/docs/runbook/substrate/building-recovery/build-hypervisor/),
       Step 7)

@@ -235,7 +235,7 @@ Key points:
 
 ## Adding a New PXE Host
 
-To PXE-build a new host, see [Build a Management-Plane VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-vm/#approach-b--pxe-netboot).
+To PXE-build a new host, see [Build a Management-Hypervisor VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-b--pxe-netboot).
 
 ---
 
@@ -254,7 +254,7 @@ To PXE-build a new host, see [Build a Management-Plane VM → Approach B](/docs/
 
 ## Troubleshooting
 
-See [Build a Management-Plane VM → Troubleshooting](/docs/runbook/substrate/building-recovery/build-management-vm/#troubleshooting).
+See [Build a Management-Hypervisor VM → Troubleshooting](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#troubleshooting).
 
 ---
 

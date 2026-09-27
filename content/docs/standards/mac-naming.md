@@ -38,7 +38,7 @@ created on.
 
 | Class | Policy |
 |-------|--------|
-| **Assigned** — any NIC we create (management-plane VMs) | **Derived** from this namespace, never invented |
+| **Assigned** — any NIC we create (management-hypervisor VMs) | **Derived** from this namespace, never invented |
 | **Observed** — bare-metal NICs, and guests that predate this scheme | Recorded **as found**, real vendor OUIs and all |
 
 An observed MAC is a fact about hardware. Rewriting one means a NIC change plus
@@ -93,9 +93,9 @@ the namespace follows the environment with no second place to edit. Because it
 is part of the prefix, two substrates cannot collide even when they reuse the
 same suffix.
 
-### Management-plane VMs: the suffix is the VMID
+### Management-hypervisor VMs: the suffix is the VMID
 
-For management-plane VMs the suffix is the **Proxmox VMID, big-endian across
+For management-hypervisor VMs the suffix is the **Proxmox VMID, big-endian across
 three octets**:
 
 ```

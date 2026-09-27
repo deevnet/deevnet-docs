@@ -16,7 +16,7 @@ and are not interchangeable:
 
 | Host | Purpose | Carries |
 |------|---------|---------|
-| **Management hypervisor** | The site's own services | The [management plane](/docs/architecture/substrate/management-plane/) and [control plane](/docs/architecture/substrate/control-plane/) domain VMs |
+| **Management hypervisor** | The site's own services | The [management plane](/docs/architecture/substrate/management-plane/) and [control plane](/docs/architecture/substrate/control-plane/) substrate service VMs |
 | **Tenant hypervisor** | Where tenants run | The tenant fabric, and every tenant workload |
 | **Pi lab** | Where tenants run, on real hardware | A small bank of single-board computers, lent to tenant projects that need a Pi rather than a VM |
 
@@ -94,7 +94,7 @@ a project rather than carved out by the API.
 - **Compute hosts are stateless.** They can be reprovisioned from scratch by the builder, and a
   rebuilt tenant hypervisor reconstitutes its entire fabric from code, with no peer to reconcile
   against.
-- **VM placement is determined by role**, not by manual assignment: a domain VM goes to the
+- **VM placement is determined by role**, not by manual assignment: a substrate service VM goes to the
   management hypervisor, a tenant workload to the tenant hypervisor.
 - **Pi lab hosts are lent, not allocated.** A tenant project borrows a slot for as long as it is
   being developed; when it works, the project moves to dedicated hardware of its own and the slot
