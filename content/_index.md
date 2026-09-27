@@ -97,7 +97,11 @@ The rest of the toolkit carries the breadboards, components and tools for protot
   </a>
   <a class="section-card" href="docs/platforms/">
     <h3>Implementation & Tooling</h3>
-    <p>Hardware and software selections with rationale, the software catalog, and certifications.</p>
+    <p>Software selections with rationale, the software catalog, and certifications.</p>
+  </a>
+  <a class="section-card" href="docs/hardware/">
+    <h3>Hardware</h3>
+    <p>The physical boxes: specs, cabling, console access and certification, one page per model.</p>
   </a>
   <a class="section-card" href="docs/runbook/">
     <h3>Operational Runbook</h3>
@@ -126,8 +130,8 @@ The rest of the toolkit carries the breadboards, components and tools for protot
 ## One instance of Deevnet
 
 This site documents the Mobile Factory, the mobile instance of Deevnet. **Architecture, Standards and
-Policies** are written for any Deevnet site. **Implementation & Tooling, the Runbook, the records and
-the Roadmap** are this instance's. Another site would be its own instance, and would more likely run
+Policies** are written for any Deevnet site. **Implementation & Tooling, Hardware, the Runbook, the
+records and the Roadmap** are this instance's. Another site would be its own instance, and would more likely run
 a variant of the take-home kit than a factory of its own.
 
 The patterns, automation and documentation are meant to be adaptable: the standards and architecture

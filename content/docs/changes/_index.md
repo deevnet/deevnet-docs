@@ -1,6 +1,6 @@
 ---
 title: "🔀 Change Records"
-weight: 6
+weight: 7
 bookCollapseSection: true
 aliases:
   - /docs/migrations/

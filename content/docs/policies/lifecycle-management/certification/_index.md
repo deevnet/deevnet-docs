@@ -19,9 +19,10 @@ Certification moves those discoveries to before the thing is relied on.
 Certification is stages 2 and 6 of [Lifecycle Management](/docs/policies/lifecycle-management/):
 the gate between choosing something and relying on it, passed again at every new line.
 
-This section is the **process**. The certifications themselves are records, kept under
+This section is the **process**. The certifications themselves are records: a hardware model's is
+on its page under [Hardware](/docs/hardware/), beside its specs, and software is under
 [Implementation & Tooling → Certification](/docs/platforms/certification/), beside the selections
-they qualify.
+it qualifies.
 
 ---
 
@@ -69,12 +70,13 @@ Records are **by item, not by date**, so a reader finds a thing by what it is, a
 doesn't get in the way.
 
 ```text
+Hardware
+└── <group>                              Network · Compute
+    └── <item>                           the model: its specs, current verdict, and a table of revisions
+        └── <revision>                   one evaluation, e.g. 2026-10 · hardware 1.20
+
 Implementation & Tooling
 └── Certification
-    ├── Hardware
-    │   └── <layer>                      Network · Management Plane · Tenant Compute
-    │       └── <item>                   the model: current verdict, and a table of revisions
-    │           └── <revision>           one evaluation, e.g. 2026-10 · hardware 1.20
     └── Software
         └── <layer>
             └── <item>                   the product: certified lines, and a table of revisions

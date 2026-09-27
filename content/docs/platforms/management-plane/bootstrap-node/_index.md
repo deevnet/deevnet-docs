@@ -21,33 +21,9 @@ Goals:
 
 ---
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile)
-
-The AOOSTAR N1 PRO is a compact mini PC used as the dedicated bootstrap node for the mobile site, `dv00bld001p01` (the Builder). Its dual 2.5GbE NICs provide the upstream + substrate connectivity required for the bootstrap role.
-
-![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | AOOSTAR N1 PRO |
-| **CPU** | Intel N150 (upgraded N100 variant) |
-| **Memory** | 12GB LPDDR5 |
-| **Storage** | 1TB NVMe SSD |
-| **Ethernet** | 2x 2.5GbE (Intel i226-V) |
-| **Form factor** | Mini PC |
-| **Cooling** | Active (fan) |
-
-### Selection Rationale
-
-- **Dual 2.5GbE NICs** for upstream + substrate connectivity (bootstrap requirement)
-- **Compact form factor** for dedicated always-on bootstrap role
-- **12GB RAM** sufficient for artifact serving and Ansible execution
-- **1TB storage** for ISOs, images, and boot artifacts
-- **Intel i226-V NICs** for reliable network performance
+[AOOSTAR N1 PRO](/docs/hardware/compute/aoostar-n1-pro/): specs, cabling, power and console.
 
 ---
 

@@ -14,15 +14,19 @@ per evaluation beneath it. Copy the skeletons below.
 
 | | Hardware | Software |
 |---|---|---|
-| **Item** | `content/docs/platforms/certification/hardware/<layer>/<model>/_index.md` | `content/docs/platforms/certification/software/<layer>/<product>/_index.md` |
+| **Item** | The model's page, `content/docs/hardware/<group>/<model>/_index.md` | `content/docs/platforms/certification/software/<layer>/<product>/_index.md` |
 | **Revision** | `…/<model>/<YYYY-MM>-hw-<revision>.md`, e.g. `2026-10-hw-1-20.md` | `…/<product>/<line>.md`, e.g. `26-7.md` |
-| **Layer** | `network`, `management-plane` or `tenant-compute`, as on [Implementation & Tooling](/docs/platforms/) | the same, or `tooling` for build and automation tools |
+| **Layer** | `network` or `compute`, as on [Hardware](/docs/hardware/) | `network`, `management-plane` or `tenant-compute`, as on [Implementation & Tooling](/docs/platforms/), or `tooling` for build and automation tools |
 | **Item title** | The model, e.g. "TP-Link SG2218" | The product, e.g. "OPNsense" |
 | **Revision title** | "2026-10 · hardware 1.20" | "26.7" |
 | **Weight** | The first revision is `1000`, and each new one is one lower, so the newest sorts first | the same |
-| **Index** | Add the item to its layer page, and to [Certification](/docs/platforms/certification/) | the same |
+| **Index** | The model is already listed on [Hardware](/docs/hardware/); update its Certification section | Add the item to its layer page, and to [Certification](/docs/platforms/certification/) |
 
 Add `bookCollapseSection: true` to every item page, so its revisions stay folded in the sidebar.
+
+For hardware, the item page already exists: it is the model's page under [Hardware](/docs/hardware/).
+Its **Certification** section carries the Role and Current rows and the Revisions table from the
+skeleton below, and its revision pages go beneath it.
 
 ---
 

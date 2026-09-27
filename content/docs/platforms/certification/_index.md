@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Certification
 
-The certifications of the hardware and software Deevnet selects: for each item, its current verdict
+The certifications of the software Deevnet selects: for each item, its current verdict
 and every evaluation behind it. What certification requires, and how one is done, is the
 [Certification](/docs/policies/lifecycle-management/certification/) policy.
 
@@ -17,9 +17,8 @@ now. Its revisions sit folded beneath it, one click deeper.
 
 ## Hardware
 
-| Item | Layer | Role | Current |
-|---|---|---|---|
-| *None yet.* | | | |
+Each hardware model's certification is on its own page under [Hardware](/docs/hardware/), with its
+specs.
 
 ## Software
 

@@ -7,8 +7,8 @@ aliases:
 
 # Hardware Certification
 
-How a model of hardware is certified for a role. The records are under
-[Certification → Hardware](/docs/platforms/certification/hardware/).
+How a model of hardware is certified for a role. The record is the model's own page under
+[Hardware](/docs/hardware/).
 
 ---
 

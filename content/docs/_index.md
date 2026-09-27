@@ -10,7 +10,7 @@ This section contains all documentation that is cross-cutting, normative, and st
 
 This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone
 `mobile.deevnet.net`), which delivers IoT as a Service. **Architecture, Standards and Policies &
-Procedures** are written for any Deevnet site. **Implementation & Tooling, the Operational Runbook,
+Procedures** are written for any Deevnet site. **Implementation & Tooling, Hardware, the Operational Runbook,
 the change and incident records, and the Roadmap** are this instance's. Another site would be its own
 instance of this documentation.
 
@@ -31,7 +31,11 @@ Implementation details live in their respective repositories. This repository de
   </a>
   <a class="section-card" href="platforms/">
     <h3>Implementation & Tooling</h3>
-    <p>Hardware selections, OS choices, and technology stack rationale.</p>
+    <p>What each role runs, OS choices, and technology stack rationale.</p>
+  </a>
+  <a class="section-card" href="hardware/">
+    <h3>Hardware</h3>
+    <p>The physical boxes: specs, cabling, console access and certification, one page per model.</p>
   </a>
   <a class="section-card" href="runbook/">
     <h3>Operational Runbook</h3>

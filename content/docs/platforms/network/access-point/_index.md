@@ -16,39 +16,13 @@ graph LR
 
 ---
 
-## Hardware Platform
+## Hardware
 
-**Site**: mobile (mobile)
+[TP-Link Omada EAP650-Outdoor](/docs/hardware/network/tp-link-eap650-outdoor/): specs, cabling, power and console.
 
-The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN product line. Despite being outdoor-rated, its rugged design makes it suitable for the mobile site's varied deployment environments.
+---
 
-![TP-Link Omada EAP650-Outdoor](tplink-eap650-outdoor.webp)
-
-### Hardware
-
-| Attribute | Value |
-|-----------|-------|
-| **Model** | TP-Link Omada EAP650-Outdoor |
-| **Wi-Fi Standard** | Wi-Fi 6 (802.11ax) |
-| **Bands** | Dual-band (2.4GHz + 5GHz) |
-| **Speed** | AX3000 (574 + 2402 Mbps) |
-| **Antennas** | 2x2 internal (2.4GHz), 2x2 internal (5GHz) |
-| **Ethernet** | 1x Gigabit RJ45 |
-| **Power** | 802.3at PoE (12.3W typical), from the injector supplied with the AP — the SG2218 has no PoE |
-| **Weatherproofing** | IP67 |
-| **Operating Temp** | -30°C to 70°C |
-| **Mounting** | Wall/pole mount |
-
-### Selection Rationale
-
-- **VLAN capable**: Supports VLAN tagging per SSID for network segmentation
-- **API manageable**: Omada controller provides REST API for automation
-- **Wi-Fi 6**: Modern standard with improved efficiency and capacity
-- **Rugged**: IP67 rating handles varied mobile deployment conditions
-- **Omada ecosystem**: Matches mobile switch (SG2218) for unified management
-- **PoE powered**: Single cable for power and data
-
-### Management
+## Management
 
 | Attribute | Value |
 |-----------|-------|
@@ -57,7 +31,7 @@ The EAP650-Outdoor is a Wi-Fi 6 outdoor access point from TP-Link's Omada SDN pr
 | **API** | Yes — Omada controller REST API |
 | **Automation** | `deevnet.net` Ansible collection (Omada API) |
 
-### Roles
+## Roles
 
 | Role | Description |
 |------|-------------|

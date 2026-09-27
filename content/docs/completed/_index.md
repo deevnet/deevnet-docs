@@ -1,6 +1,6 @@
 ---
 title: "🏁 Completed Projects"
-weight: 9
+weight: 10
 bookCollapseSection: true
 aliases:
   - /docs/platforms/tenant-compute/pi-production/
