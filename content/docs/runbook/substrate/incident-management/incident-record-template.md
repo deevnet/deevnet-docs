@@ -3,6 +3,7 @@ title: "Incident Record Template (INC)"
 weight: 1
 aliases:
   - /docs/runbook/incident-management/incident-record-template/
+  - /docs/policies/incident-management/incident-record-template/
 ---
 
 # Incident Record Template (INC)

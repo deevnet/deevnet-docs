@@ -1,6 +1,6 @@
 ---
 title: "Lifecycle"
-weight: 2
+weight: 4
 bookCollapseSection: true
 aliases:
   - /docs/runbook/lifecycle/
@@ -16,4 +16,4 @@ Keeping what is in service current, and taking it out of service when its time c
 - [Renaming Hosts](host-rename/) — what any rename has to reckon with, and renaming a Proxmox node
 
 Each upgrade is a change of type **Upgrade**, and gets a
-[change record](/docs/policies/change-management/change-record-template/).
+[change record](/docs/runbook/substrate/change-management/change-record-template/).

@@ -22,7 +22,7 @@ A builder node with internet access stages all required artifacts to the interna
 
 ### Phase 2: Offline Build
 
-With artifacts pre-staged, the bootstrap node can build the entire substrate without internet access. PXE boot pulls everything from local sources.
+With artifacts pre-staged, the Builder can build the entire substrate without internet access. PXE boot pulls everything from local sources.
 
 ---
 

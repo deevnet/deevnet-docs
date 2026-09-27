@@ -18,7 +18,7 @@ bookCollapseSection: true
 | **Automation** | `deevnet.net` `playbooks/omada-wireless.yml` via `make wireless`; `deevnet.mgmt` role `deevnet_api`; tenant Terraform through `deevnet/deevnet` |
 | **Risk** | Medium — creating an SSID re-applies the WLAN group to a live AP, which can drop associations on `DVNTM` for a few seconds. Nothing existing is rewritten or deleted. |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (proved PPSK, left the follow-up), [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) (the API this extends), [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) (must not break the API's path to the controller) |
-| **Related incidents** | [INC-0002](/docs/policies/incident-management/) (the controller hang; it is now in a tenant's apply path) |
+| **Related incidents** | [INC-0002](/docs/incidents/2026/0002-controller-vm-network-hang/) (the controller hang; it is now in a tenant's apply path) |
 | **Related runbooks** | [Wireless AP recovery](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/) |
 
 ---

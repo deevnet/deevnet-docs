@@ -13,7 +13,7 @@ Configure PXE boot authority before provisioning hosts.
 
 ## Greenfield Build (No Core Router)
 
-For initial site build or full recovery, the bootstrap node provides DNS/DHCP/TFTP for the management subnet.
+For initial site build or full recovery, the Builder provides DNS/DHCP/TFTP for the management subnet.
 
 ```bash
 cd ansible-collection-deevnet.builder
@@ -37,7 +37,7 @@ Proceed to [Build Network](/docs/runbook/substrate/building-recovery/build-netwo
 
 ## Component Rebuild (Core Router Running)
 
-If Core Router is already operational, no PXE reconfiguration is needed. The bootstrap node provides TFTP only; Core Router handles DHCP with PXE options.
+If Core Router is already operational, no PXE reconfiguration is needed. The Builder provides TFTP only; Core Router handles DHCP with PXE options.
 
 Verify TFTP is running:
 

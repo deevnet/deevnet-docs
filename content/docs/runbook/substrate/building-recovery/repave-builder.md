@@ -91,7 +91,7 @@ ansible-playbook playbooks/site.yml --limit dv02bld001v01 --tags grub-mac
 
 Then, **by hand on the core router**, set the management subnet's `next_server` to `10.20.99.97`.
 No role manages it, and UEFI firmware reads it rather than option 66
-([PXE Role → Subnet-Level Settings](/docs/platforms/management-plane/bootstrap-node/pxe-role/#subnet-level-settings)).
+([Bootstrap Role → Subnet-Level Settings](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)).
 
 Check before booting anything: `dig +short artifacts.mobile.deevnet.net` resolves to
 `dv02bld001v01`, and `curl -I http://artifacts.mobile.deevnet.net/kickstart/` answers from it.

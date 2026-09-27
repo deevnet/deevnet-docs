@@ -1,6 +1,8 @@
 ---
 title: "Workstation Role"
 weight: 1
+aliases:
+  - /docs/platforms/management-plane/bootstrap-node/workstation-role/
 ---
 
 # Workstation Role
@@ -53,7 +55,7 @@ Users come from `dev_users` in inventory (`group_vars/workstations.yml`). See [S
 
 ## Use Cases
 
-- **Bootstrap node** — Admin environment for running Ansible playbooks
+- **Builder** — Admin environment for running Ansible playbooks
 - **Dev workstation** — Full development environment for infrastructure work
 - **Build host** — Image factory with Packer/Terraform installed
 

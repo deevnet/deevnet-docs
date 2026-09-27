@@ -38,7 +38,7 @@ Core infrastructure for building and deploying the site.
 |------|--------|
 | Automation tooling setup (collections, modules) | ⏳ |
 | Base image creation and packaging | ⏳ |
-| Bootstrap node provisioning | ⏳ |
+| Builder provisioning | ⏳ |
 | Hypervisor/platform provisioning | ⏳ |
 | Automated install mechanisms | ⏳ |
 | Artifact hosting and distribution | ⏳ |

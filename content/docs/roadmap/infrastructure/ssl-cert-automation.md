@@ -46,7 +46,7 @@ Eliminate browser security warnings and enable secure communication between subs
 Internal CA infrastructure for issuing trusted certificates.
 
 - ⏳ Evaluate CA options (step-ca, smallstep, CFSSL)
-- ⏳ Deploy internal CA on bootstrap node
+- ⏳ Deploy internal CA on the Builder
 - ⏳ Distribute root CA to substrate hosts
 - ⏳ Configure browser/OS trust stores
 

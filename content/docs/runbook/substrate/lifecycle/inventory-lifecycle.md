@@ -41,7 +41,7 @@ This section ensures infrastructure ages intentionally, not accidentally.
 
 - **ansible-inventory-deevnet** - Canonical host identity
 - **OPNsense** - Authoritative DNS/DHCP (production)
-- **Bootstrap node** - Authoritative DNS/DHCP (during provisioning)
+- **Builder** - Authoritative DNS/DHCP (during provisioning)
 
 ---
 

@@ -3,7 +3,7 @@ title: "Patch Automation"
 weight: 2
 tasks_completed: 2
 tasks_in_progress: 0
-tasks_planned: 14
+tasks_planned: 15
 ---
 
 # Patch Automation
@@ -59,6 +59,7 @@ Improvements identified during the network migration and authority transition wo
 - ⏳ OPNsense automation filter API investigation (addRule saves but doesn't compile to pf on 25.7.10)
 - ⏳ Omada SSID VLAN provisioning via controller after AP firmware update
 - ⏳ Replace curl-based Omada API tasks with Ansible uri module (eliminate command-line secret exposure)
+- ⏳ Checks on every pull request (GitHub Actions): `ansible-playbook --syntax-check`, `packer validate` and the docs build, so the change-management validation checklist is not only manual
 
 ---
 

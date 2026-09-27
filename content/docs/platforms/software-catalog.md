@@ -260,11 +260,5 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
 
 **Other pages that disagree with this one** (facts, not versions):
-- [Network Controllers](/docs/platforms/network/network-controllers/): the controller "on the
-  bootstrap node". It moved to `dv02nms001v01` in CHG-0008.
-- [Access Switch](/docs/platforms/network/access-switch/): managed by "Omada API". It is standalone,
-  configured over CLI, and its adoption ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/))
-  is on hold.
-- The Proxmox ISO build and [Build a Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/)
-  still default to `PVE_ISO_VERSION=8.4-1`, while the tenant hypervisor runs 9.
+- The Proxmox ISO build still defaults to `PVE_ISO_VERSION=8.4-1`, while the tenant hypervisor runs 9.
 - CHG-0018 says the hypervisors run Debian 12. `dv02hyp002p02` runs Debian 13.

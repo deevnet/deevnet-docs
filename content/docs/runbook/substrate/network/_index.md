@@ -1,6 +1,6 @@
 ---
 title: "Network"
-weight: 3
+weight: 5
 bookCollapseSection: true
 aliases:
   - /docs/runbook/network/

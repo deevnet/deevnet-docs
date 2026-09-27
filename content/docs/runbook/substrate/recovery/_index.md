@@ -1,6 +1,6 @@
 ---
 title: "Recovery"
-weight: 4
+weight: 6
 bookCollapseSection: true
 aliases:
   - /docs/runbook/recovery/

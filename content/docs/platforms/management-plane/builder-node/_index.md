@@ -1,10 +1,12 @@
 ---
-title: "Bootstrap Node"
+title: "Builder Node"
 weight: 1
 bookCollapseSection: true
+aliases:
+  - /docs/platforms/management-plane/bootstrap-node/
 ---
 
-# Bootstrap Node
+# Builder Node
 
 Fills the **builder** role — see [Builder](/docs/architecture/builder/). The host is `dv00bld001p01`.
 
@@ -18,7 +20,7 @@ Fills the **builder** role — see [Builder](/docs/architecture/builder/). The h
 
 ## Operating System
 
-The bootstrap node runs Fedora Workstation, configured via the `deevnet.builder` Ansible collection.
+The Builder runs Fedora Workstation, configured via the `deevnet.builder` Ansible collection.
 
 | Attribute | Value |
 |-----------|-------|
@@ -26,7 +28,7 @@ The bootstrap node runs Fedora Workstation, configured via the `deevnet.builder`
 | **Version** | [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms) |
 | **Collection** | `deevnet.builder` applied |
 
-The bootstrap node is installed over PXE by another builder: a temporary builder VM on the management hypervisor network-boots it with the builder kickstart, then applies the full builder configuration. See [Repave the Builder](/docs/runbook/substrate/building-recovery/repave-builder/).
+The Builder is installed over PXE by another builder: a temporary builder VM on the management hypervisor network-boots it with the builder kickstart, then applies the full builder configuration. See [Repave the Builder](/docs/runbook/substrate/building-recovery/repave-builder/).
 
 ---
 
@@ -45,13 +47,13 @@ On this host, from inventory:
 
 ## Roles
 
-The bootstrap node is configured using these `deevnet.builder` roles:
+The Builder is configured using these `deevnet.builder` roles:
 
 | Role | Purpose |
 |------|---------|
 | **[Workstation](workstation-role/)** | Developer tools, users, Ansible controller |
 | **[Artifacts](artifacts-role/)** | Air-gapped artifact serving (ISOs, packages, images) |
-| **[PXE](pxe-role/)** | Network boot infrastructure (TFTP, GRUB configs) |
+| **[Bootstrap](bootstrap-role/)** | Network boot for the site: PXE and TFTP always; DNS, DHCP and gateway too while the Builder is authoritative |
 | **[Network Controller](network-controller-role/)** | A stopped Omada controller with its data, the cold fallback for `dv02nms001v01` |
 
 ---
@@ -64,4 +66,4 @@ Per the [Naming Standard](/docs/standards/naming/):
 - `artifacts.mobile.deevnet.net` → `dv00bld001p01.mobile.deevnet.net` (CNAME)
 - `pxe.mobile.deevnet.net` → `dv00bld001p01.mobile.deevnet.net` (CNAME)
 
-Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location), the bootstrap node hosts multiple services. This co-location is intentional and documented—blast radius is understood.
+Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location), the Builder hosts multiple services. This co-location is intentional and documented—blast radius is understood.

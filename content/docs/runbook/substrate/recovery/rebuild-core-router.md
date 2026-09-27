@@ -76,7 +76,7 @@ fresh router needs, in order:
    Then remove, by hand, the stock allow rules a fresh install puts on LAN. They sit outside
    automation, and the policy is not enforced while they remain.
 6. **Set the management subnet's `next_server`** to the Builder, `10.20.99.95`, by hand. No role
-   manages it ([PXE Role](/docs/platforms/management-plane/bootstrap-node/pxe-role/#subnet-level-settings)).
+   manages it ([Bootstrap Role](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)).
 7. **Register Wake-on-LAN hosts:** `ansible-playbook playbooks/wol.yml`.
 8. **Give the Deevnet API the new key:** in `deevnet.mgmt`,
    `ansible-playbook playbooks/site.yml --limit deevnet_api`, then reconcile each tenant.

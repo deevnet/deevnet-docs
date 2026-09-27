@@ -9,7 +9,7 @@ aliases:
 # Renaming Hosts
 
 What any rename of a host has to reckon with, whether it is one host or the estate. A rename is a
-change: open a [change record](/docs/policies/change-management/change-record-template/) for it.
+change: open a [change record](/docs/runbook/substrate/change-management/change-record-template/) for it.
 The 2026-09-05 host rename, [CHG-0003](/docs/changes/2026/0003-host-rename/), is the worked example,
 with the phase order that made it survivable.
 
