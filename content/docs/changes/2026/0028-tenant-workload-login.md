@@ -10,8 +10,8 @@ weight: -28
 | **Date** | 2026-09-27 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | In progress |
-| **Window** | 2026-09-27, started 13:11 |
+| **Status** | **Complete, 2026-09-27.** Tenants log in to their own workloads with their own key, as `tenant`; tenant workloads carry no `a_autoprov`; `DVNTM-TD` reaches them on 22. Proven from the operator's development computer. |
+| **Window** | 2026-09-27, 13:11 to ~15:05 |
 | **Site** | mobile |
 | **Systems** | `dv02hyp002p02` (a new `fedora-tenant-44-*` template), `dv02prv001v01` (the API), `dv02cor002p01` (one rule), `dv02obs001v01` (tenant downloads: the new provider), the eds and tdemo workloads (rebuilt) |
 | **Automation** | `deevnet-image-factory` `make proxmox-fedora-tenant`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`; `deevnet.mgmt` `site.yml --tags deevnet-api` and `--tags tenant-downloads`; `deevnet.net` `make migration-opnsense-firewall`. Inventory `ansible-inventory-deevnet/mobile` |
@@ -228,6 +228,8 @@ Run from the Builder on 2026-09-27; the `DVNTM-TD` checks from the operator's ow
 | ~14:40 | Verification | From the operator's computer on `DVNTM-TD` (`10.20.45.50`): `segment-check.sh DVNTM-TD` **29 passed, 0 failed**, with `REACH tenant-workload-ssh(ADR-0028) 10.20.130.10:22`. Log below |
 | ~14:48 | Step 7 check | The Deploy Your App flow, run from the Builder against eds: an image built, `podman save \| ssh podman load` (under a second), `kit.env` and a systemd unit installed, the app's output read back; a rebuilt image shipped and restarted; the unit back by itself after a reboot. Removed afterwards |
 
+| ~15:05 | Verification | From the operator's development computer on `DVNTM-TD`, with its own key: logged in to eds as `tenant`, `sudo-ok`. Output below |
+
 {{< details "segment-check.sh DVNTM-TD, 2026-09-27" >}}
 ```text
 Segment check: DVNTM-TD (from 10.20.45.50)
@@ -263,6 +265,14 @@ Segment check: DVNTM-TD (from 10.20.45.50)
   PASS  BLOCK edge-router-admin(CHG-0023) 192.168.8.1:80
 
 RESULT: DVNTM-TD - 29 passed, 0 failed
+```
+{{< /details >}}
+
+{{< details "Login from the development computer, 2026-09-27" >}}
+```text
+cdeever@Chriss-MacBook-Pro scripts % ssh tenant@services.eds.mobile.deevnet.net 'id; sudo -n true && echo sudo-ok'
+uid=1000(tenant) gid=1000(tenant) groups=1000(tenant),4(adm),10(wheel),190(systemd-journal) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+sudo-ok
 ```
 {{< /details >}}
 
