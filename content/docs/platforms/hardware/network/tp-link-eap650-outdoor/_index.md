@@ -1,5 +1,7 @@
 ---
 title: "TP-Link EAP650-Outdoor"
+aliases:
+  - /docs/hardware/network/tp-link-eap650-outdoor/
 weight: 4
 bookCollapseSection: true
 ---

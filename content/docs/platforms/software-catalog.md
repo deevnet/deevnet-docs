@@ -1,6 +1,6 @@
 ---
 title: "Software Catalog"
-weight: 6
+weight: 7
 ---
 
 # Software Catalog
@@ -100,7 +100,7 @@ No other plugins are used. The collection has no plugin-install tasks.
 | **Proxmox VE** | **8.4.1** (see [Gaps](#gaps)) | AGPL-3.0 | Community, commercial available. The nodes use the **no-subscription** repository | Observed, undated (platform page, roadmap) |
 | Debian | 12 (Bookworm) | Free software, per package | Community | Bundled with Proxmox VE 8 |
 | Linux kernel | 6.8.12 | GPL-2.0 | Bundled | Observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/)) |
-| Dell BIOS ([OptiPlex 7050 Micro](/docs/hardware/compute/dell-optiplex-7050-mff/)) | 1.27.0 (2023-09-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
+| Dell BIOS ([OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/)) | 1.27.0 (2023-09-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
 
 ### Domain VMs
 
@@ -137,7 +137,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | nginx (artifact server) | Fedora package | BSD-2-Clause | Community | Not pinned |
 | tftp-server, syslinux, grub2 (PXE) | Fedora packages | BSD / GPL-2.0 / GPL-3.0 | Community | Not pinned |
 | dnsmasq | Fedora package; installed but disabled | GPL-2.0 | Community | Not pinned |
-| AOOSTAR BIOS ([N1 PRO](/docs/hardware/compute/aoostar-n1-pro/)) | HCN150_MI3_0.10 (2025-04-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
+| AOOSTAR BIOS ([N1 PRO](/docs/platforms/hardware/compute/aoostar-n1-pro/)) | HCN150_MI3_0.10 (2025-04-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
 
 ---
 
@@ -150,7 +150,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/)) |
 | Debian | 13 (Trixie) | Free software, per package | Community | Bundled with Proxmox VE 9 |
 | Proxmox SDN (`libpve-network-perl`) | 1.6.7 | AGPL-3.0 | Bundled | Observed 2026-08-30 |
-| Dell BIOS ([OptiPlex 7060 Micro](/docs/hardware/compute/dell-optiplex-7060-mff/)) | 1.32.0 (2024-09-03) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
+| Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/)) | 1.32.0 (2024-09-03) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
 | **FRR** (EVPN, OpenFabric underlay) | not recorded. `frr-pythontools` is 10.6.1-1+pve3 | GPL-2.0-or-later | Community | Observed 2026-08-30 (pythontools only) |
 | Tenant egress agent | follows `deevnet.net` 1.0.0 | Apache-2.0 (collection `LICENSE`) | In-house | Not versioned |
 
@@ -244,7 +244,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
 - **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
   and `pkg info`, which `opnsense-diag.sh` already collects); whether `os-wol` is installed; the
-  GL.iNet firmware; the [ZimaBoard](/docs/hardware/network/zimaboard-832/)'s BIOS; the Pi bootloader EEPROMs; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
+  GL.iNet firmware; the [ZimaBoard](/docs/platforms/hardware/network/zimaboard-832/)'s BIOS; the Pi bootloader EEPROMs; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
   Fedora release; the OS on `dv02rpi001p01` to `…003p01`.
 
 **Unpinned:** ansible-core, Terraform and Packer on the Builder; `packer-builder-arm:latest`;

@@ -1,5 +1,7 @@
 ---
 title: "Network"
+aliases:
+  - /docs/hardware/network/
 weight: 1
 bookCollapseSection: true
 ---

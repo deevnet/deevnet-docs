@@ -18,7 +18,7 @@ graph LR
 
 ## Hardware
 
-[TP-Link Omada EAP650-Outdoor](/docs/hardware/network/tp-link-eap650-outdoor/): specs, cabling, power and console.
+[TP-Link Omada EAP650-Outdoor](/docs/platforms/hardware/network/tp-link-eap650-outdoor/): specs, cabling, power and console.
 
 ---
 

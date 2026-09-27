@@ -17,7 +17,7 @@ graph LR
 
 ## Hardware
 
-[ZimaBoard 832](/docs/hardware/network/zimaboard-832/): specs, cabling, power and console.
+[ZimaBoard 832](/docs/platforms/hardware/network/zimaboard-832/): specs, cabling, power and console.
 
 ---
 

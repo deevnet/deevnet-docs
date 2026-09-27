@@ -1,5 +1,7 @@
 ---
 title: "GL-iNet Slate AX"
+aliases:
+  - /docs/hardware/network/gl-inet-slate-ax/
 weight: 1
 bookCollapseSection: true
 ---

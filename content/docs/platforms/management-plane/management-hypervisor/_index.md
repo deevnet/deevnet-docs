@@ -14,7 +14,7 @@ The management hypervisor hosts **infrastructure-critical services** for the sub
 
 ## Hardware
 
-[Dell OptiPlex 7050 Micro](/docs/hardware/compute/dell-optiplex-7050-mff/): specs, cabling, power and console.
+[Dell OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/): specs, cabling, power and console.
 
 ---
 

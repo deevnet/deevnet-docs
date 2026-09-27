@@ -23,7 +23,7 @@ Goals:
 
 ## Hardware
 
-[AOOSTAR N1 PRO](/docs/hardware/compute/aoostar-n1-pro/): specs, cabling, power and console.
+[AOOSTAR N1 PRO](/docs/platforms/hardware/compute/aoostar-n1-pro/): specs, cabling, power and console.
 
 ---
 

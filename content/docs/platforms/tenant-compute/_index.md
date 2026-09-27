@@ -1,6 +1,6 @@
 ---
 title: "Tenant Compute"
-weight: 3
+weight: 4
 bookCollapseSection: true
 ---
 

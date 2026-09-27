@@ -1,6 +1,6 @@
 ---
 title: "Certification"
-weight: 5
+weight: 6
 bookCollapseSection: true
 ---
 
@@ -17,7 +17,7 @@ now. Its revisions sit folded beneath it, one click deeper.
 
 ## Hardware
 
-Each hardware model's certification is on its own page under [Hardware](/docs/hardware/), with its
+Each hardware model's certification is on its own page under [Hardware](/docs/platforms/hardware/), with its
 specs.
 
 ## Software

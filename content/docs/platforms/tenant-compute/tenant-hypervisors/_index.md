@@ -14,7 +14,7 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 
 ## Hardware
 
-[Dell OptiPlex 7060 Micro](/docs/hardware/compute/dell-optiplex-7060-mff/): specs, cabling, power and console.
+[Dell OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/): specs, cabling, power and console.
 
 ### Requirements
 

@@ -1,5 +1,7 @@
 ---
 title: "ZimaBoard 832"
+aliases:
+  - /docs/hardware/network/zimaboard-832/
 weight: 2
 bookCollapseSection: true
 ---

@@ -8,7 +8,7 @@ This is the **authoritative documentation repository** for the Deevnet ecosystem
 
 ## This Instance
 
-This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone `mobile.deevnet.net`), published as **Deevnet IoTaaS** (Deevnet IoT as a Service). Architecture, Standards and Policies & Procedures are written for any Deevnet site; Implementation & Tooling, Hardware, the Runbook, the change and incident records, and the Roadmap are this instance's. The home site is not built: its site code, zone and address space stay reserved in the standards, and its old documentation is archived at the git tag `archive/home-site-2026-09`. Don't add home-site content; a future site would be its own instance.
+This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone `mobile.deevnet.net`), published as **Deevnet IoTaaS** (Deevnet IoT as a Service). Architecture, Standards and Policies & Procedures are written for any Deevnet site; Implementation & Tooling, the Runbook, the change and incident records, and the Roadmap are this instance's. The home site is not built: its site code, zone and address space stay reserved in the standards, and its old documentation is archived at the git tag `archive/home-site-2026-09`. Don't add home-site content; a future site would be its own instance.
 
 ## Key Principles
 
@@ -22,13 +22,12 @@ This site documents the **Mobile Factory**, the mobile instance of Deevnet (site
 1. **Standards** - Non-negotiable rules (naming conventions, correctness definitions)
 2. **Architecture** - System-level design intent and layer contracts
 3. **Roadmap** - Forward-looking shared intent (informational, not binding)
-4. **Implementation & Tooling** (`platforms/`) - What each role runs and why, current and under evaluation; the Software Catalog; and software certification records (`platforms/certification/`, by item, revisions folded beneath). No procedures. A role's page links to its hardware rather than describing it
-5. **Hardware** (`hardware/`) - One page per hardware model (`network/`, `compute/`): photo, specs, selection rationale, hosts, cabling, power, console, firmware (linked to the catalog), and its certification record, with revisions beneath it. Hardware facts only; no serial numbers (the repo is public)
-6. **Operational Runbook** (`runbook/`) - `substrate/` for the operator (building, lifecycle, network, recovery, tenant admission); `tenant/` for tenants (getting started, services, operating, Pi Lab)
-7. **Policies & Procedures** (`policies/`) - Change management, incident management, risk management (vulnerabilities, security controls, traceability, resiliency, risk register), lifecycle management (the stages from selection to retirement, with certification beneath it: the hardware and software process, criteria and record template)
-8. **Change / Incident Records** (`changes/`, `incidents/`) - Numbered records
-9. **Completed Projects** (`completed/`) - Finished projects, graduated from the Roadmap
-10. **Platforms Integration** - How docs integrate into developer workflow
+4. **Implementation & Tooling** (`platforms/`) - What each role runs and why, current and under evaluation; the Software Catalog; and software certification records (`platforms/certification/`, by item, revisions folded beneath). No procedures. A role's page links to its hardware rather than describing it. **Hardware** (`platforms/hardware/`, first in the section) has one page per hardware model (`network/`, `compute/`): photo, specs, selection rationale, hosts, cabling, power, console, firmware (linked to the catalog), and its certification record, with revisions beneath it. Hardware facts only; no serial numbers (the repo is public)
+5. **Operational Runbook** (`runbook/`) - `substrate/` for the operator (building, lifecycle, network, recovery, tenant admission); `tenant/` for tenants (getting started, services, operating, Pi Lab)
+6. **Policies & Procedures** (`policies/`) - Change management, incident management, risk management (vulnerabilities, security controls, traceability, resiliency, risk register), lifecycle management (the stages from selection to retirement, with certification beneath it: the hardware and software process, criteria and record template)
+7. **Change / Incident Records** (`changes/`, `incidents/`) - Numbered records
+8. **Completed Projects** (`completed/`) - Finished projects, graduated from the Roadmap
+9. **Platforms Integration** - How docs integrate into developer workflow
 
 ## Usage by Other Repos
 

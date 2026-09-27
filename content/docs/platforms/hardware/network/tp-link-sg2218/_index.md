@@ -1,5 +1,7 @@
 ---
 title: "TP-Link SG2218"
+aliases:
+  - /docs/hardware/network/tp-link-sg2218/
 weight: 3
 bookCollapseSection: true
 ---
@@ -54,10 +56,10 @@ The authority is the switch's `switch_ports` in the inventory
 | `gi1/0/4` | Trunk | native 99; 10, 30, 31, 40, 45 | [Access point](../tp-link-eap650-outdoor/) |
 | `gi1/0/5` | Access | 30 | `dv02rpi004p01` |
 | `gi1/0/6` to `gi1/0/12` | Undeclared | VLAN 1, not routed | — |
-| `gi1/0/13` | Trunk | native 99; 50, 51 | [Tenant hypervisor](/docs/hardware/compute/dell-optiplex-7060-mff/) |
+| `gi1/0/13` | Trunk | native 99; 50, 51 | [Tenant hypervisor](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/) |
 | `gi1/0/14` | Access | 30 | `dv02rpi001p01` |
-| `gi1/0/15` | Trunk | native 99; 25, 35 | [Management hypervisor](/docs/hardware/compute/dell-optiplex-7050-mff/) |
-| `gi1/0/16` | Access | 99 | [Builder](/docs/hardware/compute/aoostar-n1-pro/) |
+| `gi1/0/15` | Trunk | native 99; 25, 35 | [Management hypervisor](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/) |
+| `gi1/0/16` | Access | 99 | [Builder](/docs/platforms/hardware/compute/aoostar-n1-pro/) |
 
 An undeclared port is untagged VLAN 1, which has no DHCP and no route, so a device cabled to one
 looks dead. Declare the port before cabling a new device.

@@ -1,5 +1,7 @@
 ---
 title: "Raspberry Pi 4"
+aliases:
+  - /docs/hardware/compute/raspberry-pi-4/
 weight: 4
 bookCollapseSection: true
 ---

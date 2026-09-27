@@ -1,5 +1,7 @@
 ---
 title: "Compute"
+aliases:
+  - /docs/hardware/compute/
 weight: 2
 bookCollapseSection: true
 ---

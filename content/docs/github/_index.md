@@ -1,6 +1,6 @@
 ---
 title: "💻 Code Repositories"
-weight: 11
+weight: 10
 bookCollapseSection: true
 ---
 
