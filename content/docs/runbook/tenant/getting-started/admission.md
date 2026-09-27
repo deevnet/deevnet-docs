@@ -15,16 +15,17 @@ does for you; everything after it you do yourself.
   Proxmox caps zone IDs at 8 characters
 - It becomes your DNS zone (`<name>.mobile.deevnet.net`), your MQTT topic prefix (`<name>/…`) and
   the name of your network. Pick something you will not mind seeing everywhere
-- `sensors`, `bench1`, `ptv` are fine; `Pico-Demo` and `meetupproject` are not
+- `sensors`, `bench1`, `ptv` are fine; `Pico-Demo` and `greenhouse1` are not
 
 ## Ask the operator
 
 Tell the operator the name. They run one API call
-([Tenant Admission](/docs/runbook/substrate/tenant-admission/)) and hand you three things:
+([Tenant Admission](/docs/runbook/substrate/tenant-admission/)) and hand you four things:
 
 1. an **enrollment token** (it looks like `s.…`)
 2. the **API endpoint**, `https://api.mobile.deevnet.net:8080`
-3. the **site CA**, `site-ca.pem`
+3. the **`DVNTM-TD` Wi-Fi key**, for the network you work from
+4. the **site CA**, `site-ca.pem`
 
 ## What the token is
 

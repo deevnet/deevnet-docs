@@ -62,8 +62,9 @@ read it to use this guide.
 5. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
 5. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
    ESP32 or a borrowed kit
-6. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and devices on a Pi of
-   your own, same topics and tokens, no Deevnet behind it
+6. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and the services it uses
+   move onto a Pi of your own, and your devices keep talking to it with the same topics and tokens,
+   with no Deevnet behind it
 7. **[Troubleshooting](troubleshooting/)** — when something doesn't work
 
 The operator's side of all this — admitting your name — is

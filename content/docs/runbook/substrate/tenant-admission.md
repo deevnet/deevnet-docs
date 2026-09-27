@@ -25,7 +25,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | The API | `https://api.mobile.deevnet.net:8080`, reachable from the Builder |
 | The operator token | `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault |
 | The site CA | `ansible-collection-deevnet.mgmt/.openbao/site-ca.pem` on the control node |
-| The provider | the tenant installs `deevnet/deevnet` 0.4.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before a meetup, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
+| The provider | the tenant installs `deevnet/deevnet` 0.4.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
 ---
 
@@ -49,13 +49,14 @@ curl -sS --cacert site-ca.pem \
 | The token | single-use, expires after `DEEVNET_ENROLLMENT_TTL` (72h by default) |
 | A name already registered | answers `409`. Admission creates nothing; it only authorizes |
 
-## 2. Hand over three things
+## 2. Hand over four things
 
 The tenant needs exactly these, and nothing else from the substrate:
 
 1. the **enrollment token**
 2. the **API endpoint**, `https://api.mobile.deevnet.net:8080`
-3. the **site CA**, `site-ca.pem`
+3. the **`DVNTM-TD` Wi-Fi key** ([§3](#3-where-the-tenant-applies-from))
+4. the **site CA**, `site-ca.pem`
 
 The token is bound to the name. Presenting it for a different name **spends** it and answers `401`,
 so a mistyped name costs a new admission.

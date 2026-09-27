@@ -6,8 +6,9 @@ aliases: ["/docs/runbook/tenant/take-it-home/"]
 
 # Convert a Tenant to a Raspberry Pi Image
 
-This page converts a tenant into a standalone **Raspberry Pi image**: your app and your devices
-keep working, with no Deevnet behind them. The Pi is flashed from the image factory's `pi-backend`
+This page converts a tenant into a standalone **Raspberry Pi image**: your app and the services it
+uses move onto a Pi of your own, and your devices keep working with it, with no Deevnet behind
+them. The Pi is flashed from the image factory's `pi-backend`
 image and runs your tenant's back-end services itself, so it can go anywhere: home, a classroom, a
 project that outlives the site.
 
@@ -100,7 +101,7 @@ and `tools/`; check the image against its `.sha256` before flashing.
 1. In **Raspberry Pi Imager** choose *Use custom* and pick `raspios-bookworm-mobile-pi-backend.img.xz`
    (from the tenant downloads' `pi/`). **Imager 2.x offers no OS customization for a custom image**,
    so skip it: the boot partition does the same job in step 3.
-2. Write the card, and leave it in the reader. The boot partition (`bootfs`) opens on your laptop.
+2. Write the card, and leave it in the reader. The boot partition (`bootfs`) opens on your computer.
    **`README.txt`** there is this page's short version, and stays on the card.
 3. **On the boot partition:**
    - **Name your tenant** in `deevnet-kit.txt`:
@@ -155,7 +156,7 @@ minute or two; then `deevnet-kit dashboards` creates your organization. Until it
 carries no `GRAFANA_*` lines.
 
 The hostname is `raspberrypi` unless you changed it. Find the Pi's address on your router's
-client list, or use `raspberrypi.local` from a laptop on the same network.
+client list, or use `raspberrypi.local` from a computer on the same network.
 
 ```bash
 ssh you@<pi>
@@ -180,7 +181,7 @@ needs a new CA. On a network where the Pi's MAC has a DHCP reservation, the firs
 land on a pool address if an older OS on the same Pi holds the reserved lease. It moves once that
 lease expires.
 
-Copy `~/deevnet-kit/` to your laptop. That is everything your app needs.
+Copy `~/deevnet-kit/` to your computer. That is everything your app needs.
 
 ## 3. Recreate your broker accounts
 
@@ -237,7 +238,7 @@ The unit uses host networking and points the app at `localhost`, because a conta
 resolve `.local` names. The certificate covers `localhost`. Podman on Bookworm is 4.3, which has no
 quadlets, so it is a plain unit.
 
-Or run the app on your laptop with `~/deevnet-kit/kit.env`; the Pi does not mind.
+Or run the app on your computer with `~/deevnet-kit/kit.env`; the Pi does not mind.
 
 ## 6. Bring your dashboards
 
@@ -280,7 +281,7 @@ curl -sS --cacert ~/deevnet-kit/site-ca.pem -H "Authorization: Bearer $LOG_READ_
 
 | On Deevnet | On your Pi |
 |---|---|
-| Workload VMs | Your app runs on the Pi or your laptop |
+| Workload VMs | Your app runs on the Pi or your computer |
 | `<tenant>.mobile.deevnet.net` DNS | `<hostname>.local`, and the Pi's address for devices |
 | Wi-Fi keys on `DVNTM-IOT` | Your own Wi-Fi |
 | The device registry | Device names are checked for shape only |
