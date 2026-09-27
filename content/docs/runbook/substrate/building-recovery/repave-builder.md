@@ -35,6 +35,7 @@ survives unless you move it off first:
 | `/srv/dvnt` checkouts | Re-encrypt every vault (`make vault` in the inventory), then commit and push every branch. Local-only work is lost |
 | Other work under `/srv` and `/home` | Copy off anything not in a remote repository |
 | `/opt/omada-controller` and `/opt/omada-controller-backup` | The cold-fallback controller and **the only Omada snapshot** ([Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/)). Copy both off if you want to keep them |
+| `/srv/dvnt/migration-logs` | The router's saved `config.xml` copies, written before each firewall apply: the fastest way to [rebuild the core router](/docs/runbook/substrate/recovery/rebuild-core-router/). They hold the router's secrets, so keep them somewhere private |
 | `/srv/deevnet-http` (artifacts) | Nothing. The `artifacts` role stages them again, which needs internet access |
 
 Two things are **not** on the Builder: the operator's SSH key is forwarded from their own

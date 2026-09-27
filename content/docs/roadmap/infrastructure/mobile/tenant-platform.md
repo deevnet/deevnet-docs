@@ -3,7 +3,7 @@ title: "Tenant Platform"
 weight: 4
 tasks_completed: 2
 tasks_in_progress: 5
-tasks_planned: 2
+tasks_planned: 3
 ---
 
 # Tenant Platform
@@ -148,6 +148,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 - ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node
+- ⏳ Workloads and DNS records come back after a rebuild: a reconcile re-ensures neither, and a tenant's plain apply sees no change. Re-ensure them in the reconcile, or give the tenant a documented way to force a re-apply
 
 ## Windows tenant laptops ⏳
 

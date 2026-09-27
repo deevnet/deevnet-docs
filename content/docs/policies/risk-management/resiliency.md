@@ -134,10 +134,11 @@ the rack leaves."*
 ## Backups live on the thing being backed up
 
 OPNsense keeps its own configuration history on the router, which covers a configuration
-mistake but not a failed disk. No collection carries off-box backup automation; the manual
-download step in the
-[segmentation prerequisites](/docs/changes/2026/0001-flat-network-to-vlans/prerequisites/) is the whole of
-the practice.
+mistake but not a failed disk. The `opnsense_firewall` role also copies the whole configuration to
+the control host before every apply (`/srv/dvnt/migration-logs/`), which is what a
+[core router rebuild](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from. That copy
+is only as fresh as the last firewall run, and it lives on the Builder, so it is lost with the
+Builder unless carried off.
 
 ---
 
@@ -175,19 +176,24 @@ exercised decays: a package moves, a URL changes, a manual step creeps in. So re
 routine, not an emergency procedure.
 
 **What must be true:**
-- Every host the substrate rebuilds from code is rebuilt from scratch **once per Fedora release**
+- Every host whose install is automated is rebuilt from scratch **once per Fedora release**
   (about every six months), when the site moves to that release:
   - the Builder, [repaved](/docs/runbook/substrate/building-recovery/repave-builder/) from the
     builder VM;
-  - both hypervisors ([Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/));
   - every management-plane VM, from the new release's template
     ([Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/)).
 - Each rebuild is a [change record](/docs/policies/change-management/), which records how long it
   took and every step that was not in the runbook.
 - A step that was not in the runbook is a finding. The runbook or the automation is fixed in that
   change, or in a follow-up it names.
-- The core router, the switch and the AP are **not** on this schedule: their installs are manual
-  or factory resets. They are rebuilt in the [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/).
+- The hypervisors and the core router are **not** on this schedule, because their installs are
+  manual. They are kept current in place, by package updates along Proxmox's and OPNsense's own
+  sequential upgrade paths ([Patching](/docs/runbook/substrate/lifecycle/patching/)), and rebuilt
+  from scratch only when one is lost:
+  [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/),
+  [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/). The switch and
+  the AP are factory resets. All of them are rebuilt in the
+  [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/).
 
 **Today:** rebuilds happen when something needs one. The Builder in service was built over PXE
 from the builder VM, and the builder VMs by template clone and by PXE. No scheduled round has been

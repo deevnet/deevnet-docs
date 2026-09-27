@@ -34,8 +34,10 @@ The roles themselves — what each does, and where it sits in the network — ar
 | [Pi lab](/docs/architecture/substrate/compute/#the-pi-lab) | Raspberry Pi 4 | [Raspberry Pi](tenant-compute/raspberry-pi/) |
 | [Tenant DNS](/docs/architecture/substrate/control-plane/#identity) | PowerDNS Authoritative | [Tenant DNS](management-plane/tenant-dns/) |
 
-Everything else the management and control planes run — the Deevnet API, OpenBao, the MQTT broker,
-the log store, Grafana — is listed in the [Software Catalog](software-catalog/).
+The software this site wrote for itself — the Deevnet API, the Terraform provider tenants use, and
+the runtime tools around them — is [Deevnet Software](deevnet-software/). Everything else the
+management and control planes run — OpenBao, the MQTT broker, the log store, Grafana — is listed in
+the [Software Catalog](software-catalog/).
 
 ---
 

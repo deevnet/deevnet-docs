@@ -22,13 +22,13 @@ Tenant management provides:
 ## Tenant Lifecycle
 
 A tenant's whole lifecycle runs through the Deevnet API. The operator admits it once; everything
-after that is the tenant's own Terraform ([Building](/docs/architecture/tenant/building/)).
+after that is the tenant's own ([Substrate and Tenant](/docs/architecture/tenant/boundary/)).
 
 ### Create
 
 1. **Admission** — the operator registers the tenant's name, and the API issues a single-use
    enrollment token. This is the only substrate act in a tenant's life.
-2. **First apply** — the tenant's Terraform spends the token, and the API builds everything the
+2. **First apply** — the tenant's first apply spends the token, and the API builds everything the
    tenant is entitled to, numbered from the index it allocates: the fabric overlay network, the
    DNS zone and its update key, a state store prefix, log partitions and their tokens, and a
    dashboards organization. It returns the tenant's own token.
@@ -39,7 +39,7 @@ router or switch change ([Networking → Perimeter handoff](/docs/architecture/t
 ### Update
 
 Adding or removing workloads, names, Wi-Fi keys, devices and broker accounts is a
-`terraform apply` against the tenant's own repository. None of it needs the operator.
+change the tenant applies from its own repository. None of it needs the operator.
 
 ### Destroy
 
@@ -106,7 +106,7 @@ Tenant management is distinct from substrate management:
 | Aspect | Substrate Management | Tenant Management |
 |--------|---------------------|-------------------|
 | **Scope** | Infrastructure (router, hypervisors) | Workloads (VMs, applications) |
-| **Tooling** | Automation-first | Terraform-first |
+| **Tooling** | Procedural configuration | Declarative, through the API |
 | **Lifecycle** | Rare changes, high stability | Frequent changes, agile |
 | **Authority** | Platform admins only | May delegate to tenant admins |
 

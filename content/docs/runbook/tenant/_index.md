@@ -57,7 +57,8 @@ read it to use this guide.
 2. **[Walkthrough: a Pico W or ESP32 talking to a backend](walkthrough-mqtt-device/)** — the whole
    thing end to end, in one Terraform file and two short firmware sketches
 3. **Services** — one page per service, when you need the details
-4. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
+4. **[Recovery](recovery/)** — when your tenant, or the site under it, loses something
+5. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
 5. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
    ESP32 or a borrowed kit
 6. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and devices on a Pi of

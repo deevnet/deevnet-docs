@@ -103,7 +103,7 @@ service.tenant.site.deevnet.net
 | **Purpose** | Infrastructure boundary | Workload namespace |
 | **Contains** | Network, compute, management and control planes | Applications, services |
 | **Lifetime** | Long-lived, stable | May be created/destroyed frequently |
-| **Provisioning** | Automation-first | Terraform-first |
+| **Provisioning** | Procedural configuration, from inventory | Declarative, through the provisioning API |
 | **Example** | `mobile` | `eds`, `tdemo` |
 
 ---
@@ -150,12 +150,12 @@ Two properties of that interface matter more than the rows themselves:
   controller credential — so there is nothing it could use to reach around the interface.
 - **Nothing recurring needs a substrate commit.** Onboarding a tenant is a substrate act;
   everything after it — adding a workload, publishing a name, issuing a device key — is the
-  tenant's own `terraform apply`
+  tenant's own change
   ([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)).
 
 Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
-changing the substrate. See [Building](/docs/architecture/tenant/building/) for what that looks
-like in practice.
+changing the substrate. See [Substrate and Tenant](/docs/architecture/tenant/boundary/) for the
+boundary itself.
 
 ---
 
@@ -164,4 +164,4 @@ like in practice.
 - [Networking](/docs/architecture/tenant/networking/) — Tenant network isolation via the overlay fabric
 - [Shared Tenant Services](/docs/architecture/tenant/shared-services/) — Substrate-run services tenants consume, and the rules for consuming them
 - [Management](/docs/architecture/tenant/management/) — Tenant lifecycle and observability
-- [Building](/docs/architecture/tenant/building/) — Tenant provisioning as code
+- [Substrate and Tenant](/docs/architecture/tenant/boundary/) — The boundary between the two, and what crosses it
