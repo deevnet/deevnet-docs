@@ -22,7 +22,9 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 | What | Where it comes from | Procedure |
 |------|---------------------|-----------|
 | OS packages, at install | The staged install tree on the artifact server — no internet needed | [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/) |
-| OS packages, after install | Public Fedora (or Debian, for Proxmox) mirrors — the host needs internet access | Per change record |
+| OS packages, after install | Public Fedora mirrors — the host needs internet access | Per change record |
+| Proxmox VE (both hypervisors) | Proxmox's Debian repositories, in place. A major version is only reached through the one before it, following Proxmox's upgrade path (`pve8to9` before 8 → 9) | Per change record; the 8 → 9 move was the [Hypervisor Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/) |
+| OPNsense (core router) | OPNsense's firmware updates, in place, one major release after another in order | Per change record |
 | Omada controller | A staged image on the artifact server | [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/) |
 | Switch and AP firmware | Firmware staged on the artifact server | Per change record: [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) (switch), [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (AP) |
 
