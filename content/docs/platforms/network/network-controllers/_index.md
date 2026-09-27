@@ -8,7 +8,7 @@ weight: 5
 Fills the **network management** domain of the management plane — see
 [Management Plane → Network management](/docs/architecture/substrate/management-plane/#network-management).
 
-The controller runs in the network management domain VM, `dv02nms001v01`. The Builder keeps a
+The controller runs in the network management service VM, `dv02nms001v01`. The Builder keeps a
 stopped copy with its data as a cold fallback for when the management hypervisor is down.
 
 ---

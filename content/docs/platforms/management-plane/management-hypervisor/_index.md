@@ -7,9 +7,9 @@ bookCollapseSection: true
 # Management Hypervisor
 
 Fills the **management hypervisor** role — the host for the site's management and control plane
-domain VMs. See [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
-The host is `dv02hyp001p01`; the domain VMs it carries are listed in the
-[Software Catalog](/docs/platforms/software-catalog/#domain-vms).
+substrate service VMs. See [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
+The host is `dv02hyp001p01`; the service VMs it carries are listed in the
+[Software Catalog](/docs/platforms/software-catalog/#substrate-service-vms).
 
 ---
 

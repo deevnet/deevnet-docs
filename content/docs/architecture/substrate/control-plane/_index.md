@@ -44,7 +44,7 @@ restart among them must never take tenant name resolution with it.
 
 **Services are placed by audience.** Each sits on exactly one segment, chosen by who uses it; a
 service that would need two segments becomes two services. How these are packaged into VMs is
-[Domain VMs](/docs/platforms/management-plane/domain-vms/).
+[Substrate Service VMs](/docs/platforms/management-plane/substrate-service-vms/).
 
 ### The provisioning API
 

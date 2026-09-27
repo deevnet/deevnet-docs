@@ -56,7 +56,7 @@ Operators and substrate hosts use them.
 Automation runners and access tooling belong to this plane too, when they are built. Services are
 placed by audience, one segment each, as in the
 [control plane](/docs/architecture/substrate/control-plane/#services-and-where-they-sit). How they
-are packaged into VMs is [Domain VMs](/docs/platforms/management-plane/domain-vms/).
+are packaged into VMs is [Substrate Service VMs](/docs/platforms/management-plane/substrate-service-vms/).
 
 ### Network management
 

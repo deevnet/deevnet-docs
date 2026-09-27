@@ -102,9 +102,9 @@ No other plugins are used. The collection has no plugin-install tasks.
 | Linux kernel | 6.8.12 | GPL-2.0 | Bundled | Observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/)) |
 | Dell BIOS ([OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/)) | 1.27.0 (2023-09-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
 
-### Domain VMs
+### Substrate Service VMs
 
-Every domain VM is **Fedora 44** from the template `fedora-server-44-1.7`, and runs its services as
+Every substrate service VM is **Fedora 44** from the template `fedora-server-44-1.7`, and runs its services as
 Podman containers ([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
 Image tags are pinned in the role defaults and mirrored on the Builder as tarballs.
 
