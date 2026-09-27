@@ -5,19 +5,25 @@ weight: 2
 
 # Substrate Compute
 
-The virtualization hosts a site runs, and what each is for.
+The compute hosts a site runs, and what each is for.
 
 ---
 
-## Two hypervisors, two purposes
+## Compute by purpose
 
-A site's compute is deliberately split by **purpose**, not by capacity. The two hypervisors are not
-a cluster and are not interchangeable:
+A site's compute is deliberately split by **purpose**, not by capacity. Its hosts are not a cluster
+and are not interchangeable:
 
 | Host | Purpose | Carries |
 |------|---------|---------|
 | **Management hypervisor** | The site's own services | The [management plane](/docs/architecture/substrate/management-plane/) and [control plane](/docs/architecture/substrate/control-plane/) domain VMs |
-| **Tenant hypervisor** | What runs on the site | The tenant fabric, and every tenant workload |
+| **Tenant hypervisor** | Where tenants run | The tenant fabric, and every tenant workload |
+| **Pi lab** | Where tenants run, on real hardware | A small bank of single-board computers, lent to tenant projects that need a Pi rather than a VM |
+
+Only the management hypervisor *makes up* the substrate. The tenant hypervisor and the Pi lab are
+substrate hosts — inventoried, cabled and provisioned like any other — but they are **capacity the
+substrate offers tenants**, not infrastructure the site depends on. Losing either stops tenant
+work, never the site.
 
 The separation is a **plane** separation as much as a workload one. The tenant hypervisor owns the
 tenant fabric's control plane — its own SDN controller, its zones, its VRFs — and the management
@@ -44,9 +50,8 @@ anything here:
   rebuild-and-restore, not a failover.
 - **Nothing enforces VMID uniqueness** across the substrate, because there is no cluster
   filesystem. Inventory does it instead, through an allocator.
-- **Both hosts are single-NIC.** Management, tenant transit and the fabric underlay all ride one
-  interface as VLAN sub-interfaces of a VLAN-aware bridge. There is no bonding and no NIC
-  redundancy: a failed port, cable or NIC takes the host off the network.
+- **There is no network redundancy.** Each hypervisor reaches the network over a single link,
+  so a failed port, cable or NIC takes the host off the network.
 
 See [Limits](/docs/policies/risk-management/resiliency/) for the full picture of what the hardware cannot do.
 
@@ -66,6 +71,23 @@ VLAN-aware bridge or a cluster.
 
 ---
 
+## The Pi lab
+
+Some tenant projects need real hardware — GPIO, a radio, an ARM board — rather than a VM. The Pi
+lab is a small bank of identical single-board computers for them. It is to hardware what the tenant
+hypervisor is to VMs: a shared place for tenant work, with the difference that a slot is lent for
+a project rather than carved out by the API.
+
+- **The image is the product.** A project is developed as an image on a lab host; when it is done,
+  that image goes onto hardware the project owns, and the lab host is reimaged for the next one.
+- **Lab hosts sit on the IoT segment**, beside the devices they are most often built to talk to,
+  and away from the management plane
+  ([Network Segmentation](/docs/architecture/network-segmentation/#iot-segment)).
+- **Nothing depends on the lab.** No substrate service runs on it, so it can be empty, rewired or
+  retired without touching the site.
+
+---
+
 ## Architectural properties
 
 - **Compute hosts are stateless.** They can be reprovisioned from scratch by the builder, and a
@@ -73,9 +95,12 @@ VLAN-aware bridge or a cluster.
   against.
 - **VM placement is determined by role**, not by manual assignment: a domain VM goes to the
   management hypervisor, a tenant workload to the tenant hypervisor.
+- **Pi lab hosts are lent, not allocated.** A tenant project borrows a slot for as long as it is
+  being developed; when it works, the project moves to dedicated hardware of its own and the slot
+  returns to the lab.
 - **Every host's management interface sits on the management segment**, with a fixed address by
   reservation rather than configured into the host.
-- **Node-local state is Ansible-managed, never hand-carried.** Some things Proxmox will not model —
-  a forwarding sysctl, a policy-routing unit — and those are applied from code like everything
-  else. What is *not* acceptable is state that contradicts configuration Proxmox generates and
-  rewrites ([ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/)).
+- **Node-local state is applied from code, never hand-carried.** Where the hypervisor platform
+  cannot model a setting the design needs, automation applies it like everything else. What is
+  *not* acceptable is state that contradicts configuration the platform generates and rewrites
+  ([ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/)).

@@ -8,14 +8,11 @@ bookCollapseSection: true
 
 # Raspberry Pi
 
-## Purpose
+Fills the **Pi lab** role — bare-metal hosts lent to tenant projects that need a Pi rather than a
+VM. See [Substrate Compute → The Pi lab](/docs/architecture/substrate/compute/#the-pi-lab).
 
-The Raspberry Pi bank provides a **development and prototyping platform** for edge compute, IoT, and clustering experiments. The Pis function as a reusable workbench—when a project is complete, the SD card becomes the deliverable and a new Pi4 is purchased for permanent deployment.
-
-Goals:
-- **SD card as product** — Develop on the bank, deploy the card to dedicated hardware
-- **Swappable experiments** — Swap SD cards in/out for different projects or clustering configurations
-- **Prototyping platform** — Test configurations before committing to permanent hardware
+The SD card is the unit that moves: a project is developed on a lab Pi, and when it works the card
+goes into a Pi the project owns, and the lab Pi takes the next card.
 
 ---
 
@@ -27,12 +24,9 @@ Goals:
 
 ## Network Position
 
-{{< mermaid >}}
-graph LR
-    A[Core Router] <--> B[Access Switch<br>IoT VLAN] <--> C[Raspberry Pi Bank<br>4x Pi4 8GB]
-{{< /mermaid >}}
-
-Pis are placed on the IoT network segment for isolation from management workloads.
+Lab Pis sit on the IoT segment. Their hostnames and switch ports are in the
+[Network Reference](/docs/runbook/substrate/network/network-reference/) and the
+[Raspberry Pi 4](/docs/platforms/hardware/compute/raspberry-pi-4/) hardware page.
 
 ---
 

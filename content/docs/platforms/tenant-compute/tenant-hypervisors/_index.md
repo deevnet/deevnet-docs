@@ -6,9 +6,8 @@ bookCollapseSection: true
 
 # Tenant Hypervisors
 
-## Purpose
-
-The tenant hypervisors host **application workloads and experiments**. This is Proxmox Node 2 in the two-hypervisor architecture, dedicated to workloads that may be rebuilt frequently and can tolerate higher churn.
+Fills the **tenant hypervisor** role — see [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
+The host is `dv02hyp002p02`.
 
 ---
 
@@ -39,22 +38,8 @@ The tenant hypervisors host **application workloads and experiments**. This is P
 
 - **Installation**: Manual ISO install (no PXE support for Proxmox)
 - **Post-install**: Ansible configuration via `deevnet.builder` collection
-- **VM provisioning**: Terraform (future) for declarative lifecycle
+- **VM provisioning**: the Deevnet API, on behalf of each tenant's Terraform
 - **Templates**: Packer-built Fedora templates stored locally
-
----
-
-## Roles
-
-The tenant hypervisor hosts these workload categories:
-
-| Category | Examples |
-|----------|----------|
-| **Application development** | IoT backend, services, APIs |
-| **Experiments** | Test environments, sandboxes |
-| **Ephemeral workloads** | Short-lived or rebuildable VMs |
-
-Tenant workloads tolerate higher churn and may be rebuilt frequently.
 
 ---
 
@@ -107,72 +92,23 @@ and built by the Deevnet API; the management plane stays on Ansible. See
 
 ## Non-Clustered Design
 
-The tenant hypervisor operates **independently** without Proxmox clustering:
-
-| Aspect | Implication |
-|--------|-------------|
-| **No HA failover** | VMs do not automatically migrate |
-| **No shared storage** | Local storage only |
-| **Independent management** | Dedicated web UI |
-| **Simpler operations** | No quorum concerns |
-
-### Rationale
-
-For a two-node lab environment:
-- Clustering adds complexity without meaningful HA
-- Two-node clusters introduce quorum challenges
-- Local storage is simpler and faster
-- Manual VM placement is acceptable at this scale
-
-> **Trajectory note.** Non-clustered is the Phase 1 state, not a permanent constraint. The tenant
-> network is built as a **single-member fabric** designed to expand into a *tenant* cluster later
-> without redefinition — see [Tenant Fabric (SDN)](tenant-fabric/). Any such cluster is a cluster
-> of **tenant** hypervisors for its own quorum; it does not join the management hypervisor, which
-> follows a separate path.
+The node is a standalone Proxmox host, not a cluster member: no HA manager, no shared storage, and
+its own web UI. Why is in
+[Substrate Compute → Nothing is clustered](/docs/architecture/substrate/compute/#nothing-is-clustered);
+how the fabric is built to gain a second member later is in [Tenant Fabric (SDN)](tenant-fabric/).
 
 ---
 
-## Network Position
+## Tenant Networking
 
-{{< mermaid >}}
-graph LR
-    A[Core Router<br>perimeter: NAT, policy] <-->|transit VLAN| B[Tenant Hypervisor<br>Proxmox Node 2<br>tenant fabric] <-->|VRF overlays| C[Tenant VMs<br>apps, experiments, sandboxes]
-{{< /mermaid >}}
-
-Tenant VMs receive addressing from the **tenant fabric** (SDN IPAM/DHCP). Aggregate tenant egress
-reaches the core router over a transit VLAN, where the core router applies NAT and perimeter
-policy. The core router does not serve tenant DHCP.
-
----
-
-## Tenant Networking: The Tenant Fabric
-
-Tenant networking is a **routed overlay fabric** owned by this hypervisor, not a set of physical
-VLANs on the core router. Each tenant is a VRF-isolated virtual network with an anycast gateway
-hosted by the fabric; the core router is only the perimeter. The fabric is **self-contained on
-this node** and built as a single-member fabric that expands to a cluster without redefinition.
-
-See [Tenant Fabric (SDN)](tenant-fabric/) for the Proxmox SDN/EVPN implementation, and
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) for the decision and the
-options considered.
-
-| Feature | Description |
-|---------|-------------|
-| **Overlay (EVPN/VXLAN)** | Tenant networks are virtual; no per-tenant switch change |
-| **VRF per tenant** | Tenants cannot see each other's traffic |
-| **Anycast gateway** | Tenant gateway hosted by the fabric, not the core router |
-| **Fabric IPAM** | Address space owned by the fabric, per tenant; workloads addressed by cloud-init (no DHCP on EVPN zones) |
-| **Perimeter transit** | Aggregate egress to the core router for NAT and policy |
+The tenant network model is in [Tenant Networking](/docs/architecture/tenant/networking/). This node
+implements it with Proxmox SDN — see [Tenant Fabric (SDN)](tenant-fabric/).
 
 ---
 
 ## Deterministic MAC Addressing
 
-### Current Policy
-
-Deterministic MAC addressing for tenant workloads is **deferred** until tenant lifecycle management is formalized.
-
-| Workload Type | MAC Policy |
-|--------------|-----------|
-| **Management Plane** | Deterministic, inventory-defined |
-| **Tenant Workloads** | TBD — may become deterministic later |
+Tenant workload MACs are **derived by the Deevnet API** from the tenant's index, like the rest of a
+tenant's identifiers ([Tenant → The Tenant Contract](/docs/architecture/tenant/#the-tenant-contract)).
+Management-plane VMs follow the inventory-defined policy on the
+[Management Hypervisor](/docs/platforms/management-plane/management-hypervisor/#deterministic-mac-addressing).

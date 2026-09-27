@@ -38,6 +38,30 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 
 ---
 
+## mobile Hosts by Segment
+
+From inventory (`env.interfaces` in `host_vars`). Trusted, Tenant Dev and Guest hold only DHCP clients.
+
+| Segment | Host | Address | What it is |
+|---------|------|---------|------------|
+| Management | `dv02cor002p01` | 10.20.99.1 | Core router |
+| | `dv02wap001p01` | 10.20.99.9 | Wireless AP |
+| | `dv02acc001p01` | 10.20.99.10 | Access switch |
+| | `dv02hyp001p01` | 10.20.99.21 | Management hypervisor |
+| | `dv02hyp002p02` | 10.20.99.22 | Tenant hypervisor |
+| | `dv02nms001v01` | 10.20.99.40 | Network management (Omada controller) |
+| | `dv02col001v01` | 10.20.99.41 | Substrate observability collection |
+| | `dv00bld001p01` | 10.20.99.95 | Builder |
+| Platform | `dv02prv001v01` | 10.20.25.20 | Provisioning: the Deevnet API, the tenant state store |
+| | `dv02idn001v01` | 10.20.25.21 | Identity: OpenBao, tenant DNS |
+| | `dv02obs001v01` | 10.20.25.22 | Tenant observability: log store, Grafana |
+| IoT Backend | `dv02msg001v01` | 10.20.35.20 | Device messaging: the MQTT broker |
+| IoT | `dv02rpi001p01`–`dv02rpi004p01` | 10.20.30.11–.14 | The Pi lab |
+| | `dv02bgw001e01` | 10.20.30.50 | An edge device |
+| Outside the site | `dv02edg001p01` | 192.168.8.1 | Edge (travel) router |
+
+---
+
 ## Segment Purpose Summary
 
 | Segment | Trust Level | Purpose |

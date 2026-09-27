@@ -5,16 +5,15 @@ weight: 1
 
 # Edge Router
 
-## Purpose
+Fills the **edge router** role — see [Substrate Networking → Edge Router Role](/docs/architecture/substrate/networking/#edge-router-role).
 
-The edge router provides **upstream connectivity** between the site and the external network (ISP, travel router, or host network).
+It is not managed by Deevnet automation; configuration is manual, in the vendor UI.
 
-Edge routers are **external** to the site — they provide connectivity but are not managed by Deevnet automation. Configuration is manual or vendor-managed. The site assumes each edge router provides DHCP on its LAN interface (for bootstrap node or core router upstream connectivity).
-
-{{< mermaid >}}
-graph LR
-    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
-{{< /mermaid >}}
+| | |
+|---|---|
+| **Host** | `dv02edg001p01` |
+| **WAN** | DHCP from whatever upstream is available |
+| **LAN** | `192.168.8.0/24`, the travel router's own; the core router's WAN takes an address from it |
 
 ---
 
@@ -32,12 +31,9 @@ graph LR
 | **Version** | [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge) |
 | **Base** | GL-iNet firmware (OpenWrt fork) |
 
-## Roles
+## Product features in use
 
-| Role | Description |
-|------|-------------|
-| **WAN connectivity** | Connects to upstream network (hotel, tether, etc.) |
-| **NAT** | Masquerades substrate traffic |
-| **DHCP** | Provides IP to core router WAN interface |
-| **Wi-Fi repeater** | Extends upstream Wi-Fi to wired connection |
+| Feature | Use |
+|---------|-----|
+| **Wi-Fi repeater** | Joins an upstream Wi-Fi network and presents it as a wired WAN to the core router, so the site can attach to a hotel or a phone without a cable |
 

@@ -27,7 +27,7 @@ node, and is not clustered with the management hypervisor.
 | Tenant gateway | **Anycast gateway** hosted by the fabric (the tenant subnet's `.1`) |
 | IPAM / addressing | Proxmox SDN IPAM; workloads addressed by **cloud-init** (EVPN zones have no DHCP) |
 | North-south exit | Single **transit VLAN** to the core router (perimeter) |
-| Provisioning | Terraform, `bpg/proxmox` provider |
+| Provisioning | The Deevnet API, through the Proxmox API |
 
 > **Not chosen:** VLAN-aware bridge and plain (non-EVPN) VXLAN. Both are a different paradigm
 > with no distributed control plane, and adopting either would have to be torn out to reach a
@@ -51,35 +51,23 @@ substrate.
 
 ---
 
-## Build requirements (do not violate — these keep the cluster door open)
+## Build requirements
 
-From ADR-0001. Each is a hard requirement because violating it reintroduces lock-in:
-
-| # | Requirement | Why |
-|---|-------------|-----|
-| 1 | **Globally-unique numbering** — VNIs, VRF IDs, tenant subnets allocated as if the fabric already spans nodes | Two members merge with no collision |
-| 2 | **SDN-as-code** — all SDN objects defined in Terraform, never hand-clicked | "Cluster later" becomes a re-apply, not a migration |
-| 3 | **EVPN from the start** — not a VLAN-aware bridge or plain VXLAN | Scaling is additive; the control-plane paradigm never changes |
-| 4 | **Real underlay/VTEP identity now** — a proper loopback/VTEP address and an underlay concept even with no peers | Adding a member is "add a neighbor," not "invent an underlay" |
+The fabric's hard requirements — globally-unique numbering, EVPN from the start, a real VTEP
+identity with no peers, every object from code — are the design's, recorded in
+[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) and summarized in
+[Substrate Compute → The tenant fabric](/docs/architecture/substrate/compute/#the-tenant-fabric).
+Here they mean: every SDN object is created by the Deevnet API or by `deevnet-tenant-fabric`, never
+hand-clicked in the Proxmox UI, so that adding a member is a re-apply rather than a migration.
 
 ---
 
 ## Perimeter transit to the core router
 
-The fabric hands off to the core router over a single **transit VLAN** per hypervisor
-(Phase 1 choice in ADR-0001):
-
-- Aggregate tenant egress leaves the fabric on the transit network.
-- The core router sees only the transit network — never individual tenant subnets — and provides
-  NAT, internet egress, and tenant↔management policy there.
-- Per-tenant north-south isolation is enforced inside the fabric (VRFs), not by the core router
-  seeing each tenant.
-
-The switch port for the tenant hypervisor therefore needs the **transit VLAN** and the
-**underlay** — it does **not** need a VLAN per tenant. New tenants require no switch change.
-
-> A future option (ADR-0001, Seam 1) is a per-VRF exit with separate transit segments per tenant,
-> if the core router ever needs to enforce per-tenant egress policy. Not needed for Phase 1.
+The handoff model is in [Tenant Networking → Perimeter handoff](/docs/architecture/tenant/networking/#perimeter-handoff).
+On this node, the switch port for `dv02hyp002p02` carries the **transit VLAN** and the
+**underlay VLAN** (see [Concrete allocation](#concrete-allocation)) and no VLAN per tenant, so a new
+tenant needs no switch change.
 
 ---
 
@@ -101,15 +89,10 @@ How a tenant uses this is [Tenant Operations](/docs/runbook/tenant/).
 
 ## Trajectory: single-member fabric → cluster
 
-The fabric is built with exactly one member today and expands without redefinition. What changes
-and what stays identical is tabulated in
-[ADR-0001 → Trajectory](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory).
-The short version: the SDN objects, the VRF-per-tenant model, the anycast gateway semantics, and
-the tenant IaC are **unchanged** when members are added; only the underlay gains peers and the
-cluster gains a QDevice for quorum. Nothing structural is torn out to scale.
-
-The management hypervisor (dv02hyp001p01) is on a **separate** path — it may form its own cluster for the
-management plane, independently, and does not join the tenant fabric.
+What changes when the fabric gains a member, and what stays identical, is in
+[ADR-0001 → Trajectory](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory). In
+Proxmox terms: the underlay gains peers and the cluster gains a QDevice for quorum; the SDN objects
+are unchanged.
 
 ---
 
@@ -125,6 +108,18 @@ Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-num
 | Transit | VLAN 50, `10.20.50.0/24`; dv02hyp002p02 `.22`, perimeter `.1` |
 | Underlay | VLAN 51, `10.20.51.0/24`; dv02hyp002p02 `.22`, no router presence |
 | Tenant overlays | `10.20.{128+n}.0/24`, anycast gateway `.1`, workload addresses from `.10` |
+
+Per tenant at index `n`, the API creates:
+
+| Object | Derivation | `eds` (index 2) |
+|--------|-----------|-----------------|
+| EVPN zone, which **is** the VRF | the tenant's name | `eds`, `vrf-vxlan 10002` |
+| VNet | `20000 + n×10` | `eds0`, tag `20020` |
+| Subnet, with SNAT | `10.20.{128+n}.0/24` | `10.20.130.0/24` |
+
+Proxmox caps SDN zone IDs at **8 characters**, and a zone ID is the tenant's name verbatim — which is
+where the tenant name limit comes from. Workloads are addressed by cloud-init because Proxmox
+implements SDN DHCP in Simple zones only, and a tenant's zone is an EVPN zone.
 
 ### How egress actually works
 

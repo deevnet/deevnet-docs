@@ -5,16 +5,11 @@ weight: 5
 
 # Network Controllers
 
-## Purpose
+Fills the **network management** domain of the management plane — see
+[Management Plane → Network management](/docs/architecture/substrate/management-plane/#network-management).
 
-Network controllers provide **centralized management** for switches and access points. They enable VLAN configuration, firmware updates, and API-based automation across all managed network devices.
-
-{{< mermaid >}}
-graph LR
-    A[Bootstrap Node<br>hosts controller] <--> B[Network Controller<br>Omada] <--> C[Switches & APs<br>managed devices]
-{{< /mermaid >}}
-
-Both controllers run on the **bootstrap node** as containerized services, providing management capability during initial network configuration.
+The controller runs in the network management domain VM, `dv02nms001v01`. The Builder keeps a
+stopped copy with its data as a cold fallback for when the management hypervisor is down.
 
 ---
 
@@ -29,7 +24,7 @@ The Omada SDN Controller manages all TP-Link Omada devices in the mobile site, i
 | Attribute | Value |
 |-----------|-------|
 | **Software** | Omada SDN Controller |
-| **Deployment** | Podman container on bootstrap node |
+| **Deployment** | Podman container on `dv02nms001v01`, `deevnet.mgmt` role `omada_controller` |
 | **Web UI** | Port 8043 (HTTPS) |
 | **Discovery** | L2 discovery or manual adoption |
 
@@ -47,7 +42,7 @@ The Omada SDN Controller manages all TP-Link Omada devices in the mobile site, i
 | **VLAN Management** | Create VLANs, assign ports, configure trunks |
 | **SSID Configuration** | Create SSIDs, map to VLANs, set security |
 | **Firmware Updates** | Centralized firmware management |
-| **REST API** | Automation via `deevnet.net` Ansible collection |
+| **Open API** | Automation via the `deevnet.net` Ansible collection, and tenant Wi-Fi keys via the Deevnet API |
 | **Zero-touch Provisioning** | Devices auto-discover and adopt |
 
 ### Automation

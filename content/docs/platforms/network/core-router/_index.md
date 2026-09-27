@@ -6,14 +6,10 @@ bookCollapseSection: true
 
 # Core Router
 
-## Purpose
+Fills the **core router** role — segment routing, firewall, DNS, DHCP and NAT for every segment. See
+[Substrate Networking → Core Router Role](/docs/architecture/substrate/networking/#core-router-role).
 
-The core router is the **production network authority** for each Deevnet site. It provides routing, firewall, DNS, DHCP, and gateway services for all substrate hosts.
-
-{{< mermaid >}}
-graph LR
-    A[Edge Router<br>unmanaged] <--> B[Core Router<br>managed] <--> C[Site Hosts]
-{{< /mermaid >}}
+---
 
 ## Hardware
 
@@ -33,15 +29,13 @@ The core router runs OPNsense.
 
 ---
 
-## Roles
+## Product features in use
 
-| Role | Description |
-|------|-------------|
-| **DNS Forwarding** | Forwards DNS queries to upstream resolver |
-| **DHCP** | Static mappings for known hosts, pool for dynamic clients |
-| **NAT** | Masquerades substrate traffic to upstream |
-| **Wake-on-LAN** | WoL proxy for substrate hosts |
-| **Gateway** | Default route for all substrate traffic |
+Beyond the role itself:
+
+| Feature | Use |
+|---------|-----|
+| **Wake-on-LAN** | The `os-wol` plugin wakes substrate hosts that are declared `wol: true` in inventory |
 
 ---
 

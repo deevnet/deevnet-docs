@@ -7,7 +7,25 @@ weight: 1
 
 The substrate networking layer provides foundational network services for each site. The core router serves as the segment router, firewall, and service gateway for all segments within a substrate.
 
-For the segment model (nine segment types, trust hierarchy, and routing policy), see [Network Segmentation](/docs/architecture/network-segmentation/).
+For the segment model (segment types, trust hierarchy, and routing policy), see [Network Segmentation](/docs/architecture/network-segmentation/).
+
+---
+
+## Edge Router Role
+
+The edge router sits **between the site and whatever upstream is available** — a home network, a
+hotel, a tethered phone. It is outside the substrate: the site depends on it for internet access but
+does not manage it, and nothing inside the site is configured through it.
+
+| Function | Description |
+|----------|-------------|
+| Upstream connectivity | Joins whatever external network the site is attached to |
+| NAT | Every site address leaves behind the edge router's address |
+| DHCP to the core router | Hands the core router its WAN address, so the site needs no upstream-specific configuration |
+
+The site is **always a client of its upstream**. Moving it to a new location changes only the edge
+router's upstream; no address or name inside the site changes. See
+[Naming and Addressing → WAN Operation](/docs/architecture/naming-and-addressing/#wan-operation).
 
 ---
 

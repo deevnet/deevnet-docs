@@ -43,6 +43,15 @@ Tenants:
 - Are isolated from other tenants
 - Share substrate infrastructure (network, compute, and both planes)
 
+### What Tenants Run
+
+Tenant work is application development, experiments and sandboxes, and short-lived or rebuildable
+workloads — anything that tolerates churn. It runs in one of two places the substrate offers:
+
+- **VMs on the tenant hypervisor**, declared by the tenant and built by the substrate on its behalf
+- **A borrowed Pi lab host**, when the project needs real hardware rather than a VM
+  ([Compute → The Pi lab](/docs/architecture/substrate/compute/#the-pi-lab))
+
 ### Tenant Networks Are Virtual Overlays
 
 A tenant's network is a **virtual overlay owned by the tenant compute domain (the tenant fabric)**,

@@ -36,20 +36,23 @@ Each substrate implements ten segment types:
 | Tenant Dev | Tenant developers' laptops: the tenant-facing services and nothing else | Low |
 | Guest | Transient visitor access | Untrusted |
 
+The hosts on each segment at the mobile site are listed in the
+[Network Reference](/docs/runbook/substrate/network/network-reference/#mobile-hosts-by-segment).
+
 ### Management Segment
 
 The management segment carries infrastructure control traffic.
 
 **Typical inhabitants:**
-- Builder (`dv00bld001p01`)
-- Hypervisor management interfaces (`dv02hyp001p01-mgmt`, `dv02hyp002p02-mgmt`)
-- Router management interfaces (`dv02cor002p01-mgmt`)
-- Switch management interfaces (`dv02acc001p01-mgmt`)
-- IPMI/BMC interfaces (`dv02hyp001p01-oob`)
+- The builder
+- Hypervisor management interfaces
+- Router, switch and access point management interfaces
+- Network management and substrate observability services
+- IPMI/BMC interfaces
 
 **Properties:**
 - Full access to all infrastructure
-- Source of Ansible automation
+- Source of automation
 - Never exposed to untrusted networks
 
 ### Trusted Segment
@@ -57,7 +60,7 @@ The management segment carries infrastructure control traffic.
 The trusted segment contains high-trust user devices that require broad network access but are not part of the infrastructure management plane.
 
 **Typical inhabitants:**
-- Personal workstations (`ws01`, `ws02`)
+- Personal workstations
 - Laptops and primary user devices
 - Multi-homed desktops with access to multiple segments
 
@@ -117,7 +120,8 @@ workload sits on either — workloads live in the overlay, at `10.20.128.0/18`.
 The platform segment contains shared infrastructure services that multiple segments need to access.
 
 **Typical inhabitants:**
-- DNS resolvers (`dns01`, `dns02`)
+- Shared services the control plane runs for tenants: the provisioning API, secrets, tenant DNS
+- DNS resolvers
 - NTP servers
 - Artifact mirrors and package caches
 - Reverse proxy / load balancer
@@ -152,9 +156,9 @@ The IoT vendor segment is a strict containment zone for vendor-managed devices t
 The IoT segment contains controlled devices with a known owner. Their firmware is built and released by that owner, from that owner's repository; the substrate attaches them to the network and issues their credentials, but does not build their software. Unlike the IoT Vendor segment, where the vendor controls the firmware, an IoT device's owner is accountable for what it runs.
 
 **Typical inhabitants:**
-- Raspberry Pis (`dv02rpi001p01`, `dv02rpi002p01`, `dv02rpi003p01`)
-- Embedded devices (`dv02bgw001e01`)
-- SDR receivers (e.g., `sdr.mobile.deevnet.net` → `dv02rpi001p01`)
+- Pi lab hosts
+- Embedded devices
+- SDR receivers
 - Sensors and IoT gateways
 
 **Properties:**
@@ -168,7 +172,7 @@ The IoT segment contains controlled devices with a known owner. Their firmware i
 The IoT backend segment hosts application backends that process IoT data — MQTT brokers, home automation controllers, and data pipelines.
 
 **Typical inhabitants:**
-- MQTT brokers (`mqtt01`)
+- MQTT brokers
 - Home Assistant instances
 - IoT data ingestion and processing services
 - Time-series databases for sensor data

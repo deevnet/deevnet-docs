@@ -73,10 +73,10 @@ digraph architecture {
             // kept inside this cluster so it stays in the substrate.
             { rank=same; AccessSwitch -> WirelessAP }
 
-            // Physical substrate compute: inventoried, cabled to the access
-            // switch, and outside the yellow hypervisor boxes because it is
-            // not virtualized.
-            PiCompute [label="Bare-Metal Compute\nsingle-board hosts"]
+            // The Pi lab: physical hosts the substrate inventories and cables,
+            // lent to tenant projects. Outside the yellow hypervisor boxes
+            // because it is not virtualized.
+            PiCompute [label="Pi Lab\nbare-metal, lent to tenants"]
 
             // Yellow boxes are virtual: each is a hypervisor (standalone
             // today, could grow into a cluster)
@@ -123,7 +123,7 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster. Everything else inside the substrate is physical — including bare-metal compute, which is inventoried, cabled to the access switch, and provisioned like any other substrate host. Edge devices sit inside the site but outside the substrate: the substrate attaches them, it does not own them.
+Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster. Everything else inside the substrate is physical — including the Pi lab, bare-metal hosts that are inventoried, cabled and provisioned like any other substrate host, but lent to tenant projects rather than run for the site ([Compute](/docs/architecture/substrate/compute/#the-pi-lab)). Edge devices sit inside the site but outside the substrate: the substrate attaches them, it does not own them.
 
 The platform is organized around a few architectural boundaries that separate infrastructure from what runs on it. A **site** is a self-contained deployment. Within it, the **substrate** provides infrastructure — networking, virtualized compute, and bare-metal hosts alike; **tenants** are isolated virtual workloads that run on it; and **edge devices** are physical things an application owns and the platform attaches. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
 
