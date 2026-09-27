@@ -79,9 +79,11 @@ terraform output -raw kit_env > kit.env               # secret: it holds your br
 podman build --platform linux/amd64 -t my-app .
 ```
 
-`kit_env` is an output your configuration declares; copy the block from
-[Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment). Run the app once on
-your computer with the same file before moving it:
+`kit_env` is an output of the [reference tenant](https://github.com/deevnet/deevnet-tenant-tdemo),
+so a tenant started from it already has one; it names every setting in
+[the table](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment),
+including the backend's own broker login. Run the app once on your computer with the same file
+before moving it:
 `podman run --rm --env-file kit.env -v ./site-ca.pem:/kit/site-ca.pem:ro -e MQTT_CA_FILE=/kit/site-ca.pem my-app`.
 
 ## 4. Copy it to the workload
