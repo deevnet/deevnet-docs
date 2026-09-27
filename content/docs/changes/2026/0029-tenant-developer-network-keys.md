@@ -7,11 +7,11 @@ weight: -29
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-09-27 |
 | **Change type** | Configuration |
 | **Classification** | Disruptive |
-| **Status** | Planned |
-| **Window** | Unscheduled |
+| **Status** | In progress |
+| **Window** | 2026-09-27, started 15:04 |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller: the `DVNTM-TD` SSID, a new PPSK profile, two IP groups, two EAP ACLs), `dv02wap001p01` (the AP it provisions), `dv02prv001v01` (the API, migration 0008) |
 | **Automation** | `deevnet.net` `playbooks/omada-wireless.yml`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`; `deevnet.mgmt` `site.yml --tags deevnet-api` and `--tags tenant-downloads`. Inventory `ansible-inventory-deevnet/mobile` |
