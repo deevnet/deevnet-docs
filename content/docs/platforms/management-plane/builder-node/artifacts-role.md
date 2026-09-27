@@ -30,7 +30,13 @@ Artifacts are served via HTTP at `artifacts.<site>.deevnet.net`.
 
 ## Package Mirrors
 
-Not built. Substrate hosts install from the staged install tree, but there is no local mirror for post-install updates, so a fully air-gapped substrate cannot yet patch itself. The options are recorded as a candidate in [Evaluations → Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/).
+The artifact server holds a full rsync of each Fedora release's `os` repository — the packages as
+released, with their `repodata` — at `fedora/<release>/mirror`, and hosts install from it. It does not
+carry Fedora's `updates` repository, and installed hosts are not pointed at the local mirror, so
+post-install updates still come from the internet and an air-gapped site cannot patch itself.
+Mirroring `updates` is the
+[Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/)
+candidate.
 
 ---
 
@@ -72,5 +78,5 @@ The artifacts server is the foundation of air-gapped substrate provisioning:
 1. **Scope to the substrate** — Don't try to air-gap everything
 2. **Serve via DNS name** — `artifacts.<site>.deevnet.net`
 3. **Verify integrity** — GPG signatures on everything installed
-4. **Package mirrors are not built yet** — see [the candidate](/docs/platforms/evaluations/software/management-plane/package-mirror/)
+4. **The release is mirrored; updates are not** — see [the candidate](/docs/platforms/evaluations/software/management-plane/package-mirror/)
 5. **Document co-location** — If sharing a host with PXE/DNS, track the blast radius

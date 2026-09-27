@@ -7,14 +7,16 @@ weight: 1
 
 | | |
 |---|---|
-| **Role** | Local package repositories on the artifact server, for post-install updates on an air-gapped substrate |
+| **Role** | A local mirror of Fedora's `updates` repository on the artifact server, for post-install updates on an air-gapped substrate |
 | **Current** | {{< status-badge "planned" "Not yet evaluated" >}} Nothing built; options recorded below |
 
 The commands on this page are design sketches. None of them is run anywhere today.
 
 ## Context
 
-Beyond Kickstart and PXE artifacts, a fully air-gapped substrate requires local package repositories for post-install updates and additional package installation.
+The artifact server already mirrors each Fedora release's `os` repository by rsync, and hosts install
+from it. What is missing is Fedora's `updates` repository, and a repository file on each host pointing
+at the local mirror, so that post-install updates need no internet access.
 
 ## Option A: dnf reposync + nginx
 
