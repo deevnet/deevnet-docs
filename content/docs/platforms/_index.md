@@ -27,7 +27,7 @@ The roles themselves — what each does, and where it sits in the network — ar
 | [Access switch](/docs/architecture/substrate/networking/#switching) | TP-Link SG2218 | [Access Switch](network/access-switch/) |
 | [Wireless access](/docs/architecture/substrate/networking/#wireless) | TP-Link EAP650-Outdoor | [Wireless Access Point](network/access-point/) |
 | [Network management](/docs/architecture/substrate/management-plane/#network-management) | Omada SDN Controller | [Network Controllers](network/network-controllers/) |
-| [Builder](/docs/architecture/builder/) | AOOSTAR N1 PRO, Fedora | [Bootstrap Node](management-plane/bootstrap-node/) |
+| [Builder](/docs/architecture/builder/) | AOOSTAR N1 PRO, Fedora | [Builder Node](management-plane/builder-node/) |
 | [Management hypervisor](/docs/architecture/substrate/compute/#compute-by-purpose) | Dell OptiPlex 7050 Micro, Proxmox VE | [Management Hypervisor](management-plane/management-hypervisor/) |
 | [Tenant hypervisor](/docs/architecture/substrate/compute/#compute-by-purpose) | Dell OptiPlex 7060 Micro, Proxmox VE | [Tenant Hypervisors](tenant-compute/tenant-hypervisors/) |
 | [Tenant fabric](/docs/architecture/tenant/networking/) | Proxmox SDN, EVPN/VXLAN | [Tenant Fabric](tenant-compute/tenant-hypervisors/tenant-fabric/) |

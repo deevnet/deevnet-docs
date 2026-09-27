@@ -1,6 +1,8 @@
 ---
 title: "Artifacts Role"
 weight: 2
+aliases:
+  - /docs/platforms/management-plane/bootstrap-node/artifacts-role/
 ---
 
 # Artifacts Role

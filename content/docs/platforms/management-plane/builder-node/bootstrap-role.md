@@ -1,9 +1,24 @@
 ---
-title: "PXE Role"
+title: "Bootstrap Role"
 weight: 3
+aliases:
+  - /docs/platforms/management-plane/bootstrap-node/pxe-role/
 ---
 
-# PXE Role
+# Bootstrap Role
+
+The `bootstrap` role in `deevnet.builder` makes the Builder the thing new hosts boot from. It works in
+two modes ([Builder → Authority Transition](/docs/architecture/builder/#authority-transition)):
+
+| Mode | The Builder provides | Switched by |
+|---|---|---|
+| **Core-authoritative** (normal) | PXE boot files over TFTP (`in.tftpd`); the core router answers DNS and DHCP | `make core-auth` |
+| **Bootstrap-authoritative** | DNS, DHCP and TFTP from dnsmasq, and the site's gateway, with records and reservations from inventory | `make bootstrap-auth` |
+
+The rest of this page is the PXE side, which is the same in both modes. How to switch is
+[Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/).
+
+---
 
 ## Purpose
 
@@ -12,7 +27,7 @@ The PXE boot infrastructure enables **fully automated, zero-touch provisioning**
 Goals:
 - **Zero-touch** — MAC-specific configs eliminate boot menus and manual selection
 - **UEFI-native** — Modern UEFI boot with network-enabled GRUB
-- **Decoupled services** — DHCP (Core Router) and TFTP (bootstrap node) are separate
+- **Decoupled services** — DHCP (Core Router) and TFTP (the Builder) are separate
 - **Air-gap capable** — All boot artifacts served from local infrastructure
 
 ---
@@ -69,7 +84,7 @@ Bare-metal clients are unaffected — real firmware has its own entropy sources.
 sequenceDiagram
     participant Client as PXE Client<br>(VM or bare)
     participant Router as Core Router<br>(Kea DHCP)
-    participant Boot as Bootstrap Node<br>(TFTP)
+    participant Boot as Builder<br>(TFTP)
 
     Client->>Router: DHCP Request
     Router-->>Client: IP + next-server + boot-file
@@ -81,9 +96,9 @@ sequenceDiagram
 | Component | Host | Implementation | Role |
 |-----------|------|----------------|------|
 | **DHCP** | Core Router (dv02cor002p01) | Kea | Provides IP, next-server, boot-file-name |
-| **TFTP** | Bootstrap node | in.tftpd (systemd socket) | Serves bootloader, configs, kernel/initrd |
+| **TFTP** | Builder | in.tftpd (systemd socket) | Serves bootloader, configs, kernel/initrd |
 | **Bootloader** | — | GRUB (grub2-mkimage) | Network-enabled UEFI bootloader |
-| **Artifacts** | Bootstrap node | nginx | Kickstart files, install trees, squashfs |
+| **Artifacts** | Builder | nginx | Kickstart files, install trees, squashfs |
 
 > **Note:** The Core Router is currently OPNsense but the PXE infrastructure works with any router providing Kea DHCP with PXE options.
 
@@ -95,7 +110,7 @@ The Core Router's Kea DHCP provides two critical options for PXE:
 
 | Option | Value | Purpose |
 |--------|-------|---------|
-| **next-server** | 10.20.99.95 | TFTP server IP (bootstrap node) |
+| **next-server** | 10.20.99.95 | TFTP server IP (Builder) |
 | **boot-file-name** | grubx64.efi | UEFI bootloader filename |
 
 ### Subnet-Level Settings
@@ -126,9 +141,9 @@ subnet setting above.
 
 ---
 
-## TFTP Server (Bootstrap Node)
+## TFTP Server (Builder)
 
-The bootstrap node runs `in.tftpd` via systemd socket activation:
+The Builder runs `in.tftpd` via systemd socket activation:
 
 ```
 Service: tftp.socket / tftp.service
@@ -260,6 +275,6 @@ The PXE infrastructure is managed by the `bootstrap` role in `deevnet.builder`:
 ## Summary
 
 1. **DHCP** (Core Router Kea) provides next-server and boot-file-name
-2. **TFTP** (bootstrap node) serves GRUB and boot files
+2. **TFTP** (Builder) serves GRUB and boot files
 3. **MAC-specific configs** enable zero-touch automated installs
 4. **Subnet `next_server`** is required; per-host reservations do not replace it

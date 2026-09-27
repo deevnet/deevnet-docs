@@ -157,7 +157,7 @@ The WoL playbook registers all hosts with `wol: true` in their inventory interfa
 
 ## Transition PXE to Core Router
 
-After the network is segmented and Core Router is handling DNS/DHCP, transition the bootstrap node to TFTP-only mode:
+After the network is segmented and Core Router is handling DNS/DHCP, transition the Builder to TFTP-only mode:
 
 ```bash
 cd ansible-collection-deevnet.builder
@@ -175,7 +175,7 @@ This:
 
 The IP swap is the last step — it drops the SSH connection. All configuration completes first while connectivity is stable. Reconnect at the reserved IP to verify.
 
-Core Router now handles DNS/DHCP; bootstrap node provides TFTP only.
+Core Router now handles DNS/DHCP; the Builder provides TFTP only.
 
 ### Verify the transition
 

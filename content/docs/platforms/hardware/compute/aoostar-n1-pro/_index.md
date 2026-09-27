@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 # AOOSTAR N1 PRO
 
-A compact mini PC, used as the mobile site's Builder: its bootstrap node. Its two 2.5GbE NICs give
+A compact mini PC, used as the mobile site's Builder. Its two 2.5GbE NICs give
 it the upstream and site connections the bootstrap role needs.
 
 ![AOOSTAR N1 PRO](aoostar-n1-pro.jpg)
@@ -38,7 +38,7 @@ it the upstream and site connections the bootstrap role needs.
 
 | Host | Role |
 |---|---|
-| `dv00bld001p01` | The Builder: [Bootstrap Node](/docs/platforms/management-plane/bootstrap-node/) |
+| `dv00bld001p01` | The Builder: [Builder Node](/docs/platforms/management-plane/builder-node/) |
 
 ## Physical
 
@@ -59,7 +59,7 @@ The BIOS version is in the
 
 | | |
 |---|---|
-| **Role** | Builder (bootstrap node) |
+| **Role** | Builder |
 | **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions

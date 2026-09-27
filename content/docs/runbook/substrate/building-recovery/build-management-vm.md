@@ -123,7 +123,7 @@ guest reinstalled into the same VMID re-mounts existing data.
 ### Extra requirements beyond the shared prerequisites
 
 **1. The VM needs a VirtIO RNG device.** A UEFI VM without one cannot PXE boot at all —
-see [PXE Role](/docs/platforms/management-plane/bootstrap-node/pxe-role/). This is the
+see [Bootstrap Role](/docs/platforms/management-plane/builder-node/bootstrap-role/). This is the
 single most common way this approach fails, and it fails silently.
 
 **2. The reservation must specify a UEFI boot file.** In `host_vars`:
