@@ -111,6 +111,7 @@ flowchart TD
 ### Reference
 
 - [Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
+- [Repave the Builder](repave-builder/) — Reinstall the hardware Builder from a temporary builder VM, over PXE
 - [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---

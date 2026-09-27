@@ -26,7 +26,7 @@ The bootstrap node runs Fedora Workstation, configured via the `deevnet.builder`
 | **Version** | [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms) |
 | **Collection** | `deevnet.builder` applied |
 
-The bootstrap node is provisioned via PXE from another bootstrap node, or manually installed and then configured via Ansible self-application.
+The bootstrap node is installed over PXE by another builder: a temporary builder VM on the management hypervisor network-boots it with the builder kickstart, then applies the full builder configuration. See [Repave the Builder](/docs/runbook/substrate/building-recovery/repave-builder/).
 
 ---
 
