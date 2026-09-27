@@ -53,9 +53,17 @@ run:
 | Broker accounts, log users | An SSH key each, to the `deevnet-broker-account` and `deevnet-log-user` forced commands |
 | Grafana | The server admin password |
 
-**`DeevnetTenantBuilder` was created by hand, and its privilege list is recorded nowhere.** No role
-creates it, and a rebuilt tenant hypervisor cannot recreate it from these docs. Read it with
-`pveum role list` on `dv02hyp002p02` and record it here.
+**Its Proxmox access is declared in inventory** (`proxmox_node_access` in
+`host_vars/dv02hyp002p02/vars.yml`) and recreated by `deevnet.builder`'s `proxmox_node_access` role;
+only the token is issued by hand
+([Build Management Plane → Step 7](/docs/runbook/substrate/building-recovery/build-management-plane/#step-7-proxmox-access-token-manual)).
+
+| Role | Privileges | Granted at |
+|---|---|---|
+| `DeevnetTenantBuilder` | Datastore.AllocateSpace, Datastore.AllocateTemplate, Datastore.Audit, SDN.Allocate, SDN.Audit, SDN.Use, VM.Allocate, VM.Audit, VM.Clone, VM.Config.CPU, VM.Config.Cloudinit, VM.Config.Disk, VM.Config.Memory, VM.Config.Network, VM.Config.Options, VM.Migrate, VM.PowerMgmt | `/` |
+| `DeevnetNodeAudit` | Sys.Audit | `/nodes` |
+
+Both are granted to the user `deevnet-api@pve` and to its token.
 
 **Tenant secrets** it issues are sealed with the OpenBao Transit key `tenant-secrets`, and enrollment
 tokens use response wrapping. Tenant tokens are HMACs of a key in the vault, so they verify

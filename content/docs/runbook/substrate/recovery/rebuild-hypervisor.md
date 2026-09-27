@@ -41,13 +41,11 @@ service keeps and where:
 
 After Build Management Plane's Steps 1 to 8, running **every** Step 8 tag on this node, in order:
 
-1. **Recreate the Deevnet API's Proxmox token.** The API has its own token on this node,
-   `deevnet-api@pve!tenants` under the role `DeevnetTenantBuilder`
-   ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)). Like every Proxmox token its secret
-   is shown once. Issue it again, put it in `group_vars/deevnet_api/vault.yml`, `make vault`,
-   commit and push, then `ansible-playbook playbooks/site.yml --limit deevnet_api` in
-   `deevnet.mgmt`. The role's privilege list is not recorded anywhere: read it with
-   `pveum role list` before a planned rebuild.
+1. **The Deevnet API's Proxmox access.** Build Management Plane's Step 7 recreates it on this node
+   too: the `DeevnetTenantBuilder` and `DeevnetNodeAudit` roles, the `deevnet-api@pve` user and
+   their ACLs come from inventory, and the token `deevnet-api@pve!tenants` is issued by hand, vaulted
+   and pushed. Then redeploy the API: `ansible-playbook playbooks/site.yml --limit deevnet_api` in
+   `deevnet.mgmt`.
 2. **The template:** `make proxmox-fedora-pve2` in `deevnet-image-factory`.
 3. **The fabric:** `make fabric-apply` in `deevnet-tenant-fabric`. It rebuilds the underlay, the VTEP
    identity and the EVPN controller from code.

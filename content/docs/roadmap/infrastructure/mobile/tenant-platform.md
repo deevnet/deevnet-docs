@@ -1,7 +1,7 @@
 ---
 title: "Tenant Platform"
 weight: 4
-tasks_completed: 2
+tasks_completed: 3
 tasks_in_progress: 5
 tasks_planned: 6
 ---
@@ -101,10 +101,11 @@ A repeatable, code-defined tenant lifecycle.
   it ships with an index the module rejects, so the guard does not depend on being read.
 - ✅ DNS publication over RFC 2136 with a per-zone TSIG key (ADR-0004), and a state store tenants
   may use or decline (ADR-0007).
-- ⏳ Record the Deevnet API's Proxmox role, `DeevnetTenantBuilder`: it was created by hand and its
-  privileges are written down nowhere. Read `pveum role list` on `dv02hyp002p02` and record it on the
-  [Deevnet API](/docs/platforms/deevnet-software/deevnet-api/) page, or have a role create it, so a
-  rebuilt tenant hypervisor can recreate it
+- ✅ Record the Deevnet API's Proxmox access: `DeevnetTenantBuilder`, `DeevnetNodeAudit`, the user
+  and ACLs are declared in inventory and recreated by `deevnet.builder`'s `proxmox_node_access` role
+  (2026-09-27)
+- ⏳ Remove the unused `TerraformProv` role on `dv02hyp002p02`, left from the retired tenant-module
+  flow; no ACL references it
 - ⏳ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
   back in through an operator reconcile
   ([Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/)), proven on `tdemo`
