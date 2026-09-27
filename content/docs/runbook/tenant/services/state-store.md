@@ -22,8 +22,11 @@ terraform {
     bucket       = "tf-state"
     key          = "tenants/bench1/terraform.tfstate"    # state_key_prefix + terraform.tfstate
     region       = "us-east-1"
-    endpoints    = { s3 = "http://tfstate.mobile.deevnet.net:9000" }
+    endpoints    = { s3 = "https://tfstate.mobile.deevnet.net:9000" }
     use_lockfile = true
+
+    # TLS from the site CA: the same site-ca.pem the provider uses.
+    custom_ca_bundle = "site-ca.pem"
 
     # S3-compatible, not AWS.
     skip_credentials_validation = true
@@ -63,9 +66,6 @@ The reference tenant's `make state-backend` prints the block and both keys for y
 
 ## What it does not do yet
 
-- **It is plain HTTP today**, inside the site. Your state crosses the platform network
-  unencrypted in transit; the design says TLS
-  ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
 - **It has no second copy.** The store lives on one disk
   ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), Proposed). Keep a copy
   of anything you cannot re-issue
