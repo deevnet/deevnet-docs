@@ -6,18 +6,7 @@ bookCollapseSection: true
 
 # Bootstrap Node
 
-## Purpose
-
-The bootstrap node is the **management plane** for standing up a Deevnet site. It's a single, portable device that contains everything needed to provision and configure an entire environment from scratch.
-
-Goals:
-- **Self-contained** — All automation, artifacts, and services on one device
-- **Portable** — Can move between sites as needed
-- **Independent** — Can operate independently of the site network
-- **Air-gapped capable** — Can provision without upstream internet once artifacts are staged
-- **Disposable authority** — Hands off control to Core Router once the site is running
-
-"Bring one box, provision everything."
+Fills the **builder** role — see [Builder](/docs/architecture/builder/). The host is `dv00bld001p01`.
 
 ---
 
@@ -43,17 +32,14 @@ The bootstrap node is provisioned via PXE from another bootstrap node, or manual
 
 ## Network Position
 
-{{< mermaid >}}
-graph LR
-    A[Host Network<br>WAN/upstream] <--> B[Bootstrap Node<br>dual-homed] <--> C[Site Network<br>mobile]
-{{< /mermaid >}}
+The dual-homed position is described in [Builder → Network Position](/docs/architecture/builder/#network-position).
+On this host, from inventory:
 
-- **Upstream interface**: Connects to existing network (home, hotel, office) for internet access
-- **Downstream interface**: Becomes the gateway for the site during bootstrap
-
-{{% hint warning %}}
-During initial provisioning, the bootstrap node may NAT traffic for substrate hosts. Once Core Router is configured, routing authority transitions. This handoff is **explicit, not automatic**.
-{{% /hint %}}
+| Interface | Purpose | Address |
+|-----------|---------|---------|
+| `eth0` | Management segment (downstream) | `10.20.99.95` reserved; `10.20.99.1` while bootstrap-authoritative |
+| `eth1` | Transit | DHCP |
+| `wifi` | Upstream (WAN) | from whatever network it joins |
 
 ---
 
@@ -66,7 +52,7 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 | **[Workstation](workstation-role/)** | Developer tools, users, Ansible controller |
 | **[Artifacts](artifacts-role/)** | Air-gapped artifact serving (ISOs, packages, images) |
 | **[PXE](pxe-role/)** | Network boot infrastructure (TFTP, GRUB configs) |
-| **[Network Controller](network-controller-role/)** | Switch and AP management (Omada) |
+| **[Network Controller](network-controller-role/)** | A stopped Omada controller with its data, the cold fallback for `dv02nms001v01` |
 
 ---
 
@@ -74,8 +60,8 @@ The bootstrap node is configured using these `deevnet.builder` roles:
 
 Per the [Naming Standard](/docs/standards/naming/):
 
-- `bootstrap.mobile.deevnet.net` — The bootstrap node itself
-- `artifacts.mobile.deevnet.net` → `bootstrap.mobile.deevnet.net` (CNAME)
-- `pxe.mobile.deevnet.net` → `bootstrap.mobile.deevnet.net` (CNAME)
+- `dv00bld001p01.mobile.deevnet.net` — the host itself
+- `artifacts.mobile.deevnet.net` → `dv00bld001p01.mobile.deevnet.net` (CNAME)
+- `pxe.mobile.deevnet.net` → `dv00bld001p01.mobile.deevnet.net` (CNAME)
 
 Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location), the bootstrap node hosts multiple services. This co-location is intentional and documented—blast radius is understood.

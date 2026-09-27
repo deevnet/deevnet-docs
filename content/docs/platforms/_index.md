@@ -15,32 +15,27 @@ on it are under [Completed Projects](/docs/completed/).
 
 ---
 
-## Substrate Architecture
+## Roles and what fills them
 
-Platform documentation follows the three-layer substrate architecture:
+The roles themselves — what each does, and where it sits in the network — are defined in
+[Architecture](/docs/architecture/). This section only says what fills them.
 
-### Network
+| Architecture role | Filled by | Page |
+|---|---|---|
+| [Edge router](/docs/architecture/substrate/networking/#edge-router-role) | GL-iNet Slate AX, OpenWrt | [Edge Router](network/edge-router/) |
+| [Core router](/docs/architecture/substrate/networking/#core-router-role) | ZimaBoard 832, OPNsense | [Core Router](network/core-router/) |
+| [Access switch](/docs/architecture/substrate/networking/#switching) | TP-Link SG2218 | [Access Switch](network/access-switch/) |
+| [Wireless access](/docs/architecture/substrate/networking/#wireless) | TP-Link EAP650-Outdoor | [Wireless Access Point](network/access-point/) |
+| [Network management](/docs/architecture/substrate/management-plane/#network-management) | Omada SDN Controller | [Network Controllers](network/network-controllers/) |
+| [Builder](/docs/architecture/builder/) | AOOSTAR N1 PRO, Fedora | [Bootstrap Node](management-plane/bootstrap-node/) |
+| [Management hypervisor](/docs/architecture/substrate/compute/#compute-by-purpose) | Dell OptiPlex 7050 Micro, Proxmox VE | [Management Hypervisor](management-plane/management-hypervisor/) |
+| [Tenant hypervisor](/docs/architecture/substrate/compute/#compute-by-purpose) | Dell OptiPlex 7060 Micro, Proxmox VE | [Tenant Hypervisors](tenant-compute/tenant-hypervisors/) |
+| [Tenant fabric](/docs/architecture/tenant/networking/) | Proxmox SDN, EVPN/VXLAN | [Tenant Fabric](tenant-compute/tenant-hypervisors/tenant-fabric/) |
+| [Pi lab](/docs/architecture/substrate/compute/#the-pi-lab) | Raspberry Pi 4 | [Raspberry Pi](tenant-compute/raspberry-pi/) |
+| [Tenant DNS](/docs/architecture/substrate/control-plane/#identity) | PowerDNS Authoritative | [Tenant DNS](management-plane/tenant-dns/) |
 
-The **network layer** provides connectivity, routing, and network services:
-
-- **Edge Router** — Upstream connectivity (ISP/travel router)
-- **Core Router** — Internal routing, firewall, DNS, DHCP, gateway
-- **Access Switch** — Layer 2 connectivity, VLAN tagging
-- **Wireless Access Point** — Wireless connectivity
-
-### Management Plane
-
-The **management plane** provides infrastructure services for substrate management:
-
-- **Bootstrap Node** — Ansible controller, artifact server, PXE boot
-- **Management Hypervisor** — Observability, automation, access services (Proxmox Node 1)
-
-### Tenant Compute
-
-The **tenant compute layer** provides resources for application workloads:
-
-- **Tenant Hypervisors** — VM-based tenant workloads (Proxmox Node 2)
-- **Raspberry Pi** — Pi 4 bank for edge/IoT and hardware projects
+Everything else the management and control planes run — the Deevnet API, OpenBao, the MQTT broker,
+the log store, Grafana — is listed in the [Software Catalog](software-catalog/).
 
 ---
 
@@ -49,14 +44,16 @@ The **tenant compute layer** provides resources for application workloads:
 This section answers the question:
 > "Why did we choose this, and under what conditions would we change it?"
 
-Each platform page documents:
+Each role page documents:
 
 | Section | Content |
 |---------|---------|
-| **Purpose** | Role in the substrate |
+| **Role** | One line naming the architecture role it fills, with a link |
 | **Hardware** | A link to the model's page under [Hardware](/docs/platforms/hardware/) |
 | **Operating System** | OS choice and automation capability |
-| **Roles** | Services or functions provided |
+| **Product features in use** | What the product does beyond the role, and the product-specific facts that cost time to discover |
+
+It does not restate the role, and it holds no procedures: those are in the [runbook](/docs/runbook/).
 
 ---
 

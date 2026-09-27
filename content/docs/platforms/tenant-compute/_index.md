@@ -6,61 +6,12 @@ bookCollapseSection: true
 
 # Tenant Compute
 
-The **tenant compute layer** provides resources for application workloads, experiments, and user-facing services. Unlike the management plane, tenant compute is designed for higher churn and experimentation.
+The products behind the compute the substrate offers tenants. What that compute is for, and where it
+sits, is in [Substrate Compute](/docs/architecture/substrate/compute/) and
+[Tenant](/docs/architecture/tenant/).
 
----
-
-## Tenant Compute Components
-
-| Component | Purpose |
-|-----------|---------|
-| **Tenant Hypervisors** | Proxmox hosts for VM-based tenant workloads |
-| **[Raspberry Pi](raspberry-pi/)** | Pi 4 bank for edge/IoT and hardware projects |
-
----
-
-## Characteristics
-
-Tenant compute infrastructure is:
-
-- **Tolerant of rebuilds** — Expect frequent provisioning and teardown
-- **Fast change cadence** — Experimentation and iteration encouraged
-- **Terraform-managed** — declared by each tenant through the Deevnet API
-- **VLAN-isolated** — Tenant traffic separated from management plane
-
----
-
-## Workload Types
-
-| Category | Examples |
-|----------|----------|
-| **Application development** | IoT backend, services, APIs |
-| **Experiments** | Test environments, sandboxes |
-| **Ephemeral workloads** | Short-lived or rebuildable VMs |
-| **Edge/IoT** | Sensor collection, local processing |
-
----
-
-## Separation from Management Plane
-
-Tenant compute is deliberately separated from management plane infrastructure:
-
-| Aspect | Management Plane | Tenant Compute |
-|--------|------------------|----------------|
-| **Change cadence** | Slow, deliberate | Fast, experimental |
-| **Blast radius** | Must be minimized | Tolerable |
-| **Rebuild tolerance** | Low — avoid rebuilds | High — expect rebuilds |
-| **Provisioning** | Ansible | Terraform, through the Deevnet API |
-
-This separation ensures that tenant experimentation cannot impact substrate stability. If a tenant VM misbehaves or a tenant hypervisor fails, the management plane remains operational.
-
----
-
-### Tenant Networking
-
-Tenant networks are EVPN/VXLAN overlays owned by the tenant hypervisor's own SDN fabric — one VRF
-per tenant, an anycast gateway hosted by the fabric, and addressing from fabric IPAM. The core
-router is the perimeter for the aggregate transit network only.
-
-See [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) and the
-[tenant fabric](/docs/platforms/tenant-compute/tenant-hypervisors/tenant-fabric/) implementation.
+| Role | Filled by | Page |
+|------|-----------|------|
+| Tenant hypervisor | Dell OptiPlex 7060 Micro, Proxmox VE | [Tenant Hypervisors](tenant-hypervisors/) |
+| Tenant fabric | Proxmox SDN, EVPN/VXLAN | [Tenant Fabric (SDN)](tenant-hypervisors/tenant-fabric/) |
+| Pi lab | Raspberry Pi 4 | [Raspberry Pi](raspberry-pi/) |

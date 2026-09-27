@@ -6,29 +6,16 @@ bookCollapseSection: true
 
 # Network
 
-The **network layer** provides connectivity, routing, and network services for all substrate infrastructure.
+The products that fill the network roles. What each role does, and where it sits, is in
+[Substrate Networking](/docs/architecture/substrate/networking/).
 
-This section documents network devices that form the physical and logical foundation for substrate connectivity:
-
-- **Edge Router** — Upstream connectivity and WAN interface
-- **Core Router** — Internal routing, firewall, DNS, DHCP, and gateway services
-- **Access Switch** — Layer 2 connectivity for substrate hosts
-- **Wireless Access Point** — Wireless connectivity for mobile and IoT devices
-
----
-
-## Network Services
-
-Network devices collectively provide:
-
-| Service | Provider |
-|---------|----------|
-| **DNS** | Core Router (authoritative for substrate zone) |
-| **DHCP** | Core Router (static mappings + dynamic pool) |
-| **Gateway** | Core Router (default route for substrate) |
-| **Firewall** | Core Router (NAT, inter-VLAN rules) |
-| **VLAN tagging** | Access Switch |
-| **Wireless** | Wireless Access Point (managed by Omada controller) |
+| Role | Product | Page |
+|------|---------|------|
+| Edge router | GL-iNet Slate AX, OpenWrt | [Edge Router](edge-router/) |
+| Core router | ZimaBoard 832, OPNsense | [Core Router](core-router/) |
+| Access switch | TP-Link SG2218 | [Access Switch](access-switch/) |
+| Wireless access | TP-Link EAP650-Outdoor | [Wireless Access Point](access-point/) |
+| Network management | Omada SDN Controller | [Network Controllers](network-controllers/) |
 
 ---
 

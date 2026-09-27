@@ -5,14 +5,7 @@ weight: 3
 
 # Access Switch
 
-## Purpose
-
-The access switch provides **Layer 2 connectivity** for substrate hosts, connecting endpoints to the core router. Access switches handle VLAN tagging, port isolation, and traffic aggregation.
-
-{{< mermaid >}}
-graph LR
-    A[Core Router] <--> B[Access Switch] <--> C[Site Hosts]
-{{< /mermaid >}}
+Fills the **access switch** role — see [Substrate Networking → Switching](/docs/architecture/substrate/networking/#switching).
 
 ---
 
@@ -26,36 +19,12 @@ graph LR
 
 | Attribute | Value |
 |-----------|-------|
-| **Controller** | TP-Link Omada SDN |
-| **CLI** | SSH access |
-| **Web UI** | Standalone or controller-managed |
-| **Automation** | Omada API via `deevnet.net` collection |
+| **Controller** | None: standalone, not yet adopted into Omada ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold) |
+| **CLI** | SSH |
+| **Web UI** | Standalone |
+| **Automation** | `deevnet.net` `switch_vlans` over the SSH CLI |
 
-## Roles
-
-| Role | Description |
-|------|-------------|
-| **L2 switching** | Connects substrate hosts to core router |
-| **VLAN tagging** | 802.1Q trunk to core router |
-| **Port isolation** | Separates trust zones at L2 |
-
-
----
-
-## Configuration Management
-
-| Controller | Automation |
-|------------|------------|
-| None: standalone, not yet adopted into Omada ([CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold) | `deevnet.net` `switch_vlans` over SSH CLI |
-
-### VLAN Configuration
-
-VLANs are defined in the substrate standards and configured on all access switches:
-
-| VLAN | Purpose |
-|------|---------|
-| Management | Infrastructure management traffic |
-| Tenant | Application/user traffic |
-| IoT | Isolated IoT devices |
-
-Specific VLAN IDs are documented in the [Network Segmentation](/docs/standards/network-segmentation/) standard.
+Which VLANs exist, and which ports carry them, come from inventory. The segments are described in
+[Network Segmentation](/docs/architecture/network-segmentation/); their IDs and subnets are in the
+[Network Reference](/docs/runbook/substrate/network/network-reference/), and the port assignments in
+the hardware page's port map.

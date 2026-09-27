@@ -80,7 +80,7 @@ Each subnet uses `.1` as the gateway address:
 | .2-.49 | Static infrastructure hosts |
 | .50-.59 | Tenant-reserved addresses |
 | .60-.69 | Reserved for future use |
-| .70-.79 | Experimental/lab use — `.79` is the transient image-build address (see [tenant hypervisors](/docs/platforms/tenant-compute/tenant-hypervisors/)) |
+| .70-.79 | Experimental/lab use, including transient addresses a build holds only while it runs |
 | .100-.200 | DHCP dynamic pools (where applicable) |
 
 Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive static assignments in the low range. DHCP pools are used for segments with dynamic devices (trusted, IoT, guest).
@@ -89,12 +89,11 @@ Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive
 
 ## WAN Operation
 
-mobile operates the same way wherever it is: behind `dv02edg001p01` (travel router), with outbound
-NAT to whatever upstream is available (home, a hotel, a tethered phone).
-
-- `dv02edg001p01` WAN: DHCP from upstream
-- `dv02edg001p01` LAN: 192.168.8.0/24 (travel-router-local)
-- All mobile traffic NATs through `dv02edg001p01`
+mobile operates the same way wherever it is: behind its
+[edge router](/docs/architecture/substrate/networking/#edge-router-role), with outbound NAT to
+whatever upstream is available (home, a hotel, a tethered phone). The edge router takes its own
+address from the upstream and NATs all of the site's traffic, so the site's addressing never has to
+change to fit a location.
 
 There is no connectivity between sites. Wherever mobile is set up, it is just another client of that
 location's upstream, and no site routes to another. Linking the sites is a decision for when there is a

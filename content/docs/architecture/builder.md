@@ -35,6 +35,40 @@ The builder answers this by providing:
 
 ---
 
+## Network Position
+
+The builder is **dual-homed**, with one foot outside the site and one inside it:
+
+- **Upstream**, it joins whatever external network is available (home, hotel, office), for staging
+  artifacts and reaching the internet. Nothing inside the site depends on this link.
+- **Downstream**, it sits on the management segment. During bootstrap it *is* the gateway for the
+  site; in production it is an ordinary management host at a reserved address, behind the core
+  router like everything else.
+
+The builder moving between those two positions on the downstream side is the
+[authority transition](#authority-transition).
+
+---
+
+## Air-Gap Scope
+
+Air-gapping applies to the **substrate** — the hosts that define the site: routers, hypervisors,
+the builder itself, and the management and control plane VMs. Everything they install comes from
+the builder's artifact server, pre-staged and validated before use, with no upstream dependency
+during a build.
+
+Out of scope:
+
+- **Tenant workloads** — they may reach upstream repositories and registries, as their tenant's
+  policy allows
+- **Pi lab hosts and edge devices** — a different OS and a different lifecycle, owned by the project
+  using them
+
+Mirroring every OS a tenant or device might run would be an unsustainable maintenance burden. The
+substrate is the trusted foundation, so the air-gap effort goes there.
+
+---
+
 ## How It Works
 
 The builder hosts all Infrastructure as Code and Configuration as Code used to set up the substrate. The build process follows a deliberate sequence:
@@ -45,6 +79,10 @@ The builder hosts all Infrastructure as Code and Configuration as Code used to s
 4. **Validation** — Each host is verified against its expected state before proceeding to the next
 
 The builder drives this entire sequence from its own local resources — no external dependencies are required once artifacts are staged.
+
+Order matters within it: a host can only fetch artifacts once it can resolve the artifact server's
+name, and it only learns where to boot from once DHCP answers it. DNS and DHCP come first, then boot
+files, then artifacts.
 
 ---
 

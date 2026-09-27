@@ -17,9 +17,10 @@ The network controller role deploys **centralized management software** for swit
 |------------|-----------------|
 | TP-Link Omada SDN | EAP650-Outdoor AP (adopted); the SG2218 switch is standalone until [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/) |
 
-The controller must be available for initial network configuration, before VLANs exist, so the
-bootstrap node can run it. Since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) it runs
-on `dv02nms001v01`, and the bootstrap node keeps a stopped cold spare for when that VM is down.
+Since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) the controller runs on
+`dv02nms001v01`, and the bootstrap node keeps a stopped cold spare for when that VM is down. The
+pre-VLAN substrate is built without it
+([Management Plane → Network management](/docs/architecture/substrate/management-plane/#network-management)).
 
 ---
 

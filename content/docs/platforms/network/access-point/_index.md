@@ -5,14 +5,7 @@ weight: 4
 
 # Wireless Access Point
 
-## Purpose
-
-The access point provides **wireless connectivity** for mobile devices, laptops, and IoT devices within the site.
-
-{{< mermaid >}}
-graph LR
-    A[Access Switch<br>VLAN trunk] <--> B[Access Point<br>Wi-Fi] <--> C[Wireless Clients]
-{{< /mermaid >}}
+Fills the **wireless access** role — see [Substrate Networking → Wireless](/docs/architecture/substrate/networking/#wireless).
 
 ---
 
@@ -28,16 +21,21 @@ graph LR
 |-----------|-------|
 | **Controller** | TP-Link Omada SDN |
 | **VLAN Support** | Yes — per-SSID VLAN tagging |
-| **API** | Yes — Omada controller REST API |
-| **Automation** | `deevnet.net` Ansible collection (Omada API) |
+| **API** | Yes — the Omada controller's documented Open API |
+| **Automation** | `deevnet.net` Ansible collection, through the controller |
 
-## Roles
+## Product features in use
 
-| Role | Description |
-|------|-------------|
-| **Wireless access** | Provides Wi-Fi 6 connectivity for clients |
-| **SSID-to-VLAN mapping** | Multiple SSIDs mapped to VLANs |
-| **Band steering** | Directs capable clients to 5GHz |
+| Feature | Use |
+|---------|-----|
+| **Wi-Fi 6** | Client connectivity |
+| **Per-SSID VLAN tagging** | Each SSID lands on its segment's VLAN |
+| **PPSK with per-key VLAN** | One IoT SSID; the key a device joins with decides its VLAN |
+| **Band steering** | Directs capable clients to 5 GHz |
+
+**Client isolation is not used on the IoT SSID.** The EAP650 offers no client isolation that would
+also preserve the service reachability devices need on the segment. Two devices on the IoT segment can therefore reach each other; why that is accepted is in
+[Edge Devices → Access](/docs/architecture/edge-devices/access/#what-is-not-protected).
 
 
 ---

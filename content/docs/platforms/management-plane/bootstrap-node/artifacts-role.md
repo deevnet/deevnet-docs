@@ -5,14 +5,8 @@ weight: 2
 
 # Artifacts Role
 
-## Purpose
-
-The artifacts server enables **air-gapped provisioning** for substrate hosts. Target machines fetch all installation artifacts from the local server—no internet connectivity required during provisioning.
-
-Goals:
-- **Air-gap capability** — Substrate hosts install without upstream dependencies
-- **Single source of truth** — All provisioning artifacts in one location
-- **Reproducibility** — Known artifacts yield known outcomes
+Serves the builder's artifacts: everything a substrate host installs from. What is in scope for the
+air gap, and why, is in [Builder → Air-Gap Scope](/docs/architecture/builder/#air-gap-scope).
 
 ---
 
@@ -26,41 +20,9 @@ The artifacts server provides:
 | **PXE boot artifacts** | Kernel, initrd, boot configuration |
 | **Custom scripts** | Post-install automation payloads |
 | **OS images** | ISO images or extracted install trees |
+| **Container images** | Service image tarballs, loaded by the roles that run them |
 
 Artifacts are served via HTTP at `artifacts.<site>.deevnet.net`.
-
----
-
-## Air-Gap Model
-
-### Scope: Substrate Layer Only
-
-Air-gapping applies to **substrate hosts**—the infrastructure foundation:
-
-- Proxmox / hypervisors
-- Admin / build servers
-- Routers, firewalls
-- DNS, DHCP hosts
-- Any host that defines the substrate
-
-**Not in scope for air-gap:**
-
-- Tenant workloads (may use upstream repos or container registries)
-- Edge devices (Raspberry Pis, IoT) — different OS, different lifecycle
-- Container images — separate concern, different tooling
-
-### Rationale
-
-Mirroring every possible OS (Debian for RPis, various container base images, tenant-specific distros) creates unsustainable maintenance burden. The substrate is the trusted foundation—focus air-gap effort there.
-
-Tenants and edge devices can follow their own update patterns, potentially with network access to upstream repositories.
-
-### Behavior
-
-- **Install-time air-gap**: Substrate hosts fetch everything from local artifacts server
-- **No upstream dependencies** during substrate provisioning workflow
-- Artifacts are pre-staged and validated before use
-- Tenants/workloads may have network access to upstream repos (policy decision per tenant)
 
 ---
 
@@ -105,7 +67,7 @@ Per the [Correctness Standard](/docs/standards/correctness/#33-multihoming-servi
 
 The artifacts server is the foundation of air-gapped substrate provisioning:
 
-1. **Scope to site** — Don't try to air-gap everything
+1. **Scope to the substrate** — Don't try to air-gap everything
 2. **Serve via DNS name** — `artifacts.<site>.deevnet.net`
 3. **Verify integrity** — GPG signatures on everything installed
 4. **Package mirrors are not built yet** — see [the candidate](/docs/platforms/evaluations/software/management-plane/package-mirror/)

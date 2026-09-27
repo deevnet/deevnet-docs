@@ -113,8 +113,8 @@ exists, and none may be added.
 
 Two devices on one access segment **can reach each other**, and nothing currently prevents it.
 Their traffic is switched at Layer 2 and never reaches the core router, so no zone policy can see
-it. The site's access point offers no client isolation that would also preserve the service
-reachability devices need, and wired devices on the segment have no isolation mechanism at all.
+it. Wireless client isolation, where an access point offers it, would also cut devices off from
+the services they need, and wired devices on the segment have no isolation mechanism at all.
 
 This is recorded as an accepted limitation rather than solved, because the distinction that matters
 is between **being unable to send a packet to another device** and **being unable to authenticate

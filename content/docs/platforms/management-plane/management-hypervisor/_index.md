@@ -6,9 +6,10 @@ bookCollapseSection: true
 
 # Management Hypervisor
 
-## Purpose
-
-The management hypervisor hosts **infrastructure-critical services** for the substrate. This is Proxmox Node 1 in the two-hypervisor architecture, dedicated to management-plane workloads that must remain stable and available to support recovery operations.
+Fills the **management hypervisor** role — the host for the site's management and control plane
+domain VMs. See [Substrate Compute → Compute by purpose](/docs/architecture/substrate/compute/#compute-by-purpose).
+The host is `dv02hyp001p01`; the domain VMs it carries are listed in the
+[Software Catalog](/docs/platforms/software-catalog/#domain-vms).
 
 ---
 
@@ -38,31 +39,6 @@ The management hypervisor runs Proxmox VE.
 - **Templates**: Packer-built Fedora templates stored locally
 
 Proxmox is treated as an API surface for management workloads, not a declarative state engine.
-
----
-
-## Roles
-
-The management hypervisor hosts these workload categories:
-
-| Category | Examples |
-|----------|----------|
-| **Observability** | Metrics collection, log aggregation, alerting |
-| **Automation & CI** | Ansible runners, image factory helpers |
-| **Access & recovery** | Jump hosts, OOB tooling |
-| **Tenant-facing services** | Tenant authoritative DNS (ADR-0004) |
-
-> **Note**: Core network services (DNS, DHCP, NAT) run on the [Core Router](/docs/platforms/network/core-router/), not as VMs on the management hypervisor.
->
-> This is about **resolution**, and it is unchanged. The core router remains the resolver every
-> substrate client asks, and remains authoritative for substrate names.
->
-> It is not a rule against **authority**. Per
-> [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/), tenant DNS zones are
-> served by a PowerDNS Authoritative instance on the management hypervisor and delegated to from
-> the core router's Unbound. That is an extended management service, not a core network service —
-> a class that did not exist when the rule above was written. Losing it costs tenant name
-> resolution and nothing else.
 
 ---
 
@@ -114,22 +90,9 @@ This enables:
 
 ## Non-Clustered Design
 
-The management hypervisor operates **independently** without Proxmox clustering:
-
-| Aspect | Implication |
-|--------|-------------|
-| **No HA failover** | VMs do not automatically migrate |
-| **No shared storage** | Local storage only |
-| **Independent management** | Dedicated web UI |
-| **Simpler operations** | No quorum concerns |
-
-### Rationale
-
-For a two-node lab environment:
-- Clustering adds complexity without meaningful HA
-- Two-node clusters introduce quorum challenges
-- Local storage is simpler and faster
-- Manual VM placement is acceptable at this scale
+The node is a standalone Proxmox host, not a cluster member: no HA manager, no shared storage, and
+its own web UI. Why nothing is clustered is in
+[Substrate Compute → Nothing is clustered](/docs/architecture/substrate/compute/#nothing-is-clustered).
 
 ---
 
@@ -140,30 +103,3 @@ Packer-built template that management VMs are cloned from. The procedure is
 [Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.
-
----
-
-## Network Position
-
-{{< mermaid >}}
-graph LR
-    A[Core Router] <--> B[Management Hypervisor<br>Proxmox Node 1] <--> C[Management VMs<br>observability, automation]
-{{< /mermaid >}}
-
-Guest VMs receive network configuration from Core Router DHCP, using static mappings for known management-plane hosts.
-
----
-
-## Separation from Tenant Compute
-
-The management hypervisor is intentionally separate from tenant workloads:
-
-| Aspect | Management Hypervisor | Tenant Hypervisor |
-|--------|----------------------|-------------------|
-| **Workloads** | Infrastructure-critical | Experiments, apps |
-| **Change cadence** | Slow, deliberate | Fast, experimental |
-| **Rebuild tolerance** | Low | High |
-| **MAC policy** | Deterministic, derived from VMID | TBD |
-| **Provisioning** | Ansible | Terraform (future) |
-
-This separation reduces blast radius and ensures that tenant experimentation cannot impact platform stability.

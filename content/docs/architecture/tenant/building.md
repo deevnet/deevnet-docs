@@ -92,16 +92,15 @@ For a tenant at index `n` on `mobile`, everything derives from that one number
 
 | Object | Derivation | `eds` (index 2) |
 |--------|-----------|-----------------|
-| EVPN zone, which **is** the VRF | the tenant's name | `eds`, `vrf-vxlan 10002` |
-| VNet | `20000 + n×10` | `eds0`, tag `20020` |
+| Isolated network (its own VRF) | the tenant's name and index | `eds` |
 | Subnet, with SNAT | `10.20.{128+n}.0/24` | `10.20.130.0/24` |
 | Anycast gateway | `.1` of that subnet | `10.20.130.1` |
 | Workload addresses | `.10` upward, by ordinal | `10.20.130.10` |
 | DNS zone | `<tenant>.<site>.deevnet.net` | `eds.mobile.deevnet.net` |
 
-Workloads are addressed by **cloud-init, not DHCP** — Proxmox implements SDN DHCP in Simple zones
-only, and a tenant's zone is an EVPN zone. The address is derived from the index rather than
-leased, which matches the deterministic addressing the rest of the estate uses.
+Workload addresses are **derived from the index, not leased**, which matches the deterministic
+addressing the rest of the estate uses. The fabric-level identifiers behind these rows are in
+[Tenant Fabric → Concrete allocation](/docs/platforms/tenant-compute/tenant-hypervisors/tenant-fabric/#concrete-allocation).
 
 ---
 
