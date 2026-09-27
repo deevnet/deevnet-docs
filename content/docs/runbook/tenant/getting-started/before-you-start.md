@@ -92,11 +92,11 @@ Deevnet API, and which Wi-Fi your computer is on decides whether it can:
 |---|---|---|
 | **Guest** Wi-Fi | **No** — internet only | reading these docs |
 | **IoT** Wi-Fi (`DVNTM-IOT`) | **No** — that is where your *devices* go, not your computer | nothing |
-| **Tenant dev** Wi-Fi (`DVNTM-TD`) | **Yes** — the tenant-facing services and the internet | `terraform plan` / `apply`, MQTT test clients |
+| **Tenant dev** Wi-Fi (`DVNTM-TD`) | **Yes** — the tenant-facing services and the internet | `terraform plan` / `apply`, MQTT test clients, SSH to your workloads |
 
 **Work from `DVNTM-TD`.** Its key comes from the operator. It reaches the services your Terraform,
 test clients and browser use (the API, the state store, the broker, the log store, Grafana and the
-tenant downloads) and nothing else on the site.
+tenant downloads), SSH to tenant workloads, and nothing else on the site.
 
 `DVNTM-TD` uses the site's own DNS. If your computer has a VPN, iCloud Private Relay or a hard-coded
 DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.

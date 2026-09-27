@@ -72,12 +72,17 @@ credential for 72 hours.
 
 Every apply has to reach the API, and after the first one the state store too. Give the tenant the
 **`DVNTM-TD`** key (`deevnet_wifi_psk.tenant_dev`): that segment reaches the API, the state store,
-the broker, the log store and Grafana, and nothing else
+the broker, the log store, Grafana and SSH on tenant workloads, and nothing else
 ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Guest is
 internet-only and IoT cannot reach the API. A trusted seat still works, but it reaches the
 management plane, so don't offer it to a visitor. See
 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) for how the tenant side
 reads this.
+
+**You have no standing access to a tenant's workloads**
+([ADR-0028](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/)). They clone the
+`fedora-tenant-*` template, which carries no `a_autoprov`, and trust only the keys in the tenant's
+`ssh_keys`. To help on one, the tenant adds your public key and replaces the workload.
 
 ---
 

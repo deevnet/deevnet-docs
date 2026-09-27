@@ -52,10 +52,11 @@ declared like everything else. [ADR-0026](/docs/architecture/decisions/platform-
 
 {{< status-badge "planned" "Coming soon" >}}
 
-**Today:** a workload boots Fedora with nothing of yours on it, and — because
-[`ssh_keys` is broken](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) — the
-operator installs your code for you. **Planned:** a workload fetches a Deevnet-shaped description of
-what to run at boot, so declaring the workload is enough to have it running your code.
+**Today:** a workload boots Fedora with nothing of yours on it, and you put your app on it yourself
+over SSH ([Deploy Your App to a Workload](/docs/runbook/tenant/deploy-your-app/)). A replaced
+workload comes back empty until you do it again. **Planned:** a workload fetches a Deevnet-shaped
+description of what to run at boot, so declaring the workload is enough to have it running your
+code.
 [ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)
 
 ## A tenant devbox
@@ -67,5 +68,4 @@ your own computer, with the provider and the large downloads served by the site.
 development workload, built from an image with the tools already on it, that you launch in your own
 tenant network, so the Terraform and CLI half needs nothing on your computer. Flashing a device or
 an SD card still needs your computer's USB. It waits on
-[`ssh_keys`](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) and on
 [code delivery](#code-delivery-to-workloads).

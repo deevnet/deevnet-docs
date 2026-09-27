@@ -44,17 +44,25 @@ hypervisor and proves nothing.
 
 ## Getting onto it
 
-SSH reaches workloads from the **management and trusted networks only**
-([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)); the guest and IoT
-networks cannot reach them, by design.
+You log in with your own key
+([ADR-0028](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/)):
 
-{{< hint warning >}}
-**`ssh_keys` does not work yet.** The resource accepts it, but the API sends the keys to Proxmox
-URL-encoded with spaces as `+`, which Proxmox rejects. Until that is fixed, workloads carry only the
-platform's automation key, so **getting your code onto a workload goes through the operator** —
-see [code delivery](/docs/runbook/tenant/services/coming-soon/#code-delivery-to-workloads) for where
-this is heading.
-{{< /hint >}}
+- **`ssh_keys`** takes the **public** keys that may log in. The private key never leaves your
+  computer, and the substrate holds nothing to log in with.
+- **The account is `tenant`,** reported as `login_user`, with passwordless sudo. Log in with
+  `ssh tenant@<fqdn>` from `DVNTM-TD`.
+- **Nobody else has a key.** A workload carries no substrate account; the operator gets in only if
+  you add the operator's key to `ssh_keys`.
+- **Keys are written when the workload is built.** To change them, change `ssh_keys` and
+  `terraform apply -replace=deevnet_workload.<name>`; a workload boots straight to ready.
+- **Updates are yours.** A workload is built from an up-to-date template and does not upgrade itself;
+  `sudo dnf upgrade` when you choose.
+
+SSH reaches workloads from `DVNTM-TD`, and from the site's management and trusted networks. The
+guest and IoT networks cannot reach them, by design.
+
+[Deploy Your App to a Workload](/docs/runbook/tenant/deploy-your-app/) takes it from there: your
+container, your `kit.env`, and a systemd unit.
 
 ## What it does not do
 
