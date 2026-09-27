@@ -13,9 +13,10 @@ aliases:
 A tenant is code in its own repository
 ([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/)). Two layouts work:
 
-- **A tenant repository of its own**, like the reference tenant
-  [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo) — copy it and change the
-  name
+- **A tenant repository of its own**, from the reference tenant
+  [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo): clone it, then
+  `make new NAME=<your name>`. That makes the copy yours, and its README takes you from here to a
+  device, a workload and your state in the store
 - **Inside your application's repository**, at `infra/deevnet-tenant-<name>/`, beside the firmware.
   EdS and Ma Bell do this, so the device and the infrastructure it depends on change together
 
@@ -26,7 +27,7 @@ deevnet-tenant-<name>/
 ├── main.tf
 ├── site-ca.pem        # from the operator; gitignored is fine, it is not secret
 ├── .gitignore         # *.tfstate*, .terraform/
-└── Makefile           # optional; tdemo's sets the endpoint and CA for you
+└── Makefile           # optional; tdemo's sets the endpoint and CA, and guards the copy
 ```
 
 ## The minimum: one resource
@@ -35,7 +36,7 @@ deevnet-tenant-<name>/
 terraform {
   required_version = ">= 1.5"
   required_providers {
-    deevnet = { source = "deevnet/deevnet", version = "~> 0.4" }
+    deevnet = { source = "deevnet/deevnet", version = "~> 0.5" }
   }
 }
 

@@ -62,7 +62,10 @@ export AWS_SECRET_ACCESS_KEY=<secret_key>
 terraform init -migrate-state
 ```
 
-The reference tenant's `make state-backend` prints the block and both keys for you.
+The reference tenant does all of this with `make state-backend`: it writes the block as
+`backend.tf` (not secret; commit it), puts the two keys in a gitignored `.backend.env`, and
+migrates. Every later `make` loads `.backend.env`. On another laptop, copy `.backend.env` and
+`site-ca.pem` in beside a clone.
 
 ## What it does not do yet
 
