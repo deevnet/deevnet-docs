@@ -136,39 +136,41 @@ The `hypervisors` play runs two roles:
 
 **Verify:** `pvesm status` lists `local-lvm-big-thin` and `local-lvm-big` as active.
 
-## Step 7: API token (manual)
+## Step 7: Proxmox access (token manual)
 
-Automation authenticates to the Proxmox API as the token `terraform-prov@pve!tf-prov-token`,
-recorded in the node's vault as `vault_proxmox_token_id` and `vault_proxmox_token_secret`.
+The roles, users and ACLs automation uses on each node are declared in inventory
+(`proxmox_node_access` in the node's `vars.yml`) and applied by the `proxmox_node_access` role in
+`deevnet.builder`. Only the API tokens are made by hand: a token's secret is shown once, so the role
+verifies tokens and never creates them.
 
-**State as read on 2026-09-14:**
-- It is the only API token on `dv02hyp001p01`, with privilege separation on (`privsep 1`).
-- `Administrator` at `/` is granted to both the user and the token.
+| Node | Token | Stored in | Used by |
+|---|---|---|---|
+| `dv02hyp001p01` | `terraform-prov@pve!tf-prov-token` | `host_vars/dv02hyp001p01/vault.yml` | Packer builds, through `pve-creds` |
+| `dv02hyp002p02` | `terraform-prov@pve!terraform-prov-token` | `host_vars/dv02hyp002p02/vault.yml` | Packer builds and the tenant fabric |
+| `dv02hyp002p02` | `deevnet-api@pve!tenants` | `group_vars/deevnet_api/vault.yml` | The Deevnet API |
 
-**What a rebuild has to do:**
-- **Issue a new token.** Its value can't be recovered from a lost node: Proxmox shows it *"only
-  displayed/returned once when the token is generated"*.
-- **Grant both ACLs.** With privilege separation, *"effective permissions are calculated by
-  intersecting user and token permissions"*. A token granted a role while its user has none can
-  do nothing.
+1. **Apply the declaration:**
+   ```bash
+   cd ansible-collection-deevnet.builder
+   ansible-playbook playbooks/site.yml --limit <node> --tags proxmox-access
+   ```
+   It creates the roles and users, then stops at the first missing token and names it.
+2. **Issue each missing token**, as root on the node, with privilege separation on (the default):
+   ```bash
+   pveum user token add terraform-prov@pve tf-prov-token
+   ```
+   Put the printed secret into its vault file straight away, then `make vault`, commit and **push**
+   before doing anything else.
+3. **Apply again.** With the tokens present, the role grants their ACLs. With privilege separation,
+   *"effective permissions are calculated by intersecting user and token permissions"*, so both the
+   user and the token hold each grant.
+4. **Hand the tokens to what uses them:** `ansible-playbook playbooks/site.yml --tags openbao` in
+   `deevnet.mgmt` for the build token, which the builds read from OpenBao
+   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)), and
+   `--limit deevnet_api` for the API's.
 
-As root on the node:
-
-```bash
-pveum user add terraform-prov@pve
-pveum user token add terraform-prov@pve tf-prov-token      # privilege separation on by default
-pveum acl modify / --roles Administrator --users terraform-prov@pve
-pveum acl modify / --roles Administrator --tokens 'terraform-prov@pve!tf-prov-token'
-```
-
-Put the printed value into `host_vars/dv02hyp001p01/vault.yml` as `vault_proxmox_token_secret`
-straight away, then run `make vault`, commit and push. Then run
-`ansible-playbook playbooks/site.yml --tags openbao` in `ansible-collection-deevnet.mgmt`, so the
-builds read the new token from OpenBao
-([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
-
-**Not recreated:** the node also has a user `packer-prov@pve` with `Administrator` at `/` and no
-token. The image factory's Packer builds use the vault token above.
+Not declared, and not recreated: the user `packer-prov@pve` on `dv02hyp001p01`, which has
+`Administrator` at `/` and no token.
 
 **Follow-up:** both the `terraform-prov` name and `Administrator` at `/` predate the rule that the
 management plane is Ansible-only. Narrowing the token is a separate change.
