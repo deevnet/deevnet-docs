@@ -52,6 +52,6 @@ statement about audience.
 - **Services with different audiences never share a host.** The substrate's own services change
   often, and a restart among them must not take down something tenants or devices depend on.
 
-How a service VM is built is [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/).
+How a service VM is built is [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/).
 What each loses when its host is rebuilt is in
 [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/#management-hypervisor-dv02hyp001p01).

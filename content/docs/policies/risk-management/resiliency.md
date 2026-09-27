@@ -103,7 +103,7 @@ is what makes *rebuild rather than failover* a credible strategy at all.
 The duties are already spread. `builder` covers three hosts; artifact serving, bootstrap/PXE
 and workstation duties each cover two.
 
-The limit is **where** the copies live. Two of the three are management-plane VMs on
+The limit is **where** the copies live. Two of the three are management-hypervisor VMs on
 `dv02hyp001p01` — inside the substrate they would be used to rebuild. For an everyday failure
 that duplication is real. For a substrate-level one it collapses to the third copy, the
 physical node you can detach and carry, and there is exactly one of those at the moment it
@@ -180,8 +180,8 @@ routine, not an emergency procedure.
   (about every six months), when the site moves to that release:
   - the Builder, [repaved](/docs/runbook/substrate/building-recovery/repave-builder/) from the
     builder VM;
-  - every management-plane VM, from the new release's template
-    ([Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/)).
+  - every management-hypervisor VM, from the new release's template
+    ([Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/)).
 - Each rebuild is a [change record](/docs/policies/change-management/), which records how long it
   took and every step that was not in the runbook.
 - A step that was not in the runbook is a finding. The runbook or the automation is fixed in that

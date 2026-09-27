@@ -7,7 +7,7 @@ aliases:
 
 # Allocate VM Identity
 
-A management-plane VM's inventory entry exists **before** its MAC does. For bare
+A management-hypervisor VM's inventory entry exists **before** its MAC does. For bare
 metal a MAC is a hardware fact read off a NIC and typed into inventory; for a
 cloned VM there is no NIC to read until something creates one. So the MAC is
 **derived from the Proxmox VMID** and written into inventory by a tool, rather
@@ -24,7 +24,7 @@ the DHCP reservation and the address all follow from it.
 
 | Scenario | Action |
 |----------|--------|
-| New management-plane VM | Allocate identity before first boot |
+| New management-hypervisor VM | Allocate identity before first boot |
 | Auditing the substrate | Run read-only; reports the next free VMID |
 | Suspected drift | Run read-only; fails naming the offending host |
 | Renumbering a VM | Delete the old DHCP reservation **first** — see below |

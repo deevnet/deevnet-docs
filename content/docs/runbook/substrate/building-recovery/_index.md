@@ -36,7 +36,7 @@ With artifacts pre-staged, the Builder can build the entire substrate without in
 | Capacity expansion | Adding hosts to existing site |
 
 In all cases, the process starts with seeding MAC addresses into inventory. Bare-metal
-MACs are read off the hardware and recorded; management-plane VMs have no NIC to read
+MACs are read off the hardware and recorded; management-hypervisor VMs have no NIC to read
 until one is created, so their MACs are derived from the VMID instead — see
 [Allocate VM Identity](vm-identity/).
 
@@ -49,7 +49,7 @@ The substrate (Core Router, hypervisors, network infrastructure) is stateless. A
 This means:
 - No substrate snapshots or backups to maintain
 - No state synchronization concerns
-- Any host can be wiped and rebuilt at any time, and the Builder and management-plane VMs are, once per Fedora release ([Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule))
+- Any host can be wiped and rebuilt at any time, and the Builder and management-hypervisor VMs are, once per Fedora release ([Resiliency](/docs/policies/risk-management/resiliency/#rebuilds-are-exercised-on-a-schedule))
 - Hardware replacement is straightforward
 
 **Application tenants are different.** Tenant workloads may have stateful data (databases, user files, etc.) that requires backup and recovery procedures. A tenant rebuilds itself from its own repository and state; see [Tenant Operations](/docs/runbook/tenant/).
@@ -70,7 +70,7 @@ flowchart TD
     F["<b>6. Build Network</b><br/>VLANs, firewall, DHCP, wireless<br/><code>make core-auth</code>"]:::transition
     G["<b>7. Build Management Plane</b><br/>Manual Proxmox install, then Ansible"]:::manual
     H["<b>8. Allocate VM Identity</b><br/>VMID &rarr; MAC &rarr; DHCP reservation"]
-    I["<b>9. Build Management-Plane VMs</b><br/>Clone from template, or PXE netboot"]
+    I["<b>9. Build Management-Hypervisor VMs</b><br/>Clone from template, or PXE netboot"]
     J["<b>10. Verify Site</b><br/>Network, DNS, DHCP, PXE validation"]
     K["<b>11. Admit Tenants</b><br/>Operator admits each tenant name"]
     L["<b>12. Tenants Apply</b><br/>Each tenant applies its own Terraform"]
@@ -101,7 +101,7 @@ flowchart TD
 - [Build Network](build-network/) — Core Router install, network segmentation, transition to core-authoritative (`make core-auth`)
 - [Build Management Plane](build-management-plane/) — Install and configure the Proxmox hypervisors
 - [Allocate VM Identity](vm-identity/) — Derive management-VM MACs from their VMID before first boot
-- [Build a Management-Plane VM](build-management-vm/) — Put an OS on the VM, by template clone or PXE netboot
+- [Build a Management-Hypervisor VM](build-management-hypervisor-vm/) — Put an OS on the VM, by template clone or PXE netboot
 
 ### Validate
 

@@ -12,7 +12,7 @@ VMs on. It applies to a new node, and to a rebuild of an existing one. The worke
 management hypervisor, `dv02hyp001p01`.
 
 This covers the **hypervisors themselves**. Putting an OS on the VMs that run on top of them is
-[Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/).
+[Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/).
 
 Everything below comes from inventory or from code, except three manual steps: installing Proxmox
 from the ISO, running the first bootstrap script at the console, and creating the API token.
@@ -203,7 +203,7 @@ Management stays untagged.
    A rebuilt VM gets new volumes. `lvremove` an orphan only once you're sure nothing on it is
    needed.
 3. **VMs.** Follow [Allocate VM Identity](/docs/runbook/substrate/building-recovery/vm-identity/) and
-   [Build a Management-Plane VM](/docs/runbook/substrate/building-recovery/build-management-vm/). Allocated
+   [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/). Allocated
    VMIDs are kept in inventory, so each VM gets back the same MAC and address.
 
 ## Verify

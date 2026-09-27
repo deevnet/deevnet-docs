@@ -110,5 +110,5 @@ implements it with Proxmox SDN — see [Tenant Fabric (SDN)](tenant-fabric/).
 
 Tenant workload MACs are **derived by the Deevnet API** from the tenant's index, like the rest of a
 tenant's identifiers ([Tenant → The Tenant Contract](/docs/architecture/tenant/#the-tenant-contract)).
-Management-plane VMs follow the inventory-defined policy on the
+Management-hypervisor VMs follow the inventory-defined policy on the
 [Management Hypervisor](/docs/platforms/management-plane/management-hypervisor/#deterministic-mac-addressing).

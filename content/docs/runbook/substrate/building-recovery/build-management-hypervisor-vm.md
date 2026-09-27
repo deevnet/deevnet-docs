@@ -1,13 +1,14 @@
 ---
-title: "Build a Management-Plane VM"
+title: "Build a Management-Hypervisor VM"
 weight: 13
 aliases:
   - /docs/runbook/building-recovery/build-management-vm/
+  - /docs/runbook/substrate/building-recovery/build-management-vm/
 ---
 
-# Build a Management-Plane VM
+# Build a Management-Hypervisor VM
 
-Two supported ways to put an OS on a management-plane VM. Both produce a host that is
+Two supported ways to put an OS on a management-hypervisor VM. Both produce a host that is
 reachable at its reserved address, carries a deterministic MAC, and can be rebuilt from
 its declaration.
 

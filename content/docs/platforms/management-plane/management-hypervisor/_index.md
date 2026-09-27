@@ -54,12 +54,12 @@ Templates are built using Packer and stored locally on each hypervisor. New VMs 
 
 ## Deterministic MAC Addressing
 
-For management-plane VMs, network identity must be stable and reproducible.
+For management-hypervisor VMs, network identity must be stable and reproducible.
 
 ### Policy
 
 - Proxmox does **not** generate deterministic MAC addresses automatically
-- All management-plane VMs explicitly define MAC addresses
+- All management-hypervisor VMs explicitly define MAC addresses
 - A MAC is **derived from the VM's Proxmox VMID** inside the locally
   administered `02:de:<site octet>` namespace, then written into
   version-controlled inventory
