@@ -62,6 +62,14 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0028: Tenant Workload Login](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/) —
+  *Proposed.* Answers ADR-0018's open question 3. A tenant logs in to its own workloads with a public
+  key it supplies through `ssh_keys`; the private key never leaves the tenant, so the substrate holds
+  nothing to leak or recover. Keys land on a tenant account the API reports as `login_user`, with
+  passwordless sudo. Tenant workloads clone a separate `fedora-tenant-*` template whose build removes
+  `a_autoprov` and fails if a trace remains, so the operator has no standing access and gets in only
+  with a key the tenant adds. One zone-level rule lets `DVNTM-TD` reach the overlay on port 22; the key,
+  not the network, keeps tenants out of each other's workloads. An OpenBao SSH CA stays the end state.
 - [ADR-0021: Tenant Secrets](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/) —
   *Proposed.* Answers ADR-0016 §8, which left tenant namespaces for their own record. Each tenant
   gets a namespace in the substrate's OpenBao, made by the API, and it holds a copy of the tenant's
