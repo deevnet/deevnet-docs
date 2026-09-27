@@ -13,8 +13,9 @@ For whoever is **building something on Deevnet** — you know Terraform, you may
 and you want a device or a service running on the platform without learning how the platform is
 built.
 
-A picture to keep in mind: the mobile kit is set up at a [CARPE](https://carpe-tech.org/) meetup, and you want a Pico W or an ESP32
-on your bench to send messages to a backend. This section walks from "I have nothing" to that.
+A picture to keep in mind: the mobile kit is set up at a meetup of a local microcontroller and
+edge-compute group ([CARPE](https://carpe-tech.org/), for example), and you want a Pico W or an
+ESP32 on your bench to send messages to a backend. This section walks from "I have nothing" to that.
 
 ---
 
