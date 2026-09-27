@@ -42,6 +42,27 @@ trust class differently.
 |---|---|---|
 | `iot` | devices you build and flash yourself | yes |
 | `iot_vendor` | commercial devices that phone home to a vendor cloud | not configured |
+| `tenant_dev` | your computers on `DVNTM-TD`, the network you develop from | yes |
+
+## Your `DVNTM-TD` keys
+
+Your first `DVNTM-TD` key comes with your admission, because you need that network to reach the API
+at all. After your first apply it is one of your tenant's keys, named `admission`. For another
+computer, or a teammate's, issue one more:
+
+```hcl
+resource "deevnet_iot_wifi_key" "second_laptop" {
+  tenant      = deevnet_tenant.this.name
+  name        = "second-laptop"
+  trust_class = "tenant_dev"
+  mac         = "AA-BB-CC-00-11-22"   # optional: this key then works from that computer only
+}
+```
+
+`mac` binds a key to one computer, so a key that leaks is useless elsewhere. Your computer probably
+uses a private Wi-Fi address per network: bind the one it shows while joined to `DVNTM-TD`.
+Computers on `DVNTM-TD` cannot reach each other; each reaches only the site's services and your
+workloads.
 
 ## Rotating it
 
@@ -58,5 +79,4 @@ issues a new key, and **every device holding the old one drops off** until it is
   service still wants its own credential (the broker wants a broker account)
   ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/))
 - **Your devices cannot reach your workloads directly.** Both talk to the broker
-- **Known defect:** on a *freshly built* site whose key profile started empty, the first key issued
-  does not authenticate. The mobile site is past this; it matters only after a site rebuild
+

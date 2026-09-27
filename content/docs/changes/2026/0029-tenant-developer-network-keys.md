@@ -10,8 +10,8 @@ weight: -29
 | **Date** | 2026-09-27 |
 | **Change type** | Configuration |
 | **Classification** | Disruptive |
-| **Status** | In progress |
-| **Window** | 2026-09-27, started 15:04 |
+| **Status** | **Complete, 2026-09-27.** `DVNTM-TD` has one key per tenant, issued at admission and adopted by the tenant; its computers are isolated from each other. The first key in the fresh profile worked on the first join. |
+| **Window** | 2026-09-27, 15:04 to ~17:15 |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller: the `DVNTM-TD` SSID, a new PPSK profile, two IP groups, two EAP ACLs), `dv02wap001p01` (the AP it provisions), `dv02prv001v01` (the API, migration 0008) |
 | **Automation** | `deevnet.net` `playbooks/omada-wireless.yml`; `deevnet-provisioning-api` `make stage`; `terraform-provider-deevnet` `make stage`; `deevnet.mgmt` `site.yml --tags deevnet-api` and `--tags tenant-downloads`. Inventory `ansible-inventory-deevnet/mobile` |
@@ -217,18 +217,81 @@ place.
 
 ## Outcome
 
-*Completed after the change has run.*
+Run from the Builder; the client tests from the operator's own computer and a phone. Times are
+approximate.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| ~15:30 | 1 | A read-only check first: every decrypted vault file matched its committed plaintext (11 of 11 `SAME`). `deevnet_wifi_psk.tenant_dev` removed, the file re-encrypted, committed with inventory #61 |
+| ~15:45 | 2 | A disabled UI rule with protocols "All" read back as **`protocols: [256]`**; recorded as `omada_acl_protocols_all` and the rule deleted |
+| ~15:55 | 3 | Plan: profile `DVNTM-TD` to create, `DVNTM-TD` to recreate (security 3 → 4), two isolation ACLs. First apply created the profile with the placeholder, deleted and recreated the SSID, then **stopped** at the isolation check (see departures). After the fix, a second apply created the IP groups and ACLs: `allow gateway` (index 1, policy 1) ahead of `drop clients` (index 2, policy 0), both on the SSID, protocols `[256]`. A fresh plan wanted nothing |
+| ~16:00 | 4 | API role: `DEEVNET_ADMISSION_WIFI_CLASS=tenant_dev`, trust classes `iot=DVNTM-IOT:30,tenant_dev=DVNTM-TD:45`, `/readyz` `200` (API `v0.9.1`, already live) |
+| ~16:00 | 5 | Tenant **`cdeever`** admitted (no MAC). Its key joined `DVNTM-TD` **on the first try** (`10.20.45.50`): the first key in a freshly created profile works, which CHG-0013 phase 5 had found broken for a profile created empty |
+| ~16:10 | 5 | Throwaway `tprobe2` admitted; a phone joined with its key. The Mac **could** reach the phone: the ACLs were on the controller, enabled and correct, but the AP had not applied them. After a force-provision of the AP, the Mac could no longer reach the phone (ping lost, `nc` unreachable), and `segment-check.sh DVNTM-TD` on the tenant's own key: **29 passed, 0 failed** (log below) |
+| ~16:20 | 5 | `DELETE /v1/admissions/tprobe2`: `204`, then `404`. The phone could no longer join |
+| ~16:50 | 5 | `cdeever` created from tdemo's reworked README on the operator's Mac. `GET …/cdeever/wifi-keys` lists **`admission`** (`tenant_dev`, `DVNTM-TD`) beside `devices` (`iot`): the admission key is the tenant's own. The tenant's backend workload took its key, and `ssh tenant@backend.cdeever…` worked |
+
+{{< details "segment-check.sh DVNTM-TD on the tenant's own key, 2026-09-27" >}}
+```text
+Segment check: DVNTM-TD (from 10.20.45.50)
+== Address and DNS
+  PASS  lease 10.20.45.50
+  PASS  api.mobile.deevnet.net -> 10.20.25.20
+  PASS  tfstate.mobile.deevnet.net -> 10.20.25.20
+  PASS  mqtt.mobile.deevnet.net -> 10.20.35.20
+  PASS  downloads.mobile.deevnet.net -> 10.20.25.22
+  PASS  REACH https://api.mobile.deevnet.net:8080 - HTTP 404 (TLS verified)
+  PASS  REACH https://tfstate.mobile.deevnet.net:9000 - HTTP 403 (TLS verified)
+  PASS  mqtt.mobile.deevnet.net:8883 TLS verified
+  PASS  dv02obs001v01.mobile.deevnet.net:8427 TLS verified
+  PASS  REACH https://dv02obs001v01.mobile.deevnet.net:3000 - HTTP 302 (TLS verified)
+  PASS  REACH https://downloads.mobile.deevnet.net:8443 - HTTP 200 (TLS verified)
+  PASS  internet (https://example.com 200)
+  PASS  BLOCK obs-ssh(platform) 10.20.25.22:22
+  PASS  BLOCK Builder-ssh(management) 10.20.99.95:22
+  PASS  BLOCK router-GUI(management) 10.20.99.1:443
+  PASS  BLOCK hypervisor-PVE(management) 10.20.99.21:8006
+  PASS  BLOCK router-GUI-on-own-gateway 10.20.45.1:443
+  PASS  BLOCK router-ssh-on-own-gateway 10.20.45.1:22
+  PASS  BLOCK router-on-trusted 10.20.10.1:443
+  PASS  BLOCK prv-ssh(platform) 10.20.25.20:22
+  PASS  BLOCK prv-other-port(platform) 10.20.25.20:8200
+  PASS  BLOCK msg-ssh(iot_backend) 10.20.35.20:22
+  PASS  BLOCK broker-plaintext(iot_backend) 10.20.35.20:1883
+  PASS  REACH tenant-workload-ssh(ADR-0028) 10.20.130.10:22 (open)
+  PASS  BLOCK pi(iot,if-on) 10.20.30.11:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.12:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.13:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.14:22
+  PASS  BLOCK edge-router-admin(CHG-0023) 192.168.8.1:80
+
+RESULT: DVNTM-TD - 29 passed, 0 failed
+```
+{{< /details >}}
 
 ### Departures from the plan
 
--
+- **A play default hid inventory.** The wireless play declared `omada_acl_protocols_all: []` in its
+  own `vars`, and play vars outrank group vars, so inventory's `[256]` never reached it. Step 3's
+  first apply recreated the SSID and then stopped at the isolation check. The controller was
+  consistent (profile and SSID made, ACLs not), and after the fix (net #41) a second apply finished.
+- **The AP did not apply the isolation rules until it was force-provisioned.** The play now
+  force-provisions the AP, through the documented `forceProvisionDevice`, whenever a run creates an
+  SSID, a PPSK profile or an isolation rule, and never on a run that changes nothing (net #42).
+- **The gateway does not answer ping** from `DVNTM-TD`. That is the router's policy for the segment,
+  not the isolation rules; DHCP and DNS on it work.
+- **Step 2's value went straight to `main`** (inventory `485b54f`) after a failed attempt left the
+  working copy on `main`. The operator chose to keep it.
+- **MAC binding was not tried on hardware.** The API, provider and controller support it; no key was
+  bound.
+- **Step 6 was not needed.** eds, tdemo and mabell have one owner, whose `cdeever` key covers them.
+- **Newcomer snags** from the run are fixed in tdemo's README and `install-provider.sh`: the scripts
+  were named but never fetched, `ssh_keys` went in as a string, and a silent 28 MB download looked
+  like a hang.
+- **Tenant `cdeever` is kept** as a live tenant.
 
 ## Follow-ups
 
 - [ ] TLS on the state store: ADR-0029 §4 depends on it.
-- [ ] If step 5.1 passed, record CHG-0013's defect as fixed, by creating profiles non-empty.
+- [x] CHG-0013's defect is fixed by creating profiles non-empty: proven by step 5's first join.
 - [ ] A per-session key expiry for meetups (ADR-0029 open question 1).
