@@ -59,12 +59,12 @@ Hardware v1.0 (US). TP-Link's firmware file labeled V1.6 is the right one for th
 version is in the
 [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Wireless access point |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

@@ -61,12 +61,12 @@ Which LAN port each device uses is not recorded.
 GL.iNet firmware, an OpenWrt fork. The version is not recorded; see the
 [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Edge router |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

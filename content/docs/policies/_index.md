@@ -12,7 +12,7 @@ identified and accepted. The [runbook](/docs/runbook/) says *how to do* a thing;
 
 The records these procedures produce live in their own sections:
 [Change Records](/docs/changes/), [Incident Records](/docs/incidents/), and
-[Certification](/docs/platforms/certification/) under Implementation & Tooling.
+[Evaluations](/docs/platforms/evaluations/) under Implementation & Tooling.
 
 <div class="section-cards">
   <a class="section-card" href="change-management/">
@@ -29,6 +29,6 @@ The records these procedures produce live in their own sections:
   </a>
   <a class="section-card" href="lifecycle-management/">
     <h3>Lifecycle Management</h3>
-    <p>From selection to retirement, including certification: what hardware and software must demonstrate before they are relied on.</p>
+    <p>From selection to retirement, including evaluation: what hardware and software must demonstrate before they are relied on.</p>
   </a>
 </div>

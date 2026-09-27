@@ -76,12 +76,12 @@ Hardware revision 1.20 (a unit labeled V1.26 takes the same firmware). It holds 
 the running version and a rollback. Both are in the
 [Software Catalog](/docs/platforms/software-catalog/#switching-wireless-and-edge).
 
-## Certification
+## Evaluation
 
 | | |
 |---|---|
 | **Role** | Access switch |
-| **Current** | {{< status-badge "planned" "Not yet certified" >}} In service from before the [Certification](/docs/policies/lifecycle-management/certification/) policy |
+| **Current** | {{< status-badge "planned" "Not yet evaluated" >}} In service from before the [Evaluation](/docs/policies/lifecycle-management/evaluation/) policy |
 
 ### Revisions
 

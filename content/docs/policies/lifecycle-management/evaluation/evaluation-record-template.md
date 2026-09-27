@@ -1,11 +1,13 @@
 ---
-title: "Certification Record Template"
+title: "Evaluation Record Template"
 weight: 3
+aliases:
+  - /docs/policies/lifecycle-management/certification/certification-record-template/
 ---
 
-# Certification Record Template
+# Evaluation Record Template
 
-The shape of a certification: one **item page** per model or product, and one **revision page**
+The shape of an evaluation record: one **item page** per model or product, and one **revision page**
 per evaluation beneath it. Copy the skeletons below.
 
 ---
@@ -14,18 +16,18 @@ per evaluation beneath it. Copy the skeletons below.
 
 | | Hardware | Software |
 |---|---|---|
-| **Item** | The model's page, `content/docs/platforms/hardware/<group>/<model>/_index.md` | `content/docs/platforms/certification/software/<layer>/<product>/_index.md` |
+| **Item** | In service: the model's page, `content/docs/platforms/hardware/<group>/<model>/_index.md`. A candidate: `content/docs/platforms/evaluations/hardware/<model>/_index.md` | `content/docs/platforms/evaluations/software/<layer>/<product>/_index.md` |
 | **Revision** | `…/<model>/<YYYY-MM>-hw-<revision>.md`, e.g. `2026-10-hw-1-20.md` | `…/<product>/<line>.md`, e.g. `26-7.md` |
 | **Layer** | `network` or `compute`, as on [Hardware](/docs/platforms/hardware/) | `network`, `management-plane` or `tenant-compute`, as on [Implementation & Tooling](/docs/platforms/), or `tooling` for build and automation tools |
 | **Item title** | The model, e.g. "TP-Link SG2218" | The product, e.g. "OPNsense" |
 | **Revision title** | "2026-10 · hardware 1.20" | "26.7" |
 | **Weight** | The first revision is `1000`, and each new one is one lower, so the newest sorts first | the same |
-| **Index** | The model is already listed on [Hardware](/docs/platforms/hardware/); update its Certification section | Add the item to its layer page, and to [Certification](/docs/platforms/certification/) |
+| **Index** | In service: already listed on [Hardware](/docs/platforms/hardware/); update its Evaluation section. A candidate: add it to [Evaluations](/docs/platforms/evaluations/) | Add the item to its layer page, and to [Evaluations](/docs/platforms/evaluations/) |
 
 Add `bookCollapseSection: true` to every item page, so its revisions stay folded in the sidebar.
 
-For hardware, the item page already exists: it is the model's page under [Hardware](/docs/platforms/hardware/).
-Its **Certification** section carries the Role and Current rows and the Revisions table from the
+For hardware in service, the item page already exists: it is the model's page under [Hardware](/docs/platforms/hardware/).
+Its **Evaluation** section carries the Role and Current rows and the Revisions table from the
 skeleton below, and its revision pages go beneath it.
 
 ---
@@ -42,8 +44,8 @@ bookCollapseSection: true
 
 | | |
 |---|---|
-| **Role** | <what it is certified for, e.g. core router> |
-| **Current** | {{</* status-badge "complete" "Certified" */>}} <revision or line> |
+| **Role** | <the role it is evaluated for, e.g. core router> |
+| **Current** | {{</* status-badge "complete" "Approved" */>}} <revision or line> |
 | **Selected on** | [<platform page>](/docs/platforms/...) |
 | **In the catalog** | [Software Catalog](/docs/platforms/software-catalog/#...) *(software only)* |
 
@@ -53,7 +55,7 @@ bookCollapseSection: true
 
 | Revision | Date | Verdict | Notes |
 |---|---|---|---|
-| [<revision>](<slug>/) | YYYY-MM-DD | Certified | <one line> |
+| [<revision>](<slug>/) | YYYY-MM-DD | Approved | <one line> |
 ````
 
 ---
@@ -79,13 +81,16 @@ weight: <1000 for the first revision; one lower for each after>
 
 ## Criteria
 
-| Area | Tested | How | Result |
-|---|---|---|---|
-| <area from the process page> | yes / no / not tested | <what was done> | <what was seen> |
+One row per criterion on the [hardware](/docs/policies/lifecycle-management/evaluation/hardware-evaluation/#criteria) or
+[software](/docs/policies/lifecycle-management/evaluation/software-evaluation/#criteria) page, in order, including the Preferred ones.
+
+| # | Criterion | Result | How it was checked | What was seen |
+|---|---|---|---|---|
+| H1 / S1 | <criterion> | Passed / Failed / Not tested / Not applicable (why) | <what was done> | <measurements, log lines, links> |
 
 ## Conditions
 
-<Certified with conditions only: each condition, and what would clear it. Otherwise "None".>
+<Approved with conditions only: each Required criterion missed or not tested, and what would clear it. Otherwise "None".>
 
 ## Findings
 
