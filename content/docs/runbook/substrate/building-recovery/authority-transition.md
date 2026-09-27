@@ -3,6 +3,7 @@ title: "Authority Transition"
 weight: 30
 aliases:
   - /docs/runbook/building-recovery/authority-transition/
+  - /docs/platforms/management-plane/core-services/
   - /docs/runbook/authority-transition/
 ---
 
@@ -46,7 +47,7 @@ Transfer DNS/DHCP authority from the builder to production network infrastructur
 
 1. **Transition builder to TFTP-only mode:**
    ```bash
-   cd ~/home/ansible-collection-deevnet.builder
+   cd ansible-collection-deevnet.builder
    make core-auth
    ```
    This disables dnsmasq, stops masquerading, installs standalone TFTP, and swaps the builder's IP from the gateway address to its reserved address. The SSH connection will drop.
@@ -91,14 +92,14 @@ Transfer DNS/DHCP authority from production network infrastructure back to the b
 
 1. **Disable OPNsense DNS/DHCP** (if the router is still operational):
    ```bash
-   cd ~/home/ansible-collection-deevnet.net
+   cd ansible-collection-deevnet.net
    ansible-playbook playbooks/disable-opnsense-services.yml --ask-vault-pass
    ```
    If the router is down or unreachable, skip this step.
 
 2. **Enable bootstrap-authoritative mode on the builder:**
    ```bash
-   cd ~/home/ansible-collection-deevnet.builder
+   cd ansible-collection-deevnet.builder
    make bootstrap-auth
    ```
    This enables dnsmasq with DNS host records and DHCP reservations from inventory, configures masquerading on the WAN interface, and swaps the builder's IP from the reserved address to the gateway address. The SSH connection will drop.
@@ -124,10 +125,10 @@ Transfer DNS/DHCP authority from production network infrastructure back to the b
 
 Re-enable OPNsense services and return the builder to production mode:
 ```bash
-cd ~/home/ansible-collection-deevnet.net
+cd ansible-collection-deevnet.net
 ansible-playbook playbooks/enable-opnsense-services.yml --ask-vault-pass
 
-cd ~/home/ansible-collection-deevnet.builder
+cd ansible-collection-deevnet.builder
 make core-auth
 ```
 
@@ -144,6 +145,18 @@ make core-auth
 | Default gateway | Builder | Core Router |
 | Masquerading | Enabled (WAN interface) | Disabled |
 | Use case | Greenfield / full recovery | Normal operations |
+
+### Builder DNS records
+
+The Builder's name and its service aliases resolve in both modes, from whichever side holds authority. The Builder's address differs by mode. The values are for the mobile site, from inventory (`host_vars/dv00bld001p01.yml`):
+
+| Record | Bootstrap-Authoritative (dnsmasq) | Core-Authoritative (Unbound) |
+|--------|-----------------------------------|------------------------------|
+| `dv00bld001p01.mobile.deevnet.net` A | `10.20.99.1` | `10.20.99.95` |
+| `artifacts.mobile.deevnet.net` CNAME | `dv00bld001p01` | `dv00bld001p01` |
+| `pxe.mobile.deevnet.net` CNAME | `dv00bld001p01` | `dv00bld001p01` |
+
+Clients use the aliases rather than the address, so moving authority between the Builder and the router changes nothing for them.
 
 ---
 

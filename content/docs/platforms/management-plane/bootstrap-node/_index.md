@@ -79,23 +79,3 @@ Per the [Naming Standard](/docs/standards/naming/):
 - `pxe.mobile.deevnet.net` → `bootstrap.mobile.deevnet.net` (CNAME)
 
 Per [Multihoming](/docs/standards/correctness/#33-multihoming-service-co-location), the bootstrap node hosts multiple services. This co-location is intentional and documented—blast radius is understood.
-
----
-
-## Git Repository Layout
-
-All Deevnet repositories are checked out to a standard location:
-
-```
-~/dvnt/
-├── ansible-collection-deevnet.builder/   # Provisioning roles
-├── ansible-collection-deevnet.mgmt/      # Management plane and centralized services
-├── ansible-collection-deevnet.net/       # Network device configuration
-├── ansible-inventory-deevnet/            # Host inventory (mobile)
-├── deevnet-image-factory/                # Packer image builds
-├── deevnet-tenant-fabric/                # Tenant EVPN fabric (hypervisor readiness)
-├── deevnet-tenant-tdemo/                 # The demo tenant
-└── deevnet-docs/                         # This documentation (submodule)
-```
-
-The inventory is site-specific. Running playbooks from the bootstrap node targets the connected site.

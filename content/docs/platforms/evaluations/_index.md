@@ -34,6 +34,7 @@ By layer, under [Software](software/).
 | Item | Layer | Role | Current |
 |---|---|---|---|
 | [VyOS](software/network/vyos/) | Network | Core router | {{< status-badge "on-hold" "On hold" >}} Not yet evaluated |
+| [Substrate package mirror](software/management-plane/package-mirror/) | Management Plane | Artifact server | {{< status-badge "planned" "Not yet evaluated" >}} Candidate; nothing built |
 
 Everything in service today predates the policy, and is
 {{< status-badge "planned" "Not yet evaluated" >}} until it is checked. The

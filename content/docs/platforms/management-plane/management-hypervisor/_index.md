@@ -135,13 +135,9 @@ For a two-node lab environment:
 
 ## Provisioning Workflow
 
-1. **Unattended install** from the image factory's ISO
-2. **Bootstrap**: the node's `netconfig` script at the console, then its `configure` script
-3. **Ansible post-config**: node baseline, data-disk storage, API token (manual), VLAN-aware bridge
-4. **Template build**: Packer, straight onto the node
-5. **VM creation**: identity allocated, then cloned from the template via Ansible
-
-The full procedure is [Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
+The node is installed unattended from the image factory's ISO, finished by Ansible, and given a
+Packer-built template that management VMs are cloned from. The procedure is
+[Build Management Plane](/docs/runbook/substrate/building-recovery/build-management-plane/).
 
 Management VMs are created using **Ansible only** — simplicity and recoverability are prioritized over drift detection.
 

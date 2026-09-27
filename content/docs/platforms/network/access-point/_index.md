@@ -106,4 +106,4 @@ password is generated, returned to nobody and stored nowhere, so it cannot be us
 and it disappears the moment any real key is issued. It is only ever present when the alternative
 would be an empty profile.
 
-Changing any of this is `make wireless` in `deevnet.net`, never the controller UI.
+Changing any of this goes through inventory, never the controller UI. See [Build Network: Wireless](/docs/runbook/substrate/building-recovery/build-network/#wireless).

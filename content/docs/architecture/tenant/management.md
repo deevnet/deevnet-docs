@@ -147,15 +147,9 @@ If a tenant depends on another service:
 
 ## Operational Runbooks
 
-Common tenant operations:
-
-| Operation | Runbook |
-|-----------|---------|
-| Create new tenant | Define fabric overlay network, attach perimeter policy, deploy VMs |
-| Add VM to tenant | Update Terraform, apply, verify |
-| Debug tenant network | Check the fabric overlay, fabric DHCP, and perimeter rules |
-| Investigate tenant issue | Query tenant-scoped logs and metrics |
-| Decommission tenant | Destroy VMs, clean up network, archive data |
+The procedures are in the runbook: [Tenant Admission](/docs/runbook/substrate/tenant-admission/)
+for the operator's side, and [Tenant Operations](/docs/runbook/tenant/) for everything a tenant does
+itself.
 
 ---
 

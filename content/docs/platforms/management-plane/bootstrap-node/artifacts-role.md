@@ -66,74 +66,7 @@ Tenants and edge devices can follow their own update patterns, potentially with 
 
 ## Package Mirrors
 
-Beyond Kickstart and PXE artifacts, a fully air-gapped substrate requires local package repositories for post-install updates and additional package installation.
-
-### Simple Approach: dnf reposync + nginx
-
-For Fedora-based substrate hosts, mirror the essential repositories locally:
-
-**Repositories to mirror:**
-- `fedora` — Base OS packages
-- `updates` — Security and bug fixes
-
-**Basic sync:**
-```bash
-dnf reposync --repoid=fedora --repoid=updates \
-  --download-metadata \
-  --destdir=/var/www/html/repos/fedora/41
-```
-
-**Directory structure:**
-```
-/var/www/html/repos/
-└── fedora/
-    └── 41/
-        ├── fedora/
-        │   └── Packages/
-        │   └── repodata/
-        └── updates/
-            └── Packages/
-            └── repodata/
-```
-
-**Target machine repo configuration** (`/etc/yum.repos.d/local.repo`):
-```ini
-[local-fedora]
-name=Local Fedora Mirror
-baseurl=http://artifacts.mobile.deevnet.net/repos/fedora/41/fedora
-enabled=1
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-41-primary
-
-[local-updates]
-name=Local Fedora Updates Mirror
-baseurl=http://artifacts.mobile.deevnet.net/repos/fedora/41/updates
-enabled=1
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-41-primary
-```
-
-**Sync scheduling:**
-- Manual sync before major provisioning runs
-- Or: scheduled sync (weekly/monthly) via cron/systemd timer
-- Storage: ~100-200GB per Fedora release
-
-### Enterprise Approach: Pulp / Katello
-
-For larger environments or stricter compliance requirements:
-
-| Feature | Benefit |
-|---------|---------|
-| **Content views** | Snapshot package sets for reproducibility |
-| **Promotion workflow** | dev → QA → prod with identical packages |
-| **GPG verification** | Built-in signature validation |
-| **Vulnerability data** | OVAL integration for security scanning |
-| **Lifecycle management** | Track which hosts use which content view |
-
-Consider Pulp/Katello when:
-- Multiple environments need identical, versioned package sets
-- Compliance requires audit trails for package changes
-- Scale exceeds what manual sync can manage
+Not built. Substrate hosts install from the staged install tree, but there is no local mirror for post-install updates, so a fully air-gapped substrate cannot yet patch itself. The options are recorded as a candidate in [Evaluations → Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/).
 
 ---
 
@@ -142,25 +75,6 @@ Consider Pulp/Katello when:
 ### GPG Signatures
 
 DNF validates GPG signatures automatically when `gpgcheck=1`. Ensure GPG keys are pre-installed on target hosts (typically included in Kickstart).
-
-### OpenSCAP Compliance
-
-For hardened substrate hosts, use OpenSCAP to validate against security profiles:
-
-```bash
-oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_cis \
-  /usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml
-```
-
-Can be integrated into post-install automation.
-
-### SBOM Generation
-
-For audit trails, consider generating Software Bill of Materials:
-
-```bash
-rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' > /root/sbom.txt
-```
 
 ---
 
@@ -193,6 +107,6 @@ The artifacts server is the foundation of air-gapped substrate provisioning:
 
 1. **Scope to site** — Don't try to air-gap everything
 2. **Serve via DNS name** — `artifacts.<site>.deevnet.net`
-3. **Include package mirrors** — dnf reposync for Fedora hosts
-4. **Verify integrity** — GPG signatures, OpenSCAP for compliance
+3. **Verify integrity** — GPG signatures on everything installed
+4. **Package mirrors are not built yet** — see [the candidate](/docs/platforms/evaluations/software/management-plane/package-mirror/)
 5. **Document co-location** — If sharing a host with PXE/DNS, track the blast radius

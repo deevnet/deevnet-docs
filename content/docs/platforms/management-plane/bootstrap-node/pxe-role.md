@@ -95,30 +95,34 @@ The Core Router's Kea DHCP provides two critical options for PXE:
 
 | Option | Value | Purpose |
 |--------|-------|---------|
-| **next-server** | 192.168.10.95 | TFTP server IP (bootstrap node) |
+| **next-server** | 10.20.99.95 | TFTP server IP (bootstrap node) |
 | **boot-file-name** | grubx64.efi | UEFI bootloader filename |
 
 ### Subnet-Level Settings
 
-Applied to all hosts on the subnet unless overridden:
+```
+Subnet: 10.20.99.0/24
+Next Server: 10.20.99.95
+```
 
-```
-Subnet: 192.168.10.0/23
-Next Server: 192.168.10.95
-Boot File Name: grubx64.efi
-```
+**`next_server` must be set on the subnet, and no role manages it.** If it is empty, Kea advertises
+its own address in `siaddr`, and UEFI firmware reads `siaddr` rather than DHCP option 66, so the
+client tries to TFTP from the router.
 
 ### Per-Host Reservations
 
-**Per-host reservations override subnet settings.** Each PXE-bootable host must have:
+Reservations are generated from each host's `pxe_boot` block in inventory:
 
 | Field | Example | Notes |
 |-------|---------|-------|
 | MAC Address | 02:DE:20:00:00:CB | Hardware address |
 | IP Address | 10.20.99.96 | Static reservation |
 | Hostname | dv02bld002v01 | DNS hostname |
-| TFTP Server | 10.20.99.95 | Next-server for this host |
+| TFTP Server | 10.20.99.95 | Option 66 (`tftp_server_name`) |
 | Boot File | grubx64.efi | UEFI bootloader |
+
+A reservation carries option 66 but **no `next_server` field**, so it does not substitute for the
+subnet setting above.
 
 ---
 
@@ -216,56 +220,14 @@ Key points:
 
 ## Adding a New PXE Host
 
-### 1. Add DHCP Reservation (Core Router)
-
-Via Core Router UI or API, create a host reservation:
-
-```
-MAC Address: <new-host-mac>
-IP Address: <static-ip>
-Hostname: <hostname>
-TFTP Server Name: 192.168.10.95
-Boot File Name: grubx64.efi
-```
-
-### 2. Add to Ansible Inventory
-
-In `ansible-inventory-deevnet/mobile/group_vars/bootstrap_nodes.yml`:
-
-```yaml
-bootstrap_grub_mac_configs:
-  - hostname: new-host
-    mac: "aa:bb:cc:dd:ee:ff"
-    image_name: "Fedora 43 Server"
-    dest_subdir: "fedora/43"
-    boot_options: >-
-      inst.repo=http://artifacts.mobile.deevnet.net/fedora/43/mirror
-      inst.ks=http://artifacts.mobile.deevnet.net/kickstart/builder-node.ks
-```
-
-### 3. Apply Bootstrap Role
-
-```bash
-cd ~/home/ansible-collection-deevnet.builder
-make rebuild
-ansible-playbook playbooks/site.yml --limit bootstrap_nodes
-```
-
-### 4. Reconfigure Kea
-
-After adding DHCP reservation:
-
-```bash
-# Via Core Router API
-curl -X POST "https://dv02cor002p01/api/kea/service/reconfigure"
-```
+To PXE-build a new host, see [Build a Management-Plane VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-vm/#approach-b--pxe-netboot).
 
 ---
 
 ## Boot Sequence
 
 1. **Power on** — Host starts UEFI PXE boot
-2. **DHCP** — Core Router Kea provides IP + next-server (192.168.10.95) + boot-file (grubx64.efi)
+2. **DHCP** — Core Router Kea provides IP + next-server (10.20.99.95) + boot-file (grubx64.efi)
 3. **TFTP grubx64.efi** — Host downloads network-enabled GRUB
 4. **TFTP grub.cfg** — GRUB fetches default config
 5. **TFTP grub.cfg-MAC** — GRUB finds MAC-specific config (no menu)
@@ -277,40 +239,7 @@ curl -X POST "https://dv02cor002p01/api/kea/service/reconfigure"
 
 ## Troubleshooting
 
-### Check DHCP Options
-
-On the PXE boot screen, verify:
-- **Server IP**: Should be 192.168.10.95 (not 192.168.10.1)
-- **Boot file**: Should be grubx64.efi
-
-If wrong, check both subnet AND per-host reservation in Kea.
-
-### Check TFTP Logs
-
-```bash
-# On bootstrap node
-journalctl -u tftp.service -f
-```
-
-Look for:
-- `RRQ from <ip> filename grubx64.efi` — Bootloader request
-- `Client <ip> finished grubx64.efi` — Successful transfer
-- `RRQ from <ip> filename /grub.cfg-<MAC>` — Config lookup
-
-### Verify Files Exist
-
-```bash
-# On bootstrap node
-ls -la /srv/tftp/grubx64.efi
-ls -la /srv/tftp/grub.cfg-*
-```
-
-### Test TFTP Manually
-
-```bash
-tftp 192.168.10.95 -c get grubx64.efi /tmp/test.efi
-ls -la /tmp/test.efi  # Should be ~1.2MB
-```
+See [Build a Management-Plane VM → Troubleshooting](/docs/runbook/substrate/building-recovery/build-management-vm/#troubleshooting).
 
 ---
 
@@ -333,4 +262,4 @@ The PXE infrastructure is managed by the `bootstrap` role in `deevnet.builder`:
 1. **DHCP** (Core Router Kea) provides next-server and boot-file-name
 2. **TFTP** (bootstrap node) serves GRUB and boot files
 3. **MAC-specific configs** enable zero-touch automated installs
-4. **Per-host reservations** override subnet defaults — update both when adding hosts
+4. **Subnet `next_server`** is required; per-host reservations do not replace it

@@ -59,52 +59,14 @@ substrate is configured, not created, so it does not need that and should not pa
 
 ## What a tenant declares
 
-The whole of a minimal tenant, from
-[`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo) — the reference a new
-tenant is copied from:
+A minimal tenant declares three things: the tenant itself, a workload, and a name for the service it
+runs. The API derives everything else — addresses, identifiers, the network — from the tenant's
+index, so a tenant's configuration holds nothing that is specific to where it lands.
 
-```hcl
-terraform {
-  required_providers {
-    deevnet = {
-      source  = "deevnet/deevnet"
-      version = "~> 0.1"
-    }
-  }
-}
-
-# endpoint, token and CA come from the environment. The token is the
-# single-use enrollment token on the first apply, and this tenant's own
-# token afterwards.
-provider "deevnet" {}
-
-resource "deevnet_tenant" "this" {
-  name = var.tenant_name
-}
-
-# One workload. The API picks its VMID, MAC and address from the tenant's
-# index; the tenant picks what it runs on.
-resource "deevnet_workload" "app" {
-  tenant    = deevnet_tenant.this.name
-  name      = "app"
-  cores     = var.vm_cores
-  memory_mb = var.vm_memory_mb
-  ssh_keys  = var.ssh_keys
-}
-
-# A name beside the workload's own, for the service rather than the machine.
-resource "deevnet_dns_record" "service" {
-  tenant  = deevnet_tenant.this.name
-  name    = "service"
-  address = deevnet_workload.app.address
-}
-```
-
-**To create a tenant, copy this repository and change the name.** Nothing else in it is
-tenant-specific — which is the point of moving allocation behind the API.
-
-One naming constraint survives from the fabric: Proxmox caps SDN zone IDs at **8 characters**, and a
-tenant's zone ID is its name verbatim. Tenant names must fit.
+**To create a tenant, copy the reference tenant and change the name.** Nothing else in it is
+tenant-specific — which is the point of moving allocation behind the API. The reference tenant and
+a walkthrough of its first apply are in the tenant guide:
+[First apply](/docs/runbook/tenant/getting-started/first-apply/).
 
 ---
 
@@ -118,8 +80,7 @@ commit; everything after it is the tenant's own.
 2. **The tenant applies.** The API allocates its index, builds its network and workloads, delegates
    its DNS zone, and returns a token of the tenant's own. The enrollment token is spent.
 3. **The tenant migrates its state**, if it is taking the offered store. The credentials are outputs
-   of the first apply, so the backend is configured after it, with
-   `terraform init -migrate-state` — or the tenant keeps custody of its own state and skips this
+   of the first apply, so the backend is configured after it — or the tenant keeps custody of its own state and skips this
    entirely ([ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/)).
 
 ---
