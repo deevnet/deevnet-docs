@@ -3,7 +3,7 @@ title: "Tenant Platform"
 weight: 4
 tasks_completed: 2
 tasks_in_progress: 5
-tasks_planned: 3
+tasks_planned: 6
 ---
 
 # Tenant Platform
@@ -101,6 +101,16 @@ A repeatable, code-defined tenant lifecycle.
   it ships with an index the module rejects, so the guard does not depend on being read.
 - ✅ DNS publication over RFC 2136 with a per-zone TSIG key (ADR-0004), and a state store tenants
   may use or decline (ADR-0007).
+- ⏳ Record the Deevnet API's Proxmox role, `DeevnetTenantBuilder`: it was created by hand and its
+  privileges are written down nowhere. Read `pveum role list` on `dv02hyp002p02` and record it on the
+  [Deevnet API](/docs/platforms/deevnet-software/deevnet-api/) page, or have a role create it, so a
+  rebuilt tenant hypervisor can recreate it
+- ⏳ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
+  back in through an operator reconcile
+  ([Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/)), proven on `tdemo`
+- ⏳ Bring the Deevnet API's README up to date: its route table (Wi-Fi keys, devices and broker
+  accounts are live, not `501`) and its OpenBao field list (`broker_writer_key`, `log_writer_key`,
+  `grafana_admin_password`)
 
 ## First tenant — end-to-end 🔄
 
