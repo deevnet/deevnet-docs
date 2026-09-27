@@ -31,7 +31,7 @@ service keeps and where:
   snapshot is still unproven
   ([OpenBao Drills → Snapshot restore](/docs/runbook/substrate/recovery/substrate-secrets-drills/#snapshot-restore)).
 - **The Deevnet API** registry and the **tenant state store** (`dv02prv001v01`) sit on the VM's own
-  disks with no copy ([ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/)).
+  disks with no copy ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/)).
 - **The Omada controller** (`dv02nms001v01`) has no snapshot
   ([Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/)).
 

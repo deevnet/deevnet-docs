@@ -1,6 +1,6 @@
 ---
 title: "CHG-0001: Flat Network → VLANs"
-weight: 1
+weight: -1
 bookCollapseSection: true
 aliases:
   - /docs/changes/2026/2026-03-21-flat-network-to-vlans/
@@ -72,7 +72,7 @@ The end state that counts as done:
   left on 192.168.10.x.
 
 VLANs 50–52 were per-tenant segments at the time. On 2026-08-30 they were replaced by the tenant
-fabric's transport segments ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
+fabric's transport segments ([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)).
 The [network reference](/docs/runbook/substrate/network/network-reference/) has the current table.
 
 ## Scope

@@ -24,10 +24,10 @@ How tenant traffic is isolated, routed, and addressed.
 
 - **Decided:** the fabric model — an EVPN overlay owned by the tenant compute domain,
   self-contained per hypervisor, single-member now and expandable to a cluster
-  ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)).
+  ([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)).
 - **Decided:** the numbering scheme — the site `/16` split so tenant overlays live at
   `10.20.128.0/18` and fabric loopbacks at `10.20.255.0/24`, with every tenant identifier derived
-  from a single allocated index ([ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)).
+  from a single allocated index ([ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/)).
 - **Deferred — DNS:** how tenant records are authored and published into the substrate zone is
   still undecided, and is tracked as its own thread below rather than holding this milestone open.
   Proxmox's SDN DNS integration targets a PowerDNS API; the core router runs Unbound, so it does
@@ -38,11 +38,11 @@ How tenant traffic is isolated, routed, and addressed.
 The interface every tenant must satisfy to be rebuildable against the substrate.
 
 **In practice, the contract is now the Deevnet API and its Terraform provider**
-([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), deployed by
+([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), deployed by
 [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)). A tenant is admitted with a single-use
 enrollment token, then declares itself, its workloads and its names through one provider. It holds
 no Proxmox credential, no vault access and no index. What it may consume is
-[ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/)'s, and the tenant
+[ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)'s, and the tenant
 runbook describes each service. What is still missing is the boundary written down as one
 specification.
 
@@ -70,7 +70,7 @@ defined as code rather than as hand-maintained node state.
   segment.
 - ✅ Tenant egress through the perimeter: transit forwarding and a default route inside each
   tenant VRF, both code-managed
-  ([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)). Proxmox's
+  ([ADR-0003](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/)). Proxmox's
   own exit-node behavior would have routed tenants *around* the perimeter onto the management
   segment.
 - ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
@@ -82,7 +82,7 @@ How a tenant authors its own records and publishes them into the substrate zone 
 
 - **Decided:** RFC 2136 updates with a per-zone TSIG key, into substrate-run PowerDNS, reached
   through the core router's forward
-  ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+  ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)).
 - Proven end to end with `tdemo` (below), and since
   [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) issued through the Deevnet API.
 - Workloads resolve through the tenant-transit resolver, not the authoritative server
@@ -184,5 +184,5 @@ tenant without building the provider from source.
 
 Not scheduled, not counted. Reached by **adding** members to the Phase 1 fabric, not rebuilding it
 — same SDN objects re-applied at cluster scope, underlay peers formed, a QDevice for quorum.
-Trajectory detail is in [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory).
+Trajectory detail is in [ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/#trajectory).
 The management hypervisor (dv02hyp001p01) follows a separate path and does not join the tenant fabric.

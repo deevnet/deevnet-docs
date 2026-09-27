@@ -34,7 +34,7 @@ This is **not** an urgent security posture item. mobile is a lab on hardware tha
 
 **Out of Scope**
 
-- Tenant-held credentials. Under [ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/) a tenant's per-tenant MinIO credential is the tenant's own; the substrate issues it and does not manage its lifecycle.
+- Tenant-held credentials. Under [ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/) a tenant's per-tenant MinIO credential is the tenant's own; the substrate issues it and does not manage its lifecycle.
 - Building a secrets manager. §4.3 says IaC must reference secret *locations* rather than values; choosing and deploying the thing those locations point at is a separate, larger project.
 
 ---

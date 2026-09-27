@@ -1,6 +1,6 @@
 ---
 title: "CHG-0015: The VerneMQ Broker"
-weight: 15
+weight: -15
 ---
 
 # CHG-0015: The VerneMQ Broker
@@ -24,7 +24,7 @@ weight: 15
 
 ## Summary
 
-There is no broker. [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §8 chose VerneMQ
+There is no broker. [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §8 chose VerneMQ
 in review on 2026-09-14 and nothing has been built since: `mqtt_brokers` holds no host, the
 `mosquitto` role it supersedes serves nothing, and every IoT resource that depends on a broker is
 blocked behind it. This builds it.

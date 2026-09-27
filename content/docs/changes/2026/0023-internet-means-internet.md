@@ -1,6 +1,6 @@
 ---
 title: "CHG-0023: Internet Means Internet"
-weight: 23
+weight: -23
 ---
 
 # CHG-0023: Internet Means Internet

@@ -130,7 +130,7 @@ now, and it proves nothing good:
   `trusted` use the tenant route — **not `iot`**. So the moment the zone policy is enforced, that
   same test fails, correctly.
 - It is also not the intended path. Under
-  [ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) a device is
+  [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) a device is
   *platform-attached*, not a member of its owner's fabric: it talks to the **broker** on IoT
   Backend, and the broker talks to the tenant's workloads. A device reaching a tenant VM directly
   crosses a boundary the model deliberately does not draw.
@@ -165,7 +165,7 @@ demonstrated from a client, which is better evidence.
 The operator expected the device to land on **eds's own tenant network**. It does not, and cannot:
 eds's network is an EVPN/VXLAN overlay inside hv02's SDN fabric, and it does not extend to the AP —
 whose switch port trunks VLANs 10, 30, 31, 40 and 99. Under
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) a device is
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) a device is
 *platform-attached*, not a fabric member: it attaches by **trust class**, and the key says **which
 tenant owns it**, not which network it joins.
 

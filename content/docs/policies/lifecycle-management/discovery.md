@@ -45,7 +45,7 @@ Deevnet has to hear about both from the place that publishes them, not by chance
 | A patch within an approved line | [Patch](/docs/policies/lifecycle-management/): read its notes, and re-check a criterion if they touch one |
 | A new line | [Evaluation](/docs/policies/lifecycle-management/evaluation/), then an upgrade change |
 | End of life announced for a line in use | Plan the upgrade or the retirement, with a date |
-| Upstream archived or abandoned | A risk entry, and a replacement decision (as [ADR-0026](/docs/architecture/decisions/0026-object-storage/) did for MinIO) |
+| Upstream archived or abandoned | A risk entry, and a replacement decision (as [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/) did for MinIO) |
 | A security advisory | [Vulnerability Management](/docs/policies/risk-management/vulnerability-management/), which assesses and records it |
 | Nothing relevant | Noted as seen, so it isn't triaged twice |
 

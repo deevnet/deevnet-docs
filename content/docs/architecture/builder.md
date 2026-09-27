@@ -132,7 +132,7 @@ dv00bld001p01.mobile.deevnet.net  ->  10.20.99.95
 
 The builder keeps one short name everywhere; the zone says which site's address you get. Each fully
 qualified name has exactly one address
-([ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/)).
+([ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/)).
 
 This preserves:
 - truthful routing

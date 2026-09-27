@@ -22,7 +22,7 @@ yet to make your apply send it. Until there is, ask the operator. Closing this i
 [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/) roadmap.
 
 Anything a workload kept on its own disk is gone. Your application comes back the way it arrived:
-the workload pulls it ([ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)).
+the workload pulls it ([ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)).
 
 ## Your names, after a DNS rebuild
 

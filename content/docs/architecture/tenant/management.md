@@ -5,7 +5,8 @@ weight: 3
 
 # Tenant Management
 
-Defines the lifecycle and operational model for tenant workloads.
+A tenant is created, changed and destroyed through the provisioning API, by the tenant itself; the
+operator only admits it. Its logs, dashboards and access are scoped to it alone.
 
 ---
 
@@ -13,7 +14,7 @@ Defines the lifecycle and operational model for tenant workloads.
 
 Tenant management provides:
 - **Lifecycle control** — Create, update, and destroy tenant environments
-- **Observability** — Logs, metrics, and alerting scoped to tenants
+- **Observability** — Logs and dashboards scoped to tenants
 - **Access control** — Who can manage which tenants
 - **Operational clarity** — Clear boundaries between tenants
 
@@ -21,7 +22,7 @@ Tenant management provides:
 
 ## Tenant Lifecycle
 
-A tenant's whole lifecycle runs through the Deevnet API. The operator admits it once; everything
+A tenant's whole lifecycle runs through the provisioning API. The operator admits it once; everything
 after that is the tenant's own ([Substrate and Tenant](/docs/architecture/tenant/boundary/)).
 
 ### Create
@@ -59,17 +60,17 @@ A tenant's index is never reused while that tenant exists.
 
 Each tenant has its own partitions in the tenant log store, run by the control plane: workload logs,
 and device logs arriving over MQTT. It writes and reads them with tokens of its own, and no other
-tenant's token reaches them ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/)).
+tenant's token reaches them ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)).
 
 ### Dashboards
 
 Each tenant has a Grafana organization of its own, with its logs already wired in as data sources
-([ADR-0024](/docs/architecture/decisions/0024-dashboards/)).
+([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)).
 
 ### Metrics and alerting
 
 Tenants have no metrics store or alerting yet. The design is
-[ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/), and building it is part of the
+[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), and building it is part of the
 [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/)
 roadmap project.
 
@@ -95,7 +96,7 @@ Access is controlled via:
 - API tokens: the operator's, and one per tenant
 - The SSH keys a tenant declares for its own workloads
 - Zone policy on the core router, and the operator route into tenant networks
-  ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/))
+  ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/))
 
 ---
 
@@ -152,13 +153,3 @@ If a tenant depends on another service:
 The procedures are in the runbook: [Tenant Admission](/docs/runbook/substrate/tenant-admission/)
 for the operator's side, and [Tenant Operations](/docs/runbook/tenant/) for everything a tenant does
 itself.
-
----
-
-## Summary
-
-1. Tenants have explicit lifecycle: create, update, destroy
-2. Observability (logs, metrics, alerts) is scoped per tenant
-3. Access control separates platform admins from tenant admins
-4. Tenant management is distinct from substrate management
-5. Isolation principles prevent cross-tenant impact

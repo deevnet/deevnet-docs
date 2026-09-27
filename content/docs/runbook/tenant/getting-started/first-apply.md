@@ -11,7 +11,7 @@ aliases:
 ## Lay out a repository
 
 A tenant is code in its own repository
-([ADR-0006](/docs/architecture/decisions/0006-tenant-code-boundary/)). Two layouts work:
+([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/)). Two layouts work:
 
 - **A tenant repository of its own**, like the reference tenant
   [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo) — copy it and change the
@@ -84,7 +84,7 @@ Put that line in whatever you use to set up a shell for this project. If a later
 
 {{< hint warning >}}
 **Your Terraform state now holds every credential the tenant was issued**, and for most of them it
-is the only copy ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) §4).
+is the only copy ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §4).
 Never commit it. Losing it means asking the operator to restore what the API can, and re-issuing the
 rest — which for a device means reflashing it. Once the tenant matters, move the state into the
 [state store](/docs/runbook/tenant/services/state-store/).

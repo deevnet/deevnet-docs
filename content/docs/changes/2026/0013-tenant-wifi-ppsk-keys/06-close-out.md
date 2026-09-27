@@ -29,7 +29,7 @@ weight: 6
    `migration-omada-ssids` Make target used undocumented `/api/v2` calls and are replaced by
    `make wireless` (CHG-0005 follow-up #2).
 
-3. **Mark [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) Accepted** — at close-out,
+3. **Mark [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) Accepted** — at close-out,
    not at the start: it is accepted once the thing it decides has been built and proven on the AP.
 
 ## Outcome — ran 2026-09-18

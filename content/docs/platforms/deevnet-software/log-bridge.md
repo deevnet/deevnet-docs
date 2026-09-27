@@ -6,7 +6,7 @@ weight: 3
 # Log Bridge
 
 Carries device log lines from the MQTT broker into each tenant's device-log partition, `(index, 2)`,
-in the tenant log store ([ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) §4,
+in the tenant log store ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) §4,
 [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)). A device publishes; it never talks to the log
 store.
 

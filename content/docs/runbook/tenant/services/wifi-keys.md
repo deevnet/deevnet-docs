@@ -56,7 +56,7 @@ issues a new key, and **every device holding the old one drops off** until it is
 
 - **It is not authorization.** Joining the network proves you have the key, nothing more; each
   service still wants its own credential (the broker wants a broker account)
-  ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/))
+  ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/))
 - **Your devices cannot reach your workloads directly.** Both talk to the broker
 - **Known defect:** on a *freshly built* site whose key profile started empty, the first key issued
   does not authenticate. The mobile site is past this; it matters only after a site rebuild

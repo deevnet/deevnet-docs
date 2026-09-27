@@ -48,7 +48,7 @@ was done and what was seen. How the columns work is in [Evaluation](/docs/polici
 | S10 | **Observable** | Preferred | Its logs and health can reach the site's log store or monitoring | Find its logs in the log store after the S8 run |
 
 **Where these came from.** S6 is MinIO, whose community edition was archived while in use
-([ADR-0026](/docs/architecture/decisions/0026-object-storage/)). S7 is VerneMQ, whose upstream
+([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)). S7 is VerneMQ, whose upstream
 binaries carry an EULA, so it is built from source
 ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)). S9 is the build secrets that used to sit on
 disk ([CHG-0026](/docs/changes/2026/0026-build-secrets/)).

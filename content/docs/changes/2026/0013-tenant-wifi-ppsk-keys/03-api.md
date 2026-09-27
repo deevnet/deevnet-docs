@@ -102,7 +102,7 @@ the fix ships.
    Respects the controller's stated invariant whatever `modifyPPSKProfile` does, and self-cleans:
    issuing any real key removes the placeholder. Costs an oddly-named key visible in the UI.
 3. **Delete the profile when it empties.** Rejected: the profile is inventory's
-   ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §6), and the API must not
+   ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §6), and the API must not
    delete objects inventory declares.
 
 **Decided and fixed, 2026-09-18: option 2.** Not because option 1 was ruled out — it was never

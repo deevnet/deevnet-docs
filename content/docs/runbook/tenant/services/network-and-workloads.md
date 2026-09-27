@@ -45,7 +45,7 @@ hypervisor and proves nothing.
 ## Getting onto it
 
 SSH reaches workloads from the **management and trusted networks only**
-([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)); the guest and IoT
+([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)); the guest and IoT
 networks cannot reach them, by design.
 
 {{< hint warning >}}

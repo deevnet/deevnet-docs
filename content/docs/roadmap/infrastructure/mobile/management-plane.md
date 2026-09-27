@@ -42,30 +42,30 @@ Deploy a unified management plane providing observability, security, and identit
 
 - ✅ Define service selection criteria: each service's choice is its own ADR, weighing alternatives
   against the site's constraints (offline operation, memory, tenancy)
-  ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/) to
-  [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/))
+  ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) to
+  [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/))
 - 🔄 Define retention policies (logs, metrics): logs have one retention period and a disk cap for
-  the whole store ([ADR-0022](/docs/architecture/decisions/0022-central-logging/) §6); metrics wait
+  the whole store ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) §6); metrics wait
   on ADR-0023
 - 🔄 Define alerting channels and escalation: proposed in
-  [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/) (one Alertmanager to ntfy on
+  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) (one Alertmanager to ntfy on
   Platform). Open: who watches the watcher, and reaching an off-site phone
 - ✅ Define secrets access policies: every OpenBao client is an AppRole whose policy names exactly
-  its paths ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)); the image
+  its paths ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)); the image
   factory's is read-only ([CHG-0026](/docs/changes/2026/0026-build-secrets/))
 - 🔄 Define identity/RBAC model: proposed in
-  [ADR-0025](/docs/architecture/decisions/0025-identity-directory/)
+  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
 
 ---
 
 ## Centralized Logging 🔄
 
 One log store on Platform: VictoriaLogs behind vmauth on `dv02obs001v01`, partitioned by tenant
-index. [ADR-0027](/docs/architecture/decisions/0027-tenant-log-store/) narrowed it to **tenants
+index. [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) narrowed it to **tenants
 only**: the substrate's own logs are not centralized.
 
 - ✅ Evaluate logging stack: VictoriaLogs, over Loki and Logstash with OpenSearch
-  ([ADR-0022](/docs/architecture/decisions/0022-central-logging/))
+  ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/))
 - ✅ Deploy log aggregation service ([CHG-0018](/docs/changes/2026/0018-central-log-store/)), cut to
   tenant scope ([CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/))
 - ✅ Tenant ingest and read tokens, issued by the Deevnet API
@@ -75,7 +75,7 @@ only**: the substrate's own logs are not centralized.
 - 🔄 Deploy log visualization: Grafana OSS, one organization per tenant, deployed and verified
   ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Done when the tenants have their
   passwords and CHG-0024 closes
-- ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/0022-central-logging/) §6)
+- ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) §6)
 - Not pursued: shipping the substrate hosts' logs. CHG-0018 started it and CHG-0019 removed it
   under ADR-0027. Not counted
 
@@ -85,7 +85,7 @@ only**: the substrate's own logs are not centralized.
   into a tenant's `(index, 1)`. A collector that maps PowerDNS and VerneMQ lines to a tenant gets its
   own record, once those lines are shown to identify the tenant reliably (Open question 3)
 - ⏳ Per-workload ingest tokens, so one workload can be revoked alone. v1 issues one per tenant.
-  Waits on [ADR-0021](/docs/architecture/decisions/0021-tenant-secrets/)'s delivery path (Open
+  Waits on [ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)'s delivery path (Open
   question 5)
 - ⏳ Per-tenant quotas. v1 has one disk cap and one retention period, so a noisy tenant shortens
   everyone's history. Revisit when VictoriaLogs has per-tenant quotas, or if it happens (Open
@@ -100,7 +100,7 @@ only**: the substrate's own logs are not centralized.
 ## Telemetry 🔄
 
 - 🔄 Evaluate metrics stack: VictoriaMetrics cluster beside the logs, fed by vmagent, proposed in
-  [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/)
+  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
 - ⏳ Deploy metrics collection service
 - ⏳ Configure exporters on substrate hosts
 - ⏳ Deploy metrics dashboards. Grafana itself is up since
@@ -112,8 +112,8 @@ only**: the substrate's own logs are not centralized.
 ## Alerting 🔄
 
 - 🔄 Evaluate alerting solutions: vmalert per tenant, one Alertmanager, ntfy, proposed in
-  [ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/). Grafana's own alerting is off
-  ([ADR-0024](/docs/architecture/decisions/0024-dashboards/))
+  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/). Grafana's own alerting is off
+  ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/))
 - ⏳ Deploy alerting service
 - ⏳ Define alert rules for infrastructure
 - ⏳ Configure notification channels (email, webhook, etc.)
@@ -138,11 +138,11 @@ The core router's `config.xml` copies exist only on the Builder, in `/srv/dvnt/m
 ## Secrets Management 🔄
 
 OpenBao on `dv02idn001v01`, unsealed by a key ansible-vault delivers, which stays the root of trust
-([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)).
+([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)).
 
 - ✅ Migrate IaC secrets from env var lookups to Ansible Vault in inventory
 - ✅ Evaluate dedicated secrets solutions: OpenBao
-  ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/))
+  ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/))
 - ✅ Deploy secrets management service ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/))
 - 🔄 Integrate consumers: the Deevnet API reads its backend credentials at start
   ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)), and image-factory and tenant-fabric
@@ -156,7 +156,7 @@ OpenBao on `dv02idn001v01`, unsealed by a key ansible-vault delivers, which stay
 ## Identity Management 🔄
 
 - 🔄 Evaluate identity solutions: Keycloak, with a realm per tenant, proposed in
-  [ADR-0025](/docs/architecture/decisions/0025-identity-directory/)
+  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
 - ⏳ Deploy identity provider
 - ⏳ Configure SSO for infrastructure services
 - ⏳ Define RBAC policies

@@ -1,6 +1,6 @@
 ---
 title: "CHG-0011: Tenant Workloads Get a Resolver"
-weight: 11
+weight: -11
 ---
 
 # CHG-0011: Tenant Workloads Get a Resolver
@@ -18,7 +18,7 @@ weight: 11
 | **Risk** | Medium — both tenant workloads are replaced, so anything on their disks is lost. Today both are empty. |
 | **Related changes** | [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) introduced the defect |
 | **Related incidents** | None |
-| **Related runbooks** | [Tenant DNS](/docs/architecture/decisions/0004-tenant-dns-publication/) |
+| **Related runbooks** | [Tenant DNS](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/) |
 
 ---
 

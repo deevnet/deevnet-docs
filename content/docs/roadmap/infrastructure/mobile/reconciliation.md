@@ -44,7 +44,7 @@ So "we made holes that trigger recycle" is the right instinct, and the ordering 
 
 **Out of Scope**
 
-- Tenant-owned records. Under [ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/) tenants write their own names over TSIG-signed RFC 2136, and the substrate must not prune what it does not own. Any pruning added here has to be scoped to substrate-managed records specifically.
+- Tenant-owned records. Under [ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/) tenants write their own names over TSIG-signed RFC 2136, and the substrate must not prune what it does not own. Any pruning added here has to be scoped to substrate-managed records specifically.
 
 **Prerequisites**
 

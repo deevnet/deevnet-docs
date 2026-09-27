@@ -1,6 +1,6 @@
 ---
 title: "CHG-0004: Omada Controller Upgrade"
-weight: 4
+weight: -4
 aliases:
   - /docs/changes/2026/0004-omada-controller-and-network-firmware/
 ---
@@ -110,6 +110,6 @@ since 2026-03-24, when it was forgotten with a configuration reset.
 ## Follow-ups
 
 - [x] **Decided who owns network device configuration:** inventory owns it, and the controller
-  applies it through its Open API — [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/).
+  applies it through its Open API — [ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/).
 - [ ] **Fix or retire `playbooks/upgrade-omada.yml`** in the builder collection. It hard-codes a
   fresh install and deletes the controller's data.

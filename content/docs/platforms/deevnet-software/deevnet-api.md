@@ -8,8 +8,8 @@ weight: 1
 Fills the **provisioning API** role at the
 [substrate–tenant boundary](/docs/architecture/tenant/boundary/): the one interface a tenant uses,
 which builds on the substrate what the tenant declares
-([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/),
-[ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)). It is
+([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/),
+[ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)). It is
 provisioning-only: nothing at runtime depends on it being up.
 
 | | |
@@ -64,7 +64,7 @@ without the registry, as long as that key is unchanged.
 **The registry**: PostgreSQL, at `/srv/deevnet-api/pgdata` on the VM's own disk: tenants, their
 workloads, records, keys, devices and broker accounts, each step's outcome, and an audit log.
 **Nothing copies it off the host**
-([ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/), Proposed).
+([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), Proposed).
 
 ---
 

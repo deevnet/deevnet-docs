@@ -15,7 +15,7 @@ Several limits Deevnet lives with were discovered in service rather than before 
 driver that watchdog-times out under load
 ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)), devices with no out-of-band management
 ([Resiliency](/docs/policies/risk-management/resiliency/)), and an object store whose community
-edition was archived while in use ([ADR-0026](/docs/architecture/decisions/0026-object-storage/)).
+edition was archived while in use ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)).
 Evaluation moves those discoveries to before the thing is relied on.
 
 Evaluation is stages 2 and 6 of [Lifecycle Management](/docs/policies/lifecycle-management/):

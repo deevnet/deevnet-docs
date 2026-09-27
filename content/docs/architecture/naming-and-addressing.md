@@ -40,7 +40,7 @@ This creates a predictable, self-documenting address scheme where any IP immedia
 
 The pattern above describes **substrate segments**, where the third octet is a VLAN ID. Tenant
 overlays are not VLANs, so they cannot be described by it. Each site's `/16` is therefore split,
-per [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/):
+per [ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/):
 
 | Block (mobile) | Purpose |
 |---------------|---------|
@@ -157,11 +157,11 @@ cannot collide.
 
 Tenant workloads do **not** use the substrate's address service, and the reason is structural
 rather than preferential: a tenant's network is an overlay owned by the tenant compute domain
-([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)), and that overlay has no
+([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)), and that overlay has no
 leasing service of its own.
 
 So a tenant workload is given its address **at creation time**, from the tenant's own code, derived
-from the tenant's index ([ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/)).
+from the tenant's index ([ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/)).
 There is no reservation because there is nothing to reserve against.
 
 | | Substrate host | Tenant workload |
@@ -196,7 +196,7 @@ they come from one declaration.
 
 **A tenant's names live in a separate authoritative service.** The substrate runs that service and
 creates each tenant's zone, but it never writes a record into one. Records are tenant content
-([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)).
 
 This is the point of the arrangement. If tenant names lived in the substrate resolver, then either
 tenants would need to commit to a substrate repository to publish a name, or substrate
@@ -236,7 +236,7 @@ That distinction has real consequences, and they are easy to miss:
   records that name its own servers still resolves perfectly through the resolver, because nothing
   on this path ever looks at them. The defect is invisible from the client's point of view — which
   is exactly how it went unnoticed until
-  [ADR-0005](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/).
+  [ADR-0005](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/).
 - **Resolution depends on configuration, not on the DNS hierarchy.** Anyone querying the tenant
   authoritative service directly gets the same answers; anyone querying the public hierarchy for
   these names gets nothing. These are internal names and that is intended.
@@ -270,7 +270,7 @@ One qualification, recorded because the table above reads stronger than the trut
 scoped to a **zone**, not to individual records within it. Everything inside a tenant's own zone —
 including the apex records the substrate maintains — is writable by the tenant holding that
 credential. The namespace boundary is enforced; the boundary *within* a zone is a convention. See
-[ADR-0005](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/).
+[ADR-0005](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/).
 
 ---
 

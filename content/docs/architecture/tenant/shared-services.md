@@ -18,7 +18,7 @@ reach a broker running inside one. And a tenant zone needs a parent that only th
 
 The one exception is the operator: the substrate's management and trusted networks can reach tenant
 workloads, so that an operator who owns every tenant can build and debug them
-([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/)). That path is for
+([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)). That path is for
 operating a workload, not for delivering what runs on it, and it changes nothing above — a device
 still has no route to a tenant.
 
@@ -35,7 +35,7 @@ the substrate's own services. They never share a host with those services:
 - **The two have different change cadences.** Substrate services change often; tenant-facing ones
   should be boring. Keeping them on separate hosts means a restart among the substrate's services
   can't take tenant name resolution with it
-  ([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)).
+  ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)).
 
 {{< graphviz >}}
 digraph shared_tenant_services {
@@ -135,7 +135,7 @@ Two things a tenant does **not** get, and should not expect:
 ## 3. How Tenants Consume Them
 
 The rule that governs every shared tenant service
-([ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/), *Proposed*):
+([ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/), *Proposed*):
 
 > **A tenant may depend on the substrate; the substrate must not come to contain the tenant.**
 
@@ -169,7 +169,7 @@ tenant's own act, through the service's interface.
 | **Tenant observability** | *To be defined* | *To be defined* |
 
 The existing debt is named in
-[ADR-0010](/docs/architecture/decisions/0010-tenants-consume-platform-services/): device broker
+[ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/): device broker
 accounts and topic permissions are still kept in substrate inventory.
 
 ---
@@ -188,7 +188,7 @@ infrastructure tooling never provisions them, even though they exist only to ser
 This prevents a bootstrap cycle. The state store tenants keep their state in is built by
 automation that keeps no state in it. If the store were built by the tooling that uses it, the
 store's own state would have nowhere to live
-([ADR-0007](/docs/architecture/decisions/0007-terraform-state-custody/)).
+([ADR-0007](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/)).
 
 ---
 
@@ -200,9 +200,9 @@ store's own state would have nowhere to live
   loses it, each tenant re-applies its own code to restore it.
 - **A substrate rebuild never costs a device visit.** Secrets a device already holds are restored
   from the tenant's state, not regenerated
-  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §5). That makes
+  ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §5). That makes
   tenant state data worth keeping, and how the store keeps it is
-  [ADR-0014](/docs/architecture/decisions/0014-tenant-state-durability/) (*Proposed*).
+  [ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/) (*Proposed*).
 - **A tenant may decline a service** wherever declining is possible, as it can for the state store.
   The service documents what declining costs.
 

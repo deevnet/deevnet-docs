@@ -38,7 +38,7 @@ The hypervisors are **standalone**. There is no cluster, no quorum, no HA manage
 failover. A node that is down takes its guests with it until it comes back.
 
 This was a deliberate choice rather than an omission
-([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)): clustering two nodes
+([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)): clustering two nodes
 introduces quorum fragility that needs a third vote to resolve, and it would couple the management
 and tenant planes into one control and failure domain — the opposite of the separation above.
 
@@ -67,7 +67,7 @@ than "invent an underlay after the fact."
 
 The fabric is where tenant isolation actually lives: one VRF per tenant, with an anycast gateway
 the fabric hosts. See [Tenant Networking](/docs/architecture/tenant/networking/) for the model and
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) for why it was chosen over a
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/) for why it was chosen over a
 VLAN-aware bridge or a cluster.
 
 ---
@@ -104,4 +104,4 @@ a project rather than carved out by the API.
 - **Node-local state is applied from code, never hand-carried.** Where the hypervisor platform
   cannot model a setting the design needs, automation applies it like everything else. What is
   *not* acceptable is state that contradicts configuration the platform generates and rewrites
-  ([ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/)).
+  ([ADR-0019](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/)).

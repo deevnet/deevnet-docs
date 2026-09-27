@@ -1,6 +1,6 @@
 ---
 title: "CHG-0012: Operator Access to Tenant Workloads"
-weight: 12
+weight: -12
 ---
 
 # CHG-0012: Operator Access to Tenant Workloads
@@ -32,7 +32,7 @@ This adds **one aggregate route** on the core router, `10.20.128.0/18` via the f
 `10.20.50.22`, and declares the zone-policy rules that let `management` and `trusted` use it. After
 it, an operator on the Builder or on a desktop can reach any tenant workload directly.
 
-[ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) is the decision; it
+[ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/) is the decision; it
 records what this does to the "no inbound path" property and what it deliberately does not
 authorize.
 
@@ -88,7 +88,7 @@ key; any change to tenant egress or to what devices may reach.
 
 ## Prerequisites
 
-- [ ] [ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) reviewed — this
+- [ ] [ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/) reviewed — this
       changes a property six records rely on
 - [ ] A tenant workload running, to test against
 - [ ] Console access to the core router, in case a routing change misbehaves
@@ -230,4 +230,4 @@ name in both directions.
       `10.20.130.0/24` twice. Functionally harmless, but the insertion is not idempotent and the
       list grows on every run.
 - [ ] Operator access to a tenant workload leaves no audit trail
-      ([ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) open question 2).
+      ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/) open question 2).

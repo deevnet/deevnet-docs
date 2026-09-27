@@ -21,7 +21,7 @@ block-beta
     net["Network"]:1 netd["Routing · Firewall · DNS · DHCP · NAT · Switching · Wireless"]:1
     cmp["Compute · Storage¹"]:1 cmpd["Hypervisors · Persistent storage"]:1
     mgp["Management Plane"]:1 mgpd["Network management · Substrate observability"]:1
-    ctp["Control Plane"]:1 ctpd["Deevnet API · Tenant DNS · Secrets · Broker"]:1
+    ctp["Control Plane"]:1 ctpd["Provisioning API · Tenant DNS · Secrets · Broker"]:1
 {{< /mermaid >}}
 
 ¹ Storage is each hypervisor's local disks. Shared storage is on the roadmap: [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/).
@@ -54,7 +54,7 @@ substrate observability, on the management segment, for operators and substrate 
 
 ### Control Plane
 
-What the substrate runs so it can **serve what runs on it** — the Deevnet API that creates tenants,
+What the substrate runs so it can **serve what runs on it** — the provisioning API that creates tenants,
 tenant DNS, the secret store, tenant observability, and the device broker. It sits on the Platform
 and IoT Backend segments, because tenants and devices must never reach the management segment. See
 [Control Plane](control-plane/).

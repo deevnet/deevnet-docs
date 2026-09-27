@@ -8,7 +8,7 @@ weight: 6
 ## What you get
 
 A **Grafana organization of your own**, with your logs already wired in
-([ADR-0024](/docs/architecture/decisions/0024-dashboards/)). Your login is an **Editor** there, and
+([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)). Your login is an **Editor** there, and
 a member of no other organization. You build folders and dashboards. The platform owns the data
 sources.
 

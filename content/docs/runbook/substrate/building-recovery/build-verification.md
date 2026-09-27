@@ -30,7 +30,7 @@ say the site is up.
   core router, `10.20.99.1`.
 
 *Rewritten 2026-09-26 from inventory and the change records, for the domain-VM layout of
-[ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/). Expected results marked
+[ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/). Expected results marked
 "recorded" were measured in the change record named. The others are the service's standard health
 endpoint and have not yet been run as part of this page.*
 

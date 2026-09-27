@@ -63,7 +63,7 @@ The EAP650-Outdoor meets the core selection criteria:
 
 One SSID per trust class, each carrying one VLAN. The names come from `wifi_ssid` in
 `deevnet_vlans`, and the controller applies them — inventory is the only declaration
-([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)).
+([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/)).
 
 | SSID | VLAN | Security | Key |
 |---|---|---|---|
@@ -87,7 +87,7 @@ AP at firmware 1.3.11 in
 [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) phase 6. A per-key VLAN needs
 no controller network object: it is raw 802.1Q tagging, and the core router serves the DHCP.
 
-**Who owns what** ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §6):
+**Who owns what** ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §6):
 
 - **Inventory owns** the SSID and the PPSK profile. `omada-wireless.yml` creates them and never
   rewrites or deletes what it finds.

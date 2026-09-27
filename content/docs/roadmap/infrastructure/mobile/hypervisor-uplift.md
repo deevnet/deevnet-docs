@@ -32,7 +32,7 @@ major-version distribution upgrade on each node, not a package update.
 - Building the tenant fabric itself — tracked in
   [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/)
 - Clustering either hypervisor — both remain standalone per
-  [ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/)
+  [ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)
 - Ongoing patch strategy — tracked in
   [Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/)
 
@@ -40,7 +40,7 @@ major-version distribution upgrade on each node, not a package update.
 
 ## Why this blocks the tenant fabric
 
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) build requirement #4 calls for
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/) build requirement #4 calls for
 **a real underlay/VTEP identity now**, defined as code alongside the rest of the fabric, so that
 adding a fabric member later is "add a neighbor" rather than "invent an underlay after the fact."
 
@@ -121,7 +121,7 @@ hand-maintained node state — which was the whole reason for the gate. Implemen
 
 **dv02hyp001p01 remains on PVE 8.4** ([current version](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01)). It carries the management plane, so it needs its own maintenance
 window; nothing in the tenant fabric waits on it. Nor does tenant DNS
-([ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/)) — cloning a template and
+([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)) — cloning a template and
 running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on dv02hyp002p02.
 
 The **PVE 9.2-1 installer ISO is published to the artifact server** (`isos/proxmox`), so the uplift

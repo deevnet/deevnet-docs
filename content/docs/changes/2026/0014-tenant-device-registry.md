@@ -1,6 +1,6 @@
 ---
 title: "CHG-0014: The Tenant Device Registry"
-weight: 14
+weight: -14
 ---
 
 # CHG-0014: The Tenant Device Registry
@@ -38,12 +38,12 @@ records its own devices through `terraform apply`.
 An operator joined `DVNTM-IOT` with eds's PPSK and could no longer reach a service in the eds
 tenant. That is [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) working correctly:
 before it, the router was allow-all and the client was riding the operator route
-[ADR-0018](/docs/architecture/decisions/0018-operator-access-to-tenants/) added for `management` and
+[ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/) added for `management` and
 `trusted`, which was never declared for `iot`. CHG-0007 phase 3 tested that exact path and recorded
 the drops.
 
 The fix that suggests itself is forbidden.
-[ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/) §4: *"`IoT ->
+[ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §4: *"`IoT ->
 tenant_transit`, or `IoT -> tenant networks`, is not the answer… It must not be added."* The
 sanctioned replacement is a device-facing, per-device-authenticating service on IoT Backend that
 both sides dial into. This change is its first prerequisite.

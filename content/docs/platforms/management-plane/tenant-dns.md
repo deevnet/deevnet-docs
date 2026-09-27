@@ -1,12 +1,12 @@
 ---
 title: "Tenant DNS"
-weight: 3
+weight: 4
 ---
 
 # Tenant DNS Implementation
 
 The authoritative service behind
-[ADR-0004](/docs/architecture/decisions/0004-tenant-dns-publication/). For the model — who owns
+[ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/). For the model — who owns
 what, and why forwarding a zone is not delegating it — see
 [Naming and Addressing](/docs/architecture/naming-and-addressing/). This page is the
 implementation: what runs, and the specifics that are not guessable from the design.
@@ -27,7 +27,7 @@ implementation: what runs, and the specifics that are not guessable from the des
 
 It runs on the **management** hypervisor, not the tenant one: a service every tenant depends on does
 not belong inside the tenant compute domain. It shares the identity VM with OpenBao
-([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)); the `tenant_dns`
+([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)); the `tenant_dns`
 inventory group keeps it movable to its own host.
 
 ### Host networking, not published ports
@@ -108,7 +108,7 @@ literal placeholder `a.misconfigured.dns.server.invalid` as its SOA primary.
 Setting it fixes zones created **afterwards only**. An existing zone's SOA is a stored row, not
 something synthesized at query time, so the apex of existing zones has to be reconciled explicitly —
 which is why the role does that on every run rather than at creation
-([ADR-0005](/docs/architecture/decisions/0005-tenant-zone-apex-ownership/)).
+([ADR-0005](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/)).
 
 ### The apex NS cannot be `tdns`
 
@@ -123,7 +123,7 @@ point their updates at — neither of which is a delegation.
 
 **The HTTP API is on for the Deevnet API alone.** Its key is global to the server, so any holder can
 write every tenant's zone — the reason ADR-0004 chose dynamic update for tenants. The key is given
-only to the Deevnet API ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)
+only to the Deevnet API ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)
 §6), and `webserver-allow-from` refuses every address but the API host's. Tenants still publish over
 RFC 2136 with a TSIG key bound to their own zone. With no API key in the vault the role turns the
 API off, and `pdnsutil` is the only way in.

@@ -19,17 +19,10 @@ everything else in the substrate.
 > *What does the substrate run so it can manage itself?*
 
 Its audience is **operators and substrate hosts**. The services the substrate runs for *tenants and
-devices* — the Deevnet API, tenant DNS, the secret store, the broker — are a different plane with a
-different audience, on different segments: see
+devices* — the provisioning API, tenant names, the secret store, the broker — are a different plane
+with a different audience, on different segments: see
 [Control Plane](/docs/architecture/substrate/control-plane/). No host belongs to both.
 
-{{< hint info >}}
-**This page was split on 2026-09-19.** It previously covered both planes under the name
-*"Management / Control Plane"*, which obscured the distinction that actually matters: management
-serves the substrate, control serves what runs on it, and tenants must never reach the segment
-management sits on. Anything about provisioning, tenant identity, tenant observability or device
-messaging now lives in [Control Plane](/docs/architecture/substrate/control-plane/).
-{{< /hint >}}
 
 ---
 
@@ -53,85 +46,32 @@ Operators and substrate hosts use them.
 
 ---
 
-## Domains
+## Services and where they sit
 
-Services are grouped into **domains** by what they are for, not by which segment they sit on or
-what kind of software they are
-([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/)):
+| Service | Segment | Why there |
+|---|---|---|
+| **Network device management**: the controller for the switch and access points | Management | Adopting a device needs the device and the controller on the same segment, and devices are managed on Management |
+| **Substrate observability**: logs and metrics about the substrate | Management | Tenants and devices must never reach it |
 
-| Domain | Holds | Notes |
-|--------|-------|-------|
-| **Network management** | The controller for the switch and wireless access points; later, network monitoring and config backup | Applies device configuration that inventory owns ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/)) |
-| **Substrate observability** | Logs and metrics about the substrate | Collection tooling is not yet chosen |
-
-Automation runners and access tooling (jump hosts) belong to the plane as well. When they are
-built, each joins the domain it fits, or becomes a new one.
-
-How domains map onto hosts:
-
-- **Each domain is one host, on exactly one segment.** Anything that crosses segments goes through
-  the core router and its zone policy, so no host quietly bridges two zones.
-- **A domain that needs two segments becomes two domains.**
-- **Each service inside a domain stays separable.** It runs in its own container, with its own data
-  and its own inventory group. Moving a service to another host is a change to inventory, not a
-  redesign.
-- **A new service joins the domain it belongs to.** If no domain fits, it becomes a new domain.
-- **Services in one domain share the host's fate.** Rebooting a host takes all of its services
-  with it, which is accepted at lab scale.
-- **Services with different audiences never share a host.** The substrate's own services change
-  often, and a restart among them must not take down a service something else depends on.
+Automation runners and access tooling belong to this plane too, when they are built. Services are
+placed by audience, one segment each, as in the
+[control plane](/docs/architecture/substrate/control-plane/#services-and-where-they-sit). How they
+are packaged into VMs is [Domain VMs](/docs/platforms/management-plane/domain-vms/).
 
 ### Network management
 
 - **Inventory owns network device configuration, and the controller applies it.** The controller
-  is the actuator, not the source of truth.
-- **The controller's database is derived state.** Whatever it holds can be rebuilt from inventory
-  by re-running the automation. A new controller is a fresh install that inventory provisions, not
-  a migration.
-- **It sits on the management segment** because adopting a device needs the device and the
-  controller on the same subnet and VLAN, and devices are managed on the management segment.
+  is the actuator, not the source of truth
+  ([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/)).
+- **The controller's database is derived state.** A new controller is a fresh install that inventory
+  provisions, not a migration.
 - **The pre-VLAN substrate is built without it.** The core router and a standalone access switch
-  come first, and the controller is needed only once devices are adopted
-  ([ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) §8).
+  come first; the controller is needed only once devices are adopted.
 
 ### Substrate observability
 
-- **It collects by pull from the platform and IoT backend segments.** The zone policy lets neither
-  of those segments reach management, so their hosts can't push to it.
-- **Hosts on the management segment can push to it.**
-
----
-
-## Provisioning
-
-The plane is provisioned by **substrate automation**, run from the builder:
-
-- Post-install configuration via build automation
-- Management plane VMs are created by build automation
-- Simplicity and traceability are prioritized
-
----
-
-## Design Principles
-
-- **Stability over velocity**
-- **Explicit configuration over convenience**
-- **Recoverability over optimization**
-- **Isolation from workload experimentation**
-
-These services are intentionally boring. That is a feature.
-
----
-
-## Service Characteristics
-
-| Attribute | Requirement |
-|--------|------------|
-| **Availability** | High (relative to lab scale) |
-| **Identity** | Stable and deterministic |
-| **Network addressing** | Static via DHCP reservations |
-| **Backup** | Mandatory for anything that is not derived state |
-| **Rebuild support** | Must assist rebuilds, not depend on them |
+- **It collects by pull from the Platform and IoT Backend segments**, which the zone policy does not
+  let reach Management. Hosts on Management push to it.
 
 ---
 
@@ -174,6 +114,7 @@ The management plane is considered **correct** when:
 - services are reached by stable names, so the host behind a name can be replaced without changing
   what consumers reference
 - no workload code runs in the plane
+- anything in it that is not derived state is backed up
 
 If the substrate must be "mostly working" in order to rebuild the plane, the architecture is
 incorrect.

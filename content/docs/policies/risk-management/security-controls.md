@@ -21,20 +21,20 @@ transit, IoT, IoT vendor and guest
   ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/))
 - **Joining a network is not authorization.** A device on the IoT network still needs a credential
   for every service it uses
-  ([ADR-0020](/docs/architecture/decisions/0020-direct-device-access-to-tenant-services/))
+  ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/))
 - **Guest is internet-only**; IoT reaches the broker and the internet, not tenant workloads or
   management
 
 ## Tenant isolation
 
 - **A routing domain per tenant.** Tenants are separated by VRF, not by a firewall rule — there is
-  no route between them to filter ([ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/))
+  no route between them to filter ([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/))
 - **Every tenant-facing service is partitioned by the platform, not by the tenant.** DNS updates are
   bound to the tenant's own zone by server-side key metadata; MQTT topics are prefixed by the API;
   log partitions are selected by the proxy from routes the API wrote. A tenant cannot claim another
   tenant's identity in a payload
 - **Tenants hold no substrate credential** — one API token, nothing else
-  ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/))
+  ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/))
 
 ## Encryption
 
@@ -43,7 +43,7 @@ transit, IoT, IoT vendor and guest
 | The Deevnet API | TLS, site CA | registry secrets in OpenBao |
 | MQTT broker | TLS only; no plaintext listener | — |
 | Log store | TLS through an authenticating proxy | on the observability VM's disk |
-| Substrate secrets | — | ansible-vault in the inventory; OpenBao for runtime secrets ([ADR-0016](/docs/architecture/decisions/0016-substrate-secrets-openbao/)) |
+| Substrate secrets | — | ansible-vault in the inventory; OpenBao for runtime secrets ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)) |
 | Build secrets (the Proxmox token for Packer and the fabric) | TLS to OpenBao | OpenBao's runtime copy; the inventory vault is authoritative. Never on disk on the Builder |
 | Terraform state store | **plain HTTP today** — see the [register](/docs/policies/risk-management/risk-register/) | on one disk |
 | Wi-Fi | WPA2 with a per-tenant key (PPSK) on the IoT SSID | — |

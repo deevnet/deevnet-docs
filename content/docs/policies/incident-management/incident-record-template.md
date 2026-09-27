@@ -9,7 +9,7 @@ aliases:
 
 The shape every [incident record](/docs/incidents/) takes. Copy the skeleton below into
 `content/docs/incidents/<YYYY>/<NNNN>-<slug>.md`, numbered with the next unused `INC-NNNN` —
-global across years and never reused, like ADRs.
+global across years and never reused, like ADRs. Its `weight` is `-NNNN`, so the newest sorts first, and its row goes at the **top** of [Incident Records](/docs/incidents/) and of that year's page.
 [INC-0001: Firewall Policy Deleted, Total Connectivity Loss](/docs/incidents/2026/0001-firewall-policy-deletion/)
 is a worked example.
 
@@ -23,7 +23,7 @@ and the wrong turns are the parts memory loses first.
 ````markdown
 ---
 title: "INC-NNNN: <What broke>"
-weight: NNNN
+weight: -NNNN
 ---
 
 # INC-NNNN: <What broke>

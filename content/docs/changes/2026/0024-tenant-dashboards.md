@@ -1,6 +1,6 @@
 ---
 title: "CHG-0024: Tenant Dashboards"
-weight: 24
+weight: -24
 ---
 
 # CHG-0024: Tenant Dashboards
@@ -24,7 +24,7 @@ weight: 24
 
 ## Summary
 
-Tenants can read their logs only by query. [ADR-0024](/docs/architecture/decisions/0024-dashboards/)
+Tenants can read their logs only by query. [ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)
 decided on Grafana OSS with one organization per tenant, created by the API, and nothing was built.
 
 The take-home Pi image needs dashboards before its first meetup. The Pi copies what Deevnet offers

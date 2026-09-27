@@ -17,7 +17,7 @@ here can be declared today. The shape described is the proposal's, and may chang
 **Today:** anything secret your application needs lives in your Terraform state or your own
 tooling. **Planned:** a namespace of your own in the platform secrets store, holding a runtime copy
 of secrets your repository owns, written through the API, and read by your workloads with their own
-identity. [ADR-0021](/docs/architecture/decisions/0021-tenant-secrets/)
+identity. [ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)
 
 ## Metrics and alerting
 
@@ -29,7 +29,7 @@ device's JSON log line can already be [graphed](/docs/runbook/tenant/services/da
 tenant workload), you declare alert rules that run under your own token, and notifications go out
 through a platform push service. Your Grafana organization gains metrics data sources beside the
 log ones.
-[ADR-0023](/docs/architecture/decisions/0023-metrics-and-alerting/)
+[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
 
 ## Identity
 
@@ -38,7 +38,7 @@ log ones.
 **Today:** the API token is your tenant's identity; there are no user accounts. **Planned:** a realm
 of your own in a platform identity directory, for your application's users and for SSH to your
 workloads by short-lived certificate.
-[ADR-0025](/docs/architecture/decisions/0025-identity-directory/)
+[ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
 
 ## Object storage
 
@@ -46,7 +46,7 @@ workloads by short-lived certificate.
 
 **Today:** the [state store](/docs/runbook/tenant/services/state-store/) holds Terraform state only.
 **Planned:** S3-compatible buckets of your own for application data,
-declared like everything else. [ADR-0026](/docs/architecture/decisions/0026-object-storage/)
+declared like everything else. [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
 
 ## Code delivery to workloads
 
@@ -56,7 +56,7 @@ declared like everything else. [ADR-0026](/docs/architecture/decisions/0026-obje
 [`ssh_keys` is broken](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) — the
 operator installs your code for you. **Planned:** a workload fetches a Deevnet-shaped description of
 what to run at boot, so declaring the workload is enough to have it running your code.
-[ADR-0017](/docs/architecture/decisions/0017-tenant-code-delivery/)
+[ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)
 
 ## A tenant devbox
 

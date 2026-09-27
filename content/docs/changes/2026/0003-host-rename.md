@@ -1,6 +1,6 @@
 ---
 title: "CHG-0003: Host Rename (ADR-0008)"
-weight: 3
+weight: -3
 aliases:
   - /docs/runbook/host-rename/
 ---
@@ -32,7 +32,7 @@ repos it touched. Times are local (UTC−4), from commit timestamps.
 ## Summary
 
 The migration that brought the estate onto the naming scheme in
-[ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/): fixed-width hostnames
+[ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/): fixed-width hostnames
 (`dv02hyp001p01`), site codes, and the `home` / `mobile` DNS zones. The site inventories were
 renamed with it, from `dvnt/` and `dvntm/` to `home/` and `mobile/`. The ADR was proposed on
 2026-09-04 and accepted as the first step of the change.

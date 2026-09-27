@@ -20,7 +20,7 @@ firmware rather than to whoever runs the site.
 
 ## The ownership test
 
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) settles what makes
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) settles what makes
 something an edge device with one question:
 
 > **Would this device have a reason to exist if its application disappeared?**
@@ -74,8 +74,8 @@ applications do.
 
 The alternative — a segment per owner — was considered and rejected twice, and both records are
 worth reading before proposing it again:
-[ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) Option B, and
-[ADR-0019](/docs/architecture/decisions/0019-tenant-l2-at-the-access-edge/), which re-examined it
+[ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) Option B, and
+[ADR-0019](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/), which re-examined it
 against a variation that removed its worst cost and still found it wanting.
 
 ---
@@ -86,14 +86,14 @@ The platform knows only what it must to attach and account for a device:
 
 - **It issues the credential that gets a device onto the network.** Today that is a wireless key,
   issued per tenant per trust class rather than per device
-  ([ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) §3).
+  ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3).
 - **It never holds device secrets or signing keys.** Those stay with the application that owns the
   device. Whoever holds a signing key owns every future image for that chip, and that is not a
   thing the substrate should be able to do.
 - **It never builds the firmware.** The builder may offer a toolchain the way it offers Terraform
   or Go, but offering a tool is not a claim of ownership, and the project pins its own versions.
 - **A device needs no substrate host record.** Its identity is its credential, not its address
-  ([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/) open question 2).
+  ([ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) open question 2).
 
 ---
 
@@ -116,7 +116,7 @@ tenant it must be substrate" framing could not do.
 ## Current state
 
 The model is decided and largely built. Wireless attachment is real: `DVNTM-IOT` is a PPSK network
-on the IoT segment, and a tenant issues its own key through the Deevnet API without a substrate
+on the IoT segment, and a tenant issues its own key through the provisioning API without a substrate
 commit.
 
 The other side of attachment is built too. The broker is deployed and serving TLS

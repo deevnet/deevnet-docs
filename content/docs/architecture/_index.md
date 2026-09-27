@@ -12,14 +12,14 @@ The **Deevnet platform** is a collection of physical and virtual infrastructure 
 
 ## Design Philosophy
 
-Deevnet's infrastructure architecture is inspired by patterns used in large-scale cloud platforms. Concepts such as infrastructure boundaries, automation-first provisioning, and tenant isolation are intentionally applied.
+Deevnet's infrastructure architecture is inspired by patterns used in large-scale cloud platforms —
+infrastructure boundaries, automation-first provisioning, and tenant isolation — applied not to
+global regions but to independent infrastructure sites, each built, operated and reprovisioned
+entirely from code.
 
-However, Deevnet operates at a much smaller scale than hyperscale cloud providers. Instead of modeling multiple global regions and availability zones, the architecture focuses on independent infrastructure sites that can be built, operated, and reprovisioned entirely from code.
-
-This approach preserves the architectural principles of cloud infrastructure while remaining practical for a portable site: the Mobile Factory, which this documentation describes.
-
-The principles, site model and layers on these pages are written for any Deevnet site. The
-[Decision Records](decisions/) are this instance's decisions.
+The principles, site model and layers on these pages are written for any Deevnet site. This
+documentation describes one of them, the Mobile Factory, a portable site; the
+[Decision Records](decisions/) are its decisions.
 
 ---
 
@@ -88,7 +88,7 @@ digraph architecture {
                 fillcolor="#fff3cd"
 
                 SubstrateSvc [label="Substrate Services\nnetwork mgmt, observability"]
-                SharedTenantSvc [label="Tenant Services\nDeevnet API, DNS, secrets, broker"]
+                SharedTenantSvc [label="Tenant Services\nprovisioning API, DNS, secrets, broker"]
             }
 
             subgraph cluster_tenant {
@@ -123,45 +123,31 @@ digraph architecture {
 }
 {{< /graphviz >}}
 
-Yellow boxes are virtual: each runs on its own hypervisor, standalone today but able to grow into a cluster. Everything else inside the substrate is physical — including the Pi lab, bare-metal hosts that are inventoried, cabled and provisioned like any other substrate host, but lent to tenant projects rather than run for the site ([Compute](/docs/architecture/substrate/compute/#the-pi-lab)). Edge devices sit inside the site but outside the substrate: the substrate attaches them, it does not own them.
+Yellow boxes are virtual, each on its own hypervisor. Everything else inside the substrate is
+physical. Edge devices sit inside the site but outside the substrate.
 
-The platform is organized around a few architectural boundaries that separate infrastructure from what runs on it. A **site** is a self-contained deployment. Within it, the **substrate** provides infrastructure — networking, virtualized compute, and bare-metal hosts alike; **tenants** are isolated virtual workloads that run on it; and **edge devices** are physical things an application owns and the platform attaches. Because infrastructure is fully defined in code, a substrate can be reprovisioned from scratch and workloads redeployed to it — or to a different site entirely — without being coupled to any specific hardware.
+---
 
-The distinction between the last two matters more than it first appears. A tenant is virtual and lives in an overlay of its own; an edge device is physical, shares an access network with devices of other owners, and is **never** a member of its application's network. Keeping them separate is what lets an application own a device without the substrate owning it, and without the device gaining reach into its application's network.
+## Substrate and Tenant
 
-## Sites
+A **site** is one self-contained deployment: its own address space, DNS zone and hardware. Within
+it, the architecture draws one main line — between the infrastructure and what runs on it.
 
-A **site** is an independent infrastructure deployment with its own IP address space, DNS zone, and complete hardware stack. Each site can be built, operated, and torn down without affecting any other.
+- **[Substrate](substrate/)** — the site's infrastructure: network, compute, storage, and the
+  management and control planes. Built and rebuilt from code by the operator.
+- **[Tenant](tenant/)** — an isolated slice of the site for one application: its own network, DNS
+  zone and workloads, built for it by the substrate when it asks.
+- **[Edge devices](edge-devices/)** — physical things an application owns, which the substrate
+  attaches to an access network. Neither substrate nor tenant, and never inside a tenant's network.
+- **[Builder](builder/)** — the portable server that creates a site's substrate from scratch, then
+  hands authority to it.
 
-| Site | Purpose | Address Block | DNS Zone |
-|------|---------|---------------|----------|
-| **mobile** | The Mobile Factory: IoT as a Service, portable. The site this documentation describes | 10.20.0.0/16 | mobile.deevnet.net |
-| **home** | Reserved for a home site. **Not built** | 10.10.0.0/16 | home.deevnet.net |
+## Going deeper
 
-### Builder
-
-The **builder** is a small server that can be connected to either site to create its substrate from scratch. Self-contained, portable, and air-gapped capable, it provisions the site and then hands off authority to production infrastructure. See [Builder](builder/) for the provisioning model, authority transitions, and design principles.
-
-### Substrate
-
-The **substrate** is the shared infrastructure foundation within a site — networking, compute, storage, and management plane. It provides the base that workloads run on and is fully reprovisioned through automation. See [Substrate](substrate/) for infrastructure layers and authority modes.
-
-### Tenant
-
-A **tenant** is an isolated workload boundary for applications and services running on a site's substrate. Each tenant has its own virtual network, its own DNS zone and its own workloads, all created for it by the substrate's control plane when the tenant asks. Creating one changes nothing physical. See [Tenant](tenant/) for tenant networking, lifecycle management, and provisioning.
-
-### Edge Devices
-
-An **edge device** is a physical thing an application owns — a microcontroller, a gateway, a sensor — that the platform attaches to an access network according to how far its firmware is trusted. It is neither substrate nor tenant: the application owns its purpose and its firmware, the platform owns only what it must know to attach and authenticate it. See [Edge Devices](edge-devices/) for the ownership model, and [Access](edge-devices/access/) for how a device reaches the services its application exposes.
-
-### Network Segmentation
-
-The network segmentation model that divides each substrate into isolated broadcast domains, enforcing trust boundaries and traffic separation at the network layer. See [Network Segmentation](network-segmentation/) for segment types, trust hierarchy, default routing policy, and authority mode transitions.
-
-### Naming and Addressing
-
-How each site is addressed, and how hosts and tenant workloads get their addresses and names. See [Naming and Addressing](naming-and-addressing/) for the site address plan, WAN operation modes, the chain from declared identity to address and name, and the two naming authorities.
-
-### Limits
-
-What the hardware underneath the architecture cannot do — no out-of-band management, nothing clustered, local storage, and a single instance of every network device. Deevnet is designed to be rebuilt quickly rather than to stay up through a failure. See [Resiliency & Limits](/docs/policies/risk-management/resiliency/) for each constraint, what compensates for it, and what lifting it would take.
+- [Network Segmentation](network-segmentation/) — the segments, their trust levels and the policy
+  between them
+- [Naming and Addressing](naming-and-addressing/) — the site address plan, and how hosts and
+  tenants get addresses and names
+- [Decision Records](decisions/) — why each choice was made
+- [Resiliency & Limits](/docs/policies/risk-management/resiliency/) — what the hardware can't do,
+  and why the site is built to be rebuilt rather than to stay up

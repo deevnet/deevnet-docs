@@ -1,6 +1,6 @@
 ---
 title: "CHG-0002: Authority Transition Rework"
-weight: 2
+weight: -2
 aliases:
   - /docs/runbook/authority-transition-gap-analysis/
 ---
@@ -265,7 +265,7 @@ The analysis recorded three decisions that the fixes depended on. Where each sta
 
 | Decision | Now |
 |---|---|
-| **Multi-site provisioner model.** The builder is an appliance: it plugs into one site's management VLAN at a time, with no dual-homing and zero config changes between sites. Every site-specific value comes from inventory, and switching sites means selecting another inventory directory. | Settled by [ADR-0008](/docs/architecture/decisions/0008-host-naming-site-codes/) as the roaming appliance, site code `00`. |
+| **Multi-site provisioner model.** The builder is an appliance: it plugs into one site's management VLAN at a time, with no dual-homing and zero config changes between sites. Every site-specific value comes from inventory, and switching sites means selecting another inventory directory. | Settled by [ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/) as the roaming appliance, site code `00`. |
 | **Drop `mgmt.deevnet.net`.** Use site-scoped zones only. During bootstrap the builder's dnsmasq serves records in the site zone; in production OPNsense is authoritative for the same zone. | In effect: the site zone is `mobile.deevnet.net` since ADR-0008. The documentation pass it called for is still open (see Follow-ups). |
 | **Bootstrap is management-VLAN-only** (Gap 6). | Unchanged. |
 

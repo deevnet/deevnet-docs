@@ -158,7 +158,7 @@ make migration-omada-ssids
 {{< hint warning >}}
 **Retired.** `make migration-omada-ssids` and `playbooks/migration/13-omada-ssids.yml` no longer
 exist: they drove the controller's undocumented internal API, which
-[ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) replaced with the
+[ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/) replaced with the
 documented Open API. The command above is kept because this is a record of what was run in March
 2026, not an instruction.
 

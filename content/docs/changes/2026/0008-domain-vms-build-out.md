@@ -1,6 +1,6 @@
 ---
 title: "CHG-0008: Management Domain VMs, First Build"
-weight: 8
+weight: -8
 ---
 
 # CHG-0008: Management Domain VMs, First Build
@@ -16,7 +16,7 @@ weight: 8
 | **Systems** | Management hypervisor `dv02hyp001p01`; six new VMs: `dv02nms001v01`, `dv02sob001v01`, `dv02prv001v01`, `dv02idn001v01`, `dv02tob001v01`, `dv02msg001v01`; retired: `dv02tdn001v01`, `dv02tst001v01`, `dv02mqt001v01`; core router `dv02cor002p01` (Unbound, Kea); access switch `dv02acc001p01`; control host `dv00bld001p01` |
 | **Automation** | `ansible-collection-deevnet.mgmt` (`podman_service`, `powerdns`, `minio`, `deevnet_api`, `omada_controller`, `proxmox_vm`, `vm_identity`); `ansible-collection-deevnet.net` (`dns.yml`, `dhcp.yml`, `switch-vlans.yml`, `proxmox-node-network.yml`); `ansible-collection-deevnet.builder` (`artifacts`); the new [`deevnet-provisioning-api`](https://github.com/deevnet/deevnet-provisioning-api) repository; all against `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. The step most likely to go wrong is the switch trunk re-apply, which rewrites every trunk on the switch, including the ports the control host and the management hypervisor sit behind. |
-| **Related decisions** | [ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) — the domain VMs this builds, and §6's fold-in of tenant DNS and state, which this record carries out; [ADR-0012](/docs/architecture/decisions/0012-iot-platform-api/) — the API whose shell is deployed; [ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/) — the controller's manual floor |
+| **Related decisions** | [ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) — the domain VMs this builds, and §6's fold-in of tenant DNS and state, which this record carries out; [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) — the API whose shell is deployed; [ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/) — the controller's manual floor |
 | **Related changes** | [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) — waits for the network management VM this builds; [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) — the zone policy these VMs are placed to survive |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — why the router record prune is previewed and gated |
 | **Related runbooks** | [VM Identity](/docs/runbook/substrate/building-recovery/vm-identity/); [Console Recovery → Access Switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/) |
@@ -25,7 +25,7 @@ weight: 8
 
 ## Summary
 
-[ADR-0013](/docs/architecture/decisions/0013-management-services-domain-vms/) groups the
+[ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) groups the
 management hypervisor's services into domain VMs, each on exactly one segment, with every function
 a container. Today the hypervisor still runs the earlier one-service VMs: tenant DNS
 (`dv02tdn001v01`), the tenant state store (`dv02tst001v01`) and an MQTT broker that never
@@ -33,7 +33,7 @@ answered (`dv02mqt001v01`). The Omada controller runs on the Builder.
 
 Nothing depends on those three VMs yet:
 - The only registered tenant, eds, has never applied its Terraform
-  ([ADR-0011](/docs/architecture/decisions/0011-edge-devices-application-owned/)).
+  ([ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/)).
 - tdemo was destroyed on 2026-09-05.
 - The broker was never reachable.
 
@@ -165,7 +165,7 @@ nothing else:
 `dv02mqt001v01` has nothing to remove:
 - It never had a reservation, because it declared `dhcp_reservation: false`.
 - The router holds no override and no `mqtt` alias for it, which fits the broker never resolving
-  in [ADR-0011's validation](/docs/architecture/decisions/0011-edge-devices-application-owned/#validation-2026-09-14).
+  in [ADR-0011's validation](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/#validation-2026-09-14).
 
 `tdns` and `tfstate` are still declared, now by the new hosts, so the role moves them rather than
 deleting them. Anything else in either list stops the step.
@@ -320,7 +320,7 @@ The `tenant-dns` run moves the core router's eds forwarding rows from 10.20.99.3
 
 ### Step 9: The controller's manual floor
 
-This is manual, per [ADR-0009 §5](/docs/architecture/decisions/0009-network-device-config-ownership/).
+This is manual, per [ADR-0009 §5](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/).
 
 1. In the setup wizard, create the Owner account, and decide whether to cloud-register it
    (ADR-0013's open question 2). Make the vault's `vault_omada_owner_*` match the account.
@@ -520,10 +520,10 @@ The change is complete; these are carried separately.
 - [ ] `proxmox_vm`: decide on first-boot upgrades. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
 - [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
 - [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
-      `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/0012-iot-platform-api/))
+      `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/))
 - [ ] Observability tooling for `dv02sob001v01` and `dv02tob001v01`
 - [ ] API functionality, and the `platform -> management` rule to the controller's Open API port
-      ([ADR-0013 §10](/docs/architecture/decisions/0013-management-services-domain-vms/))
+      ([ADR-0013 §10](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/))
 - [x] Review `powerdns_dnsupdate_from`, which still admits only the management subnet, now that
       the server sits on Platform. Done: mgmt #19 admits management, trusted and tenant_transit,
       applied to `dv02idn001v01` on 2026-09-17 (`--tags tenant-dns`, `changed=3`). The eds zones read
@@ -531,7 +531,7 @@ The change is complete; these are carried separately.
       with eds's key from the Builder added and removed a TXT record.
 - [ ] `deevnet-tenant-tdemo` still names `tfstate.mobile.deevnet.net` and 10.20.99.30. The tenant
       is destroyed; update or archive the repository. **Not archived:** a do-not-apply banner went in
-      (tdemo #3), and [ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/) makes
+      (tdemo #3), and [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) makes
       tdemo the reference tenant, rewritten to create itself through the API.
 - [x] `deevnet-tenant-factory` `TENANTS.md` shows index 1 as free, but the inventory gives it to
       eds. Done in factory #13; ADR-0015 retires the file at cutover.

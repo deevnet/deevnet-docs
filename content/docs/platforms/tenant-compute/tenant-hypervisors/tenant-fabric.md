@@ -7,7 +7,7 @@ weight: 2
 
 The implementation of the tenant network model on the tenant hypervisor. The *why* and the
 options considered are recorded in
-[ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/0001-tenant-network-fabric/); this
+[ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/); this
 page is the *how* and the concrete technology choices.
 
 ---
@@ -55,7 +55,7 @@ substrate.
 
 The fabric's hard requirements — globally-unique numbering, EVPN from the start, a real VTEP
 identity with no peers, every object from code — are the design's, recorded in
-[ADR-0001](/docs/architecture/decisions/0001-tenant-network-fabric/) and summarized in
+[ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/) and summarized in
 [Substrate Compute → The tenant fabric](/docs/architecture/substrate/compute/#the-tenant-fabric).
 Here they mean: every SDN object is created by the Deevnet API or by `deevnet-tenant-fabric`, never
 hand-clicked in the Proxmox UI, so that adding a member is a re-apply rather than a migration.
@@ -74,7 +74,7 @@ tenant needs no switch change.
 ## Provisioning
 
 Tenant SDN objects and workloads are created by the **Deevnet API**
-([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/)), which holds the
+([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)), which holds the
 Proxmox credential; tenants never do. A tenant declares itself through the `deevnet/deevnet`
 Terraform provider and the API builds, per tenant:
 
@@ -90,7 +90,7 @@ How a tenant uses this is [Tenant Operations](/docs/runbook/tenant/).
 ## Trajectory: single-member fabric → cluster
 
 What changes when the fabric gains a member, and what stays identical, is in
-[ADR-0001 → Trajectory](/docs/architecture/decisions/0001-tenant-network-fabric/#trajectory). In
+[ADR-0001 → Trajectory](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/#trajectory). In
 Proxmox terms: the underlay gains peers and the cluster gains a QDevice for quorum; the SDN objects
 are unchanged.
 
@@ -98,7 +98,7 @@ are unchanged.
 
 ## Concrete allocation
 
-Numbering follows [ADR-0002](/docs/architecture/decisions/0002-tenant-fabric-numbering/). On dv02hyp002p02:
+Numbering follows [ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/). On dv02hyp002p02:
 
 | Element | Value |
 |---------|-------|
@@ -147,7 +147,7 @@ takes the default route out transit.
   node's VTEP identity and the EVPN controller. **A tenant's own zone, VNets, subnet and workloads
   are built by the Deevnet API**, declared from the tenant's own repository through the
   `deevnet/deevnet` provider
-  ([ADR-0015](/docs/architecture/decisions/0015-tenant-onboarding-through-api/), deployed by
+  ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), deployed by
   [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)).
 - ✅ Default route moved onto transit.
 - ✅ First tenant end to end — `tdemo` (index 1, `10.20.129.0/24`), addressed by cloud-init, with
@@ -157,7 +157,7 @@ takes the default route out transit.
 ### How egress is enforced
 
 Two node-local settings the Ansible role owns, because Proxmox models neither
-([ADR-0003](/docs/architecture/decisions/0003-tenant-egress-single-member-fabric/)):
+([ADR-0003](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/)):
 
 - **Forwarding on the transit interface.** Proxmox sets `ip-forward on` only for the interfaces
   its SDN config owns, and the transit interface is node substrate. Without it, tenant traffic

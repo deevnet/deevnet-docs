@@ -82,7 +82,7 @@ inference, not a vendor statement.
 ## Management access ports ⏳
 
 - ⏳ Declare a labeled block of free SG2218 ports as access VLAN 99. Do it as a port profile when the
-  switch is adopted into Omada ([ADR-0009](/docs/architecture/decisions/0009-network-device-config-ownership/),
+  switch is adopted into Omada ([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/),
   after [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) and
   [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Doing it first through
   `switch_vlans` would only be redone at adoption.
