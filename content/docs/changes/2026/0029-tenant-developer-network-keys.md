@@ -200,7 +200,7 @@ never-run follow-up.
 ### Step 7: The tenant-facing pages
 
 **Run:** merge the tenant-guide PR: Before You Start, Tenant Admission §3, the Wi-Fi keys service
-page and CARPE's laptop setup.
+page.
 
 ## Verification
 
