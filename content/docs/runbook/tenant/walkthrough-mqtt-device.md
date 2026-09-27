@@ -280,13 +280,9 @@ mosquitto_pub -h mqtt.mobile.deevnet.net -p 8883 --cafile site-ca.pem \
 A real backend is the same thing in code — `paho-mqtt` in Python, with `tls_set("site-ca.pem")`,
 `username_pw_set(...)`, and a subscription to `bench1/sensors/+/telemetry`.
 
-{{< hint info >}}
-**Getting the backend onto the workload goes through the operator today.** Workload SSH keys do not
-work yet and code delivery is not built
-([Coming soon](/docs/runbook/tenant/services/coming-soon/#code-delivery-to-workloads)). Until then,
-the operator installs it for you: for this walkthrough, that is the `mosquitto_sub` above, run on
-your workload by the operator while you watch.
-{{< /hint >}}
+To run it on the workload, log in (`ssh tenant@backend.<tenant>.mobile.deevnet.net`, with your key
+in the workload's `ssh_keys`) and run the `mosquitto_sub` above there. A real backend goes on as a
+container: [Deploy Your App to a Workload](/docs/runbook/tenant/deploy-your-app/).
 
 ---
 

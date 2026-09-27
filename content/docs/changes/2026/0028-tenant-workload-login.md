@@ -213,17 +213,86 @@ Remove the rule from `firewall.yml` and run the firewall plan and apply again.
 
 ## Outcome
 
-*Completed after the change has run.*
+Run from the Builder on 2026-09-27; the `DVNTM-TD` checks from the operator's own computer.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 12:42 | 1 | Already done by [CHG-0030](/docs/changes/2026/0030-state-store-tls/): API `v0.9.0`, provider `0.5.0` |
+| ~13:13 | 2 | `make proxmox-fedora-tenant`: `fedora-tenant-44-1.7` as template 101 on `dv02hyp002p02`, 7m22s, beside the untouched `fedora-server-44-1.7` (100). The build's last step, which fails on any trace of `a_autoprov`, passed silently |
+| ~13:25 | 3 | mgmt #50 merged; `site.yml --tags deevnet-api` ok=70 changed=5. Env `DEEVNET_TEMPLATE_PREFIX=fedora-tenant-`, `DEEVNET_TENANT_CIUSER=tenant` |
+| ~13:27 | 4 | inventory #60 merged. Plan: **ADD 1** (`10.20.45.0/24 -> 10.20.128.0/18` TCP 22 on `opt11`), UPDATE 0, DELETE 0; applied, router 68 → 69 rules, reachability handler passed. net #40 merged: `segment-check.sh` now expects `DVNTM-TD` to REACH a workload on 22. A throwaway tdemo workload `probe` (VMID 2041), created with a test key: the response carried `login_user: tenant`; login as `tenant` with passwordless sudo; `id a_autoprov`: no such user; nothing of it in `/etc/passwd`, `shadow`, `group` or `sudoers.d`. Refused, `Permission denied (publickey)`: the substrate key as `a_autoprov`, the substrate key as `tenant`, and an unrelated key. `probe` deleted |
+| ~13:31 | 5 | Operator-created `tprobe2` with broker account `tprobe2-probe`: MQTT login `Success`; tenant deleted (`204`); the same login `Bad user name or password` |
+| ~13:35 | 6 | eds and tdemo rebuilt with `terraform apply -replace` (run by the operator; the classifier refused it to the assistant). Both logged in as `tenant`, sudo, no `a_autoprov`. **eds then lost its network**: see the departures |
+| 13:58 | 6 (again) | After the fix, eds rebuilt once more: login **28 s** after the apply, `pending-updates: 0`, `ciupgrade: 0`, cloud-init `done`. Proxmox's task log shows one stop, destroy, config and start |
+| ~14:25 | 6 (keys) | eds rebuilt with the operator's development computer's key added (see departures) |
+| ~14:40 | Verification | From the operator's computer on `DVNTM-TD` (`10.20.45.50`): `segment-check.sh DVNTM-TD` **29 passed, 0 failed**, with `REACH tenant-workload-ssh(ADR-0028) 10.20.130.10:22`. Log below |
+| ~14:48 | Step 7 check | The Deploy Your App flow, run from the Builder against eds: an image built, `podman save \| ssh podman load` (under a second), `kit.env` and a systemd unit installed, the app's output read back; a rebuilt image shipped and restarted; the unit back by itself after a reboot. Removed afterwards |
+
+{{< details "segment-check.sh DVNTM-TD, 2026-09-27" >}}
+```text
+Segment check: DVNTM-TD (from 10.20.45.50)
+== Address and DNS
+  PASS  lease 10.20.45.50
+  PASS  api.mobile.deevnet.net -> 10.20.25.20
+  PASS  tfstate.mobile.deevnet.net -> 10.20.25.20
+  PASS  mqtt.mobile.deevnet.net -> 10.20.35.20
+  PASS  downloads.mobile.deevnet.net -> 10.20.25.22
+  PASS  REACH https://api.mobile.deevnet.net:8080 - HTTP 404 (TLS verified)
+  PASS  REACH https://tfstate.mobile.deevnet.net:9000 - HTTP 403 (TLS verified)
+  PASS  mqtt.mobile.deevnet.net:8883 TLS verified
+  PASS  dv02obs001v01.mobile.deevnet.net:8427 TLS verified
+  PASS  REACH https://dv02obs001v01.mobile.deevnet.net:3000 - HTTP 302 (TLS verified)
+  PASS  REACH https://downloads.mobile.deevnet.net:8443 - HTTP 200 (TLS verified)
+  PASS  internet (https://example.com 200)
+  PASS  BLOCK obs-ssh(platform) 10.20.25.22:22
+  PASS  BLOCK Builder-ssh(management) 10.20.99.95:22
+  PASS  BLOCK router-GUI(management) 10.20.99.1:443
+  PASS  BLOCK hypervisor-PVE(management) 10.20.99.21:8006
+  PASS  BLOCK router-GUI-on-own-gateway 10.20.45.1:443
+  PASS  BLOCK router-ssh-on-own-gateway 10.20.45.1:22
+  PASS  BLOCK router-on-trusted 10.20.10.1:443
+  PASS  BLOCK prv-ssh(platform) 10.20.25.20:22
+  PASS  BLOCK prv-other-port(platform) 10.20.25.20:8200
+  PASS  BLOCK msg-ssh(iot_backend) 10.20.35.20:22
+  PASS  BLOCK broker-plaintext(iot_backend) 10.20.35.20:1883
+  PASS  REACH tenant-workload-ssh(ADR-0028) 10.20.130.10:22 (open)
+  PASS  BLOCK pi(iot,if-on) 10.20.30.11:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.12:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.13:22
+  PASS  BLOCK pi(iot,if-on) 10.20.30.14:22
+  PASS  BLOCK edge-router-admin(CHG-0023) 192.168.8.1:80
+
+RESULT: DVNTM-TD - 29 passed, 0 failed
+```
+{{< /details >}}
 
 ### Departures from the plan
 
--
+- **Every workload upgraded ~400 packages on first boot, and eds lost its network doing it.**
+  Proxmox 9.2 defaults `ciupgrade` on, so the cloud-init data it generates carries
+  `package_upgrade: true`, and the template straight from the Fedora ISO was far behind. eds stalled
+  at 160 of 404 packages with its interface down (its MAC absent from the bridge's forwarding table).
+  Fixed in two places: the API sets `ciupgrade=0` (API `v0.9.1`, test first), and the Fedora
+  templates run `dnf -y upgrade` at build time. Template 101 was destroyed and rebuilt (9m05s), API
+  `v0.9.1` deployed (mgmt bump), and eds rebuilt again. Updates on a workload are now the tenant's.
+- **The first key was not the tenant's.** The key put on eds came from the agent forwarded into the
+  operator's Builder session, assumed to be from the development computer. It was not: that computer
+  holds a different key with the **same comment**. Its own key was added (fingerprint-checked) and
+  eds rebuilt. The tenant guide now says to use the development computer's key and to compare
+  fingerprints, not comments.
+- **`login_user` is `tenant`, not the person's username.** The first login attempt used the
+  operator's usual user name. The guide now leads with it.
+- **Step 6 was run by the operator.** The classifier refused `terraform apply` to the assistant; the
+  steps went into scripts the operator ran.
+- **A clone inherits the build VM's login history** (`last` shows the Packer build's boots). Harmless,
+  but misleading; see the follow-ups.
 
 ## Follow-ups
+
+- [ ] The template cleanup truncates `/var/log/wtmp` and `/var/log/lastlog`, so a clone starts with
+      its own history.
+- [ ] Substrate VMs clone `fedora-server-*` with Proxmox's default `ciupgrade` too; the `proxmox_vm`
+      role should set it off as the API now does.
 
 - [ ] Whether a key change reaches a running workload on reboot (ADR-0028 open question 2).
 - [ ] Per-tenant `DVNTM-TD` keys and client isolation.

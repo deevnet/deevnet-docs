@@ -57,15 +57,18 @@ read it to use this guide.
    [Admission](getting-started/admission/) → [First apply](getting-started/first-apply/)
 2. **[Walkthrough: a Pico W or ESP32 talking to a backend](walkthrough-mqtt-device/)** — the whole
    thing end to end, in one Terraform file and two short firmware sketches
-3. **Services** — one page per service, when you need the details
-4. **[Recovery](recovery/)** — when your tenant, or the site under it, loses something
-5. **[Pi Lab](pi-lab/)** — the Raspberry Pi bank, when your project needs a Pi rather than a VM
-5. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
+3. **[Deploy your app to a workload](deploy-your-app/)** — your code from your computer onto your
+   own VM, as a container over SSH
+4. **Services** — one page per service, when you need the details
+5. **[Recovery](recovery/)** — when your tenant, or the site under it, loses something
+6. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
    ESP32 or a borrowed kit
-6. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and the services it uses
+7. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and the services it uses
    move onto a Pi of your own, and your devices keep talking to it with the same topics and tokens,
    with no Deevnet behind it
-7. **[Troubleshooting](troubleshooting/)** — when something doesn't work
+8. **[Pi Lab](pi-lab/)** — the site's own bank of Pis, when your project needs a Pi at the site
+   rather than a VM. Not a Pi of your own
+9. **[Troubleshooting](troubleshooting/)** — when something doesn't work
 
 The operator's side of all this — admitting your name — is
 [Tenant Admission](/docs/runbook/substrate/tenant-admission/).

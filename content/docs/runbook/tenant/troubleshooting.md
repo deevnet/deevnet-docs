@@ -36,7 +36,8 @@ fix is on the substrate, not in your repo.
 | `400` on a broker account | a topic pattern breaks the rules: a leading `/`, `$` or `%`, a `#` not at the end, or a device reaching into `log/` ([rules](/docs/runbook/tenant/services/devices-and-mqtt/#topic-rules)) |
 | `400` on a DNS record | the address is outside your own subnet |
 | `Saved plan is stale` | the state moved between `plan` and `apply`. Re-plan |
-| `ssh_keys` apply fails on a workload | a known defect — [leave `ssh_keys` unset](/docs/runbook/tenant/services/network-and-workloads/#getting-onto-it) |
+| `Permission denied (publickey)` logging in to a workload | the user is `tenant`, not your own; and one key your computer offers (`ssh -v … 2>&1 \| grep Offering`) must be in the workload's `ssh_keys`. Compare fingerprints, not comments ([Deploy Your App](/docs/runbook/tenant/deploy-your-app/#2-log-in)) |
+| `REMOTE HOST IDENTIFICATION HAS CHANGED` for a workload | expected after you replaced it: `ssh-keygen -R <fqdn>`. If you did not replace it, stop and ask the operator |
 
 ## Device side
 
