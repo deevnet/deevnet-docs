@@ -8,7 +8,7 @@ aliases:
 # Omada Controller Upgrade
 
 How the Omada controller on `dv02nms001v01` is upgraded to a new version in place, keeping its
-data. Each upgrade is a change: open a [change record](/docs/policies/change-management/change-record-template/)
+data. Each upgrade is a change: open a [change record](/docs/runbook/substrate/change-management/change-record-template/)
 of type **Upgrade**. Its steps are the ones below.
 
 If an upgrade goes wrong, or the controller's data is damaged, see

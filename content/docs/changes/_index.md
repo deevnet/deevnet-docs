@@ -17,7 +17,7 @@ reality changes. A change record is **retained**: evidence of a change made on a
 It is written once and then left alone, apart from follow-ups closing. Incidents are kept
 the same way, under [Incident Records](/docs/incidents/).
 
-New records start from the [change record template](/docs/policies/change-management/change-record-template/).
+New records start from the [change record template](/docs/runbook/substrate/change-management/change-record-template/).
 [Change Management](/docs/policies/change-management/) says when a change needs one.
 
 ---

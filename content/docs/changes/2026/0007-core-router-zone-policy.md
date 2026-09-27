@@ -19,7 +19,7 @@ weight: -7
 | **Related changes** | [CHG-0001](/docs/changes/2026/0001-flat-network-to-vlans/) — the segmentation that declared this policy |
 | **Related incidents** | [INC-0001](/docs/incidents/2026/0001-firewall-policy-deletion/) — its open items are this change |
 | **Related decisions** | [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) — attachment by trust class depends on this policy; its [Validation](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/#validation-2026-09-14) is where the pre-change state was first read |
-| **Related runbooks** | [Change Management](/docs/policies/change-management/#validation-checklist); [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) |
+| **Related runbooks** | [Change Management](/docs/runbook/substrate/change-management/#validation-checklist); [Console Recovery → Core Router](/docs/runbook/substrate/recovery/console-recovery/core-router/) |
 
 ---
 

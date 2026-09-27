@@ -3,6 +3,7 @@ title: "Change Record Template (CHG)"
 weight: 1
 aliases:
   - /docs/runbook/change-management/change-record-template/
+  - /docs/policies/change-management/change-record-template/
 ---
 
 # Change Record Template (CHG)
@@ -146,7 +147,7 @@ Steps are backed out in reverse order. Name the point where undo stops being pra
   Where there is genuinely no undo, write that down; it marks the point of no return.
 - **Take verification from the network, not from Ansible.** For the network roles,
   `--check --diff` is not a dry run and `changed=0` is not proof — see
-  [Validation Checklist](/docs/policies/change-management/#validation-checklist).
+  [Validation Checklist](/docs/runbook/substrate/change-management/#validation-checklist).
 - **Record departures, don't edit them away.** When execution differs from the plan, leave the
   plan as it was and say what happened under **Outcome**. The plan and the outcome together
   are the record.
