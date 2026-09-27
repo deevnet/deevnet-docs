@@ -1,6 +1,6 @@
 ---
 title: "Software Catalog"
-weight: 7
+weight: 6
 ---
 
 # Software Catalog
