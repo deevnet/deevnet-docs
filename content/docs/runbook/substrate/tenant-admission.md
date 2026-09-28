@@ -119,6 +119,7 @@ To confirm the fabric side, `pvesh get /cluster/sdn/zones` on the tenant hypervi
 | Call | Use |
 |---|---|
 | `GET /v1/tenants` | every tenant, by index, without secrets. The list is lean — ask `GET /v1/tenants/{name}` before concluding something is missing |
+| `DELETE /v1/tenants/{name}` | take a tenant out of service, after its workloads (the tenant can call it too, with its own token). It leaves the tenant's state and more behind: [Tenant Removal](/docs/runbook/substrate/tenant-removal/) |
 | `POST /v1/tenants/{name}/reconcile` | re-ensure every backend with the secrets the registry holds. The repair after a backend is rebuilt, and how a tenant created before a service existed is handed that service's credentials |
 
 ---

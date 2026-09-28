@@ -39,4 +39,8 @@ with inventory and vault access.
     <h3>Tenant Admission</h3>
     <p>The operator's half of creating a tenant: admitting a name and handing over the enrollment token.</p>
   </a>
+  <a class="section-card" href="tenant-removal/">
+    <h3>Tenant Removal</h3>
+    <p>Taking a tenant out of service: what a delete removes, and cleaning up what it leaves behind.</p>
+  </a>
 </div>
