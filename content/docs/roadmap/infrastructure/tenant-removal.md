@@ -36,8 +36,9 @@ use, and nothing should need the operator's hands.
 - ⏳ **State.** Delete the objects under `tenants/<name>/`, every version of them, with the
   tenant. Today the delete removes only the store user, and the objects stay on purpose; that
   decision needs revisiting, since a tenant later created under the same name is given the same prefix.
-- ⏳ **Logs.** Keep a freed index out of use until the log retention has passed, or delete the
-  index's partitions with the tenant. Today the next tenant created gets the freed index, and its
+- ⏳ **Logs.** Delete the index's partitions with the tenant, or keep a freed index out of use
+  until the log retention has passed. VictoriaLogs v1.52 has delete endpoints behind
+  `-delete.enable`, which is off on the log store today. Today the next tenant created gets the freed index, and its
   partitions still hold the previous tenant's lines.
 - ⏳ **Dashboards.** Delete the tenant's dashboards before the organization is renamed
   `deleted-<name>-<id>`, since Grafana 13 cannot delete the organization itself.

@@ -58,8 +58,8 @@ index.
 | Leftover | Where | What to do |
 |---|---|---|
 | The tenant's Terraform state, every version of it, and its lock | `tf-state/tenants/<name>/` in the state store | [remove it](#removing-the-tenants-state) |
-| Log lines | partitions `(index, 0..2)` in VictoriaLogs | nothing today: they age out after the 30-day retention |
-| The Grafana organization | renamed `deleted-<name>-<id>`, with any dashboards the tenant saved in it | nothing today: Grafana 13 cannot delete an organization |
+| Log lines | partitions `(index, 0..2)` in VictoriaLogs | nothing today: they age out after the 30-day retention. VictoriaLogs can delete (`-delete.enable`), but the flag is off here |
+| The Grafana organization | renamed `deleted-<name>-<id>`, with any dashboards the tenant saved in it | nothing today: Grafana 13 cannot delete an organization. `GET /api/orgs` as the Grafana admin lists them |
 | The tenant's API token | wherever the tenant kept its state | nothing today: it can still recreate a tenant under that name |
 | Audit entries | the API's `audit_log` | none; the audit log is kept on purpose |
 
