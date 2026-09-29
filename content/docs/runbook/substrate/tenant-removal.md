@@ -13,22 +13,35 @@ page covers what that removes and the leftovers the operator cleans up by hand. 
 
 ## Who deletes
 
-Either the tenant or the operator can delete a tenant. Both send `DELETE /v1/tenants/{name}`.
+Either the tenant or the operator can delete a tenant. Both end in `DELETE /v1/tenants/{name}`.
 
 | | |
 |---|---|
-| The tenant | `terraform destroy` in its own repository, with its own API token. The workloads go first, then the tenant |
-| The operator | the call below, with the operator token. Delete the tenant's workloads first |
+| The tenant | `terraform destroy` in its own repository, with its own API token. The workloads go first, then the tenant. The operator then [removes its state](#removing-the-tenants-state) |
+| The operator | `make remove-tenant` from `ansible-collection-deevnet.mgmt` on the Builder |
 
 ```bash
-curl -sS --cacert site-ca.pem -X DELETE \
-  -H "Authorization: Bearer $OPERATOR_TOKEN" \
-  https://api.mobile.deevnet.net:8080/v1/tenants/<name>
+make remove-tenant NAME=<name>
 ```
 
-A delete answers `409` while the registry still holds any of the tenant's workloads. It checks only
-the registry: a VM made outside the API is not seen, and would also keep the tenant's VNet from being
-deleted.
+```
+Removing tenant trm (index 5):
+  workloads:  w1
+  then its network, DNS zones, broker accounts, Wi-Fi keys, log tokens and Grafana login,
+  and its Terraform state in tf-state/tenants/trm/, every version.
+This cannot be undone. Type 'trm' to go ahead: trm
+deleted workload w1
+deleted tenant trm
+state purged: tf-state/tenants/trm/ is empty
+```
+
+It deletes the tenant's workloads, then the tenant, then its state, and stops at the first step that
+fails. It reads the operator token from the API container, as `make admit` does. `CONFIRM=<name>`
+answers the question in advance.
+
+The API refuses to delete a tenant (`409`) while its registry holds any workloads, which is why the
+target deletes them first. It checks only the registry: a VM made outside the API is not seen, and
+would also keep the tenant's VNet from being deleted.
 
 ---
 
@@ -57,7 +70,7 @@ index.
 
 | Leftover | Where | What to do |
 |---|---|---|
-| The tenant's Terraform state, every version of it, and its lock | `tf-state/tenants/<name>/` in the state store | [remove it](#removing-the-tenants-state) |
+| The tenant's Terraform state, every version of it, and its lock | `tf-state/tenants/<name>/` in the state store | `make remove-tenant` removes it; after a tenant's own destroy, [remove it](#removing-the-tenants-state) |
 | Log lines | partitions `(index, 0..2)` in VictoriaLogs | nothing today: they age out after the 30-day retention. VictoriaLogs can delete (`-delete.enable`), but the flag is off here |
 | The Grafana organization | renamed `deleted-<name>-<id>`, with any dashboards the tenant saved in it | nothing today: Grafana 13 cannot delete an organization. `GET /api/orgs` as the Grafana admin lists them |
 | The tenant's API token | wherever the tenant kept its state | nothing today: it can still recreate a tenant under that name |
@@ -77,23 +90,18 @@ The last three rows are gaps in the delete itself, tracked on the
 
 ## Removing the tenant's state
 
-The state store's MinIO container carries `mc`, and its root credentials are already in the
-container's environment. Run this from the Builder:
+`make remove-tenant` ends with this. After a tenant has run its own `terraform destroy`, run it
+alone:
 
 ```bash
-ssh a_autoprov@dv02prv001v01.mobile.deevnet.net 'sudo podman exec minio sh -c '\''
-  export MC_CONFIG_DIR=/tmp/mc-cleanup
-  mc alias set local https://127.0.0.1:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" --insecure >/dev/null
-  mc ls --insecure --recursive --versions local/tf-state/tenants/<name>/
-  mc rm --insecure --recursive --force --versions local/tf-state/tenants/<name>/
-  echo "versions left: $(mc ls --insecure --recursive --versions local/tf-state/tenants/<name>/ | wc -l)"
-  rm -rf /tmp/mc-cleanup
-'\'''
+make purge-tenant-state NAME=<name>
 ```
 
-`--versions` matters. The bucket is versioned, so a plain `mc rm` only adds delete markers, and
-every earlier state, credentials and all, stays stored underneath them. Done right, it ends with
-`versions left: 0`.
+It refuses while `<name>` is still a tenant, since that tenant would still be writing there. It
+removes every version under `tf-state/tenants/<name>/`, not just the current objects: the bucket is
+versioned, so a plain delete only adds delete markers, and every earlier state, credentials and all,
+stays stored underneath them. It runs `mc` inside the state store's MinIO container, whose root
+credentials never leave it, and finishes only when no versions are left.
 
 Remove the state before admitting the name again. Otherwise the new tenant's
 `make state-backend` finds the old state and a lock nobody holds.
@@ -105,6 +113,6 @@ Remove the state before admitting the name again. Otherwise the new tenant's
 | Symptom | What it means |
 |---|---|
 | The tenant's `terraform destroy` ends in `Failed to save state` / `InvalidAccessKeyId`, and a lock it cannot release | expected: the delete removed the state-store user the backend was writing with. `errored.tfstate` should hold no resources; delete it, then [remove the state](#removing-the-tenants-state) |
-| `409` "destroy them first" | the registry still holds workloads. Delete them, then the tenant |
-| `502` part-way through | a backend step failed. The tenant stays in `deleting` with the failing step recorded, and repeating the `DELETE` picks up from there |
+| `409` "destroy them first" | the registry still holds workloads. `make remove-tenant` deletes them first; called by hand, delete them, then the tenant |
+| `502` part-way through | a backend step failed. The tenant stays in `deleting` with the failing step recorded, and running `make remove-tenant` again picks up from there |
 | `409` creating a tenant under a deleted name | the delete has not finished; the row is still there in `deleting` |
