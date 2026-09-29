@@ -23,7 +23,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | | |
 |---|---|
 | The API | `https://api.mobile.deevnet.net:8080`, reachable from the Builder |
-| The operator token | `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault |
+| The operator token | nothing to fetch: `make admit` reads it from the running API container over SSH, and never prints it. It is also `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault, for calling the API by hand |
 | The site CA | `ansible-collection-deevnet.mgmt/.openbao/site-ca.pem` on the control node |
 | The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
@@ -31,36 +31,41 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 
 ## 1. Admit the name
 
+From `ansible-collection-deevnet.mgmt` on the Builder:
+
 ```bash
-curl -sS --cacert site-ca.pem \
-  -H "Authorization: Bearer $OPERATOR_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"mabell"}' \
-  https://api.mobile.deevnet.net:8080/v1/admissions
+make admit NAME=mabell                          # or bind the Wi-Fi key to one laptop:
+make admit NAME=mabell MAC=AA-BB-CC-00-11-22
 ```
 
-```json
-{ "name": "mabell", "enrollment_token": "s.…", "expires_at": "2026-09-26T…Z",
-  "wifi": { "ssid": "DVNTM-TD", "psk": "…" } }
+```
+admitted mabell: expires 2026-09-26T…Z, Wi-Fi DVNTM-TD
+handover details: /home/<you>/mabell-admission.txt (mode 0600)
 ```
 
-`wifi` is the tenant's own `DVNTM-TD` key
+The terminal shows nothing secret. `~/<name>-admission.txt` holds everything the tenant is handed:
+the enrollment token and its expiry, the API endpoint, the `DVNTM-TD` Wi-Fi key, the site CA's URL
+and fingerprint, and the tenant's first three steps. It is written to be read and passed on by a
+person.
+
+The Wi-Fi key is the tenant's own `DVNTM-TD` key
 ([ADR-0029](/docs/architecture/decisions/tenant-networking/0029-tenant-developer-network-keys/)): a
-tenant needs that network to reach the API at all, so its first key comes with the admission. Add
-`"mac":"AA-BB-CC-00-11-22"` to the request to bind it to one laptop. When the tenant creates itself,
-the key becomes its own Wi-Fi key `admission`.
+tenant needs that network to reach the API at all, so its first key comes with the admission. `MAC=`
+binds it to one laptop. When the tenant creates itself, the key becomes its own Wi-Fi key
+`admission`.
 
 | | |
 |---|---|
 | The name | `^[a-z][a-z0-9]{0,7}$` — it becomes a PVE SDN zone ID, a DNS label and a state-store user |
 | The token | single-use, expires after `DEEVNET_ENROLLMENT_TTL` (72h by default) |
 | A name already registered | answers `409`. Admission creates nothing but that key; it only authorizes |
-| Admitting the name again | issues a new key; the one handed over before stops working |
-| An admission never used | `DELETE /v1/admissions/<name>` revokes its key. The token itself just expires |
+| Admitting the name again | issues a new key; the one handed over before stops working. `make admit` refuses while `~/<name>-admission.txt` exists; `FORCE=1` admits anyway |
+| An admission never used | `make unadmit NAME=<name>` revokes its key (`DELETE /v1/admissions/<name>`) and deletes the handover file. The token itself just expires |
 
 ## 2. Hand over four things
 
-The tenant needs exactly these, and nothing else from the substrate:
+The tenant needs exactly these, and nothing else from the substrate. All four are in
+`~/<name>-admission.txt`:
 
 1. the **enrollment token**
 2. the **API endpoint**, `https://api.mobile.deevnet.net:8080`
@@ -74,7 +79,8 @@ so a mistyped name costs a new admission.
 **Delivery is by hand today.** ADR-0012 §9 says the token is delivered age-encrypted to the
 tenant's own key; that tooling is not built. Until it is, hand the token over on a channel you would
 trust with a password, and admit close to when the tenant will apply — an unspent token is a
-credential for 72 hours.
+credential for 72 hours. Delete `~/<name>-admission.txt` once it is handed over: after the first
+apply the Wi-Fi key in it is the tenant's to keep, not yours.
 {{< /hint >}}
 
 ## 3. Where the tenant applies from
