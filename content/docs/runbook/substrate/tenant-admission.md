@@ -101,6 +101,29 @@ reads this.
 
 ---
 
+## Rotating a tenant's Wi-Fi key
+
+A tenant's `DVNTM-TD` password is handed over once: the API never returns a key's password again,
+so a lost one is replaced, not recovered. Rotate the key to give it a new password — after a loss, a
+possible leak, or on a schedule:
+
+```bash
+make rotate-wifi-key NAME=<tenant>                 # the admission key
+make rotate-wifi-key NAME=<tenant> KEY=<key>       # any other key
+```
+
+It shows the key's trust class, SSID and MAC binding, asks for the tenant's name, then deletes the key
+and creates it again under the same name and settings. The new password goes to
+`~/<tenant>-wifi-<key>.txt` (mode 0600), to hand over like an admission. The old password stops
+working on every device that used it; each one forgets the network and joins again.
+
+Only the `admission` key is the operator's to rotate. It came with the admission and the tenant's
+Terraform does not declare it. A key the tenant declares, such as its devices' key, lives in the
+tenant's state, and rotating it here would leave that state holding the old password: the tenant
+rotates its own with `terraform apply -replace=<the key's resource>`.
+
+---
+
 ## What the substrate does on the first apply
 
 | | |

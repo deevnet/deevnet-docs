@@ -22,6 +22,11 @@ or iCloud Private Relay first. **All passing** means the network is fine and the
 Terraform or client side (below). **Anything failing:** send the whole output to the operator; the
 fix is on the substrate, not in your repo.
 
+**Can't join `DVNTM-TD` at all, or lost its password?** The password you were handed at admission is
+the only copy: nothing shows it again. Ask the operator to rotate your key. You get a new password, and
+the old one stops working on every device that had it. A key bound to one computer's MAC address
+also refuses any other computer, including the same one with a new private Wi-Fi address.
+
 ## Terraform side
 
 | Symptom | What it means |
