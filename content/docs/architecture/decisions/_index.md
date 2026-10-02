@@ -288,10 +288,12 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 - [ADR-0030: Site Certificate Hierarchy](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) —
   *Proposed.* Answers ADR-0016's open question 1. Each site's root is generated once and kept offline
-  in ansible-vault; OpenBao holds an intermediate under it and issues every substrate and tenant
-  certificate, so an OpenBao rebuild costs an intermediate rather than a new root. The root is the only
-  trust anchor, installed in the OS trust store of every substrate host, the Builder and the VM
-  template, and on the operator's computer by hand. Leaves last a year and are laid down by the build
+  in ansible-vault; OpenBao holds an intermediate under it and issues tenant certificates and those of
+  every service built after it, so an OpenBao rebuild costs an intermediate rather than a new root.
+  The core router and the hypervisors, which come up before OpenBao, are signed by a second, bootstrap
+  intermediate kept in ansible-vault, so a from-scratch rebuild never waits on itself. The root,
+  `deevnet-mobile-root-ca.pem`, is the only trust anchor, installed in the OS trust store of every
+  substrate host, the Builder and the VM template, and on the operator's computer by hand. Leaves last a year and are laid down by the build
   and a `certs.yml` playbook, with no automatic renewal yet. Proxmox, the core router and the Omada
   controller get site certificates, and the clients that skip verification to reach them stop.
   Extends ADR-0016.
