@@ -10,7 +10,7 @@ weight: -31
 | **Date** | 2026-10-02 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Step 1 done 2026-10-02: the site root and the bootstrap intermediate exist, keys encrypted and pushed. Steps 2 onward not started. |
+| **Status** | **In progress.** Step 1 done 2026-10-02: the site root and the bootstrap intermediate exist, keys encrypted and pushed. Step 2 done 2026-10-02: code merged, collections published. Steps 3 onward not started. |
 | **Window** | Steps 2–7 in one sitting; tenants are without a working CA from step 5 until step 6 |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02hyp002p02` (the egress agent), the Builder and both hypervisors (trust store), the tdemo, eds, mabell and cdeever tenants, the eds workload |
@@ -106,7 +106,7 @@ ansible-playbook playbooks/site-root-ca.yml
 cd ../ansible-inventory-deevnet && make vault   # then commit and push
 ```
 
-**Verify:** `openssl verify -CAfile mobile/pki/deevnet-mobile-root-ca.pem mobile/pki/deevnet-mobile-bootstrap-ca.pem`
+**Verify:** `openssl verify -CAfile pki/mobile/deevnet-mobile-root-ca.pem pki/mobile/deevnet-mobile-bootstrap-ca.pem`
 is `OK`, and the pushed `vault.yml` starts `$ANSIBLE_VAULT`.
 
 **Undo:** remove both `.pem` files and both `vault_site_*` keys, then commit.
@@ -124,6 +124,12 @@ cd ../ansible-collection-deevnet.mgmt && make install-dev
 `ansible-playbook playbooks/certs.yml --syntax-check` passes.
 
 **Undo:** publish the previous `main`.
+
+**Done 2026-10-02.** Merged mgmt #59, inventory #63, builder #21, image-factory #19 and this record
+(docs #238); `make publish` installed `deevnet.builder` with `site_trust`, and `certs.yml`, `site.yml`
+and `openbao.yml` pass `--syntax-check`. Before step 3, OpenBao's default issuer is
+`a5679c07-dbe3-9ac2-a0eb-bfe7f31d7412` (`drill-rotated`, the internal root the 2026-09-17 drill made):
+[Undo Step 3](#undo-step-3) sets it back.
 
 ### Step 3: OpenBao issues from the intermediate
 
@@ -228,7 +234,7 @@ The old root is still an issuer on the mount. Set it back as the default:
 ```bash
 # POST pki/config/issuers as Ansible's AppRole, with the id it listed before step 3
 curl --cacert .openbao/dv02idn001v01-listener.pem -H "X-Vault-Token: $T" \
-  -d '{"default":"<old issuer id>"}' https://bao.mobile.deevnet.net:8200/v1/pki/config/issuers
+  -d '{"default":"a5679c07-dbe3-9ac2-a0eb-bfe7f31d7412"}' https://bao.mobile.deevnet.net:8200/v1/pki/config/issuers
 ```
 
 OpenBao issues from the old root again. Nothing else changed in step 3.
@@ -242,6 +248,13 @@ Tenants keep their old `site-ca.pem`.
 ## Outcome
 
 To be written when the change completes.
+
+### Departures from the plan
+
+- **The PKI certificates moved out of the inventory directory** (step 2). Step 1 wrote them to
+  `mobile/pki/`, and Ansible parses every file there as an inventory source: every run warned five
+  times that it could not parse them (hosts still loaded). They are at `pki/mobile/` at the inventory
+  repository's root (inventory #64, mgmt #60, image-factory #20).
 
 ## Follow-ups
 
