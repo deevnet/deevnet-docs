@@ -3,7 +3,7 @@ title: "SSL Cert Automation"
 weight: 5
 tasks_completed: 3
 tasks_in_progress: 0
-tasks_planned: 14
+tasks_planned: 16
 ---
 
 # SSL Cert Automation
@@ -44,7 +44,9 @@ host and tool, with no browser warning and no client skipping verification.
 - ✅ Internal CA in OpenBao, issuing to Platform services (ADR-0016, CHG-0010)
 - ✅ CA delivered to tenants with their credentials (downloads, admission fingerprint)
 - ⏳ Offline root in ansible-vault, OpenBao intermediate under it (ADR-0030 §1–§2)
-- ⏳ Re-root tenants, scripts and device firmware onto the offline root, once
+- ⏳ Bootstrap intermediate in ansible-vault for the core router and hypervisors (ADR-0030 §3)
+- ⏳ Re-root tenants and scripts onto the offline root, once
+- ⏳ Root file renamed `deevnet-mobile-root-ca.pem`; applications read the CA from a variable
 
 ---
 

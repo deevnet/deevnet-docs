@@ -65,27 +65,49 @@ and this record finishes the job that roadmap described.
   handed anything. The `openbao` role signs a new intermediate when OpenBao has none, or when the one
   it has does not chain to the inventory root.
 
-### 3. The root is the only trust anchor
+### 3. What comes before OpenBao is signed by a bootstrap intermediate
 
-- **`site-ca.pem` is the root.** Tenants still download it as `deevnet-mobile-ca.pem`, and admission
-  still prints its fingerprint.
+The core router and the hypervisors come up before OpenBao does, and OpenBao's VM is built through
+them (ADR-0016 §6). A certificate they could only get from OpenBao would make a from-scratch rebuild
+wait on itself, so they don't get one from it.
+
+- **A second intermediate, the bootstrap intermediate, sits under the same root.** Its key lives in the
+  inventory vault beside the root's (`vault_site_bootstrap_ca_key`), and its certificate in plain
+  inventory. Valid five years.
+- **Ansible signs with it on the control node**, with no OpenBao involved, for everything that comes
+  before OpenBao in the rebuild order: the core router and the Proxmox hypervisors.
+- **It is installed without needing what it replaces.** Proxmox takes its certificate over SSH. The
+  core router's install step trusts the router's own certificate on first use, then verifies from then
+  on.
+- **Everything after OpenBao in the rebuild order issues from OpenBao**, the Omada controller included:
+  OpenBao does not need the controller to come up.
+
+### 4. The root is the only trust anchor
+
+- **The root's file is `deevnet-<site>-root-ca.pem`** (`deevnet-mobile-root-ca.pem` here), on hosts,
+  in trust stores, in tenant repositories and on the downloads server. It replaces `site-ca.pem` and the
+  `deevnet-mobile-ca.pem` download. Admission still prints its fingerprint.
+- **Applications read the CA from a variable, not a fixed file name** (`MQTT_CA_FILE`,
+  `GRAFANA_CA_CERT`, `DEEVNET_API_CACERT`). At Deevnet it names the root. On a take-home Pi it names
+  the Pi's own CA, which deevnet-kit writes as `deevnet-kit-ca.pem`, so an application moves between
+  the two without a change.
 - **Services serve their full chain:** leaf, then intermediate.
 - **"Has the CA changed" means "does this leaf still chain to the root".** Roles verify the leaf
   against the root with the intermediate as an untrusted link, instead of comparing the host's CA file
   with `pki/cert/ca`. An intermediate rotation fails that check and reissues; a root rotation is a
   deliberate act, not a side effect of a rebuild.
 
-### 4. Leaves last a year
+### 5. Leaves last a year
 
 - **One year, reissued by any run that finds fewer than 60 days left.** No timer renews certificates
-  (§5), so the lifetime has to outlast the gaps between deliberate runs.
+  (§6), so the lifetime has to outlast the gaps between deliberate runs.
 - **Names:** the CN is the name clients dial (`<service>.<site>.deevnet.net`), with the host's FQDN and
   address as SANs. `127.0.0.1` is added only where the role's own health check dials it.
 - **To confirm when building:** that macOS accepts a one-year leaf under a user-trusted root. Apple
   caps TLS server certificates at 825 days; whether that cap or the 398-day one for public roots
   applies to a user-installed root is to be read from Apple's current guidance, not assumed.
 
-### 5. Certificates are laid down by the build, not by a clock
+### 6. Certificates are laid down by the build, not by a clock
 
 - **The roles that build a host issue its certificates and install its trust.** A new build or a
   repave comes up with the right certificate and the right root, with no extra step.
@@ -94,7 +116,7 @@ and this record finishes the job that roadmap described.
 - **No automatic renewal in this version.** An expiring leaf is a known risk, held in the risk register
   and narrowed by the one-year lifetime, not a gap.
 
-### 6. Trust is installed where the tools run
+### 7. Trust is installed where the tools run
 
 | Where | How |
 |---|---|
@@ -107,10 +129,10 @@ and this record finishes the job that roadmap described.
 Tools that already pass the CA by file keep doing so. The trust store is what lets the rest stop
 skipping verification.
 
-### 7. The appliances get site certificates
+### 8. The appliances get site certificates
 
-- **Proxmox, the core router and the Omada controller** are issued leaves from the intermediate and
-  have them installed through each product's own documented mechanism, chosen and quoted when the
+- **Proxmox and the core router** are issued leaves from the bootstrap intermediate (§3), and **the
+  Omada controller** from OpenBao's. Each has its leaf installed through each product's own documented mechanism, chosen and quoted when the
   change is built. Where a product offers no API for it, the runbook carries the manual step.
 - **Once an appliance serves a site certificate, every client that skips verification to reach it
   stops.** The Deevnet API's `*_INSECURE_TLS` settings default to off.
@@ -123,15 +145,14 @@ skipping verification.
 and script, becomes a reissue on the next run.
 
 **One last re-root.** Moving to this hierarchy changes the trust anchor once:
-- every tenant replaces `site-ca.pem` (eds, tdemo, mabell, cdeever);
-- the copies embedded in `install-provider.sh`, `tenant-check.sh` and `segment-check.sh` are updated;
-- any device firmware that embeds the CA is reflashed.
+- every tenant replaces `site-ca.pem` with `deevnet-mobile-root-ca.pem` (eds, tdemo, mabell, cdeever);
+- the copies embedded in `install-provider.sh`, `tenant-check.sh` and `segment-check.sh` are updated.
 
-The change that builds this has to prove a device validates a leaf-plus-intermediate chain against a
-root-only anchor before it cuts over.
+No device firmware embeds the CA today, so nothing is reflashed; builds from here on carry the root.
 
-**The root's custody is ansible-vault's.** Anyone with the vault password can sign an intermediate the
-whole site trusts. It joins the seal key in the category ADR-0016 already gave the same care as the
+**The root's custody is ansible-vault's, and so is the bootstrap intermediate's.** Anyone with the
+vault password can sign an intermediate, or a router or hypervisor certificate, that the whole site
+trusts. It joins the seal key in the category ADR-0016 already gave the same care as the
 vault password.
 
 **The substrate's interfaces verify.** The browser warnings, and the `-k`, `insecure` and
@@ -151,6 +172,11 @@ re-applies for ten months will expire.
 - **An intermediate generated outside OpenBao and imported.** A rebuild could restore the very same
   intermediate, but its key would sit in ansible-vault beside the root and gain nothing over §2's
   reissue. Rejected.
+- **The root signs the core router's and the hypervisors' leaves directly.** One fewer key, but the
+  root would be used on every repave of them. Rejected for §3's bootstrap intermediate.
+- **OpenBao issues the core router's and the hypervisors' certificates, and a from-scratch rebuild
+  skips verification until it is up.** No new key, but skipping verification stays in the bootstrap
+  path, which is where a spoofed endpoint matters most. Rejected.
 - **Renew on a timer now** (a scheduled play, an OpenBao Agent per host, or ACME from OpenBao's PKI).
   Each is a real design, with a dependency on the control node, a credential on every host, or
   challenge plumbing. Deferred, not rejected: see open question 1.
