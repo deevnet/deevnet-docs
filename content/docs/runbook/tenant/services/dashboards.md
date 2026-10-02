@@ -53,7 +53,7 @@ Deevnet and against your Pi:
 ```bash
 export GRAFANA_URL="$(terraform output -raw dashboard_url)"
 export GRAFANA_AUTH="<dashboard_username>:<dashboard_password>"
-export GRAFANA_CA_CERT=site-ca.pem
+export GRAFANA_CA_CERT=deevnet-mobile-root-ca.pem
 export TF_VAR_grafana_org_id=<dashboard_org_id>
 ```
 

@@ -15,7 +15,7 @@ The broker is where devices and workloads meet. Neither connects to the other; b
 | | |
 |---|---|
 | Broker | `mqtt.mobile.deevnet.net`, port **8883**, **TLS only** — nothing listens on 1883 |
-| Certificate | issued by the site CA — trust `site-ca.pem` |
+| Certificate | issued by the site CA — trust `deevnet-mobile-root-ca.pem` |
 | Who can reach it | the IoT network (your devices) and tenant networks (your workloads) |
 | Your topic space | everything under `<tenant>/` — and nothing else |
 
