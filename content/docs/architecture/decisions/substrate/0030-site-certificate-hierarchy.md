@@ -61,7 +61,8 @@ and this record finishes the job that roadmap described.
 - **Everything that issues today keeps issuing from it:** the `platform` role for substrate services,
   and the API's grant for tenant issuance.
 - **A rebuild costs an intermediate, not a root.** An OpenBao that comes back without its data gets a
-  new intermediate under the same root. Every service is reissued on the next run and no client is
+  new intermediate under the same root. Certificates the old one signed still chain to the root
+  and stay in service until they are due; new ones come from the new intermediate. No client is
   handed anything. The `openbao` role signs a new intermediate when OpenBao has none, or when the one
   it has does not chain to the inventory root.
 
