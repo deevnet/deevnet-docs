@@ -64,7 +64,7 @@ sudo podman pull docker.io/mbentley/omada-controller:<tag>
 ## 2. Record, stop, snapshot
 
 ```bash
-curl -k https://localhost:8043/api/info     # controllerVer and omadacId, to compare after
+curl https://localhost:8043/api/info        # controllerVer and omadacId, to compare after
 sudo systemctl stop omada-controller
 ```
 

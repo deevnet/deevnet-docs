@@ -1,6 +1,6 @@
 ---
 title: "Tenant Admission"
-weight: 7
+weight: 8
 aliases:
   - /docs/runbook/tenant-provisioning/
   - /docs/runbook/tenant/legacy-provisioning/

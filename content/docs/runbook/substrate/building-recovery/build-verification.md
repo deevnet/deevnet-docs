@@ -65,9 +65,9 @@ dig +short @10.20.99.1 tdemo-1.tdemo.mobile.deevnet.net      # 10.20.129.10, if 
 ping -c 3 dv02hyp001p01.mobile.deevnet.net    # management hypervisor, 10.20.99.21
 ping -c 3 dv02hyp002p02.mobile.deevnet.net    # tenant hypervisor, 10.20.99.22
 
-# Proxmox API answers
-curl -k https://dv02hyp001p01.mobile.deevnet.net:8006/api2/json/version
-curl -k https://dv02hyp002p02.mobile.deevnet.net:8006/api2/json/version
+# Proxmox answers, verified against the site root (401: no token, which is expected)
+curl --cacert $CA -s -o /dev/null -w '%{http_code}\n' https://dv02hyp001p01.mobile.deevnet.net:8006/api2/json/version
+curl --cacert $CA -s -o /dev/null -w '%{http_code}\n' https://dv02hyp002p02.mobile.deevnet.net:8006/api2/json/version
 
 # SSH as the automation user
 ssh a_autoprov@dv02hyp001p01.mobile.deevnet.net hostname
@@ -93,7 +93,7 @@ The substrate service VMs, and one check each.
 | Log store (vmauth) | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -o /dev/null -w '%{http_code}\n' https://dv02obs001v01.mobile.deevnet.net:8427/select/logsql/query` | `401`: vmauth is up and refuses a request with no token (recorded: [CHG-0018](/docs/changes/2026/0018-central-log-store/)) |
 | Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://dv02obs001v01.mobile.deevnet.net:3000/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
 | Tenant downloads | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -I https://downloads.mobile.deevnet.net:8443/` | `200` |
-| Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl -k -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
+| Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl --cacert $CA -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
 | Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/` | `200` |
 
 Then **reconcile one tenant**. It exercises every backend the API writes (DNS, state, broker

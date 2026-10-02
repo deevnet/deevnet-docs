@@ -31,6 +31,10 @@ with inventory and vault access.
     <h3>Network</h3>
     <p>Important URLs — every management UI by name and IP — plus VLAN and addressing reference.</p>
   </a>
+  <a class="section-card" href="certificates/">
+    <h3>Certificates</h3>
+    <p>The site's TLS certificates: the root and its intermediates, what each signs, renewing, the appliances, rotating, and trusting the root.</p>
+  </a>
   <a class="section-card" href="recovery/">
     <h3>Recovery</h3>
     <p>Getting service back when something has failed — console access, and restoring the Omada controller.</p>

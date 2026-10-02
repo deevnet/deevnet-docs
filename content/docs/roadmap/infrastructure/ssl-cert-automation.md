@@ -1,9 +1,9 @@
 ---
 title: "SSL Cert Automation"
 weight: 5
-tasks_completed: 12
-tasks_in_progress: 0
-tasks_planned: 7
+tasks_completed: 14
+tasks_in_progress: 2
+tasks_planned: 3
 ---
 
 # SSL Cert Automation
@@ -14,7 +14,10 @@ under it ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificat
 Deevnet API, the state store, the broker, the log store's proxy, Grafana and tenant downloads as it
 builds each one, and `certs.yml` renews them. The Builder, the hypervisors, every management-plane VM
 and the VM template trust the root at the OS level; tenants trust it as `deevnet-mobile-root-ca.pem`.
-Proxmox, the core router and the Omada controller still serve their own certificates (CHG-0032).
+Proxmox and the Omada controller serve site certificates, and their clients verify them; the core
+router's is imported and waits on one manual GUI step
+([CHG-0032](/docs/changes/2026/0032-appliance-certificates/),
+[Certificates](/docs/runbook/substrate/certificates/)).
 
 {{< overall-progress >}}
 
@@ -64,10 +67,10 @@ host and tool, with no browser warning and no client skipping verification.
 
 - ✅ Platform services serve TLS from the site CA (API, state store, broker, log store, Grafana, downloads)
 - ✅ One `certs.yml` playbook that lays down every certificate and trust anchor
-- ⏳ Proxmox admin UI
-- ⏳ Core router admin UI and API
-- ⏳ Omada controller UI and API
-- ⏳ Clients stop skipping verification (Deevnet API, Packer, tenant fabric, Ansible)
+- ✅ Proxmox admin UI
+- 🔄 Core router admin UI and API (certificate imported; the GUI selection is the manual step)
+- ✅ Omada controller UI and API
+- 🔄 Clients stop skipping verification (Deevnet API, Packer, tenant fabric, Ansible): Proxmox and Omada done, the core router waits on its GUI step
 
 ---
 
