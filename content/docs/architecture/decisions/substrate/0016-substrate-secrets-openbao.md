@@ -223,7 +223,8 @@ reads every secret. The key gets the same care as the vault password.
 ## Open questions
 
 1. **Root or intermediate CA.** Should `pki/` be the root, or an intermediate under a root kept
-   offline, for example in ansible-vault?
+   offline, for example in ansible-vault? [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)
+   (Proposed) answers it: an intermediate, under a root kept in ansible-vault.
 2. **Audit device.** A file audit log inside the VM, or shipped to substrate observability
    (`dv02sob001v01`)?
 3. **Router key scope.** Carried from ADR-0015: now that the key lives in KV, can it also be narrowed

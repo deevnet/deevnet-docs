@@ -1,14 +1,19 @@
 ---
 title: "SSL Cert Automation"
 weight: 5
-tasks_completed: 0
+tasks_completed: 3
 tasks_in_progress: 0
-tasks_planned: 16
+tasks_planned: 14
 ---
 
 # SSL Cert Automation
 
-Automated SSL certificate provisioning and renewal for substrate services.
+The site's certificate authority is OpenBao's `pki/` mount (ADR-0016). Ansible issues site-CA
+certificates to the Deevnet API, the state store, the broker, the log store's proxy, Grafana and tenant
+downloads as it builds each one, and tenants trust the CA as `site-ca.pem`.
+[ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) (Proposed) sets the
+next version: an offline root with an OpenBao intermediate, trust in every OS trust store, and site
+certificates on Proxmox, the core router and the Omada controller, all laid down by the build.
 
 {{< overall-progress >}}
 
@@ -18,62 +23,53 @@ Automated SSL certificate provisioning and renewal for substrate services.
 
 ## Project Vision & Scope
 
-Eliminate browser security warnings and enable secure communication between substrate services by deploying an internal Certificate Authority and automating certificate lifecycle management.
+A new build or a repave comes up with the right certificates and the right trust on every substrate
+host and tool, with no browser warning and no client skipping verification.
 
 **In Scope**
-- Internal CA deployment and trust distribution
-- SSL certificates for infrastructure web UIs (Proxmox, OPNsense, Omada)
-- Automated certificate renewal
-- Expiration monitoring
+- The site's certificate hierarchy and its custody
+- Trust distribution: substrate hosts, the Builder, the VM template, the operator's computer, tenants
+- Site certificates for every substrate service and appliance interface
+- Renewal and expiry monitoring
 
 **Out of Scope**
-- Public-facing certificates (use Let's Encrypt separately)
+- Public-facing certificates
 - Client certificate authentication
 - Code signing certificates
 
 ---
 
-## Requirements ⏳
+## Certificate Authority 🔄
 
-- ⏳ Define certificate naming conventions
-- ⏳ Define certificate validity periods
-- ⏳ Define renewal thresholds and alerting
-
----
-
-## Certificate Authority ⏳
-
-Internal CA infrastructure for issuing trusted certificates.
-
-- ⏳ Evaluate CA options (step-ca, smallstep, CFSSL)
-- ⏳ Deploy internal CA on the Builder
-- ⏳ Distribute root CA to substrate hosts
-- ⏳ Configure browser/OS trust stores
+- ✅ Internal CA in OpenBao, issuing to Platform services (ADR-0016, CHG-0010)
+- ✅ CA delivered to tenants with their credentials (downloads, admission fingerprint)
+- ⏳ Offline root in ansible-vault, OpenBao intermediate under it (ADR-0030 §1–§2)
+- ⏳ Re-root tenants, scripts and device firmware onto the offline root, once
 
 ---
 
-## Infrastructure Services ⏳
+## Trust Distribution ⏳
 
-SSL certificates for core infrastructure web UIs.
-
-- ⏳ Proxmox VE admin UI (pve.mobile.deevnet.net)
-- ⏳ OPNsense admin UI (opnsense.mobile.deevnet.net)
-- ⏳ Omada Controller UI (omada.mobile.deevnet.net)
-
----
-
-## Certificate Lifecycle ⏳
-
-Automated renewal and distribution.
-
-- ⏳ ACME client deployment (certbot, acme.sh, or step CLI)
-- ⏳ Automated certificate renewal via cron/systemd timer
-- ⏳ Certificate deployment playbook
-- ⏳ Expiration monitoring and alerting
+- ⏳ Root in the OS trust store of every substrate host and domain VM
+- ⏳ Root in the Builder's trust store
+- ⏳ Root baked into the VM template
+- ⏳ Operator computer trust procedure
 
 ---
 
-## Documentation ⏳
+## Substrate Services 🔄
 
-- ⏳ Certificate management runbook
-- ⏳ Manual renewal procedure (fallback)
+- ✅ Platform services serve TLS from the site CA (API, state store, broker, log store, Grafana, downloads)
+- ⏳ One `certs.yml` playbook that lays down every certificate and trust anchor
+- ⏳ Proxmox admin UI
+- ⏳ Core router admin UI and API
+- ⏳ Omada controller UI and API
+- ⏳ Clients stop skipping verification (Deevnet API, Packer, tenant fabric, Ansible)
+
+---
+
+## Later ⏳
+
+- ⏳ Automatic renewal (ADR-0030 open question 1)
+- ⏳ Expiry monitoring, with ADR-0023
+- ⏳ OpenBao listener, PowerDNS API and the Builder's artifact server on site certificates
