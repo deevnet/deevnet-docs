@@ -24,7 +24,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 |---|---|
 | The API | `https://api.mobile.deevnet.net:8080`, reachable from the Builder |
 | The operator token | nothing to fetch: `make admit` reads it from the running API container over SSH, and never prints it. It is also `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault, for calling the API by hand |
-| The site root CA | `ansible-inventory-deevnet/mobile/pki/deevnet-mobile-root-ca.pem`: the one trust anchor for the whole site, the same for every tenant ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)). Tenants download it under the same name |
+| The site root CA | `ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem`: the one trust anchor for the whole site, the same for every tenant ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)). Tenants download it under the same name |
 | The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
 ---

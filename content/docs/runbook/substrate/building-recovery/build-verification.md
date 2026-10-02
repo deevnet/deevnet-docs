@@ -21,10 +21,10 @@ say the site is up.
   segments are checked from a real client instead: see [From the client segments](#from-the-client-segments).
 - **Use the site root** for every TLS check. The Builder trusts it at the OS level, so `--cacert` is
   optional there; naming it keeps the check honest on any other machine. The inventory's copy is
-  `ansible-inventory-deevnet/mobile/pki/deevnet-mobile-root-ca.pem`:
+  `ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem`:
 
   ```bash
-  CA=/srv/dvnt/ansible-inventory-deevnet/mobile/pki/deevnet-mobile-root-ca.pem
+  CA=/srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem
   ```
 
   OpenBao's own listener is the exception: it is self-signed, and checked against the copy pinned on
