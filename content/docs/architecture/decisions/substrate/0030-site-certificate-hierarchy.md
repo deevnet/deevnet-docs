@@ -168,6 +168,10 @@ re-applies for ten months will expire.
 
 - **Keep the root in OpenBao, and rely on snapshots.** No re-root now, but a rebuild without a snapshot
   re-roots everything again, and ADR-0016 §6 still lists snapshot restore as unconfirmed. Rejected.
+- **One Deevnet root for every site, with a CA per site under it.** One anchor for an operator or a
+  tenant who works at more than one site, and the conventional shape. Rejected for now: there is one
+  site, sites are standalone instances, and the mobile kit travels, so its vault is the likelier to be
+  lost, and a per-site root keeps that loss to one site. Open question 4 keeps the way there open.
 - **Put the root in ansible-vault and load it into OpenBao.** One fewer level, but the root's key would
   then live in two places, one of them online. Rejected.
 - **An intermediate generated outside OpenBao and imported.** A rebuild could restore the very same
@@ -193,3 +197,6 @@ re-applies for ten months will expire.
 3. **The remaining untrusted endpoints.** OpenBao's own listener (self-signed, pinned by every role),
    PowerDNS's HTTP API and the Builder's artifact server. The offline root lets Ansible sign OpenBao's
    listener directly, which removes the reason it was left self-signed.
+4. **An organization root, if a second site is built.** An offline `Deevnet root CA` can cross-sign
+   each site root, so that one anchor trusts every site while everything that trusts a site root
+   keeps working, with no re-root.
