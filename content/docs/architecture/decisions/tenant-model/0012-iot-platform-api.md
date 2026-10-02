@@ -637,8 +637,9 @@ construction, but it reverses "the API generates" and wasn't chosen.
 - **Why not an HTTPS mirror now.** A network mirror *"must use the scheme `https:`"* and is subject
   to TLS certificate checks
   ([HashiCorp](https://developer.hashicorp.com/terraform/internals/provider-network-mirror-protocol)).
-  The artifact server serves plain HTTP. The internal CA is still an unstarted roadmap project
-  ([SSL Cert Automation](/docs/roadmap/infrastructure/ssl-cert-automation/), 0 of 16 tasks).
+  The artifact server serves plain HTTP. The site has a CA
+  ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)), but the
+  artifact server is not yet on it.
 - **Later.** Once that CA exists, the same tree is served as a network mirror, and only client
   configuration changes.
 - **Rejected: `dev_overrides`.** It *"disables the version and checksum verifications for this

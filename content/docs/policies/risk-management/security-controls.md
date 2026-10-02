@@ -45,11 +45,13 @@ transit, IoT, IoT vendor and guest
 | Log store | TLS through an authenticating proxy | on the observability VM's disk |
 | Substrate secrets | — | ansible-vault in the inventory; OpenBao for runtime secrets ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)) |
 | Build secrets (the Proxmox token for Packer and the fabric) | TLS to OpenBao | OpenBao's runtime copy; the inventory vault is authoritative. Never on disk on the Builder |
-| Terraform state store | **plain HTTP today** — see the [register](/docs/policies/risk-management/risk-register/) | on one disk |
+| Terraform state store | TLS, site CA ([CHG-0030](/docs/changes/2026/0030-state-store-tls/)) | on one disk |
 | Wi-Fi | WPA2 with a per-tenant key (PPSK) on the IoT SSID | — |
 
-The site runs its own certificate authority; clients trust `site-ca.pem` rather than a public CA,
-because nothing Deevnet serves is public.
+The site runs its own certificate authority; clients trust the site's CA certificate rather than a
+public CA, because nothing Deevnet serves is public. Its root is kept offline in the inventory vault,
+and OpenBao issues from an intermediate under it
+([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)).
 
 ## Credentials
 
