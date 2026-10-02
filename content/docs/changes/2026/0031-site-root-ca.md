@@ -10,7 +10,7 @@ weight: -31
 | **Date** | 2026-10-02 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Step 1 done 2026-10-02: the site root and the bootstrap intermediate exist, keys encrypted and pushed. Step 2 done 2026-10-02: code merged, collections published. Steps 3 onward not started. |
+| **Status** | **In progress.** Step 1 done 2026-10-02: the site root and the bootstrap intermediate exist, keys encrypted and pushed. Steps 2–7 done 2026-10-02 on the Builder: OpenBao issues from the intermediate, every service serves the new chain, every substrate host trusts the root, tdemo, eds and mabell hold it. **Left:** the cdeever tenant (on the operator's computer) and `segment-check.sh DVNTM-TD` from a computer on that segment. |
 | **Window** | Steps 2–7 in one sitting; tenants are without a working CA from step 5 until step 6 |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02hyp002p02` (the egress agent), the Builder and both hypervisors (trust store), the tdemo, eds, mabell and cdeever tenants, the eds workload |
@@ -247,7 +247,49 @@ Tenants keep their old `site-ca.pem`.
 
 ## Outcome
 
-To be written when the change completes.
+Steps 1–7 run on 2026-10-02 from the Builder, steps 3–7 between 12:39 and 13:10 UTC.
+
+**Step 3, OpenBao.** The play signed `CN=Deevnet mobile intermediate CA` (P-256, `CA:TRUE,
+pathlen:0`, `keyCertSign, cRLSign`, valid to 2031-10-02) under the root and made it the default
+issuer, `e706e3de-7bee-94c3-b407-ee87324ca988`; the old default, `a5679c07-…` (`drill-rotated`), is
+still on the mount. The `platform` role's `max_ttl` is one year. A second run: `changed=0`. Services
+still verified against the old CA afterwards.
+
+**Step 4, trust stores.** The root is an OS anchor on all 11 hosts: the Builder, both hypervisors,
+the eight management-plane VMs including the test VM. A second run: `changed=0`.
+
+**Step 5, services.** Every service presents two certificates, leaf then the intermediate, and
+verifies against the root alone:
+
+| Service | Leaf CN | Chain | From the Builder, no `--cacert` |
+|---|---|---|---|
+| API `:8080` | `api.mobile.deevnet.net` (SANs: the host address, `127.0.0.1`), to 2027-10-02 | 2 | `/version` answers `v0.9.1` |
+| State store `:9000` | `tfstate.mobile.deevnet.net` | 2 | `/minio/health/live` `200` |
+| Broker `:8883` | `dv02msg001v01.mobile.deevnet.net` | 2 | verified handshake |
+| Log store `:8427`, Grafana `:3000`, downloads `:8443` | as before | 2 | verified |
+
+Both open questions in the Risk table closed: MinIO serves the chain from `public.crt`, and VerneMQ
+from `certfile`, so the `cafile` fallback was not needed. Downloads serves the root under
+`/deevnet-mobile-root-ca.pem` and both old names, fingerprint `68:D5:C9:8E:…:2C:6B` each. The log
+bridge resubscribed; the egress agent's run succeeded over the new chain; `make reconcile
+NAME=--all` reconciled tdemo, eds, mabell and cdeever, and all twelve of their Grafana data sources
+pass Grafana's health check.
+
+**Step 6, tenants.** tdemo, eds and mabell fetched the root, checked its fingerprint and dropped
+`site-ca.pem`. eds and tdemo reconfigured their backends against the state store with the root.
+- **eds:** the plan changes outputs only (`broker.ca`, `kit_env`). `make units` put the root on the
+  workload; lightd reconnected to the broker over TLS.
+- **mabell:** the plan changes outputs only. It also reports `state_endpoint` `http` → `https`,
+  read from the API: CHG-0030's change, not applied to mabell's local state since.
+- **tdemo:** its state reads over the new chain, but its plan is not empty, for a reason outside this
+  change: the live tenant predates the tdemo #7 rework (`workload.app`, `dns_record.service`), and the
+  plan is that rework (5 to add, 2 to destroy). Not applied.
+- **cdeever:** not done; it lives on the operator's computer.
+
+**Step 7.** `install-provider.sh` and `tenant-check.sh`, rendered with the versions already staged
+(0.5.0, Grafana 4.46.0) rather than by `make stage`, which would have rebuilt the provider zips and
+broken every tenant's lock-file hashes, are on the downloads server with the new root embedded. The
+runbook rename merged (docs #239). A full `certs.yml` run: `changed=0` on all 11 hosts.
 
 ### Departures from the plan
 
@@ -255,6 +297,19 @@ To be written when the change completes.
   `mobile/pki/`, and Ansible parses every file there as an inventory source: every run warned five
   times that it could not parse them (hosts still loaded). They are at `pki/mobile/` at the inventory
   repository's root (inventory #64, mgmt #60, image-factory #20).
+- **The broker could not read its new root, and the log bridge was down 12:46–12:49** (step 5). The
+  broker's tls directory is mounted `:Z`, and podman applies the container's private SELinux label
+  only when it creates the container. The new root file got the host default, `var_t`; the broker,
+  only restarted, listed its listener as running and reset every handshake (`errno=104`). Repaired by
+  hand with `chcon --reference`, then fixed in `site_cert`, which now gives its files their
+  directory's label, and in `vernemq`, whose readiness is now a verified handshake (mgmt #61). Proven
+  by setting the label back to `var_t`: the role relabelled, restarted and passed. On obs, the fixed
+  role relabelled vmauth's, Grafana's and downloads' new root files, which would otherwise have
+  broken the same way.
+- **`site_trust`'s own check needed `openssl`** (step 4), which `dv02bld002v01` lacks, and the first
+  replacement read `/etc/pki/tls/certs/ca-bundle.crt`, which Fedora 44 no longer has. It now reads
+  the bundle each OS builds (builder #22); the template's check uses `trust list` (image-factory #21).
+- **The test VM was included in step 4**, not limited out: it was up, and an anchor is harmless.
 
 ## Follow-ups
 
@@ -265,3 +320,6 @@ To be written when the change completes.
 - Release deevnet-kit with the `deevnet-kit-ca.pem` export, and rebuild the Pi image.
 - Retire the old root's issuer from the `pki/` mount once nothing it signed is in service.
 - Remove the old download names (`/deevnet-mobile-ca.pem`, `/site-ca.pem`) after one release.
+- Apply eds and mabell once, so the state holds the new output values (`broker.ca`, `kit_env`); and
+  decide tdemo's pending #7 rework.
+- Remove Grafana's `deleted-*` organizations, which tenant deletions leave behind with no data sources.
