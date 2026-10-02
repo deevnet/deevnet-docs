@@ -25,8 +25,8 @@ terraform {
     endpoints    = { s3 = "https://tfstate.mobile.deevnet.net:9000" }
     use_lockfile = true
 
-    # TLS from the site CA: the same site-ca.pem the provider uses.
-    custom_ca_bundle = "site-ca.pem"
+    # TLS from the site CA: the same deevnet-mobile-root-ca.pem the provider uses.
+    custom_ca_bundle = "deevnet-mobile-root-ca.pem"
 
     # S3-compatible, not AWS.
     skip_credentials_validation = true
@@ -65,7 +65,7 @@ terraform init -migrate-state
 The reference tenant does all of this with `make state-backend`: it writes the block as
 `backend.tf` (not secret; commit it), puts the two keys in a gitignored `.backend.env`, and
 migrates. Every later `make` loads `.backend.env`. On another laptop, copy `.backend.env` and
-`site-ca.pem` in beside a clone.
+`deevnet-mobile-root-ca.pem` in beside a clone.
 
 ## What it does not do yet
 

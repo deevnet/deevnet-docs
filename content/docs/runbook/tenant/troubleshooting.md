@@ -35,7 +35,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 | `Failed to query available provider packages` for `deevnet/deevnet` | the provider is not in your filesystem mirror, or not at a version your constraint allows. See [Before you start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider) |
 | Connection timed out to `api.mobile.deevnet.net:8080` or `tfstate…:9000` | you are not on `DVNTM-TD` (or a trusted seat) — [where to sit](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only) |
 | `api.mobile.deevnet.net` does not resolve on `DVNTM-TD` | a VPN, Private Relay or hard-coded DNS is bypassing the site's resolver `10.20.45.1` |
-| `x509: certificate signed by unknown authority` | `DEEVNET_API_CACERT` does not point at `site-ca.pem` |
+| `x509: certificate signed by unknown authority` | `DEEVNET_API_CACERT` does not point at `deevnet-mobile-root-ca.pem` |
 | `401` on the first apply | the enrollment token was for a different name, and is now spent. Ask for a new admission |
 | `401` later | you are presenting the enrollment token (spent) instead of `terraform output -raw api_token` |
 | `400` on a broker account | a topic pattern breaks the rules: a leading `/`, `$` or `%`, a `#` not at the end, or a device reaching into `log/` ([rules](/docs/runbook/tenant/services/devices-and-mqtt/#topic-rules)) |
@@ -51,7 +51,7 @@ In rough order of how often each is the cause:
 | Symptom | Check |
 |---|---|
 | Never joins Wi-Fi | the PSK is the one from `terraform output`, not an older one; the SSID is the output's (`DVNTM-IOT` on the mobile kit); the board is 2.4 GHz-capable and in range |
-| Joins, but the broker connection fails at TLS | the CA is `site-ca.pem` (DER for MicroPython); you connect by **name**, `mqtt.mobile.deevnet.net`, not by IP — the certificate is for the name; the ESP32 has a sane clock |
+| Joins, but the broker connection fails at TLS | the CA is `deevnet-mobile-root-ca.pem` (DER for MicroPython); you connect by **name**, `mqtt.mobile.deevnet.net`, not by IP — the certificate is for the name; the ESP32 has a sane clock |
 | TLS works, `CONNACK` refused (not authorized) | username is `<tenant>-<name>`; the password is from the *current* state — a `-replace` issued a new one |
 | Connected, but publishes vanish | the topic must be the **granted** one, `<tenant>/…`, exactly. An unauthorized publish is dropped or disconnects the client — it is not an error you will see |
 | Connected, subscribed, but nothing arrives | a refused subscription is also silent. Compare your topic with `granted_subscribe` |

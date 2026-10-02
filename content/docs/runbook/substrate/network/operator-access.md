@@ -115,6 +115,27 @@ Every target answered from the builder on 2026-09-16. The devices present their 
 which won't match `localhost`, so expect a certificate warning. For the rest of the site's
 endpoints, see [Important URLs](/docs/runbook/substrate/network/important-urls/).
 
+### Trusting the site root on your computer
+
+Everything the site serves over TLS by name chains to one root,
+`deevnet-mobile-root-ca.pem` ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)).
+Trust it once and browsers and command-line tools verify the site without flags. Check its
+fingerprint first: `68:D5:C9:8E:3D:2E:B2:DF:B6:1B:99:E4:F3:4D:F9:D3:B4:65:C3:66:34:97:30:97:36:B7:7B:60:C4:15:2C:6B`.
+
+```bash
+curl -fsSLk -O https://downloads.mobile.deevnet.net:8443/deevnet-mobile-root-ca.pem
+openssl x509 -in deevnet-mobile-root-ca.pem -noout -fingerprint -sha256
+
+# macOS: the System keychain, trusted as a root (security(1), add-trusted-cert)
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain deevnet-mobile-root-ca.pem
+
+# Fedora
+sudo cp deevnet-mobile-root-ca.pem /etc/pki/ca-trust/source/anchors/ && sudo update-ca-trust extract
+```
+
+A certificate names the service, not `localhost`, so a page opened through the tunnel table above
+still warns. Browse by name to get a verified page.
+
 ---
 
 ## Backup: the operator port

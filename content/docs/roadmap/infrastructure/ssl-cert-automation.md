@@ -1,19 +1,20 @@
 ---
 title: "SSL Cert Automation"
 weight: 5
-tasks_completed: 3
+tasks_completed: 12
 tasks_in_progress: 0
-tasks_planned: 16
+tasks_planned: 7
 ---
 
 # SSL Cert Automation
 
-The site's certificate authority is OpenBao's `pki/` mount (ADR-0016). Ansible issues site-CA
-certificates to the Deevnet API, the state store, the broker, the log store's proxy, Grafana and tenant
-downloads as it builds each one, and tenants trust the CA as `site-ca.pem`.
-[ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) (Proposed) sets the
-next version: an offline root with an OpenBao intermediate, trust in every OS trust store, and site
-certificates on Proxmox, the core router and the Omada controller, all laid down by the build.
+The site's root CA is kept offline in the inventory vault, and OpenBao issues from an intermediate
+under it ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/),
+[CHG-0031](/docs/changes/2026/0031-site-root-ca/)). Ansible issues one-year certificates to the
+Deevnet API, the state store, the broker, the log store's proxy, Grafana and tenant downloads as it
+builds each one, and `certs.yml` renews them. The Builder, the hypervisors, every management-plane VM
+and the VM template trust the root at the OS level; tenants trust it as `deevnet-mobile-root-ca.pem`.
+Proxmox, the core router and the Omada controller still serve their own certificates (CHG-0032).
 
 {{< overall-progress >}}
 
@@ -39,30 +40,30 @@ host and tool, with no browser warning and no client skipping verification.
 
 ---
 
-## Certificate Authority 🔄
+## Certificate Authority ✅
 
 - ✅ Internal CA in OpenBao, issuing to Platform services (ADR-0016, CHG-0010)
 - ✅ CA delivered to tenants with their credentials (downloads, admission fingerprint)
-- ⏳ Offline root in ansible-vault, OpenBao intermediate under it (ADR-0030 §1–§2)
-- ⏳ Bootstrap intermediate in ansible-vault for the core router and hypervisors (ADR-0030 §3)
-- ⏳ Re-root tenants and scripts onto the offline root, once
-- ⏳ Root file renamed `deevnet-mobile-root-ca.pem`; applications read the CA from a variable
+- ✅ Offline root in ansible-vault, OpenBao intermediate under it (ADR-0030 §1–§2)
+- ✅ Bootstrap intermediate in ansible-vault for the core router and hypervisors (ADR-0030 §3)
+- ✅ Re-root tenants and scripts onto the offline root, once
+- ✅ Root file renamed `deevnet-mobile-root-ca.pem`; applications read the CA from a variable
 
 ---
 
-## Trust Distribution ⏳
+## Trust Distribution ✅
 
-- ⏳ Root in the OS trust store of every substrate host and domain VM
-- ⏳ Root in the Builder's trust store
-- ⏳ Root baked into the VM template
-- ⏳ Operator computer trust procedure
+- ✅ Root in the OS trust store of every substrate host and domain VM
+- ✅ Root in the Builder's trust store
+- ✅ Root baked into the VM template
+- ✅ Operator computer trust procedure
 
 ---
 
 ## Substrate Services 🔄
 
 - ✅ Platform services serve TLS from the site CA (API, state store, broker, log store, Grafana, downloads)
-- ⏳ One `certs.yml` playbook that lays down every certificate and trust anchor
+- ✅ One `certs.yml` playbook that lays down every certificate and trust anchor
 - ⏳ Proxmox admin UI
 - ⏳ Core router admin UI and API
 - ⏳ Omada controller UI and API

@@ -7,12 +7,14 @@ aliases:
 
 # OpenBao Drills
 
-Two exercises, and they prove different things. Both were written from a run against the live mobile
-site on 2026-09-17; every command below is one that was actually issued.
+Two exercises, and they prove different things. The Transit half of the key-change drill and the
+snapshot restore were written from a run against the live mobile site on 2026-09-17; the issuer half
+from [CHG-0031](/docs/changes/2026/0031-site-root-ca/)'s. Every command below is one that was actually
+issued.
 
 | Drill | What changes | What it proves | Destructive? |
 |---|---|---|---|
-| **Key change** | a new PKI issuer and a new Transit key version | the site survives keys it has never seen before | No — every step reverses |
+| **Key change** | a new PKI intermediate and a new Transit key version | the site survives keys it has never seen before | No — every step reverses |
 | **Snapshot restore** | the instance is replaced and its data restored | the data survives at all ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/)) | Yes, on a scratch instance |
 
 **Why both.** A snapshot restore brings back the *same* issuer and the *same* Transit key, so nothing
@@ -24,8 +26,8 @@ The three defects [INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/)
 
 ## Why the key-change drill matters
 
-Everything it exercises is a thing that happens for real: an OpenBao rebuilt after a loss, a CA
-rotated on schedule, a Transit key rotated after a suspected exposure. Each leaves the site holding
+Everything it exercises is a thing that happens for real: an OpenBao rebuilt after a loss, an
+intermediate rotated before it expires, a Transit key rotated after a suspected exposure. Each leaves the site holding
 credentials issued under something that no longer exists, and each of those paths had a defect in it
 the first time it ran.
 
@@ -43,61 +45,57 @@ It is also the regression test for those three fixes. Run it after any change to
 
 ---
 
-## Part 1 — the issuer changes
+## Part 1 — the intermediate changes
 
-**Rotate the root and move the default.** The new issuer is what `pki/cert/ca` returns afterwards,
-which is the condition the `deevnet_api` role compares against.
+OpenBao issues from an intermediate under the site root, which lives in the inventory
+([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)). A rebuilt
+OpenBao, or a rotation before the five years run out, replaces the intermediate and nothing else. The
+drill is that rotation.
 
-```bash
-curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
-  https://<openbao>:8200/v1/pki/root/rotate/internal \
-  -d '{"common_name":"Deevnet mobile internal CA","ttl":"87600h","issuer_name":"drill-rotated"}'
-
-curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
-  https://<openbao>:8200/v1/pki/config/issuers \
-  -d '{"default":"<new issuer_id>","default_follows_latest_issuer":false}'
-```
-
-**Then run the API role.** It must reissue, not skip.
+**Rotate the intermediate:**
 
 ```bash
 cd ansible-collection-deevnet.mgmt
-ansible-playbook playbooks/site.yml --limit dv02prv001v01 --skip-tags vms,tenant-state
+ansible-playbook playbooks/openbao.yml -e openbao_pki_rotate_intermediate=true
 ```
 
-**What must happen, in order:**
+**What must happen:**
 
-1. `Decide whether the certificate must be issued` resolves true. Expiry alone would not have caught
-   this: the old certificate is still valid for its full term, and the new root carries the same common
-   name. The role compares the CA the host holds against `pki/cert/ca`.
-2. The certificate, key and site CA are written — three changed items.
-3. `Restart now if the certificate or the environment changed` flushes the handler, and the restart
-   runs **before** the readiness wait. If it runs after, the wait verifies a new CA against a container
-   still serving the old certificate, fails, and aborts the play — which leaves the handler unrun, so
-   the next run finds nothing changed and fails identically. That deadlock has to be broken by hand.
-4. `Wait for the API to report ready` passes.
+1. `Sign an intermediate under the site root` runs: OpenBao generates a key and request, the control
+   node signs it with the root, OpenBao installs it and makes it the default issuer.
+2. `Check OpenBao now issues under the site root` passes.
 
-**Refresh the control node's copy**, which the `openbao` role fetches:
+**Then renew everything:**
 
 ```bash
-ansible-playbook playbooks/openbao.yml      # .openbao/site-ca.pem follows the rotation
+ansible-playbook playbooks/certs.yml
 ```
 
-**Redeliver the CA to everything that trusts it** — both tenant repositories and the egress agent.
-Skip this and the agent stops being able to read the VRF list:
+3. **Nothing is reissued.** Every service's certificate was signed by the previous intermediate,
+   which still chains to the root, and every client trusts only the root. `changed=0` apart from the
+   login tasks is the pass.
+4. **No client is handed anything.** Tenants, the egress agent, the log bridge and the Builder all
+   hold the root, which did not change.
+
+**Then force one reissue**, to prove a new certificate comes from the new intermediate:
 
 ```bash
-cp .openbao/site-ca.pem <each tenant repo>/site-ca.pem
-cd ../ansible-collection-deevnet.net && ansible-playbook playbooks/tenant-egress-agent.yml
+ssh a_autoprov@dv02prv001v01 sudo rm /srv/deevnet-api/tls/api.pem
+ansible-playbook playbooks/certs.yml --limit deevnet_api
 ```
 
-**Verify:** `/readyz` answers `200` from the Builder against the new CA and the served certificate's
-serial has changed; one agent run succeeds and `frr.conf.local` still carries every tenant VRF; both
-tenants' plans are clean.
+5. `Restart now if the certificate or the environment changed` runs **before** the readiness wait.
+   If it ran after, the wait would verify against a container still serving the old certificate,
+   fail, and leave the handler unrun, so the next run would find nothing changed and fail the same
+   way.
+6. `openssl s_client -connect api.mobile.deevnet.net:8080 -showcerts` shows the new intermediate's
+   serial, and verifies against the root.
 
-**To reverse:** nothing needs reversing. The rotated issuer is a legitimate steady state, and moving
-the default back would strand the certificate that was just issued from it. The previous issuer stays
-in `pki/issuers` and can be made default again if that is ever wanted.
+**Verify:** `/readyz` answers `200` from the Builder against the root; one egress agent run
+succeeds; every tenant's `terraform plan` is clean.
+
+**To reverse:** nothing needs reversing. The new intermediate is a legitimate steady state. The
+previous one stays in `pki/issuers` and can be made default again.
 
 ---
 

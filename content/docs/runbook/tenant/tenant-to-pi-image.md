@@ -39,7 +39,7 @@ the environment, under these names:
 | `DEEVNET_TENANT` | your tenant | the same |
 | `MQTT_HOST` | `mqtt.mobile.deevnet.net` | `<hostname>.local` |
 | `MQTT_PORT` | `8883` | `8883` |
-| `MQTT_CA_FILE` | `site-ca.pem` (Deevnet's) | `site-ca.pem` (the card's) |
+| `MQTT_CA_FILE` | `deevnet-mobile-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
 | `MQTT_USERNAME`, `MQTT_PASSWORD` | your app's broker account | the same: you re-create it with the same password |
 | `LOG_ENDPOINT` | `log_endpoint` | `https://<hostname>.local:8427` |
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
@@ -48,7 +48,7 @@ the environment, under these names:
 | `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
 | `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the card's |
 | `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the card's |
-| `GRAFANA_CA_CERT` | `site-ca.pem` (Deevnet's) | `site-ca.pem` (the card's) |
+| `GRAFANA_CA_CERT` | `deevnet-mobile-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
 
 The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
 `TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
@@ -64,7 +64,7 @@ output "kit_env" {
     DEEVNET_TENANT=${deevnet_tenant.this.name}
     MQTT_HOST=mqtt.mobile.deevnet.net
     MQTT_PORT=8883
-    MQTT_CA_FILE=site-ca.pem
+    MQTT_CA_FILE=deevnet-mobile-root-ca.pem
     MQTT_USERNAME=${deevnet_iot_broker_account.backend.username}
     MQTT_PASSWORD=${deevnet_iot_broker_account.backend.password}
     LOG_ENDPOINT=${deevnet_tenant.this.log_endpoint}
@@ -76,7 +76,7 @@ output "kit_env" {
     GRAFANA_AUTH=${deevnet_tenant.this.dashboard_username}:${deevnet_tenant.this.dashboard_password}
     GRAFANA_ORG_ID=${deevnet_tenant.this.dashboard_org_id}
     TF_VAR_grafana_org_id=${deevnet_tenant.this.dashboard_org_id}
-    GRAFANA_CA_CERT=site-ca.pem
+    GRAFANA_CA_CERT=deevnet-mobile-root-ca.pem
   EOT
 }
 ```
@@ -187,7 +187,7 @@ host keys on first boot, so your computer will ask you to accept it once.
 ssh you@<pi>
 sudo deevnet-kit status
 sudo deevnet-kit selftest                 # the card, end to end: every check ok?
-sudo deevnet-kit export ~/deevnet-kit     # kit.env + site-ca.pem, the Pi's side of the table above
+sudo deevnet-kit export ~/deevnet-kit     # kit.env + deevnet-kit-ca.pem, the Pi's side of the table above
 ```
 
 **The self-test** runs by itself after every boot, and `status` shows the last result. It checks:
@@ -241,8 +241,8 @@ Two lines change in the firmware from the [walkthrough](/docs/runbook/tenant/wal
 
 - **The broker.** Use the Pi's address. A Pico W cannot resolve `bench1.local`. Give the Pi a DHCP
   reservation on your router so the address stays put.
-- **The CA.** Replace `site-ca.pem`/`site-ca.der` with the card's (`~/deevnet-kit/site-ca.pem`;
-  `openssl x509 -in site-ca.pem -outform der -out site-ca.der` for the Pico).
+- **The CA.** Replace `deevnet-mobile-root-ca.pem`/`.der` with the card's (`~/deevnet-kit/deevnet-kit-ca.pem`;
+  `openssl x509 -in deevnet-kit-ca.pem -outform der -out deevnet-kit-ca.der` for the Pico).
 
 And the Wi-Fi: the Pi's network instead of `DVNTM-IOT`. The username, the password and every topic
 stay the same.
@@ -287,7 +287,7 @@ configuration against the Pi, with the Pi's `kit.env` in the environment:
 
 ```bash
 set -a; . ~/deevnet-kit/kit.env; set +a
-export GRAFANA_CA_CERT=~/deevnet-kit/site-ca.pem
+export GRAFANA_CA_CERT=~/deevnet-kit/deevnet-kit-ca.pem
 terraform -chdir=dashboards init
 terraform -chdir=dashboards apply
 ```
@@ -305,11 +305,11 @@ lines, your device logs and your app logs. It is yours to change; the card never
 
 ```bash
 set -a; . ~/deevnet-kit/kit.env; set +a
-mosquitto_sub -h "$MQTT_HOST" -p 8883 --cafile ~/deevnet-kit/site-ca.pem \
+mosquitto_sub -h "$MQTT_HOST" -p 8883 --cafile ~/deevnet-kit/deevnet-kit-ca.pem \
   -u "$DEEVNET_TENANT-backend" -P '<backend password>' -t "$DEEVNET_TENANT/sensors/+/telemetry" -v
 
 # Device log lines, as on Deevnet
-curl -sS --cacert ~/deevnet-kit/site-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
+curl -sS --cacert ~/deevnet-kit/deevnet-kit-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
   -H "$LOG_SELECT_HEADER: $LOG_DEVICE_PARTITION" \
   "$LOG_ENDPOINT/select/logsql/query" --data-urlencode 'query=*'
 ```

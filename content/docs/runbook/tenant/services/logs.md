@@ -45,7 +45,7 @@ payload, so a device cannot write into another tenant's logs by claiming to be o
 The store is VictoriaLogs behind an authenticating proxy. From a workload:
 
 ```bash
-curl -sS --cacert site-ca.pem \
+curl -sS --cacert deevnet-mobile-root-ca.pem \
   -H "Authorization: Bearer $LOG_INGEST_TOKEN" \
   -H "Content-Type: application/stream+json" \
   --data-binary '{"_msg":"backend started","app":"backend"}' \
@@ -65,11 +65,11 @@ header is stored, without it it is not. Every client library that posts here nee
 
 ```bash
 # your workloads' logs (partition 0, the default)
-curl -sS --cacert site-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
+curl -sS --cacert deevnet-mobile-root-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
   "$LOG_ENDPOINT/select/logsql/query" --data-urlencode 'query=*'
 
 # your devices' logs: select partition 2 with the select header
-curl -sS --cacert site-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
+curl -sS --cacert deevnet-mobile-root-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN" \
   -H "X-Deevnet-Partition: ${INDEX}-2" \
   "$LOG_ENDPOINT/select/logsql/query" --data-urlencode 'query=*'
 ```

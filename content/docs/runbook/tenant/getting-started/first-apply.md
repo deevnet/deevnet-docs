@@ -25,7 +25,7 @@ Either way:
 ```
 deevnet-tenant-<name>/
 ├── main.tf
-├── site-ca.pem        # from the operator; gitignored is fine, it is not secret
+├── deevnet-mobile-root-ca.pem        # from the operator; gitignored is fine, it is not secret
 ├── .gitignore         # *.tfstate*, .terraform/
 └── Makefile           # optional; tdemo's sets the endpoint and CA, and guards the copy
 ```
@@ -60,7 +60,7 @@ Everything else — workloads, names, Wi-Fi keys, devices, broker accounts — h
 
 ```bash
 export DEEVNET_API_ENDPOINT=https://api.mobile.deevnet.net:8080
-export DEEVNET_API_CACERT=$PWD/site-ca.pem
+export DEEVNET_API_CACERT=$PWD/deevnet-mobile-root-ca.pem
 export DEEVNET_API_TOKEN=<the enrollment token>
 
 terraform init
