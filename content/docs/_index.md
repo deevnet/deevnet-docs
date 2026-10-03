@@ -57,4 +57,8 @@ Implementation details live in their respective repositories. This repository de
     <h3>Code Repositories</h3>
     <p>GitHub repos, repository layout, and getting started.</p>
   </a>
+  <a class="section-card" href="appendix/">
+    <h3>Appendix</h3>
+    <p>Background primers, starting with cryptography and PKI.</p>
+  </a>
 </div>

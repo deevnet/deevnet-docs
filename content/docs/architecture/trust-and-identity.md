@@ -14,6 +14,9 @@ and each site's **Site CA** are held offline by a person, never by a system. Und
 
 The substrate never needs the second to build itself, and a tenant never touches the first.
 
+New to certificates? The [Cryptography and PKI Primer](/docs/appendix/cryptography-and-pki-primer/)
+explains keys, signatures, chains and CAs from the beginning.
+
 ---
 
 **The hierarchy: Deevnet Root CA → Site CA → two issuing CAs**
