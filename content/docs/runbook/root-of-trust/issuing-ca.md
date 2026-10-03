@@ -69,7 +69,7 @@ record.**
 ## 2. Sign (offline)
 
 **On the offline machine, check the request and sign it with the Site CA.** On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
-and the **Site CA's key media** mounted:
+and the **Site CA's key media** open at `/mnt/keys` (`sudo deevnet-pki-media keys open`):
 
 ```bash
 deevnet-pki-sign /mnt/transfer --site-key /mnt/keys/deevnet-mobile-site-ca.key

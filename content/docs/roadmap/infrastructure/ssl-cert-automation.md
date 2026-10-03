@@ -82,7 +82,8 @@ CA for mTLS ([Trust and Identity](/docs/architecture/trust-and-identity/)).
 
 - ✅ Ceremony transfer tooling: hash manifests, private-key refusal, request and chain checks (`deevnet-pki-transfer`, `deevnet-pki-sign`)
 - ✅ Ceremony image for a Raspberry Pi 4 (`pi-pki`): no radios or network services, no SSH or automation account, read-only root, tools baked in
-- ⏳ The operator's ceremony: Deevnet Root CA and the Mobile Site CA ([Root of Trust](/docs/runbook/root-of-trust/))
+- ✅ Ceremony media prepared on the Pi (`deevnet-pki-media`): key media as encrypted drives, transfer media as plain FAT32
+- ⏳ The operator's ceremony: Deevnet Root CA and the Mobile Site CA ([Root of Trust](/docs/runbook/root-of-trust/)), [CHG-0033](/docs/changes/2026/0033-deevnet-pki/)
 - ⏳ The Mobile Substrate CA in the site vault; every substrate certificate from it, by Ansible, OpenBao's listener included
 - ⏳ Re-root every host, image, tenant and computer to the Deevnet Root CA; retire the OpenBao and bootstrap intermediates
 - ⏳ The Mobile Tenant Device CA in OpenBao; device enrollment through the Deevnet API
@@ -94,4 +95,5 @@ CA for mTLS ([Trust and Identity](/docs/architecture/trust-and-identity/)).
 
 - ⏳ Automatic renewal (ADR-0030 open question 1)
 - ⏳ Expiry monitoring, with ADR-0023
+- ⏳ Keeping a twenty-year root readable for twenty years: the root outlives any Pi, USB drive or microSD, and today's tools may not run in 2046. Open: how often to refresh the key media onto new drives, what keeps the ceremony machine buildable, whether a different medium (paper backup, a hardware token) belongs in custody, or whether a shorter root lifetime is simpler
 - ⏳ OpenBao listener, PowerDNS API and the Builder's artifact server on site certificates

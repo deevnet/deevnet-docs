@@ -13,7 +13,7 @@ The site's name is its title in the [naming standard](/docs/standards/naming/): 
 Below, `SITE=Mobile` and `site=mobile`.
 
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki` with
-`deevnet-pki.cnf`, and the **root's key media** mounted. **Check `date -u` first:** the Site CA's ten
+`deevnet-pki.cnf`, and the **key media** open at `/mnt/keys` (`sudo deevnet-pki-media keys open`). **Check `date -u` first:** the Site CA's ten
 years start from the clock.
 
 ## 1. Generate the key and request
@@ -35,7 +35,7 @@ openssl req -new -key deevnet-$site-site-ca.key \
 
 ```bash
 openssl x509 -req -in deevnet-$site-site-ca.csr \
-  -CA deevnet-root-ca.pem -CAkey /path/to/key-media/deevnet-root-ca.key \
+  -CA deevnet-root-ca.pem -CAkey /mnt/keys/deevnet-root-ca.key \
   -extfile deevnet-pki.cnf -extensions v3_site -days 3653 -sha256 \
   -set_serial 0x$(openssl rand -hex 16) \
   -out deevnet-$site-site-ca.pem
