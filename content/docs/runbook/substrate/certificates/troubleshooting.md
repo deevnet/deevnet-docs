@@ -7,7 +7,7 @@ weight: 7
 
 Set `R=/srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem` first.
 
-## Is it the site's certificate, and does it chain?
+## Check the certificate is the site's and chains to the root
 
 ```bash
 openssl s_client -connect <host>:<port> -servername <name> -showcerts -CAfile $R </dev/null 2>&1 \
@@ -28,7 +28,7 @@ openssl s_client -connect <host>:<port> -servername <name> -showcerts -CAfile $R
 openssl x509 -noout -ext subjectAltName <<<"$(openssl s_client -connect <host>:<port> </dev/null 2>/dev/null)"
 ```
 
-## A container service resets every handshake
+## A container service that resets every handshake cannot read a file
 
 The listener is up and the service reports it running, yet `openssl s_client` gets
 `errno=104` (connection reset). The service cannot read one of its own files, usually the root.
@@ -46,7 +46,7 @@ verified handshake rather than trusting the listener's state. By hand:
 `sudo chcon --reference=<dir> <file>`, then restart the service. This happened to the broker during
 [CHG-0031](/docs/changes/2026/0031-site-root-ca/).
 
-## A client still skips verification
+## A client that still skips verification has its switch off
 
 The appliances' clients verify only when the inventory's switch is on: `site_verify_proxmox`,
 `site_verify_opnsense`, `site_verify_omada`. The Deevnet API takes them from its container
@@ -60,7 +60,7 @@ ssh a_autoprov@dv02prv001v01.mobile.deevnet.net \
 
 A changed switch reaches the API on its next deploy (`site.yml --limit dv02prv001v01 --tags deevnet-api`).
 
-## A tool on the Builder does not trust the root
+## Builder tools trust the root through the OS store
 
 The Builder trusts the root at the OS level: `trust list --filter=ca-anchors | grep Deevnet`. Ansible,
 Packer and Terraform verify through that. A Python tool that bundles its own CA list (`certifi`)

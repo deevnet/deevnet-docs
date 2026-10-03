@@ -33,7 +33,7 @@ online (control node)                 transfer media                 offline mac
 ```
 
 The online commands are in `ansible-collection-deevnet.mgmt/scripts/pki/`; the offline one is
-installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#the-ceremony-image), so the
+installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#the-ceremony-runs-on-the-pi-pki-image), so the
 transfer media carries data only, never code that runs offline. Every step fails, and changes nothing,
 if it finds a private key anywhere on the transfer media, by file name or by content.
 
@@ -58,7 +58,7 @@ Then it empties `deevnet-transfer/` on the media and writes `to-offline/` with:
 - the Root CA and Site CA certificates;
 - a `MANIFEST` of SHA-256 hashes.
 
-On the [Fedora fallback](/docs/runbook/root-of-trust/preparing/#without-a-pi-a-fedora-live-usb), add
+On the [Fedora fallback](/docs/runbook/root-of-trust/preparing/#without-a-pi-a-fedora-live-usb-works-as-the-fallback), add
 `--with-tools`: it also writes the signing profile and `deevnet-pki-sign`, under the same manifest.
 
 It prints the manifest's own hash and the request's public-key hash. **Write both in the paper
@@ -66,7 +66,7 @@ record.**
 
 `--ca tenant-device` does the same for the Tenant Device CA.
 
-## 2. Offline: sign
+## 2. Offline: check the request and sign it
 
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
 and the **Site CA's key media** mounted:
@@ -101,7 +101,7 @@ request's key. It writes **only** the certificate and a return `MANIFEST` to `to
 the certificate's SHA-256 fingerprint. **Write it in the paper record.** Unmount both media, shut
 down.
 
-## 3. Online: accept
+## 3. Online: verify the certificate and accept it
 
 Back on the control node:
 
@@ -120,7 +120,7 @@ It checks:
 It prints the fingerprint; **compare it with the paper record**. Only then does it copy the
 certificate to `--out`, for automation to install beside the key it already holds.
 
-## Rotating one
+## Rotate an issuing CA before its five years run out
 
 Run the ceremony again with a new request before the five years run out. The old CA's certificates
 stay valid until they expire, and clients trust both, because they trust the root.

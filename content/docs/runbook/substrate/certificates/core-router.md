@@ -12,7 +12,7 @@ no API for which certificate the web GUI serves**, so choosing it is a manual st
 
 The certificate's description in the router is `Deevnet site certificate (dv02cor002p01.mobile.deevnet.net)`.
 
-## 1. Import
+## 1. Import the certificate with Ansible
 
 ```bash
 cd ansible-collection-deevnet.net
@@ -31,7 +31,7 @@ MANUAL STEP: in the router GUI, System > Settings > Administration > SSL Certifi
 
 Nothing the GUI serves has changed yet.
 
-## 2. Choose it in the GUI
+## 2. Choose the certificate in the GUI (the manual step)
 
 Keep an SSH session to the router open before you start; it is the way back if the GUI does not
 return.
@@ -63,7 +63,7 @@ Then set `site_verify_opnsense: true` in `group_vars/all`, merge it, and redeplo
 (`site.yml --limit dv02prv001v01 --tags deevnet-api`). The `opnsense_*` roles and the API verify from
 then on.
 
-## Renewal
+## Renewal replaces the certificate the GUI already uses
 
 `certs.yml` and `opnsense.yml` run the same role. When the certificate is due, the role replaces the
 payload of the certificate the GUI already uses (`trust/cert/set`), so the GUI choice survives. Then
@@ -73,11 +73,11 @@ The first renewal confirms that the Trust API accepts an in-place replacement: t
 fails if it did not. If it does not, import a new certificate and choose it in the GUI again, as
 above.
 
-## Back it out
+## Back out to the router's own certificate
 
-**From the GUI:** choose `Web GUI TLS certificate` (the router's own) under SSL Certificate, and Save.
+**Back out from the GUI:** choose `Web GUI TLS certificate` (the router's own) under SSL Certificate, and Save.
 
-**If the GUI does not come back,** over SSH or the console, as root:
+**If the GUI does not come back, back out over SSH or the console**, as root:
 
 ```bash
 configctl webgui restart renew

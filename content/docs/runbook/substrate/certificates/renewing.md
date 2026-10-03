@@ -19,7 +19,7 @@ ansible-playbook playbooks/certs.yml --limit dv02obs001v01
 It needs the inventory's vaults decrypted, and `deevnet.builder` and `deevnet.net` published
 (`make publish` in each), because the trust, hypervisor and router plays are theirs.
 
-## What a run checks
+## A run reissues only what is missing, due, unchained or misnamed
 
 Every certificate is reissued only when one of these holds:
 
@@ -30,16 +30,16 @@ Every certificate is reissued only when one of these holds:
 
 Otherwise the run changes nothing. A run on a healthy site is `changed=0` on every host.
 
-## What it does not do
+## certs.yml renews certificates; it does not configure services
 
-**It does not change a service's configuration.** `certs.yml` renews certificates that services
+**certs.yml does not change a service's configuration.** `certs.yml` renews certificates that services
 already name. A first build, or a change to which files a service reads, goes through that
 service's own `site.yml` play.
 
 **The core router's GUI selection is manual the first time.** After that, renewal replaces the
 certificate the GUI already uses. See [Core Router](/docs/runbook/substrate/certificates/core-router/).
 
-## When to run it
+## Run certs.yml at least every ten months, and after a naming change
 
 At least every ten months, and after anything that might change what a certificate names: a new
 CNAME, a new address, a rebuilt OpenBao. The intermediates and the root are not renewed by it; see

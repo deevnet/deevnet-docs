@@ -8,7 +8,7 @@ weight: 1
 Every ceremony runs on a machine with no network, so a key it touches can only leave on the media
 you carry away.
 
-## What you need
+## You need a Pi 4, three kinds of media, a paper record and a passphrase
 
 | Media | Holds | Crosses between online and offline? |
 |---|---|---|
@@ -22,7 +22,7 @@ And:
 - **The paper record**, a notebook or sheet, for fingerprints, hashes and dates.
 - **The passphrase** for the key files, kept offline, under the holder's own control.
 
-## The ceremony image
+## The ceremony runs on the pi-pki image
 
 The offline machine's operating system is `pi-pki`, built by the image factory: Raspberry Pi OS Lite
 with Wi-Fi and Bluetooth off in firmware, every network service masked, no SSH, no automation
@@ -37,7 +37,7 @@ Flash it once, and again whenever it is rebuilt:
 2. Flash it to a microSD with Raspberry Pi Imager (choose **no** customization: no Wi-Fi, no SSH, no
    user), or `xzcat raspios-bookworm-mobile-pki.img.xz | sudo dd of=/dev/sdX bs=4M conv=fsync`.
 
-## Bring up the offline machine
+## Bring up the offline machine and confirm it has no network
 
 1. Put the microSD in the Pi 4, connect the display and keyboard, and power it on. It logs in as
    `pki` on its own and shows the steps.
@@ -62,7 +62,7 @@ Flash it once, and again whenever it is rebuilt:
 5. Plug in and mount the key media and the transfer media (`lsblk`, then `sudo mount /dev/sdX1
    /mnt/keys` and `sudo mount /dev/sdY1 /mnt/transfer`).
 
-### Without a Pi: a Fedora live USB
+### Without a Pi, a Fedora live USB works as the fallback
 
 Any x86 machine works the same way, booted from a live USB of a current Fedora Workstation release
 (it has `openssl`, and nothing it does survives a reboot):
@@ -73,7 +73,7 @@ Any x86 machine works the same way, booted from a live USB of a current Fedora W
   `deevnet-pki-transfer prepare … --with-tools`. It then carries `deevnet-pki-sign` and the profile,
   under its manifest, and you copy the profile into `/dev/shm/pki` from there.
 
-## The profile file
+## Every ceremony uses one profile file, deevnet-pki.cnf
 
 Every ceremony uses this file, `deevnet-pki.cnf`. The ceremony image carries it at
 `/usr/local/share/deevnet-pki/deevnet-pki.cnf`, and it is here so you can check it. It holds the

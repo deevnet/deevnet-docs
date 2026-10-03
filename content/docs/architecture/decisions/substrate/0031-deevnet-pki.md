@@ -114,7 +114,7 @@ firmware signing.
 **ADR-0021's "per-tenant PKI" is answered with one Tenant Device CA per site.** The tenant is in each
 certificate's OU and URI, and isolation is the broker's per-identity authorization.
 
-### 7. What ADR-0030 keeps
+### 7. ADR-0030 §5–§8 stand, issued by the Substrate CA
 
 ADR-0030 §5–§8 stand, with "issued by OpenBao" read as "issued by the Substrate CA, by Ansible":
 - one-year leaves, reissued under 60 days;
@@ -132,49 +132,51 @@ replaces in a ceremony while every client keeps the same anchor. R-11 closes whe
 **A substrate rebuild has no cycle.** Everything it needs is Ansible's, so OpenBao goes back to being
 a tenant-facing service.
 
-**One anchor everywhere.** An operator, a tenant or a device working at more than one site trusts one
-root.
+**One trust anchor serves every site.** An operator, a tenant or a device working at more than one
+site trusts one root.
 
 **Ceremonies have a cost.**
-- **A short offline ceremony:** creating or rotating an issuing CA needs the operator, about every
-  five years per CA, and after any loss of one.
-- **A longer one:** a new site needs a Site CA ceremony.
+- **Creating or rotating an issuing CA needs a short offline ceremony**, by the operator, about every
+  five years per CA and after any loss of one.
+- **A new site needs a longer ceremony**, for its Site CA.
 
-**Another re-root.** What CHG-0031/0032 built is replaced:
+**The site is re-rooted once more.** What CHG-0031/0032 built is replaced:
 - the trust anchor changes for every host, image, tenant and computer, once more;
 - the OpenBao and bootstrap intermediates retire.
 
 The migration is its own change record.
 
-**Device identity becomes real**, when built: a stolen password no longer impersonates a device, and a
-device is revoked by deregistering it.
+**Devices get a real identity once this is built.** A stolen password no longer impersonates a
+device, and a device is revoked by deregistering it.
 
 ---
 
 ## Alternatives considered
 
-- **The Site CA online, in the site's vault.** Fewer ceremonies, but the vault password could mint any
-  CA for the site. Rejected: the point of an offline root is lost one level down.
-- **OpenBao issues the substrate's certificates** (ADR-0030's model). It needs a bootstrap CA for what
-  comes before it, and makes the substrate's rebuild depend on a service it builds. Rejected.
-- **A root per site** (ADR-0030 §1). Self-contained per site, but every person and device working at
-  two sites carries two anchors. Rejected for one root and a Site CA per site, which keeps the
-  per-site boundary.
-- **One Tenant Device CA per tenant.** Strongest isolation and per-tenant revocation, but a CA per
-  tenant to create, rotate and trust. Not now; a tenant's devices can move to their own CA later
-  without touching anything above the Site CA.
-- **A hardware token for the offline keys.** Stronger custody than encrypted files. Not now; the
+- **Rejected: the Site CA online, in the site's vault.** Fewer ceremonies, but the vault password could
+  then mint any CA for the site, and the point of an offline root is lost one level down.
+- **Rejected: OpenBao issues the substrate's certificates** (ADR-0030's model). It needs a bootstrap CA
+  for what comes before OpenBao, and makes the substrate's rebuild depend on a service the substrate
+  builds.
+- **Rejected: a root per site** (ADR-0030 §1). Self-contained per site, but every person and device
+  working at two sites would carry two anchors. One root with a Site CA per site keeps the per-site
+  boundary without that.
+- **Not now: one Tenant Device CA per tenant.** Strongest isolation and per-tenant revocation, but a CA
+  per tenant to create, rotate and trust. A tenant's devices can move to their own CA later without
+  touching anything above the Site CA.
+- **Not now: a hardware token for the offline keys.** Stronger custody than encrypted files; the
   ceremony can move to one without changing the hierarchy.
 
 ---
 
 ## Open questions
 
-1. **The Builder.** `dv00bld001p01` belongs to no site (site code `00`). Which Site CA issues its
-   certificate, when it serves the artifact server over TLS?
-2. **Tenant workloads' own services.** Does a tenant's application get server certificates from the
-   site (a third issuing CA), or bring its own?
-3. **Device revocation.** Short-lived certificates, a CRL, or deregistration alone (§6)?
-4. **Name constraints.** Should each Site CA be constrained to its site's zone and address space?
-5. **Devices that cannot make a key.** The tenant's computer generates it (§6); is there a supported
-   way to load it onto such a device?
+1. **Which Site CA issues the Builder's certificate?** `dv00bld001p01` belongs to no site (site code
+   `00`), and will need one when it serves the artifact server over TLS.
+2. **Where do tenant workloads' own services get server certificates?** From the site, as a third
+   issuing CA, or from the tenant itself.
+3. **How is a device certificate revoked?** Short-lived certificates, a CRL, or deregistration alone
+   (§6).
+4. **Should each Site CA be name-constrained** to its site's zone and address space?
+5. **How does a device that cannot make a key get one?** The tenant's computer generates it (§6); a
+   supported way to load it onto such a device is not yet defined.

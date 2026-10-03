@@ -22,7 +22,7 @@ in MongoDB, and the `/cert` mount stops working.
 Adoption and inform (29810–29817) do not use this certificate. Port 8043 also serves device firmware
 upgrades; an upgrade through it has not yet been run against the site certificate.
 
-## Install or renew
+## Install or renew the controller's certificate with certs.yml
 
 ```bash
 cd ansible-collection-deevnet.mgmt
@@ -32,7 +32,7 @@ ansible-playbook playbooks/certs.yml --tags omada
 A renewal restarts the controller, because the keystore is read only at start. Devices stay up
 meanwhile.
 
-**Verify:**
+**Verify both ports serve the full chain:**
 
 ```bash
 for p in 8043 8843; do
@@ -44,7 +44,7 @@ done
 Three certificates (leaf, intermediate, root) on each port. Then check every device is still
 connected in the controller.
 
-## Back it out
+## Back out to the controller's own keystore
 
 The first time the role ran, it kept the controller's own keystore as
 `/opt/omada-controller/data/keystore/eap.keystore.pre-chg0032`.

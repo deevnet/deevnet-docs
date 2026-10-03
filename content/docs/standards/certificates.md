@@ -16,7 +16,7 @@ A certificate that does not meet this standard is a defect, whatever issued it.
 
 ---
 
-## 1. The Hierarchy
+## 1. Four tiers: Root CA, Site CA, issuing CA, end entity
 
 | Tier | Issued by | Signs | Count |
 |---|---|---|---|
@@ -33,7 +33,7 @@ A certificate that does not meet this standard is a defect, whatever issued it.
 
 ---
 
-## 2. Subject Names
+## 2. Every subject is exactly O, OU and CN
 
 Every subject MUST carry exactly **O**, **OU** and **CN**, encoded in that order, so that a
 certificate's *Issued To* and *Issued By* each name the organization, the part of it, and the thing
@@ -55,7 +55,7 @@ itself.
 
 ---
 
-## 3. Subject Alternative Names
+## 3. A certificate is valid for the names and addresses its clients dial
 
 A client checks the name it dialled against the SANs, never the CN. The SANs are what a certificate
 is valid for.
@@ -71,7 +71,7 @@ is valid for.
 
 ---
 
-## 4. Keys, Lifetimes and Extensions
+## 4. Each tier has a fixed key, lifetime and set of extensions
 
 | Tier | Key | Lifetime | basicConstraints | keyUsage | extendedKeyUsage |
 |---|---|---|---|---|---|
@@ -95,7 +95,7 @@ is valid for.
 
 ---
 
-## 5. Where Keys Live
+## 5. Each key lives in exactly one allowed place
 
 | Key | Where | Generated |
 |---|---|---|
@@ -115,7 +115,7 @@ is valid for.
   automation's, so a substrate rebuilt from nothing can issue every certificate it needs before the
   secret store exists.
 
-### Crossing the offline boundary
+### Only the transfer media crosses the offline boundary
 
 - 5.5 The media holding the Root CA's and Site CAs' keys (the *key media*) MUST be used only on the
   offline machine, and MUST NOT be the media that carries anything between the online and offline
@@ -137,7 +137,7 @@ is valid for.
 
 ---
 
-## 6. File Names
+## 6. Files are named deevnet-<site>-<ca>.pem
 
 | File | Holds |
 |---|---|
@@ -151,7 +151,7 @@ is valid for.
 
 ---
 
-## 7. Definition of Correct
+## 7. A certificate is correct only when all of these hold
 
 A Deevnet certificate is correct when:
 
