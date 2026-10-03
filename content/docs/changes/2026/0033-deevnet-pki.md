@@ -98,8 +98,8 @@ old root goes only once nothing serves its chain.
 **Run** (the operator, offline):
 1. [Root CA](/docs/runbook/root-of-trust/root-ca/), then [Site CA](/docs/runbook/root-of-trust/site-ca/)
    for `mobile`, in one session.
-2. Copy `deevnet-root-ca.pem` and `deevnet-mobile-site-ca.pem` (certificates only) from the transfer
-   media to the Builder, in `~/pki-inbox/`.
+2. Bring the transfer drive to the Builder: `sudo mount LABEL=TRANSFER /mnt/transfer`, then copy
+   `deevnet-root-ca.pem` and `deevnet-mobile-site-ca.pem` (certificates only) to `~/pki-inbox/`.
 
 **Verify** (on the Builder):
 1. `openssl verify -CAfile deevnet-root-ca.pem deevnet-mobile-site-ca.pem` is `OK`.
@@ -146,7 +146,7 @@ first `--ca substrate`, then `--ca tenant-device`. The transfer media goes Build
 for each. Accept each into the inventory:
 
 ```bash
-./deevnet-pki-transfer accept /run/media/$USER/TRANSFER \
+./deevnet-pki-transfer accept /mnt/transfer \
   --csr ../../../ansible-inventory-deevnet/pki/mobile/deevnet-mobile-substrate-ca.csr \
   --out ../../../ansible-inventory-deevnet/pki/mobile
 # and the same for deevnet-mobile-tenant-device-ca.csr

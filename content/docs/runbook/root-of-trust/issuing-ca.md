@@ -40,11 +40,16 @@ if it finds a private key anywhere on the transfer media, by file name or by con
 ## 1. Prepare (online)
 
 **On the control node, prepare the transfer media with the request and the chain.** Automation first makes the issuing CA's key and request where the key will live; the substrate
-runbook has that procedure for each CA. Then, on the control node, with the transfer media mounted:
+runbook has that procedure for each CA. Then, on the control node, mount the transfer drive (plain
+FAT32, labeled `TRANSFER`):
+
+```bash
+sudo mkdir -p /mnt/transfer && sudo mount -o uid=$(id -u),gid=$(id -g) LABEL=TRANSFER /mnt/transfer
+```
 
 ```bash
 cd ansible-collection-deevnet.mgmt/scripts/pki
-./deevnet-pki-transfer prepare /run/media/$USER/TRANSFER \
+./deevnet-pki-transfer prepare /mnt/transfer \
   --site mobile --ca substrate --csr /path/to/deevnet-mobile-substrate-ca.csr
 ```
 
@@ -69,9 +74,11 @@ record.**
 ## 2. Sign (offline)
 
 **On the offline machine, check the request and sign it with the Site CA.** On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
-and the **Site CA's key media** open at `/mnt/keys` (`sudo deevnet-pki-media keys open`):
+and the **Site CA's key media**, opened:
 
 ```bash
+sudo deevnet-pki-media keys open                  # the key drive's passphrase; /mnt/keys
+sudo deevnet-pki-media transfer mount             # /mnt/transfer
 deevnet-pki-sign /mnt/transfer --site-key /mnt/keys/deevnet-mobile-site-ca.key
 ```
 
@@ -98,15 +105,15 @@ is the trust decision, and nothing is signed without it.
 
 After signing it checks the certificate chains to the root with `pathlen:0`, and that it carries the
 request's key. It writes **only** the certificate and a return `MANIFEST` to `to-online/`, and prints
-the certificate's SHA-256 fingerprint. **Write it in the paper record.** Unmount both media, shut
-down.
+the certificate's SHA-256 fingerprint. **Write it in the paper record.** Then close both drives and
+shut down (`sudo deevnet-pki-media keys close; sudo deevnet-pki-media transfer umount; sudo poweroff`).
 
 ## 3. Accept (online)
 
 **Back on the control node, verify the certificate before automation installs it:**
 
 ```bash
-./deevnet-pki-transfer accept /run/media/$USER/TRANSFER \
+./deevnet-pki-transfer accept /mnt/transfer \
   --csr /path/to/deevnet-mobile-substrate-ca.csr --out /path/for/installation
 ```
 

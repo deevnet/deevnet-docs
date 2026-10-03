@@ -171,28 +171,29 @@ issuing CAs, and an issuing CA signs only certificates that cannot sign anything
 
 ## Finishing up
 
-**Every session ends the same way, with both key copies checked and nothing left behind:**
+**Every session ends the same way, with every key on its drives and nothing left behind:**
 
-1. Copy any new key files from `/dev/shm/pki` to **both** key media, one at a time, and check each
-   copy opens (`openssl pkey -in <key> -noout` asks for the key's passphrase and prints nothing):
-
-   ```bash
-   sudo deevnet-pki-media keys open primary
-   cp /dev/shm/pki/*.key /mnt/keys/ && openssl pkey -in /mnt/keys/<key> -noout
-   sudo deevnet-pki-media keys close
-   # then the same with: keys open backup
-   ```
-2. Copy any certificates to the transfer media.
-3. Write the date, what was made, and each new certificate's SHA-256 fingerprint in the paper record.
+1. Each new key is on the key drive, checked to open. The Root CA and Site CA pages copy it there;
+   the backup drive gets the same files, now or [later](#a-backup-key-drive-later).
+2. Each new certificate is on the transfer drive.
+3. The date, what was made, and each new certificate's SHA-256 fingerprint are in the paper record.
 4. Close and unmount everything, and shut the machine down. `/dev/shm/pki` goes with it:
 
    ```bash
    sudo deevnet-pki-media keys close; sudo deevnet-pki-media transfer umount; sudo poweroff
    ```
 
-**A backup key drive can be made later.** Until it exists, each key exists only once, and losing
-that drive means making the CAs again. Later: open the primary, copy its files into `/dev/shm/pki`,
-close it, `keys init` the new drive as `backup`, and copy them in.
+### A backup key drive later
+
+**A backup key drive can be made after the CAs.** Until it exists, each key exists only once, and losing
+that drive means making the CAs again. On the offline machine:
+
+```bash
+mkdir -m 0700 /dev/shm/pki && cd /dev/shm/pki
+sudo deevnet-pki-media keys open primary && cp /mnt/keys/* . && sudo deevnet-pki-media keys close
+sudo deevnet-pki-media keys init /dev/sdX backup      # the new drive; opens it at /mnt/keys
+cp deevnet-* /mnt/keys/ && sudo deevnet-pki-media keys close
+```
 
 ## Fedora live USB
 
@@ -207,7 +208,7 @@ and [finishing up](#finishing-up) are the same as on the Pi.
 the [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) step 1 with `--with-tools` added:
 
 ```bash
-./deevnet-pki-transfer prepare /run/media/$USER/TRANSFER \
+./deevnet-pki-transfer prepare /mnt/transfer \
   --site mobile --ca substrate --csr /path/to/deevnet-mobile-substrate-ca.csr --with-tools
 ```
 
