@@ -7,7 +7,7 @@ weight: -30
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Proposed; **§1–§4 superseded by [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)** (an offline Deevnet root and Site CAs; the substrate issued by Ansible, not OpenBao). §5–§8 stand. |
 | **Date** | 2026-10-02 |
 | **Scope** | Where the site's root of trust lives, what issues TLS certificates, how long they last, how a build or repave puts certificates and trust on substrate hosts, appliances, images and the operator's computer, and how tenants keep trusting it. Not automatic renewal, not expiry alerting, not client certificates. |
 | **Extends** | [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) §3 (the `pki/` row) and §6 (rebuild order); answers its open question 1 |

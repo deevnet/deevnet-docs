@@ -3,7 +3,7 @@ title: "SSL Cert Automation"
 weight: 5
 tasks_completed: 14
 tasks_in_progress: 2
-tasks_planned: 3
+tasks_planned: 8
 ---
 
 # SSL Cert Automation
@@ -71,6 +71,20 @@ host and tool, with no browser warning and no client skipping verification.
 - 🔄 Core router admin UI and API (certificate imported; the GUI selection is the manual step)
 - ✅ Omada controller UI and API
 - 🔄 Clients stop skipping verification (Deevnet API, Packer, tenant fabric, Ansible): Proxmox and Omada done, the core router waits on its GUI step
+
+---
+
+## Deevnet PKI (ADR-0031) ⏳
+
+The design that replaces the chain CHG-0031 and CHG-0032 built, which stays in service until this is
+done: an offline Deevnet Root CA and Site CAs, a Substrate CA issued by Ansible, and a Tenant Device
+CA for mTLS ([Trust and Identity](/docs/architecture/trust-and-identity/)).
+
+- ⏳ The operator's ceremony: Deevnet Root CA and the Mobile Site CA ([Root of Trust](/docs/runbook/root-of-trust/))
+- ⏳ The Mobile Substrate CA in the site vault; every substrate certificate from it, by Ansible, OpenBao's listener included
+- ⏳ Re-root every host, image, tenant and computer to the Deevnet Root CA; retire the OpenBao and bootstrap intermediates
+- ⏳ The Mobile Tenant Device CA in OpenBao; device enrollment through the Deevnet API
+- ⏳ mTLS at the broker: client certificates from the Tenant Device CA, authorized by their URI
 
 ---
 

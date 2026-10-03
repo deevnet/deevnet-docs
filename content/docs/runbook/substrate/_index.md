@@ -1,6 +1,6 @@
 ---
 title: "Substrate Operations"
-weight: 1
+weight: 2
 bookCollapseSection: true
 ---
 

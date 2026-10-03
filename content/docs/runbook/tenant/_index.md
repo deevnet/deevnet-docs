@@ -1,6 +1,6 @@
 ---
 title: "Tenant Operations"
-weight: 2
+weight: 3
 bookCollapseSection: true
 aliases:
   - /docs/runbook/building-recovery/build-tenants/

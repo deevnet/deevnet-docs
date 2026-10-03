@@ -148,6 +148,8 @@ it, the architecture draws one main line — between the infrastructure and what
   between them
 - [Naming and Addressing](naming-and-addressing/) — the site address plan, and how hosts and
   tenants get addresses and names
+- [Trust and Identity](trust-and-identity/) — the offline root, each site's CA, and why server
+  identity and device identity are issued separately
 - [Decision Records](decisions/) — why each choice was made
 - [Resiliency & Limits](/docs/policies/risk-management/resiliency/) — what the hardware can't do,
   and why the site is built to be rebuilt rather than to stay up
