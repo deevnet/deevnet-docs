@@ -153,6 +153,11 @@ device, and a device is revoked by deregistering it.
 
 ## Alternatives considered
 
+- **Rejected: a public CA** (Let's Encrypt, or a commercial CA). Publicly trusted certificates may
+  not carry private addresses or internal names, no longer carry client authentication, carry no OU,
+  are limited to 200 days now and 47 from 2029, need the CA reachable to renew, and publish every
+  name in Certificate Transparency logs. Sources and detail:
+  [Trust and Identity](/docs/architecture/trust-and-identity/#a-private-pki-because-a-public-ca-cannot-certify-what-a-site-serves).
 - **Rejected: the Site CA online, in the site's vault.** Fewer ceremonies, but the vault password could
   then mint any CA for the site, and the point of an offline root is lost one level down.
 - **Rejected: OpenBao issues the substrate's certificates** (ADR-0030's model). It needs a bootstrap CA
