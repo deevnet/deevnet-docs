@@ -16,7 +16,9 @@ On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/
 `deevnet-pki.cnf`, and the **root's key media** mounted. **Check `date -u` first:** the Site CA's ten
 years start from the clock.
 
-## 1. Generate the Site CA's key and signing request
+## 1. Generate the key and request
+
+**The Site CA's key is encrypted as it is made, and its request names the site:**
 
 ```bash
 SITE=Mobile; site=mobile
@@ -27,7 +29,9 @@ openssl req -new -key deevnet-$site-site-ca.key \
   -out deevnet-$site-site-ca.csr
 ```
 
-## 2. Sign the Site CA with the root
+## 2. Sign with the root
+
+**The root signs the request with the profile's `v3_site` extensions:**
 
 ```bash
 openssl x509 -req -in deevnet-$site-site-ca.csr \
@@ -40,7 +44,9 @@ openssl x509 -req -in deevnet-$site-site-ca.csr \
 It asks for the root key's passphrase. The extensions come only from the profile, never from the
 request.
 
-## 3. Check the Site CA chains to the root
+## 3. Check the chain
+
+**Check that the Site CA chains to the root before the key is stored:**
 
 ```bash
 openssl x509 -in deevnet-$site-site-ca.pem -noout -subject -issuer -enddate -ext basicConstraints
@@ -52,7 +58,9 @@ openssl x509 -in deevnet-$site-site-ca.pem -noout -fingerprint -sha256
 - `CA:TRUE, pathlen:1`, ten years.
 - `verify` answers `OK`.
 
-## 4. Put the key on both key media and the certificate in the inventory
+## 4. Store it
+
+**The key goes on both key media, and the certificate into the inventory:**
 
 - `deevnet-$site-site-ca.key` goes to both key media. The `.csr` can be deleted.
 - `deevnet-$site-site-ca.pem` goes to the transfer media and, by pull request, into the inventory at

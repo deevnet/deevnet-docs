@@ -37,9 +37,9 @@ installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#raspber
 transfer media carries data only, never code that runs offline. Every step fails, and changes nothing,
 if it finds a private key anywhere on the transfer media, by file name or by content.
 
-## 1. Online: prepare the transfer media
+## 1. Prepare (online)
 
-Automation first makes the issuing CA's key and request where the key will live; the substrate
+**On the control node, prepare the transfer media with the request and the chain.** Automation first makes the issuing CA's key and request where the key will live; the substrate
 runbook has that procedure for each CA. Then, on the control node, with the transfer media mounted:
 
 ```bash
@@ -66,9 +66,9 @@ record.**
 
 `--ca tenant-device` does the same for the Tenant Device CA.
 
-## 2. Offline: check the request and sign it
+## 2. Sign (offline)
 
-On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
+**On the offline machine, check the request and sign it with the Site CA.** On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
 and the **Site CA's key media** mounted:
 
 ```bash
@@ -101,9 +101,9 @@ request's key. It writes **only** the certificate and a return `MANIFEST` to `to
 the certificate's SHA-256 fingerprint. **Write it in the paper record.** Unmount both media, shut
 down.
 
-## 3. Online: verify the certificate and accept it
+## 3. Accept (online)
 
-Back on the control node:
+**Back on the control node, verify the certificate before automation installs it:**
 
 ```bash
 ./deevnet-pki-transfer accept /run/media/$USER/TRANSFER \
@@ -120,7 +120,7 @@ It checks:
 It prints the fingerprint; **compare it with the paper record**. Only then does it copy the
 certificate to `--out`, for automation to install beside the key it already holds.
 
-## Rotate an issuing CA before its five years run out
+## Rotation
 
-Run the ceremony again with a new request before the five years run out. The old CA's certificates
+**Rotate an issuing CA before its five years run out.** Run the ceremony again with a new request before the five years run out. The old CA's certificates
 stay valid until they expire, and clients trust both, because they trust the root.

@@ -9,7 +9,9 @@ The Root CA's and every Site CA's keys exist only as passphrase-encrypted files 
 kept apart. The passphrase is kept offline, under the holder's own control, and never with the key
 media.
 
-## The keys live on two key media, kept apart
+## Two key media
+
+**The keys live on two key media, kept apart:**
 
 - **Primary key media:** in the holder's secure storage.
 - **Backup key media:** somewhere else, so one loss (fire, theft, a bag left behind) cannot take both.
@@ -18,9 +20,9 @@ media.
 
 Neither key media is ever plugged into a networked machine.
 
-## Every year, check both copies still open
+## Yearly check
 
-On the offline machine ([Preparing](/docs/runbook/root-of-trust/preparing/)):
+**Every year, check that both copies still open.** On the offline machine ([Preparing](/docs/runbook/root-of-trust/preparing/)):
 
 ```bash
 openssl pkey -in /path/to/primary/deevnet-root-ca.key -noout
@@ -31,9 +33,9 @@ openssl pkey -in /path/to/backup/deevnet-root-ca.key -noout
 Each asks for the passphrase and prints nothing. Note the date in the paper record. A copy that does
 not open is replaced from the other at once, by copying the file, never by generating a new key.
 
-## Each CA is rotated a year before it expires
+## Rotation calendar
 
-At the yearly check, also check the calendar:
+**Each CA is rotated a year before it expires.** At the yearly check, also check the calendar:
 
 | CA | Its key is held by | Signs | Valid for | Rotate it |
 |---|---|---|---|---|
@@ -46,9 +48,10 @@ Rotating a CA means making a new one with the same ceremony:
 - [Site CA](/docs/runbook/root-of-trust/site-ca/) for a Site CA;
 - [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) for an issuing CA.
 
-## A rotation reaches everything below the CA rotated, and nothing above it
+## What a rotation reaches
 
-**A certificate works only while every CA above it is still valid.** When a CA expires, everything it
+**A rotation reaches everything below the CA rotated, and nothing above it.** A certificate works
+only while every CA above it is still valid. When a CA expires, everything it
 signed stops working with it, however long those certificates had left. A rotation therefore has to
 move everything below the rotated CA onto the new one before the old one expires. The year's head
 start is for that.
@@ -83,16 +86,18 @@ CA, every certificate moves to it within the year, before the old CA expires. Th
 both chain to the same Site CA and root, so clients trust both while they overlap.
 
 These are planned rotations, with the old key still safe. A key that may have been exposed is
-[replaced at once](#an-exposed-key-is-replaced-never-reused), without waiting for the calendar.
+[replaced at once](#exposed-key), without waiting for the calendar.
 
-## A lost key media exposes nothing while the passphrase is safe
+## Lost key media
 
-The keys on it are encrypted, so a lost drive alone exposes nothing while the passphrase is safe.
+**A lost key media exposes nothing while the passphrase is safe,** because the keys on it are
+encrypted.
 Copy the surviving media onto a new drive, and note it in the paper record.
 
-## An exposed key is replaced, never reused
+## Exposed key
 
-That is, the file *and* the passphrase may both have been seen.
+**An exposed key is replaced, never reused.** A key is exposed when the file *and* the passphrase
+may both have been seen.
 
 - **A Site CA's key:** make a new Site CA ([Site CA](/docs/runbook/root-of-trust/site-ca/)), sign new
   issuing CAs under it, and reissue the site's certificates. Clients keep trusting the root, so
@@ -100,7 +105,7 @@ That is, the file *and* the passphrase may both have been seen.
 - **The root's key:** everything is re-rooted: a new root, new Site CAs, new issuing CAs, and the new
   root handed to every machine, tenant and computer that trusts the old one. Record it as an incident.
 
-## Losing both copies of a key stops new signing at that level
+## Both copies lost
 
-Certificates already issued keep working until they expire, but nothing new can be signed above the
+**Losing both copies of a key stops new signing at that level.** Certificates already issued keep working until they expire, but nothing new can be signed above the
 issuing CAs. For a Site CA, make a new one. For the root, it is the re-root above.
