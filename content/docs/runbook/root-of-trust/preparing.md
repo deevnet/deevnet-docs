@@ -57,9 +57,14 @@ A Pi is also small, cheap and easy to keep for nothing but this.
 
 **Flash it once, and again whenever the image is rebuilt:**
 
-1. Download `pi-images/pki/raspios-bookworm-mobile-pki.img.xz` and its `.sha256` from the artifact
-   server, and check them: `sha256sum -c raspios-bookworm-mobile-pki.img.xz.sha256`. Write the hash
-   in the paper record.
+1. Download the image and its hash from the artifact server, and check them. Write the hash in the
+   paper record.
+
+   ```bash
+   curl -fO http://artifacts.mobile.deevnet.net/pi-images/pki/raspios-bookworm-mobile-pki.img.xz
+   curl -fO http://artifacts.mobile.deevnet.net/pi-images/pki/raspios-bookworm-mobile-pki.img.xz.sha256
+   sha256sum -c raspios-bookworm-mobile-pki.img.xz.sha256
+   ```
 2. Flash it to a microSD with Raspberry Pi Imager (choose **no** customization: no Wi-Fi, no SSH, no
    user), or `xzcat raspios-bookworm-mobile-pki.img.xz | sudo dd of=/dev/sdX bs=4M conv=fsync`.
 
