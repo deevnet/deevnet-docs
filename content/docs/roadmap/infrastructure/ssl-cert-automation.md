@@ -1,7 +1,7 @@
 ---
 title: "SSL Cert Automation"
 weight: 5
-tasks_completed: 14
+tasks_completed: 15
 tasks_in_progress: 2
 tasks_planned: 8
 ---
@@ -80,6 +80,7 @@ The design that replaces the chain CHG-0031 and CHG-0032 built, which stays in s
 done: an offline Deevnet Root CA and Site CAs, a Substrate CA issued by Ansible, and a Tenant Device
 CA for mTLS ([Trust and Identity](/docs/architecture/trust-and-identity/)).
 
+- ✅ Ceremony transfer tooling: hash manifests, private-key refusal, request and chain checks (`deevnet-pki-transfer`, `deevnet-pki-sign`)
 - ⏳ The operator's ceremony: Deevnet Root CA and the Mobile Site CA ([Root of Trust](/docs/runbook/root-of-trust/))
 - ⏳ The Mobile Substrate CA in the site vault; every substrate certificate from it, by Ansible, OpenBao's listener included
 - ⏳ Re-root every host, image, tenant and computer to the Deevnet Root CA; retire the OpenBao and bootstrap intermediates

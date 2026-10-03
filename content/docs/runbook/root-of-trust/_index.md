@@ -29,9 +29,17 @@ Only public material leaves the offline machine:
 - **certificates:** the root's, each Site CA's, and each signed issuing CA's;
 - **certificate signing requests**, which come *in* from automation to be signed.
 
-A key never leaves the machine except as an encrypted file onto the holder's own backup media. An
-issuing CA's key is generated where it will live (site automation for the Substrate CA, the secret
-store for the Tenant Device CA), and only its request is brought to the ceremony.
+They cross on the **transfer media**, the only thing that moves between the online and offline
+machines. The Root CA's and Site CAs' keys stay on their own **key media**, which is only ever
+plugged into the offline machine. A key never leaves the offline machine except as an encrypted file
+onto that key media.
+
+An issuing CA's key is generated where it will live (site automation for the Substrate CA, the secret
+store for the Tenant Device CA), and only its request is brought to the ceremony. Two small tools in
+`ansible-collection-deevnet.mgmt/scripts/pki/` move it and its certificate across, with a manifest of
+hashes each way, a refusal of any private key on the transfer media, and checks of the request, the
+signature and the chain ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)). They automate the
+mechanics and the checking. Signing stays a decision the key holder makes by typing the CA's name.
 
 ## What each certificate says
 

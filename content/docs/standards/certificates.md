@@ -115,6 +115,21 @@ is valid for.
   automation's, so a substrate rebuilt from nothing can issue every certificate it needs before the
   secret store exists.
 
+### Crossing the offline boundary
+
+- 5.5 The media holding the Root CA's and Site CAs' keys (the *key media*) MUST be used only on the
+  offline machine, and MUST NOT be the media that carries anything between the online and offline
+  machines.
+- 5.6 Only the *transfer media* crosses. It MUST carry only signing requests, certificates, the
+  signing profile and the ceremony's tools. It MUST NOT carry a private key.
+- 5.7 What crosses MUST travel under a manifest of SHA-256 hashes, checked on arrival on each side.
+  A request is signed only after its subject and signature are checked and the key holder confirms
+  it. A returned certificate is installed only after it is checked against the original request's
+  key and chained to the Root CA through the **online side's own** copies of the Root and Site CA
+  certificates.
+- 5.8 The ceremony's tools (`deevnet-pki-transfer`, `deevnet-pki-sign`) enforce 5.5–5.7. Tooling
+  MAY automate the mechanics and the checks, and MUST NOT automate the decision to sign.
+
 ---
 
 ## 6. File Names
