@@ -41,6 +41,15 @@ CA. The worst a site loses is one issuing CA, which the operator replaces in a s
 at more than one site trusts one anchor. A site's own CA still bounds that site: a Site CA lost at
 one site is replaced without touching another.
 
+**What crosses the offline boundary.** The offline keys sit on media that never leaves the offline
+side. A separate transfer medium is the only thing that crosses:
+- a signing request goes in, under a manifest of hashes;
+- a signed certificate comes back, under another.
+
+Each side checks the manifest, refuses any private key on the medium, and checks the request or
+certificate against what it expects. The online side checks the chain against its own copy of the
+root. Tooling does the moving and the checking; the decision to sign is a person's.
+
 ---
 
 ## Substrate identity never waits on the secret store

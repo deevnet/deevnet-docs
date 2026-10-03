@@ -58,6 +58,10 @@ In use, it falls short in four ways:
 - **Held offline by the same operator, like the root.** It signs only its site's issuing CAs, in a
   ceremony, about every five years.
 - A Site CA lost or exposed is replaced without touching another site or the root's trust.
+- **Ceremonies cross the offline boundary on separate transfer media**, never on the key media.
+  Tooling moves the request out and the certificate back under hash manifests, refuses any private
+  key on the transfer media, and checks the request, the signature and the chain; the decision to
+  sign stays the operator's ([Certificates standard](/docs/standards/certificates/) 5.5–5.8).
 
 ### 3. Two issuing CAs per site, separating server and device identity
 

@@ -13,9 +13,11 @@ you carry away.
 - **A live USB** of a current Fedora Workstation release. It has `openssl`, and nothing it does
   survives a reboot.
 - **Two USB drives for the keys** (the *key media*), kept apart afterwards: the primary and the
-  backup.
-- **One USB drive for transfer** (the *transfer media*): it carries certificates and signing requests
-  in and out, never a key.
+  backup. They hold the Root CA's and Site CAs' keys, and **never cross to the online side**: they
+  are only ever plugged into the offline machine.
+- **One USB drive for transfer** (the *transfer media*), a different drive: it is the only thing
+  that crosses between the online and offline machines. It carries signing requests in, and
+  certificates out, never a key. The ceremony's tools fail if they find one on it.
 - **The paper record**, a notebook or sheet, for fingerprints and dates.
 - **The passphrase** for the key files, kept offline, under the holder's own control.
 
