@@ -12,8 +12,9 @@ like the root's, held by the same person.
 The site's name is its title in the [naming standard](/docs/standards/naming/): `Mobile`, `Home`.
 Below, `SITE=Mobile` and `site=mobile`.
 
-On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the **root's key media**
-mounted:
+On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki` with
+`deevnet-pki.cnf`, and the **root's key media** mounted. **Check `date -u` first:** the Site CA's ten
+years start from the clock.
 
 ## 1. The Site CA's key and request
 

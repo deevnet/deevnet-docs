@@ -25,14 +25,17 @@ stays on its **key media**, which never crosses to the online side.
 online (control node)                 transfer media                 offline machine
 ─────────────────────                 ──────────────                 ───────────────
 1. deevnet-pki-transfer prepare  ──►  to-offline/  request,     ──►  2. deevnet-pki-sign
-                                          certificates, profile,          + the Site CA key
-                                          offline script, MANIFEST          (its own key media)
+                                          certificates, MANIFEST          (on the ceremony image)
+                                                                            + the Site CA key
+                                                                            (its own key media)
 3. deevnet-pki-transfer accept   ◄──  to-online/   certificate, ◄──
                                           MANIFEST
 ```
 
-The commands are in `ansible-collection-deevnet.mgmt/scripts/pki/`. Every step fails, and changes
-nothing, if it finds a private key anywhere on the transfer media, by file name or by content.
+The online commands are in `ansible-collection-deevnet.mgmt/scripts/pki/`; the offline one is
+installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#the-ceremony-image), so the
+transfer media carries data only, never code that runs offline. Every step fails, and changes nothing,
+if it finds a private key anywhere on the transfer media, by file name or by content.
 
 ## 1. Online: prepare the transfer media
 
@@ -53,8 +56,10 @@ It checks the request:
 Then it empties `deevnet-transfer/` on the media and writes `to-offline/` with:
 - the request;
 - the Root CA and Site CA certificates;
-- the signing profile and the offline script;
 - a `MANIFEST` of SHA-256 hashes.
+
+On the [Fedora fallback](/docs/runbook/root-of-trust/preparing/#without-a-pi-a-fedora-live-usb), add
+`--with-tools`: it also writes the signing profile and `deevnet-pki-sign`, under the same manifest.
 
 It prints the manifest's own hash and the request's public-key hash. **Write both in the paper
 record.**
@@ -63,15 +68,18 @@ record.**
 
 ## 2. Offline: sign
 
-On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, mount the transfer media
-and the **Site CA's key media**, then run the script that came on the transfer media:
+On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, with the transfer media
+and the **Site CA's key media** mounted:
 
 ```bash
-bash /run/media/$USER/TRANSFER/deevnet-transfer/to-offline/deevnet-pki-sign \
-  /run/media/$USER/TRANSFER --site-key /run/media/$USER/KEYS/deevnet-mobile-site-ca.key
+deevnet-pki-sign /mnt/transfer --site-key /mnt/keys/deevnet-mobile-site-ca.key
 ```
 
-It refuses to go on unless:
+On the Fedora fallback, run the copy that came on the transfer media:
+`bash /mnt/transfer/deevnet-transfer/to-offline/deevnet-pki-sign /mnt/transfer --site-key …`.
+
+It first shows the clock and asks you to confirm it, because the certificate's five years start
+there; it refuses a date earlier than the ceremony image was built. Then it refuses to go on unless:
 - every network interface is down;
 - the Site CA's key is on its own media, not the transfer media;
 - the transfer media holds no private key;
