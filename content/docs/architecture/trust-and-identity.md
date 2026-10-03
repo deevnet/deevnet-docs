@@ -16,7 +16,7 @@ The substrate never needs the second to build itself, and a tenant never touches
 
 ---
 
-## The layers
+## One Root CA, a Site CA per site, and two issuing CAs per site
 
 ```
 Deevnet Root CA                  offline, held by the operator
@@ -32,19 +32,21 @@ Deevnet Root CA                  offline, held by the operator
 | Substrate CA | the site's automation (its encrypted inventory) | every substrate server certificate | every five years |
 | Tenant Device CA | the site's secret store | tenant devices' client certificates | every five years |
 
-**Why the top two are offline.** Whatever holds a CA's key can mint anything under it. With the root
-and Site CA held offline, no compromise of a site system, automation's included, can create a new
-CA. The worst a site loses is one issuing CA, which the operator replaces in a short
-[ceremony](/docs/runbook/root-of-trust/) while every client keeps trusting the root.
+**For maximum integrity, the Root CA and every Site CA are generated and kept offline.** Whatever
+holds a CA's key can mint anything under it. With the root and Site CA held offline, no compromise
+of a site system, automation's included, can create a new CA. The worst a site loses is one issuing
+CA, which the operator replaces in a short [ceremony](/docs/runbook/root-of-trust/) while every
+client keeps trusting the root.
 
-**Why one root for every site.** An operator's computer, a tenant's tooling or a device that works
-at more than one site trusts one anchor. A site's own CA still bounds that site: a Site CA lost at
-one site is replaced without touching another.
+**One Deevnet Root CA serves every site; each site has its own Site CA under it.** An operator's
+computer, a tenant's tooling or a device that works at more than one site trusts one anchor. A
+site's own CA still bounds that site: a Site CA lost at one site is replaced without touching
+another.
 
-**What crosses the offline boundary.** The offline keys sit on media that never leaves the offline
-side. A separate transfer medium is the only thing that crosses:
-- a signing request goes in, under a manifest of hashes;
-- a signed certificate comes back, under another.
+**Only a separate transfer medium crosses between the offline and online sides, and it never
+carries a key.** The offline keys sit on media that never leaves the offline side. The transfer
+medium carries a signing request in, under a manifest of hashes, and a signed certificate back,
+under another.
 
 Each side checks the manifest, refuses any private key on the medium, and checks the request or
 certificate against what it expects. The online side checks the chain against its own copy of the
@@ -52,7 +54,7 @@ root. Tooling does the moving and the checking; the decision to sign is a person
 
 ---
 
-## Substrate identity never waits on the secret store
+## Substrate certificates come from automation, never from the secret store
 
 The substrate is built in order: the network, the hypervisors, then the service VMs, one of which
 runs the secret store. Each step needs certificates for the steps before it. If those came from the
@@ -65,7 +67,7 @@ do. The secret store issues nothing the substrate needs.
 
 ---
 
-## Two kinds of identity
+## Server identity and device identity come from separate CAs
 
 | | Substrate server | Tenant device |
 |---|---|---|
@@ -81,29 +83,29 @@ certificate cannot impersonate a service.
 
 ---
 
-## How a device proves who it is (mTLS)
+## Tenant devices will prove their identity with client certificates (mTLS)
 
 This is the target for tenant devices; today they authenticate to the message broker with a username
 and password over TLS ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §8).
 
-1. **Enrollment.** The device makes a key pair and a signing request, or the tenant's own computer
-   does it for a device that cannot. The tenant submits the request through the tenant interface,
-   for a device the tenant has registered.
-2. **Issuance.** The platform checks the request names that tenant's registered device, and the
-   Tenant Device CA signs it: one year, client authentication only, the identity
-   `urn:deevnet:<site>:tenant:<tenant>:device:<device>`. The certificate goes back to the tenant.
-   The key never left the device.
-3. **Connection.** The device connects to a platform service, for example the message broker. Both
-   sides present a certificate:
+1. **The device makes its own key and signing request.** A device that cannot do so has the
+   tenant's own computer make them. The tenant submits the request through the tenant interface, for
+   a device the tenant has registered.
+2. **The Tenant Device CA signs it, for a registered device only.** The platform checks the request
+   names that tenant's registered device. The certificate is valid one year, for client
+   authentication only, with the identity `urn:deevnet:<site>:tenant:<tenant>:device:<device>`. It
+   goes back to the tenant; the key never left the device.
+3. **Device and service each present a certificate.** For example, at the message broker:
    - the service shows its substrate server certificate, and the device checks it against the
      Deevnet Root CA;
    - the device shows its client certificate, and the service checks it against the Tenant Device
      CA.
-4. **Authorization.** The service takes the device's identity from its certificate and applies that
+4. **The service authorizes the device by the identity in its certificate.** It applies that
    device's permissions: its tenant's topics, and nothing else.
-5. **Renewal.** Before the year runs out, the device repeats enrollment with a new request.
-6. **Loss.** A lost or retired device is deregistered. The platform stops authorizing its identity at
-   once, whatever its certificate says.
+5. **The device renews yearly**, by repeating steps 1 and 2 with a new request before the year runs
+   out.
+6. **Deregistering a lost or retired device revokes it at once.** The platform stops authorizing its
+   identity, whatever its certificate says.
 
 What crosses the substrate–tenant boundary is a signing request in and a certificate out. Device
 keys, and the firmware-signing keys that are the tenant's alone
@@ -112,7 +114,7 @@ never do.
 
 ---
 
-## Who trusts the root
+## Where the Deevnet Root CA is trusted
 
 | Where | How |
 |---|---|
@@ -123,7 +125,7 @@ never do.
 
 ---
 
-## Rules
+## The rules are in the Certificates standard
 
 The certificates themselves (subjects, names, keys, lifetimes, where each key may live) are set by
 the [Certificates standard](/docs/standards/certificates/). The decision and its alternatives are
