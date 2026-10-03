@@ -153,11 +153,34 @@ device, and a device is revoked by deregistering it.
 
 ## Alternatives considered
 
-- **Rejected: a public CA** (Let's Encrypt, or a commercial CA). Publicly trusted certificates may
-  not carry private addresses or internal names, no longer carry client authentication, carry no OU,
-  are limited to 200 days now and 47 from 2029, need the CA reachable to renew, and publish every
-  name in Certificate Transparency logs. Sources and detail:
-  [Trust and Identity](/docs/architecture/trust-and-identity/#a-private-pki-because-a-public-ca-cannot-certify-what-a-site-serves).
+- **Rejected: a public CA** (Let's Encrypt, or a commercial CA), because it cannot certify what a
+  site serves. A public CA could cover some of the site's names, but not the parts that matter most:
+  - **Public CAs may not certify private addresses or internal names.** Since 2015 publicly trusted
+    certificates cannot carry a reserved IP address or an internal name
+    ([CA/Browser Forum](https://cabforum.org/working-groups/server/internal-names/)). A site's
+    services are dialed at `10.20.x.x`, `127.0.0.1` and `localhost`.
+  - **Public CAs no longer issue client certificates.** Let's Encrypt removed TLS client
+    authentication from its certificates in 2026, following browser root-program rules
+    ([Let's Encrypt](https://letsencrypt.org/2025/05/14/ending-tls-client-authentication)). Device
+    identity (mTLS) needs a CA that issues client certificates.
+  - **Public certificates cannot say what a certificate is for.** Let's Encrypt issues
+    domain-validated certificates only, with no organization ([FAQ](https://letsencrypt.org/docs/faq/)),
+    and the organizational unit is no longer permitted in any publicly trusted certificate
+    ([Baseline Requirements](https://cabforum.org/working-groups/server/baseline-requirements/requirements/)
+    §1.7.9). Deevnet's subjects carry O and OU so that *Issued To* and *Issued By* read plainly.
+  - **Public certificates are short-lived by rule, and renewal needs the internet.** Their maximum
+    lifetime is 200 days from March 2026, 100 from 2027 and 47 from 2029 (Baseline Requirements
+    §6.3.2). Each renewal needs the CA reachable, and a mobile site runs without internet access.
+  - **Public certificates publish their names.** Every certificate goes to public Certificate
+    Transparency logs, where crawlers find it ([FAQ](https://letsencrypt.org/docs/faq/)). Every host,
+    service and tenant name on the site would be listed there.
+
+  A paid CA changes none of these: the rules are the CA/Browser Forum's, and every publicly trusted
+  CA follows them. A private PKI's one cost is that nothing trusts its root by default, so the root
+  is installed where it is needed
+  ([Trust and Identity](/docs/architecture/trust-and-identity/#where-the-deevnet-root-ca-is-trusted)).
+  Nothing Deevnet serves is meant for the public internet, so that cost falls only on Deevnet's own
+  machines, tenants and operators.
 - **Rejected: the Site CA online, in the site's vault.** Fewer ceremonies, but the vault password could
   then mint any CA for the site, and the point of an offline root is lost one level down.
 - **Rejected: OpenBao issues the substrate's certificates** (ADR-0030's model). It needs a bootstrap CA

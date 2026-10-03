@@ -417,8 +417,8 @@ public log.
 | Signing with an offline key, hashes compared on paper | the [Root of Trust](/docs/runbook/root-of-trust/) ceremonies |
 | Installing the root where it is trusted | [where the Deevnet Root CA is trusted](/docs/architecture/trust-and-identity/#where-the-deevnet-root-ca-is-trusted) |
 
-Trust and Identity also sets out in full
-[why Deevnet uses a private PKI rather than a public CA](/docs/architecture/trust-and-identity/#a-private-pki-because-a-public-ca-cannot-certify-what-a-site-serves).
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/#alternatives-considered)
+records why Deevnet uses a private PKI rather than a public CA.
 
 ## Terms at a glance
 
