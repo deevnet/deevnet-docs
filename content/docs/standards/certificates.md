@@ -129,6 +129,11 @@ is valid for.
   certificates.
 - 5.8 The ceremony's tools (`deevnet-pki-transfer`, `deevnet-pki-sign`) enforce 5.5–5.7. Tooling
   MAY automate the mechanics and the checks, and MUST NOT automate the decision to sign.
+- 5.9 The offline machine MUST have its radios disabled and no network service running, and MUST NOT
+  carry an automation account or remote access. Its clock MUST be checked before any key or
+  certificate is made. Its operating system SHOULD be the image factory's ceremony image (`pi-pki`),
+  checked against its published hash before use, so that the code that signs is pinned at build and
+  never arrives on the transfer media.
 
 ---
 

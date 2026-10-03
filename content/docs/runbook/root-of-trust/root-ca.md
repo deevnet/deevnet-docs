@@ -9,7 +9,8 @@ The Deevnet Root CA is made **once**, for the whole organization, and every site
 It is valid for twenty years and its key is RSA 4096.
 
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki`, with
-`deevnet-pki.cnf` beside you:
+`deevnet-pki.cnf` beside you. **Check `date -u` first:** the root's twenty years start from the
+clock.
 
 ## 1. The key
 

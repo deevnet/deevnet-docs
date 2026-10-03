@@ -1,7 +1,7 @@
 ---
 title: "SSL Cert Automation"
 weight: 5
-tasks_completed: 15
+tasks_completed: 16
 tasks_in_progress: 2
 tasks_planned: 8
 ---
@@ -81,6 +81,7 @@ done: an offline Deevnet Root CA and Site CAs, a Substrate CA issued by Ansible,
 CA for mTLS ([Trust and Identity](/docs/architecture/trust-and-identity/)).
 
 - ✅ Ceremony transfer tooling: hash manifests, private-key refusal, request and chain checks (`deevnet-pki-transfer`, `deevnet-pki-sign`)
+- ✅ Ceremony image for a Raspberry Pi 4 (`pi-pki`): no radios or network services, no SSH or automation account, read-only root, tools baked in
 - ⏳ The operator's ceremony: Deevnet Root CA and the Mobile Site CA ([Root of Trust](/docs/runbook/root-of-trust/))
 - ⏳ The Mobile Substrate CA in the site vault; every substrate certificate from it, by Ansible, OpenBao's listener included
 - ⏳ Re-root every host, image, tenant and computer to the Deevnet Root CA; retire the OpenBao and bootstrap intermediates
