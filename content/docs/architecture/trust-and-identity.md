@@ -16,7 +16,7 @@ The substrate never needs the second to build itself, and a tenant never touches
 
 ---
 
-## One Root CA, a Site CA per site, and two issuing CAs per site
+**The hierarchy: Deevnet Root CA → Site CA → two issuing CAs**
 
 ```
 Deevnet Root CA                  offline, held by the operator
