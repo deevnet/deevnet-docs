@@ -69,6 +69,10 @@ do. The secret store issues nothing the substrate needs.
 
 ## Server identity and device identity come from separate CAs
 
+Every edge device belongs to a tenant
+([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)), so device
+identity is always a tenant's: the tenant is named in every device certificate.
+
 | | Substrate server | Tenant device |
 |---|---|---|
 | Proves | "I am this host or service" | "I am this tenant's device" |

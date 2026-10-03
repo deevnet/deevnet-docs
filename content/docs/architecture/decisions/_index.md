@@ -268,6 +268,11 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Edge Devices](edge-devices/)
 
+- [ADR-0032: Every Edge Device Belongs to a Tenant](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/) —
+  *Accepted.* An application owns its devices through its tenant, and a tenant may have devices and no
+  workloads, as mabell does. Amends ADR-0011's ownership row ("may or may not be a tenant"): a second
+  owner model would need its own registration, credentials, scoping and removal, for no device that
+  needs one. Already how the API works; it is what lets device identity name the tenant (ADR-0031).
 - [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) —
   *Accepted.* Answers ADR-0011's open question 5, which an editing error had left orphaned and
   unnumbered: how a device reaches a service its application exposes directly, when publish/subscribe
@@ -280,8 +285,8 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   device-facing service authenticates its callers per device, because zone policy grants a whole
   zone — and accepts that peer devices on one VLAN are not separable with the current access point.
 - [ADR-0011: Edge Devices Are Application-Owned and Platform-Attached](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) —
-  A physical device belongs to the application that gives it purpose, joins the access
-  network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
+  A physical device belongs to the application that gives it purpose (through its tenant, since
+  ADR-0032), joins the access network of its trust class rather than its tenant's fabric, and reaches the tenant through scoped
   platform services; device secrets and signing keys never enter the substrate vault.
 
 ### [Substrate](substrate/)

@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Accepted |
+| **Status** | Accepted; §1's *Ownership* row **amended by [ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)**: every edge device belongs to a tenant, which may have no workloads. |
 | **Accepted** | 2026-09-15, once its four open questions were answered. Questions 1–3 were settled by the operator on 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9's controller work made the platform side real); question 4 was settled on 2026-09-14. |
 | **Date** | 2026-09-13 |
 | **Amended** | 2026-09-19, reconciling against ADR-0019 and ADR-0020. An editing error had deleted the heading that numbered two further open questions, leaving them orphaned — they are now **5** (tenant ingress, answered by ADR-0020) and **6** (the firmware supply chain, still open). Five statements overtaken by CHG-0013 and by ADR-0012 §8 are corrected in place. The decision is unchanged. |
@@ -170,7 +170,7 @@ and serves it through scoped platform services.
 
 | Axis | Owned by | What it covers |
 |---|---|---|
-| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
+| **Ownership** | The application, through its tenant (ADR-0032; it read "which may or may not be a tenant") | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
 | **Identity** | The platform | Only what it must know to attach, authenticate and account for a device |
 | **Attachment** | The substrate, chosen by **trust class** | The access segment (IoT or IoT Vendor), over Wi-Fi or a switch port |
 | **Access** | Platform services, scoped per owner | Rendezvous services on IoT Backend, such as the broker; per-device permissions |
