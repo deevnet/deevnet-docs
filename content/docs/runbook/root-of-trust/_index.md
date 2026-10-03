@@ -25,9 +25,9 @@ These pages are the key holder's procedures. They run on an offline machine, rar
 | Sign an issuing CA | when a site's Substrate CA or Tenant Device CA is created or rotated, about every five years | [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) |
 | Check, back up, recover | yearly, and after a loss | [Custody](/docs/runbook/root-of-trust/custody/) |
 
-## Only certificates and signing requests cross to automation
+## What crosses to automation
 
-Only public material leaves the offline machine:
+**Only certificates and signing requests cross between the offline machine and automation:**
 
 - **certificates:** the root's, each Site CA's, and each signed issuing CA's;
 - **certificate signing requests**, which come *in* from automation to be signed.
@@ -44,10 +44,10 @@ hashes each way, a refusal of any private key on the transfer media, and checks 
 signature and the chain ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)). They automate the
 mechanics and the checking. Signing stays a decision the key holder makes by typing the CA's name.
 
-## Every certificate names its organization, its unit and itself
+## Certificate names
 
-Every subject carries an organization, an organizational unit and a common name, so a certificate's
-*Issued To* and *Issued By* read plainly ([Certificates standard](/docs/standards/certificates/)):
+**Every certificate names its organization, its unit and itself,** so its *Issued To* and *Issued
+By* read plainly ([Certificates standard](/docs/standards/certificates/)):
 
 | Certificate | O | OU | CN |
 |---|---|---|---|
