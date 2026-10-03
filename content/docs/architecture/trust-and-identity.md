@@ -9,10 +9,12 @@ Every TLS connection on a Deevnet site verifies against one anchor, the **Deevne
 and each site's **Site CA** are held offline by a person, never by a system. Under each Site CA, two
 **issuing CAs** separate the two kinds of identity a site has:
 
-- **the substrate's servers**, issued by automation;
-- **tenants' devices**, issued through the tenant interface as devices are registered.
+- the **Substrate CA** issues the substrate's server certificates, through automation;
+- the **Tenant Device CA** issues tenants' device certificates, through the tenant interface as
+  devices are registered.
 
-The substrate never needs the second to build itself, and a tenant never touches the first.
+The substrate builds itself without the Tenant Device CA, and no tenant ever touches the Substrate
+CA.
 
 New to certificates? The [Cryptography and PKI Primer](/docs/appendix/cryptography-and-pki-primer/)
 explains keys, signatures, chains and CAs from the beginning.
