@@ -12,7 +12,8 @@ the third category of thing in a Deevnet site, alongside the substrate that prov
 infrastructure and the tenants that run virtual workloads on it.
 
 It is a category of its own because it does not fit either of the others. A device is **physical**,
-so it is not a tenant workload. It is **owned by an application**, so it is not substrate. It runs
+so it is not a tenant workload. It is **owned by an application, through that application's tenant**,
+so it is not substrate. It runs
 on the access network rather than in the tenant fabric, and it is accountable to whoever wrote its
 firmware rather than to whoever runs the site.
 
@@ -41,7 +42,7 @@ and both are wrong.
 
 | Axis | Owned by | What it covers |
 |------|----------|----------------|
-| **Ownership** | The application, which may or may not be a tenant | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
+| **Ownership** | The application, through its tenant, which may have no workloads ([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)) | Firmware source, build configuration, release artifacts, signing keys, device secrets, behavior |
 | **Identity** | The platform | Only what it must know to attach, authenticate and account for a device |
 | **Attachment** | The substrate, chosen by **trust class** | The access segment, over Wi-Fi or a switch port |
 | **Access** | Platform services, scoped per owner | Rendezvous services the device and the application both reach; per-device permissions |
@@ -68,7 +69,7 @@ of whoever owns it.
 | **IoT** | A known owner, who is accountable for it | IoT | Device-facing platform services, and controlled outbound internet |
 | **IoT Vendor** | The vendor, and assumed compromised | IoT Vendor | Outbound internet only — full containment from every internal segment |
 
-This is why creating a tenant never creates a VLAN. Devices of many owners share one segment, and
+This is why creating a tenant never creates a VLAN. Devices of many tenants share one segment, and
 the number of access segments is a function of how many *trust levels* exist, not how many
 applications do.
 

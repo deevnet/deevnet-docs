@@ -14,7 +14,10 @@ from scratch against the substrate.
 
 ## What is a Tenant?
 
-Tenants are the workload layer that runs **within** sites, on top of substrate infrastructure:
+Tenants are the workload layer that runs **within** sites, on top of substrate infrastructure. A tenant
+is the accountable owner of what an application has on the site: its workloads, its edge devices, or
+both. **Every edge device belongs to a tenant**, and a tenant may have devices and no workloads
+([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)):
 
 {{< mermaid >}}
 graph TB

@@ -137,8 +137,9 @@ it, the architecture draws one main line — between the infrastructure and what
   management and control planes. Built and rebuilt from code by the operator.
 - **[Tenant](tenant/)** — an isolated slice of the site for one application: its own network, DNS
   zone and workloads, built for it by the substrate when it asks.
-- **[Edge devices](edge-devices/)** — physical things an application owns, which the substrate
-  attaches to an access network. Neither substrate nor tenant, and never inside a tenant's network.
+- **[Edge devices](edge-devices/)** — physical things an application owns through its tenant, which
+  the substrate attaches to an access network. Not substrate, not a tenant workload, and never inside
+  a tenant's network.
 - **[Builder](builder/)** — the portable server that creates a site's substrate from scratch, then
   hands authority to it.
 
