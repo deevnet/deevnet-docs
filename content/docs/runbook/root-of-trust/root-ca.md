@@ -9,8 +9,12 @@ The Deevnet Root CA is made **once**, for the whole organization, and every site
 It is valid for twenty years and its key is RSA 4096.
 
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki`, with
-`deevnet-pki.cnf` beside you. **Check `date -u` first:** the root's twenty years start from the
-clock.
+`deevnet-pki.cnf` beside you, and the key media and transfer media
+[prepared](/docs/runbook/root-of-trust/preparing/#prepare-new-media). **Check `date -u` first:** the
+root's twenty years start from the clock.
+
+The key is made in memory (`/dev/shm/pki`), copied onto the encrypted key drives, and gone at
+shutdown.
 
 ## 1. Generate the key
 
@@ -49,14 +53,25 @@ openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256
 
 ## 4. Store it
 
-**The key goes on both key media, and the certificate on the transfer media:**
+**The key and certificate go on each key drive, and the certificate alone on the transfer drive:**
 
-- `deevnet-root-ca.key` goes to **both** key media, and nowhere else.
-- `deevnet-root-ca.pem` goes to the transfer media. It is public.
+```bash
+sudo deevnet-pki-media keys open primary          # the drive's passphrase
+cp deevnet-root-ca.key deevnet-root-ca.pem /mnt/keys/
+openssl pkey -in /mnt/keys/deevnet-root-ca.key -noout   # the key's passphrase; prints nothing
+sudo deevnet-pki-media keys close
+# the backup drive the same way (keys open backup), now or later
+
+sudo deevnet-pki-media transfer mount
+cp deevnet-root-ca.pem /mnt/transfer/
+```
+
+- The key goes on the key drives and nowhere else.
+- The certificate is public. The key drive keeps a copy for the Site CA's signing.
 - The fingerprint, the date and "Deevnet Root CA, 20 years" go in the paper record.
 
-Then [finish](/docs/runbook/root-of-trust/preparing/#finishing-up) and shut
-down.
+Making the Site CA next, in the same session? Leave everything open and go on. Otherwise
+[finish up](/docs/runbook/root-of-trust/preparing/#finishing-up).
 
 ## Hand off to automation
 

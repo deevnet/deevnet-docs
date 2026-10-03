@@ -13,8 +13,14 @@ The site's name is its title in the [naming standard](/docs/standards/naming/): 
 Below, `SITE=Mobile` and `site=mobile`.
 
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki` with
-`deevnet-pki.cnf`, and the **key media** open at `/mnt/keys` (`sudo deevnet-pki-media keys open`). **Check `date -u` first:** the Site CA's ten
-years start from the clock.
+`deevnet-pki.cnf`. **Check `date -u` first:** the Site CA's ten years start from the clock.
+
+The root signs it, so the key drive that holds the root is open:
+
+```bash
+sudo deevnet-pki-media keys open primary          # if it is not open already
+sudo deevnet-pki-media transfer mount             # likewise
+```
 
 ## 1. Generate the key and request
 
@@ -35,7 +41,7 @@ openssl req -new -key deevnet-$site-site-ca.key \
 
 ```bash
 openssl x509 -req -in deevnet-$site-site-ca.csr \
-  -CA deevnet-root-ca.pem -CAkey /mnt/keys/deevnet-root-ca.key \
+  -CA /mnt/keys/deevnet-root-ca.pem -CAkey /mnt/keys/deevnet-root-ca.key \
   -extfile deevnet-pki.cnf -extensions v3_site -days 3653 -sha256 \
   -set_serial 0x$(openssl rand -hex 16) \
   -out deevnet-$site-site-ca.pem
@@ -50,7 +56,7 @@ request.
 
 ```bash
 openssl x509 -in deevnet-$site-site-ca.pem -noout -subject -issuer -enddate -ext basicConstraints
-openssl verify -CAfile deevnet-root-ca.pem deevnet-$site-site-ca.pem
+openssl verify -CAfile /mnt/keys/deevnet-root-ca.pem deevnet-$site-site-ca.pem
 openssl x509 -in deevnet-$site-site-ca.pem -noout -fingerprint -sha256
 ```
 
@@ -60,11 +66,21 @@ openssl x509 -in deevnet-$site-site-ca.pem -noout -fingerprint -sha256
 
 ## 4. Store it
 
-**The key goes on both key media, and the certificate into the inventory:**
+**The key and certificate go on each key drive, and the certificate alone on the transfer drive:**
 
-- `deevnet-$site-site-ca.key` goes to both key media. The `.csr` can be deleted.
-- `deevnet-$site-site-ca.pem` goes to the transfer media and, by pull request, into the inventory at
-  `pki/$site/deevnet-$site-site-ca.pem`.
+```bash
+cp deevnet-$site-site-ca.key deevnet-$site-site-ca.pem /mnt/keys/
+openssl pkey -in /mnt/keys/deevnet-$site-site-ca.key -noout   # prints nothing
+cp deevnet-$site-site-ca.pem /mnt/transfer/
+sudo deevnet-pki-media keys close
+# the backup drive the same way (keys open backup), now or later
+```
+
+- The `.csr` can be left: `/dev/shm/pki` is gone at shutdown.
+- The certificate goes, by pull request, into the inventory at `pki/$site/deevnet-$site-site-ca.pem`.
 - The fingerprint goes in the paper record.
+
+Then [finish up](/docs/runbook/root-of-trust/preparing/#finishing-up). On the Builder, mount the
+transfer drive (`sudo mount LABEL=TRANSFER /mnt/transfer`) and take both certificates from it.
 
 Next: the site's [issuing CAs](/docs/runbook/root-of-trust/issuing-ca/).
