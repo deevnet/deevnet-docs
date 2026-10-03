@@ -10,12 +10,12 @@ weight: -33
 | **Date** | 2026-10-03 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned.** The code is written and tested off the site, on unmerged `chg-0033-deevnet-pki` branches. Step 1 waits on the operator's offline session. |
+| **Status** | **Planned.** The code is written, tested off the site and merged (2026-10-03), but not yet run against anything. Step 1 waits on the operator's offline session. |
 | **Window** | Steps 1–3 over one or two days, nothing live changing. Steps 5–7 in one sitting. Step 8 once nothing uses the old root. |
 | **Site** | mobile |
-| **Systems** | Every substrate host and service: both hypervisors, the core router, `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02nms001v01` (the Omada controller), `dv02hyp002p02` (the egress agent), the Builder. Every tenant (tdemo, eds, mabell, cdeever), the eds devices, the operator's computers. |
+| **Systems** | Every substrate host and service: both hypervisors, the core router, `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02nms001v01` (the Omada controller), `dv02hyp002p02` (the egress agent), the Builder. Every tenant (tdemo, eds, mabell, cdeever), the operator's computers. |
 | **Automation** | `deevnet.mgmt` `playbooks/substrate-ca.yml`, `tenant-device-ca.yml`, `certs.yml`, `site.yml`, `scripts/pki/`; `deevnet.builder` `substrate_cert`, `site_trust`, `proxmox_node_cert`; `deevnet.net` `opnsense_cert`, `tenant-egress-agent.yml`; the inventory's `site_root_ca_*`; the image factory's Fedora template |
-| **Risk** | High. Every TLS client changes trust anchor, and two of them cannot be updated by automation: device firmware that embeds the CA, and the operator's own computers. Both roots are trusted side by side until step 8 to soften it. |
+| **Risk** | High. Every TLS client changes trust anchor, and the operator's own computers cannot be updated by automation. Both roots are trusted side by side until step 8 to soften it. |
 | **Related changes** | Replaces what [CHG-0031](/docs/changes/2026/0031-site-root-ca/) and [CHG-0032](/docs/changes/2026/0032-appliance-certificates/) built; CHG-0034 (device certificates, mTLS) follows |
 | **Related runbooks** | [Root of Trust](/docs/runbook/root-of-trust/), [Certificates](/docs/runbook/substrate/certificates/) |
 
@@ -67,9 +67,11 @@ old root goes only once nothing serves its chain.
 
 ## Risk and impact
 
-- **A device whose firmware embeds the old root loses the broker at step 6.** eds's lp-stand
-  firmware embeds `main/certs/mqtt_ca.pem`. Reflash it in step 5 with both roots in that file.
-  mabell's firmware does not verify the broker yet, so it is unaffected.
+- **No tenant device is active yet**, so none loses the broker at step 6. A device flashed later
+  takes `deevnet-root-ca.pem`.
+- **Merged code, unrun.** The PRs merged on 2026-10-03, before the certificates exist. A
+  certificate or trust run before step 4 fails at its first check (a missing CA file), before
+  writing anything. Run none until then.
 - **The operator's computers distrust the substrate at step 6** unless they took the new root in
   step 5. That includes the Windows browser used for the Proxmox and router GUIs.
 - **OpenBao's clients pin its listener.** The `deevnet_api` role must run right after the
@@ -85,9 +87,8 @@ old root goes only once nothing serves its chain.
 - [ ] The `pi-pki` image flashed and its hardware checks done
       ([Preparing](/docs/runbook/root-of-trust/preparing/))
 - [ ] Media: two key media, one transfer media, the paper record
-- [ ] Code reviewed, PRs open (`chg-0033-deevnet-pki`): `ansible-collection-deevnet.builder`,
-      `.mgmt`, `.net`, `ansible-inventory-deevnet`, `deevnet-image-factory`, and this record.
-      **Merged only at step 4**
+- [x] PRs merged 2026-10-03: `ansible-collection-deevnet.builder` #24, `.mgmt` #65, `.net` #45,
+      `ansible-inventory-deevnet` #69, `deevnet-image-factory` #24, and this record (#262)
 - [ ] The inventory decrypted on the Builder
 
 ## Procedure
@@ -109,7 +110,7 @@ old root goes only once nothing serves its chain.
 
 ### Step 2: The issuing CAs' requests
 
-**Run** (on the Builder, on the `chg-0033-deevnet-pki` branches, inventory decrypted):
+**Run** (on the Builder, inventory decrypted):
 
 ```bash
 cd ansible-inventory-deevnet
@@ -117,7 +118,7 @@ cp ~/pki-inbox/deevnet-root-ca.pem pki/
 cp ~/pki-inbox/deevnet-mobile-site-ca.pem pki/mobile/
 cd ../ansible-collection-deevnet.mgmt
 ansible-playbook playbooks/substrate-ca.yml      # key into the vault, request to pki/mobile/
-cd ../ansible-inventory-deevnet && make vault && git add pki mobile && git commit && git push
+cd ../ansible-inventory-deevnet && make vault && git add pki mobile && git commit && git push   # on a branch, as a PR
 cd ../ansible-collection-deevnet.mgmt
 ansible-playbook playbooks/tenant-device-ca.yml  # key inside OpenBao, request to pki/mobile/
 ```
@@ -152,7 +153,7 @@ for each. Accept each into the inventory:
 cd ../.. && ansible-playbook playbooks/tenant-device-ca.yml   # installs the signed CA in OpenBao
 ```
 
-Commit both certificates to the inventory PR.
+Commit both certificates to the inventory, as a PR.
 
 **Verify:**
 1. Both `accept`s pass, and their fingerprints match the paper record.
@@ -161,24 +162,22 @@ Commit both certificates to the inventory PR.
 
 **Undo:** remove the certificates. OpenBao's mount is unused until CHG-0034.
 
-### Step 4: Merge and publish
+### Step 4: Publish
 
-**Run:**
-1. Merge the builder, mgmt, net, inventory and image-factory PRs.
-2. Then:
+The PRs are merged already. **Run:**
 
-   ```bash
-   cd ansible-collection-deevnet.builder && make publish
-   cd ../ansible-collection-deevnet.net && make publish
-   cd ../ansible-collection-deevnet.mgmt && make install-dev
-   ```
+```bash
+cd ansible-collection-deevnet.builder && make publish
+cd ../ansible-collection-deevnet.net && make publish
+cd ../ansible-collection-deevnet.mgmt && make install-dev
+```
 
 **Verify:** `certs.yml`, `site.yml`, `openbao.yml` and `tenant-device-ca.yml` pass `--syntax-check`.
 
 From here, any certificate the site issues comes from the Substrate CA. **Run nothing else until
 step 5.**
 
-**Undo:** revert the merges, and publish the previous `main`.
+**Undo:** publish the commit before the merges.
 
 ### Step 5: Trust both roots everywhere
 
@@ -193,13 +192,11 @@ step 5.**
 2. Tenants (tdemo, eds, mabell, cdeever): each CA file becomes both roots:
    `cat deevnet-root-ca.pem deevnet-mobile-root-ca.pem > deevnet-mobile-root-ca.pem.new`, then move
    it into place. `terraform plan` shows no changes.
-3. eds devices: reflash lp-stand with both roots in `main/certs/mqtt_ca.pem`.
-4. The operator's computers: import `deevnet-root-ca.pem` as a trusted root, keeping the old one.
+3. The operator's computers: import `deevnet-root-ca.pem` as a trusted root, keeping the old one.
 
 **Verify:**
 1. On every host, the OS bundle holds both roots (the play checks).
 2. `tenant-check.sh` passes for each tenant.
-3. The eds devices reconnect.
 
 **Undo:** remove the new anchor. Nothing serves under it yet.
 
@@ -288,7 +285,7 @@ The Goal as a whole, from the Builder and from a computer on `DVNTM-TD` holding 
 
 Every host still trusts the old root, and OpenBao's old `pki` mount is untouched until step 8.
 
-1. Revert the step 4 merges and publish the previous `main`.
+1. Revert the CHG-0033 merges and publish the previous `main`.
 2. Run `openbao.yml`, then `site.yml` per host, as in CHG-0031 step 5. Each role finds its
    certificate does not chain to the old root and reissues from the old intermediate.
 3. Put the old self-signed listener back: delete `/srv/openbao/tls/listener*.pem` and run
