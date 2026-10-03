@@ -47,7 +47,7 @@ openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256
 - `deevnet-root-ca.pem` goes to the transfer media. It is public.
 - The fingerprint, the date and "Deevnet Root CA, 20 years" go in the paper record.
 
-Then [finish](/docs/runbook/root-of-trust/preparing/#finish-every-ceremony-the-same-way) and shut
+Then [finish](/docs/runbook/root-of-trust/preparing/#finishing-up) and shut
 down.
 
 ## Only the root's certificate is handed to automation

@@ -33,7 +33,7 @@ online (control node)                 transfer media                 offline mac
 ```
 
 The online commands are in `ansible-collection-deevnet.mgmt/scripts/pki/`; the offline one is
-installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#on-a-raspberry-pi-4-flash-the-pi-pki-image-and-boot-it-offline), so the
+installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#raspberry-pi-4), so the
 transfer media carries data only, never code that runs offline. Every step fails, and changes nothing,
 if it finds a private key anywhere on the transfer media, by file name or by content.
 
@@ -58,7 +58,7 @@ Then it empties `deevnet-transfer/` on the media and writes `to-offline/` with:
 - the Root CA and Site CA certificates;
 - a `MANIFEST` of SHA-256 hashes.
 
-On a [Fedora live USB](/docs/runbook/root-of-trust/preparing/#on-any-other-computer-boot-a-fedora-live-usb-and-bring-the-tools-on-the-transfer-media), add
+On a [Fedora live USB](/docs/runbook/root-of-trust/preparing/#fedora-live-usb), add
 `--with-tools`: it also writes the signing profile and `deevnet-pki-sign`, under the same manifest.
 
 It prints the manifest's own hash and the request's public-key hash. **Write both in the paper
