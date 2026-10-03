@@ -9,14 +9,59 @@ Every secure connection solves the same problem: talking privately to a machine 
 over a network that anyone along the way can read and alter. Encryption hides the conversation, but
 it can't tell you *who* is on the other end. That is the job of a **public key infrastructure
 (PKI)**: certificates that bind names to keys, signed by **certificate authorities (CAs)** that you
-decided to trust ahead of time. This page builds that up one idea at a time, with no math. It ends
-with why the web's PKI is invisible to almost everyone, and why a private network like Deevnet runs
-its own.
+decided to trust ahead of time. The protocol that puts it all to work on a connection is **TLS**,
+the "S" in HTTPS. This page builds TLS and PKI up one idea at a time, with no math. It ends with why
+the web's PKI is invisible to almost everyone, and why a private network like Deevnet runs its own.
 
 The boxes marked *Try it* are optional. They show the same ideas on a real website, using a browser
 or `openssl`.
 
 ---
+
+## TLS is the layer that makes an ordinary connection secure
+
+**TLS (Transport Layer Security) wraps a network connection so that nobody along the way can read it
+or change it.** It sits between the connection itself (TCP) and the application using it, and the
+application barely notices. HTTPS is plain HTTP carried inside TLS. Secure email, MQTT for devices,
+database clients and most other modern protocols do the same. When a browser shows a padlock, the
+page came over TLS.
+
+{{< graphviz >}}
+digraph stack {
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="#e0e0e0", pad=0.25]
+    node [shape=plaintext, fontname="Helvetica"]
+    stack [label=<
+      <table border="0" cellborder="1" cellspacing="0" cellpadding="10" color="#555555">
+        <tr><td bgcolor="#ffffff" width="380"><b>Application</b><br/><font point-size="10">HTTP, MQTT, email: unchanged, and never sees the encryption</font></td></tr>
+        <tr><td bgcolor="#d0e8d0"><b>TLS</b><br/><font point-size="10">private · unaltered · talking to the right machine</font></td></tr>
+        <tr><td bgcolor="#e0f0ff"><b>TCP</b><br/><font point-size="10">delivers bytes reliably and in order, in plain sight</font></td></tr>
+        <tr><td bgcolor="#f4f4f4"><b>IP</b><br/><font point-size="10">addresses and routing, hop by hop</font></td></tr>
+      </table>
+    >]
+}
+{{< /graphviz >}}
+
+**Every TLS connection answers three questions before it carries any of your data:**
+
+| The question | What answers it | Explained in |
+|---|---|---|
+| Can anyone else read this? | encryption, with keys that only the two ends have | [encryption](#encryption-keeps-a-conversation-private-but-only-from-people-who-dont-have-the-key) and [key exchange](#public-key-cryptography-lets-strangers-agree-on-a-secret-in-the-open) |
+| Did anyone change it on the way? | an integrity check on every message | [hashes](#a-hash-is-a-fingerprint-any-change-to-the-data-changes-it-completely) and [signatures](#a-digital-signature-proves-which-key-signed-something-and-that-nobody-changed-it) |
+| Am I talking to who I think I am? | the server's certificate, checked against a CA you already trust | [certificates](#a-certificate-is-a-signed-statement-that-binds-a-name-to-a-public-key), [CAs](#a-certificate-authority-is-a-signer-that-both-sides-already-trust) and [chains](#a-chain-lets-the-root-stay-offline-while-intermediates-do-the-daily-signing) |
+
+**The first two questions are solved problems; the third is why PKI exists.** Strong encryption and
+integrity checks are well understood and fast. Proving *who* is on the other end, to a machine that
+has never met it, is the hard part, and most of this page is about it. The
+[handshake section](#a-tls-connection-opens-with-a-handshake-that-checks-the-server-then-seals-every-message)
+puts the pieces back together.
+
+**"SSL" is TLS's old name, and it stuck.** Netscape's **SSL** (Secure Sockets Layer) secured the
+early web in the mid-1990s. The IETF standardized its successor as TLS 1.0 in 1999
+([RFC 2246](https://www.rfc-editor.org/rfc/rfc2246)). Every SSL version is now retired as insecure
+([RFC 7568](https://www.rfc-editor.org/rfc/rfc7568)), and so are TLS 1.0 and 1.1
+([RFC 8996](https://www.rfc-editor.org/rfc/rfc8996)). Today's connections use TLS 1.2 or 1.3
+([RFC 8446](https://www.rfc-editor.org/rfc/rfc8446)). An "SSL certificate" is the same thing as a
+TLS certificate; only the name is old.
 
 ## Encryption keeps a conversation private, but only from people who don't have the key
 
@@ -200,22 +245,60 @@ what makes the first case the likely one.
 **`pathlen` limits how deep a chain may grow below a CA.** An intermediate with `pathlen:0` may sign
 leaves but no further CAs, so even a stolen intermediate can't create CAs of its own.
 
-## A TLS handshake checks the chain, the name and the dates in a few milliseconds
+## A TLS connection opens with a handshake that checks the server, then seals every message
 
-**Every HTTPS page load runs these steps before the first byte of the page arrives** (TLS 1.3):
+**A TLS connection runs in two phases: a handshake, then sealed records.** The handshake is a short
+scripted exchange that agrees on keys and proves the server's identity. It costs one round trip in
+TLS 1.3, a few milliseconds on a local network. Everything after it is the application's data,
+sealed with the keys the handshake agreed.
 
-1. **The two sides run a key exchange** (ECDHE) and from then on encrypt the handshake.
-2. **The server sends its certificate and the intermediates.** The root is not sent; the client
+{{< mermaid >}}
+sequenceDiagram
+    participant C as Client (your browser)
+    participant S as Server (example.org)
+    C->>S: ClientHello: TLS versions, ciphers, a key share, the name it wants
+    S->>C: ServerHello: the chosen cipher and its own key share
+    Note over C,S: Both now compute the same session keys. Everything below is encrypted.
+    S->>C: Certificate: the leaf and its intermediates
+    S->>C: CertificateVerify: a signature over the handshake so far
+    S->>C: Finished
+    Note over C,S: The client checks the chain, the dates, the name and the key usage
+    C->>S: Finished
+    C->>S: Application data, such as the HTTP request
+    S->>C: Application data, such as the web page
+{{< /mermaid >}}
+
+**The handshake in order** (TLS 1.3):
+
+1. **The client says hello and names the server it wants.** Its *ClientHello* lists the TLS versions
+   and **cipher suites** (the encryption and integrity algorithms) it supports, carries its half of
+   a key exchange, and names the host it is trying to reach (**SNI**, server name indication), so a
+   server hosting many sites knows which certificate to send.
+2. **The server picks, and both sides compute the same session keys.** The *ServerHello* picks a
+   version and a cipher suite and carries the server's half of the key exchange (ECDHE). From here
+   on, the rest of the handshake is encrypted.
+3. **The server sends its certificate and the intermediates.** The root is not sent; the client
    must already have it.
-3. **The server signs the handshake so far with its private key.** This proves it holds the key in
-   the certificate, which a copied certificate can't fake.
-4. **The client builds a chain from the leaf to a root in its trust store** and checks each signature
-   on the way up.
-5. **The client checks that today falls within each certificate's validity dates.**
-6. **The client checks that the name it dialed is in the leaf's SANs**, and that the EKU allows
-   `serverAuth`.
-7. **If anything fails, the client stops and warns.** If everything passes, the page loads over
-   the encrypted connection.
+4. **The server signs the handshake so far with its private key.** This proves it holds the key in
+   the certificate, which a copied certificate can't fake. It also ties the identity to *this*
+   connection's key exchange, so an attacker in the middle can't splice in a different one.
+5. **The client checks the certificate.** It builds a chain from the leaf to a root in its trust
+   store and checks each signature on the way up. It checks that today falls within each
+   certificate's validity dates, that the name it dialed is in the leaf's SANs, and that the EKU
+   allows `serverAuth`. **If anything fails, the client stops and warns**, and no application data
+   is sent.
+6. **Both sides send *Finished*,** a check over the whole handshake that catches any message an
+   attacker altered along the way.
+
+**After the handshake, every message travels as a sealed record.** The application's data is cut
+into records, and each is encrypted and given an integrity tag with the session keys. A record
+altered in transit fails its check, and the connection is closed. This part is fast symmetric
+cryptography; the slow public-key work happened once, in the handshake.
+
+**Session keys are new for every connection.** Because each side's key-exchange half is thrown away
+afterward, someone who records today's traffic and steals the server's private
+key next year still can't decrypt it. This is **forward secrecy**, and TLS 1.3 builds it into every full handshake. The
+server's long-lived key only *signs*; it never encrypts the session.
 
 {{< hint info >}}
 **Try it: watch a server send its chain.** From any machine with OpenSSL:
@@ -224,7 +307,8 @@ leaves but no further CAs, so even a stolen intermediate can't create CAs of its
 openssl s_client -connect example.org:443 -servername example.org -showcerts </dev/null
 ```
 
-Each certificate prints as `s:` (subject) and `i:` (issuer). Each issuer is the next one's subject,
+`-servername` sets the SNI from step 1. Each certificate prints as `s:` (subject) and `i:`
+(issuer). Each issuer is the next one's subject,
 up to a certificate whose issuer is a root in your store. The `Verify return code: 0 (ok)` line near
 the end means the chain checked out.
 
@@ -340,6 +424,14 @@ Trust and Identity also sets out in full
 
 | Term | Meaning |
 |---|---|
+| TLS | Transport Layer Security: the protocol that makes a connection private, unaltered and authenticated |
+| SSL | TLS's predecessor and old name; every version is retired, but "SSL certificate" lives on |
+| HTTPS | HTTP carried inside TLS; the padlock in a browser |
+| Handshake | the opening exchange of a TLS connection: agree on keys, prove the server's identity |
+| Cipher suite | the set of algorithms a connection uses for encryption and integrity |
+| SNI | server name indication: the host name the client asks for in its first message |
+| Session keys | symmetric keys made fresh for one connection by the key exchange, then thrown away |
+| Forward secrecy | a stolen long-term key can't decrypt connections recorded earlier |
 | Key pair | a public key to share and a private key to keep, made together |
 | Hash, fingerprint | a short fixed-length value that changes completely if the data changes; a certificate's fingerprint is its hash |
 | Digital signature | proof that a given private key signed exactly this data |
