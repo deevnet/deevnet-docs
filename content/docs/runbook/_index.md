@@ -6,9 +6,14 @@ bookCollapseSection: true
 
 # Operational Runbook
 
-Step-by-step procedures, in two halves that are written for two different readers.
+Step-by-step procedures. The root of trust is held offline and run by its holder; the rest is in two
+halves written for two different readers.
 
 <div class="section-cards">
+  <a class="section-card" href="root-of-trust/">
+    <h3>Root of Trust</h3>
+    <p>For the holder of the offline keys: generating the Deevnet Root CA and each site's CA on an offline machine, signing issuing CAs, and keeping the keys.</p>
+  </a>
   <a class="section-card" href="substrate/">
     <h3>Substrate Operations</h3>
     <p>For the operator: building and recovering the platform, keeping it current, the network, and admitting tenants.</p>

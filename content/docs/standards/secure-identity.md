@@ -104,7 +104,8 @@ If one layer must “reach across” to do another layer’s job, the design is 
 ## 3. SSH Identity Invariants
 
 ### 3.1 Private Keys Do Not Move
-Private keys MUST remain on the client.
+Private keys MUST remain on the client. The same holds for every X.509 key, a device's included:
+[Certificates](/docs/standards/certificates/) says where each may live.
 
 - use SSH agents
 - use forwarding only to systems you control and trust

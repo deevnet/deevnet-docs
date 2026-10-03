@@ -29,6 +29,10 @@ If a project conflicts with standards, **standards win**.
     <h3>Network Segmentation</h3>
     <p>VLAN isolation and trust boundaries.</p>
   </a>
+  <a class="section-card" href="certificates/">
+    <h3>Certificates</h3>
+    <p>The Deevnet PKI: tiers, subject names, SANs, keys, lifetimes and where each key may live.</p>
+  </a>
   <a class="section-card" href="project-workflows/">
     <h3>Project Workflows</h3>
     <p>Reusable milestone templates for new projects.</p>

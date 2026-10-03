@@ -64,4 +64,6 @@ those switches.
   appliance takes its certificate, and how to back it out.
 - [Trusting the Root](trusting-the-root/): on your own computer.
 - [Rotating](rotating/): a new intermediate, or a new root.
+- [Root of Trust](/docs/runbook/root-of-trust/): the offline ceremonies for the Deevnet Root CA and
+  each Site CA ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)).
 - [Troubleshooting](troubleshooting/): when a certificate is served but not trusted.

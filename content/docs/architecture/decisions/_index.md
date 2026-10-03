@@ -286,17 +286,24 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Substrate](substrate/)
 
+- [ADR-0031: Deevnet PKI](/docs/architecture/decisions/substrate/0031-deevnet-pki/) —
+  *Proposed.* One Deevnet Root CA and a Site CA per site, both generated and held offline by the
+  operator, so no online system can mint a CA. Under each Site CA, two issuing CAs separate server and
+  device identity: the Substrate CA, whose key is in the site's ansible-vault, issues every substrate
+  certificate through Ansible (OpenBao's own listener included, so a rebuild has no cycle), and the
+  Tenant Device CA, inside OpenBao, issues tenant devices' client certificates through the API, the
+  target for mTLS. Subjects carry O, OU and CN. Supersedes ADR-0030 §1–§4; amends ADR-0016 §3.
 - [ADR-0030: Site Certificate Hierarchy](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) —
-  *Proposed.* Answers ADR-0016's open question 1. Each site's root is generated once and kept offline
-  in ansible-vault; OpenBao holds an intermediate under it and issues tenant certificates and those of
-  every service built after it, so an OpenBao rebuild costs an intermediate rather than a new root.
-  The core router and the hypervisors, which come up before OpenBao, are signed by a second, bootstrap
-  intermediate kept in ansible-vault, so a from-scratch rebuild never waits on itself. The root,
-  `deevnet-mobile-root-ca.pem`, is the only trust anchor, installed in the OS trust store of every
-  substrate host, the Builder and the VM template, and on the operator's computer by hand. Leaves last a year and are laid down by the build
-  and a `certs.yml` playbook, with no automatic renewal yet. Proxmox, the core router and the Omada
-  controller get site certificates, and the clients that skip verification to reach them stop.
-  Extends ADR-0016.
+  *Proposed; §1–§4 superseded by ADR-0031.* Answers ADR-0016's open question 1. Each site's root is
+  generated once and kept offline in ansible-vault; OpenBao holds an intermediate under it and issues
+  tenant certificates and those of every service built after it, so an OpenBao rebuild costs an
+  intermediate rather than a new root. The core router and the hypervisors, which come up before
+  OpenBao, are signed by a second, bootstrap intermediate kept in ansible-vault, so a from-scratch
+  rebuild never waits on itself. The root, `deevnet-mobile-root-ca.pem`, is the only trust anchor,
+  installed in the OS trust store of every substrate host, the Builder and the VM template, and on the
+  operator's computer by hand. Leaves last a year and are laid down by the build and a `certs.yml`
+  playbook, with no automatic renewal yet. Proxmox, the core router and the Omada controller get site
+  certificates, and the clients that skip verification to reach them stop. Extends ADR-0016.
 - [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) —
   *Accepted.* The substrate's runtime credentials, the encryption of tenant secrets at rest, the
   internal certificate authority and single-use enrollment tokens live in OpenBao, in the identity VM,

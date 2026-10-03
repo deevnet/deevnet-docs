@@ -1,0 +1,46 @@
+---
+title: "Root of Trust"
+weight: 1
+bookCollapseSection: true
+---
+
+# Root of Trust
+
+Every certificate Deevnet issues chains to one root, the **Deevnet Root CA**, and each site has its
+own **Site CA** under it ([Trust and Identity](/docs/architecture/trust-and-identity/),
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). The keys of both are made and
+kept **offline**, by their holder, the same person who holds the ansible-vault password. No
+automation, no site system and no networked machine ever holds either key.
+
+These pages are that holder's procedures. They run on an offline machine, rarely:
+
+| Ceremony | When | Page |
+|---|---|---|
+| Prepare the offline machine | before every ceremony | [Preparing](/docs/runbook/root-of-trust/preparing/) |
+| Generate the Deevnet Root CA | once, for the whole organization | [Root CA](/docs/runbook/root-of-trust/root-ca/) |
+| Create a Site CA | once per site (mobile, home, …), and every ten years | [Site CA](/docs/runbook/root-of-trust/site-ca/) |
+| Sign an issuing CA | when a site's Substrate CA or Tenant Device CA is created or rotated, about every five years | [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) |
+| Check, back up, recover | yearly, and after a loss | [Custody](/docs/runbook/root-of-trust/custody/) |
+
+## What crosses to automation
+
+Only public material leaves the offline machine:
+
+- **certificates:** the root's, each Site CA's, and each signed issuing CA's;
+- **certificate signing requests**, which come *in* from automation to be signed.
+
+A key never leaves the machine except as an encrypted file onto the holder's own backup media. An
+issuing CA's key is generated where it will live (the site's vault for the Substrate CA, the secret
+store for the Tenant Device CA), and only its request is brought to the ceremony.
+
+## What each certificate says
+
+Every subject carries an organization, an organizational unit and a common name, so a certificate's
+*Issued To* and *Issued By* read plainly ([Certificates standard](/docs/standards/certificates/)):
+
+| Certificate | O | OU | CN |
+|---|---|---|---|
+| Root | Deevnet | Deevnet PKI | Deevnet Root CA |
+| Site CA | Deevnet | Mobile Site | Deevnet Mobile Site CA |
+| Substrate CA | Deevnet | Mobile Site | Deevnet Mobile Substrate CA |
+| Tenant Device CA | Deevnet | Mobile Site | Deevnet Mobile Tenant Device CA |
