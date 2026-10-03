@@ -17,7 +17,7 @@ you carry away.
 - **One USB drive for transfer** (the *transfer media*): it carries certificates and signing requests
   in and out, never a key.
 - **The paper record**, a notebook or sheet, for fingerprints and dates.
-- **The passphrase** for the key files, kept where the ansible-vault password is kept.
+- **The passphrase** for the key files, kept offline, under the holder's own control.
 
 ## Bring up the offline machine
 

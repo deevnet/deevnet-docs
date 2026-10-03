@@ -10,7 +10,7 @@ ceremony:
 
 | Issuing CA | Its key lives in | Issues |
 |---|---|---|
-| Deevnet Mobile Substrate CA | the site's ansible-vault; automation signs on the control node | every substrate certificate: hosts, appliances, service VMs and their services, the secret store's own listener |
+| Deevnet Mobile Substrate CA | site automation, which signs on the control node | every substrate certificate: hosts, appliances, service VMs and their services, the secret store's own listener |
 | Deevnet Mobile Tenant Device CA | the secret store, behind the Deevnet API | tenant devices' client certificates (mTLS) |
 
 Each is valid for five years. **Its key is generated where it lives,** and only its signing request

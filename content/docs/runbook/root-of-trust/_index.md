@@ -8,11 +8,11 @@ bookCollapseSection: true
 
 Every certificate Deevnet issues chains to one root, the **Deevnet Root CA**, and each site has its
 own **Site CA** under it ([Trust and Identity](/docs/architecture/trust-and-identity/),
-[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). The keys of both are made and
-kept **offline**, by their holder, the same person who holds the ansible-vault password. No
-automation, no site system and no networked machine ever holds either key.
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). The Deevnet Root CA and Site
+CA private keys are generated and maintained offline and are never available to site automation or
+networked systems.
 
-These pages are that holder's procedures. They run on an offline machine, rarely:
+These pages are the key holder's procedures. They run on an offline machine, rarely:
 
 | Ceremony | When | Page |
 |---|---|---|
@@ -30,7 +30,7 @@ Only public material leaves the offline machine:
 - **certificate signing requests**, which come *in* from automation to be signed.
 
 A key never leaves the machine except as an encrypted file onto the holder's own backup media. An
-issuing CA's key is generated where it will live (the site's vault for the Substrate CA, the secret
+issuing CA's key is generated where it will live (site automation for the Substrate CA, the secret
 store for the Tenant Device CA), and only its request is brought to the ceremony.
 
 ## What each certificate says

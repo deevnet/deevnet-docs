@@ -30,7 +30,7 @@ In use, it falls short in four ways:
 
 - **The root's key is online in practice.** It sits in the inventory vault, so the vault password
   can mint any certificate the site trusts (risk R-11). The operator wants the root generated and held
-  offline by a person, as the vault password is.
+  offline by a person.
 - **The substrate depends on OpenBao for its own certificates.** The bootstrap intermediate exists only
   to break the cycle that dependency creates. The substrate, bare metal and service VMs alike, is
   meant to be Ansible's alone.
@@ -46,8 +46,8 @@ In use, it falls short in four ways:
 
 - One root for the organization, `O=Deevnet, OU=Deevnet PKI, CN=Deevnet Root CA`. RSA 4096, twenty
   years, `pathlen:2`.
-- **Generated and held offline by the operator**, the holder of the ansible-vault password, as a
-  passphrase-encrypted file on two offline media
+- **Generated and maintained offline by the operator**, as a passphrase-encrypted file on two
+  offline media
   ([Root of Trust](/docs/runbook/root-of-trust/)). Its key is never on a networked machine.
 - It is **the only trust anchor**, on every site.
 
