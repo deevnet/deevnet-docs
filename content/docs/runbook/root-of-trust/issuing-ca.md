@@ -33,7 +33,7 @@ online (control node)                 transfer media                 offline mac
 ```
 
 The online commands are in `ansible-collection-deevnet.mgmt/scripts/pki/`; the offline one is
-installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#the-ceremony-runs-on-the-pi-pki-image), so the
+installed on the [ceremony image](/docs/runbook/root-of-trust/preparing/#on-a-raspberry-pi-4-flash-the-pi-pki-image-and-boot-it-offline), so the
 transfer media carries data only, never code that runs offline. Every step fails, and changes nothing,
 if it finds a private key anywhere on the transfer media, by file name or by content.
 
@@ -58,7 +58,7 @@ Then it empties `deevnet-transfer/` on the media and writes `to-offline/` with:
 - the Root CA and Site CA certificates;
 - a `MANIFEST` of SHA-256 hashes.
 
-On the [Fedora fallback](/docs/runbook/root-of-trust/preparing/#without-a-pi-a-fedora-live-usb-works-as-the-fallback), add
+On a [Fedora live USB](/docs/runbook/root-of-trust/preparing/#on-any-other-computer-boot-a-fedora-live-usb-and-bring-the-tools-on-the-transfer-media), add
 `--with-tools`: it also writes the signing profile and `deevnet-pki-sign`, under the same manifest.
 
 It prints the manifest's own hash and the request's public-key hash. **Write both in the paper
@@ -75,7 +75,7 @@ and the **Site CA's key media** mounted:
 deevnet-pki-sign /mnt/transfer --site-key /mnt/keys/deevnet-mobile-site-ca.key
 ```
 
-On the Fedora fallback, run the copy that came on the transfer media:
+On a Fedora live USB, run the copy that came on the transfer media:
 `bash /mnt/transfer/deevnet-transfer/to-offline/deevnet-pki-sign /mnt/transfer --site-key …`.
 
 It first shows the clock and asks you to confirm it, because the certificate's five years start
