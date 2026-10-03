@@ -6,11 +6,12 @@ weight: 5
 # Custody
 
 The Root CA's and every Site CA's keys exist only as passphrase-encrypted files on two key media,
-kept apart. The passphrase is kept where the ansible-vault password is.
+kept apart. The passphrase is kept offline, under the holder's own control, and never with the key
+media.
 
 ## Storage
 
-- **Primary key media:** where you keep the ansible-vault password's own backup.
+- **Primary key media:** in the holder's secure storage.
 - **Backup key media:** somewhere else, so one loss (fire, theft, a bag left behind) cannot take both.
 - **The paper record:** fingerprints and dates of every certificate the ceremonies made. It is how
   you recognize the right file, and how anyone checks a certificate they were handed.

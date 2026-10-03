@@ -99,7 +99,7 @@ is valid for.
 
 | Key | Where | Generated |
 |---|---|---|
-| Root CA, Site CA | passphrase-encrypted files on two offline media, held by the holder of the ansible-vault password | on an offline machine ([Root of Trust](/docs/runbook/root-of-trust/)) |
+| Root CA, Site CA | passphrase-encrypted files on two offline media, generated and maintained offline; never available to site automation or networked systems | on an offline machine ([Root of Trust](/docs/runbook/root-of-trust/)) |
 | Substrate CA | the site's ansible-vault | by automation, on the control node |
 | Tenant Device CA | the site's secret store; it never leaves | inside the secret store |
 | Substrate server | the server it identifies | by automation, then installed |
