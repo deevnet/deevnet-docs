@@ -18,12 +18,63 @@ The substrate never needs the second to build itself, and a tenant never touches
 
 **The hierarchy: Deevnet Root CA → Site CA → two issuing CAs**
 
-```
-Deevnet Root CA                  offline, held by the operator
-└─ Deevnet <Site> Site CA        offline, held by the operator     one per site
-   ├─ <Site> Substrate CA        the site's automation             substrate server identity
-   └─ <Site> Tenant Device CA    the site's secret store           tenant device identity
-```
+{{< graphviz >}}
+digraph pki {
+    graph [
+        rankdir=TB,
+        nodesep=0.5,
+        ranksep=0.45,
+        fontname="Helvetica",
+        bgcolor="#e0e0e0",
+        pad=0.25,
+        size="6.5,9!"
+    ]
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=13, margin="0.25,0.12", penwidth=1.2]
+    edge [arrowsize=0.7, fontname="Helvetica", fontsize=11, fontcolor="#333333", color="#555555"]
+
+    subgraph cluster_offline {
+        label=<<b>Offline: </b>held by the operator, never on a network>
+        labeljust=l
+        fontname="Helvetica"
+        fontsize=11
+        style="dashed,rounded,filled"
+        fillcolor="#f5ead8"
+        color="#a0855b"
+        margin=14
+
+        root [label=<<b>Deevnet Root CA</b><br/><font point-size="10">one for the organization · 20 years</font>>, fillcolor="#f6e3c4", group=trunk]
+        site [label=<<b>Site CA</b><br/><font point-size="10">one per site · 10 years</font>>, fillcolor="#f6e3c4", group=trunk]
+    }
+
+    split [shape=point, width=0.01, height=0.01, label="", group=trunk]
+
+    subgraph cluster_online {
+        label=<<b>Online: </b>at the site>
+        labeljust=r
+        labelloc=b
+        fontname="Helvetica"
+        fontsize=11
+        style="dashed,rounded,filled"
+        fillcolor="#eef3f8"
+        color="#6b8aa8"
+        margin=14
+
+        sub [label=<<b>Substrate CA</b><br/><font point-size="10">site automation · 5 years</font>>, fillcolor="#e0f0ff"]
+        dev [label=<<b>Tenant Device CA</b><br/><font point-size="10">secret store, via the tenant interface · 5 years</font>>, fillcolor="#d0e8d0"]
+        { rank=same; sub; dev }
+    }
+
+    srv [label=<<b>serverAuth</b><br/><font point-size="10">hosts, appliances, services</font>>, shape=note, style=filled, fillcolor=white]
+    cli [label=<<b>clientAuth</b><br/><font point-size="10">tenant devices (mTLS)</font>>, shape=note, style=filled, fillcolor=white]
+
+    root -> site  [label="  What organization do I trust?", weight=10]
+    site -> split [label="  Which Deevnet site owns this authority?", arrowhead=none, weight=10]
+    split -> sub
+    split -> dev
+    sub -> srv    [label="  Who is this server?"]
+    dev -> cli    [label="  Who is this device?"]
+}
+{{< /graphviz >}}
 
 | Layer | Holds its key | Signs | Changes |
 |---|---|---|---|
