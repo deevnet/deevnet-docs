@@ -30,14 +30,23 @@ for working without a Pi.
 | Media | Holds | Crosses between online and offline? |
 |---|---|---|
 | **Boot media**: the `pi-pki` microSD, or a live USB | the offline machine's operating system; no key, no certificate | no: written once, then used only on the offline machine |
-| **Two key media** (USB drives, the primary and the backup) | the Root CA's and Site CAs' keys | **never**: only ever plugged into the offline machine |
-| **Transfer media** (a different USB drive) | signing requests in, certificates out, never a key | yes, and it is the only thing that does; the signing tools fail if they find a key on it |
+| **Two key media** (USB drives, the primary and the backup): encrypted drives | the Root CA's and Site CAs' passphrase-encrypted key files | **never**: only ever plugged into the offline machine |
+| **Transfer media** (a different USB drive): plain FAT32 | signing requests in, certificates out, never a key | yes, and it is the only thing that does; the signing tools fail if they find a key on it |
 
-**You also need a display and keyboard, a paper record, and the passphrase:**
+**You also need a display and keyboard, a paper record, and two passphrases:**
 
 - **a display and a keyboard** for the offline machine, and no network cable;
 - **the paper record**, a notebook or sheet, for fingerprints, hashes and dates;
-- **the passphrase** for the key files, kept offline, under the holder's own control.
+- **the key media's passphrase**, which unlocks the encrypted drive;
+- **the key files' passphrase**, which decrypts each key inside it.
+
+Both are kept offline, under the holder's own control.
+
+**Opening a key drive later needs only the drive and both passphrases, on any Linux machine with
+`cryptsetup`.** That is the `pi-pki` image on any Pi, or a Fedora live USB on any computer. Nothing
+ties a key drive to the Pi or the microSD that made it: there is no TPM and no key file kept
+anywhere else. Lose the drive's passphrase, though, and the drive is unreadable; the other key drive
+is the only way back.
 
 ## Raspberry Pi 4
 
@@ -92,8 +101,32 @@ A Pi is also small, cheap and easy to keep for nothing but this.
    mkdir -m 0700 /dev/shm/pki && cd /dev/shm/pki
    cp /usr/local/share/deevnet-pki/deevnet-pki.cnf .
    ```
-5. Plug in and mount the key media and the transfer media (`lsblk`, then `sudo mount /dev/sdX1
-   /mnt/keys` and `sudo mount /dev/sdY1 /mnt/transfer`).
+5. Plug in the key media and the transfer media, and open them:
+
+   ```bash
+   sudo deevnet-pki-media keys open        # asks for the key media's passphrase; /mnt/keys
+   sudo deevnet-pki-media transfer mount   # /mnt/transfer
+   ```
+
+### Prepare new media
+
+**The first time, or with a new drive, `deevnet-pki-media` formats it on the Pi.** It erases the
+drive, so it lists what is plugged in, refuses anything but a whole USB drive, and asks you to type
+the device name first:
+
+```bash
+sudo deevnet-pki-media list                          # find each drive: sda, sdb, ...
+sudo deevnet-pki-media keys init /dev/sdX primary    # encrypted; asks for a new passphrase twice
+sudo deevnet-pki-media keys close
+sudo deevnet-pki-media keys init /dev/sdZ backup     # the second key drive, same passphrase or its own
+sudo deevnet-pki-media keys close
+sudo deevnet-pki-media transfer init /dev/sdY        # plain FAT32, label TRANSFER
+```
+
+A key drive is LUKS2 with ext4 inside, labeled `deevnet-keys-primary` or `deevnet-keys-backup`.
+Its key-derivation cost is fixed and modest, so any machine can unlock it. Write each drive's
+label and date in the paper record. The transfer drive is plain: the online side reads it with no
+passphrase, and it only ever carries public material.
 
 ## Signing profile
 
@@ -140,11 +173,26 @@ issuing CAs, and an issuing CA signs only certificates that cannot sign anything
 
 **Every session ends the same way, with both key copies checked and nothing left behind:**
 
-1. Copy any new key files to **both** key media, and any certificates to the transfer media.
-2. Check both key-media copies open: `openssl pkey -in <key> -noout` asks for the passphrase and
-   prints nothing on success.
+1. Copy any new key files from `/dev/shm/pki` to **both** key media, one at a time, and check each
+   copy opens (`openssl pkey -in <key> -noout` asks for the key's passphrase and prints nothing):
+
+   ```bash
+   sudo deevnet-pki-media keys open primary
+   cp /dev/shm/pki/*.key /mnt/keys/ && openssl pkey -in /mnt/keys/<key> -noout
+   sudo deevnet-pki-media keys close
+   # then the same with: keys open backup
+   ```
+2. Copy any certificates to the transfer media.
 3. Write the date, what was made, and each new certificate's SHA-256 fingerprint in the paper record.
-4. Unmount everything and shut the machine down. `/dev/shm/pki` goes with it.
+4. Close and unmount everything, and shut the machine down. `/dev/shm/pki` goes with it:
+
+   ```bash
+   sudo deevnet-pki-media keys close; sudo deevnet-pki-media transfer umount; sudo poweroff
+   ```
+
+**A backup key drive can be made later.** Until it exists, each key exists only once, and losing
+that drive means making the CAs again. Later: open the primary, copy its files into `/dev/shm/pki`,
+close it, `keys init` the new drive as `backup`, and copy them in.
 
 ## Fedora live USB
 
@@ -187,8 +235,16 @@ the paper record, to check again on the offline side.
    date -u
    sudo date -u -s 'YYYY-MM-DD HH:MM'     # only if wrong; now, in UTC
    ```
-4. Plug in and mount the key media and the transfer media (`lsblk`, then `sudo mount /dev/sdX1
-   /mnt/keys` and `sudo mount /dev/sdY1 /mnt/transfer`).
+4. Plug in the key media and the transfer media, and open them. A Fedora live USB has `cryptsetup`
+   but not `deevnet-pki-media`, so open them by hand (`lsblk` finds each drive):
+
+   ```bash
+   sudo cryptsetup open /dev/sdX deevnet-keys && sudo mkdir -p /mnt/keys \
+     && sudo mount /dev/mapper/deevnet-keys /mnt/keys      # the key media's passphrase
+   sudo mkdir -p /mnt/transfer && sudo mount /dev/sdY1 /mnt/transfer
+   ```
+
+   At the end, `sudo umount /mnt/keys && sudo cryptsetup close deevnet-keys`.
 5. Make a working directory in memory, and copy the profile into it from the transfer media:
 
    ```bash

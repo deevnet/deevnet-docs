@@ -5,9 +5,9 @@ weight: 5
 
 # Custody
 
-The Root CA's and every Site CA's keys exist only as passphrase-encrypted files on two key media,
-kept apart. The passphrase is kept offline, under the holder's own control, and never with the key
-media.
+The Root CA's and every Site CA's keys exist only as passphrase-encrypted files on two encrypted key
+drives, kept apart. Both passphrases, the drives' and the key files', are kept offline, under the
+holder's own control, and never with the key media.
 
 ## Two key media
 
@@ -20,17 +20,23 @@ media.
 
 Neither key media is ever plugged into a networked machine.
 
+**Opening a key drive needs only the drive and both passphrases, on any Linux machine with
+`cryptsetup`:** the `pi-pki` image on any Pi, or a Fedora live USB. Nothing ties a drive to the Pi
+or microSD that made it ([Preparing](/docs/runbook/root-of-trust/preparing/#prepare-new-media)).
+
 ## Yearly check
 
 **Every year, check that both copies still open.** On the offline machine ([Preparing](/docs/runbook/root-of-trust/preparing/)):
 
 ```bash
-openssl pkey -in /path/to/primary/deevnet-root-ca.key -noout
-openssl pkey -in /path/to/backup/deevnet-root-ca.key -noout
-# and each deevnet-<site>-site-ca.key, on both
+sudo deevnet-pki-media keys open primary          # the drive's passphrase
+openssl pkey -in /mnt/keys/deevnet-root-ca.key -noout
+openssl pkey -in /mnt/keys/deevnet-mobile-site-ca.key -noout   # and each other site's
+sudo deevnet-pki-media keys close
+# then the same with: keys open backup
 ```
 
-Each asks for the passphrase and prints nothing. Note the date in the paper record. A copy that does
+Each `openssl pkey` asks for the key's passphrase and prints nothing. Note the date in the paper record. A copy that does
 not open is replaced from the other at once, by copying the file, never by generating a new key.
 
 ## Rotation calendar
@@ -90,8 +96,8 @@ These are planned rotations, with the old key still safe. A key that may have be
 
 ## Lost key media
 
-**A lost key media exposes nothing while the passphrase is safe,** because the keys on it are
-encrypted.
+**A lost key media exposes nothing while the passphrases are safe,** because the drive is encrypted
+and so is each key file on it.
 Copy the surviving media onto a new drive, and note it in the paper record.
 
 ## Exposed key
