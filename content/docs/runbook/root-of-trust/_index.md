@@ -12,6 +12,9 @@ own **Site CA** under it ([Trust and Identity](/docs/architecture/trust-and-iden
 CA private keys are generated and maintained offline and are never available to site automation or
 networked systems.
 
+New to certificates? The [Cryptography and PKI Primer](/docs/appendix/cryptography-and-pki-primer/)
+explains keys, signatures, chains and CAs from the beginning.
+
 These pages are the key holder's procedures. They run on an offline machine, rarely:
 
 | Ceremony | When | Page |

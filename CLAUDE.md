@@ -28,6 +28,7 @@ This site documents the **Mobile Factory**, the mobile instance of Deevnet (site
 7. **Change / Incident Records** (`changes/`, `incidents/`) - Numbered records. Records, and ADRs (filed in topic folders under `architecture/decisions/<topic>/`), list **newest first**: `weight: -NNNN`, year folders `weight: -YYYY`, and new rows go at the top of each index
 8. **Completed Projects** (`completed/`) - Finished projects, graduated from the Roadmap
 9. **Platforms Integration** - How docs integrate into developer workflow
+10. **Appendix** (`appendix/`) - Background primers (cryptography and PKI first). Explanatory, not normative: the rules stay in Architecture and Standards, the procedures in the Runbook
 
 ## Usage by Other Repos
 
