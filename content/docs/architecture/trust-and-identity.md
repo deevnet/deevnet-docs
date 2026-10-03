@@ -5,8 +5,10 @@ weight: 7
 
 # Trust and Identity
 
-Every TLS connection on a Deevnet site verifies against one anchor, the **Deevnet Root CA**. The root
-and each site's **Site CA** are held offline by a person, never by a system. Under each Site CA, two
+Deevnet runs its own **private PKI**: every certificate on a Deevnet site comes from Deevnet's own
+certificate authorities, and is trusted only where Deevnet has installed its root. Every TLS
+connection verifies against that one anchor, the **Deevnet Root CA**. The root and each site's
+**Site CA** are held offline by a person, never by a system. Under each Site CA, two
 **issuing CAs** separate the two kinds of identity a site has:
 
 - the **Substrate CA** issues the substrate's server certificates, through automation;
@@ -15,6 +17,10 @@ and each site's **Site CA** are held offline by a person, never by a system. Und
 
 The substrate builds itself without the Tenant Device CA, and no tenant ever touches the Substrate
 CA.
+
+Deevnet uses a private PKI because a public CA cannot certify what a site serves: private addresses,
+internal names, and device client certificates. The comparison with Let's Encrypt and commercial CAs
+is in [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/#alternatives-considered).
 
 New to certificates? The [Cryptography and PKI Primer](/docs/appendix/cryptography-and-pki-primer/)
 explains keys, signatures, chains and CAs from the beginning.
@@ -81,13 +87,6 @@ digraph pki {
 }
 {{< /graphviz >}}
 
-| Layer | Holds its key | Signs | Changes |
-|---|---|---|---|
-| Root CA | the operator, offline | Site CAs | once in twenty years |
-| Site CA | the operator, offline | its site's issuing CAs | once in ten years |
-| Substrate CA | the site's automation (its encrypted inventory) | every substrate server certificate | every five years |
-| Tenant Device CA | the site's secret store | tenant devices' client certificates | every five years |
-
 **For maximum integrity, the Root CA and every Site CA are generated and kept offline.** Whatever
 holds a CA's key can mint anything under it. With the root and Site CA held offline, no compromise
 of a site system, automation's included, can create a new CA. The worst a site loses is one issuing
@@ -109,38 +108,6 @@ certificate against what it expects. The online side checks the chain against it
 root. Tooling does the moving and the checking; the decision to sign is a person's.
 
 ---
-
-## A private PKI, because a public CA cannot certify what a site serves
-
-Every Deevnet certificate comes from Deevnet's own chain, not from a public CA such as Let's Encrypt
-or a commercial one. A public CA could cover some of the site's names, but not the parts that matter
-most:
-
-- **Public CAs may not certify private addresses or internal names.** Since 2015 publicly trusted
-  certificates cannot carry a reserved IP address or an internal name
-  ([CA/Browser Forum](https://cabforum.org/working-groups/server/internal-names/)). A site's
-  services are dialled at `10.20.x.x`, `127.0.0.1` and `localhost`.
-- **Public CAs no longer issue client certificates.** Let's Encrypt removed TLS client authentication
-  from its certificates in 2026, following browser root-program rules
-  ([Let's Encrypt](https://letsencrypt.org/2025/05/14/ending-tls-client-authentication)). Device
-  identity (mTLS) needs a CA that issues client certificates.
-- **Public certificates cannot say what a certificate is for.** Let's Encrypt issues domain-validated
-  certificates only, with no organization ([FAQ](https://letsencrypt.org/docs/faq/)), and the
-  organizational unit is no longer permitted in any publicly trusted certificate
-  ([Baseline Requirements](https://cabforum.org/working-groups/server/baseline-requirements/requirements/)
-  §1.7.9). Deevnet's subjects carry O and OU so that *Issued To* and *Issued By* read plainly.
-- **Public certificates are short-lived by rule, and renewal needs the internet.** Their maximum
-  lifetime is 200 days from March 2026, 100 from 2027 and 47 from 2029 (Baseline Requirements §6.3.2).
-  Each renewal needs the CA reachable, and a mobile site runs without internet access.
-- **Public certificates publish their names.** Every certificate goes to public Certificate
-  Transparency logs, where crawlers find it ([FAQ](https://letsencrypt.org/docs/faq/)). Every host,
-  service and tenant name on the site would be listed there.
-
-A paid CA changes none of these: the rules are the CA/Browser Forum's, and every publicly trusted CA
-follows them. A private PKI's one cost is that nothing trusts its root by default, so the root is
-installed where it is needed ([below](#where-the-deevnet-root-ca-is-trusted)). Nothing Deevnet serves is
-meant for the public internet, so that is a cost only Deevnet's own machines, tenants and operators
-pay.
 
 ## Substrate certificates come from automation, never from the secret store
 
