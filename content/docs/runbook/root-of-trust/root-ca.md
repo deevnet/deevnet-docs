@@ -12,7 +12,7 @@ On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/
 `deevnet-pki.cnf` beside you. **Check `date -u` first:** the root's twenty years start from the
 clock.
 
-## 1. The key
+## 1. Generate the root's passphrase-encrypted key
 
 ```bash
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out deevnet-root-ca.key
@@ -21,7 +21,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -out d
 It asks for the passphrase twice. The file is encrypted with it; without the passphrase it is
 useless, and without the file the passphrase is.
 
-## 2. The certificate
+## 2. Self-sign the root's certificate
 
 ```bash
 openssl req -x509 -new -config deevnet-pki.cnf -key deevnet-root-ca.key \
@@ -30,7 +30,7 @@ openssl req -x509 -new -config deevnet-pki.cnf -key deevnet-root-ca.key \
   -out deevnet-root-ca.pem
 ```
 
-## 3. Check it
+## 3. Check the root's subject, lifetime and extensions
 
 ```bash
 openssl x509 -in deevnet-root-ca.pem -noout -subject -issuer -enddate -ext basicConstraints,keyUsage
@@ -41,7 +41,7 @@ openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256
 - It ends twenty years from today.
 - `CA:TRUE, pathlen:2`, and `Certificate Sign, CRL Sign`.
 
-## 4. Keep it
+## 4. Put the key on both key media and the certificate on the transfer media
 
 - `deevnet-root-ca.key` goes to **both** key media, and nowhere else.
 - `deevnet-root-ca.pem` goes to the transfer media. It is public.
@@ -50,7 +50,7 @@ openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256
 Then [finish](/docs/runbook/root-of-trust/preparing/#finish-every-ceremony-the-same-way) and shut
 down.
 
-## Hand over
+## Only the root's certificate is handed to automation
 
 The certificate, never the key, goes into the inventory at `pki/deevnet-root-ca.pem`, through a pull
 request like any other inventory change. From there automation installs it as the trust anchor

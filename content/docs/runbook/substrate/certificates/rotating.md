@@ -7,7 +7,7 @@ weight: 6
 
 Certificates are renewed by [Renewing](/docs/runbook/substrate/certificates/renewing/). The CAs above them change only deliberately.
 
-## The OpenBao intermediate
+## Rotate the OpenBao intermediate with the openbao play
 
 Valid five years. Rotate it before it expires, or after an OpenBao rebuild that lost its data (the
 `openbao` role signs a new one then without being asked):
@@ -23,14 +23,14 @@ the root and stay in service until they are due, so `certs.yml` reissues nothing
 handed anything. The [OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)
 rehearse exactly this.
 
-## The bootstrap intermediate
+## A new bootstrap intermediate is a deliberate, hand-made step
 
 Valid five years, and its key is in the vault. A new one is signed by the root on the control node,
 the same way `playbooks/site-root-ca.yml` signed the first. That playbook refuses to run on a site
 that has a root, so a rotation is a deliberate, hand-made step. Once it is done,
 `certs.yml --tags hypervisors,router` reissues the router's and the hypervisors' certificates.
 
-## The root
+## A new root means re-rooting everything
 
 Valid to 2046-10-02. A new root is a re-root: every tenant, every embedded copy (`tenant-check.sh`,
 `install-provider.sh`, `segment-check.sh`), the VM templates and every computer that trusts it take

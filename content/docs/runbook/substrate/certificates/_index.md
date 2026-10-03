@@ -13,7 +13,7 @@ intermediates sit under it and sign every certificate in service. Certificates l
 laid down by the roles that build each host. `certs.yml` renews them all, and nothing renews them on
 a clock.
 
-## The hierarchy
+## Today, a root and two intermediates sign every certificate in service
 
 | CA | Where its key is | Signs | Valid to |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Both certificates are public and live in the inventory repository at `pki/mobile
 inventory directory, because Ansible parses every file in there as inventory. The root's SHA-256
 fingerprint is `68:D5:C9:8E:3D:2E:B2:DF:B6:1B:99:E4:F3:4D:F9:D3:B4:65:C3:66:34:97:30:97:36:B7:7B:60:C4:15:2C:6B`.
 
-## What each certificate names
+## Every certificate's names come from the inventory
 
 Names come from the inventory, never a hand list. For a host, `site_cert_dns_names` is its A record
 plus every CNAME in `env.interfaces.<if>.dns.cnames` (the data the router's DNS publishes), and
@@ -42,7 +42,7 @@ is issued. Some certificates carry more:
 | Omada controller | `localhost`, `127.0.0.1` | the controller's own playbooks dial it that way |
 | Deevnet API, state store | `127.0.0.1` | their roles' health checks |
 
-## Who trusts the root
+## Where the root is trusted
 
 | Where | How |
 |---|---|

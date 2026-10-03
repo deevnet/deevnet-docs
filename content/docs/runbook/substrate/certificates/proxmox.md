@@ -18,7 +18,7 @@ falls back to when no custom certificate is present. `--restart 1` restarts pvep
 the new certificate only after a restart. The node fingerprint changes with the certificate; nothing
 on the site pins it, and the nodes are not clustered.
 
-## Install or renew
+## Install or renew a node's certificate with certs.yml
 
 ```bash
 cd ansible-collection-deevnet.mgmt
@@ -27,7 +27,7 @@ ansible-playbook playbooks/certs.yml --tags hypervisors --limit dv02hyp002p02
 
 The builder collection's `site.yml` runs the same role in the hypervisors play (`--tags certs`).
 
-**Verify** from the Builder, which trusts the root:
+**Verify the chain from the Builder**, which trusts the root:
 
 ```bash
 curl -fsS -o /dev/null https://pve2.mobile.deevnet.net:8006/ && echo ok
@@ -37,7 +37,7 @@ openssl s_client -connect 10.20.99.22:8006 -showcerts -verify_ip 10.20.99.22 -ve
 
 Two certificates (the leaf, then `Deevnet mobile bootstrap CA`) and `Verify return code: 0 (ok)`.
 
-## Back it out
+## Back out to the node's own certificate with pvenode cert delete
 
 On the node, as root:
 

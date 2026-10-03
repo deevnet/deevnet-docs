@@ -20,7 +20,7 @@ openssl x509 -in deevnet-mobile-root-ca.pem -noout -fingerprint -sha256
 The first fetch skips verification (`-k`) because you do not trust the root yet. The fingerprint
 check is what makes it safe.
 
-## macOS
+## Trust the root on macOS
 
 Into the System keychain, trusted as a root (`security(1)`, `add-trusted-cert`):
 
@@ -31,13 +31,13 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 Safari and Chrome read the System keychain. Firefox keeps a certificate store of its own; check
 Mozilla's current guidance before relying on it for the site.
 
-## Fedora
+## Trust the root on Fedora
 
 ```bash
 sudo cp deevnet-mobile-root-ca.pem /etc/pki/ca-trust/source/anchors/ && sudo update-ca-trust extract
 ```
 
-## Check it
+## Check the root is trusted
 
 ```bash
 curl -fsS https://api.mobile.deevnet.net:8080/version
