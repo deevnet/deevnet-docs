@@ -232,6 +232,7 @@ cp deevnet-$site-site-ca.pem /mnt/transfer/
 The extensions come only from the profile, never from the request. Check:
 - subject `O = Deevnet, OU = Mobile Site, CN = Deevnet Mobile Site CA`, issuer the root;
 - `CA:TRUE, pathlen:1`, ten years;
+- Name Constraints permit only `deevnet.net`, `localhost`, and the private and loopback ranges;
 - `verify` answers `OK`.
 
 ### Signing profile
@@ -263,6 +264,23 @@ basicConstraints       = critical, CA:TRUE, pathlen:1
 keyUsage               = critical, keyCertSign, cRLSign
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always
+nameConstraints        = @site_names
+
+# Everything under a Site CA may name only Deevnet's own names and private
+# addresses: a leaked key below it cannot vouch for a public site. Not marked
+# critical: mbedTLS (ESP-IDF, MicroPython) does not implement name constraints
+# and refuses to parse a certificate with a critical extension it does not
+# know, so a critical one would cut off every such device. OpenSSL, Go, Java,
+# Rust, Erlang, browsers and Windows enforce it either way.
+[ site_names ]
+permitted;DNS.1 = deevnet.net
+permitted;DNS.2 = localhost
+permitted;IP.1  = 10.0.0.0/255.0.0.0
+permitted;IP.2  = 172.16.0.0/255.240.0.0
+permitted;IP.3  = 192.168.0.0/255.255.0.0
+permitted;IP.4  = 127.0.0.0/255.0.0.0
+permitted;IP.5  = fc00::/fe00::
+permitted;IP.6  = ::1/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 
 [ v3_issuing ]
 basicConstraints       = critical, CA:TRUE, pathlen:0
@@ -271,8 +289,45 @@ subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always
 ```
 
+**The Site CA's name constraints keep everything under it to Deevnet's own names and private
+addresses**, so no key below it can vouch for a public site. They are not marked critical, so devices
+whose TLS library does not implement them (mbedTLS) can still parse the chain.
+
 **The path lengths keep each layer in its place:** the root signs Site CAs, a Site CA signs
 issuing CAs, and an issuing CA signs only certificates that cannot sign anything.
+
+## What this protects, and what it does not
+
+**The ceremony keeps the Root CA's and Site CAs' keys off every networked machine.** They are made on
+a machine with no network, kept encrypted on drives that only ever go into that machine, and never
+cross to the online side. A compromise of any site system, automation included, cannot make a new
+CA.
+
+**It does not protect against a compromised Builder.** The ceremony image is built on the Builder,
+from packages fetched at build time and the scripts in git, and its hash is published by the same
+Builder: the hash proves the card is what the Builder made, not that what it made is honest. Code
+planted there would run on the offline machine and could weaken the root it makes. What Deevnet does
+about it:
+
+- **The tools are short, readable shell.** Read `deevnet-pki-ceremony.sh`, `deevnet-pki-media.sh`
+  and the profile before a ceremony; the commands it runs are on this page.
+- **The image records what it carries:** `/etc/deevnet-pki-release` names its build date and the
+  tools' git commit. Write both, and the image's hash, in the paper record.
+- **Keep the microSD that made the root.** It is evidence of what ran.
+
+What it does not do: build the image on a second, independent machine and compare, or sign it with
+a key held off the Builder. A site that needs that assurance should add it.
+
+**It cuts some corners, knowingly.** This is a lab, not a vault:
+- one person holds both offline keys, both passphrases and the vault password;
+- the root and Site CA keys share one key drive and one passphrase;
+- the ceremony machine was built and flashed from the Builder, and during setup a key drive went
+  into the Builder for testing. Once a real root exists, its key drives never touch a networked
+  machine.
+
+**There is no revocation.** A CA certificate stays valid until it expires; see
+[Custody](/docs/runbook/root-of-trust/custody/#exposed-key) for what an exposed key means, and when to
+re-root.
 
 ## Without a Pi: a Fedora live USB
 

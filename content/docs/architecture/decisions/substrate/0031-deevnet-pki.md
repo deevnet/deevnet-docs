@@ -57,7 +57,16 @@ In use, it falls short in four ways:
   RSA 3072, ten years, `pathlen:1`.
 - **Held offline by the same operator, like the root.** It signs only its site's issuing CAs, in a
   ceremony, about every five years.
-- A Site CA lost or exposed is replaced without touching another site or the root's trust.
+- **It is name-constrained to Deevnet's own names and private addresses:** DNS `deevnet.net` and
+  `localhost`; IP `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`, `fc00::/7` and
+  `::1`. Everything under it, the online Substrate CA included, can vouch for nothing else, so a
+  leaked key below the Site CA cannot impersonate a public site to anyone who trusts the Deevnet Root
+  CA. The extension is **not marked critical**: mbedTLS, which ESP-IDF and MicroPython use, does not
+  implement name constraints and refuses to parse a certificate with a critical extension it does
+  not know ([Mbed TLS #3241](https://github.com/Mbed-TLS/mbedtls/issues/3241)). OpenSSL, Go, Java,
+  Rust, Erlang, browsers and Windows enforce it either way.
+- A Site CA lost is replaced without touching another site or the root's trust. One **exposed** is
+  another matter: with no revocation (below), the old one stays valid until it expires.
 - **Ceremonies cross the offline boundary on separate transfer media**, never on the key media.
   Tooling moves the request out and the certificate back under hash manifests, refuses any private
   key on the transfer media, and checks the request, the signature and the chain; the decision to
@@ -91,7 +100,9 @@ only.
 
 Every certificate's subject is exactly O, OU and CN, in that order:
 - servers: `O=Deevnet, OU=<Site> Substrate, CN=<primary FQDN>`;
-- devices: `O=Deevnet, OU=Tenant <tenant>, CN=<device>.<tenant>`.
+- devices: `O=Deevnet, OU=Tenant <tenant>, CN=<device>.<tenant>.<site>.deevnet.net`. The CN sits
+  inside the Site CA's name constraints: OpenSSL treats a hostname-like CN as a DNS name, and would
+  refuse a bare `<device>.<tenant>`.
 
 SANs follow the [Certificates standard](/docs/standards/certificates/):
 - a server: its A record, every CNAME and every address, from the inventory;
@@ -149,6 +160,18 @@ The migration is its own change record.
 **Devices get a real identity once this is built.** A stolen password no longer impersonates a
 device, and a device is revoked by deregistering it.
 
+**There is no revocation for the CAs.** No CRL or OCSP is published, so an exposed issuing CA or Site
+CA stays trusted until its certificate expires: five or ten years. The name constraints bound what a
+thief can do with one (Deevnet names and private addresses only), and the
+[Custody](/docs/runbook/root-of-trust/custody/#exposed-key) runbook says when an exposure needs a
+re-root, the only complete fix.
+
+**The offline machine runs code the online side built.** The ceremony image is built on the Builder,
+from packages fetched at build time and scripts from git, and its hash is published by the same
+Builder. A compromised Builder could plant code in the image that makes the root. The
+[ceremony page](/docs/runbook/root-of-trust/ceremony/#what-this-protects-and-what-it-does-not) says
+what is done about it, and what is not.
+
 ---
 
 ## Alternatives considered
@@ -205,6 +228,5 @@ device, and a device is revoked by deregistering it.
    issuing CA, or from the tenant itself.
 3. **How is a device certificate revoked?** Short-lived certificates, a CRL, or deregistration alone
    (§6).
-4. **Should each Site CA be name-constrained** to its site's zone and address space?
-5. **How does a device that cannot make a key get one?** The tenant's computer generates it (§6); a
+4. **How does a device that cannot make a key get one?** The tenant's computer generates it (§6); a
    supported way to load it onto such a device is not yet defined.

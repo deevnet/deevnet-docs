@@ -46,7 +46,7 @@ itself.
 | Substrate CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Substrate CA` |
 | Tenant Device CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Tenant Device CA` |
 | Substrate server | `Deevnet` | `<Site> Substrate` | the host's primary FQDN, e.g. `pve.mobile.deevnet.net` |
-| Tenant device | `Deevnet` | `Tenant <tenant>` | `<device>.<tenant>`, e.g. `lp-stand-01.eds` |
+| Tenant device | `Deevnet` | `Tenant <tenant>` | `<device>.<tenant>.<site>.deevnet.net`, e.g. `lp-stand-01.eds.mobile.deevnet.net` |
 
 - 2.1 `<Site>` MUST be the site's name in title case, as in the [naming standard](/docs/standards/naming/):
   `Mobile`, `Home`.
@@ -92,6 +92,12 @@ is valid for.
 - 4.6 Extensions MUST come from the issuer's profile. An issuer MUST NOT copy extensions from a
   signing request.
 - 4.7 An end-entity certificate MUST be reissued once fewer than 60 days remain.
+- 4.8 A Site CA MUST carry `nameConstraints` permitting only DNS `deevnet.net` and `localhost`, and
+  IP `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`, `fc00::/7` and `::1`. It MUST NOT
+  be marked critical: mbedTLS devices refuse to parse a certificate with a critical extension they
+  do not implement, and name constraints are one.
+- 4.9 Every name and address in a certificate below a Site CA, its CN included when the CN looks like
+  a host name, MUST fall within those constraints.
 
 ---
 

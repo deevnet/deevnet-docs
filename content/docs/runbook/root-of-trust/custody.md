@@ -102,14 +102,39 @@ Copy the surviving media onto a new drive, and note it in the paper record.
 
 ## Exposed key
 
-**An exposed key is replaced, never reused.** A key is exposed when the file *and* the passphrase
-may both have been seen.
+**An exposed key is replaced, never reused, and only a re-root ends its trust.** A key is exposed
+when the file *and* its passphrase may both have been seen, or, for the online issuing CAs, when the
+system holding it may have been compromised.
 
-- **A Site CA's key:** make a new Site CA ([Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/), path 2), sign new
-  issuing CAs under it, and reissue the site's certificates. Clients keep trusting the root, so
-  nothing is handed out.
-- **The root's key:** everything is re-rooted: a new root, new Site CAs, new issuing CAs, and the new
-  root handed to every machine, tenant and computer that trusts the old one. Record it as an incident.
+**Deevnet publishes no revocation list, so a CA certificate stays valid until it expires.** Making a
+new CA stops the site *using* the old one. It does not stop a thief using it: anything signed with
+the stolen key still chains to the trusted root. The Site CA's name constraints bound the damage to
+Deevnet's own names and private addresses; a public site cannot be impersonated.
+
+| Exposed | It stays valid for | Do now | Then decide |
+|---|---|---|---|
+| **Substrate CA** (online, in the vault) | up to 5 years | sign a new one ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)), rotate the vault password, reissue everything (`certs.yml`) | re-root, or accept the risk until it expires |
+| **Tenant Device CA** (online, in OpenBao) | up to 5 years | sign a new one, re-enroll every device | re-root, or accept the risk until it expires |
+| **Site CA** (offline) | up to 10 years | new Site CA and new issuing CAs ([ceremony](/docs/runbook/root-of-trust/ceremony/), path 2) | re-root, or accept the risk until it expires |
+| **Root CA** (offline) | up to 20 years | re-root | — |
+
+**Re-root when the key may be in someone's hands who could use it on the site's networks.** Someone
+in a position to intercept traffic on the site, with a stolen key, can impersonate any Deevnet
+service to anything that trusts the root. That is worth the re-root: a new root and Site CAs
+([ceremony](/docs/runbook/root-of-trust/ceremony/), path 1), new issuing CAs, and the new root
+handed to every machine, tenant and computer, as in
+[a root rotation](#what-a-rotation-reaches).
+
+**Accepting the risk is reasonable when the exposure is only possible.** A key media misplaced and
+found again, a passphrase glimpsed, a vault file copied with no sign it was opened: replace the CA,
+note the decision and the date in the paper record and the incident record, and let the old
+certificate run out.
+
+**Until a re-root, a computer can refuse the exposed CA by hand.** Windows (the *Untrusted
+Certificates* store) and macOS (*Never Trust* in Keychain Access) can distrust a single CA
+certificate. Site automation has no equivalent today.
+
+Record every exposure as an incident.
 
 ## Both copies lost
 

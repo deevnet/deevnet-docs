@@ -93,6 +93,11 @@ of a site system, automation's included, can create a new CA. The worst a site l
 CA, which the operator replaces in a short [ceremony](/docs/runbook/root-of-trust/) while every
 client keeps trusting the root.
 
+**Everything under a Site CA can vouch only for Deevnet's own names and private addresses.** Each
+Site CA is name-constrained to `deevnet.net`, `localhost` and private and loopback address ranges, so
+even a leaked key below it cannot make a certificate a computer trusting the Deevnet Root CA would
+accept for a public site.
+
 **One Deevnet Root CA serves every site; each site has its own Site CA under it.** An operator's
 computer, a tenant's tooling or a device that works at more than one site trusts one anchor. A
 site's own CA still bounds that site: a Site CA lost at one site is replaced without touching
