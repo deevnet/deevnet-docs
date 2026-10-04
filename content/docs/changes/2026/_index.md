@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0033 | 2026-10-03 | [The Deevnet PKI](0033-deevnet-pki/) | Configuration | mobile | Planned |
+| CHG-0033 | 2026-10-03 | [The Deevnet PKI](0033-deevnet-pki/) | Configuration | mobile | In progress |
 | CHG-0032 | 2026-10-02 | [The Appliances on Site Certificates](0032-appliance-certificates/) | Configuration | mobile | In progress |
 | CHG-0031 | 2026-10-02 | [The Site Root and Its Intermediate](0031-site-root-ca/) | Configuration | mobile | In progress |
 | CHG-0030 | 2026-09-27 | [The State Store Over TLS](0030-state-store-tls/) | Configuration | mobile | Complete |
