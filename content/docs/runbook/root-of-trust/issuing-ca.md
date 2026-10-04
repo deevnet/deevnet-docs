@@ -73,14 +73,28 @@ record.**
 
 ## 2. Sign (offline)
 
-**On the offline machine, check the request and sign it with the Site CA.** On the [prepared](/docs/runbook/root-of-trust/ceremony/#run-the-ceremony) offline machine, with the transfer media
-and the **Site CA's key media**, opened:
+**On the offline machine, check the request and sign it with the Site CA.** On the Pi,
+[started](/docs/runbook/root-of-trust/ceremony/#run-the-ceremony) with no drives plugged in and the
+clock set, run the ceremony script and choose **path 3**:
+
+```bash
+./deevnet-pki-ceremony.sh      # 3: sign an issuing CA
+```
+
+It asks for the key drive (the one holding the Site CA) and then the transfer drive, opens both,
+shows the request, and runs `deevnet-pki-sign.sh` for you. It never formats a drive on this path.
+For a second request in the same session, it closes the key drive while the transfer drive goes to
+the Builder (accept the first, prepare the next) and comes back.
+
+By hand, the same step is:
 
 ```bash
 sudo deevnet-pki-media.sh keys open                  # the key drive's passphrase; /mnt/keys
 sudo deevnet-pki-media.sh transfer mount             # /mnt/transfer
 deevnet-pki-sign.sh /mnt/transfer --site-key /mnt/keys/deevnet-mobile-site-ca.key
 ```
+
+**`deevnet-pki-sign.sh` does the checking and asks for the decision:**
 
 On a Fedora live USB, run the copy that came on the transfer media:
 `bash /mnt/transfer/deevnet-transfer/to-offline/deevnet-pki-sign.sh /mnt/transfer --site-key …`.
