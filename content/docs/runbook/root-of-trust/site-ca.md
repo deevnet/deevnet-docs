@@ -15,6 +15,9 @@ Below, `SITE=Mobile` and `site=mobile`.
 On the [prepared](/docs/runbook/root-of-trust/preparing/) offline machine, in `/dev/shm/pki` with
 `deevnet-pki.cnf`. **Check `date -u` first:** the Site CA's ten years start from the clock.
 
+**On the `pi-pki` image, `./deevnet-pki-ceremony` runs this page step by step:** path 2 for a Site
+CA under the root already on the key drive. Path 1 makes the root first.
+
 The root signs it, so the key drive that holds the root is open:
 
 ```bash

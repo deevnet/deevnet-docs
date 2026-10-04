@@ -16,6 +16,11 @@ root's twenty years start from the clock.
 The key is made in memory (`/dev/shm/pki`), copied onto the encrypted key drives, and gone at
 shutdown.
 
+**On the `pi-pki` image, `./deevnet-pki-ceremony` in the `pki` home runs this page and the
+[Site CA](/docs/runbook/root-of-trust/site-ca/) step by step.** It explains each step and asks
+**Proceed? [Y/n]** before running it. It runs exactly the commands below, so this page is what it
+does. Choose path 1 for a new root, then a Site CA.
+
 ## 1. Generate the key
 
 **The root's key is encrypted with a passphrase as it is made:**
