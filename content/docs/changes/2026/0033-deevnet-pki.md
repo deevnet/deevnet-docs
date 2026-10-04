@@ -10,7 +10,7 @@ weight: -33
 | **Date** | 2026-10-03 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **Planned.** The code is written, tested off the site and merged (2026-10-03), but not yet run against anything. Step 1 waits on the operator's offline session. |
+| **Status** | **In progress.** Steps 1–3 done 2026-10-04: the Deevnet Root CA and Mobile Site CA made offline; the Mobile Substrate CA and Tenant Device CA signed offline and accepted, the Tenant Device CA installed in OpenBao. Nothing serving traffic has changed. **Next:** step 4. |
 | **Window** | Steps 1–3 over one or two days, nothing live changing. Steps 5–7 in one sitting. Step 8 once nothing uses the old root. |
 | **Site** | mobile |
 | **Systems** | Every substrate host and service: both hypervisors, the core router, `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02nms001v01` (the Omada controller), `dv02hyp002p02` (the egress agent), the Builder. Every tenant (tdemo, eds, mabell, cdeever), the operator's computers. |
@@ -295,7 +295,42 @@ Tenants keep both roots until step 8, so they need nothing.
 
 ## Outcome
 
-Not started.
+Steps 1–3 on 2026-10-04. The offline steps ran on the `pi-pki` machine with
+`deevnet-pki-ceremony.sh` (path 1, then path 3); the online steps ran on the Builder.
+
+| Certificate | SHA-256 fingerprint | Valid to |
+|---|---|---|
+| Deevnet Root CA | `F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52` | 2046-10-04 |
+| Deevnet Mobile Site CA | `CD:E7:FF:FC:F0:83:7B:CE:E7:D6:64:DA:59:86:28:54:DC:4B:A7:F6:D2:BC:B7:34:26:3E:79:F7:11:4A:3A:1E` | 2036-10-04 |
+| Deevnet Mobile Substrate CA | `86:EE:AB:CB:F9:5F:B7:A8:B0:90:C9:62:E2:6C:AC:D1:08:25:0F:D4:5E:4D:38:0D:30:95:8A:7D:D7:3F:5F:23` | 2031-10-04 |
+| Deevnet Mobile Tenant Device CA | `66:05:74:BC:62:60:B8:80:BA:93:96:79:10:31:56:A3:67:D7:21:BA:8E:43:4D:6C:42:3E:A0:05:4D:9B:79:6A` | 2031-10-04 |
+
+Each fingerprint was checked against the paper record. The Site CA carries the name constraints
+(ADR-0031 §2). The issuing CAs were each checked against their request's key and chained to the
+root through the inventory's Site CA. OpenBao's `pki-tenant-device` mount issues from the Tenant
+Device CA (inventory #70, #71).
+
+### Departures from the plan
+
+- **The ceremony machine took several image builds to boot and run**, each fix in the image factory:
+  - the console login was never enabled (stock Pi OS turns it on only when its user wizard finishes);
+  - a boot-time fsck, and the stock first-boot resize, failed under the read-only overlay;
+  - `systemd-firstboot` was masked.
+- **The first Root CA attempt was discarded.** The key drive dropped off the Pi's USB bus when the
+  transfer drive was plugged in, while the key drive's encrypted volume was open. A full `badblocks
+  -w` pass on the Builder found the drive sound. The script now asks for both drives before opening
+  either, and checks and recovers drives before every write.
+- **Name constraints were added to the Site CA before the root was made** (a review of what a reader
+  would call an obvious gap). They are not marked critical, so mbedTLS devices still connect.
+- **The ceremony script gained path 3** (signing issuing CAs). Its first run on the Pi failed to
+  recognize the key drive: as the `pki` user, `blkid` cannot read a raw drive. The script now uses
+  `sudo blkid`. Tests run as a non-root user with an empty `blkid` cache reproduce the failure and the
+  fix.
+- **`tenant-device-ca.yml` needed `become`** on its first live run (mgmt #72).
+- **The PRs merged before step 1, not at step 4**, at the operator's request. No certificate or trust
+  play ran in between.
+- **Only one key drive so far.** The backup key drive waits for a third USB drive. Until then each
+  offline key exists once.
 
 ## Follow-ups
 
