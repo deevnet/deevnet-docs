@@ -108,6 +108,14 @@ A Pi is also small, cheap and easy to keep for nothing but this.
    sudo deevnet-pki-media transfer mount   # /mnt/transfer
    ```
 
+### The ceremony script
+
+**The quickest path on the Pi is `./deevnet-pki-ceremony`, in the `pki` home.** After the clock is
+set, it does the rest of a Root CA and Site CA session, explaining each step and asking before it
+runs. That covers checking the machine is offline, preparing or opening the drives, the
+[Root CA](/docs/runbook/root-of-trust/root-ca/) and [Site CA](/docs/runbook/root-of-trust/site-ca/)
+commands, the backup key drive, and finishing up. The pages say what each step does.
+
 ### Prepare new media
 
 **The first time, or with a new drive, `deevnet-pki-media` formats it on the Pi.** It erases the
