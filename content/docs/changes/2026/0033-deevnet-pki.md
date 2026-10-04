@@ -85,7 +85,7 @@ old root goes only once nothing serves its chain.
 
 - [ ] The operator accepts ADR-0031's design (it stays Proposed until this change completes)
 - [ ] The `pi-pki` image flashed and its hardware checks done
-      ([Preparing](/docs/runbook/root-of-trust/preparing/))
+      ([Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/))
 - [ ] Media: two key media, one transfer media, the paper record
 - [x] PRs merged 2026-10-03: `ansible-collection-deevnet.builder` #24, `.mgmt` #65, `.net` #45,
       `ansible-inventory-deevnet` #69, `deevnet-image-factory` #24, and this record (#262)
@@ -96,7 +96,7 @@ old root goes only once nothing serves its chain.
 ### Step 1: The Deevnet Root CA and the Mobile Site CA
 
 **Run** (the operator, offline):
-1. [Root CA](/docs/runbook/root-of-trust/root-ca/), then [Site CA](/docs/runbook/root-of-trust/site-ca/)
+1. The [Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/), path 1,
    for `mobile`, in one session.
 2. Bring the transfer drive to the Builder: `sudo mount LABEL=TRANSFER /mnt/transfer`, then copy
    `deevnet-root-ca.pem` and `deevnet-mobile-site-ca.pem` (certificates only) to `~/pki-inbox/`.
@@ -146,7 +146,7 @@ first `--ca substrate`, then `--ca tenant-device`. The transfer media goes Build
 for each. Accept each into the inventory:
 
 ```bash
-./deevnet-pki-transfer accept /mnt/transfer \
+./deevnet-pki-transfer.sh accept /mnt/transfer \
   --csr ../../../ansible-inventory-deevnet/pki/mobile/deevnet-mobile-substrate-ca.csr \
   --out ../../../ansible-inventory-deevnet/pki/mobile
 # and the same for deevnet-mobile-tenant-device-ca.csr

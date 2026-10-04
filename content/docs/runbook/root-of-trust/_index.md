@@ -19,9 +19,7 @@ These pages are the key holder's procedures. They run on an offline machine, rar
 
 | Ceremony | When | Page |
 |---|---|---|
-| Prepare the offline machine | before every ceremony | [Preparing](/docs/runbook/root-of-trust/preparing/) |
-| Generate the Deevnet Root CA | once, for the whole organization | [Root CA](/docs/runbook/root-of-trust/root-ca/) |
-| Create a Site CA | once per site (mobile, home, …), and every ten years | [Site CA](/docs/runbook/root-of-trust/site-ca/) |
+| Make the Deevnet Root CA and a Site CA, on the Pi with `deevnet-pki-ceremony.sh` | the root once, for the whole organization; a Site CA once per site (mobile, home, …) and every ten years | [Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/) |
 | Sign an issuing CA | when a site's Substrate CA or Tenant Device CA is created or rotated, about every five years | [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) |
 | Check, back up, recover | yearly, and after a loss | [Custody](/docs/runbook/root-of-trust/custody/) |
 

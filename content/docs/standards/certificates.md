@@ -127,7 +127,7 @@ is valid for.
   it. A returned certificate is installed only after it is checked against the original request's
   key and chained to the Root CA through the **online side's own** copies of the Root and Site CA
   certificates.
-- 5.8 The ceremony's tools (`deevnet-pki-transfer`, `deevnet-pki-sign`) enforce 5.5–5.7. Tooling
+- 5.8 The ceremony's tools (`deevnet-pki-transfer.sh`, `deevnet-pki-sign.sh`) enforce 5.5–5.7. Tooling
   MAY automate the mechanics and the checks, and MUST NOT automate the decision to sign.
 - 5.9 The offline machine MUST have its radios disabled and no network service running, and MUST NOT
   carry an automation account or remote access. Its clock MUST be checked before any key or

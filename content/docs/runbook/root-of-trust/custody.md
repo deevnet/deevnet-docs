@@ -1,6 +1,6 @@
 ---
 title: "Custody"
-weight: 5
+weight: 3
 ---
 
 # Custody
@@ -22,17 +22,17 @@ Neither key media is ever plugged into a networked machine.
 
 **Opening a key drive needs only the drive and both passphrases, on any Linux machine with
 `cryptsetup`:** the `pi-pki` image on any Pi, or a Fedora live USB. Nothing ties a drive to the Pi
-or microSD that made it ([Preparing](/docs/runbook/root-of-trust/preparing/#prepare-new-media)).
+or microSD that made it ([Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/#what-you-need)).
 
 ## Yearly check
 
-**Every year, check that both copies still open.** On the offline machine ([Preparing](/docs/runbook/root-of-trust/preparing/)):
+**Every year, check that both copies still open.** On the offline machine ([Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/#run-the-ceremony)):
 
 ```bash
-sudo deevnet-pki-media keys open primary          # the drive's passphrase
+sudo deevnet-pki-media.sh keys open primary          # the drive's passphrase
 openssl pkey -in /mnt/keys/deevnet-root-ca.key -noout
 openssl pkey -in /mnt/keys/deevnet-mobile-site-ca.key -noout   # and each other site's
-sudo deevnet-pki-media keys close
+sudo deevnet-pki-media.sh keys close
 # then the same with: keys open backup
 ```
 
@@ -51,7 +51,7 @@ not open is replaced from the other at once, by copying the file, never by gener
 | Tenant Device CA | the site's secret store | tenant devices' client certificates | five years | 4 years after it was made |
 
 Rotating a CA means making a new one with the same ceremony:
-- [Site CA](/docs/runbook/root-of-trust/site-ca/) for a Site CA;
+- [Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/), path 2, for a Site CA;
 - [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) for an issuing CA.
 
 ## What a rotation reaches
@@ -105,7 +105,7 @@ Copy the surviving media onto a new drive, and note it in the paper record.
 **An exposed key is replaced, never reused.** A key is exposed when the file *and* the passphrase
 may both have been seen.
 
-- **A Site CA's key:** make a new Site CA ([Site CA](/docs/runbook/root-of-trust/site-ca/)), sign new
+- **A Site CA's key:** make a new Site CA ([Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/), path 2), sign new
   issuing CAs under it, and reissue the site's certificates. Clients keep trusting the root, so
   nothing is handed out.
 - **The root's key:** everything is re-rooted: a new root, new Site CAs, new issuing CAs, and the new
