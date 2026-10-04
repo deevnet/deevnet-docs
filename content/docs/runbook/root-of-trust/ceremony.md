@@ -109,6 +109,9 @@ it cleanly. In order, it:
    - **1:** a new Deevnet Root CA, then a Site CA (the first ceremony, or a re-root);
    - **2:** a Site CA only, signed by the root already on the key drive (a new site, or a Site CA
      rotation);
+   - **3:** sign an issuing CA from a request the Builder put on the transfer drive
+     ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)); the rest of this list is paths 1
+     and 2;
 2. **checks the Pi is offline**, shows the clock, and asks you to confirm it;
 3. **makes the working directory** in RAM, `/dev/shm/pki`, gone at power-off;
 4. **asks for the key drive, then the transfer drive.** For each, insert it when asked. One already
