@@ -40,7 +40,7 @@ And for what is handed to tenants:
 
 1. **Nothing on the tenant path is encrypted in transit.** The API, the state store and PowerDNS's
    API all speak plain HTTP. The internal certificate authority is an unstarted roadmap item
-   ([SSL Cert Automation](/docs/roadmap/infrastructure/ssl-cert-automation/)).
+   ([TLS Cert Automation](/docs/roadmap/infrastructure/tls-cert-automation/)).
 2. **Tenant secrets are stored in the clear** in a database on the provisioning VM's OS disk.
 3. **Every runtime credential is a long-lived value copied into env files.** Rotating one means an
    inventory commit and a re-run of each role that copies it. Root on the VM can read them all with
@@ -146,7 +146,7 @@ talk to the secrets manager in the scope decided here (§8).
 |---|---|---|
 | KV v2 | `deevnet-api/` | the API's backend credentials: PowerDNS key, router key, state-store admin, Proxmox token. The API's env file carries only its AppRole credentials. |
 | Transit | `transit/keys/tenant-secrets` | envelope encryption of the TSIG and state-store secrets in the API's database. The key never leaves OpenBao and rotates in place. |
-| PKI | `pki/` | the site's internal certificate authority, issuing TLS certificates to the API, the state store and PowerDNS's API. It takes over the role the SSL Cert Automation roadmap planned for step-ca. |
+| PKI | `pki/` | the site's internal certificate authority, issuing TLS certificates to the API, the state store and PowerDNS's API. It takes over the role the TLS Cert Automation roadmap planned for step-ca. |
 | Response wrapping | `sys/wrapping` | the single-use enrollment token that lets a tenant create itself (ADR-0015 §10) |
 | AppRole auth | `auth/approle/` | the Deevnet API, and Ansible after bootstrap, each with a policy naming exactly its paths |
 
