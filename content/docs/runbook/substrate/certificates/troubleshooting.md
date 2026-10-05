@@ -5,19 +5,19 @@ weight: 7
 
 # Troubleshooting
 
-Set `R=/srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem` first.
+Set `R=/srv/dvnt/ansible-inventory-deevnet/pki/deevnet-root-ca.pem` first.
 
 ## Check the certificate is the site's and chains to the root
 
 ```bash
-openssl s_client -connect <host>:<port> -servername <name> -showcerts -CAfile $R </dev/null 2>&1 \
+openssl s_client -connect <host>:<port> -servername <name> -showcerts -CAfile $R -no-CApath -no-CAstore </dev/null 2>&1 \
   | grep -E '^ *[0-9] s:|Verify return code'
 ```
 
-- **One certificate, no intermediate:** the service is sending its leaf alone. Clients that hold only
-  the root cannot build the chain.
-- **`unable to get local issuer certificate`:** a certificate from something other than the site
-  root. It is either the device's own, or one issued before a re-root. Re-run its role or
+- **The leaf alone, or the leaf and one CA:** the service is not sending the whole chain (leaf,
+  Substrate CA, Site CA). Clients that hold only the root cannot build it.
+- **`unable to get local issuer certificate`:** a certificate from something other than the Deevnet
+  Root CA. It is either the device's own, or one issued before a re-root. Re-run its role or
   `certs.yml`; `site_cert` and `proxmox_node_cert` reissue anything that does not chain.
 - **`Verify return code: 0` but the client still refuses:** check the name. Add
   `-verify_hostname <name>`, or `-verify_ip <address>`, for exactly what the client dials. Every name
@@ -27,6 +27,19 @@ openssl s_client -connect <host>:<port> -servername <name> -showcerts -CAfile $R
 ```bash
 openssl x509 -noout -ext subjectAltName <<<"$(openssl s_client -connect <host>:<port> </dev/null 2>/dev/null)"
 ```
+
+## A check passes that should fail: OpenSSL also read the system store
+
+`openssl verify -CAfile <root>` and `openssl s_client -CAfile <root>` also load the host's own trust
+store unless told not to. A certificate under any root that store trusts, a public CA or an outgoing
+Deevnet root, then verifies. Add `-no-CApath -no-CAstore` whenever the question is "does this chain
+to *this* root"; every check in the roles and the ceremony tools does since CHG-0033. `curl --cacert`
+and Python's `cafile` use only the file given.
+
+## A Windows computer has the root but does not trust it
+
+The root was filed under *Intermediate Certification Authorities*. Only *Trusted Root Certification
+Authorities* makes it an anchor ([Trusting the Root](/docs/runbook/substrate/certificates/trusting-the-root/#trust-the-root-on-windows)).
 
 ## A container service that resets every handshake cannot read a file
 
@@ -58,10 +71,10 @@ ssh a_autoprov@dv02prv001v01.mobile.deevnet.net \
   | grep -E 'INSECURE_TLS|SSL_CERT_FILE'
 ```
 
-A changed switch reaches the API on its next deploy (`site.yml --limit dv02prv001v01 --tags deevnet-api`).
+A changed switch reaches the API on its next deploy (`site.yml --skip-tags vms --limit dv02prv001v01`).
 
 ## Builder tools trust the root through the OS store
 
-The Builder trusts the root at the OS level: `trust list --filter=ca-anchors | grep Deevnet`. Ansible,
+The Builder trusts the root at the OS level: `trust list --filter=ca-anchors | grep 'Deevnet Root CA'`. Ansible,
 Packer and Terraform verify through that. A Python tool that bundles its own CA list (`certifi`)
 would not; the Builder's Ansible runs on the system Python, which uses the OS bundle.

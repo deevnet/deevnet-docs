@@ -25,16 +25,22 @@ Every certificate is reissued only when one of these holds:
 
 - it is missing;
 - it has fewer than 60 days left;
-- it no longer chains to the site root (an OpenBao that was rebuilt, or a re-root);
+- it no longer chains to the Deevnet Root CA (a rotated issuing CA, or a re-root);
 - for the hypervisors, the names it carries differ from the inventory's.
 
 Otherwise the run changes nothing. A run on a healthy site is `changed=0` on every host.
+
+The chain check trusts only the root it is given (`openssl verify -no-CApath -no-CAstore`). Without
+those flags OpenSSL also loads the host's own trust store, and a certificate under a root that store
+still trusts would pass: in CHG-0033 the first re-run skipped the Deevnet API for exactly that
+reason.
 
 ## certs.yml renews certificates; it does not configure services
 
 **certs.yml does not change a service's configuration.** `certs.yml` renews certificates that services
 already name. A first build, or a change to which files a service reads, goes through that
-service's own `site.yml` play.
+service's own `site.yml` play: `site.yml --skip-tags vms --limit <host>`. Not `--tags`: a tag
+selects a role's `include_role`, not the tasks it includes, so a container would not be recreated.
 
 **The core router's GUI selection is manual the first time.** After that, renewal replaces the
 certificate the GUI already uses. See [Core Router](/docs/runbook/substrate/certificates/core-router/).
@@ -42,5 +48,5 @@ certificate the GUI already uses. See [Core Router](/docs/runbook/substrate/cert
 ## Run certs.yml at least every ten months, and after a naming change
 
 At least every ten months, and after anything that might change what a certificate names: a new
-CNAME, a new address, a rebuilt OpenBao. The intermediates and the root are not renewed by it; see
+CNAME, a new address. The CAs are not renewed by it; see
 [Rotating](/docs/runbook/substrate/certificates/rotating/).

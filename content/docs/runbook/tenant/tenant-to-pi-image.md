@@ -39,7 +39,7 @@ the environment, under these names:
 | `DEEVNET_TENANT` | your tenant | the same |
 | `MQTT_HOST` | `mqtt.mobile.deevnet.net` | `<hostname>.local` |
 | `MQTT_PORT` | `8883` | `8883` |
-| `MQTT_CA_FILE` | `deevnet-mobile-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
+| `MQTT_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
 | `MQTT_USERNAME`, `MQTT_PASSWORD` | your app's broker account | the same: you re-create it with the same password |
 | `LOG_ENDPOINT` | `log_endpoint` | `https://<hostname>.local:8427` |
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
@@ -48,7 +48,7 @@ the environment, under these names:
 | `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
 | `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the card's |
 | `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the card's |
-| `GRAFANA_CA_CERT` | `deevnet-mobile-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
+| `GRAFANA_CA_CERT` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
 
 The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
 `TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
@@ -64,7 +64,7 @@ output "kit_env" {
     DEEVNET_TENANT=${deevnet_tenant.this.name}
     MQTT_HOST=mqtt.mobile.deevnet.net
     MQTT_PORT=8883
-    MQTT_CA_FILE=deevnet-mobile-root-ca.pem
+    MQTT_CA_FILE=deevnet-root-ca.pem
     MQTT_USERNAME=${deevnet_iot_broker_account.backend.username}
     MQTT_PASSWORD=${deevnet_iot_broker_account.backend.password}
     LOG_ENDPOINT=${deevnet_tenant.this.log_endpoint}
@@ -76,7 +76,7 @@ output "kit_env" {
     GRAFANA_AUTH=${deevnet_tenant.this.dashboard_username}:${deevnet_tenant.this.dashboard_password}
     GRAFANA_ORG_ID=${deevnet_tenant.this.dashboard_org_id}
     TF_VAR_grafana_org_id=${deevnet_tenant.this.dashboard_org_id}
-    GRAFANA_CA_CERT=deevnet-mobile-root-ca.pem
+    GRAFANA_CA_CERT=deevnet-root-ca.pem
   EOT
 }
 ```
@@ -241,7 +241,7 @@ Two lines change in the firmware from the [walkthrough](/docs/runbook/tenant/wal
 
 - **The broker.** Use the Pi's address. A Pico W cannot resolve `bench1.local`. Give the Pi a DHCP
   reservation on your router so the address stays put.
-- **The CA.** Replace `deevnet-mobile-root-ca.pem`/`.der` with the card's (`~/deevnet-kit/deevnet-kit-ca.pem`;
+- **The CA.** Replace `deevnet-root-ca.pem`/`.der` with the card's (`~/deevnet-kit/deevnet-kit-ca.pem`;
   `openssl x509 -in deevnet-kit-ca.pem -outform der -out deevnet-kit-ca.der` for the Pico).
 
 And the Wi-Fi: the Pi's network instead of `DVNTM-IOT`. The username, the password and every topic

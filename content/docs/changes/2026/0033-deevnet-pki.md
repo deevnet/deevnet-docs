@@ -10,7 +10,7 @@ weight: -33
 | **Date** | 2026-10-03 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1–3 done 2026-10-04: the Deevnet Root CA and Mobile Site CA made offline; the Mobile Substrate CA and Tenant Device CA signed offline and accepted, the Tenant Device CA installed in OpenBao. Nothing serving traffic has changed. **Next:** step 4. |
+| **Status** | **In progress.** Steps 1–6 and 8 done 2026-10-04/05: every substrate service and appliance serves the new chain and every client verifies it; the ADR-0030 root, its keys and its intermediates are retired (R-11 closed). **Left (step 7):** the tenant repos and eds's lightd to `deevnet-root-ca.pem` alone, the Fedora templates rebuilt, the `pi-pki` image rebuilt with the chain-check fix. |
 | **Window** | Steps 1–3 over one or two days, nothing live changing. Steps 5–7 in one sitting. Step 8 once nothing uses the old root. |
 | **Site** | mobile |
 | **Systems** | Every substrate host and service: both hypervisors, the core router, `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02nms001v01` (the Omada controller), `dv02hyp002p02` (the egress agent), the Builder. Every tenant (tdemo, eds, mabell, cdeever), the operator's computers. |
@@ -310,6 +310,34 @@ Each fingerprint was checked against the paper record. The Site CA carries the n
 root through the inventory's Site CA. OpenBao's `pki-tenant-device` mount issues from the Tenant
 Device CA (inventory #70, #71).
 
+Steps 4–6 and 8 on 2026-10-04 and 2026-10-05, from the Builder.
+
+**Step 4.** The collections published; the root put on the artifact server
+(`keys/pki/deevnet-root-ca.{pem,crt}`).
+
+**Step 5.** Both roots trusted on all 11 hosts' OS stores (each run's own check), by the egress agent
+and the log bridge, and in tdemo's, eds's and mabell's CA files and eds's lightd. The operator's
+Windows computer took the new root.
+
+**Step 6**, in this order:
+1. **the Deevnet API**, with a two-root CA file, so its calls reached every service whichever chain
+   it served;
+2. **both hypervisors**, verified by every name and address;
+3. **OpenBao's listener**, then the API again to pin it; OpenBao's clients now pin the root itself;
+4. **the Omada controller** and **the core router**; the operator chose the router's certificate in
+   its GUI, CHG-0032's outstanding step, and `site_verify_opnsense` turned on (inventory #72): every
+   client of the three appliances verifies;
+5. **the state store**, **the broker** and **the observability host** (log store, Grafana,
+   downloads); eds's lightd reconnected to the broker on its own;
+6. `make reconcile NAME=--all`, rewriting every tenant's Grafana data sources.
+
+**Step 8**, straight after: the operator judged no waiting period was needed, since the old root had
+never been trusted where it mattered. The old anchor removed from all 11 hosts' bundles; OpenBao's
+`pki` mount deleted; the router's old CAs deleted; downloads serves only `deevnet-root-ca.pem`, and the
+provider's scripts embed the new root (provider #16); the old root and bootstrap keys deleted from
+the vault (inventory #73). Afterwards `tenant-check.sh`, downloaded from the site, verified all six
+site services with the Deevnet Root CA alone.
+
 ### Departures from the plan
 
 - **The ceremony machine took several image builds to boot and run**, each fix in the image factory:
@@ -331,6 +359,20 @@ Device CA (inventory #70, #71).
   play ran in between.
 - **Only one key drive so far.** The backup key drive waits for a third USB drive. Until then each
   offline key exists once.
+- **Two reissue checks passed that should have failed.** `openssl verify -CAfile` also loads the
+  system trust store, which since step 5 held the old root, so the API's old certificate "chained to
+  the new root" and was not reissued. Every check in the roles and ceremony tools now passes
+  `-no-CApath -no-CAstore` (builder #25, mgmt #75); the same flaw had let `deevnet-pki-transfer.sh
+  accept` trust a chain to any public CA.
+- **`substrate_cert` read an undefined variable** (`substrate`, where the inventory has
+  `deevnet_substrate`), hidden by a test that defined it (builder #26).
+- **`--tags` would have skipped recreating containers**: a tag selects an `include_role` but not the
+  tasks it includes. Roles were run on their own, and the runbook now says `--limit`.
+- **The API and the hypervisors moved together, before the rest of step 6**: the API trusted only
+  the old root, so moving Proxmox alone would have cut it off.
+- **OpenBao's role and `site_cert` both set its `tls` directory**, so every run changed it (mgmt #76).
+- **The old root on the operator's computer was in the Intermediate store**, where Windows never
+  trusts it; the runbook now says to choose Trusted Root explicitly.
 
 ## Follow-ups
 

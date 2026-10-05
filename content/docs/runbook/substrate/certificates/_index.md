@@ -6,28 +6,35 @@ bookCollapseSection: true
 
 # Certificates
 
-Everything the site serves over TLS chains to one root, `CN=Deevnet mobile root CA`, kept offline
-in the inventory vault
-([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)). Two
-intermediates sit under it and sign every certificate in service. Certificates last a year and are
-laid down by the roles that build each host. `certs.yml` renews them all, and nothing renews them on
-a clock.
+Everything the site serves over TLS chains to the **Deevnet Root CA**, through the **Mobile Site
+CA** and the **Mobile Substrate CA**
+([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). The root and the Site CA are
+kept offline ([Root of Trust](/docs/runbook/root-of-trust/)). The Substrate CA's key is in the
+inventory vault, and it signs every substrate certificate on the control node, OpenBao's own
+listener included. Certificates last a year and are laid down by the roles that build each host.
+`certs.yml` renews them all, and nothing renews them on a clock.
 
-## Today, a root and two intermediates sign every certificate in service
+## The chain
+
+**Four CAs, two of them offline, sign everything on the site:**
 
 | CA | Where its key is | Signs | Valid to |
 |---|---|---|---|
-| `Deevnet mobile root CA` | the inventory vault, `vault_site_root_ca_key` | the two intermediates, nothing else | 2046-10-02 |
-| `Deevnet mobile intermediate CA` | inside OpenBao, generated there and never exported | the Platform services and the Omada controller (`pki/issue/platform`) | 2031-10-02 |
-| `Deevnet mobile bootstrap CA` | the inventory vault, `vault_site_bootstrap_ca_key` | the core router and the hypervisors, on the control node | 2031-10-02 |
+| `Deevnet Root CA` | offline ([Root of Trust](/docs/runbook/root-of-trust/)) | Site CAs only | 2046-10-04 |
+| `Deevnet Mobile Site CA` | offline | the mobile site's issuing CAs only | 2036-10-04 |
+| `Deevnet Mobile Substrate CA` | the inventory vault, `vault_site_substrate_ca_key` | every substrate certificate, on the control node (`deevnet.builder.substrate_cert`) | 2031-10-04 |
+| `Deevnet Mobile Tenant Device CA` | inside OpenBao, `pki-tenant-device`, never exported | tenant devices' client certificates (not yet issuing) | 2031-10-04 |
 
-The bootstrap intermediate exists because the core router and the hypervisors come up before
-OpenBao, and OpenBao's VM is built through them. A certificate only OpenBao could issue would make a
-from-scratch rebuild wait on itself.
+**Every substrate service serves its leaf, the Substrate CA and the Site CA,** so a client that holds
+only the root can build the chain. Omada also sends the root, which its image wants in the chain.
 
-Both certificates are public and live in the inventory repository at `pki/mobile/`, outside the
-inventory directory, because Ansible parses every file in there as inventory. The root's SHA-256
-fingerprint is `68:D5:C9:8E:3D:2E:B2:DF:B6:1B:99:E4:F3:4D:F9:D3:B4:65:C3:66:34:97:30:97:36:B7:7B:60:C4:15:2C:6B`.
+**The Site CA is name-constrained** to `deevnet.net`, `localhost`, and private and loopback
+addresses, so nothing under it can vouch for a public site.
+
+The certificates are public, in the inventory repository: the root at `pki/deevnet-root-ca.pem`, and
+the site's CAs in `pki/mobile/`, outside the inventory directory because Ansible parses every file in
+there as inventory. The root's SHA-256 fingerprint is
+`F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52`.
 
 ## Every certificate's names come from the inventory
 
@@ -48,7 +55,7 @@ is issued. Some certificates carry more:
 |---|---|
 | The Builder, the hypervisors, every management-plane VM | the OS trust store (`deevnet.builder.site_trust`) |
 | Fedora VM templates | baked in by the image factory |
-| Each service's own TLS directory | `deevnet-mobile-root-ca.pem`, beside its certificate |
+| Each service's own TLS directory | `deevnet-root-ca.pem`, beside its certificate |
 | Tenants | they download it once and pass it to each tool by file |
 | Your computer | [by hand](trusting-the-root/) |
 
@@ -63,7 +70,7 @@ those switches.
 - [Proxmox](proxmox/), [Core Router](core-router/), [Omada Controller](omada-controller/): how each
   appliance takes its certificate, and how to back it out.
 - [Trusting the Root](trusting-the-root/): on your own computer.
-- [Rotating](rotating/): a new intermediate, or a new root.
+- [Rotating](rotating/): a new issuing CA, Site CA or root.
 - [Root of Trust](/docs/runbook/root-of-trust/): the offline ceremonies for the Deevnet Root CA and
   each Site CA ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)).
 - [Troubleshooting](troubleshooting/): when a certificate is served but not trusted.

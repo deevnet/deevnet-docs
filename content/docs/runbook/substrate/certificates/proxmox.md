@@ -5,8 +5,8 @@ weight: 2
 
 # Proxmox
 
-Each hypervisor's web UI and API (`:8006`) serve a certificate signed by the bootstrap intermediate,
-installed by `deevnet.builder.proxmox_node_cert` with Proxmox's own command:
+Each hypervisor's web UI and API (`:8006`) serve a certificate signed by the Substrate CA on the
+control node, installed by `deevnet.builder.proxmox_node_cert` with Proxmox's own command:
 
 ```bash
 pvenode cert set <chain.pem> <key.pem> --force 1 --restart 1
@@ -32,10 +32,11 @@ The builder collection's `site.yml` runs the same role in the hypervisors play (
 ```bash
 curl -fsS -o /dev/null https://pve2.mobile.deevnet.net:8006/ && echo ok
 openssl s_client -connect 10.20.99.22:8006 -showcerts -verify_ip 10.20.99.22 -verify_return_error \
-  -CAfile /srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem </dev/null
+  -CAfile /srv/dvnt/ansible-inventory-deevnet/pki/deevnet-root-ca.pem -no-CApath -no-CAstore </dev/null
 ```
 
-Two certificates (the leaf, then `Deevnet mobile bootstrap CA`) and `Verify return code: 0 (ok)`.
+Three certificates (the leaf, `Deevnet Mobile Substrate CA`, `Deevnet Mobile Site CA`) and
+`Verify return code: 0 (ok)`.
 
 ## Back out to the node's own certificate with pvenode cert delete
 

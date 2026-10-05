@@ -19,16 +19,16 @@ say the site is up.
 
 - **Run it from the Builder**, on the management segment, which reaches every zone. Tenant-facing
   segments are checked from a real client instead: see [From the client segments](#from-the-client-segments).
-- **Use the site root** for every TLS check. The Builder trusts it at the OS level, so `--cacert` is
+- **Use the Deevnet Root CA** for every TLS check. The Builder trusts it at the OS level, so `--cacert` is
   optional there; naming it keeps the check honest on any other machine. The inventory's copy is
-  `ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem`:
+  `ansible-inventory-deevnet/pki/deevnet-root-ca.pem`:
 
   ```bash
-  CA=/srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem
+  CA=/srv/dvnt/ansible-inventory-deevnet/pki/deevnet-root-ca.pem
   ```
 
-  OpenBao's own listener is the exception: it is self-signed, and checked against the copy pinned on
-  the control node, `ansible-collection-deevnet.mgmt/.openbao/dv02idn001v01-listener.pem`.
+  OpenBao's listener is no exception: its certificate comes from the Substrate CA like every other
+  (ADR-0031 §4).
 
 - **Addresses** are from inventory. Names are in the `mobile.deevnet.net` zone and resolve through the
   core router, `10.20.99.1`.
@@ -65,7 +65,7 @@ dig +short @10.20.99.1 tdemo-1.tdemo.mobile.deevnet.net      # 10.20.129.10, if 
 ping -c 3 dv02hyp001p01.mobile.deevnet.net    # management hypervisor, 10.20.99.21
 ping -c 3 dv02hyp002p02.mobile.deevnet.net    # tenant hypervisor, 10.20.99.22
 
-# Proxmox answers, verified against the site root (401: no token, which is expected)
+# Proxmox answers, verified against the Deevnet Root CA (401: no token, which is expected)
 curl --cacert $CA -s -o /dev/null -w '%{http_code}\n' https://dv02hyp001p01.mobile.deevnet.net:8006/api2/json/version
 curl --cacert $CA -s -o /dev/null -w '%{http_code}\n' https://dv02hyp002p02.mobile.deevnet.net:8006/api2/json/version
 
@@ -87,7 +87,7 @@ The substrate service VMs, and one check each.
 | Deevnet API | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA https://api.mobile.deevnet.net:8080/readyz` | `200` (recorded: the `deevnet_api` role asserts it) |
 | | | `curl --cacert $CA https://api.mobile.deevnet.net:8080/version` | the deployed tag |
 | Terraform state store | `dv02prv001v01`, 10.20.25.20 | `curl -I http://tfstate.mobile.deevnet.net:9000/minio/health/live` | `200` |
-| OpenBao | `dv02idn001v01`, 10.20.25.21 | `curl --cacert .openbao/dv02idn001v01-listener.pem https://dv02idn001v01.mobile.deevnet.net:8200/v1/sys/health` | `200`: initialized, unsealed, active |
+| OpenBao | `dv02idn001v01`, 10.20.25.21 | `curl --cacert $CA https://dv02idn001v01.mobile.deevnet.net:8200/v1/sys/health` | `200`: initialized, unsealed, active |
 | Tenant DNS (PowerDNS) | `dv02idn001v01`, 10.20.25.21 | `dig @10.20.25.21 tdemo.mobile.deevnet.net SOA` | an answer for each admitted tenant's zone |
 | MQTT broker (VerneMQ) | `dv02msg001v01`, 10.20.35.20 | `openssl s_client -connect mqtt.mobile.deevnet.net:8883 -CAfile $CA </dev/null` | `Verify return code: 0` (recorded: [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) |
 | Log store (vmauth) | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -o /dev/null -w '%{http_code}\n' https://dv02obs001v01.mobile.deevnet.net:8427/select/logsql/query` | `401`: vmauth is up and refuses a request with no token (recorded: [CHG-0018](/docs/changes/2026/0018-central-log-store/)) |

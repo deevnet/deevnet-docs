@@ -6,7 +6,7 @@ weight: 4
 # Omada Controller
 
 The controller's web UI and Open API (`:8043`) and its portal (`:8843`) serve a certificate from
-OpenBao's intermediate, through the container image's own mechanism. Its entrypoint builds the
+the Substrate CA, through the container image's own mechanism. Its entrypoint builds the
 keystore from two files in `/cert` on every start (`mbentley/omada-controller` README):
 
 - `/cert/tls.crt`: **the full chain, root included**;
@@ -37,11 +37,11 @@ meanwhile.
 ```bash
 for p in 8043 8843; do
   openssl s_client -connect omada.mobile.deevnet.net:$p -showcerts -verify_return_error \
-    -CAfile /srv/dvnt/ansible-inventory-deevnet/pki/mobile/deevnet-mobile-root-ca.pem </dev/null | grep 'Verify return'
+    -CAfile /srv/dvnt/ansible-inventory-deevnet/pki/deevnet-root-ca.pem -no-CApath -no-CAstore </dev/null | grep 'Verify return'
 done
 ```
 
-Three certificates (leaf, intermediate, root) on each port. Then check every device is still
+Four certificates (leaf, Substrate CA, Site CA, root) on each port. Then check every device is still
 connected in the controller.
 
 ## Back out to the controller's own keystore

@@ -25,7 +25,7 @@ Tell the operator the name. They run one API call
 1. an **enrollment token** (it looks like `s.…`)
 2. the **API endpoint**, `https://api.mobile.deevnet.net:8080`
 3. the **`DVNTM-TD` Wi-Fi key**, for the network you work from
-4. the **site CA**, `deevnet-mobile-root-ca.pem`
+4. the **Deevnet Root CA**, `deevnet-root-ca.pem`
 
 ## What the token is
 

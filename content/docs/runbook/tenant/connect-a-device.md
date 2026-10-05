@@ -115,7 +115,7 @@ account: [Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/).
 - **The board has no Wi-Fi.** A plain Pico, like the one in CARPE's starter kit, has no radio;
   only a Pico W (or another Wi-Fi board) can join
 - **It joins but can't reach the broker.** That's past Wi-Fi: the broker needs its own account,
-  and TLS needs the site CA ([Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/))
+  and TLS needs the Deevnet Root CA ([Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/))
 - **It stopped working after a key rotation.** Rotating the key drops **every** device holding the
   old one, until each is reflashed ([Wi-Fi Keys](/docs/runbook/tenant/services/wifi-keys/#rotating-it))
 
