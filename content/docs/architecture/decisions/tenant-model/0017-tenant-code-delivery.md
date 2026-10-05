@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Superseded by [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/): the tenant pushes its own code over SSH, and pushes again after a workload is lost; unattended delivery is out of scope. Never accepted |
 | **Date** | 2026-09-18 |
 | **Revised** | 2026-09-18, twice, before review. First written as a single choice between delivery mechanisms, with tenant-authored cloud-init user-data recommended; that draft argued the wrong layer. Rewritten to separate the **tenant-facing contract** (§1, settled) from the **substrate-side mechanism** (§2, open). Then revised again once both halves of the leading mechanism were tested rather than assumed, adding the measured SMBIOS limit and **§3, the fetch rule that keeps ADR-0012 provisioning-only**. |
 | **Scope** | How a tenant's own application code and configuration arrive on a tenant workload, and how they are kept current — not what the code is, and not how the workload itself is built |
@@ -353,6 +353,10 @@ same category as a container image already on disk.
 ---
 
 ## Current state
+
+**Superseded** by ADR-0034 (2026-10-05). The pull was never built: tenants push their code over
+SSH ([Deploy Your App](/docs/runbook/tenant/deploy-your-app/)). What follows was the state when
+this record was written.
 
 Nothing is built. Tenant workloads are empty Fedora VMs with podman, cloud-init, working DNS and
 working egress, and no mechanism to tell them what to run. EdS has a running, empty `eds-services`

@@ -22,7 +22,8 @@ yet to make your apply send it. Until there is, ask the operator. Closing this i
 [Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/) roadmap.
 
 Anything a workload kept on its own disk is gone. Your application comes back the way it arrived:
-the workload pulls it ([ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)).
+you push it again ([Deploy Your App to a Workload](/docs/runbook/tenant/deploy-your-app/)). Keep the
+steps in a script in your repository, and that is one command.
 
 ## Your names, after a DNS rebuild
 

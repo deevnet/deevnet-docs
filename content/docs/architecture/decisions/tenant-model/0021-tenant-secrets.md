@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
+| **In conflict with** | [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/): this record delivers each workload's credential through ADR-0017's channel, and ADR-0017 is superseded; there is no channel. To be revisited |
 | **Date** | 2026-09-21 |
 | **Scope** | Where a tenant's own runtime secrets live, such as a third-party API key its backend service calls with, how they reach the workload that needs them, and who holds the authoritative copy. Not device credentials, and not how the workload itself is filled with code. |
 | **Extends** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), whose §8 left *"tenant namespaces"* out and said they need their own record. This is that record. |

@@ -62,6 +62,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/) —
+  *Accepted* (2026-10-05). A tenant pushes its own code to its workloads over SSH, from its own
+  computer or CI, with whatever tools it likes; the guide's pattern is a container image, `kit.env`
+  and a systemd unit. The substrate never delivers tenant code. A replaced or rebuilt workload comes
+  back empty and the tenant pushes again, its deploy steps kept in its repository. There is no
+  unattended delivery: no schema, no agent, no fetch at boot. Already how `eds` runs. Supersedes
+  ADR-0017.
 - [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) —
   *Proposed.* Code is the authoritative copy of everything: inventory and its vault for the
   substrate, each tenant's repository for the tenant. Recovery rebuilds from code, with no backup on
@@ -86,9 +93,10 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   workload reads directly under its own AppRole, delivered once through ADR-0017's channel, so the
   API stays out of the read path. OpenBao becomes something needed to *start* a tenant service, not
   to keep one running. Its blast radius now covers tenant secrets, and an audit device and a proven
-  snapshot restore are preconditions for accepting this record. Extends ADR-0016; depends on ADR-0017.
+  snapshot restore are preconditions for accepting this record. Extends ADR-0016; depends on ADR-0017,
+  which ADR-0034 superseded, so it is to be revisited.
 - [ADR-0017: How Tenant Code Reaches a Tenant Workload](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/) —
-  *Proposed.* Separates the tenant-facing contract from the substrate-side mechanism. **The contract
+  *Superseded by ADR-0034; never accepted.* Separates the tenant-facing contract from the substrate-side mechanism. **The contract
   is settled:** a tenant declares its workload configuration to the Deevnet API in a Deevnet-owned
   schema, never Proxmox user-data, so a hypervisor detail stays out of the tenant contract and the
   mechanism can change. **Delivery is forced to be a pull** from inside the workload, because a
@@ -161,7 +169,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   here and building, checking and debugging one otherwise means the hypervisor console. Supersedes,
   in part, ADR-0001 and ADR-0002 where they say the core router never learns tenant address space.
   Devices, other tenants and the outside world still have no path in, and this is explicitly not a
-  delivery mechanism for tenant code — ADR-0017 holds, now as a rule rather than a physical fact.
+  delivery mechanism for tenant code — the tenant delivers its own (ADR-0034), now as a rule rather than a physical fact.
 - [ADR-0003: Tenant Egress on a Single-Member Fabric](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/) —
   tenant egress needs transit forwarding and a default route inside each tenant VRF; Proxmox's own
   exit-node behavior routes around the perimeter rather than through it.
