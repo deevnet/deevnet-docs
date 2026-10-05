@@ -97,7 +97,8 @@ fabric exit node, and the zone policy permits `management` and `trusted` to reac
 ### What this does not authorize
 
 **It is not a delivery mechanism for tenant code.** [ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)
-holds: tenant application code is pulled by the workload, not pushed by the substrate. The
+holds: tenant application code is pulled by the workload, not pushed by the substrate. *(ADR-0017
+is superseded by [ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/): the tenant pushes its own code. The substrate still never does.)* The
 difference is between *operating* a machine — reaching it to look, to debug, to run a check — and
 *owning what runs on it*, which stays with the tenant.
 

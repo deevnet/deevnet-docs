@@ -156,7 +156,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
   Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
 - ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
   site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
-- ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
+- ⏳ Secrets, metrics and alerting, identity and object storage: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 - ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
   the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the

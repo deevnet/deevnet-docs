@@ -76,7 +76,7 @@ tenant A out of tenant B's workload is §1 to §3, not the network.
 ## Consequences
 
 - **Self-service code delivery exists** for a person at a keyboard: `scp`, `rsync`, `git pull`,
-  `podman`, whatever the tenant likes. ADR-0017 remains the answer for unattended delivery (a rebuilt
+  `podman`, whatever the tenant likes. ADR-0017 remains the answer for unattended delivery *(dropped by [ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/): the tenant pushes again)* (a rebuilt
   workload filling itself), but it no longer blocks a tenant from shipping.
 - **Existing workloads are rebuilt.** They were cloned from the substrate template and carry
   `a_autoprov`; nothing short of a new clone removes it.

@@ -158,6 +158,5 @@ The workload is yours to maintain: it is built up to date, and after that
 
 - **A replaced workload comes back empty.** Replacing it (a key change, or a site rebuild) starts
   from the template, so keep these steps in a script beside your Terraform; running it again puts
-  your app back. A workload that fetches and starts your app by itself is
-  [coming](/docs/runbook/tenant/services/coming-soon/#code-delivery-to-workloads).
+  your app back. Nothing puts it back for you: a workload holds only what you push to it.
 - **No backup.** Data you care about belongs somewhere you declared, not on the workload's disk.

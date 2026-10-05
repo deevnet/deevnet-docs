@@ -85,8 +85,9 @@ the reference tenant with the name changed.
 
 The substrate builds a tenant's infrastructure. Three things stay the tenant's own:
 
-- **Its application.** The substrate does not deliver it; a workload pulls it
-  ([ADR-0017](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/)). The line is between
+- **Its application.** The substrate does not deliver it; the tenant pushes it to its workloads,
+  and pushes it again after one is lost
+  ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). The line is between
   *operating* a machine and *owning what runs on it*, and it is a rule rather than a physical fact
   now that operators can reach tenant workloads
   ([ADR-0018](/docs/architecture/decisions/tenant-networking/0018-operator-access-to-tenants/)).

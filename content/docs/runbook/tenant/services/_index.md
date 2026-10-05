@@ -18,11 +18,11 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 | [Logs](logs/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
 | [Dashboards](dashboards/) | attributes of `deevnet_tenant`; dashboards with the `grafana` provider | {{< status-badge "active" "Available" >}} |
 | [State store](state-store/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
+| [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on `deevnet_workload`; you push over SSH | {{< status-badge "active" "Available" >}} |
 | [Secrets](coming-soon/#secrets) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Metrics & alerting](coming-soon/#metrics-and-alerting) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Identity](coming-soon/#identity) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Object storage](coming-soon/#object-storage) | — | {{< status-badge "planned" "Coming soon" >}} |
-| [Code delivery to workloads](coming-soon/#code-delivery-to-workloads) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [A tenant devbox](coming-soon/#a-tenant-devbox) | — | {{< status-badge "planned" "Coming soon" >}} |
 
 Every resource takes `tenant = deevnet_tenant.this.name`, and changing `tenant` or `name` on any of
