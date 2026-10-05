@@ -60,7 +60,9 @@ host and tool, with no browser warning and no client skipping verification.
 - ✅ The Deevnet Root CA in the OS trust store of the Builder, both hypervisors and every management-plane VM
 - ✅ Tenants: `deevnet-root-ca.pem` on the downloads site, embedded in `tenant-check.sh` and `install-provider.sh`
 - ✅ Operator computer trust procedure, Windows included
-- 🔄 The VM templates rebuilt with the Deevnet Root CA; tenant workloads cloned before CHG-0033 trust only the retired root in their OS store
+- ✅ The VM templates rebuilt with the Deevnet Root CA, server and tenant flavors
+- ✅ The tenant repositories and eds's lightd on `deevnet-root-ca.pem`
+- 🔄 Tenant workloads cloned before CHG-0033 trust only the retired root in their OS store, until each is replaced
 
 ---
 

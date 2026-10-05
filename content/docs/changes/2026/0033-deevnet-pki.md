@@ -10,7 +10,7 @@ weight: -33
 | **Date** | 2026-10-03 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1–6 and 8 done 2026-10-04/05: every substrate service and appliance serves the new chain and every client verifies it; the ADR-0030 root, its keys and its intermediates are retired (R-11 closed). **Left (step 7):** the tenant repos and eds's lightd to `deevnet-root-ca.pem` alone, the Fedora templates rebuilt, the `pi-pki` image rebuilt with the chain-check fix. |
+| **Status** | **Complete** 2026-10-05. Every substrate service, appliance and tenant tool trusts the Deevnet Root CA alone; the ADR-0030 root, its keys and its intermediates are retired (R-11 closed); the Fedora templates and the `pi-pki` image are rebuilt. |
 | **Window** | Steps 1–3 over one or two days, nothing live changing. Steps 5–7 in one sitting. Step 8 once nothing uses the old root. |
 | **Site** | mobile |
 | **Systems** | Every substrate host and service: both hypervisors, the core router, `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02nms001v01` (the Omada controller), `dv02hyp002p02` (the egress agent), the Builder. Every tenant (tdemo, eds, mabell, cdeever), the operator's computers. |
@@ -338,6 +338,19 @@ provider's scripts embed the new root (provider #16); the old root and bootstrap
 the vault (inventory #73). Afterwards `tenant-check.sh`, downloaded from the site, verified all six
 site services with the Deevnet Root CA alone.
 
+**Step 7** on 2026-10-05:
+- **The tenant repos** tdemo (#12), eds (#12) and mabell (its open PR #1) name `deevnet-root-ca.pem`,
+  and each checkout holds the new root alone. In each, `terraform init -reconfigure` reached the
+  state store and `plan` refreshed through the API. eds and mabell plan output changes only. tdemo's
+  plan carries older drift between its reference code and its live state, unrelated to this change.
+- **eds's lightd** redeployed with the new file. It logged `connected to broker` over TLS with the
+  Deevnet Root CA as its only anchor, and the old files were removed from `/opt/eds`.
+- **The Fedora templates** rebuilt on both hypervisors, server and tenant flavors. Each build's own
+  check found `Deevnet Root CA` among the store's anchors. The superseded templates were removed.
+- **The `pi-pki` image** rebuilt from `deevnet.mgmt` `2b607ef`, which carries the chain-check fix,
+  and published (SHA-256 `ab4b4bcbe7328a6cd391888e21d6a4312ebdde5d502502ac13cb128e82fbbadf`). The
+  scripts inside it were compared with the collection's byte for byte.
+
 ### Departures from the plan
 
 - **The ceremony machine took several image builds to boot and run**, each fix in the image factory:
@@ -373,8 +386,19 @@ site services with the Deevnet Root CA alone.
 - **OpenBao's role and `site_cert` both set its `tls` directory**, so every run changed it (mgmt #76).
 - **The old root on the operator's computer was in the Intermediate store**, where Windows never
   trusts it; the runbook now says to choose Trusted Root explicitly.
+- **The template build ran Packer with no credentials** when the inventory was vaulted: the
+  Makefile's `eval "$(pve-creds ...)"` hid the fetch's failure. A failed fetch now stops the build
+  (image factory #32).
+- **tdemo had no `.backend.env`.** It was rebuilt from the `state_backend` output kept in tdemo's
+  `terraform.tfstate.backup`.
 
 ## Follow-ups
+
+- Tenant workloads cloned before step 7 (`tdemo-1`, eds's `services`, cdeever's) hold only the
+  retired root in their OS trust store. They take the new one when replaced. Nothing on them uses
+  the OS store for a site service today: eds's lightd names its CA file.
+- The `cdeever` tenant's checkout takes `deevnet-root-ca.pem` from the downloads site.
+- The backup key drive, at the first rotation drill.
 
 - CHG-0034: device certificates through the Deevnet API, and the broker accepting them (ADR-0031
   §6).
