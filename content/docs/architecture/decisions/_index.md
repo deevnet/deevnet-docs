@@ -214,7 +214,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   break-glass account. Users' credentials exist nowhere else, an accepted exception to ADR-0010 §4
   that makes Keycloak's database kept data. Extends ADR-0013 and ADR-0024.
 - [ADR-0024: Dashboards](/docs/architecture/decisions/platform-services/0024-dashboards/) —
-  *Proposed.* Grafana OSS on the tenant observability VM, with one organization per tenant, because
+  *Accepted* (2026-10-05). Grafana OSS on the tenant observability VM, with one organization per tenant, because
   free Grafana has no data-source permissions inside an organization. The API creates each tenant's
   organization, its four data sources, which carry the tenant's read token, and one login. A tenant
   is an Editor, never an Admin, so it can build dashboards but can't create a data source. A data
@@ -223,7 +223,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   the offline mirror, using the same login. A password, unlike a service-account token, can be
   restored from tenant state after a rebuild. Dashboards are re-derivable from code, and ones built
   only by clicking are not kept. Perses was considered: it is pre-1.0 and has no Terraform provider.
-  **Amended by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)** (deployed 2026-09-24):
+  **Amended by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)** (Complete 2026-10-05):
   three log data sources with fixed UIDs, the same on the take-home Pi; port 3000; the password is
   re-minted by the API like the log tokens; and three Grafana 13 behaviors the design now works
   around.

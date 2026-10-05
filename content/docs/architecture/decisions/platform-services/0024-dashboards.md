@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Built and deployed by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), which amends it (see [As built](#as-built-chg-0024)); Accepted when that change is Complete |
+| **Status** | Accepted (2026-10-05): built and deployed by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), which amends it (see [As built](#as-built-chg-0024)) |
 | **Date** | 2026-09-21 |
 | **Scope** | How the operator and each tenant view their metrics and logs as dashboards, how people log in to do it, how dashboards are declared as code, and what a tenant may and may not configure. Not alerting, which ADR-0023 decides. |
 | **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organization per tenant as the likely shape |
@@ -285,8 +285,8 @@ section is the one that holds. The rest stands.
 
 ## Current state
 
-- **Proposed. Deployed 2026-09-24** by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)
-  (In progress: its `tenant_dev` rules are still to apply). Grafana 13.2.2 runs on `obs`, the API
-  is v0.8.0, and `tdemo`, `eds` and `mabell` each have an organization. A rebuild drill restored all
-  three with the same passwords.
+- **Accepted.** Built by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), Complete
+  2026-10-05. Grafana 13.2.2 runs on `obs`, and `tdemo`, `eds` and `mabell` each have an
+  organization and a login. A `tenant_dev` laptop reaches Grafana and the log store; IoT reaches
+  neither. A rebuild drill restored every organization with the same passwords.
 - The metrics store of ADR-0023 is not built.
