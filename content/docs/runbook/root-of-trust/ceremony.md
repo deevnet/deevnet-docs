@@ -17,17 +17,18 @@ script does, and the commands it runs.
 
 ## What you need
 
-**Gather everything before you start; the Pi never touches a network:**
+**Gather everything before you start; nothing connects the Pi to a network during a ceremony:**
 
 | Item | Notes |
 |---|---|
 | **Raspberry Pi 4 Model B** | any memory size |
 | **Its USB-C power supply** | the official 5.1 V / 3 A supply, or one as good |
 | **microSD card**, 8 GB or larger | flashed with the `pi-pki` image ([below](#flash-the-ceremony-image)); holds the system, never a key |
+| **A second microSD card**, any size | flashed with the bootloader reset image ([below](#reset-the-bootloader)); used only to reset the Pi's bootloader |
 | **HDMI display and a micro-HDMI to HDMI cable** | the Pi 4's display ports are micro-HDMI; use the one nearest the power port |
 | **Wired USB keyboard** | wired: a wireless keyboard is a radio link |
 | **Two USB drives, plus one more for a backup** | the **key drive** (encrypted, holds the CA keys), the **transfer drive** (plain, carries certificates to the Builder), and optionally a **backup key drive**. Any size; label them with a marker so you can tell them apart |
-| **No network cable** | nothing is ever plugged into the Pi's network port |
+| **No network cable** | nothing is plugged into the Pi's network port |
 | **The paper record and a pen** | a notebook or sheet, for fingerprints, hashes and dates |
 | **Two passphrases, chosen beforehand** | one for the key drive, one for the key files inside it; both kept offline, under the holder's own control |
 
@@ -42,6 +43,7 @@ drive is the only way back.
 | Drive | Holds | Crosses between online and offline? |
 |---|---|---|
 | **microSD** (boot) | the `pi-pki` system | no: written once, then used only in the Pi |
+| **microSD** (bootloader reset) | Raspberry Pi's bootloader reset image | no: written once, then used only in the Pi |
 | **Key drive**, and the **backup key drive** (LUKS2-encrypted) | the Root CA's and Site CAs' passphrase-encrypted keys, and their certificates | **never**: only ever plugged into the Pi |
 | **Transfer drive** (plain FAT32, labeled `TRANSFER`) | certificates out, signing requests in, never a key | yes, and it is the only thing that does |
 
@@ -85,18 +87,58 @@ drive is the only way back.
 2. Flash it to the microSD with Raspberry Pi Imager (choose **no** customization: no Wi-Fi, no SSH,
    no user), or `xzcat raspios-bookworm-mobile-pki.img.xz | sudo dd of=/dev/sdX bs=4M conv=fsync`.
 
+### Reset the bootloader
+
+**Reset the Pi's bootloader before every ceremony, because it lives on the board, not on the
+microSD.** A Raspberry Pi 4 starts from a bootloader stored in an EEPROM on the board, and any system
+that has run on the Pi can rewrite it. Changing the microSD doesn't undo that. The reset replaces it
+from the reset card before the ceremony card ever boots.
+
+**The reset runs ahead of the bootloader it replaces.** Raspberry Pi's documentation: *"At power on,
+the ROM found on BCM2711 and BCM2712 looks for a file called `recovery.bin` in the root directory of
+the boot partition on the SD card. If a valid `recovery.bin` is found then the ROM executes this
+instead of the contents of the EEPROM."*
+
+**Make the reset card once**, on any computer with
+[Raspberry Pi Imager](https://www.raspberrypi.com/software/), following Raspberry Pi's
+[Reflash the bootloader](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#bootloader_reflash):
+
+1. In the *Device* tab, choose **Raspberry Pi 4**.
+2. In the *OS* tab, choose **Misc utility images > Bootloader > SD Card Boot**.
+3. Write it to the second microSD.
+4. Write the first line of the card's `pieeprom.sig` (the image's SHA-256) in the paper record.
+5. On a Raspberry Pi 4B revision 1.3 or earlier, the USB controller has its own firmware EEPROM
+   (`vl805.bin`), and the key drives go through it. Check the card carries `vl805.bin` and
+   `vl805.sig`, and write that hash down too.
+
+**At every ceremony, before the `pi-pki` card:**
+
+1. With no network cable and no USB drive, put the reset card in the Pi and connect the display and
+   power.
+2. Wait for the screen to turn **green** and the green activity LED to flash steadily. That means
+   the bootloader was rewritten. **If the screen does not turn green, stop:** the reset didn't run,
+   and the Pi is not fit for a ceremony.
+3. Disconnect the power and take out the reset card.
+
 ## Run the ceremony
 
-**Start with no USB drive plugged in; the script asks for each one when it needs it:**
+**Start with the bootloader reset and no USB drive plugged in; the script asks for each drive when
+it needs it:**
 
-1. Put the microSD in the Pi and connect the display, keyboard and power, with no network cable
+1. [Reset the bootloader](#reset-the-bootloader). Then put the `pi-pki` microSD in the Pi and
+   connect the display, keyboard and power, with no network cable
    and no USB drive. It boots to the `pki` login on its own and shows a banner.
 2. Set the clock. A Pi has no battery clock, and every certificate's validity starts from it:
 
    ```bash
    sudo date -u -s 'YYYY-MM-DD HH:MM'     # now, in UTC
    ```
-3. Run the ceremony:
+3. Write the bootloader's version in the paper record:
+
+   ```bash
+   vcgencmd bootloader_version
+   ```
+4. Run the ceremony:
 
    ```bash
    ./deevnet-pki-ceremony.sh
@@ -326,7 +368,10 @@ a key held off the Builder. A site that needs that assurance should add it.
 - the root and Site CA keys share one key drive and one passphrase;
 - the ceremony machine was built and flashed from the Builder, and during setup a key drive went
   into the Builder for testing. Once a real root exists, its key drives never touch a networked
-  machine.
+  machine;
+- the first ceremony, which made today's root, ran without a bootloader reset. A clean re-root is
+  planned once the PKI is fully rolled out
+  ([TLS Certificate Automation](/docs/roadmap/infrastructure/tls-cert-automation/)).
 
 **There is no revocation.** A CA certificate stays valid until it expires; see
 [Custody](/docs/runbook/root-of-trust/custody/#exposed-key) for what an exposed key means, and when to
