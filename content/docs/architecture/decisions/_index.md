@@ -291,6 +291,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Substrate](substrate/)
 
+- [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/) —
+  *Proposed.* ADR-0014's on-write copy, the API's database backups and, later, Keycloak's backups
+  live on a dedicated Raspberry Pi 4 that leaves the Pi lab for the substrate, under a new role code
+  `rep`. It boots and stores on a USB SSD, is wired on the management segment, and needs nothing on
+  the substrate hypervisor to serve, so it is up when ADR-0014 §6 restores from it. It may be taken
+  offline for rare, scheduled operator work. Answers ADR-0014's open question 1, ADR-0026's 2 and
+  ADR-0025's 3.
 - [ADR-0031: Deevnet PKI](/docs/architecture/decisions/substrate/0031-deevnet-pki/) —
   *Accepted; built by CHG-0033, §6 (mTLS) still to build.* One Deevnet Root CA and a Site CA per site, both generated and held offline by the
   operator, so no online system can mint a CA. Under each Site CA, two issuing CAs separate server and

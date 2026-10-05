@@ -13,6 +13,7 @@ aliases:
 | **Date** | 2026-09-21 |
 | **Scope** | What the substrate's S3 service must guarantee, which engine provides it, and how it serves both Terraform state and tenants' own buckets. Covers isolation, quotas, locking, versioning, transport and replication. |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered a state store and chose MinIO as a detail; [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), whose data disk and replica this store needs before it holds anything more |
+| **Extended by** | [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/): the replica is a dedicated Raspberry Pi on the management segment (open question 2) |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/) §4, [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) §6, [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) |
 
 ---
@@ -212,6 +213,7 @@ reserve, and replication settings.
 1. **The size of the state reserve**, and the capacity of the data disk it comes out of.
 2. **Where the ADR-0014 replica lives.** Still open there, and now also the target for opted-in
    tenant buckets.
+   *Answered by [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/).*
 3. **Bucket lifecycle rules**, such as expiry and noncurrent-version cleanup. Tenant-declared, or
    a substrate default?
 4. **Can a tenant bucket be read publicly** (for example, static assets)? Not in v1. Nothing on the

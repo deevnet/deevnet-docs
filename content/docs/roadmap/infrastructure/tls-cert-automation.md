@@ -5,7 +5,7 @@ aliases:
 weight: 5
 tasks_completed: 13
 tasks_in_progress: 1
-tasks_planned: 6
+tasks_planned: 7
 ---
 
 # TLS Cert Automation
@@ -84,6 +84,7 @@ host and tool, with no browser warning and no client skipping verification.
 
 ## Later ⏳
 
+- ⏳ A clean re-root once device identity is built: a new Deevnet Root CA and Site CA, and every issuing CA under them, made in a ceremony that starts with a bootloader reset ([Certificates](/docs/standards/certificates/) 5.10). The first ceremony ran without one
 - ⏳ Automatic renewal (ADR-0030 open question 1)
 - ⏳ Expiry monitoring, with ADR-0023
 - ⏳ Keeping a twenty-year root readable for twenty years: the root outlives any Pi, USB drive or microSD, and today's tools may not run in 2046. Open: how often to refresh the key media onto new drives, what keeps the ceremony machine buildable, whether a different medium (paper backup, a hardware token) belongs in custody, or whether a shorter root lifetime is simpler

@@ -140,6 +140,9 @@ is valid for.
   certificate is made. Its operating system SHOULD be the image factory's ceremony image (`pi-pki`),
   checked against its published hash before use, so that the code that signs is pinned at build and
   never arrives on the transfer media.
+- 5.10 Firmware that persists on the offline machine across boot media, such as a Raspberry Pi's
+  bootloader EEPROM, MUST be reset from known media at the start of every ceremony, and the reset
+  confirmed before the ceremony's system boots.
 
 ---
 
