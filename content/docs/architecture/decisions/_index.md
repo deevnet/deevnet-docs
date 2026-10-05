@@ -306,7 +306,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   Tenant Device CA, inside OpenBao, issues tenant devices' client certificates through the API, the
   target for mTLS. Subjects carry O, OU and CN. Supersedes ADR-0030 §1–§4; amends ADR-0016 §3.
 - [ADR-0030: Site Certificate Hierarchy](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) —
-  *Proposed; §1–§4 superseded by ADR-0031.* Answers ADR-0016's open question 1. Each site's root is
+  *Accepted (2026-10-05) for §5–§8, built by CHG-0033; §1–§4 superseded by ADR-0031.* Answers ADR-0016's open question 1. Each site's root is
   generated once and kept offline in ansible-vault; OpenBao holds an intermediate under it and issues
   tenant certificates and those of every service built after it, so an OpenBao rebuild costs an
   intermediate rather than a new root. The core router and the hypervisors, which come up before
