@@ -9,8 +9,8 @@ bookCollapseSection: true
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
 | CHG-0033 | 2026-10-03 | [The Deevnet PKI](0033-deevnet-pki/) | Configuration | mobile | In progress |
-| CHG-0032 | 2026-10-02 | [The Appliances on Site Certificates](0032-appliance-certificates/) | Configuration | mobile | In progress |
-| CHG-0031 | 2026-10-02 | [The Site Root and Its Intermediate](0031-site-root-ca/) | Configuration | mobile | In progress |
+| CHG-0032 | 2026-10-02 | [The Appliances on Site Certificates](0032-appliance-certificates/) | Configuration | mobile | Complete |
+| CHG-0031 | 2026-10-02 | [The Site Root and Its Intermediate](0031-site-root-ca/) | Configuration | mobile | Superseded |
 | CHG-0030 | 2026-09-27 | [The State Store Over TLS](0030-state-store-tls/) | Configuration | mobile | Complete |
 | CHG-0029 | 2026-09-27 | [One Key per Tenant on DVNTM-TD](0029-tenant-developer-network-keys/) | Configuration | mobile | Complete |
 | CHG-0028 | 2026-09-27 | [Tenants Log In to Their Own Workloads](0028-tenant-workload-login/) | Deployment | mobile | Complete |

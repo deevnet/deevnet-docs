@@ -10,7 +10,7 @@ weight: -31
 | **Date** | 2026-10-02 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Step 1 done 2026-10-02: the site root and the bootstrap intermediate exist, keys encrypted and pushed. Steps 2–7 done 2026-10-02 on the Builder: OpenBao issues from the intermediate, every service serves the new chain, every substrate host trusts the root, tdemo, eds and mabell hold it. **Left:** the cdeever tenant (on the operator's computer) and `segment-check.sh DVNTM-TD` from a computer on that segment. |
+| **Status** | **Superseded** by [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) on 2026-10-05, which re-rooted the site onto the Deevnet Root CA and retired this change's root and intermediates. Its two open items (the cdeever tenant, the DVNTM-TD segment check) concerned the retired root. |
 | **Window** | Steps 2–7 in one sitting; tenants are without a working CA from step 5 until step 6 |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the API, the state store), `dv02msg001v01` (the broker, the log bridge), `dv02obs001v01` (the log store, Grafana, downloads), `dv02hyp002p02` (the egress agent), the Builder and both hypervisors (trust store), the tdemo, eds, mabell and cdeever tenants, the eds workload |

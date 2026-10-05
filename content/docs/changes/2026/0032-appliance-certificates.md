@@ -10,7 +10,7 @@ weight: -32
 | **Date** | 2026-10-02 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Both hypervisors and the Omada controller serve site certificates and their clients verify them. The core router's certificate is imported; **left:** the operator chooses it in the router's GUI, then `site_verify_opnsense: true`. |
+| **Status** | **Complete**, 2026-10-05. Both hypervisors and the Omada controller served site certificates, verified, by 2026-10-02. The core router's GUI selection, the last step, was made during [CHG-0033](/docs/changes/2026/0033-deevnet-pki/), when the certificate was reissued from the Substrate CA, and `site_verify_opnsense` turned on. |
 | **Window** | 2026-10-02, from the Builder |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01`, `dv02hyp002p02` (Proxmox), `dv02cor002p01` (core router), `dv02nms001v01` (Omada controller), `dv02prv001v01` (the Deevnet API) |

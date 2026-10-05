@@ -106,11 +106,11 @@ backend account. A device-only tenant is normal.
 
 ## 2. Prepare the CA
 
-Both boards verify the broker's certificate against the site CA:
+Both boards verify the broker's certificate against the Deevnet Root CA:
 
 ```bash
 # Pico W (MicroPython) wants DER
-openssl x509 -in deevnet-mobile-root-ca.pem -outform DER -out deevnet-mobile-root-ca.der
+openssl x509 -in deevnet-root-ca.pem -outform DER -out deevnet-root-ca.der
 ```
 
 The ESP32 takes the PEM text as-is.
@@ -128,11 +128,11 @@ Pico W firmware: hold BOOTSEL, plug in, and copy the `.uf2` onto the drive that 
 import mip; mip.install("umqtt.simple")      # once, while on any network with internet
 ```
 
-Copy `deevnet-mobile-root-ca.der` and this `main.py` to the board, from your computer with
+Copy `deevnet-root-ca.der` and this `main.py` to the board, from your computer with
 [`mpremote`](/docs/runbook/tenant/getting-started/before-you-start/#tools) (or Thonny's Files pane):
 
 ```bash
-mpremote cp deevnet-mobile-root-ca.der main.py :      # then: mpremote reset
+mpremote cp deevnet-root-ca.der main.py :      # then: mpremote reset
 ```
 
 The `main.py`:
@@ -152,7 +152,7 @@ while not wlan.isconnected():
 
 ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 ctx.verify_mode = ssl.CERT_REQUIRED
-ctx.load_verify_locations(cadata=open("deevnet-mobile-root-ca.der", "rb").read())
+ctx.load_verify_locations(cadata=open("deevnet-root-ca.der", "rb").read())
 
 def on_command(topic, msg):
     print("command:", msg)
@@ -186,7 +186,7 @@ credentials and the CA in `secrets.h`, beside the sketch, and keep it out of git
 #define MQTT_PASS  "<flash.mqtt.esp32-1.pass>"
 static const char SITE_CA[] = R"PEM(
 -----BEGIN CERTIFICATE-----
-...paste deevnet-mobile-root-ca.pem here...
+...paste deevnet-root-ca.pem here...
 -----END CERTIFICATE-----
 )PEM";
 ```
@@ -259,7 +259,7 @@ from [Tools](/docs/runbook/tenant/getting-started/before-you-start/#tools):
 
 ```bash
 sudo dnf install -y mosquitto        # the client tools
-mosquitto_sub -h mqtt.mobile.deevnet.net -p 8883 --cafile deevnet-mobile-root-ca.pem \
+mosquitto_sub -h mqtt.mobile.deevnet.net -p 8883 --cafile deevnet-root-ca.pem \
   -u bench1-backend -P '<backend.pass>' -i bench1-backend \
   -t 'bench1/sensors/+/telemetry' -v
 ```
@@ -272,12 +272,12 @@ bench1/sensors/esp32-1/telemetry {"rssi":-58}
 And a command to one device:
 
 ```bash
-mosquitto_pub -h mqtt.mobile.deevnet.net -p 8883 --cafile deevnet-mobile-root-ca.pem \
+mosquitto_pub -h mqtt.mobile.deevnet.net -p 8883 --cafile deevnet-root-ca.pem \
   -u bench1-backend -P '<backend.pass>' -i bench1-backend-cli \
   -t 'bench1/sensors/pico-1/command' -m 'blink'
 ```
 
-A real backend is the same thing in code — `paho-mqtt` in Python, with `tls_set("deevnet-mobile-root-ca.pem")`,
+A real backend is the same thing in code — `paho-mqtt` in Python, with `tls_set("deevnet-root-ca.pem")`,
 `username_pw_set(...)`, and a subscription to `bench1/sensors/+/telemetry`.
 
 To run it on the workload, log in (`ssh tenant@backend.<tenant>.mobile.deevnet.net`, with your key

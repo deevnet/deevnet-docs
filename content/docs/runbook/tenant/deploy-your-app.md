@@ -91,7 +91,7 @@ so a tenant started from it already has one; it names every setting in
 [the table](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment),
 including the backend's own broker login. Run the app once on your computer with the same file
 before moving it:
-`podman run --rm --env-file kit.env -v ./deevnet-mobile-root-ca.pem:/kit/deevnet-mobile-root-ca.pem:ro -e MQTT_CA_FILE=/kit/deevnet-mobile-root-ca.pem my-app`.
+`podman run --rm --env-file kit.env -v ./deevnet-root-ca.pem:/kit/deevnet-root-ca.pem:ro -e MQTT_CA_FILE=/kit/deevnet-root-ca.pem my-app`.
 
 ## 4. Copy it to the workload
 
@@ -99,8 +99,8 @@ before moving it:
 H=tenant@backend.bench1.mobile.deevnet.net
 podman save my-app | ssh $H sudo podman load            # the image, straight over SSH
 ssh $H sudo install -d -m 0755 /opt/my-app
-scp kit.env deevnet-mobile-root-ca.pem $H:
-ssh $H 'sudo install -m 0600 kit.env /opt/my-app/ && sudo install -m 0644 deevnet-mobile-root-ca.pem /opt/my-app/ && rm kit.env deevnet-mobile-root-ca.pem'
+scp kit.env deevnet-root-ca.pem $H:
+ssh $H 'sudo install -m 0600 kit.env /opt/my-app/ && sudo install -m 0644 deevnet-root-ca.pem /opt/my-app/ && rm kit.env deevnet-root-ca.pem'
 ```
 
 The workload has Podman already. `podman load` names the image `localhost/my-app:latest`.
@@ -120,7 +120,7 @@ Environment=IMAGE=localhost/my-app:latest
 ExecStartPre=-/usr/bin/podman rm -f my-app
 ExecStart=/usr/bin/podman run --rm --name my-app --network host \
   --env-file /opt/my-app/kit.env \
-  -v /opt/my-app/deevnet-mobile-root-ca.pem:/kit/deevnet-mobile-root-ca.pem:ro -e MQTT_CA_FILE=/kit/deevnet-mobile-root-ca.pem \
+  -v /opt/my-app/deevnet-root-ca.pem:/kit/deevnet-root-ca.pem:ro -e MQTT_CA_FILE=/kit/deevnet-root-ca.pem \
   ${IMAGE}
 ExecStop=/usr/bin/podman stop -t 10 my-app
 Restart=on-failure
