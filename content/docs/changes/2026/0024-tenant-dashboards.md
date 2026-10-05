@@ -10,7 +10,7 @@ weight: -24
 | **Date** | 2026-09-24 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Deployed and verified: Grafana on `obs`, API v0.8.0, and `tdemo`/`eds`/`mabell` organizations; the rebuild drill passed; `tenant_dev` rules applied (68, no drift); `DVNTM-TD` 29/29 from a Mac; IoT blocked (15/15). **Remaining: hand the three tenants their dashboard passwords.** See [Outcome](#outcome). |
+| **Status** | **Complete** (2026-10-05). Grafana on `obs`, API v0.8.0, and organizations for `tdemo`, `eds` and `mabell`; the rebuild drill passed; `tenant_dev` rules applied (68, no drift); `DVNTM-TD` 29/29 from a Mac; IoT blocked (15/15); the tenants have their dashboard passwords. See [Outcome](#outcome). |
 | **Window** | 2026-09-24 14:52 to 15:03 EDT (steps 1–4 and the drill) |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, beside the log store), `dv02prv001v01` (the API, v0.8.0), `dv02cor002p01` (two `tenant_dev` rules). Artifact mirror on `dv00bld001p01`. |
@@ -198,6 +198,7 @@ Live, 2026-09-24 (EDT):
 | later | 5 | **Applied by the operator**, together with CHG-0025's rule. The re-plan shows 0 to add and 68 rules present, with no drift |
 | 20:10 | Verification 3 | From `DVNTM-IOT`, re-run with net #37's checks: **15/15**. `obs` `:8427` and `:3000` are blocked from IoT |
 | 19:59 | Verification 3 | From a Mac on `DVNTM-TD` (lease `10.20.45.51`): `segment-check.sh DVNTM-TD` **29/29**. The log store `:8427` and Grafana `:3000` are reachable over verified TLS; everything else on the site is still blocked, including SSH to `obs`. `tenant-check.sh` passed every check. From `DVNTM-IOT`: **12/12**, but that profile did not yet try `obs`'s ports; the checks were added in net #37 and need one more IoT run |
+| 2026-10-05 13:10 | 4, again | `tdemo`, `eds` and `mabell` reconciled through the API: every step `ok`, including `dashboards`. `tdemo` and `mabell` keep organizations 2 and 4. **`eds` is now organization 8**: it was removed and re-admitted on 2026-09-28, so its 2026-09-24 password no longer applied. Each tenant was handed the password from this reconcile |
 
 What was done, and tested off the site:
 
@@ -249,8 +250,8 @@ What was done, and tested off the site:
 - [x] Step 5 (`tenant_dev` rules), applied by the operator
 - [x] Verification 3 from `DVNTM-TD`: 29/29
 - [x] Verification 3 from IoT: 15/15
-- [ ] Hand `tdemo`, `eds` and `mabell` their dashboard passwords (in the operator's reconcile
-      output of 2026-09-24)
+- [x] Hand `tdemo`, `eds` and `mabell` their dashboard passwords (from the reconcile of
+      2026-10-05)
 - [ ] Remove `/srv/grafana/data.drill-20260924` on `obs` once no one needs it
 - [ ] When grafana/grafana#127404 ships: upgrade, and delete the `deleted-*` organizations
-- [ ] ADR-0024 → Accepted once this is Complete
+- [x] ADR-0024 → Accepted (2026-10-05)
