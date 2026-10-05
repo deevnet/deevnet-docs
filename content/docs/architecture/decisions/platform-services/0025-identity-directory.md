@@ -13,7 +13,6 @@ aliases:
 | **Date** | 2026-09-21 |
 | **Scope** | Who can sign in to what, and how. This covers the operator on substrate UIs and hosts, each tenant's people on the UIs the substrate offers them, and a tenant application's own end users. It also covers how tenants are separated and what stays reachable when the directory is down. Not machine credentials, which the API and OpenBao issue. |
 | **Extends** | [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/), which placed *"later an LDAP or Active Directory–compatible directory"* in the identity VM without choosing one; [ADR-0024: Dashboards](/docs/architecture/decisions/platform-services/0024-dashboards/), whose local Grafana logins it replaces for people |
-| **Extended by** | [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/): Keycloak's backups go to the state replica (open question 3) |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/) §4, [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), [ADR-0015: Tenants Are Built Through the Deevnet API](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/), [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 
 ---
@@ -241,7 +240,6 @@ local break-glass account.
    the tenant SSH-key backlog.
 3. **Backup target.** The same off-VM replica ADR-0014 plans for the provisioning VM, or a separate
    one?
-   *Answered by [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/).*
 4. **Tenant realm limits.** Brute-force protection, password policy and user counts. Are these the
    tenant's choice, or does the substrate set a floor?
 

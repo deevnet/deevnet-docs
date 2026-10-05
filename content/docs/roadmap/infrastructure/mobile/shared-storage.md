@@ -23,9 +23,7 @@ Today every VM disk lives on the local storage of the hypervisor that runs it
 its host, so losing a hypervisor's data disk loses every disk on it. Anything that must survive
 that — the tenant state store ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/)),
 object storage for tenants ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)), and data
-disks that should move between hosts — has nowhere to live yet. The tenant state store's copy is
-decided apart from this project: a dedicated Raspberry Pi
-([ADR-0033](/docs/architecture/decisions/substrate/0033-state-replica-host/)).
+disks that should move between hosts — has nowhere to live yet.
 
 **In Scope**
 - Deciding which consumers need storage independent of a host, and what losing it may cost

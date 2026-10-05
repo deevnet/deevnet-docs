@@ -13,7 +13,7 @@ aliases:
 | **Date** | 2026-09-16 |
 | **Scope** | How the tenant state store's contents survive losing the host, disk or hypervisor they live on, and how that copy is kept apart from the platform API's database, which the state restores |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered the store and recorded its durability as *"the weakest part of the decision"*; [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/), whose §1 and §6 put the store and the API's database in one VM |
-| **Extended by** | [ADR-0026: Object Storage](/docs/architecture/decisions/platform-services/0026-object-storage/) — the store is defined by a contract, runs pgsty/silo, and also offers tenant buckets *(Proposed)*; [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/) — the copy lives on a dedicated Raspberry Pi on the management segment (open question 1) |
+| **Extended by** | [ADR-0026: Object Storage](/docs/architecture/decisions/platform-services/0026-object-storage/) — the store is defined by a contract, runs pgsty/silo, and also offers tenant buckets *(Proposed)* |
 | **Related** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/) §4, [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §4 and §5, [Substrate Storage](/docs/architecture/substrate/storage/), [Limits](/docs/policies/risk-management/resiliency/) |
 
 ---
@@ -280,8 +280,6 @@ It doesn't decide whether state should hold them. That stays with ADR-0012.
      Builder is away reopens C's window.
    - **A small dedicated storage device** on the management segment. It meets §3 cleanly, but it is
      new hardware and a new host class.
-
-   *Answered by [ADR-0033: State Replica Host](/docs/architecture/decisions/substrate/0033-state-replica-host/): a dedicated Raspberry Pi.*
 2. **Should ADR-0012 §4 be revisited in favor of Option E** before ADR-0012 is accepted? If it
    is, §1 and §3 of this record relax back towards C, because state would no longer hold anything
    that isn't re-derivable.
