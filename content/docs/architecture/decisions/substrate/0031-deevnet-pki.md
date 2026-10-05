@@ -7,7 +7,7 @@ weight: -31
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-10-05): built by [CHG-0033](/docs/changes/2026/0033-deevnet-pki/). §6, device identity (mTLS), is decided and not yet built: CHG-0034. |
 | **Date** | 2026-10-03 |
 | **Scope** | The certificate hierarchy for every Deevnet site: the root and each site's CA and who holds them, the issuing CAs and what each may issue, subject names, and the target for tenant device identity (mTLS). Not automatic renewal or expiry alerting ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) open questions 1–2, unchanged). |
 | **Supersedes** | ADR-0030 §1–§4 |

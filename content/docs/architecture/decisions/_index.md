@@ -292,7 +292,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Substrate](substrate/)
 
 - [ADR-0031: Deevnet PKI](/docs/architecture/decisions/substrate/0031-deevnet-pki/) —
-  *Proposed.* One Deevnet Root CA and a Site CA per site, both generated and held offline by the
+  *Accepted; built by CHG-0033, §6 (mTLS) still to build.* One Deevnet Root CA and a Site CA per site, both generated and held offline by the
   operator, so no online system can mint a CA. Under each Site CA, two issuing CAs separate server and
   device identity: the Substrate CA, whose key is in the site's ansible-vault, issues every substrate
   certificate through Ansible (OpenBao's own listener included, so a rebuild has no cycle), and the
