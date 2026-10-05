@@ -364,3 +364,8 @@
     height: auto;
   }
 }
+
+// ADR Index: number and status never wrap, so every description starts in line.
+.adr-index td:nth-child(-n+2) {
+  white-space: nowrap;
+}

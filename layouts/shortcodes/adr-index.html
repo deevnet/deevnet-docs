@@ -1,0 +1,33 @@
+{{- /*
+  Every ADR under architecture/decisions, newest first, read from the records
+  themselves so the list can't drift: the number and description from the H1,
+  the date from the **Date** row, and the status as the first of Proposed,
+  Accepted, Superseded or Deprecated in the **Status** row.
+  Usage: {{< adr-index >}}
+*/ -}}
+{{- $rows := slice -}}
+{{- range (site.GetPage "/docs/architecture/decisions").RegularPagesRecursive -}}
+  {{- $h1 := index (findRESubmatch `(?m)^# (ADR-\d{4}): (.+)$` .RawContent 1) 0 -}}
+  {{- if not $h1 }}{{ continue }}{{ end -}}
+  {{- $date := index (findRESubmatch `(?m)^\| \*\*Date\*\* \| *(\d{4}-\d{2}-\d{2})` .RawContent 1) 0 -}}
+  {{- $statusRow := index (findRESubmatch `(?m)^\| \*\*Status\*\* \|([^\n]*)` .RawContent 1) 0 -}}
+  {{- if not (and $date $statusRow) -}}
+    {{- errorf "adr-index: %s has no **Date** or **Status** row" .File.Path -}}
+  {{- end -}}
+  {{- $status := index (findRE `Proposed|Accepted|Superseded|Deprecated` (index $statusRow 1) 1) 0 -}}
+  {{- if not $status -}}
+    {{- errorf "adr-index: %s has no recognized status" .File.Path -}}
+  {{- end -}}
+  {{- $rows = $rows | append (dict
+        "key" (printf "%s %s" (index $date 1) (index $h1 1))
+        "id" (index $h1 1) "desc" (index $h1 2) "status" $status
+        "url" .RelPermalink) -}}
+{{- end -}}
+<table class="adr-index">
+<thead><tr><th>ADR</th><th>Status</th><th>Description</th></tr></thead>
+<tbody>
+{{- range sort $rows "key" "desc" }}
+<tr><td><a href="{{ .url }}">{{ .id }}</a></td><td>{{ .status }}</td><td>{{ .desc | markdownify }}</td></tr>
+{{- end }}
+</tbody>
+</table>
