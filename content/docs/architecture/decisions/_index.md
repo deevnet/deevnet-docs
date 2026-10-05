@@ -62,6 +62,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) —
+  *Proposed.* Code is the authoritative copy of everything: inventory and its vault for the
+  substrate, each tenant's repository for the tenant. Recovery rebuilds from code, with no backup on
+  the path. Device secrets move from tenant state into the tenant's repository (age-encrypted,
+  passed write-only) until device-generated keys replace them, so a substrate rebuild still never
+  costs a device visit. The API's audit log, tenant bucket contents and issued credentials are lost
+  in a rebuild on purpose. Supersedes ADR-0014; amends ADR-0012 §4–§5 and ADR-0026 §3–§4.
 - [ADR-0028: Tenant Workload Login](/docs/architecture/decisions/tenant-model/0028-tenant-workload-login/) —
   *Accepted* (2026-09-27). Answers ADR-0018's open question 3. A tenant logs in to its own workloads with a public
   key it supplies through `ssh_keys`; the private key never leaves the tenant, so the substrate holds
@@ -100,7 +107,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   index, so tdemo returns as the reference tenant, and the factory keeps only the fabric. Extends
   ADR-0012; supersedes the registry in ADR-0002 and ADR-0006 §1–§3.
 - [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/) —
-  *Proposed.* Once device secrets live in tenant state, that state is data that can't be
+  *Superseded by ADR-0033; never accepted.* Once device secrets live in tenant state, that state is data that can't be
   re-derived. The store's data moves to a data disk and is copied on every write to separate on-site
   hardware, and the API's database is backed up on a schedule. It closes ADR-0012 §5's re-flash
   exception, which ADR-0013 had made a single-VM event. Extends ADR-0007 and ADR-0013.

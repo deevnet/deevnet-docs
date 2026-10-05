@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Accepted |
+| **Amended by** | [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) *(Proposed)*: the API's database is a working copy of the registry; each tenant's repository names the tenant and its index |
 | **Accepted** | 2026-09-19, recording what [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) settled on 2026-09-17: the API was deployed and **both live tenants were rebuilt entirely through it**. The record sat at `Proposed` after it had already been built and proven, which the status was not saying. |
 | **Date** | 2026-09-17 |
 | **Revised** | 2026-09-17, before review. First written as onboarding only; widened so that everything that builds a tenant (its network, workloads and DNS records) is behind the API and tenants hold no substrate credential (§11–§14). Admission by enrollment token (§10). Secrets handling moved to [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/). |

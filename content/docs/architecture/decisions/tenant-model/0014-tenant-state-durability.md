@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Superseded by [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/): tenant state is re-derivable again, so no copy is kept and no restore is on the recovery path. Never accepted |
 | **Date** | 2026-09-16 |
 | **Scope** | How the tenant state store's contents survive losing the host, disk or hypervisor they live on, and how that copy is kept apart from the platform API's database, which the state restores |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered the store and recorded its durability as *"the weakest part of the decision"*; [ADR-0013: Management-Hypervisor Services Run as Containers on Domain VMs](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/), whose §1 and §6 put the store and the API's database in one VM |
@@ -299,6 +299,6 @@ It doesn't decide whether state should hold them. That stays with ADR-0012.
 
 ## Current state
 
-- **Proposed.** Nothing is built.
+- **Superseded** by ADR-0033 (2026-10-05). Nothing was built.
 - The store and the API's database are on the provisioning VM's OS disk, with no off-host copy.
 - The bucket holds no tenant state, and the API holds no device resources.

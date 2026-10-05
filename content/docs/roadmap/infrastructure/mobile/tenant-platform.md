@@ -1,9 +1,9 @@
 ---
 title: "Tenant Platform"
 weight: 4
-tasks_completed: 3
-tasks_in_progress: 5
-tasks_planned: 6
+tasks_completed: 4
+tasks_in_progress: 4
+tasks_planned: 7
 ---
 
 # Tenant Platform
@@ -150,14 +150,18 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Logs: ingest and read tokens, and device logs over MQTT
   ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/),
   [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
-- 🔄 Dashboards: a Grafana organization per tenant, live; closes when the tenants have their
-  passwords ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
+- ✅ Dashboards: a Grafana organization per tenant
+  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
 - ✅ A tenant dev network, `DVNTM-TD`, reaching only the API, the state store, the broker, logs,
   Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
 - ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
   site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
 - ⏳ Secrets, metrics and alerting, identity, object storage and code delivery: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
+- ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
+  the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the
+  restore path reads them from configuration, and `eds` and `mabell` move theirs from state into
+  their repositories
 - ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node
 - ⏳ Workloads and DNS records come back after a rebuild: a reconcile re-ensures neither, and a tenant's plain apply sees no change. Re-ensure them in the reconcile, or give the tenant a documented way to force a re-apply
 
