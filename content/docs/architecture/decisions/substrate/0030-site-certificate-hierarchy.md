@@ -38,7 +38,7 @@ Four things are not covered:
 - **Renewal happens only when a role is re-run.** A 90-day leaf on a service nobody re-applies expires
   without notice, and nothing watches.
 
-The SSL Cert Automation roadmap planned step-ca on the Builder. ADR-0016 replaced that with OpenBao,
+The TLS Cert Automation roadmap planned step-ca on the Builder. ADR-0016 replaced that with OpenBao,
 and this record finishes the job that roadmap described.
 
 ## Decision

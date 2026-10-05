@@ -1,12 +1,14 @@
 ---
-title: "SSL Cert Automation"
+title: "TLS Cert Automation"
+aliases:
+  - /docs/roadmap/infrastructure/ssl-cert-automation/
 weight: 5
 tasks_completed: 13
 tasks_in_progress: 1
 tasks_planned: 6
 ---
 
-# SSL Cert Automation
+# TLS Cert Automation
 
 Every certificate the site serves chains to the **Deevnet Root CA**, kept offline with the Mobile
 Site CA ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/),
