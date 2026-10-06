@@ -26,6 +26,15 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0043 | Unscheduled | [A Local Package Mirror](2026/0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
+| CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](2026/0042-rehome-stray-vms/) | Migration | mobile | Planned |
+| CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](2026/0041-artifact-server-https/) | Configuration | mobile | Planned |
+| CHG-0040 | Unscheduled | [Device Secrets in Tenant Code](2026/0040-device-secrets-in-tenant-code/) | Deployment · Migration | mobile | Planned |
+| CHG-0039 | Unscheduled | [Backup to an Attached SSD](2026/0039-backup-to-an-attached-ssd/) | Deployment | mobile | Planned |
+| CHG-0038 | Unscheduled | [The Reconcile Restores Everything](2026/0038-reconcile-restores-everything/) | Deployment · Configuration | mobile | Planned |
+| CHG-0037 | Unscheduled | [Substrate Builds Off OpenBao](2026/0037-builds-off-openbao/) | Configuration | mobile | Planned |
+| CHG-0036 | Unscheduled | [OpenBao's Keys From the Vault](2026/0036-openbao-keys-from-the-vault/) | Configuration | mobile | Planned |
+| CHG-0035 | Unscheduled | [Previously Exposed Credentials Checked and Rotated](2026/0035-exposed-credentials/) | Configuration | mobile | Planned |
 | CHG-0033 | 2026-10-03 | [The Deevnet PKI](2026/0033-deevnet-pki/) | Configuration | mobile | Complete |
 | CHG-0032 | 2026-10-02 | [The Appliances on Site Certificates](2026/0032-appliance-certificates/) | Configuration | mobile | Complete |
 | CHG-0031 | 2026-10-02 | [The Site Root and Its Intermediate](2026/0031-site-root-ca/) | Configuration | mobile | Superseded |
