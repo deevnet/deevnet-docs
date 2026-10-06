@@ -5,10 +5,15 @@ weight: 20
 
 # Repave the Builder
 
-Reinstall the hardware Builder, `dv00bld001p01`, from scratch. It is the one host that cannot build
-itself, so a second builder does it: a temporary builder VM on the management hypervisor stands in
-for the Builder, network-boots it with the builder kickstart, and then applies the full builder
-configuration to it.
+Reinstall the hardware Builder, `dv00bld001p01`, from scratch. It is the one host that cannot
+network-boot itself, so a second builder does it: a temporary builder VM on the management hypervisor
+stands in for the Builder, network-boots it with the builder kickstart, and then applies the full
+builder configuration to it.
+
+**This is the planned path, for a Builder that is still there to help.** The temporary builder is
+cloned from a template on the management hypervisor. If the Builder is already gone, or that
+hypervisor or its template is, start from a bare machine instead:
+[Build the Builder](/docs/runbook/substrate/building-recovery/build-the-builder/).
 
 | | |
 |---|---|
@@ -41,8 +46,8 @@ survives unless you move it off first:
 Two things are **not** on the Builder: the operator's SSH key is forwarded from their own
 machine, and the vault password is typed at each run.
 
-While the Builder is down, reach the site from a trusted-segment machine; the temporary builder is
-where automation runs from.
+While the Builder is down, the temporary builder is the site's Ansible control node: automation runs
+from it, and you reach it from a machine on the trusted segment.
 
 ---
 

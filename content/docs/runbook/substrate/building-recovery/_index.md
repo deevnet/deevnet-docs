@@ -58,10 +58,11 @@ This means:
 
 ## Greenfield Build Sequence
 
-A complete build from scratch follows this sequence. Authority transitions and network segmentation are integrated steps — not separate procedures.
+**This is the site's one build order; other pages and records link here rather than restate it.** A complete build from scratch follows this sequence. Authority transitions and network segmentation are integrated steps — not separate procedures.
 
 {{< mermaid >}}
 flowchart TD
+    Z["<b>0. Build the Builder</b><br/>Fedora by hand, then its own roles"]:::manual
     A["<b>1. Stage Artifacts</b><br/>Fetch OS images, ISOs, SSH keys"]
     B["<b>2. Seed Inventory</b><br/>MAC addresses, host definitions"]
     C["<b>3. Vault Operations</b><br/>Decrypt secrets for automation"]
@@ -75,7 +76,7 @@ flowchart TD
     K["<b>11. Admit Tenants</b><br/>Operator admits each tenant name"]
     L["<b>12. Tenants Apply</b><br/>Each tenant applies its own Terraform"]
 
-    A --> B --> C --> D --> E --> F --> G --> H --> I --> J --> K --> L
+    Z --> A --> B --> C --> D --> E --> F --> G --> H --> I --> J --> K --> L
 
     classDef default fill:#2d333b,stroke:#539bf5,color:#adbac7
     classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c
@@ -84,12 +85,62 @@ flowchart TD
 
 **Legend:** {{< mermaid >}}flowchart LR; T["Authority transition"]:::transition; M["Manual step"]:::manual; classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c; classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068{{< /mermaid >}}
 
+**Within step 9, the management-plane VMs come up in the order `deevnet.mgmt`'s `site.yml` runs
+them:** all VMs first, then OpenBao, PowerDNS, the state store, the Deevnet API, the Omada
+controller, the broker and log bridge, the log store, Grafana and the downloads site. The API's play
+reads the messaging and observability VMs' SSH host keys, so those VMs must exist before it runs.
+Certificates come from the Substrate CA through Ansible (`certs.yml`) and need nothing running
+([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)).
+
+---
+
+## Rebuild Tiers
+
+**The site rebuilds in four tiers, each from the tiers below it.** A failure in one tier is
+recovered by rebuilding it from the tiers beneath; what that takes is in
+[Recovery](/docs/runbook/substrate/recovery/).
+
+| Tier | What | Built from |
+|---|---|---|
+| **T0: the manual floor** | The steps below that a person does | People, by procedure |
+| **T1: the substrate** | The Builder, the core router's configuration, the switch and AP, both hypervisors, the VM templates, the management-plane VMs, the tenant fabric | Inventory and ansible-vault |
+| **T2: runtime services** | OpenBao, the Deevnet API and its database, PowerDNS, the state store, the broker, the log store, Grafana, the Omada controller | T1, seeded from ansible-vault |
+| **T3: tenants** | Each tenant's networks, workloads, names, devices and applications | The tenant's repository, through the provider, and its own push |
+
+**Some T2 services hold data nothing below them can recreate today:**
+- OpenBao holds the Tenant Device CA's key, generated inside it, and its recovery key and Ansible
+  login exist only in the vault once an initialization's output is locked in
+  ([Vault Operations](vault-operations/)).
+- The Deevnet API's database is the tenant registry, and the state store holds tenants' Terraform
+  state, which carries their device secrets. Both are on the provisioning VM's OS disk, with no copy.
+- The Omada controller holds tenants' Wi-Fi keys, and the broker's database their device accounts.
+
+The [2026-10 Rebuild and Access review](/docs/architecture/reviews/2026-10-rebuild-and-access/)
+tracks closing each of these.
+
+### The manual floor
+
+**These steps are done by a person on every full build, and the automation starts where they end:**
+
+| Step | Where it is |
+|---|---|
+| Install Fedora on the Builder from USB | [Build the Builder](build-the-builder/) |
+| Choose and hold the vault password | [Vault Operations](vault-operations/) |
+| Install OPNsense from USB, set its interface addresses and `next_server`, create its API key | [Build Network](build-network/), [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) |
+| Factory-reset the switch and the AP | [Build Network](build-network/) |
+| Install Proxmox from the ISO, run its console bootstrap, issue its API tokens | [Build a Hypervisor](build-hypervisor/) |
+| Put the Fedora ISO into the hypervisor's `local:iso` before a template build | Not yet in a runbook: the template build expects it there (`deevnet-image-factory/packer/proxmox/fedora-base-image/fedora.pkr.hcl`, `iso_download_pve`), and a reinstall wipes it |
+| Run the Omada setup wizard, create the Owner and the Open API clients | ADR-0009 §5 |
+| Generate OpenBao's seal key; lock in an initialization's output | [Vault Operations](vault-operations/) |
+| The Root, Site and issuing CA ceremonies | [Root of Trust](/docs/runbook/root-of-trust/) |
+
 ---
 
 ## Build Procedures
 
 ### Preparation
 
+- [Build the Builder](build-the-builder/) — Make the Ansible control node from a bare machine
 - [Stage Artifacts](online-preparation/) — Fetch artifacts from internet sources
 - [Seed Inventory](inventory-setup/) — Define MAC addresses and host definitions
 - [Vault Operations](vault-operations/) — Decrypt secrets for automation
@@ -111,7 +162,7 @@ flowchart TD
 ### Reference
 
 - [Authority Transition](/docs/runbook/substrate/building-recovery/authority-transition/) — Standalone reference for DNS/DHCP authority transitions
-- [Repave the Builder](repave-builder/) — Reinstall the hardware Builder from a temporary builder VM, over PXE
+- [Repave the Builder](repave-builder/) — Reinstall the hardware Builder from a temporary builder VM, over PXE, while the Builder is still there to help
 - [CHG-0001: Flat Network → VLANs](/docs/changes/2026/0001-flat-network-to-vlans/) — the VLAN, firewall and DHCP procedure, as recorded when the mobile site was segmented
 
 ---
