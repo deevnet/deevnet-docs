@@ -20,6 +20,11 @@ A **workload** is a Fedora VM on that network, addressed by cloud-init from your
 upward; `.2`–`.9` are reserved). There is no DHCP on tenant networks — addresses are assigned, not
 leased, so a rebuilt workload comes back at the same address.
 
+**Reach your workloads by name, never by address.** A workload's name always follows it. Its address
+comes from your tenant's index, and a tenant that is re-created after a full site rebuild without its
+state may get a different index, and so different addresses. Anything you pinned to an address
+breaks then; anything that uses the name doesn't.
+
 ## Declare one
 
 ```hcl

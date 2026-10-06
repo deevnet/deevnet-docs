@@ -225,12 +225,19 @@ If you only find out something is wrong *after* the host boots, correctness has 
 
 ---
 
-### 5.4 Substrate Provisioning Is Air-Gapped
-Substrate hosts MUST be provisionable without upstream internet dependencies.
+### 5.4 Substrate Installation Is Air-Gapped
+Substrate hosts MUST be installable without upstream internet dependencies.
 
-- All artifacts (install configs, boot images, packages) served from local infrastructure
+- All install artifacts (install configs, boot images, the packages an install uses) served from local infrastructure
 - No fetches from public mirrors, CDNs, or external URLs during install
 - External dependencies create non-determinism and single points of failure
+
+**After installation, package installs and updates MAY use the internet.** This is a recorded
+exception, not the goal: the local mirror carries each release's packages as released, and hosts are
+not pointed at it afterwards, so a role that installs a package, and every update, needs upstream
+access. Mirroring the update repositories would restore an air-gapped rebuild; it is the
+[package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/) candidate
+([2026-10 review, R8](/docs/architecture/reviews/2026-10-rebuild-and-access/#r8-packages-from-the-internet)).
 
 Air-gap scope is **substrate only**. Tenants and edge devices may follow different policies.
 

@@ -9,6 +9,7 @@ weight: -33
 |--|--|
 | **Status** | Proposed. Accepted when the change that moves device secrets into tenant code is built, and a tenant has been rebuilt from its repository with no restore |
 | **Date** | 2026-10-05 |
+| **Revised** | 2026-10-06: what it said about tenant indexes corrected to match the code ([2026-10 review, T3](/docs/architecture/reviews/2026-10-rebuild-and-access/#t3-tenant-index)) |
 | **Scope** | Where the authoritative copy of everything the site runs lives, and how the site and its tenants recover with no backup on the path. Covers tenant state, device secrets, the Deevnet API's database and audit log, and tenant buckets. |
 | **Supersedes** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), whole |
 | **Amends** | [ADR-0012: IoT Platform API](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §4 (the authoritative copy of a device secret), §5 (the restore source) and its audit-log paragraph; [ADR-0015: Tenant Onboarding Through the API](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) (the API's database is a working copy of the registry); [ADR-0026: Object Storage](/docs/architecture/decisions/platform-services/0026-object-storage/) §3 and §4 (no replica) |
@@ -38,8 +39,8 @@ which *"never enters the substrate"*, and the broker trust a certificate instead
 ADR-0021 makes the tenant's repository the authoritative copy of its runtime secrets.
 
 **What the API issues is already re-mintable.** Log tokens and the Grafana password are re-issued by
-a reconcile, and a tenant asks for its own index at creation, so a re-created tenant keeps its
-identity.
+a reconcile. A tenant restored from its state keeps its index; a tenant re-created without its state
+gets the lowest free one, and nothing a tenant uses can ask for a particular index.
 
 ---
 
@@ -53,15 +54,17 @@ identity.
 - **Nothing else is authoritative.** The API's database, the Terraform state store, the broker's
   auth database and the controller's keys are working copies, rebuilt from code.
 - **That includes the tenant registry.** ADR-0015 made the API's database *"the record of which
-  tenants exist"*. It becomes a working copy: each tenant's repository names the tenant and the
-  index it asks for, and an index doesn't move when the tenant is re-created.
+  tenants exist"*. It becomes a working copy: each tenant's repository names the tenant. A tenant
+  that keeps its state keeps its index; one re-created without it may get a new index, which costs
+  nothing as long as tenants use names, never addresses
+  ([2026-10 review, T3](/docs/architecture/reviews/2026-10-rebuild-and-access/#t3-tenant-index)).
 
 ### 2. Recovery never depends on a backup
 
 After losing the substrate, or any part of it:
 
 1. **The substrate is rebuilt from inventory.**
-2. **Each tenant is admitted again at its own index.**
+2. **Each tenant is admitted again.**
 3. **Each tenant applies from its repository.** The provider supplies every secret from the
    tenant's code, and the API writes it back into the broker, the controller and its own
    database.
@@ -144,12 +147,13 @@ ADR-0014 recorded for option E, and it falls on the tenant.
 
 ## Open questions
 
-1. **Re-admission at scale.** After a full rebuild, the operator re-admits every tenant at its index
-   and re-issues its credentials. Should the API accept the tenant's own record of what it was
+1. **Re-admission at scale.** After a full rebuild, the operator re-admits every tenant and
+   re-issues its credentials. Should the API accept the tenant's own record of what it was
    issued, so that re-admission is one step per tenant?
 2. **The Tenant Device CA's key.** Should it be issued like the Substrate CA, its key in the site's
    vault and imported into OpenBao, so that losing OpenBao doesn't change the device CA? Until device
-   keys are built, nothing depends on it.
+   keys are built, nothing depends on it. *The 2026-10 review's response is yes
+   ([R1](/docs/architecture/reviews/2026-10-rebuild-and-access/#r1-tenant-device-ca-key)), and the same for the Transit key.*
 
 ---
 

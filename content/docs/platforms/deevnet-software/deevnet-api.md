@@ -83,8 +83,8 @@ workloads, records, keys, devices and broker accounts, each step's outcome, and 
   API token.
 - **Reconcile** re-ensures every backend for a registered tenant, in order: DNS, resolver
   forwarding, state store, the fabric network, then the log store and dashboards. It stops at the
-  first failure and records it; calling again resumes. It returns the tenant's DNS, state, log and
-  dashboard secrets, but **not** its API token.
+  first failure and records it; calling again resumes. It returns the tenant's log tokens and
+  dashboard password, and nothing else: not its DNS or state secrets, and not its API token.
 - **Workloads are not part of a reconcile.** Applying a workload always ensures its VM, rebuilding a
   missing one with the same VMID, MAC and address. But a tenant's plain `terraform apply` does not
   re-apply a workload the registry already lists
