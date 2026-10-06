@@ -11,7 +11,7 @@ weight: -202610
 | **Scope** | The Mobile Factory: substrate, tenants, and the accounts that build and run them |
 | **Criteria** | Every part rebuilds cleanly from code; no rebuild depends on what it is rebuilding; infrastructure and configuration are code; accounts and access are practical and least-privilege |
 | **Method** | A read of the inventory, the Ansible collections, the image factories, the Deevnet API and provider, the reference tenant, and every ADR, runbook and record. Findings cite the files they come from. Where a finding comes from reading code rather than running it, it says so. |
-| **Status** | Open. Nothing here is decided; each finding acted on becomes an ADR or a change record |
+| **Status** | Open. The operator's first responses (R1–R7, A2, A3) are recorded below, 2026-10-06; the rest are to come. Each finding acted on becomes an ADR or a change record |
 
 ---
 
@@ -37,6 +37,23 @@ rotation is written down for only a handful.
 
 **Tenant secrets are an open design question, not a defect.** The review lays out what exists and
 the criteria for deciding ([S1](#s1-tenant-secrets)), without deciding.
+
+### Responses so far
+
+**The operator responded to the first findings on 2026-10-06.** Each response is under its finding;
+in short:
+
+| Finding | Response |
+|---|---|
+| [R1](#r1-tenant-device-ca-key) Tenant Device CA key | **Agreed.** The key goes into ansible-vault and is loaded into OpenBao as configuration on a rebuild |
+| [R2](#r2-registry-and-state-on-one-vm) Registry and state on one VM | **Agreed, with a framing:** a backup is a *recovery shortcut*. Tenants must still rebuild from nothing when no backup survives. Direction for a backup target: encrypted backups on USB drives |
+| [R3](#r3-losing-the-builder) Losing the Builder | **Agreed.** A new first page, *Build the Builder*, makes a control node from a bare machine |
+| [R4](#r4-build-credentials-from-openbao) Build credentials from OpenBao | **Decided differently:** substrate builds use ansible-vault only and never OpenBao. OpenBao exists to serve tenants |
+| [R5](#r5-openbao-re-initialization) OpenBao re-initialization | **Agreed.** The play stops until the lock-in is done |
+| [R6](#r6-four-rebuild-orders) Four rebuild orders | **Agreed,** plus a recovery chart of what a failed component's blast radius is |
+| [R7](#r7-omada-controller) Omada controller | **Agreed.** The controller is a T2 service |
+| [A2](#a2-one-session-reaches-everything) One session reaches everything | **Deferred,** with the mechanics of short-lived SSH certificates recorded |
+| [A3](#a3-bootstrap-over-plain-http) Bootstrap over plain HTTP | **Agreed, extended:** the artifact server moves to HTTPS, with plain HTTP kept only where nothing can verify |
 
 ---
 
@@ -93,6 +110,11 @@ ADR-0033 open question 2.
 is issued, with its key in ansible-vault, imported into OpenBao's PKI mount. OpenBao keeps doing the
 issuing; it stops being the only holder of the key.
 
+**Response (2026-10-06): agreed.** The Tenant Device CA's key is generated outside OpenBao, kept in
+ansible-vault, and imported into OpenBao's PKI mount on every build, as configuration data. OpenBao
+keeps issuing device certificates; losing it costs a re-import, not a ceremony and a re-enrollment of
+every device. It lands before device identity (CHG-0034), and answers ADR-0033's open question 2.
+
 #### R2 Registry and state on one VM
 
 **High. The tenant registry and the tenants' state share the provisioning VM's OS disk.**
@@ -105,6 +127,33 @@ Current state.
 
 *Recommendation:* build ADR-0033's device-secret change first among tenant work. A data disk for both
 stores is a cheap interim convenience: it survives an image rebuild, though not the disk.
+
+**Response (2026-10-06): a backup is a recovery shortcut, never the recovery path.** Tenants must be
+able to rebuild from nothing if no backup survives; when one does, it makes recovery faster.
+
+**That holds fully only once device secrets leave tenant state.** A backup of the provisioning VM
+restores the registry, the audit log and every tenant's state in one step. Without one, tenants
+rebuild from their repositories, but today a device's broker password and Wi-Fi key live only in
+that state, so every device would need re-provisioning. ADR-0033's device-secret change removes that
+cost, and from then on the backup is only a shortcut.
+
+**A restored backup is a starting point.** It is always followed by a reconcile that brings the
+registry's backends back in line ([T1](#t1-reconcile-coverage)), since a backup older than a tenant's
+last apply would otherwise put old values back.
+
+**Direction for a backup target, not yet decided:** one or two USB drives on the management
+hypervisor.
+- **The backup files are encrypted before they reach the drive**, with a key in ansible-vault (`age`
+  or `restic`). A lost drive is ciphertext, and a restore needs only the vault. Not disk encryption
+  with a key on the host, which protects only a removed drive, and not a key in OpenBao, which a
+  restore would need running first.
+- **Data, not the VM:** a database dump and a mirror of the state bucket, small and restorable onto a
+  freshly built VM.
+- **Two drives, one kept away from the kit**, which also covers losing the whole site and a
+  compromise that would wipe a connected drive.
+- **On the management hypervisor**, on media separate from the VM's disk; never on the tenant
+  hypervisor. A small USB SSD outlasts a thumb drive.
+- **A missing drive fails loudly**, and a restore is tried now and then.
 
 #### R3 Losing the Builder
 
@@ -122,6 +171,23 @@ stores is a cheap interim convenience: it survives an image rebuild, though not 
 install the tools, unlock the vault. Then move the Builder's unique state into git or rebuildable
 form: images by tag from source, router configuration exported into the inventory.
 
+**Response (2026-10-06): agreed, as *Build the Builder*.** Building the Builder was a core idea from
+the start, and the runbook never captured it. It becomes the first page of Building Infrastructure,
+before Stage Artifacts.
+
+**What already exists, and what the page adds:**
+- **The tooling is code.** The Builder collection's `workstation` role installs the control node's
+  tools: Ansible's dependencies, Packer, Terraform and the image-build prerequisites.
+- **Repave the Builder covers a planned repave**, through a temporary builder cloned from a template
+  on the management hypervisor. It calls the machine Ansible runs from "a trusted-segment machine",
+  never the **Ansible control node**.
+- **The page adds the start from a bare machine:** on any Fedora machine, install Ansible and git,
+  clone the repositories, install the collections, run the `workstation` role against `localhost`,
+  then load the automation key and unlock the vault. From there, the Builder stages artifacts and
+  builds everything else, with no help from anything already on the site.
+- **The Builder's unique state** (locally built images, the router's configuration copies, the
+  controller snapshot) is moved to git or made rebuildable, so nothing is lost with it.
+
 #### R4 Build credentials from OpenBao
 
 **Medium. Template and fabric builds read their Proxmox token from OpenBao by default, with no
@@ -138,6 +204,23 @@ automatic fallback.**
 *Recommendation:* keep OpenBao as the everyday source, and fall back to the vault on its own when
 OpenBao doesn't answer, saying so on the screen. Then no rebuild needs anyone to remember a flag.
 
+**Response (2026-10-06): substrate builds never use OpenBao.** Images, hypervisors, management-plane
+VMs and the tenant fabric take their credentials from ansible-vault, always. OpenBao exists to serve
+tenants. The two are separate uses, with separate accounts.
+
+**What follows:**
+- **The build path leaves OpenBao.** `pve-creds` reads the vault only; the `image-factory` AppRole
+  and its copies of the Proxmox tokens in OpenBao are removed. That reverses most of
+  [CHG-0026](/docs/changes/2026/0026-build-secrets/), and with it this finding and half of
+  [R5](#r5-openbao-re-initialization) disappear.
+- **Proxmox accounts split by purpose:** the substrate's build tokens, in the vault only, and the
+  Deevnet API's own account for building tenant workloads.
+- **The Deevnet API's backend credentials stay in OpenBao.** The API serves tenants, and it is among
+  the last things restored in a recovery.
+- **OpenBao keeps** the API's backend credentials, Transit for tenant secrets, the Tenant Device CA
+  (its key imported from the vault, [R1](#r1-tenant-device-ca-key)), and response wrapping for
+  enrollment.
+
 #### R5 OpenBao re-initialization
 
 **Medium. Re-initializing OpenBao leaves the vault holding credentials that no longer work.**
@@ -151,6 +234,20 @@ OpenBao doesn't answer, saying so on the screen. Then no rebuild needs anyone to
 
 *Recommendation:* reissue any AppRole whose vaulted credentials fail a login, as the API's role
 already does for its own. Keep the one manual lock-in step, and make the play stop until it is done.
+
+**Response (2026-10-06): agreed; the play stops until the lock-in is done.**
+
+**What the lock-in is.** OpenBao on empty storage is initialized once. That creates a recovery key
+and a one-time root token, which the role uses to create its own login, the `ansible` AppRole, and
+then discards. The recovery key and the AppRole's credentials are written only to a file on the
+control node; until they are in the vault, committed and pushed, that file is their only copy. That
+is the step INC-0003 missed.
+
+**What changes.** After an initialization, the next run checks that the vault's `ansible` AppRole can
+log in, and stops with a message naming the file if it can't. The lock-in itself stays manual:
+secrets are never committed automatically. The dead-credential half of this finding goes with the
+`image-factory` AppRole ([R4](#r4-build-credentials-from-openbao)); the API's own AppRole already
+reissues itself. With [R1](#r1-tenant-device-ca-key), a re-initialization costs time, not a CA.
 
 #### R6 Four rebuild orders
 
@@ -167,6 +264,23 @@ already does for its own. Keep the one manual lock-in step, and make the play st
 *Recommendation:* one page in the runbook holds the dependency graph by tier, including the manual
 floor, and every ADR links to it rather than restating an order.
 
+**Response (2026-10-06): agreed, plus a recovery chart.** Beside the one rebuild-order page, a chart
+answers the other question: *this failed; what do I redo?* For each component:
+
+| Failed component | Rebuild | Then redo, downstream | Tenants affected | Who acts |
+|---|---|---|---|---|
+| Identity VM (OpenBao, tenant DNS) | The VM; OpenBao from the vault; PowerDNS | API restart; tenants resupply on their next apply; a reconcile | Names, until republished | Operator, then tenants |
+| Provisioning VM (API, registry, state store) | The VM, the API, the store | Restore from a backup if one survives, or re-admit; a reconcile | All, until restored or re-admitted | Operator, then tenants |
+| Management hypervisor | The host, then every domain VM | Everything in T2 | All | Operator |
+| Tenant hypervisor | The host, the fabric, egress | A reconcile; tenants push their applications again | Workloads | Operator, then tenants |
+| Omada controller | The VM, the manual floor, AP adoption | Wi-Fi keys re-pushed | Device Wi-Fi | Operator |
+| Broker | The VM, VerneMQ | Broker accounts re-pushed | Device MQTT | Operator |
+| Builder | Build the Builder ([R3](#r3-losing-the-builder)) | Re-stage artifacts; rebuild local images | None directly | Operator |
+| Core router | USB install, then its configuration | The API's tenant DNS forwards | Tenant name resolution | Operator |
+
+**The chart is also a check on the tier rule.** A row whose recovery needs a backup, rather than a
+rebuild from code, marks a place where something can't be re-derived.
+
 #### R7 Omada controller
 
 **Medium. The controller has no backup, and rebuilding it loses the tenants' Wi-Fi keys.**
@@ -179,6 +293,11 @@ floor, and every ADR links to it rather than restating an order.
 
 *Recommendation:* treat the controller as T2: site structure from inventory (ADR-0009), tenant keys
 re-pushed from the registry by a reconcile. A scheduled export is a convenience, not the path.
+
+**Response (2026-10-06): agreed; the controller is a T2 service.** Its site structure comes back from
+inventory (ADR-0009), tenants' Wi-Fi keys are re-pushed from the registry by the reconcile
+([T1](#t1-reconcile-coverage)), and a scheduled export is only a convenience. The setup wizard, the
+Owner account and the Open API clients stay on the manual floor ([R9](#r9-the-manual-floor)).
 
 #### R8 Packages from the internet
 
@@ -339,6 +458,31 @@ ADR-0016 §2, `deevnet-image-factory/packer/proxmox/fedora-base-image/http/kicks
 forwarded key that works everywhere. ADR-0025's open question 2 already points there. Recording
 forwarding as an accepted risk is also a fair answer.
 
+**Response (2026-10-06): deferred.** The choice is between accepting forwarding as a recorded risk, a
+vault-held SSH certificate authority with short-lived certificates, and the same with principals per
+tier or role. The mechanics are recorded here for when it is taken up.
+
+**What a certificate changes.** The operator keeps a key pair. A certificate authority signs its
+public key into a certificate naming who it is, what it may log in as (its principals), and when it
+expires. Each host trusts the authority once, in place of a list of keys. A leaked certificate stops
+working in hours; principals can narrow what one opens; adding or removing a key is a signing
+decision with nothing pushed to hosts. It does not close the window while a forwarded session is
+open; it shortens and narrows it.
+
+**Where the authority lives.** Not in OpenBao: substrate access is not a tenant service
+([R4](#r4-build-credentials-from-openbao)). Its key sits in ansible-vault like the Substrate CA's, and
+a make target on the control node signs the operator's key for a few hours and loads it into the
+agent.
+
+**A fresh host has no chicken-and-egg problem.** Today the install plants one public key and a sudo
+rule: kickstart's `%post` fetches the automation key into `authorized_keys`, the hypervisor bootstrap
+does the same, and the Pi images carry it. With certificates the install plants the authority's
+**public** key and one sshd line, `TrustedUserCAKeys`, instead. Signing happens on the control node
+before Ansible connects, so the new host needs nothing but what its install gave it. The automation
+key stays as a break-glass key, kept offline. The switch and the core router, reached by password
+and by API, are outside this. The same authority could also sign host keys, which would end the
+"host identification has changed" warning after every repave.
+
 #### A3 Bootstrap over plain HTTP
 
 **Medium. The bootstrap fetches the automation key and a root script over plain HTTP.**
@@ -351,6 +495,20 @@ forwarding as an accepted risk is also a fair answer.
 
 *Recommendation:* check each fetched file against a SHA-256 kept in the inventory. That works before
 any TLS trust exists, so it adds no cycle.
+
+**Response (2026-10-06): agreed, and extended to HTTPS.** With the Deevnet PKI in place, the artifact
+server gets a Substrate CA certificate. Plain HTTP stays only where nothing can verify yet:
+- **Everything after install uses HTTPS**: Ansible's fetches, the control node, and hosts once they
+  trust the Deevnet Root.
+- **The boot payload stays on HTTP.** Firmware and GRUB fetch the kernel and initrd and can't do
+  HTTPS.
+- **The kickstart carries the Root CA's certificate.** It is public; `%post` writes it into the trust
+  store, and every fetch after that is HTTPS, verified. The templates already carry the root
+  (ADR-0030 §7).
+- **The hypervisor bootstrap is pinned by hash**, since a freshly installed Proxmox doesn't trust the
+  root yet. After it runs, the rest is HTTPS.
+- **The first network-boot hop stays unverified** on the management segment. Closing it would need
+  UEFI HTTP boot with an enrolled certificate, which is out of proportion for this site.
 
 #### A4 OpenBao's own access
 
@@ -478,7 +636,7 @@ automation first.
 on one runbook page, with the manual floor listed ([R6](#r6-four-rebuild-orders), [R9](#r9-the-manual-floor)).
 
 **OpenBao stays, as a T2 service that holds copies.** It keeps issuing, encrypting, wrapping and
-serving builds. Nothing in T1 needs it to build ([R4](#r4-build-credentials-from-openbao)), and nothing
+serving builds. *(Response: it stops serving builds; see [R4](#r4-build-credentials-from-openbao).)* Nothing in T1 needs it to build ([R4](#r4-build-credentials-from-openbao)), and nothing
 in it exists nowhere else ([R1](#r1-tenant-device-ca-key)). That keeps everything built so far and
 makes losing it a rebuild, not a ceremony.
 
@@ -504,6 +662,9 @@ where practical, and written down ([A4](#a4-openbaos-own-access) to [A8](#a8-rot
 | **Later** | Update mirror, or narrow §5.4 | R8 | A change or a standards amendment |
 | **When decided** | Tenant secrets | S1 | An ADR, superseding or amending ADR-0021 |
 
+**The first responses change four rows:** R4 becomes *builds use the vault only* rather than a
+fallback; R3's page is *Build the Builder*; A3 gains HTTPS on the artifact server; A2 is deferred.
+
 ---
 
 ## Open for the operator
@@ -511,7 +672,7 @@ where practical, and written down ([A4](#a4-openbaos-own-access) to [A8](#a8-rot
 **These are choices this review can inform but not make:**
 - **Tenant secrets** ([S1](#s1-tenant-secrets)): code, an OpenBao copy, or both.
 - **Agent forwarding** ([A2](#a2-one-session-reaches-everything)): replace it with SSH certificates,
-  or accept it as a recorded risk.
+  or accept it as a recorded risk. *Deferred, 2026-10-06.*
 - **The manual floor** ([R9](#r9-the-manual-floor)): which parts stay manual on purpose.
 - **Offline provisioning** ([R8](#r8-packages-from-the-internet)): mirror updates, or narrow the
   standard.
