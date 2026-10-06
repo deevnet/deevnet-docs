@@ -17,17 +17,17 @@ the only copy. What you can get back depends on what you still have.
 
 ## Keys to the state store
 
-Your state-store keys live inside the state they unlock. You can get back in without them:
+**Your state-store keys live inside the state they unlock, and there is no way yet to get the secret
+key back without them.**
 
 - **The access key is your tenant name.**
-- **The secret key** is one of the secrets the site keeps for you. Ask the operator to reconcile your
-  tenant ([Tenant Admission → Operator-only calls](/docs/runbook/substrate/tenant-admission/#operator-only-calls)).
-  The reconcile response carries your state secret, which the operator hands to you like an
-  enrollment token.
+- **The secret key can't be recovered from the site today.** A reconcile deliberately doesn't return
+  it, and there is no reissue yet. An operator reissue of the state secret is planned
+  ([2026-10 review, T2](/docs/architecture/reviews/2026-10-rebuild-and-access/#t2-state-key-recovery)).
 
-With both exported, `terraform init` reads your state again, and `terraform output -raw api_token`
-gives back your API token. This path follows from how the API behaves, and has not been exercised
-end to end.
+Until then, the only way back is a copy you kept: `.backend.env`, or the
+`terraform.tfstate.backup` from before the move. Without one, ask the operator; the recovery is the
+same as having lost everything, in the last row above.
 
 ## Keep it from happening
 
