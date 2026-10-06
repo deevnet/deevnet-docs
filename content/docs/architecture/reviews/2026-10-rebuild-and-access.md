@@ -830,6 +830,9 @@ fallback; R3's page is *Build the Builder*; A3 gains HTTPS on the artifact serve
 | [CHG-0042: Two Undeclared VMs Moved Off the Management Hypervisor](/docs/changes/2026/0042-rehome-stray-vms/) | R9 |
 | [CHG-0043: A Local Package Mirror](/docs/changes/2026/0043-local-package-mirror/) | R8 |
 
+[CHG-0034: Device Certificates Through the Deevnet API](/docs/changes/2026/0034-device-certificates/),
+planned before this review, builds on CHG-0036.
+
 R3, R6, T3, T6, T7, A8 (the list), S1 and D1 needed only documentation, already done.
 A2 and T4 are deferred.
 

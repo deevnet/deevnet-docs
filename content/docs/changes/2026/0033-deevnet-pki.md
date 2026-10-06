@@ -400,7 +400,7 @@ site services with the Deevnet Root CA alone.
 - The `cdeever` tenant's checkout takes `deevnet-root-ca.pem` from the downloads site.
 - The backup key drive, at the first rotation drill.
 
-- CHG-0034: device certificates through the Deevnet API, and the broker accepting them (ADR-0031
+- [CHG-0034](/docs/changes/2026/0034-device-certificates/): device certificates through the Deevnet API, and the broker accepting them (ADR-0031
   §6).
 - Untested until step 2: `tenant-device-ca.yml` against the live listener (the Tenant Device CA
   steps were tested against an OpenBao 2.6.2 dev server). Untested until step 8: the router's
