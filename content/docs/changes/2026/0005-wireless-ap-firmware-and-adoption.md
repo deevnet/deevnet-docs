@@ -106,7 +106,7 @@ home site.
 - [x] **The AP's standalone login** in the vault, as `vault_wap_standalone_user` /
   `vault_wap_standalone_password`. The old login was unrecoverable (a 2026-09-11 adoption was
   refused with `adopt info is wrong`), so the reset-first route was taken. The account set at the
-  AP's first login after the 2026-09-15 factory reset (`admin` / `admin11`) is now recorded in
+  AP's first login after the 2026-09-15 factory reset is now recorded in
   `group_vars/network_controllers/vault.yml`, and adoption used it successfully.
 - [x] **Site `autoUpgrade` off** — confirmed by the operator in the UI (Site Settings → Services)
   before adoption on 2026-09-15. This is a **UI check**: `autoUpgrade` appears nowhere in the
