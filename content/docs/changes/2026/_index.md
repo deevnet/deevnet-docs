@@ -8,6 +8,15 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0043 | Unscheduled | [A Local Package Mirror](0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
+| CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](0042-rehome-stray-vms/) | Migration | mobile | Planned |
+| CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](0041-artifact-server-https/) | Configuration | mobile | Planned |
+| CHG-0040 | Unscheduled | [Device Secrets in Tenant Code](0040-device-secrets-in-tenant-code/) | Deployment · Migration | mobile | Planned |
+| CHG-0039 | Unscheduled | [Backup to an Attached SSD](0039-backup-to-an-attached-ssd/) | Deployment | mobile | Planned |
+| CHG-0038 | Unscheduled | [The Reconcile Restores Everything](0038-reconcile-restores-everything/) | Deployment · Configuration | mobile | Planned |
+| CHG-0037 | Unscheduled | [Substrate Builds Off OpenBao](0037-builds-off-openbao/) | Configuration | mobile | Planned |
+| CHG-0036 | Unscheduled | [OpenBao's Keys From the Vault](0036-openbao-keys-from-the-vault/) | Configuration | mobile | Planned |
+| CHG-0035 | Unscheduled | [Previously Exposed Credentials Checked and Rotated](0035-exposed-credentials/) | Configuration | mobile | Planned |
 | CHG-0033 | 2026-10-03 | [The Deevnet PKI](0033-deevnet-pki/) | Configuration | mobile | Complete |
 | CHG-0032 | 2026-10-02 | [The Appliances on Site Certificates](0032-appliance-certificates/) | Configuration | mobile | Complete |
 | CHG-0031 | 2026-10-02 | [The Site Root and Its Intermediate](0031-site-root-ca/) | Configuration | mobile | Superseded |
