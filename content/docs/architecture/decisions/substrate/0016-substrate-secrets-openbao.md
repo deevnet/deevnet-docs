@@ -171,6 +171,10 @@ A stolen token is useless once spent, and a spent token that is presented again 
 
 ### 6. Rebuild order
 
+*The site's build order is kept in one place, [Building Infrastructure](/docs/runbook/substrate/building-recovery/#greenfield-build-sequence). Since
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/), step 2's certificates come from
+the Substrate CA through Ansible, not from OpenBao.*
+
 OpenBao comes up before anything that reads from it:
 1. OpenBao
 2. PowerDNS, the state store and the core router's resolver work, which need certificates and keys

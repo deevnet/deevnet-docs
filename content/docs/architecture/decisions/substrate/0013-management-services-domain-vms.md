@@ -231,6 +231,8 @@ All run on `dv02hyp001p01`. Host names are proposed (§4).
 
 ### 8. A rebuild uses the network management VM's controller
 
+*The site's build order is kept in one place, [Building Infrastructure](/docs/runbook/substrate/building-recovery/#greenfield-build-sequence).*
+
 1. **Build the pre-VLAN substrate with no controller:** the core router, and the access switch
    configured standalone by `switch_vlans`.
 2. **Build the management hypervisor**, then the domain VMs.
