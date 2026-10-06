@@ -7,11 +7,11 @@ weight: -35
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-06 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | Planned |
-| **Window** | Unscheduled. The check is read-only; a rotation, if any, is per device |
+| **Status** | **In progress, 2026-10-06.** Step 1 is done; its list is in the operator's notes. Step 2 replaced the one credential still in the vault, pending encryption and merge. Step 3's scan runs report-only in every public repository once its pull requests merge. |
+| **Window** | 2026-10-06. The check is read-only; a rotation, if any, is per device |
 | **Site** | mobile |
 | **Systems** | Whatever the check finds still live: devices, services and their vault entries. Every public `deevnet` repository, for the scan |
 | **Automation** | A local comparison script, run on the control node; the devices' own interfaces or their roles, for rotation; a secret-scan workflow per repository |
