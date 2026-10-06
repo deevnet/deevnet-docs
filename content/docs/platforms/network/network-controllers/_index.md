@@ -9,7 +9,8 @@ Fills the **network management** domain of the management plane — see
 [Management Plane → Network management](/docs/architecture/substrate/management-plane/#network-management).
 
 The controller runs in the network management service VM, `dv02nms001v01`. The Builder keeps a
-stopped copy with its data as a cold fallback for when the management hypervisor is down.
+stopped, empty controller as a cold fallback for when the management hypervisor is down, with a
+copy of the live controller's snapshot to restore into it.
 
 ---
 

@@ -160,9 +160,17 @@ sudo ip addr add 192.168.0.1/24 dev enp4s0      # remove it once the AP is adopt
 ```
 
 A factory-default AP serves **HTTP** and forces a first-login account. Log in with
-`admin`/`admin`, set the admin account, and **record it in the vault as
+`admin`/`admin` and **set the account the vault already holds,
 `vault_wap_standalone_user` / `vault_wap_standalone_password`** in
-`group_vars/network_controllers/vault.yml` — adoption asks for it.
+`group_vars/network_controllers/vault.yml`. Adoption logs in with it.
+
+{{< hint info >}}
+**Rotating the standalone login is a vault edit.** Nothing uses it except adopting a reset AP, so
+write a new value into the vault, then encrypt, commit and push it
+([Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/#secrets-a-change-produces)).
+The AP takes the new value at its next reset. The value is never written down anywhere else, this
+page included.
+{{< /hint >}}
 
 ---
 

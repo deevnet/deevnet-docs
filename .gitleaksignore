@@ -1,0 +1,6 @@
+# Reviewed secret-scan findings (CHG-0035). One fingerprint per line:
+# commit:file:rule:line. Never a value.
+#
+# `KEY:SECRET` placeholders in a runbook curl example, not credentials.
+97594fecc7cebc73b6c6feb3fd405be01b1bb7a5:content/docs/runbook/network-migration.md:curl-auth-user:28
+db94b3a0e07145b69ff44e31d320bd92597b7a8d:content/docs/runbook/network-migration.md:curl-auth-user:36

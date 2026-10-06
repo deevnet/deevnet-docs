@@ -2,8 +2,8 @@
 title: "Extended Management Plane"
 weight: 3
 tasks_completed: 10
-tasks_in_progress: 9
-tasks_planned: 25
+tasks_in_progress: 10
+tasks_planned: 24
 ---
 
 # Extended Management Plane
@@ -122,12 +122,15 @@ only**: the substrate's own logs are not centralized.
 ## Network Management ⏳
 
 Recovery copies of the network's own configuration. The Omada controller runs on `dv02nms001v01`
-since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/), with no snapshot of its data there.
+since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/). Its data has one snapshot, taken by
+hand on 2026-10-06, with a copy on the Builder.
 The core router's `config.xml` copies exist only on the Builder, in `/srv/dvnt/migration-logs/`.
 
-- ⏳ Give the live controller a recovery path: snapshot its data on `dv02nms001v01`, or prove that
-  a fresh controller rebuilt from inventory (`make wireless`, then re-adoption) is enough, and make
-  that the [recovery runbook](/docs/runbook/substrate/recovery/omada-controller-recovery/)
+- 🔄 Give the live controller a recovery path. One snapshot exists, taken by hand during
+  [CHG-0035](/docs/changes/2026/0035-exposed-credentials/), and the
+  [recovery runbook](/docs/runbook/substrate/recovery/omada-controller-recovery/) restores from it.
+  Still to do: take snapshots routinely, so a restore does not lose everything since one hand-taken
+  copy
 - ⏳ Keep the core router's saved configurations somewhere that survives the Builder: they are what
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from,
   and they hold the router's secrets, so the copy must be private and encrypted

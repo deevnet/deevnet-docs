@@ -18,7 +18,7 @@ If an upgrade goes wrong, or the controller's data is damaged, see
 |---|---|
 | Runs as | `mbentley/omada-controller` under podman, `omada-controller.service`, on `dv02nms001v01` |
 | Data | `/opt/omada-controller` (`data`, `work`, `logs`) |
-| Snapshots | `/opt/omada-controller-backup/`. It does not exist yet on `dv02nms001v01`: step 2 creates it |
+| Snapshots | `/opt/omada-controller-backup/` on `dv02nms001v01`, copied to the same path on the Builder |
 | Images | Tarballs on the artifact server, declared in `artifacts_podman_images` (`group_vars/artifact_servers.yml`) |
 | Version pin | `omada_image_tag` in `group_vars/network_controllers/vars.yml` |
 
