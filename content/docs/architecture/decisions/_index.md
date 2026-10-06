@@ -93,8 +93,9 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   workload reads directly under its own AppRole, delivered once through ADR-0017's channel, so the
   API stays out of the read path. OpenBao becomes something needed to *start* a tenant service, not
   to keep one running. Its blast radius now covers tenant secrets, and an audit device and a proven
-  snapshot restore are preconditions for accepting this record. Extends ADR-0016; depends on ADR-0017,
-  which ADR-0034 superseded, so it is to be revisited.
+  snapshot restore are preconditions for accepting this record. Extends ADR-0016. **Parked
+  2026-10-06:** tenants keep secrets as code for now; this stays an optional service, its workload
+  credential pushed by the tenant now that ADR-0017 is superseded.
 - [ADR-0017: How Tenant Code Reaches a Tenant Workload](/docs/architecture/decisions/tenant-model/0017-tenant-code-delivery/) —
   *Superseded by ADR-0034; never accepted.* Separates the tenant-facing contract from the substrate-side mechanism. **The contract
   is settled:** a tenant declares its workload configuration to the Deevnet API in a Deevnet-owned

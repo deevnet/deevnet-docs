@@ -10,7 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
-| **In conflict with** | [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/): this record delivers each workload's credential through ADR-0017's channel, and ADR-0017 is superseded; there is no channel. To be revisited |
+| **Parked** | 2026-10-06: tenants keep their secrets as code for now: encrypted in their own repositories, merged into the settings they push ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). This record stays Proposed as an optional service for a tenant that needs rotation without a redeploy, per-workload revocation or a read audit. Its delivery through ADR-0017's channel becomes the tenant pushing each workload's AppRole credential ([2026-10 review, S1](/docs/architecture/reviews/2026-10-rebuild-and-access/#s1-tenant-secrets)) |
 | **Date** | 2026-09-21 |
 | **Scope** | Where a tenant's own runtime secrets live, such as a third-party API key its backend service calls with, how they reach the workload that needs them, and who holds the authoritative copy. Not device credentials, and not how the workload itself is filled with code. |
 | **Extends** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), whose §8 left *"tenant namespaces"* out and said they need their own record. This is that record. |
@@ -315,6 +315,9 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 ---
 
 ## Current state
+
+*Updated 2026-10-06.* **Parked.** Tenants keep their secrets as code (see the header). `lightd`'s
+broker credential is an API-issued account delivered in the `kit.env` eds pushes, not handled by hand.
 
 - **Proposed. Nothing is built.**
 - OpenBao has no namespaces.

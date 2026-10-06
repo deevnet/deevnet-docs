@@ -145,6 +145,12 @@ decision has to be kept.
 
 ## Current state
 
+*Updated 2026-10-06.* **The zone policy is enforced**:
+[CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) completed on 2026-09-19. Since
+[CHG-0028](/docs/changes/2026/0028-tenant-workload-login/) the operator has no standing key on tenant
+workloads; a tenant adds the operator's key if it wants operator access. What follows is the state when
+this record was applied.
+
 Accepted, and **applied** by
 [CHG-0012](/docs/changes/2026/0012-operator-access-to-tenants/) on 2026-09-18. An operator on
 management or trusted reaches any tenant workload, by name, in three hops. The zone-policy rules are

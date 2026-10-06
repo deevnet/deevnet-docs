@@ -720,6 +720,12 @@ doesn't answer today anyway (ADR-0011 → Validation).
 
 ### 9. Tenant credentials are issued age-encrypted into the tenant's repository
 
+*As built (2026-10-06): this section was not built, and the text file is the design. `make admit`
+writes the admission handover (the single-use enrollment token and the tenant's developer Wi-Fi key)
+to a text file the operator hands over; everything else a tenant holds comes back from the API into
+its own state. `deevnet_tenants` and `make tenant-attachment`, named below, are retired (ADR-0015
+§14). See the [2026-10 review, T6](/docs/architecture/reviews/2026-10-rebuild-and-access/#t6-credential-handover).*
+
 *Decided in review, 2026-09-14.*
 
 **The requirements set in review:**
@@ -985,6 +991,9 @@ prove.
 ---
 
 ## Current state
+
+*Updated 2026-10-06.* ADR-0010 was accepted on 2026-09-19, after this record. §9's age-encrypted
+delivery was not built (see §9). What follows is the state when it was last updated.
 
 - **Accepted 2026-09-18**, at the close of
   [CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/) — when the Wi-Fi half had been built,

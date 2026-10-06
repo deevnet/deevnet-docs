@@ -210,6 +210,11 @@ not merge.
 
 ## Status of implementation
 
+*Updated 2026-10-06.* The Deevnet API builds each tenant's SDN objects and workloads
+([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)); the
+repository below, renamed `deevnet-tenant-fabric`, now builds only the fabric itself. What follows is
+the state when Phase 1 was built.
+
 **Phase 1 is built.** The fabric, EVPN controller, a tenant zone and VNet, and a first tenant
 workload are applied on hv02 — SDN objects and VMs from `deevnet-tenant-factory` (Terraform), the
 node's substrate attachment from the `deevnet.net` Ansible collection.

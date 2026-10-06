@@ -167,6 +167,10 @@ the same declared tenant list, so the cost lands in role complexity rather than 
 
 ## Current state
 
+*Updated 2026-10-06.* Tenant zones moved to PowerDNS on `dv02idn001v01` (CHG-0008), and the core
+router forwards to them; the `10.20.99.30` host below is retired. What follows is the state when this
+record was written.
+
 - `tdemo.mobile.deevnet.net` and `129.20.10.in-addr.arpa` exist on `10.20.99.30` with the placeholder
   apex described above. Both answer; neither has an NS.
 - The Unbound delegation is not yet in place, so nothing resolves tenant names through

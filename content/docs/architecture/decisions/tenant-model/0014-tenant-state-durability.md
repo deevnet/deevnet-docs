@@ -299,6 +299,9 @@ It doesn't decide whether state should hold them. That stays with ADR-0012.
 
 ## Current state
 
+*Updated 2026-10-06.* Tenants' state is in the bucket (tdemo and eds at least), and the API holds
+device resources. Nothing this record decided was built.
+
 - **Superseded** by ADR-0033 (2026-10-05). Nothing was built.
 - The store and the API's database are on the provisioning VM's OS disk, with no off-host copy.
 - The bucket holds no tenant state, and the API holds no device resources.

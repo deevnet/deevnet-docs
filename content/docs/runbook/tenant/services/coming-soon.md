@@ -10,15 +10,6 @@ here can be declared today. The shape described is the proposal's, and may chang
 
 ---
 
-## Secrets
-
-{{< status-badge "planned" "Coming soon" >}}
-
-**Today:** anything secret your application needs lives in your Terraform state or your own
-tooling. **Planned:** a namespace of your own in the platform secrets store, holding a runtime copy
-of secrets your repository owns, written through the API, and read by your workloads with their own
-identity. [ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)
-
 ## Metrics and alerting
 
 {{< status-badge "planned" "Coming soon" >}}

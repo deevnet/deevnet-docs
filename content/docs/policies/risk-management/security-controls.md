@@ -48,15 +48,17 @@ transit, IoT, IoT vendor and guest
 | Terraform state store | TLS, site CA ([CHG-0030](/docs/changes/2026/0030-state-store-tls/)) | on one disk |
 | Wi-Fi | WPA2 with a per-tenant key (PPSK) on the IoT SSID | — |
 
-The site runs its own certificate authority; clients trust the site's CA certificate rather than a
-public CA, because nothing Deevnet serves is public. Its root is kept offline in the inventory vault,
-and OpenBao issues from an intermediate under it
-([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)).
+The site runs its own certificate authority; clients trust the Deevnet Root CA rather than a public
+CA, because nothing Deevnet serves is public. The Root CA and each Site CA are kept offline; the
+Substrate CA, whose key is in the inventory vault, issues every substrate certificate through Ansible,
+and the Tenant Device CA lives in OpenBao
+([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)).
 
 ## Credentials
 
 - **Automation uses one account, by key.** `a_autoprov`, SSH key only, passwordless sudo, provisioned
-  by the image factory. No passwords in playbooks or inventory
+  by the image factory. No password is written in a playbook; the passwords some devices and services
+need (Omada, the switch, the AP, Grafana, MinIO) are in the inventory's vault, encrypted
 - **Secrets are encrypted before they are committed**, and a pre-commit hook refuses a plaintext
   vault
 - **A credential a change generates is encrypted, committed and pushed before its source is

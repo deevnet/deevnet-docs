@@ -267,6 +267,10 @@ have been.
 
 ## Current state
 
+*Updated 2026-10-06.* **Built.** Tenant zones live on PowerDNS on `dv02idn001v01`, the core router
+forwards each one (written by the Deevnet API), and tenant names resolve through `10.20.99.1`. Tenants
+publish records through the provider. What follows is the state when this record was written.
+
 The decision is taken; the implementation is not yet built. For whoever picks it up:
 
 - Nothing about the substrate's own DNS changes. `opnsense_dns` keeps host overrides and aliases

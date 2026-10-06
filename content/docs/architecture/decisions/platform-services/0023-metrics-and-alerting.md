@@ -284,6 +284,12 @@ phone needs a path back to the site, which is Open question 3.
 
 ## Current state
 
+*Updated 2026-10-06.* Nothing this record decides is built. The observability VM, `dv02obs001v01`,
+runs the log store, vmauth, Grafana and the downloads site
+([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/),
+[ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)); the collection VM,
+`dv02col001v01`, is built empty.
+
 - **Proposed. Nothing is built.** Both observability VMs run only sshd.
 - No exporter is installed anywhere.
 - No alert exists.

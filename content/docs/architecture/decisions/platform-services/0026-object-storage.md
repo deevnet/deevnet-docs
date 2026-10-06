@@ -240,6 +240,9 @@ reserve, and replication settings.
 
 ## Current state
 
+*Updated 2026-10-06.* Nothing this record decides is built. The store serves TLS from the site's CA
+([CHG-0030](/docs/changes/2026/0030-state-store-tls/)), not plain HTTP, and tenants' state is in it.
+
 - **Proposed. Nothing is built.**
 - The store is MinIO community `RELEASE.2025-09-07`, serving plain HTTP, on the provisioning VM's OS
   disk.

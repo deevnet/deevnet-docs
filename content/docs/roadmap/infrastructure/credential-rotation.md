@@ -3,7 +3,7 @@ title: "Credential Rotation"
 weight: 6
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 9
+tasks_planned: 12
 ---
 
 # Credential Rotation
@@ -44,13 +44,34 @@ This is **not** an urgent security posture item. mobile is a lab on hardware tha
 - ⏳ Enumerate every long-lived credential in the substrate and record, for each, what it authenticates, which repos and roles consume it, and whether a copy exists outside the vault
 - ⏳ Identify which are **derivable or reissuable without coordination** (a Proxmox API token) versus which require simultaneous updates on both sides (a TSIG key shared with a tenant's Terraform)
 
-Known members of that set today, none with a defined lifetime:
+**The credentials, ordered by what losing control of each would reach.** None has a defined
+lifetime; the last column says whether replacing it is written down today.
 
-- Proxmox API tokens per hypervisor (`vault_proxmox_token_id` / `_secret`), rendered to `build/pve-env/*.env` on disk by the image factory
-- The OPNsense API key/secret pair for the core router
-- The `a_autoprov` SSH keypair — long-lived by design under §1.1, but with no defined replacement procedure
-- The ansible-vault passphrase itself, which has no password file and is only in the operator's head
-- Per-tenant TSIG keys and per-tenant MinIO credentials, both shared with tenant repos
+| Credential | Reaches | Rotation written |
+|---|---|---|
+| The ansible-vault password | every secret in the vault, including OpenBao's seal key | No |
+| The `a_autoprov` SSH key | root on every substrate host | No |
+| OpenBao's seal key and recovery key | every secret OpenBao holds | No |
+| The Deevnet API operator token | every API route, every tenant | No |
+| The API's tenant-token signing key | could forge any tenant's token | No |
+| The Substrate CA key | any substrate server certificate | Yes ([Custody](/docs/runbook/root-of-trust/custody/)) |
+| OPNsense API key, shared by Ansible and the Deevnet API | the whole core router | No |
+| Proxmox API tokens (build and the API's) | each hypervisor | Yes ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)) |
+| Omada Owner, automation user and Open API clients | the controller, the switch's and AP's configuration | Automation user only (re-run its play) |
+| PowerDNS API key, MinIO root and the API's MinIO admin | every tenant zone; every bucket | No |
+| VerneMQ cookie and database passwords; the broker-writer and log-writer keys | the broker's accounts; the log store's routes | Broker-writer key only |
+| Grafana admin and secret key; the log bridge's token; the vmauth operator token | every tenant's dashboards and log partitions | No |
+| The switch and AP admin logins; the shared Wi-Fi keys | each device; each SSID | No |
+| Per-tenant credentials the API issues (API token, TSIG key, state keys, log tokens, dashboard password, Wi-Fi keys, broker accounts) | that tenant | Wi-Fi keys and broker accounts only |
+
+**Rotation is written as each change touches a credential.** A change that adds, narrows or replaces
+a credential documents how to rotate it, rather than this project writing every procedure at once
+([2026-10 review, A8](/docs/architecture/reviews/2026-10-rebuild-and-access/#a8-rotation)). The three
+at the top need their own:
+
+- ⏳ Rekey the ansible-vault password (`ansible-vault rekey`), and what has to be updated with it
+- ⏳ Replace the `a_autoprov` SSH key on every host, from the artifact server's published copy onward
+- ⏳ Rotate OpenBao's seal key, which the role does not support yet
 
 ## Rotation Procedures ⏳
 

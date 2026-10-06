@@ -31,7 +31,7 @@ Terraform, Pi Imager, MicroPython and the Pi image are also served on the site's
 |---|---|---|---|---|
 | `git` | your repository | `xcode-select --install` | `sudo dnf install git` | `sudo apt install git` |
 | Terraform ≥ 1.5 | applies your tenant | `brew install hashicorp/tap/terraform` | from [tenant downloads](#tenant-downloads) `terraform/`, or HashiCorp's repo | the same |
-| `deevnet/deevnet` provider **0.4.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same |
+| `deevnet/deevnet` provider **0.5.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same |
 | `curl`, `openssl` | TLS checks, the CA | built in | `sudo dnf install curl openssl` | `sudo apt install curl openssl` |
 
 **For devices:**
@@ -145,7 +145,7 @@ Pin it in your configuration:
 ```hcl
 deevnet = {
   source  = "deevnet/deevnet"
-  version = "~> 0.4"
+  version = "~> 0.5"
 }
 ```
 

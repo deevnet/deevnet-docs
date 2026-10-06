@@ -624,6 +624,12 @@ this record being written around it.
 
 ## Current state
 
+*Updated 2026-10-06.* **The broker exists** (VerneMQ on `dv02msg001v01`, CHG-0015), **the device
+registry is built** (CHG-0014), and **the core router enforces the zone policy**
+([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/), 2026-09-19). Open question 6, the
+firmware supply chain, is still open. Client isolation is still untested. What follows is the state
+when it was last updated.
+
 - **Accepted 2026-09-15.** All four open questions are answered. The granularity of question 3 was
   amended on 2026-09-18 to one key per tenant per trust class.
 - **Per-key VLANs are proven on the hardware, not merely documented.**
