@@ -77,7 +77,7 @@ host and tool, with no browser warning and no client skipping verification.
 
 ## Device Identity ⏳
 
-- ⏳ Device enrollment through the Deevnet API: the Tenant Device CA signs a device's request (CHG-0034)
+- ⏳ Device enrollment through the Deevnet API: the Tenant Device CA signs a device's request ([CHG-0034](/docs/changes/2026/0034-device-certificates/))
 - ⏳ mTLS at the broker: client certificates from the Tenant Device CA, authorized by their URI
 
 ---

@@ -92,4 +92,6 @@ Re-enable plain HTTP for every path; the HTTPS listener can stay.
 
 ## To discover
 
+- Which CA issues the Builder's certificate: it belongs to no site (site code `00`), which is
+  [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)'s open question 1.
 - Whether anything else on the site fetches from the artifact server by HTTP and needs moving.
