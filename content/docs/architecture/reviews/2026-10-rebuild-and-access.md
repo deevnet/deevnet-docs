@@ -11,7 +11,7 @@ weight: -202610
 | **Scope** | The Mobile Factory: substrate, tenants, and the accounts that build and run them |
 | **Criteria** | Every part rebuilds cleanly from code; no rebuild depends on what it is rebuilding; infrastructure and configuration are code; accounts and access are practical and least-privilege |
 | **Method** | A read of the inventory, the Ansible collections, the image factories, the Deevnet API and provider, the reference tenant, and every ADR, runbook and record. Findings cite the files they come from. Where a finding comes from reading code rather than running it, it says so. |
-| **Status** | Open. The operator's first responses (R1–R7, A2, A3) are recorded below, 2026-10-06; the rest are to come. Each finding acted on becomes an ADR or a change record |
+| **Status** | Open. The operator's responses so far (R1–R9, T1–T4, A2, A3) are recorded below; the rest are to come. Each finding acted on becomes an ADR or a change record |
 
 ---
 
@@ -40,8 +40,8 @@ the criteria for deciding ([S1](#s1-tenant-secrets)), without deciding.
 
 ### Responses so far
 
-**The operator responded to the first findings on 2026-10-06.** Each response is under its finding;
-in short:
+**The operator has responded to fifteen of the 26 findings so far.** Each response is under its
+finding; in short:
 
 | Finding | Response |
 |---|---|
@@ -52,6 +52,12 @@ in short:
 | [R5](#r5-openbao-re-initialization) OpenBao re-initialization | **Agreed.** The play stops until the lock-in is done |
 | [R6](#r6-four-rebuild-orders) Four rebuild orders | **Agreed,** plus a recovery chart of what a failed component's blast radius is |
 | [R7](#r7-omada-controller) Omada controller | **Agreed.** The controller is a T2 service |
+| [R8](#r8-packages-from-the-internet) Packages from the internet | **Narrow the standard now, mirror later.** §5.4 covers the install; package installs and updates afterwards are a recorded exception |
+| [R9](#r9-the-manual-floor) The manual floor | **Mixed:** Proxmox tokens stay manual; the Fedora ISO and the network-boot VM shell are automated; the stray VMs are moved by a change, not deleted |
+| [T1](#t1-reconcile-coverage) Reconcile coverage | **Agreed.** The reconcile puts back everything the registry holds, with the same secrets. The Transit key moves to the vault, like the Tenant Device CA's |
+| [T2](#t2-state-key-recovery) State-key recovery | **Agreed:** the tenant keeps its own copy in the long term; an operator reissue now; the docs corrected |
+| [T3](#t3-tenant-index) Tenant index | **Accept renumbering,** with a rule: tenants use names, never addresses |
+| [T4](#t4-tenant-tokens) Tenant tokens | **Deferred** |
 | [A2](#a2-one-session-reaches-everything) One session reaches everything | **Deferred,** with the mechanics of short-lived SSH certificates recorded |
 | [A3](#a3-bootstrap-over-plain-http) Bootstrap over plain HTTP | **Agreed, extended:** the artifact server moves to HTTPS, with plain HTTP kept only where nothing can verify |
 
@@ -314,6 +320,13 @@ Owner account and the Open API clients stay on the manual floor ([R9](#r9-the-ma
 the install and record the rest as an accepted exception. Today the standard and the site disagree
 silently.
 
+**Response (2026-10-06): narrow §5.4 now, mirror later.** The standard is amended to match the site:
+the install stays offline (the OS install, network boot and artifacts), and package installs and
+updates after first boot are a recorded exception that needs the internet. Mirroring Fedora's
+`updates` repository, and Proxmox's, stays on the roadmap through the existing
+[package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/) evaluation,
+and restores the stricter rule if an offline rebuild comes to matter.
+
 #### R9 The manual floor
 
 **Low. The manual floor isn't written down in one place, and some of it needn't be manual.**
@@ -327,6 +340,19 @@ silently.
 
 *Recommendation:* list the floor on the rebuild graph page ([R6](#r6-four-rebuild-orders)), automate
 the three above, and remove the leftovers.
+
+**Response (2026-10-06), item by item:**
+- **Proxmox API tokens stay manual.** Proxmox shows a token's secret once; automating it would only
+  trade one manual step (issuing it) for another (locking it into the vault). The role already stops
+  when a declared token is missing.
+- **The Fedora ISO is automated.** The artifacts role publishes the ISO for every release the image
+  factory still builds, and the template build fetches it, so a reinstalled hypervisor needs no
+  hand-placed ISO.
+- **The network-boot VM shell is automated,** as an empty-shell mode of the role that creates VMs.
+- **The stray VMs are moved, not deleted.** VMs 100 and 104 on the management hypervisor are kept,
+  and a change record moves them off it. **The substrate hypervisors run the lab now: anything
+  experimental lives in a tenant.** The unused `packer-prov@pve` user goes with
+  [A5](#a5-proxmox-permissions).
 
 ### Tenant rebuild
 
@@ -349,6 +375,30 @@ come back.**
 idempotently: workloads, records, Wi-Fi keys, broker accounts. One operator command after any T2
 rebuild then restores every tenant, without asking tenants to do anything.
 
+**Response (2026-10-06): agreed; the reconcile puts back everything the registry holds.** One operator
+command after any T2 rebuild restores every tenant:
+- **Workloads** missing from their hypervisor are cloned again with the same identity (VMID, MAC,
+  address and name, all derived from the tenant's index) and the tenant's SSH keys. They come back
+  as the template: the tenant pushes its application again
+  ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)), and
+  its SSH client sees new host keys once.
+- **DNS records** are published again.
+- **Wi-Fi keys and broker accounts** are written back with **the same secrets**, from the API's stored
+  copies, so devices reconnect without a visit. A tenant's own `-replace` today would mint new
+  secrets and cost every device a visit; once a tenant supplies its device secrets from code
+  ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)), its own
+  `-replace` becomes safe too.
+- **A stored copy that can't be read is skipped and reported**, never written empty
+  ([T5](#t5-openbao-rebuild-edges)); the tenant's next apply resupplies it.
+
+**The registry is what this restores from, so the registry belongs in the backup
+([R2](#r2-registry-and-state-on-one-vm)):** the API's database and the state bucket. The API's stored
+copies are encrypted with OpenBao's Transit key, which today exists only inside OpenBao; a rebuilt
+OpenBao has a new one that can't open a restored database. **So the Transit key is handled like the
+Tenant Device CA's key ([R1](#r1-tenant-device-ca-key)):** held in ansible-vault and imported into
+OpenBao on every build. A database backup is then readable with the vault alone. The rule this makes:
+**any key OpenBao uses that can't be re-derived is held in the vault and loaded as configuration.**
+
 #### T2 State-key recovery
 
 **High. A tenant that loses its state-store keys has no way back in, and the docs say it does.**
@@ -363,6 +413,16 @@ rebuild then restores every tenant, without asking tenants to do anything.
 *Recommendation:* under ADR-0033 the tenant keeps its backend credentials in its own repository,
 encrypted, which ends the circularity. Until then, an operator-only reissue of the state key, and fix
 both pages now.
+
+**Response (2026-10-06): agreed, in three parts.**
+- **Long term:** the tenant keeps its state-store credentials in its own repository, encrypted, beside
+  its device secrets ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)),
+  which ends the circle.
+- **Now:** an operator-only **reissue** that mints a new state secret, updates the tenant's user in the
+  store, and hands the secret over like an enrollment token. The reconcile keeps refusing to return
+  the existing one, as the code intends.
+- **The docs are corrected** to say what is true until then: there is no recovery path for a lost
+  state secret yet.
 
 #### T3 Tenant index
 
@@ -379,6 +439,17 @@ both pages now.
 *Recommendation:* make `index` an optional provider input, and record it in the tenant's repository.
 Correct ADR-0033's sentence.
 
+**Response (2026-10-06): accept renumbering, with a rule: tenants use names, never addresses.**
+- **A tenant can't choose its index well.** Tenants can't see each other's indexes, so a chosen index
+  is a blind pick, and keeping them stable would need an ordering rule for every re-admission.
+- **Renumbering is rare and mostly invisible.** It happens only in a full rebuild where a tenant has
+  also lost its state; a tenant that kept its state keeps its index through the restore path. Names
+  stay the same and are published to the new addresses; topics use the tenant's name; the operator's
+  route covers every tenant; dashboards use fixed data-source identifiers.
+- **What breaks is an address pinned somewhere,** so the tenant guide says to use names, never
+  addresses, and ADR-0033's sentence is corrected to what is true: a tenant with its state keeps its
+  index, and one without may get a new one.
+
 #### T4 Tenant tokens
 
 **Medium. A tenant's API token can be neither reissued nor revoked.**
@@ -390,6 +461,12 @@ Correct ADR-0033's sentence.
 
 *Recommendation:* a token generation number inside the signed token, kept in the registry, which
 makes both reissue and revoke one increment.
+
+**Response (2026-10-06): deferred.** The leading option is a generation number inside each token,
+kept in the registry: a reissue bumps it, and removing a tenant leaves a small tombstone so its old
+token is refused. With the registry lost, tokens verify by signature alone, as today, so recovery is
+unchanged. Rotating the signing key, which replaces every tenant's token at once, stays the emergency
+option.
 
 #### T5 OpenBao rebuild edges
 
@@ -673,6 +750,8 @@ fallback; R3's page is *Build the Builder*; A3 gains HTTPS on the artifact serve
 - **Tenant secrets** ([S1](#s1-tenant-secrets)): code, an OpenBao copy, or both.
 - **Agent forwarding** ([A2](#a2-one-session-reaches-everything)): replace it with SSH certificates,
   or accept it as a recorded risk. *Deferred, 2026-10-06.*
-- **The manual floor** ([R9](#r9-the-manual-floor)): which parts stay manual on purpose.
+- **The manual floor** ([R9](#r9-the-manual-floor)): which parts stay manual on purpose. *Answered,
+  2026-10-06.*
 - **Offline provisioning** ([R8](#r8-packages-from-the-internet)): mirror updates, or narrow the
-  standard.
+  standard. *Answered, 2026-10-06: narrow now, mirror later.*
+- **Tenant tokens** ([T4](#t4-tenant-tokens)): how to reissue and revoke. *Deferred, 2026-10-06.*
