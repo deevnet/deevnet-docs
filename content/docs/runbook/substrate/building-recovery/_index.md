@@ -83,7 +83,16 @@ flowchart TD
     classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068
 {{< /mermaid >}}
 
-**Legend:** {{< mermaid >}}flowchart LR; T["Authority transition"]:::transition; M["Manual step"]:::manual; classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c; classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068{{< /mermaid >}}
+**Legend:**
+
+{{< mermaid >}}
+flowchart LR
+    T["Authority transition"]:::transition
+    M["Manual step"]:::manual
+
+    classDef transition fill:#1a3a1a,stroke:#57ab5a,color:#8ddb8c
+    classDef manual fill:#3d1f00,stroke:#d29922,color:#e6c068
+{{< /mermaid >}}
 
 **Within step 9, the management-plane VMs come up in the order `deevnet.mgmt`'s `site.yml` runs
 them:** all VMs first, then OpenBao, PowerDNS, the state store, the Deevnet API, the Omada
