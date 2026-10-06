@@ -54,7 +54,7 @@ The Builder is configured using these `deevnet.builder` roles:
 | **[Workstation](workstation-role/)** | Developer tools, users, Ansible controller |
 | **[Artifacts](artifacts-role/)** | Air-gapped artifact serving (ISOs, packages, images) |
 | **[Bootstrap](bootstrap-role/)** | Network boot for the site: PXE and TFTP always; DNS, DHCP and gateway too while the Builder is authoritative |
-| **[Network Controller](network-controller-role/)** | A stopped Omada controller with its data, the cold fallback for `dv02nms001v01` |
+| **[Network Controller](network-controller-role/)** | A stopped, empty Omada controller and a copy of the live controller's snapshot: the cold fallback for `dv02nms001v01` |
 
 ---
 
