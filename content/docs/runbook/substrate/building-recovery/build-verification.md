@@ -96,8 +96,10 @@ The substrate service VMs, and one check each.
 | Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl --cacert $CA -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
 | Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/` | `200` |
 
-Then **reconcile one tenant**. It exercises every backend the API writes (DNS, state, broker
-accounts, the log store, Grafana) in one call, and a failing backend is named in the response:
+Then **reconcile one tenant**. It exercises the backends a reconcile re-ensures (DNS and its
+forwarding, the state store, the tenant network, the log store and Grafana) in one call, and a
+failing backend is named in the response. Broker accounts, Wi-Fi keys and workloads are not part of a
+reconcile:
 
 ```bash
 # OPERATOR_TOKEN is vault_deevnet_api_token, in the deevnet_api group vault

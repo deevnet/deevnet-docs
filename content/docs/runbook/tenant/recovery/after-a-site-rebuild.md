@@ -11,6 +11,7 @@ The operator tells you what was rebuilt. What you do depends on which part it wa
 |---|---|---|
 | **The Deevnet API's registry** | Nothing about you, until you apply | `terraform apply`. Your state restores your tenant with the same index and keys, and the plan is otherwise empty. Only if another tenant has taken your index meanwhile are you given a new one, and your network and workloads are rebuilt on it |
 | **The tenant hypervisor** | Your network, once the operator reconciles your tenant | Your **workloads do not come back yet**: see below |
+| **The whole site** | Nothing about you | Wait for the operator's new handover file: it carries a new developer Wi-Fi key. Then apply. With your state, your tenant comes back with its keys. Without it, use the handover's enrollment token and create your tenant again from your repository; it may get a new index, which doesn't matter if you use names, and your devices need new secrets. Then push your application to each workload |
 | **DNS, the state store, the log store or dashboards** | Your zone and key, your state access, log tokens and dashboards login, once the operator reconciles your tenant | Re-check your names: see below. Log lines and dashboards stored on a lost host are gone |
 
 ## Your workloads, after a tenant hypervisor rebuild

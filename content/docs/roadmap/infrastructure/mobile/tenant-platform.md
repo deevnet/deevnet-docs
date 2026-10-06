@@ -135,7 +135,7 @@ Prove the whole path with a real tenant.
   ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Still untested: network isolation
   between two tenants' workloads.
 - ⏳ Rebuild-from-scratch drill — now re-scoped to the reference implementation: create a throwaway
-  tenant repository from `examples/tenant/`, apply, verify, destroy. Run at each module MAJOR tag.
+  tenant repository from the reference tenant, `deevnet-tenant-tdemo`, apply, verify, destroy. Run at each module MAJOR tag.
 
 ## Platform services for tenants 🔄
 

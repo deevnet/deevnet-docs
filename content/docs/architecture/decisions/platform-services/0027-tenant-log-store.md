@@ -280,7 +280,7 @@ today.
   there — including filters that reach the level without naming it, like a device asking to
   subscribe to `#`. Checked against the live API; the grants that exist all pass.
 - **No device firmware publishes yet.** mabell's gateway holds `mabell/log/ma-bell-gw-01` and logs to
-  serial; eds's stand has no `log/` grant at all. That is the last link, and it is work in each
+  serial; eds's stand holds a `log/lp-stand-01` grant (CHG-0021) and doesn't publish to it yet. That is the last link, and it is work in each
   device's own repository.
 
 ### What reading a partition you have no route for does

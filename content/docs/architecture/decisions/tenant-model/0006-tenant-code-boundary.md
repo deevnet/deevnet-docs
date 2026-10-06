@@ -190,6 +190,11 @@ came from.
 
 ## Current state
 
+*Updated 2026-10-06.* [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/)
+superseded the factory's registry and reference implementation: the Deevnet API is the registry, each
+tenant has its own repository, and the reference tenant is `deevnet-tenant-tdemo`. What follows is the
+state when this record was written.
+
 - `t-demo` is the first tenant to move, and it stays live. The acceptance gate for the move is an
   **empty plan** in the new repository: same state, same resource addresses, same running VM, same
   published records, zero API mutations.

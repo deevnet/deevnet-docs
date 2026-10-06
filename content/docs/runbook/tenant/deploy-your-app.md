@@ -139,6 +139,31 @@ ssh $H sudo journalctl -u my-app -f                      # your app's output
 
 It starts again by itself after a reboot of the workload.
 
+## Your own secrets
+
+**Secrets you bring yourself live in your repository, encrypted, and travel in the settings file you
+push.** A third-party API key, a webhook signing key or a password you chose is yours: the site holds
+no copy, so your repository is the only place it survives a rebuild.
+
+- **Keep them encrypted with [age](https://age-encryption.org/)**, to the keys of the computers that
+  deploy, and commit the encrypted file:
+
+  ```bash
+  age -R recipients.txt -o secrets.env.age secrets.env && rm secrets.env
+  ```
+
+- **Merge them into the settings file at deploy time**, next to what the site issued you, and push it
+  as in step 4:
+
+  ```bash
+  terraform output -raw kit_env > kit.env
+  age -d -i ~/.config/age/key.txt secrets.env.age >> kit.env
+  ```
+
+- **Rotating one** is a new value in the encrypted file, a push, and a restart.
+
+The file sits on your workload's disk, readable by root only, as `kit.env` does.
+
 ## Ship a new version
 
 ```bash

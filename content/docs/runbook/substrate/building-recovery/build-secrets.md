@@ -39,8 +39,9 @@ eval "$(â€¦)" in the make recipe           TF_VAR_proxmox_* in that shell only â
 - It uses Ansible's own libraries in-process to read the inventory: for the AppRole's credentials,
   or with `--source inventory`, for the token itself. It needs the vault password:
   `ANSIBLE_VAULT_PASSWORD_FILE`, or a prompt.
-- **Every read is in OpenBao's audit log**, under the image-factory identity. That identity can
-  read `image-factory/proxmox/*` and nothing else: not the API's backends, not a mount, not PKI.
+- **Reads are under the image-factory identity,** which can read `image-factory/proxmox/*` and nothing
+  else: not the API's backends, not a mount, not PKI. OpenBao has no audit device yet, so reads are not
+  logged ([2026-10 review, A4](/docs/architecture/reviews/2026-10-rebuild-and-access/#a4-openbaos-own-access)).
 
 ## Everyday use
 

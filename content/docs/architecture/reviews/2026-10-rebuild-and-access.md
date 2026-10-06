@@ -11,7 +11,7 @@ weight: -202610
 | **Scope** | The Mobile Factory: substrate, tenants, and the accounts that build and run them |
 | **Criteria** | Every part rebuilds cleanly from code; no rebuild depends on what it is rebuilding; infrastructure and configuration are code; accounts and access are practical and least-privilege |
 | **Method** | A read of the inventory, the Ansible collections, the image factories, the Deevnet API and provider, the reference tenant, and every ADR, runbook and record. Findings cite the files they come from. Where a finding comes from reading code rather than running it, it says so. |
-| **Status** | Open. The operator's responses so far (R1–R9, T1–T4, A2, A3) are recorded below; the rest are to come. Each finding acted on becomes an ADR or a change record |
+| **Status** | Responded. The operator answered all 26 findings by 2026-10-06 (A2 and T4 deferred); each response is under its finding. Each finding acted on becomes an ADR or a change record |
 
 ---
 
@@ -40,8 +40,8 @@ the criteria for deciding ([S1](#s1-tenant-secrets)), without deciding.
 
 ### Responses so far
 
-**The operator has responded to fifteen of the 26 findings so far.** Each response is under its
-finding; in short:
+**The operator has responded to all 26 findings: 24 decided, two deferred.** Each response is under
+its finding; in short:
 
 | Finding | Response |
 |---|---|
@@ -58,6 +58,17 @@ finding; in short:
 | [T2](#t2-state-key-recovery) State-key recovery | **Agreed:** the tenant keeps its own copy in the long term; an operator reissue now; the docs corrected |
 | [T3](#t3-tenant-index) Tenant index | **Accept renumbering,** with a rule: tenants use names, never addresses |
 | [T4](#t4-tenant-tokens) Tenant tokens | **Deferred** |
+| [T5](#t5-openbao-rebuild-edges) OpenBao rebuild edges | **Agreed,** fixed in the same change as T1 |
+| [T6](#t6-credential-handover) Credential handover | **The text file is the design;** the ADRs amended |
+| [T7](#t7-full-rebuild-plan) Full-rebuild plan | **Agreed:** tenant steps added to both pages |
+| [A1](#a1-exposure-tracking) Exposure tracking | **Agreed:** a register entry, a check of each credential, secret scanning; no history rewrite |
+| [A4](#a4-openbaos-own-access) OpenBao's own access | **Agreed:** an honest description, bound logins, a file audit device |
+| [A5](#a5-proxmox-permissions) Proxmox permissions | **Agreed:** narrow the build tokens, amend ADR-0015 to the API's role as built, remove the leftovers |
+| [A6](#a6-shared-credentials) Shared credentials | **Agreed:** separate OPNsense and Grafana credentials for the API; MinIO and the bridge accepted |
+| [A7](#a7-secrets-in-container-environments) Secrets in container environments | **Agreed, later:** secrets as files |
+| [A8](#a8-rotation) Rotation | **Agreed:** the list fixed, rotation written as each change touches a credential |
+| [S1](#s1-tenant-secrets) Tenant secrets | **Secrets as code now;** ADR-0021 parked |
+| [D1](#d1-stale-records-and-pages) Stale records and pages | **Agreed:** one sweep |
 | [A2](#a2-one-session-reaches-everything) One session reaches everything | **Deferred,** with the mechanics of short-lived SSH certificates recorded |
 | [A3](#a3-bootstrap-over-plain-http) Bootstrap over plain HTTP | **Agreed, extended:** the artifact server moves to HTTPS, with plain HTTP kept only where nothing can verify |
 
@@ -485,6 +496,12 @@ rebuilt:**
 *Recommendation:* guard the reconcile, return what a restore re-mints, and add an OpenBao-rebuild case
 to the integration tests.
 
+**Response (2026-10-06): agreed, in the same change as [T1](#t1-reconcile-coverage).** A restore
+returns what it re-mints, the operator's reconcile shows new log tokens instead of discarding them, the
+provider expects a changed dashboard password, unreadable copies are skipped, and an "OpenBao rebuilt"
+case joins the integration tests. With the Transit key held in the vault (T1), a rebuilt OpenBao keeps
+its key, and these become defense in depth.
+
 #### T6 Credential handover
 
 **Low. Admission credentials are handed over by hand, and the record describing another way is
@@ -497,6 +514,11 @@ stale.**
 
 *Recommendation:* decide whether the text-file handover is the design. If it is, amend §9 to say so.
 
+**Response (2026-10-06): the text file is the design.** The handover is one-time and short-lived (a
+single-use enrollment token, and the developer Wi-Fi key), and handing it over by hand is adequate
+here. ADR-0012 §9 and ADR-0015 §10 are amended to say so. If tenants adopt age for their own secrets
+([S1](#s1-tenant-secrets)), encrypted delivery can be revisited.
+
 #### T7 Full-rebuild plan
 
 **Low. The full-rebuild roadmap has no tenant steps, and the tenant runbook omits re-admission.**
@@ -506,6 +528,10 @@ After a full rebuild every tenant needs a new admission just to reach `DVNTM-TD`
 `runbook/tenant/recovery/after-a-site-rebuild.md`.
 
 *Recommendation:* add re-admission and re-apply to both.
+
+**Response (2026-10-06): agreed.** The Full Site Rebuild roadmap gains a "bring tenants back" step,
+and *After a Site Rebuild* says what a tenant does after a whole-site rebuild: wait for the new
+handover, apply, and push its application again.
 
 ### Accounts and access
 
@@ -518,6 +544,12 @@ The risk register holds no entry for them, and whether each was rotated isn't re
 
 *Recommendation:* a register entry, and a check of each exposed credential against its current value.
 The details belong with the operator, not on this page.
+
+**Response (2026-10-06): a register entry, a check, and secret scanning; no history rewrite.** The
+risk register records the exposure as a class (R-15). Each exposed credential is compared with its
+current value without either being displayed, and any still in use is rotated. Public repositories
+get a secret scan on every push. History is not rewritten: copies may already exist elsewhere, so
+rotation is the fix.
 
 #### A2 One session reaches everything
 
@@ -603,6 +635,14 @@ follow-up 5.
 *Recommendation:* turn on a file audit device; bind each AppRole's secret-id to the hosts that use it;
 call the `ansible` AppRole what it is in its comment, or split policy-writing out of it.
 
+**Response (2026-10-06): agreed on all three.**
+- **The `ansible` AppRole is described as what it is:** root-equivalent, held only in ansible-vault.
+  It isn't split; both halves would sit in the same vault.
+- **Logins are bound:** the API's secret ID to the provisioning VM's address, with an expiry (its role
+  reissues it); Ansible's to the Builder's addresses, without one.
+- **A file audit device** on the identity VM's disk, rotated, since the log store holds tenant data
+  only. The docs say what is true until then.
+
 #### A5 Proxmox permissions
 
 **Medium. Proxmox tokens hold far more than their jobs need.**
@@ -615,6 +655,12 @@ Platform roadmap.
 
 *Recommendation:* scope the build token to templates and storage, the API's role to a tenant pool,
 and remove the leftovers.
+
+**Response (2026-10-06): agreed on all three.** The build tokens get a custom role with only what
+Packer and the fabric need, its privileges confirmed against Proxmox's documentation and a test build,
+in the same change as [R4](#r4-build-credentials-from-openbao). The API's role stays at `/`, and
+ADR-0015 §6 is amended to that: per-tenant pools would need the API to hold the right to grant
+permissions. The two unused accounts are removed.
 
 #### A6 Shared credentials
 
@@ -630,6 +676,11 @@ question 3.
 *Recommendation:* a key per consumer where the product allows it, starting with OPNsense. Record the
 rest as accepted.
 
+**Response (2026-10-06): separate the two that can be separated.** The Deevnet API gets its own
+OPNsense user, limited to the resolver's settings, which takes it off the firewall; and its own Grafana
+server-admin login, with the same rights but its own credential. The MinIO admin's ability to grant
+itself access, and the log bridge's single token, are recorded as accepted.
+
 #### A7 Secrets in container environments
 
 **Medium. Running containers carry their secrets in their environment, readable with
@@ -641,6 +692,11 @@ admin password. The operator scripts read the operator token that way on purpose
 
 *Recommendation:* mount secrets as files with Podman secrets, and have the operator scripts read the
 token from the vault.
+
+**Response (2026-10-06): secrets as files, as a low-priority later item.** Grafana reads its admin
+password from a mounted file; the API learns to read its secrets from files at its next change; the
+operator scripts read the token from that file instead of through `podman inspect`. The exposure is
+root-only either way; the gain is fewer accidental leaks.
 
 #### A8 Rotation
 
@@ -655,6 +711,11 @@ token from the vault.
 
 *Recommendation:* one rotation page per credential class, ordered by blast radius, with the
 automation first.
+
+**Response (2026-10-06): fix the list, and rotate as we go.** The rotation roadmap's list is rewritten
+to the real set of credentials, ordered by what each reaches. Every change that touches a credential
+documents how to rotate it. The three at the top (the vault password, the automation key and
+OpenBao's seal key) get procedures of their own.
 
 ### Tenant secrets
 
@@ -683,6 +744,13 @@ automation first.
 | OpenBao as a runtime copy | The same | An OpenBao identity the tenant pushes once; reads at start | Rotation without a push, per-workload revocation, an audit trail, secrets in memory | Namespaces, a provider resource, a read client; OpenBao needed to start a service |
 | Both | The same | Its choice per workload | Tenants choose their own trade | Two paths to document and support |
 
+**Response (2026-10-06): secrets as code now; ADR-0021 parked.** A tenant keeps its own secrets
+encrypted in its repository and merges them into the settings file it pushes, which is how eds
+already works; the tenant guide now says so. ADR-0021 stays Proposed as an optional service for a
+tenant that needs rotation without a redeploy, per-workload revocation or a read audit, with each
+workload's OpenBao credential pushed by the tenant now that ADR-0017 is gone. Nothing built in OpenBao
+is undone.
+
 ---
 
 ### Documentation drift
@@ -702,6 +770,10 @@ automation first.
 - **Code comments** still naming the bootstrap intermediate and "the site CA in OpenBao".
 
 *Recommendation:* one sweep, records first.
+
+**Response (2026-10-06): agreed; one sweep.** Each stale ADR's Current state gains a dated update
+saying what is true now, with the earlier text kept below it as history, and the wrong claims on other
+pages are corrected. Code comments are fixed in the next change to each file.
 
 ---
 
@@ -747,7 +819,8 @@ fallback; R3's page is *Build the Builder*; A3 gains HTTPS on the artifact serve
 ## Open for the operator
 
 **These are choices this review can inform but not make:**
-- **Tenant secrets** ([S1](#s1-tenant-secrets)): code, an OpenBao copy, or both.
+- **Tenant secrets** ([S1](#s1-tenant-secrets)): code, an OpenBao copy, or both. *Answered,
+  2026-10-06: code now, the OpenBao copy parked.*
 - **Agent forwarding** ([A2](#a2-one-session-reaches-everything)): replace it with SSH certificates,
   or accept it as a recorded risk. *Deferred, 2026-10-06.*
 - **The manual floor** ([R9](#r9-the-manual-floor)): which parts stay manual on purpose. *Answered,

@@ -14,7 +14,7 @@ aliases:
 | **Date** | 2026-09-14 |
 | **Scope** | How services on the management hypervisor are grouped into VMs and named, where the site's Omada controller officially runs, and the order a rebuild uses them in |
 | **Extends** | [ADR-0009: Network Device Configuration Is Inventory-Owned and Controller-Applied](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/), which decided that the controller is the actuator for switch and AP configuration, but not where it runs |
-| **Extended by** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/) — the provisioning VM holds both the state store and the API's database, so their data needs a data disk and a copy on separate hardware *(Proposed)*; [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) — Keycloak in the identity VM, with a realm per tenant *(Proposed)* |
+| **Extended by** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/) — the provisioning VM holds both the state store and the API's database, so their data needs a data disk and a copy on separate hardware *(Superseded by ADR-0033)*; [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) — Keycloak in the identity VM, with a realm per tenant *(Proposed)* |
 | **Superseded in part by** | [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/) — §5, for logs only: one log store on Platform instead of one per audience *(Accepted)*. The two observability VMs are replaced as a result, `sob` by `dv02col001v01` (collector) and `tob` by `dv02obs001v01` (store), in [CHG-0018](/docs/changes/2026/0018-central-log-store/) *(Planned)* |
 | **Related** | [ADR-0004: Tenant DNS Publication](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/), [ADR-0008: Host Naming and Site Codes](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/), [ADR-0012: IoT Platform Services Through a Deevnet API and Terraform Provider](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) (its Open questions 2, 5 and 6), [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) |
 
@@ -318,6 +318,12 @@ ADR-0011, which needs the AP adopted.
 ---
 
 ## Current state
+
+*Updated 2026-10-06.* **`dv02msg001v01` runs the broker and the log bridge; `sob` and `tob` were
+replaced by `dv02col001v01` and `dv02obs001v01`** (CHG-0018), and `obs` runs the log store, Grafana and
+the downloads site. ADR-0014 is superseded by
+[ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/). What follows is the
+state when it was last updated.
 
 - **Accepted on 2026-09-16.** [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) built all
   six domain VMs on `dv02hyp001p01`.

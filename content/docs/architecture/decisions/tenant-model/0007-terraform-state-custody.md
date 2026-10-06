@@ -175,6 +175,12 @@ tenants are Ansible-provisioned and may be Terraform-consumed.
 
 ## Current state
 
+*Updated 2026-10-06.* The store runs on the provisioning VM, `dv02prv001v01`, beside the Deevnet
+API, not on a VM of its own. It serves TLS ([CHG-0030](/docs/changes/2026/0030-state-store-tls/)),
+the API issues each tenant's credential, and tenants' state is in it. Secret values do sit in tenant
+state, by ADR-0012 §4; [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)
+moves them out. What follows is the state when this record was written.
+
 - The store runs on its own management-plane VM, reached by a name rather than an address so it can
   move hosts without every tenant repository being edited.
 - One bucket, prefixed per consumer, versioning on. `t-demo` has a credential issued; the fabric's

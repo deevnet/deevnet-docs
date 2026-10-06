@@ -214,6 +214,11 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
 | State store | a dedicated MinIO admin user with a scoped policy | create users and policies and attach them | RELEASE.2025-09-07T16-13-09Z, 2026-09-17 |
 | Tenant hypervisor | a Proxmox token scoped to tenant SDN objects, VM creation from the template, the tenant datastore and per-tenant pools | build and remove tenant networks and workloads (§11, §12) | reading SDN: hv02, 2026-09-17; writing: to confirm |
 
+*As built: the API's Proxmox role, `DeevnetTenantBuilder`, is a narrow privilege set granted at `/`,
+not per tenant pool. Per-tenant pools were not built: granting the API rights on pools it creates
+needs the right to grant permissions, which is broader than what pools would save
+([2026-10 review, A5](/docs/architecture/reviews/2026-10-rebuild-and-access/#a5-proxmox-permissions)).*
+
 **Where these credentials live.** In OpenBao, not in env files
 ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) §3). The API holds only an
 AppRole credential.
@@ -280,7 +285,9 @@ site's API and gets whatever index is free there.
 - **The operator admits a tenant name.** Admission takes the operator token, and it returns a
   single-use enrollment token (ADR-0016 §4).
 - **The enrollment token reaches the tenant repository age-encrypted** (ADR-0012 §9). It is the only
-  thing delivered that way; every other value comes back from create.
+  thing delivered that way; every other value comes back from create. *As built: it is handed over by
+  hand in a text file with the tenant's developer Wi-Fi key, and that is the design
+  ([2026-10 review, T6](/docs/architecture/reviews/2026-10-rebuild-and-access/#t6-credential-handover)).*
 - **The tenant's first `create` spends it** and receives the tenant's own token, stored by the API as a
   hash. Every later call the tenant makes (workloads, records, restore, the IoT resources) takes that
   token and is confined to that tenant.
@@ -412,6 +419,11 @@ is renamed.
 ---
 
 ## Current state
+
+*Updated 2026-10-06.* **The device registry and broker accounts are built**
+([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/),
+[CHG-0016](/docs/changes/2026/0016-broker-accounts/)). §10's age-encrypted delivery was not built; the
+handover is a text file, by design. What follows is the state when it was last updated.
 
 - **Accepted and deployed.** [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) completed on
   2026-09-17: all eleven steps done, the API and the egress agent deployed, and **`tdemo` and `eds`

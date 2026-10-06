@@ -3,7 +3,7 @@ title: "Full Site Rebuild"
 weight: 4
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 7
+tasks_planned: 8
 ---
 
 # Full Site Rebuild
@@ -39,6 +39,7 @@ Perform a complete tear-down and rebuild of the mobile (mobile) site to validate
 - ⏳ Rebuild the builder node (no version bump)
 - ⏳ Rebuild core services (core router, access switch, AP) — collect timings, findings, and identify gaps
 - ⏳ Rebuild management plane (Proxmox, extended services)
+- ⏳ Bring tenants back: re-admit each tenant, each applies from its repository and pushes its application again; record what each tenant had to do
 - ⏳ Apply fixes and iterate until all steps are accounted for
 - ⏳ Tag all deevnet repos with a coordinated release version
 

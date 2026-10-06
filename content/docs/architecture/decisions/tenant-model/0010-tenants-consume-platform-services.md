@@ -235,6 +235,11 @@ changed, and none of the substrate's services has one yet.
 
 ## Current state
 
+*Updated 2026-10-06.* **The broker conforms too.** VerneMQ runs on `dv02msg001v01`, and the Deevnet
+API issues each tenant's accounts on it ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/),
+[CHG-0016](/docs/changes/2026/0016-broker-accounts/)). What follows is the state when it was last
+updated.
+
 - **Accepted.** This record implements nothing itself; it states the test, and later records build
   against it.
 - **DNS, state, tenant building and Wi-Fi keys now conform** (ADR-0004, ADR-0007, ADR-0015,
