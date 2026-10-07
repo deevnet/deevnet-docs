@@ -18,7 +18,7 @@ weight: -39
 | **Risk** | Low. Most likely to go wrong: a drive knocked loose on a mobile kit, so backups silently stop. The job fails loudly when the drive is absent |
 | **Related changes** | [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the Transit key in the vault, which makes a restored database readable) |
 | **Related incidents** | None |
-| **Related runbooks** | [Recovery](/docs/runbook/substrate/recovery/) |
+| **Related runbooks** | [Backup and Restore](/docs/runbook/substrate/recovery/backup-and-restore/), [Recovery](/docs/runbook/substrate/recovery/) |
 
 ---
 
