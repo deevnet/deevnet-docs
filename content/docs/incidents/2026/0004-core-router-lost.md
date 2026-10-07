@@ -213,6 +213,7 @@ the store, and the router's syslog is excluded until the NIC is stable.
 | 2 | Resume CHG-0018 Step 4 only after follow-up 1; `dv02obs001v01` is left half-deployed | CHG-0018 | {{< action-status "Done" >}} 2026-09-21 |
 | 3 | **Move the router from the in-tree `re(4)` driver to Realtek's vendor driver**, as its own change record, because it changes a kernel module on the site gateway and needs a reboot. Details below the table. | new CHG | {{< action-status "Open" >}} |
 | 4 | Only once `re0` is stable, send the router's syslog to the central store. **Declined** on 2026-09-22 with Preventive action 1 (ADR-0027: tenants only). | — | {{< action-status "Declined" >}} |
+| 5 | **The hard hang recurred on 2026-10-07**, again during a container image push to a Platform VM: [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/). Follow-up 3 was still open | INC-0005 | {{< action-status "Open" >}} |
 
 **Follow-up 3, the vendor driver, from OPNsense's own plugin source** (`opnsense/plugins`,
 `net/realtek-re`, read 2026-09-22):

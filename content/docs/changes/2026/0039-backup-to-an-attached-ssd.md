@@ -10,14 +10,14 @@ weight: -39
 | **Date** | Started 2026-10-07 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 and 2 are done on one USB flash drive: backups reach the drive and read back. The restore rehearsal, the second drive and the SSDs are outstanding |
+| **Status** | In Progress. Steps 1 and 2 are done on one USB flash drive: backups reach the drive and read back. The first restore rehearsal was abandoned when the core router hung (INC-0005); the rehearsal, the second drive and the SSDs are outstanding |
 | **Window** | Started 2026-10-07 with one USB flash drive standing in for the SSDs. A restore is readable in full only after [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01` (the drives), `dv02prv001v01` (what is backed up) |
 | **Automation** | The `backup` role and `proxmox_vm`'s USB pass-through in `deevnet.mgmt`, a systemd timer, and `make backup-status`, `backup-now`, `backup-dry-run`, `backup-verify`, `backup-drive` |
 | **Risk** | Low. Most likely to go wrong: a drive knocked loose on a mobile kit, so backups silently stop. The job fails loudly when the drive is absent |
 | **Related changes** | [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the Transit key in the vault, which makes a restored database readable) |
-| **Related incidents** | None |
+| **Related incidents** | [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/): the core router hung during the first restore rehearsal |
 | **Related runbooks** | [Backup and Restore](/docs/runbook/substrate/recovery/backup-and-restore/), [Recovery](/docs/runbook/substrate/recovery/) |
 
 ---
@@ -61,6 +61,8 @@ bucket contents (tenants' own); Keycloak (not built).
 | The backup key is lost | the vault | It lives in ansible-vault, which is locked in like any other secret. No host holds a copy: the job encrypts to the public half |
 | Flash wears out or fails silently | the first drive | `make backup-verify` reads the newest archive back from the drive; the SSDs replace it |
 | Restore rehearsal disturbs the live site | `dv02prv001v01` | Rehearse on a declared, rebuildable substrate VM, never an ad-hoc one; experiments don't run on the hypervisors |
+| **Rebuilding the provisioning VM takes the core router down.** The rebuild pushes about 650 MB of container images from the Builder to Platform, across the router, and the router has hard-hung twice during such a push ([INC-0004](/docs/incidents/2026/0004-core-router-lost/), INC-0005). The site loses routing, DNS and the operator's path in | `dv02cor002p01` | Not until the router's NIC driver is changed, or the images reach the VM without a bulk transfer across the router. Until then: console attached to the router, operator present, and a fallback that does not cross it. This risk was missing from the record when the first rehearsal ran |
+| The rehearsal leaves the site without its API and state store for longer than planned | `dv02prv001v01` | A dump of the VM on its own hypervisor, taken with the VM stopped, immediately before it is destroyed. `qmrestore` puts it back in a minute, with nothing crossing the router |
 
 ## Decisions
 
@@ -143,6 +145,25 @@ Restore onto a freshly built provisioning VM, then `make reconcile --all`.
 `make backup-verify` proves an archive can be read with the key from the vault. It restores nothing;
 the restore itself is written and proven in this step.
 
+**State, 2026-10-07:** attempted on `dv02prv001v01` itself and abandoned. A fresh backup was taken, the
+VM was dumped to its hypervisor, destroyed, and rebuilt from its roles as far as the state store. While
+the rebuild pushed the PostgreSQL image, the core router hung
+([INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/)). The VM was put back from the
+dump. **No backup was restored, so the step proves nothing about restoring yet.**
+
+| What the attempt did show | Result |
+|---|---|
+| `make backup-restore` refuses a host whose registry is not empty | Pass: `the registry already holds 4 tenants` |
+| A new VM built by `proxmox_vm` comes up with the backup drive attached | Pass: the USB mapping was applied before first boot and the drive was visible in the guest |
+| The dump brings the VM back as it was | Pass: 4 tenants, 203 audit entries, 3 state files, 5 state users, and a tenant's plan unchanged |
+| A missing API does not disturb tenants at runtime | Pass: the tenant egress agent failed for 50 minutes and left its routes in place |
+| A backup restored into a rebuilt VM, then a reconcile | Not reached |
+
+Two things were added to the job because of what the rehearsal would have done. A rebuilt host would
+have backed up its own empty registry ten minutes after boot and made that the newest archive, so the
+job now refuses a registry with no tenants. And `make backup-restore` exists: it fills an empty
+registry and bucket from the newest or a named archive, and has not yet run to completion anywhere.
+
 **Verify:** every tenant's plan is clean, and its devices still connect.
 
 ### Step 4: The docs
@@ -159,7 +180,8 @@ Remove the role and the timer; the drives keep what they hold until wiped.
 
 ## To discover
 
-- Which declared VM the restore rehearsal uses.
+- How the rehearsal rebuilds the provisioning VM without a bulk image transfer across the core router,
+  or whether it waits for the router's driver change. The VM itself is the one to rehearse on.
 - Whether the two drives in the rotation must be the same model. The mapping names one vendor and
   product ID, so a different model means changing `mgmt_vm.usb`.
 - Whether the drive should also be encrypted as a whole. It would hide file names and sizes, and it

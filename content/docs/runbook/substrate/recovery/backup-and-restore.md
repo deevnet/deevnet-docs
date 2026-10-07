@@ -192,7 +192,11 @@ A second drive of the same model needs only steps 4 and 5. A different model cha
 
 ## Restore
 
-**There is no restore command, and no restore has been carried out.** What exists is the archive, the
+**No restore has been carried out.** `make backup-restore CONFIRM=dv02prv001v01` exists and has never
+run to completion: the one rehearsal was abandoned before it reached the restore
+([INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/)). It fills a rebuilt host whose
+registry and bucket are empty, from the newest archive or the one named with `ARCHIVE=`, and refuses a
+host that already holds tenants. Until it has been proven, what can be relied on is the archive, the
 key, and the tools that made it.
 
 An archive is an `age`-encrypted tar. Given the private key from the vault in a file, any machine with
