@@ -7,11 +7,11 @@ weight: -44
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-06 |
 | **Change type** | Deployment · Configuration · Migration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Unscheduled. Before [CHG-0034](/docs/changes/2026/0034-device-certificates/), which it doesn't block |
+| **Status** | In progress |
+| **Window** | Started 2026-10-06. Before [CHG-0034](/docs/changes/2026/0034-device-certificates/), which it doesn't block |
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (the core router's DHCP server), `dv02prv001v01` (the Deevnet API), the tenant DNS server; the provider; the `mabell` tenant and its gateway |
 | **Automation** | `deevnet-provisioning-api`, `terraform-provider-deevnet`, `deevnet.net` `dhcp.yml` and `dns.yml`, `deevnet.mgmt` `site.yml --limit deevnet_api`, the `mobile` inventory |
@@ -69,10 +69,12 @@ credential, which is CHG-0038.
 
 ## Prerequisites
 
-- [ ] The five pull requests merged: API, provider, `deevnet.net`, `deevnet.mgmt`, and the inventory's range change
-- [ ] API v0.10.0 and provider v0.6.0 tagged and staged
-- [ ] Vault decrypted, collections built
-- [ ] The `mabell` tenant's agreement, and its repository's pull request for the address
+- [x] The pull requests merged: API, provider, `deevnet.net`, `deevnet.mgmt`, and the inventory's
+  range change. The inventory's removal of the gateway merged with them, ahead of step 4; nothing
+  on the router changes until the pruning runs in that step
+- [x] API v0.10.0 and provider v0.6.0 tagged and staged
+- [x] Vault decrypted, collections built
+- [x] The `mabell` tenant's agreement, and its repository's pull request for the address, merged
 - [ ] The items under [To discover](#to-discover) answered
 
 ## Procedure
@@ -96,6 +98,16 @@ ansible-playbook playbooks/dhcp.yml --check
 1. The test lists every reservation with a MAC, an address and a description, and resolves the IoT
    subnet.
 2. The check run reports one pool that differs, IoT's, and no other change it didn't report before.
+
+**Result, 2026-10-06:** passed.
+
+- The API's client read all 15 reservations, each with a MAC, an address and a description, and
+  resolved the IoT subnet. Every row is inventory's.
+- The check run reported one change: IoT's pool is `10.20.30.100 - 10.20.30.200` and inventory says
+  `10.20.30.201 - 10.20.30.254`. It wrote nothing.
+- The role's new ownership check passed: no inventory MAC is reserved under another description.
+- The run named the gateway's reservation as no longer declared and left it in place, as expected
+  until step 4.
 
 ### Step 2: Move the pool
 
@@ -202,8 +214,9 @@ case is every device back on the pool.
 - Whether this OPNsense build's subnet update leaves alone the settings it isn't sent. Its API
   reference lists `set_subnet` and `get_subnet`; the role asserts the outcome, and step 1 and step 2
   are where it is first seen.
-- The lease lifetime on the IoT subnet, which decides how long devices keep old addresses after
-  step 2.
+- ~~The lease lifetime on the IoT subnet.~~ **Found 2026-10-06:** the IoT subnet sets none, so the
+  server's general setting applies: 4000 seconds. A device on the old pool keeps its address for a
+  little over an hour at most after step 2.
 - That a device holding a pool lease moves to its reserved address at renewal, without a restart.
 - Whether anything still dials `bellgw` or `mabell` in the substrate's zone.
 - Whether the router's reservation search returns every row in one answer once tenants' rows are

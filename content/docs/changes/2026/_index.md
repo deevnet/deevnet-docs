@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0044 | Unscheduled | [Fixed Addresses for Tenants' Devices](0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Planned |
+| CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | In progress |
 | CHG-0043 | Unscheduled | [A Local Package Mirror](0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
 | CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](0042-rehome-stray-vms/) | Migration | mobile | Planned |
 | CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](0041-artifact-server-https/) | Configuration | mobile | Planned |
