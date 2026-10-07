@@ -107,6 +107,17 @@ network failed, and it stayed gone for 51 minutes while the router was back and 
 The tenant egress agent's log shows what a missing API does at runtime: `cannot reach
 https://api.mobile.deevnet.net:8080; leaving /etc/frr/frr.conf.local as it is`.
 
+**The image push was not the only bulk traffic.** Proxmox tells every new clone to upgrade all its
+packages on first boot. The provisioning VM upgraded 203 packages when it was first built, and the new
+clone started the same thing at 17:15:10, downloading through the router while the images were pushed
+to it. This was found afterward, and it had been an open item since
+[CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/).
+
+**A second rebuild without either flow did not hang the router.** At 19:11 the same VM was rebuilt with
+its first-boot upgrade off and its images delivered on an ISO from its own hypervisor. The router
+answered every check for the nine minutes it took. One run each way suggests load is the trigger; it
+does not establish it.
+
 **Nothing was read from the router.** It was power-cycled from a hard hang, and it keeps no log across
 one (INC-0004, Contributing factors).
 
@@ -142,6 +153,8 @@ The router's configuration was not checked against inventory after the power cyc
   the provisioning VM. It did not cover what a rebuild of that VM does on the way: push several hundred
   megabytes of images through the router. INC-0004 had already recorded that as the circumstance of a
   hang.
+- **Every new VM upgrades itself through the router on first boot**, unless told not to. The
+  rebuilt VM was doing so when the router hung.
 - **Every image for a Platform VM crosses the router.** The Builder is on management and the VMs are
   on Platform, so there is no way to build or rebuild one without a bulk transfer over `re0`.
 - **The operator could not log in at the Builder's console.** Every account on the Builder was
@@ -164,9 +177,10 @@ The router's configuration was not checked against inventory after the power cyc
 | # | Action | Where | Status |
 |---|--------|-------|--------|
 | 1 | Until corrective action 1 is done and measured, treat any image push to a Platform or IoT Backend VM as a change that can take the router down: console attached, operator present, and a way back that does not cross the router | change management | {{< action-status "Open" >}} |
-| 2 | Add the risk to CHG-0039, and decide how its rehearsal rebuilds the provisioning VM without a bulk transfer across the router, or after the driver change | [CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/) | {{< action-status "Open" >}} |
+| 2 | Add the risk to CHG-0039, and decide how its rehearsal rebuilds the provisioning VM without a bulk transfer across the router, or after the driver change. Done: images on an ISO from the VM's hypervisor, first-boot upgrade off, and the rehearsal passed that way | [CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/) | {{< action-status "Done" >}} 2026-10-07 |
 | 3 | Give the Builder's operator account a console password that survives a rebuild | `deevnet.builder`, inventory | {{< action-status "In Progress" >}} |
 | 4 | Keep a change's working files on disk, not in memory, when losing them would cost the change its evidence | practice | {{< action-status "Open" >}} |
+| 5 | Decide whether every substrate VM is built without a first-boot upgrade, and how images reach Platform and IoT Backend VMs as a matter of course, not only in this rehearsal | CHG-0008's open item; `deevnet.mgmt` | {{< action-status "Open" >}} |
 
 ## Follow-ups
 
@@ -174,7 +188,7 @@ The router's configuration was not checked against inventory after the power cyc
 |---|-----------|-------|--------|
 | 1 | Restore the provisioning VM and confirm the registry, the state bucket and a tenant's plan are as they were | `dv02prv001v01` | {{< action-status "Done" >}} 2026-10-07 |
 | 2 | Set a console password for the operator on the Builder | `dv00bld001p01` | {{< action-status "Done" >}} 2026-10-07 |
-| 3 | Remove the dump of VM 201 from the management hypervisor once CHG-0039's rehearsal no longer needs it. It holds the registry and tenants' state unencrypted | `dv02hyp001p01` | {{< action-status "Open" >}} |
+| 3 | Remove the dumps of VM 201 from the management hypervisor (one from each rehearsal attempt) once the rehearsal has passed. They held the registry and tenants' state unencrypted | `dv02hyp001p01` | {{< action-status "Done" >}} 2026-10-07 |
 | 4 | Rotate the automation's Proxmox API token on the management hypervisor. The rehearsal's new USB pass-through tasks wrote it into the Builder's journal; the tasks are corrected | `dv02hyp001p01`, the inventory vault | {{< action-status "Open" >}} |
 
 ## Lessons learned

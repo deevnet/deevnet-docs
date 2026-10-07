@@ -26,10 +26,11 @@ plus one reconcile brings every tenant back as it was, with the secrets it alrea
 its devices a visit.
 {{< /hint >}}
 
-{{< hint danger >}}
-**Restoring has not been rehearsed.** Backups are taken and read back; putting one into a rebuilt
-provisioning VM is [CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/) step 3 and has not
-been done. [Restore](#restore) says what exists today.
+{{< hint info >}}
+**A restore has been rehearsed once**, on 2026-10-07: the provisioning VM was destroyed, rebuilt from its
+roles, restored from the drive and reconciled, and came back identical
+([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/) step 3). [Restore](#restore) is that
+procedure.
 {{< /hint >}}
 
 Every command on this page runs on the Builder, in `ansible-collection-deevnet.mgmt`, with the
@@ -77,7 +78,7 @@ substrate issued it.
 | Not in the backup | On | What brings it back |
 |---|---|---|
 | OpenBao: its storage, the key that seals tenant secrets in the database, the Tenant Device CA key | `dv02idn001v01` | Nothing yet. A restored database's sealed values are readable only by the OpenBao that sealed them ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)) |
-| The state store's users and access policies | `dv02prv001v01` | A reconcile |
+| The state store's users and access policies | `dv02prv001v01` | A reconcile, with the secrets tenants already hold |
 | Earlier versions of a state file | `dv02prv001v01` | Nothing. The archives are the history: one copy per backup |
 | Anything in the store outside `tf-state` | `dv02prv001v01` | Its owner |
 | The API's and the store's certificates, configuration and container images | `dv02prv001v01` | Their roles, from the inventory |
@@ -192,12 +193,126 @@ A second drive of the same model needs only steps 4 and 5. A different model cha
 
 ## Restore
 
-**No restore has been carried out.** `make backup-restore CONFIRM=dv02prv001v01` exists and has never
-run to completion: the one rehearsal was abandoned before it reached the restore
-([INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/)). It fills a rebuilt host whose
-registry and bucket are empty, from the newest archive or the one named with `ARCHIVE=`, and refuses a
-host that already holds tenants. Until it has been proven, what can be relied on is the archive, the
-key, and the tools that made it.
+**A restore fills a provisioning VM that its roles have just rebuilt, and a reconcile finishes it.** The
+rehearsal took four and a half minutes from destroying the old VM to every tenant reconciled.
+
+{{< hint danger >}}
+**Rebuilding this VM the ordinary way can take the core router down.** A new clone downloads a full
+package upgrade, and the roles push about 650 MB of container images, all through the router, which
+has hard-hung twice under that ([INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/)).
+The procedure below keeps all of it off the router. Until the router's driver is changed, do it with a
+screen and keyboard on the router.
+{{< /hint >}}
+
+### 1. Stage what the VM needs, on its hypervisor
+
+**The images and the `age` package reach the VM on an ISO, so nothing large crosses the router.** The
+Builder and the management hypervisor are on the same segment.
+
+On the Builder, collect the three image tarballs the VM's roles load (the state store's, PostgreSQL's
+and the API's, from `/srv/deevnet-http/container-images/`) and the `age` package for the VM's Fedora
+release:
+
+```bash
+dnf download --releasever=<release> --repo=fedora --arch=x86_64 age
+sha256sum *.tar *.rpm > SHA256SUMS
+```
+
+Copy them to `dv02hyp001p01` and build the ISO there:
+
+```bash
+sudo genisoimage -quiet -J -r -V DVNT_IMAGES \
+  -o /var/lib/vz/template/iso/deevnet-prv-images.iso <the directory>
+```
+
+### 2. Build the VM
+
+`dv02prv001v01` declares `ciupgrade: false`, so the clone does not upgrade itself on first boot, and
+its `mgmt_vm.usb` entry, so it comes up with the backup drive attached.
+
+```bash
+ssh-keygen -R dv02prv001v01.mobile.deevnet.net; ssh-keygen -R 10.20.25.20
+ansible-playbook playbooks/site.yml --limit dv02prv001v01 --tags vms
+```
+
+A rebuilt VM has a new host key. The reconcile in step 5 reads its token over SSH by name and stops on
+the old one.
+
+### 3. Load the images from the ISO
+
+On the hypervisor, with the VM stopped, since an IDE drive is not hot-plugged:
+
+```bash
+sudo qm shutdown 201
+sudo qm set 201 --ide2 local:iso/deevnet-prv-images.iso,media=cdrom
+sudo qm start 201
+```
+
+On the VM:
+
+```bash
+sudo mkdir /etc/yum.repos.d.off && sudo sh -c 'mv /etc/yum.repos.d/*.repo /etc/yum.repos.d.off/'
+sudo mkdir /mnt/images && sudo mount -o ro /dev/disk/by-label/DVNT_IMAGES /mnt/images
+(cd /mnt/images && sha256sum -c --quiet SHA256SUMS)
+sudo rpm -i /mnt/images/age-*.rpm
+for t in /mnt/images/*.tar; do sudo podman load -q -i "$t"; done
+sudo umount /mnt/images
+```
+
+The package repositories are moved aside so that nothing in the next step fetches their metadata. The
+roles find each image already loaded and push nothing.
+
+### 4. Run the roles, then restore
+
+```bash
+ansible-playbook playbooks/site.yml --limit dv02prv001v01 --skip-tags vms
+make backup-restore CONFIRM=dv02prv001v01
+```
+
+The roles leave an empty registry and an empty bucket. `make backup-restore` reads the newest archive
+on the drive, or the one named with `ARCHIVE=`, checks it against its manifest, stops the API, replaces
+the database, copies the state files into the bucket and starts the API. It refuses a host whose
+registry holds tenants or whose bucket holds objects, so it cannot overwrite a live one.
+
+Until it has been restored, the rebuilt VM does not back itself up: the job skips a registry with no
+tenants, so an empty archive never becomes the newest.
+
+### 5. Reconcile
+
+```bash
+make reconcile NAME=--all
+```
+
+The restore brings back what the API knows. The reconcile makes the rest agree with it: each tenant's
+state store user, with the secret the tenant already holds, and its zone, key, network, log users and
+dashboard organization. Before it runs, a tenant cannot read its own state.
+
+### 6. Finish
+
+On the VM, put the repositories back:
+
+```bash
+sudo sh -c 'mv /etc/yum.repos.d.off/*.repo /etc/yum.repos.d/ && rmdir /etc/yum.repos.d.off'
+```
+
+On the hypervisor, detach the ISO, which takes a stop and start, and delete it:
+
+```bash
+sudo qm set 201 --delete ide2 && sudo qm shutdown 201 && sudo qm start 201
+sudo rm /var/lib/vz/template/iso/deevnet-prv-images.iso
+```
+
+Then `make backup-now` and `make backup-verify`, so the rebuilt VM has a backup of its own.
+
+### What a restore does not bring back
+
+- **Anything a tenant applied after the archive was taken.** The tenant's next apply resupplies it.
+- **Earlier versions of a state file.** The bucket starts again with one version of each.
+- **Tenant secrets, if OpenBao was lost too.** The restored database holds them sealed by the OpenBao
+  that was running when the backup was taken
+  ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)).
+
+### Without the commands
 
 An archive is an `age`-encrypted tar. Given the private key from the vault in a file, any machine with
 `age` opens it:
@@ -206,18 +321,6 @@ An archive is an `age`-encrypted tar. Given the private key from the vault in a 
 age --decrypt --identity <key file> <archive> | tar -xf -
 ```
 
-That yields `MANIFEST`, `database.pgdump` and `state/`. The dump is restored with `pg_restore` into an
-empty `deevnet_api` database of the same PostgreSQL major version, and the files under `state/` are
-copied back into the `tf-state` bucket under the same keys with any S3 client.
-
-Three things hold for any restore:
-
-- **The provisioning VM is rebuilt first**, by its roles, so the database and the bucket exist to
-  restore into.
-- **A reconcile follows**: `make reconcile NAME=--all`. The database says what each tenant has; the
-  reconcile re-ensures each tenant's zone and key, the router's forwarding, its state user, its network,
-  its log users and its dashboard organization.
-- **A restore is as old as its archive.** Anything a tenant applied after it was taken comes back with
-  the tenant's next apply.
-
-The procedure, proven on a rebuilt VM, replaces this section when CHG-0039 step 3 is done.
+That yields `MANIFEST`, `database.pgdump` and `state/`. The dump restores with `pg_restore` into an
+empty `deevnet_api` database of the same PostgreSQL major version, and the files under `state/` go back
+into the `tf-state` bucket under the same keys with any S3 client.
