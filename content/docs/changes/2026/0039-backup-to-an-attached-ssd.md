@@ -123,7 +123,7 @@ the newest 30, and fails visibly if the drive is absent.
 | Check | Result |
 |---|---|
 | `make backup-dry-run` builds and encrypts an archive with no drive | Pass: 72 kB, three state objects |
-| The job with no drive attached fails | Pass: the unit is `failed`, with `backup drive absent: no filesystem labelled deevnet-backup` |
+| The job with no drive attached fails | Pass: the unit is `failed`, with `backup drive absent: no filesystem labeled deevnet-backup` |
 | `make backup-now` writes an encrypted archive to the drive | Pass |
 | `make backup-verify` decrypts the newest archive on the drive with the key from the vault | Pass: checksums match, the dump is readable, 11 tables with data |
 | A check with a fresh backup does nothing and succeeds | Pass: `not due: the newest good backup is 0h old, the interval is 24h` |
