@@ -188,7 +188,7 @@ The router's configuration was not checked against inventory after the power cyc
 |---|-----------|-------|--------|
 | 1 | Restore the provisioning VM and confirm the registry, the state bucket and a tenant's plan are as they were | `dv02prv001v01` | {{< action-status "Done" >}} 2026-10-07 |
 | 2 | Set a console password for the operator on the Builder | `dv00bld001p01` | {{< action-status "Done" >}} 2026-10-07 |
-| 3 | Remove the dumps of VM 201 from the management hypervisor (one from each rehearsal attempt) now the rehearsal has passed. They hold the registry and tenants' state unencrypted | `dv02hyp001p01` | {{< action-status "Open" >}} |
+| 3 | Remove the dumps of VM 201 from the management hypervisor (one from each rehearsal attempt) once the rehearsal has passed. They held the registry and tenants' state unencrypted | `dv02hyp001p01` | {{< action-status "Done" >}} 2026-10-07 |
 | 4 | Rotate the automation's Proxmox API token on the management hypervisor. The rehearsal's new USB pass-through tasks wrote it into the Builder's journal; the tasks are corrected | `dv02hyp001p01`, the inventory vault | {{< action-status "Open" >}} |
 
 ## Lessons learned
