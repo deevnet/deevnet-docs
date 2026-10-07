@@ -16,7 +16,7 @@ weight: -34
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (the Tenant Device CA in OpenBao), `dv02msg001v01` (the broker); the provider; a tenant's device |
 | **Automation** | `deevnet-provisioning-api`, `terraform-provider-deevnet`, `deevnet.mgmt` `site.yml --tags vernemq,deevnet-api` |
 | **Risk** | Medium. Most likely to go wrong: turning on client certificates at the broker locks out devices still using passwords. Both stay accepted until every device has moved |
-| **Related changes** | [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) (built the Tenant Device CA), [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (its key from the vault), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) |
+| **Related changes** | [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/) (device addresses, done first; independent of this), [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) (built the Tenant Device CA), [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (its key from the vault), [CHG-0016](/docs/changes/2026/0016-broker-accounts/) |
 | **Related incidents** | None |
 | **Related runbooks** | [Devices and MQTT](/docs/runbook/tenant/services/devices-and-mqtt/), [Connect a Device](/docs/runbook/tenant/connect-a-device/) |
 

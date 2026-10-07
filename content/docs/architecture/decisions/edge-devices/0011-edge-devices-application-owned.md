@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Accepted; §1's *Ownership* row **amended by [ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)**: every edge device belongs to a tenant, which may have no workloads. |
+| **Status** | Accepted; §1's *Ownership* row **amended by [ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)**: every edge device belongs to a tenant, which may have no workloads. Open question 2's "leases from the IoT pool" **amended by [ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/)** *(Proposed)*: a tenant may reserve its device a fixed address. |
 | **Accepted** | 2026-09-15, once its four open questions were answered. Questions 1–3 were settled by the operator on 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9's controller work made the platform side real); question 4 was settled on 2026-09-14. |
 | **Date** | 2026-09-13 |
 | **Amended** | 2026-09-19, reconciling against ADR-0019 and ADR-0020. An editing error had deleted the heading that numbered two further open questions, leaving them orphaned — they are now **5** (tenant ingress, answered by ADR-0020) and **6** (the firmware supply chain, still open). Five statements overtaken by CHG-0013 and by ADR-0012 §8 are corrected in place. The decision is unchanged. |
@@ -278,6 +278,10 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
        reservations and records, because they are substrate hosts.
      - This also settles [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/)'s open
        question 3.
+     - **Amended by [ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/) *(Proposed)*.** "No substrate host record" stands. A device still
+       leases from the pool unless its tenant reserves it a fixed address, and `dv02bgw001e01` stops
+       being a substrate host: it belongs to a tenant
+       ([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)).
 3. **Shared or per-device Wi-Fi keys?**
    - A shared key per segment means one lost device exposes the key for every device on it, and
      rotation means a USB visit to every NVS-provisioned device.
