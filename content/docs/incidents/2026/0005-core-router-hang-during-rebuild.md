@@ -178,9 +178,9 @@ The router's configuration was not checked against inventory after the power cyc
 |---|--------|-------|--------|
 | 1 | Until corrective action 1 is done and measured, treat any image push to a Platform or IoT Backend VM as a change that can take the router down: console attached, operator present, and a way back that does not cross the router | change management | {{< action-status "Open" >}} |
 | 2 | Add the risk to CHG-0039, and decide how its rehearsal rebuilds the provisioning VM without a bulk transfer across the router, or after the driver change. Done: images on an ISO from the VM's hypervisor, first-boot upgrade off, and the rehearsal passed that way | [CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/) | {{< action-status "Done" >}} 2026-10-07 |
-| 5 | Decide whether every substrate VM is built without a first-boot upgrade, and how images reach Platform and IoT Backend VMs as a matter of course, not only in this rehearsal | CHG-0008's open item; `deevnet.mgmt` | {{< action-status "Open" >}} |
 | 3 | Give the Builder's operator account a console password that survives a rebuild | `deevnet.builder`, inventory | {{< action-status "In Progress" >}} |
 | 4 | Keep a change's working files on disk, not in memory, when losing them would cost the change its evidence | practice | {{< action-status "Open" >}} |
+| 5 | Decide whether every substrate VM is built without a first-boot upgrade, and how images reach Platform and IoT Backend VMs as a matter of course, not only in this rehearsal | CHG-0008's open item; `deevnet.mgmt` | {{< action-status "Open" >}} |
 
 ## Follow-ups
 
