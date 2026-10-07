@@ -31,7 +31,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](2026/0042-rehome-stray-vms/) | Migration | mobile | Planned |
 | CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](2026/0041-artifact-server-https/) | Configuration | mobile | Planned |
 | CHG-0040 | Unscheduled | [Device Secrets in Tenant Code](2026/0040-device-secrets-in-tenant-code/) | Deployment · Migration | mobile | Planned |
-| CHG-0039 | Unscheduled | [Backup to an Attached SSD](2026/0039-backup-to-an-attached-ssd/) | Deployment | mobile | Planned |
+| CHG-0039 | 2026-10-07 | [Backup to an Attached SSD](2026/0039-backup-to-an-attached-ssd/) | Deployment | mobile | In Progress |
 | CHG-0038 | Unscheduled | [The Reconcile Restores Everything](2026/0038-reconcile-restores-everything/) | Deployment · Configuration | mobile | Planned |
 | CHG-0037 | Unscheduled | [Substrate Builds Off OpenBao](2026/0037-builds-off-openbao/) | Configuration | mobile | Planned |
 | CHG-0036 | Unscheduled | [OpenBao's Keys From the Vault](2026/0036-openbao-keys-from-the-vault/) | Configuration | mobile | Planned |
