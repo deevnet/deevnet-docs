@@ -210,7 +210,7 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
 | Service | Credential | What it can do | Checked |
 |---|---|---|---|
 | PowerDNS | the HTTP API key | every zone and key on the server | 4.9.17, 2026-09-17 |
-| Core router resolver | an OPNsense API key | the resolver's forwarding entries, and whatever else the key's user is granted | endpoints the `opnsense_dns` role already uses |
+| Core router resolver, and its DHCP server once [ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/) is built | an OPNsense API key | the resolver's forwarding entries, tenants' device address reservations, and whatever else the key's user is granted | endpoints the `opnsense_dns` role already uses |
 | State store | a dedicated MinIO admin user with a scoped policy | create users and policies and attach them | RELEASE.2025-09-07T16-13-09Z, 2026-09-17 |
 | Tenant hypervisor | a Proxmox token scoped to tenant SDN objects, VM creation from the template, the tenant datastore and per-tenant pools | build and remove tenant networks and workloads (§11, §12) | reading SDN: hv02, 2026-09-17; writing: to confirm |
 
