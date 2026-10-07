@@ -43,7 +43,7 @@ read it to use this guide.
 | [Network & workloads](services/network-and-workloads/) | A private `/24`, an anycast gateway, outbound internet, and Fedora VMs | {{< status-badge "active" "Available" >}} |
 | [DNS](services/dns/) | `<tenant>.mobile.deevnet.net` and its reverse zone, written by you | {{< status-badge "active" "Available" >}} |
 | [Wi-Fi keys](services/wifi-keys/) | A per-tenant key on the IoT SSID, landing your devices on the IoT network | {{< status-badge "active" "Available" >}} |
-| [Devices & MQTT](services/devices-and-mqtt/) | A device registry and TLS MQTT accounts confined to your own topics | {{< status-badge "active" "Available" >}} |
+| [Devices & MQTT](services/devices-and-mqtt/) | A device registry, TLS MQTT accounts confined to your own topics, and a fixed address for a device that needs one | {{< status-badge "active" "Available" >}} |
 | [Logs](services/logs/) | Your own log partitions: workload logs, and device logs arriving over MQTT | {{< status-badge "active" "Available" >}} |
 | [Dashboards](services/dashboards/) | A Grafana organization of your own with your logs wired in; dashboards as code | {{< status-badge "active" "Available" >}} |
 | [State store](services/state-store/) | An S3 backend for your Terraform state | {{< status-badge "active" "Available" >}} |

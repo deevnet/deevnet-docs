@@ -285,7 +285,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Edge Devices](edge-devices/)
 
 - [ADR-0035: A Fixed Address for a Tenant's Device](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/) —
-  *Proposed.* A fixed address on the device network becomes a tenant service: a tenant asks the
+  *Accepted.* A fixed address on the device network is a tenant service: a tenant asks the
   Deevnet API for one for a device it registered with a MAC, the API reserves it from a range set
   aside for tenants and publishes the device's name in the tenant's zone. The address is allocated
   and the tenant's state remembers it. Addressing only, never authorization. Amends ADR-0011 and

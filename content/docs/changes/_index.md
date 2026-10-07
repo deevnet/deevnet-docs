@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](2026/0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | In progress |
+| CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](2026/0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Complete |
 | CHG-0043 | Unscheduled | [A Local Package Mirror](2026/0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
 | CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](2026/0042-rehome-stray-vms/) | Migration | mobile | Planned |
 | CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](2026/0041-artifact-server-https/) | Configuration | mobile | Planned |

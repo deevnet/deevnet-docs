@@ -18,7 +18,7 @@ on your behalf** ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-te
 resource "deevnet_dns_record" "api" {
   tenant  = deevnet_tenant.this.name
   name    = "api"                              # -> api.<name>.mobile.deevnet.net
-  address = deevnet_workload.backend.address   # must be inside your own subnet
+  address = deevnet_workload.backend.address   # inside your own subnet, or an address you reserved for a device
 }
 ```
 

@@ -44,9 +44,9 @@ Grafana ([2026-10 review: T1, T5, T2, A6, A7](/docs/architecture/reviews/2026-10
   the provider accepts a changed dashboard password.
 - An operator target reissues a tenant's state secret: a new secret, the store's user updated, handed
   over like an enrollment token.
-- The API writes to the router with its own OPNsense user, limited to the resolver's settings and,
-  once [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/) is in, the DHCP server's
-  reservations, and to Grafana with its own server-admin login.
+- The API writes to the router with its own OPNsense user, limited to the resolver's settings and
+  the DHCP server's reservations ([CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/)), and to
+  Grafana with its own server-admin login.
 - The integration tests include an "OpenBao rebuilt" case and a "backend rebuilt" case.
 - The recovery chart's "doesn't come back on its own" column shrinks to what only tenants can restore.
 

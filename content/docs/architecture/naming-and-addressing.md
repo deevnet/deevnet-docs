@@ -85,6 +85,8 @@ Each subnet uses `.1` as the gateway address:
 
 Infrastructure hosts (routers, hypervisors, provisioners, switches, APs) receive static assignments in the low range. DHCP pools are used for segments with dynamic devices (trusted, IoT, guest).
 
+A device network that carries tenants' devices is divided differently, in three parts: substrate-owned hosts at the bottom, a range from which tenants reserve addresses for their devices in the middle, and the dynamic pool at the top ([ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/)). On the mobile site's IoT network those are below `.25`, `.25` to `.200`, and `.201` to `.254`.
+
 ---
 
 ## WAN Operation

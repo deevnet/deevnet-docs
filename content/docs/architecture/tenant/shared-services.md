@@ -115,6 +115,7 @@ matter:
 | **Tenant DNS** | A delegated zone under the site zone, and a key scoped to it |
 | **State store** | An S3-compatible bucket, scoped to the tenant's own prefix — or nothing, if the tenant keeps custody |
 | **Device messaging** | A device registry, and a broker account for each device the tenant owns, scoped to the tenant's topics |
+| **Device addresses** | A fixed address on the device network for a registered device, and its name in the tenant's zone |
 | **Wi-Fi keys** | A key on the IoT SSID that lands the tenant's devices on the IoT segment |
 | **Logs** | Partitions of its own in the tenant log store, with an ingest and a read token |
 | **Dashboards** | A dashboards organization of its own, with its logs wired in |

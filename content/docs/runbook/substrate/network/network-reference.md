@@ -19,7 +19,7 @@ Quick reference for VLAN assignments and network configuration across Deevnet si
 | Trusted | 10 | 10.20.10.0/24 | 10.20.10.1 | .100-.200 |
 | Storage | 20 | 10.20.20.0/24 | 10.20.20.1 | Static only |
 | Platform | 25 | 10.20.25.0/24 | 10.20.25.1 | Static only |
-| IoT | 30 | 10.20.30.0/24 | 10.20.30.1 | .100-.200 |
+| IoT | 30 | 10.20.30.0/24 | 10.20.30.1 | .201-.254; tenants' device addresses .25-.200 |
 | IoT Vendor | 31 | 10.20.31.0/24 | 10.20.31.1 | .100-.200 |
 | IoT Backend | 35 | 10.20.35.0/24 | 10.20.35.1 | Static only |
 | Guest | 40 | 10.20.40.0/24 | 10.20.40.1 | .50-.250 |
@@ -57,7 +57,6 @@ From inventory (`env.interfaces` in `host_vars`). Trusted, Tenant Dev and Guest 
 | | `dv02obs001v01` | 10.20.25.22 | Tenant observability: log store, Grafana |
 | IoT Backend | `dv02msg001v01` | 10.20.35.20 | Device messaging: the MQTT broker |
 | IoT | `dv02rpi001p01`–`dv02rpi004p01` | 10.20.30.11–.14 | The Pi lab |
-| | `dv02bgw001e01` | 10.20.30.50 | An edge device |
 | Outside the site | `dv02edg001p01` | 192.168.8.1 | Edge (travel) router |
 
 ---

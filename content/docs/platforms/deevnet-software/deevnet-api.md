@@ -30,6 +30,7 @@ provisioning-only: nothing at runtime depends on it being up.
 | `/v1/tenants`, `/v1/tenants/{name}` | Create, restore, read and delete a tenant. The list is the operator's |
 | `POST /v1/tenants/{name}/reconcile` | The operator only |
 | `/v1/tenants/{name}/workloads`, `/records`, `/wifi-keys`, `/devices`, `/broker-accounts` | The tenant, with its own token |
+| `/v1/tenants/{name}/devices/{device}/address` | The tenant: a fixed address for one of its devices |
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,
@@ -46,7 +47,7 @@ run:
 | Backend | Credential |
 |---|---|
 | Proxmox (tenant hypervisor) | Its own token, `deevnet-api@pve!tenants`, under the role `DeevnetTenantBuilder`, with `Sys.Audit` on `/nodes` through `DeevnetNodeAudit` |
-| OPNsense | The router's API key (shared with the `deevnet.net` collection) |
+| OPNsense | The router's API key (shared with the `deevnet.net` collection). The API uses it for the resolver's tenant zone forwards and the DHCP server's reservations for tenants' devices |
 | PowerDNS | The HTTP API key, which the server accepts only from this host |
 | MinIO | An admin user, `deevnet-api` |
 | Omada controller | Its own Open API client, separate from the one Ansible uses |
