@@ -10,11 +10,11 @@ weight: -39
 | **Date** | Started 2026-10-07 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | In Progress. The job is installed and proven without a drive; no backup has reached a drive yet |
+| **Status** | In Progress. Steps 1 and 2 are done on one USB flash drive: backups reach the drive and read back. The restore rehearsal, the second drive and the SSDs are outstanding |
 | **Window** | Started 2026-10-07 with one USB flash drive standing in for the SSDs. A restore is readable in full only after [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01` (the drives), `dv02prv001v01` (what is backed up) |
-| **Automation** | The `backup` role in `deevnet.mgmt`, a systemd timer, and `make backup-status`, `backup-now`, `backup-dry-run`, `backup-verify`, `backup-drive` |
+| **Automation** | The `backup` role and `proxmox_vm`'s USB pass-through in `deevnet.mgmt`, a systemd timer, and `make backup-status`, `backup-now`, `backup-dry-run`, `backup-verify`, `backup-drive` |
 | **Risk** | Low. Most likely to go wrong: a drive knocked loose on a mobile kit, so backups silently stop. The job fails loudly when the drive is absent |
 | **Related changes** | [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the Transit key in the vault, which makes a restored database readable) |
 | **Related incidents** | None |
@@ -36,7 +36,8 @@ code, it is also the only thing that spares devices a visit when the provisionin
 
 - Two USB SSDs, one attached to the management hypervisor and one kept away from the kit, swapped on a
   schedule.
-- A nightly job writes a database dump and a mirror of the state bucket to the attached drive,
+- A job that runs **whenever the site is up and the newest backup is older than a day**, and on demand,
+  writes a database dump and a mirror of the state bucket to the attached drive,
   **encrypted before it reaches the drive** with a key held in ansible-vault. A lost drive is
   ciphertext; a restore needs only the vault.
 - **Nothing is ever written to the drive unencrypted.** The drive's filesystem is plain, so every file
@@ -72,7 +73,9 @@ bucket contents (tenants' own); Keycloak (not built).
 | What the state bucket's copy is | Its current objects, read over S3 | A restore does not depend on the store being the same software or version ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)). Earlier object versions are not carried; the dated archives are the history |
 | How the drive is found | By filesystem label `deevnet-backup`, plus a marker file | Both drives in the rotation carry the same label, so a swap changes nothing. The job refuses a second labelled drive, or one without the marker |
 | When the drive is mounted | Only while a run writes | The drive can be pulled at any other time, which is what a swap on a mobile kit needs |
-| The schedule | 02:30 nightly, and at the next boot if the kit was off | The kit is often off overnight |
+| The schedule | No fixed hour. A check runs ten minutes after every boot and hourly while the VM is up, and takes a backup when the newest good one is older than 24 hours. `make backup-now` takes one regardless | The kit is mobile and off most of the time, so a set hour is rarely met. A nightly timer was built first and replaced the same day |
+| What counts as overdue | A backup is due and the VM has been up two hours without taking it | Time spent powered off is not a failure. `make backup-status` fails on this and nothing else |
+| How the drive reaches the VM | A Proxmox USB resource mapping by vendor and product ID, declared in the VM's `mgmt_vm.usb` | Automation's API token may not name a raw host device; a mapping is the form it may attach. A second drive of the same model takes the first one's place with no change |
 | Retention | The newest 30 archives per drive | Weeks of history at a few megabytes |
 | The first drive | A USB flash drive, until the SSDs arrive | A backup on flash now is worth more than one on an SSD later. The drive is not what makes a backup trustworthy; the rehearsal in step 3 is |
 
@@ -91,33 +94,47 @@ Attach one drive to the management hypervisor, pass it through to the provisioni
 with `make backup-drive SERIAL=<serial>`, which erases it, labels it `deevnet-backup` and writes the
 marker. Its filesystem is plain; the backup files are encrypted.
 
-**State, 2026-10-07:** not done. The management hypervisor has no USB drive attached. The one USB drive
-on the site is in the tenant hypervisor and holds an installer image, so it was left untouched. The
-`proxmox_vm` role cannot yet pass a USB device through; that is built and tested when the drive is in
-place.
+**State, 2026-10-07:** done for one drive, a 128 GB USB flash drive. It is passed through to
+`dv02prv001v01` by the `deevnet-backup` USB mapping (`mgmt_vm.usb` in the VM's inventory entry,
+applied by `playbooks/vm-usb.yml`), erased and prepared. There is no second drive yet, so nothing is
+kept away from the kit.
+
+Three things the step found:
+
+- **The VM needed a cold start.** Proxmox does not hot-plug USB into this guest type, so the device
+  appeared only after the VM was stopped and started. A drive of the same model plugged in later
+  needs nothing.
+- **USB 3 has to be asked for.** Proxmox attached the device to the guest's emulated USB 2 controller:
+  5 Gb/s on the hypervisor, 480 Mb/s in the guest. The role now sets `usb3=1` unless told otherwise.
+- **The job's own check ran during preparation.** It fired ten minutes after the cold start, found the
+  freshly labeled drive and took a backup while the preparation still held the mount. Preparation now
+  mounts the drive somewhere of its own.
 
 ### Step 2: The backup role
 
-A role that, nightly, dumps the database and mirrors the state bucket, puts both in one archive with a
+A role that, when a backup is due, dumps the database and mirrors the state bucket, puts both in one archive with a
 manifest of checksums, encrypts it with `age` to the site's backup key, writes it to the drive, keeps
 the newest 30, and fails visibly if the drive is absent.
 
 **Verify:** a run writes encrypted files; unplugging the drive makes the next run fail.
 
-**State, 2026-10-07:** the role is deployed to `dv02prv001v01` and the timer is enabled.
+**State, 2026-10-07:** done. The role is deployed to `dv02prv001v01` and the timer is enabled.
 
 | Check | Result |
 |---|---|
 | `make backup-dry-run` builds and encrypts an archive with no drive | Pass: 72 kB, three state objects |
-| `make backup-verify SOURCE=dry-run` decrypts it with the key from the vault | Pass: checksums match, the dump is readable, 11 tables with data |
-| The job with no drive attached fails | Pass: the unit is `failed`, with `backup drive absent: no filesystem labelled deevnet-backup`; `make backup-status` fails with "No backup has ever succeeded" |
-| A run writes an encrypted archive to a drive | Not run: no drive |
-| Unplugging the drive makes the next run fail | Not run on a real unplug; the absent-drive path is the one above |
-| The 31st archive removes the oldest | Not run |
+| The job with no drive attached fails | Pass: the unit is `failed`, with `backup drive absent: no filesystem labelled deevnet-backup` |
+| `make backup-now` writes an encrypted archive to the drive | Pass |
+| `make backup-verify` decrypts the newest archive on the drive with the key from the vault | Pass: checksums match, the dump is readable, 11 tables with data |
+| A check with a fresh backup does nothing and succeeds | Pass: `not due: the newest good backup is 0h old, the interval is 24h` |
+| A check with a backup older than the interval takes one | Pass, with the job's record of its last run set back 25 hours by hand |
+| The drive is unmounted after every run | Pass |
+| Retention removes the oldest | Pass, with the limit lowered to 2 for one run |
+| Pulling the drive makes the next due check fail | Not run on a real unplug; the absent-drive path is the one above |
 
-Until step 1 is done the job fails every night. That is the intended signal, and it is the only one:
-nothing alerts on it yet ([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)), so it
-is seen by running `make backup-status`.
+Nothing alerts on a failed check yet
+([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)), so a missing
+drive is seen by running `make backup-status`.
 
 ### Step 3: Rehearse a restore
 
@@ -143,7 +160,7 @@ Remove the role and the timer; the drives keep what they hold until wiped.
 ## To discover
 
 - Which declared VM the restore rehearsal uses.
-- Whether a replacement drive of a different model needs the device mapping changed, or whether the
-  two drives must be the same model.
+- Whether the two drives in the rotation must be the same model. The mapping names one vendor and
+  product ID, so a different model means changing `mgmt_vm.usb`.
 - Whether the drive should also be encrypted as a whole. It would hide file names and sizes, and it
   would put an unlock key on the host beside the drive.
