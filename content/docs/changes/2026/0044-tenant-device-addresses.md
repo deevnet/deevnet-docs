@@ -126,6 +126,15 @@ ansible-playbook playbooks/dhcp.yml
 3. A second run reports no pool change.
 4. A device that rejoins gets an address in the new pool.
 
+**Result, 2026-10-06:** passed, except item 4, which was not observed.
+
+- The pool went from `10.20.30.100 - 10.20.30.200` to `10.20.30.201 - 10.20.30.254`.
+- The role's read-back passed: the subnet and its routers option were unchanged. This build's
+  subnet update leaves alone what it isn't sent.
+- The four Pi lab reservations and the gateway's were unchanged, and a second run reported no pool
+  change.
+- No device was on the pool to rejoin, so item 4 waits for the first one that does.
+
 **Undo:** set the old range in inventory and run the playbook again.
 
 ### Step 3: Deploy the API and stage the provider
@@ -152,6 +161,23 @@ ansible-playbook playbooks/site.yml --limit deevnet_api
 4. `ansible-playbook playbooks/dhcp.yml` in `deevnet.net`, run while the test reservation exists,
    leaves it alone.
 
+**Result, 2026-10-06:** passed.
+
+- `/version` answers v0.10.0, and the role confirmed the running version is the pinned one.
+- A throwaway device in `tdemo` was given `10.20.30.25`; the router showed it as
+  `Deevnet API - tdemo/chg44`, hostname `tdemo-chg44`. Asking again returned the same address.
+- `chg44.tdemo.mobile.deevnet.net` resolved through the router to `10.20.30.25`, with no PTR.
+- Refused as designed: an address in the dynamic pool (`400`); a Pi lab host's MAC (`409`, and no
+  record left behind); the same MAC from the `cdeever` tenant (`409`, naming nobody).
+- A second name for the address was accepted from `tdemo` and refused from `cdeever`. The address
+  could not be given back while that name pointed at it.
+- A real run of the DHCP role, with the test reservation present, left it untouched.
+- Everything was removed afterwards: the router has no reservation at `.25`, the tenant DNS server
+  answers NXDOMAIN for both names, and `tdemo` has no devices. The router's resolver kept the
+  answer cached for a few minutes more.
+- Provider v0.6.0 is staged on the Builder and installed in the control host's local mirror. The
+  tenant downloads site has not been refreshed with it.
+
 **Undo:** redeploy v0.9.1. A reservation left behind is removed in the router's UI by its
 description.
 
@@ -171,6 +197,11 @@ ansible-playbook playbooks/dns.yml -e dns_delete_unmanaged=true
 
 1. The router has no reservation for the gateway's MAC.
 2. `dv02bgw001e01`, `bellgw` and `mabell` no longer resolve in `mobile.deevnet.net`.
+
+**Result, 2026-10-06:** passed. A check run first showed the prune would remove exactly one
+reservation, one host override and two aliases, all the gateway's. After the real run the router
+holds no reservation for the gateway's MAC, none of the three names resolves, and the `mabell`
+tenant's own zone still does.
 
 **Undo:** revert the inventory commit and run both playbooks.
 
@@ -211,13 +242,12 @@ case is every device back on the pool.
 
 ## To discover
 
-- Whether this OPNsense build's subnet update leaves alone the settings it isn't sent. Its API
-  reference lists `set_subnet` and `get_subnet`; the role asserts the outcome, and step 1 and step 2
-  are where it is first seen.
+- ~~Whether this OPNsense build's subnet update leaves alone the settings it isn't sent.~~
+  **Found 2026-10-06:** it does. The role's read-back in step 2 passed.
 - ~~The lease lifetime on the IoT subnet.~~ **Found 2026-10-06:** the IoT subnet sets none, so the
   server's general setting applies: 4000 seconds. A device on the old pool keeps its address for a
   little over an hour at most after step 2.
 - That a device holding a pool lease moves to its reserved address at renewal, without a restart.
 - Whether anything still dials `bellgw` or `mabell` in the substrate's zone.
 - Whether the router's reservation search returns every row in one answer once tenants' rows are
-  added to inventory's.
+  added to inventory's. With 16 rows it does; not yet seen with many.
