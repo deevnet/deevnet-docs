@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Incident | Site | Status | Substatus |
 |----|------|----------|------|--------|-----------|
+| INC-0005 | 2026-10-07 | [Core Router Hard Hang During a Provisioning VM Rebuild](0005-core-router-hang-during-rebuild/) | mobile | Open | {{< inc-status "Mitigated" >}} |
 | INC-0004 | 2026-09-21 | [Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts](0004-core-router-lost/) | mobile | Open | {{< inc-status "Investigating" >}} |
 | INC-0003 | 2026-09-17 | [OpenBao's Recovery Key and AppRole Destroyed by a Git Reset](0003-openbao-credential-loss/) | mobile | Closed | {{< inc-status "Completed" >}} 2026-09-21 |
 | INC-0002 | 2026-09-15 | [Controller VM Silent — Running but Off the Network](0002-controller-vm-network-hang/) | mobile | Open | {{< inc-status "Mitigated" >}} |
