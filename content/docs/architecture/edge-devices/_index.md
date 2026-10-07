@@ -95,6 +95,8 @@ The platform knows only what it must to attach and account for a device:
   or Go, but offering a tool is not a claim of ownership, and the project pins its own versions.
 - **A device needs no substrate host record.** Its identity is its credential, not its address
   ([ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) open question 2).
+  A device that has to be found at one address gets it from its tenant, which reserves one through
+  the platform ([ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/)).
 
 ---
 

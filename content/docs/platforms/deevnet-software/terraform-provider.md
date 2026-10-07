@@ -33,9 +33,10 @@ have to guard.
 |---|---|---|
 | `deevnet_tenant` | The tenant, by `name` | Its index and network, DNS zone and TSIG key, state-store credentials, log endpoint and tokens, dashboards login, and its API token |
 | `deevnet_workload` | A VM: `cores`, `memory_mb`, `disk_gb`, `ssh_keys` | Its VMID, MAC, address and name |
-| `deevnet_dns_record` | A name for an address in the tenant's subnet | Its FQDN |
+| `deevnet_dns_record` | A name for an address in the tenant's subnet, or one reserved for its device | Its FQDN |
 | `deevnet_iot_wifi_key` | A Wi-Fi key per trust class | The SSID, VLAN and key |
 | `deevnet_iot_device` | A device, by MAC and trust class | Its registry entry |
+| `deevnet_iot_address` | A fixed address for a registered device | The address, and the device's name in the tenant's zone |
 | `deevnet_iot_broker_account` | An MQTT account for a device, with publish and subscribe patterns | What was granted, and the password |
 
 There are no data sources. The state store is used through Terraform's own `backend "s3"`.

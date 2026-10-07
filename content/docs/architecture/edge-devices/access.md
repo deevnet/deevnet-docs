@@ -46,8 +46,9 @@ Devices of different owners share one segment. On that segment, **nothing in a p
 one owner's device from another's**.
 
 The wireless credential identifies a tenant and a trust class, not a device — one key serves every
-device a tenant flashes with it. Every device draws an address from one pool on one subnet. MAC and
-IP are both trivially forged by anything already attached.
+device a tenant flashes with it. Every device draws an address from one subnet: from the pool, or one its
+tenant reserved for it. A reserved address says where a device is found, not who it is. MAC and IP
+are both trivially forged by anything already attached.
 
 So a rule of the shape *"the LP stand may reach EdS services but not Ma Bell's"* **cannot be
 written as a firewall rule**, because no firewall can tell the two devices apart. This is a

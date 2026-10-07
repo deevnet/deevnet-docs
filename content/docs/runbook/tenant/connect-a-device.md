@@ -20,7 +20,7 @@ This page covers only getting the device onto the network. Talking to the broker
 |---|---|
 | SSID | `DVNTM-IOT`, on 2.4 GHz and 5 GHz; a 2.4 GHz-only board such as the Pico W or ESP32 joins on 2.4 |
 | Network | the IoT network, VLAN 30, `10.20.30.0/24` |
-| Address | DHCP, from `10.20.30.100` to `10.20.30.200` |
+| Address | DHCP, from `10.20.30.201` to `10.20.30.254`; or [a fixed one you reserve](/docs/runbook/tenant/services/devices-and-mqtt/#a-fixed-address), from `10.20.30.25` to `10.20.30.200` |
 | Can reach | the MQTT broker and the internet, nothing else |
 
 The SSID is shared by every tenant. The **key** is yours, and it is what makes the device one of
@@ -104,8 +104,8 @@ A borrowed kit's own instructions say where its firmware expects the key. The id
 
 ## 3. Check it joined
 
-Watch the serial console. The device should print an address between `10.20.30.100` and
-`10.20.30.200`. If it does, the device is on your tenant's key, and the next step is a broker
+Watch the serial console. The device should print an address between `10.20.30.201` and
+`10.20.30.254`, or the fixed address you reserved for it. If it does, the device is on your tenant's key, and the next step is a broker
 account: [Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/).
 
 ## When it doesn't join

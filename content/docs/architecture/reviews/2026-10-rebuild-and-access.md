@@ -665,7 +665,8 @@ permissions. The two unused accounts are removed.
 #### A6 Shared credentials
 
 **Medium. Some credentials are shared between consumers that need different things.**
-- One OPNsense API key serves both Ansible and the API, which only writes DNS forwards.
+- One OPNsense API key serves both Ansible and the API, which only writes DNS forwards and, since
+  [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/), tenants' device address reservations.
 - The Grafana server admin is shared between Grafana and the API.
 - The API's MinIO admin can attach any policy, including to itself.
 - The log bridge's single token writes every tenant's partition, by design (ADR-0027).

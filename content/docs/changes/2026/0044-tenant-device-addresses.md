@@ -10,8 +10,8 @@ weight: -44
 | **Date** | 2026-10-06 |
 | **Change type** | Deployment · Configuration · Migration |
 | **Classification** | Structural |
-| **Status** | In progress |
-| **Window** | Started 2026-10-06. Before [CHG-0034](/docs/changes/2026/0034-device-certificates/), which it doesn't block |
+| **Status** | Complete |
+| **Window** | 2026-10-06 to 2026-10-07. Before [CHG-0034](/docs/changes/2026/0034-device-certificates/), which it doesn't block |
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (the core router's DHCP server), `dv02prv001v01` (the Deevnet API), the tenant DNS server; the provider; the `mabell` tenant and its gateway |
 | **Automation** | `deevnet-provisioning-api`, `terraform-provider-deevnet`, `deevnet.net` `dhcp.yml` and `dns.yml`, `deevnet.mgmt` `site.yml --limit deevnet_api`, the `mobile` inventory |
@@ -218,6 +218,16 @@ device, and one address resource.
    from an operator network.
 4. A second apply plans nothing.
 
+**Result, 2026-10-07:** passed, except item 3, which was not observed.
+
+- The apply added the address and recorded the gateway's MAC: `10.20.30.25`, named
+  `ma-bell-gw-01.mabell.mobile.deevnet.net`.
+- The router shows the reservation for the gateway's MAC, described
+  `Deevnet API - mabell/ma-bell-gw-01`, and the name resolves through the router.
+- A second plan showed no changes.
+- The gateway was not on the network, so nothing answered at the address. Item 3 waits for it to
+  join.
+
 **Undo:** destroy the address resource; the gateway returns to the pool.
 
 ### Step 6: Restore drill
@@ -230,10 +240,23 @@ apply.
 1. The plan shows the address resource changing, with the same address.
 2. After the apply the gateway's address is the one it had.
 
+**Result, 2026-10-07:** passed. With the address deleted through the API, the router's reservation
+was gone and the tenant's plan showed the address resource updating in place with its address
+unchanged. The apply put `10.20.30.25` back on the router, and the next plan showed no changes.
+
 ## Verification
 
 Steps 3, 5 and 6 pass; the firewall plan shows no drift; the documentation site builds without
 warnings.
+
+**Result, 2026-10-07:** all three hold. The firewall plan found the router's 69 rules matching
+inventory.
+
+Two things were not observed, because no device was on the IoT network during the change, and are
+recorded as untested, not as passed:
+
+- a device on the old pool taking an address in the new one at renewal (step 2);
+- the gateway leasing its reserved address (step 5).
 
 ## Undo
 
@@ -248,6 +271,8 @@ case is every device back on the pool.
   server's general setting applies: 4000 seconds. A device on the old pool keeps its address for a
   little over an hour at most after step 2.
 - That a device holding a pool lease moves to its reserved address at renewal, without a restart.
-- Whether anything still dials `bellgw` or `mabell` in the substrate's zone.
+  Not seen: no device was on the network.
+- Whether anything still dials `bellgw` or `mabell` in the substrate's zone. Nothing in the
+  repositories does; the names are gone, and the gateway is `ma-bell-gw-01.mabell.mobile.deevnet.net`.
 - Whether the router's reservation search returns every row in one answer once tenants' rows are
   added to inventory's. With 16 rows it does; not yet seen with many.

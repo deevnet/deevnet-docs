@@ -47,7 +47,7 @@ Configured via the `deevnet.net` Ansible collection:
 | Component | Management |
 |-----------|------------|
 | DNS records | Pushed from inventory |
-| DHCP static mappings | Pushed from inventory |
+| DHCP static mappings | Substrate hosts: pushed from inventory. Tenants' devices: written by the Deevnet API |
 | Firewall rules | Defined in playbooks |
 | WoL targets | Defined in inventory |
 
@@ -96,6 +96,13 @@ at `.200`, so that failure shows up as a host sitting somewhere in the `.200+` r
 pointing at it.
 
 The platform segment has reservations only and no pool at all.
+
+The IoT segment's reservations have two writers. Inventory's rows are described `Ansible managed -
+<host>`; the [Deevnet API](/docs/platforms/deevnet-software/deevnet-api/) adds one for each fixed
+address a tenant reserves for a device, described `Deevnet API - <tenant>/<device>`
+([ADR-0035](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/)). Each writer changes
+only its own rows, and the DHCP role stops if an inventory host's MAC is already reserved under
+another description.
 
 ---
 

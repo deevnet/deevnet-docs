@@ -7,7 +7,7 @@ weight: -35
 
 |  |  |
 |--|--|
-| **Status** | Proposed (2026-10-06). Built by [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/); Accepted when that change completes. |
+| **Status** | Accepted (2026-10-07), at the close of [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/), which built it. |
 | **Date** | 2026-10-06 |
 | **Scope** | How a tenant's device gets the same address every time on the device network, and what its name is. Not what may reach the device ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/), unchanged), and not its identity ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) §6). |
 | **Amends** | [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) open question 2 and [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §3 and open question 3: "leases from the IoT pool" becomes "leases from the pool unless its tenant reserves it an address". "No substrate host record" stands. |
@@ -167,5 +167,6 @@ tenant puts them back.
 
 ## Current state
 
-Not built. [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/) builds it and moves the Ma
-Bell gateway to its tenant.
+Built by [CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/) and in use: the Ma Bell gateway
+holds an address its tenant reserved, and is no longer an inventory host. What a tenant does is in
+[Devices & MQTT](/docs/runbook/tenant/services/devices-and-mqtt/#a-fixed-address).

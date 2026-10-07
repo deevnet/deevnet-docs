@@ -61,7 +61,7 @@ Reach these by SSH as `a_autoprov`.
 | Builder (roaming) | `dv00bld001p01.mobile.deevnet.net` | `10.20.99.95` | Control node: Ansible and the artifact server. Also holds the stopped cold-spare Omada controller. |
 | Provisioner VMs | `dv02bld001v01…`, `dv02bld002v01…` | `10.20.99.97`, `10.20.99.96` | Management-plane build VMs |
 | SDR Pi | `dv02rpi001p01.mobile.deevnet.net` (also `sdr.`) | `10.20.30.11` | IoT; no HTTP answered on 2026-09-11 |
-| Bell gateway | `dv02bgw001e01.mobile.deevnet.net` (also `mabell.`, `bellgw.`) | `10.20.30.50` | IoT (ESP32); no HTTP answered on 2026-09-11 |
+| Bell gateway | `ma-bell-gw-01.mabell.mobile.deevnet.net` | `10.20.30.25`, reserved by its tenant | IoT (ESP32); the `mabell` tenant's device |
 
 ## Documentation and code
 
