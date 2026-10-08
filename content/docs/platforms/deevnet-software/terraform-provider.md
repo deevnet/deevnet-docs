@@ -14,6 +14,7 @@ It is the tenant side of the [substrate–tenant boundary](/docs/architecture/te
 | **Runs on** | Tenant laptops and the Builder. It is not in the public registry |
 | **Distributed by** | `make release-build`: zips for macOS and Linux on amd64 and arm64, with `SHA256SUMS`, `install-provider.sh` and `tenant-check.sh`. `make stage` puts them on [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider) |
 | **Configuration** | `DEEVNET_API_ENDPOINT`, `DEEVNET_API_TOKEN`, `DEEVNET_API_CACERT` |
+| **Documentation** | [deevnet.github.io/terraform-provider-deevnet](https://deevnet.github.io/terraform-provider-deevnet/) |
 
 ---
 
@@ -29,15 +30,19 @@ have to guard.
 
 ## Resources
 
-| Resource | Declares | Gives back |
-|---|---|---|
-| `deevnet_tenant` | The tenant, by `name` | Its index and network, DNS zone and TSIG key, state-store credentials, log endpoint and tokens, dashboards login, and its API token |
-| `deevnet_workload` | A VM: `cores`, `memory_mb`, `disk_gb`, `ssh_keys` | Its VMID, MAC, address and name |
-| `deevnet_dns_record` | A name for an address in the tenant's subnet, or one reserved for its device | Its FQDN |
-| `deevnet_iot_wifi_key` | A Wi-Fi key per trust class | The SSID, VLAN and key |
-| `deevnet_iot_device` | A device, by MAC and trust class | Its registry entry |
-| `deevnet_iot_address` | A fixed address for a registered device | The address, and the device's name in the tenant's zone |
-| `deevnet_iot_broker_account` | An MQTT account for a device, with publish and subscribe patterns | What was granted, and the password |
+**The provider has its own documentation site, [Deevnet Terraform Provider](https://deevnet.github.io/terraform-provider-deevnet/).** Its
+[resource reference](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/) is generated from the provider's schemas, with every
+argument and attribute of the seven resources:
+
+| Resource | Declares |
+|---|---|
+| [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | The tenant, by `name` |
+| [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/) | A VM in the tenant's network |
+| [`deevnet_dns_record`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/dns_record/) | A name in the tenant's zone |
+| [`deevnet_iot_wifi_key`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_wifi_key/) | A Wi-Fi key per trust class |
+| [`deevnet_iot_device`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_device/) | A device in the tenant's registry |
+| [`deevnet_iot_address`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_address/) | A fixed address for a registered device |
+| [`deevnet_iot_broker_account`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_broker_account/) | An MQTT account for a device or a workload |
 
 There are no data sources. The state store is used through Terraform's own `backend "s3"`.
 
@@ -48,7 +53,8 @@ There are no data sources. The state store is used through Terraform's own `back
 The provider never drops a secret-bearing resource from state because the API has lost it. It marks
 it not present, so the next plan is an **update**, and the update sends the tenant's index and
 secrets back from state. That is how a tenant comes back, with the same keys, after the API's
-registry is lost. `-replace` issues new keys instead.
+registry is lost. `-replace` issues new keys instead. The provider's
+[Restore Instead of Recreate](https://deevnet.github.io/terraform-provider-deevnet/docs/guides/restore/) guide covers each resource.
 
 The same rule means a workload whose VM is gone, but which the registry still lists, shows no change
 ([Deevnet API → How it behaves on repair](/docs/platforms/deevnet-software/deevnet-api/#how-it-behaves-on-repair)).

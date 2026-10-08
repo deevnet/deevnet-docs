@@ -25,6 +25,14 @@ All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.c
     <h3>ansible-inventory</h3>
     <p>Central inventory for platform infrastructure.</p>
   </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-provisioning-api">
+    <h3>provisioning-api</h3>
+    <p>The Deevnet API: the service tenants build themselves through.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/terraform-provider-deevnet">
+    <h3>terraform-provider</h3>
+    <p>The <code>deevnet/deevnet</code> Terraform provider.</p>
+  </a>
   <a class="section-card" href="https://github.com/deevnet/deevnet-image-factory">
     <h3>image-factory</h3>
     <p>Packer builds for Raspberry Pi and Proxmox templates.</p>
@@ -54,11 +62,17 @@ dvnt/
 ├── ansible-collection-deevnet.net/
 ├── ansible-inventory-deevnet/
 ├── deevnet-image-factory/
+├── deevnet-provisioning-api/
+├── terraform-provider-deevnet/
 ├── deevnet-tenant-fabric/
 ├── deevnet-tenant-tdemo/           the demo tenant
 ├── deevnet-tenant-<name>/          one per tenant
 └── deevnet-docs/
 ```
+
+The API and the provider publish their own documentation:
+[Deevnet API](https://deevnet.github.io/deevnet-provisioning-api/) and
+[Deevnet Terraform Provider](https://deevnet.github.io/terraform-provider-deevnet/).
 
 All repositories are designed to be cloned into a common parent directory (typically `~/dvnt/` or `/srv/dvnt/`).
 

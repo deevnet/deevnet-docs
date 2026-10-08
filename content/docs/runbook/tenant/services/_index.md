@@ -11,14 +11,14 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 
 | Service | Resource | Status |
 |---|---|---|
-| [Network & workloads](network-and-workloads/) | `deevnet_tenant`, `deevnet_workload` | {{< status-badge "active" "Available" >}} |
-| [DNS](dns/) | `deevnet_dns_record` | {{< status-badge "active" "Available" >}} |
-| [Wi-Fi keys](wifi-keys/) | `deevnet_iot_wifi_key` | {{< status-badge "active" "Available" >}} |
-| [Devices & MQTT](devices-and-mqtt/) | `deevnet_iot_device`, `deevnet_iot_broker_account`, `deevnet_iot_address` | {{< status-badge "active" "Available" >}} |
-| [Logs](logs/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
-| [Dashboards](dashboards/) | attributes of `deevnet_tenant`; dashboards with the `grafana` provider | {{< status-badge "active" "Available" >}} |
-| [State store](state-store/) | attributes of `deevnet_tenant` | {{< status-badge "active" "Available" >}} |
-| [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on `deevnet_workload`; you push over SSH | {{< status-badge "active" "Available" >}} |
+| [Network & workloads](network-and-workloads/) | [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/), [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/) | {{< status-badge "active" "Available" >}} |
+| [DNS](dns/) | [`deevnet_dns_record`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/dns_record/) | {{< status-badge "active" "Available" >}} |
+| [Wi-Fi keys](wifi-keys/) | [`deevnet_iot_wifi_key`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_wifi_key/) | {{< status-badge "active" "Available" >}} |
+| [Devices & MQTT](devices-and-mqtt/) | [`deevnet_iot_device`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_device/), [`deevnet_iot_broker_account`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_broker_account/), [`deevnet_iot_address`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_address/) | {{< status-badge "active" "Available" >}} |
+| [Logs](logs/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
+| [Dashboards](dashboards/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/); dashboards with the `grafana` provider | {{< status-badge "active" "Available" >}} |
+| [State store](state-store/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
+| [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/); you push over SSH | {{< status-badge "active" "Available" >}} |
 | [Your own secrets](/docs/runbook/tenant/deploy-your-app/#your-own-secrets) | your repository, encrypted; pushed with your settings | {{< status-badge "active" "Available" >}} |
 | [Metrics & alerting](coming-soon/#metrics-and-alerting) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Identity](coming-soon/#identity) | — | {{< status-badge "planned" "Coming soon" >}} |
@@ -28,3 +28,6 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 Every resource takes `tenant = deevnet_tenant.this.name`, and changing `tenant` or `name` on any of
 them replaces it. None of them has a data source; what the substrate issued you comes back as
 attributes of the resources themselves.
+
+Each resource name above links to its page in the
+[provider reference](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/), which lists every argument and attribute.

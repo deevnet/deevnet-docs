@@ -17,20 +17,22 @@ provisioning-only: nothing at runtime depends on it being up.
 | **Repository** | `deevnet-provisioning-api`, Go ([version](/docs/platforms/software-catalog/#deevnets-own-software)) |
 | **Runs on** | `dv02prv001v01`, 10.20.25.20, as two podman containers under systemd: `deevnet-api` (port 8080, TLS from the site CA, `api.mobile.deevnet.net`) and `deevnet-api-db` (PostgreSQL, on a private podman network, no published port) |
 | **Deployed by** | `deevnet.mgmt` role `deevnet_api`: `ansible-playbook playbooks/site.yml --limit deevnet_api`. The image is built and staged on the Builder (`make stage`) and pushed to the host, never pulled. The role ends by checking `/readyz` and that `/version` is the pinned version |
-| **Contract** | `docs/api-v1.md` in the repository |
+| **Contract** | `api/openapi.yaml` in the repository (OpenAPI 3.1), published as the [API reference](https://deevnet.github.io/deevnet-provisioning-api/docs/reference/) |
+| **Documentation** | [deevnet.github.io/deevnet-provisioning-api](https://deevnet.github.io/deevnet-provisioning-api/) |
 
 ---
 
 ## What it exposes
 
+**The API has its own documentation site, [Deevnet API](https://deevnet.github.io/deevnet-provisioning-api/).** Its
+[reference](https://deevnet.github.io/deevnet-provisioning-api/docs/reference/) lists every route, request and response, and is rendered from the
+OpenAPI specification in the repository, which a test holds to the code.
+
 | Routes | Who calls them |
 |---|---|
 | `/healthz`, `/readyz`, `/version` | Anyone; no token |
-| `POST /v1/admissions` | The operator: returns a single-use enrollment token |
-| `/v1/tenants`, `/v1/tenants/{name}` | Create, restore, read and delete a tenant. The list is the operator's |
-| `POST /v1/tenants/{name}/reconcile` | The operator only |
-| `/v1/tenants/{name}/workloads`, `/records`, `/wifi-keys`, `/devices`, `/broker-accounts` | The tenant, with its own token |
-| `/v1/tenants/{name}/devices/{device}/address` | The tenant: a fixed address for one of its devices |
+| Admissions, the tenant list, reconcile | The operator only |
+| A tenant, and its workloads, names, devices, addresses, Wi-Fi keys and broker accounts | The tenant, with its own token, or the operator |
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,

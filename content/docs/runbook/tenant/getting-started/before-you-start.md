@@ -31,7 +31,7 @@ Terraform, Pi Imager, MicroPython and the Pi image are also served on the site's
 |---|---|---|---|---|
 | `git` | your repository | `xcode-select --install` | `sudo dnf install git` | `sudo apt install git` |
 | Terraform ≥ 1.5 | applies your tenant | `brew install hashicorp/tap/terraform` | from [tenant downloads](#tenant-downloads) `terraform/`, or HashiCorp's repo | the same |
-| `deevnet/deevnet` provider **0.5.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same |
+| `deevnet/deevnet` provider **0.6.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same |
 | `curl`, `openssl` | TLS checks, the CA | built in | `sudo dnf install curl openssl` | `sudo apt install curl openssl` |
 
 **For devices:**
@@ -138,7 +138,8 @@ its `SHA256SUMS`. **Off-site,** `bash install-provider.sh --github` fetches the 
 provider from the
 [GitHub release](https://github.com/deevnet/terraform-provider-deevnet/releases). **From
 source** (needs Go and make): clone the repository, check out the latest tag
-(`git checkout "$(git describe --tags --abbrev=0)"`), then `make mirror`.
+(`git checkout "$(git describe --tags --abbrev=0)"`), then `make mirror`. The provider's own
+[Install](https://deevnet.github.io/terraform-provider-deevnet/docs/guides/install/) guide has all three routes.
 
 Pin it in your configuration:
 
