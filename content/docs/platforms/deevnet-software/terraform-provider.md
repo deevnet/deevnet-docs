@@ -14,7 +14,7 @@ It is the tenant side of the [substrate–tenant boundary](/docs/architecture/te
 | **Runs on** | Tenant laptops and the Builder. It is not in the public registry |
 | **Distributed by** | `make release-build`: zips for macOS and Linux on amd64 and arm64, with `SHA256SUMS`, `install-provider.sh` and `tenant-check.sh`. `make stage` puts them on [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider) |
 | **Configuration** | `DEEVNET_API_ENDPOINT`, `DEEVNET_API_TOKEN`, `DEEVNET_API_CACERT` |
-| **Documentation** | [deevnet.github.io/terraform-provider-deevnet](https://deevnet.github.io/terraform-provider-deevnet/) |
+| **Documentation** | [deevnet.github.io/terraform-provider-deevnet](https://deevnet.github.io/terraform-provider-deevnet/), with [release notes](https://deevnet.github.io/terraform-provider-deevnet/docs/release-notes/) for every version |
 
 ---
 

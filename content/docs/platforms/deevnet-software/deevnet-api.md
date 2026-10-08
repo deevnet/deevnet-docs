@@ -18,7 +18,7 @@ provisioning-only: nothing at runtime depends on it being up.
 | **Runs on** | `dv02prv001v01`, 10.20.25.20, as two podman containers under systemd: `deevnet-api` (port 8080, TLS from the site CA, `api.mobile.deevnet.net`) and `deevnet-api-db` (PostgreSQL, on a private podman network, no published port) |
 | **Deployed by** | `deevnet.mgmt` role `deevnet_api`: `ansible-playbook playbooks/site.yml --limit deevnet_api`. The image is built and staged on the Builder (`make stage`) and pushed to the host, never pulled. The role ends by checking `/readyz` and that `/version` is the pinned version |
 | **Contract** | `api/openapi.yaml` in the repository (OpenAPI 3.1), published as the [API reference](https://deevnet.github.io/deevnet-provisioning-api/docs/reference/) |
-| **Documentation** | [deevnet.github.io/deevnet-provisioning-api](https://deevnet.github.io/deevnet-provisioning-api/) |
+| **Documentation** | [deevnet.github.io/deevnet-provisioning-api](https://deevnet.github.io/deevnet-provisioning-api/), with [release notes](https://deevnet.github.io/deevnet-provisioning-api/docs/release-notes/) for every version |
 
 ---
 
