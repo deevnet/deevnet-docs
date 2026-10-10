@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0046 | Unscheduled | [Tenant-Facing Services on 443](0046-service-proxy/) | Deployment · Configuration | mobile | Planned |
 | CHG-0045 | 2026-10-10 | [A Service Name for Grafana](0045-grafana-service-name/) | Configuration | mobile | Complete |
 | CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Complete |
 | CHG-0043 | Unscheduled | [A Local Package Mirror](0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
