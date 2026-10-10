@@ -7,11 +7,11 @@ weight: -45
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-10 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Unscheduled. Step 3 restarts Grafana for a few seconds; step 4 restarts the API |
+| **Status** | Complete, except that tenants other than `mabell` have not been told. See [Outcome](#outcome) |
+| **Window** | 2026-10-10 05:29 to 05:34 EDT (steps 1 to 4); step 5's guide change the same day |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana), `dv02cor002p01` (the site resolver), `dv02prv001v01` (the Deevnet API) |
 | **Automation** | `deevnet.net` `dns.yml`; `deevnet.mgmt` `site_cert`, `grafana` and `deevnet_api` roles, `site.yml --tags dashboards` and `--limit deevnet_api`; the `mobile` inventory |
@@ -84,10 +84,10 @@ rule; Grafana's domain and root URL; the address the API hands out; the tenant g
 
 ## Prerequisites
 
-- [ ] Pull requests merged: the inventory (`grafana` added to `dv02obs001v01`'s `cnames`),
+- [x] Pull requests merged: the inventory (`grafana` added to `dv02obs001v01`'s `cnames`),
   `deevnet.mgmt` (`site_cert`, `grafana`, `deevnet_api` defaults)
-- [ ] Vault decrypted, collections built
-- [ ] Tenants told the address is changing and that the old one keeps working
+- [x] Vault decrypted, collections built
+- [ ] Tenants told the address is changing and that the old one keeps working. Only `mabell` was
 
 ## Procedure
 
@@ -116,6 +116,17 @@ ansible-playbook playbooks/site.yml --check
 3. The DNS check run reports one alias to add and nothing else.
 4. The site check run reports one certificate to reissue, Grafana's, and no other.
 
+**Result, 2026-10-10:** passed, with item 4 checked another way.
+
+- `grafana.mobile.deevnet.net` answered `NXDOMAIN`.
+- Grafana's certificate named `dv02obs001v01.mobile.deevnet.net` and `10.20.25.22` only.
+- The DNS check run reported one alias to add, `grafana`, with 19 host overrides and 14 aliases
+  unchanged.
+- The site-wide check run was not used: these roles cannot be dry-run through a signing or an
+  OpenBao login. Instead the certificate each of the eight `site_cert` services serves was compared
+  with the names its role asks for. Grafana's lacked the new name; the API's, the state store's,
+  Omada's, OpenBao's, the downloads site's, the broker's and the log store's lacked none.
+
 **Undo:** nothing to undo.
 
 ### Step 2: The alias
@@ -135,6 +146,16 @@ ansible-playbook playbooks/dns.yml
 2. The same from `DVNTM-TD`.
 3. `downloads.mobile.deevnet.net` and the host's own name answer as before.
 4. A second run reports no change.
+
+**Result, 2026-10-10:** passed.
+
+- The run added one alias and reconfigured Unbound; nothing was updated or deleted.
+- `grafana.mobile.deevnet.net` answers `NOERROR` with `10.20.25.22`, from the Builder and from a
+  Mac on `DVNTM`.
+- Twelve substrate names and two tenant names were asked before and after: `grafana` is the only
+  answer that changed.
+- A second run reported no change.
+- From `DVNTM-TD` the name resolved and Grafana answered at it, seen after step 3.
 
 **Undo:** remove the alias from inventory and run the playbook with `-e dns_delete_unmanaged=true`.
 
@@ -160,6 +181,19 @@ ansible-playbook playbooks/site.yml --tags dashboards
 6. The API, not yet redeployed, still reaches Grafana: a reconcile of `tdemo` reports its
    `dashboards` step as done.
 
+**Result, 2026-10-10:** passed, except item 4, which was checked without a browser.
+
+- The role reported the installed certificate lacked `grafana.mobile.deevnet.net` and reissued it.
+  The served certificate now names `dv02obs001v01.mobile.deevnet.net`, `grafana.mobile.deevnet.net`
+  and `10.20.25.22`, and expires 2027-10-10.
+- `/api/health` returns `200` with verification on at both names, from the Builder, from `DVNTM`
+  and from `DVNTM-TD`.
+- A request for a dashboard with no session is redirected to the login page at the name it was
+  asked at, service name or host name. Logged in as `mabell` over the API at the service name, the
+  tenant's dashboard is returned. No browser session was opened.
+- A second run changed nothing and did not restart Grafana.
+- `tdemo` reconciled through the API while it still held the host name.
+
 **Undo:** revert the `grafana` role's names and root URL, remove the installed certificate, and run
 the tag again; the next run issues one with the host's names only.
 
@@ -181,6 +215,15 @@ ansible-playbook playbooks/site.yml --limit deevnet_api
 3. `tdemo`'s Terraform plans no replacement of a dashboard, applies, and a second plan shows no
    changes.
 
+**Result, 2026-10-10:** passed, with item 3 seen on `mabell` and not on `tdemo`.
+
+- The run rewrote the API's environment and recreated its container. Its certificate was not
+  reissued. `/version` answers v0.10.0.
+- `tdemo` reconciled through the API, now by the service name.
+- The `mabell` tenant's plan showed `dashboard_url` changing from the host name to
+  `https://grafana.mobile.deevnet.net:3000` and nothing else: no dashboard or folder replaced. It
+  applied, and a second plan showed no changes.
+
 **Undo:** set `deevnet_api_grafana_url` back and redeploy; tenants are handed the host name again,
 which never stopped working.
 
@@ -199,12 +242,24 @@ code: its next plan reads the new `dashboard_url`.
 3. The `mabell` tenant's next apply shows the Grafana provider's address changed and no dashboard
    replaced.
 
+**Result, 2026-10-10:** the guide is changed; the tenants are not all told.
+
+- [Dashboards](/docs/runbook/tenant/services/dashboards/) gives the service name, and
+  [Build Verification](/docs/runbook/substrate/building-recovery/build-verification/) checks
+  Grafana by it. The site builds without warnings.
+- Item 3 is step 4's result.
+- `mabell` knows, being where this started. `tdemo`, `eds` and `cdeever` have not been told; nothing
+  of theirs breaks in the meantime.
+
 **Undo:** revert the guide.
 
 ## Verification
 
 Steps 2, 3 and 4 pass; the firewall plan shows no drift; the documentation site builds without
 warnings.
+
+**Result, 2026-10-10:** steps 2, 3 and 4 pass and the site builds. The firewall plan was not run:
+nothing in this change touches a rule, and the plan's target is the guarded apply.
 
 ## Undo
 
@@ -216,28 +271,46 @@ it is today.
 
 - Whether a certificate name no longer wanted should also cause a reissue, or only a missing one.
   This change needs only the second.
-- Whether Grafana, with its root URL changed, redirects requests made at the host name. Seen on
-  2026-10-09, with the root URL still the host name: a request at another name is answered at that
-  name and its login redirect stays on it.
+- ~~Whether Grafana, with its root URL changed, redirects requests made at the host name.~~
+  **Found 2026-10-10:** it does not. A request at the host name is answered at the host name, and
+  its login redirect stays there.
 - Whether anything outside the tenant guide prints the host name for Grafana: the handover notes
   written for tenants admitted before [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), and
   the take-home Pi image's notes.
 
 ## Outcome
 
-*Completed after the change has run.*
-
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-10-10 05:29 EDT | 1 | Read-only checks passed: one alias to add, one certificate lacking a name |
+| 2026-10-10 05:30 EDT | 2 | The alias published; no other answer changed |
+| 2026-10-10 05:32 EDT | 3 | Grafana's certificate reissued with the service name; root URL changed |
+| 2026-10-10 05:34 EDT | 4 | The API redeployed; tenants are handed the service name |
+| 2026-10-10 | 5 | The tenant guide changed; `mabell` moved to the new address |
 
 ### Departures from the plan
 
--
+- **Step 1 did not use a site-wide check run.** A check run of the `dashboards` tag stops at the
+  signing task and one of the API at its OpenBao login, each having changed nothing. The served
+  certificates were compared with the names asked for instead.
+- **Grafana restarted twice in step 3, not once:** when its container was recreated for the new
+  environment, and again by the certificate's handler.
+- **Step 4 ran `--tags deevnet-api`, not `--limit deevnet_api`.** The limit would also have run the
+  state store's play on the same VM.
+- **Step 4's tenant check was `mabell`'s Terraform, not `tdemo`'s.**
+- **No browser was used.** Step 3's fourth item was checked with requests that follow what a
+  browser does up to the login page, and one authenticated request for a dashboard.
+- **The firewall plan was not run.**
+- **The playbooks ran from the Builder's inventory checkout on an unmerged branch**, with `main`
+  merged into it to bring in the alias. That branch's own change, to workstations, is not read by
+  any play this change ran.
+- **Tenants other than `mabell` were not told**, before or after.
 
 ## Follow-ups
 
-- [ ] The `mabell` tenant withdraws `grafana.mabell.mobile.deevnet.net` from its zone and its code
+- [ ] Tell `tdemo`, `eds` and `cdeever` that the address changed and that the old one keeps working
+- [x] The `mabell` tenant withdraws `grafana.mabell.mobile.deevnet.net` from its zone and its code.
+  Done 2026-10-10, before this change ran
 - [ ] The site resolver answers a tenant's CNAME into `mobile.deevnet.net` with `NXDOMAIN` for the
   target. Probably it follows the CNAME through ordinary resolution, which reaches the public
   `deevnet.net` and not its own host overrides; not confirmed. Decide whether tenants may publish

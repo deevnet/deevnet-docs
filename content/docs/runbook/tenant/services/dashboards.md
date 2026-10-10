@@ -29,7 +29,7 @@ The login comes back as attributes of your tenant:
 
 | Attribute | |
 |---|---|
-| `dashboard_url` | where Grafana is |
+| `dashboard_url` | where Grafana is: `https://grafana.mobile.deevnet.net:3000` |
 | `dashboard_org_id` | your organization |
 | `dashboard_username` | your tenant's name |
 | `dashboard_password` | sensitive; in your state, like your log tokens |
@@ -40,9 +40,13 @@ the operator for the password. After that, your state keeps it.
 ## Logging in
 
 Open `dashboard_url` in a browser on the trusted network or from a workload, and sign in with
-`dashboard_username` and `dashboard_password`. From `DVNTM-TD` it opens once
-[CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)'s last step lands. Its certificate chains to the Deevnet Root CA,
-as the broker's and the log store's do.
+`dashboard_username` and `dashboard_password`. It opens from `DVNTM-TD` too. Its certificate chains to
+the Deevnet Root CA, as the broker's and the log store's do.
+
+The address is a service name, like the broker's. Before
+[CHG-0045](/docs/changes/2026/0045-grafana-service-name/) it was the name of the host Grafana runs
+on, `dv02obs001v01.mobile.deevnet.net`; that address still works, and your next plan replaces it in
+your state.
 
 ## Dashboards as code
 

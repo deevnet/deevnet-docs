@@ -91,7 +91,7 @@ The substrate service VMs, and one check each.
 | Tenant DNS (PowerDNS) | `dv02idn001v01`, 10.20.25.21 | `dig @10.20.25.21 tdemo.mobile.deevnet.net SOA` | an answer for each admitted tenant's zone |
 | MQTT broker (VerneMQ) | `dv02msg001v01`, 10.20.35.20 | `openssl s_client -connect mqtt.mobile.deevnet.net:8883 -CAfile $CA </dev/null` | `Verify return code: 0` (recorded: [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) |
 | Log store (vmauth) | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -o /dev/null -w '%{http_code}\n' https://dv02obs001v01.mobile.deevnet.net:8427/select/logsql/query` | `401`: vmauth is up and refuses a request with no token (recorded: [CHG-0018](/docs/changes/2026/0018-central-log-store/)) |
-| Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://dv02obs001v01.mobile.deevnet.net:3000/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
+| Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://grafana.mobile.deevnet.net:3000/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
 | Tenant downloads | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -I https://downloads.mobile.deevnet.net:8443/` | `200` |
 | Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl --cacert $CA -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
 | Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/` | `200` |
