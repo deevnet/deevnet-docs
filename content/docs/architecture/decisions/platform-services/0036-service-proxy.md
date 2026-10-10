@@ -7,7 +7,7 @@ weight: -36
 
 |  |  |
 |--|--|
-| **Status** | Proposed. [CHG-0046](/docs/changes/2026/0046-service-proxy/) builds it. |
+| **Status** | Accepted (2026-10-10): built and deployed by [CHG-0046](/docs/changes/2026/0046-service-proxy/) |
 | **Date** | 2026-10-10 |
 | **Scope** | Where a tenant-facing HTTPS service listens, what name and port a tenant dials, and which process holds the certificate. Not who may call a service, which each service still decides ([ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §5), and not the broker, which is not HTTP. |
 | **Extends** | [ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/): a service VM gains one more container, and a new service on it no longer opens a port to its segment. |
@@ -174,5 +174,8 @@ certificate for another reason, the proxy does verify it (§4).
 
 ## Current state
 
-Not built. Every service listens on its own port on its host's segment address, and holds its own
-certificate. [CHG-0046](/docs/changes/2026/0046-service-proxy/) is the change that builds this.
+Built by [CHG-0046](/docs/changes/2026/0046-service-proxy/). The observability store's proxy
+serves `grafana`, `logs` and `downloads`; the provisioning VM's serves `api` and `tfstate`. Each
+also answers on its services' old ports. Grafana, the log store's vmauth, the downloads server and
+the state store serve plain HTTP on loopback. The Deevnet API keeps its certificate (§4), and its
+proxy verifies it.

@@ -184,7 +184,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Platform Services](platform-services/)
 
 - [ADR-0036: A Service Proxy on Each Service VM](/docs/architecture/decisions/platform-services/0036-service-proxy/) —
-  *Proposed.* Tenant-facing HTTPS services answer on 443 at a service name, with no port to remember.
+  Tenant-facing HTTPS services answer on 443 at a service name, with no port to remember.
   Each service VM that serves tenants runs one proxy, which terminates TLS, routes by the name the
   client asked for, and forwards to the service on the host's loopback address. The proxy holds the
   host's one server certificate, named from the inventory's aliases; it routes and decides nothing

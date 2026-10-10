@@ -7,17 +7,17 @@ weight: -46
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-10 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Not set. Steps 3 and 4 each interrupt a host's tenant-facing services for about a minute |
+| **Status** | Complete, except that tenants have not been told. See [Outcome](#outcome) |
+| **Window** | 2026-10-10, about 07:45 to 09:25 EDT. Steps 3 and 4 each interrupted a host's tenant-facing services for about a minute. The core router's LAN interface stalled for about 25 minutes between them |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, the log store, the tenant downloads), `dv02prv001v01` (the Deevnet API, the state store, the backup job), `dv02msg001v01` (the log bridge), `dv02cor002p01` (the site resolver and the zone policy) |
 | **Automation** | `deevnet.mgmt`: the new `service_proxy` role; the `grafana`, `victorialogs`, `tenant_downloads`, `minio`, `deevnet_api` and `log_bridge` roles; `site.yml` and `certs.yml`. `deevnet.net`: `dns.yml`, `opnsense.yml`, `segment-check.sh`. The `mobile` inventory |
 | **Risk** | Medium. Most likely to go wrong: a service that moved to loopback while its host's proxy is not serving, which takes that service away from every tenant. The play order and each step's checks guard it |
 | **Related changes** | [CHG-0045](/docs/changes/2026/0045-grafana-service-name/) (Grafana's service name, and why names are not per tenant), [CHG-0030](/docs/changes/2026/0030-state-store-tls/) (the state store's TLS, and its console follow-up), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) and [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (the ports this hides) |
-| **Related incidents** | None |
+| **Related incidents** | [INC-0004](/docs/incidents/2026/0004-core-router-lost/): the router's LAN interface stopped receiving during a check this change ran |
 | **Related runbooks** | [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/), [Segment Check](/docs/runbook/substrate/network/segment-check/), [Build Verification](/docs/runbook/substrate/building-recovery/build-verification/) |
 
 ---
@@ -80,13 +80,13 @@ tenant guide and the operator's check scripts.
 
 ## Prerequisites
 
-- [ ] Pull requests merged: `deevnet.mgmt` and the inventory
-- [ ] Pull request open and not merged: `deevnet.net`'s `segment-check.sh` with the 443 checks.
+- [x] Pull requests merged: `deevnet.mgmt` and the inventory
+- [x] Pull request open and not merged: `deevnet.net`'s `segment-check.sh` with the 443 checks.
   Tenants fetch that script from `main`, where it must keep matching the site until step 5 passes
-- [ ] Vault decrypted, collections built
-- [ ] A backup taken ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)), before the
+- [x] Vault decrypted, collections built
+- [x] A backup taken ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)), before the
   state store changes how it listens
-- [ ] Tenants told that the ports are going away and that the old addresses keep working
+- [ ] Tenants told that the ports are going away and that the old addresses keep working. Not done before the change
 
 ## Procedure
 
@@ -116,6 +116,16 @@ bash scripts/segment-check.sh DVNTM-TD      # from a client on DVNTM-TD
 4. The zone policy report shows two rules to add and no other drift.
 5. The segment check passes as it stands.
 
+**Result, 2026-10-10:** passed, with item 4 read at step 5 and item 5 not run.
+
+- `logs.mobile.deevnet.net` answered `NXDOMAIN`.
+- On the observability store, Grafana listened on every address at 3000, vmauth at 8427 and the
+  downloads server at 8443. On the provisioning VM, the API was at 8080 and MinIO at 9000 and 9001.
+  Nothing listened on 443 on either.
+- The DNS check run reported one alias to add, with 15 unchanged.
+- The zone policy report was not run here. It was read at step 5, before the apply.
+- The segment check was not run before the change.
+
 **Undo:** nothing to undo.
 
 ### Step 2: The alias
@@ -132,6 +142,12 @@ ansible-playbook playbooks/dns.yml
 
 1. `dig @10.20.10.1 logs.mobile.deevnet.net` answers `NOERROR` with `10.20.25.22`.
 2. A second run reports no change.
+
+**Result, 2026-10-10:** passed.
+
+- `logs.mobile.deevnet.net` answers `NOERROR` with `10.20.25.22`.
+- A second run added nothing and reported 16 aliases unchanged.
+- The alias was still published after the router's reboot later in the change.
 
 **Undo:** remove the alias from inventory and run the playbook with `-e dns_delete_unmanaged=true`.
 
@@ -162,6 +178,26 @@ ansible-playbook playbooks/site.yml --limit dv02obs001v01 \
 8. The retired certificate directories are gone from the host.
 9. A second run changes nothing and restarts nothing.
 10. Stop the proxy: items 3 and 5 fail. Start it: they pass.
+
+**Result, 2026-10-10:** passed, except item 6, which passed in part.
+
+- Grafana, vmauth and the downloads server listen on `127.0.0.1` only. The proxy listens on
+  `10.20.25.22` at 443, 3000, 8427 and 8443.
+- The certificate names the host, `downloads`, `grafana`, `logs` and `10.20.25.22`.
+- Grafana and the downloads return `200` on 443 and on their old ports. The log store returns `401`
+  with no token at `logs` on 443 and at the host name on 8427. Each chain verifies.
+- A request for the bare host name on 443, and one for the address, failed in the handshake.
+- The operator logged in at `https://grafana.mobile.deevnet.net` in a browser and opened a
+  dashboard.
+- Item 6: `mabell`'s Grafana read its device log lines from the log store at `logs` on 443, with
+  the tenant's read token. A push with a tenant's write token was not run.
+- The first megabyte of the largest download, and the whole of a smaller one, matched the files on
+  the host. A full download of the largest file was not completed: see
+  [Departures from the plan](#departures-from-the-plan).
+- The three retired certificate directories are gone.
+- A second run changed nothing. No image was pushed in either run: every image was already on the
+  host.
+- With the proxy stopped, Grafana and the downloads failed at both addresses. Started, they passed.
 
 **Undo:** revert the `deevnet.mgmt` change and run the same tags without `service-proxy`; each role
 reissues its certificate and listens on its port again. Then stop and disable `service-proxy`.
@@ -195,6 +231,23 @@ ansible-playbook playbooks/site.yml --limit dv02prv001v01 \
 8. `sudo deevnet-backup` on the host completes, and the archive verifies.
 9. A second run changes nothing and restarts nothing.
 
+**Result, 2026-10-10:** passed, except item 5, which passed in part.
+
+- MinIO listens on `127.0.0.1` at 9000 and 9001, and the API on `127.0.0.1:8080`. The proxy
+  listens on `10.20.25.20` at 443, 8080 and 9000.
+- The certificate names the host, `tfstate`, `api` and `10.20.25.20`.
+- `readyz` returns `200` at `api` on 443, at `api` on 8080 and at the host name on 8080.
+- `tdemo`'s record shows its state endpoint, `log_endpoint` and `dashboard_url` with no port.
+- `tdemo`'s `terraform init` succeeded against its unchanged `:9000` backend, and again with the
+  port removed. Its plan read the state both ways and showed `state_endpoint` losing its port. The
+  plan then failed in the tenant's own outputs, the same way at both addresses, in a checkout two
+  commits behind its `main`. The cause was not looked into.
+- A reconcile of `tdemo` returned `reconciled`, with the state store's and the dashboards' steps.
+- `:9001` is refused from the Builder.
+- A backup taken with `make backup-now` completed, and the archive verified against its manifest.
+- A second run restarted nothing. Two of MinIO's tasks report a change on every run, as they did
+  before this change.
+
 **Undo:** revert the inventory's `minio_*` and `deevnet_api_*` values and run the same tags without
 `service-proxy`; MinIO reissues its certificate and both publish on every address again. Then stop
 and disable `service-proxy`.
@@ -223,6 +276,19 @@ ansible-playbook playbooks/opnsense.yml -e firewall_apply=true
    443.
 6. Merge the `segment-check.sh` pull request.
 
+**Result, 2026-10-10:** passed.
+
+- The report showed the two rules to add, none to update of 69 present, and none to delete.
+- The apply reported `Added 2, updated 0, deleted 0`, and all six of its required paths still
+  answered. The router holds 71 managed rules, the number the inventory declares. A second report
+  was not run.
+- From `DVNTM-TD` and from `DVNTM-IOT`, the branch's `segment-check.sh` passed.
+- The first run from `DVNTM-TD`, of the script on `main`, failed two checks: the broker and the log
+  store's old port. The script carried the root that
+  [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) retired. The branch was corrected to carry the
+  Deevnet Root CA before it merged.
+- The pull request is merged.
+
 **Undo:** remove the two rules from inventory and apply.
 
 ### Step 6: The log bridge
@@ -240,6 +306,13 @@ ansible-playbook playbooks/site.yml --tags log-bridge
 
 1. The bridge's store address is `https://logs.mobile.deevnet.net`.
 2. A device log line published to the broker appears in its tenant's device partition.
+
+**Result, 2026-10-10:** passed.
+
+- The bridge restarted with `https://logs.mobile.deevnet.net` as its store, and subscribed.
+- From the bridge's host, the log store answers at `logs` on 443.
+- With a `mabell` device connected afterwards, its log lines appeared in the tenant's Grafana,
+  read from its device partition. The bridge logged no error.
 
 **Undo:** revert `log_bridge_store_url` and run the tag again.
 
@@ -259,6 +332,14 @@ keeps working as written.
 2. `tenant-check.sh` passes from `DVNTM-TD`.
 3. The documentation site builds without warnings.
 
+**Result, 2026-10-10:** the guide and the scripts are changed; the tenants are not told.
+
+- The tenant guide, the provider's scripts and guide, and the reference tenant are merged.
+- The downloads serve the new `tenant-check.sh` and `install-provider.sh`. They were rendered from
+  `main` at the provider version already staged, 0.6.0, without a release.
+- `tenant-check.sh`, fetched from the downloads, passed from the Builder: 14 ok, with every site
+  service verified at its name and no port. It was not run from `DVNTM-TD`.
+
 **Undo:** revert the guide and the scripts.
 
 ## Verification
@@ -275,16 +356,55 @@ before, during a host's minute, and after.
 
 ## To discover
 
-- Whether a container on the provisioning VM's podman network reaches the proxy at the host's own
-  address on 443. The API's call to the state store depends on it.
-- Whether Grafana's data sources, which hold the log store's host name and `:8427`, are rewritten
-  to the service name by a reconcile or only on create.
+- ~~Whether a container on the provisioning VM's podman network reaches the proxy at the host's own
+  address on 443.~~ **Found 2026-10-10:** it does. From the API container's network, the state
+  store, Grafana and the log store each answered at its name on 443 with a chain that verified.
+- ~~Whether Grafana's data sources, which hold the log store's host name and `:8427`, are rewritten
+  to the service name by a reconcile or only on create.~~ **Found 2026-10-10:** a reconcile
+  rewrites them. `tdemo`'s three held `https://logs.mobile.deevnet.net` after its reconcile, and the other
+  three tenants' did after a reconcile of all tenants the same day.
 - Whether anything else dials these services by an address this record does not list. The exit
   node's egress agent dials the API at `:8080`.
 
 ## Outcome
 
-Not yet run.
+| When | Steps | What happened |
+|---|---|---|
+| 2026-10-10, about 07:45 EDT | 1, 2 | Read-only checks passed; the `logs` alias published |
+| 2026-10-10 08:05 EDT | | A backup of the provisioning VM taken |
+| 2026-10-10 08:05 to 08:07 EDT | 3 | The observability store's three services moved to loopback; its proxy serving |
+| 2026-10-10, about 08:09 EDT | | The core router's LAN interface stopped receiving during a check download. The operator rebooted the router; forwarding was back before 08:34 |
+| 2026-10-10 08:34 to 08:36 EDT | 4 | The API and the state store moved to loopback; the provisioning VM's proxy serving |
+| 2026-10-10 08:53 EDT | 5 | Two zone rules added; segment checks passed from `DVNTM-TD` and `DVNTM-IOT` |
+| 2026-10-10 09:19 EDT | 6 | The log bridge restarted with the store's service name |
+| 2026-10-10 09:20 EDT | 7 | The guide, the scripts and the reference tenant merged; the scripts staged |
+
+All five services answer on 443 at their names, and every old address answers through the proxy.
+
+### Departures from the plan
+
+- **A check took the site's routing down for about 25 minutes.** Step 3's seventh item was run as
+  a full download of the largest file, 946 MB, from Platform to the Builder across the core router.
+  The router's LAN interface stopped receiving part-way. Its console was alive and showed no
+  watchdog message; the operator rebooted it. The services on both hosts were unaffected, but
+  nothing routed between segments and the site resolver was unreachable. The check was repeated
+  with a ranged request and a small file. [INC-0004](/docs/incidents/2026/0004-core-router-lost/)
+  records the event.
+- **The API keeps its certificate.** The proxy re-encrypts to it and verifies it under the API's
+  name. The other four services serve plain HTTP on loopback.
+- **Step 1's zone policy report and segment check were not run before the change.** The report was
+  read at step 5.
+- **`opnsense.yml` is not write-free as a report.** Its DHCP role rewrote the 14 existing
+  reservations on each run, adding and removing none.
+- **Step 4's Terraform check did not end in a clean plan.** The state store accepted signed
+  requests at both addresses; the plan failed later in the tenant's own outputs.
+- **The scripts were staged without `make stage`**, which builds a release. Only the two scripts
+  changed.
+- **The exit node's egress agent was not changed.** It dials the API at `:8080`, through the
+  proxy's legacy listener.
+- **The playbooks ran from the Builder's inventory checkout on an unmerged branch**, with `main`
+  merged into it.
+- **Tenants were not told**, before or after.
 
 ## Follow-ups
 
@@ -293,4 +413,15 @@ Not yet run.
 - [ ] Decide whether the take-home Pi image moves to 443
   ([ADR-0036](/docs/architecture/decisions/platform-services/0036-service-proxy/) open question 2)
 - [ ] Decide whether the identity VM's services get the same treatment (open question 3)
-- [ ] Accept ADR-0036 when this change completes
+- [x] Accept ADR-0036 when this change completes
+- [x] Publish a device log line and find it in its tenant's partition (step 6, item 2). Done
+  2026-10-10 with a `mabell` device
+- [ ] Push a log line with a tenant's write token to `https://logs.mobile.deevnet.net` (step 3,
+  item 6)
+- [ ] Tell each tenant that the ports are gone from the addresses and that the old ones keep
+  working
+- [x] Reconcile `cdeever`, `eds` and `mabell`, so their data sources hold the log store's service
+  name. Done 2026-10-10: every tenant's three data sources hold `https://logs.mobile.deevnet.net`
+- [ ] Find why `tdemo`'s plan fails in its outputs
+- [ ] Make the DHCP role report no change when the router's reservations match
+- [ ] Make MinIO's bucket and policy tasks report no change when nothing changed
