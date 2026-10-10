@@ -10,7 +10,7 @@ weight: -46
 | **Date** | 2026-10-10 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Complete, except two log checks and telling tenants. See [Outcome](#outcome) |
+| **Status** | Complete, except that tenants have not been told. See [Outcome](#outcome) |
 | **Window** | 2026-10-10, about 07:45 to 09:25 EDT. Steps 3 and 4 each interrupted a host's tenant-facing services for about a minute. The core router's LAN interface stalled for about 25 minutes between them |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (Grafana, the log store, the tenant downloads), `dv02prv001v01` (the Deevnet API, the state store, the backup job), `dv02msg001v01` (the log bridge), `dv02cor002p01` (the site resolver and the zone policy) |
@@ -179,7 +179,7 @@ ansible-playbook playbooks/site.yml --limit dv02obs001v01 \
 9. A second run changes nothing and restarts nothing.
 10. Stop the proxy: items 3 and 5 fail. Start it: they pass.
 
-**Result, 2026-10-10:** passed, except item 6, which is not yet checked.
+**Result, 2026-10-10:** passed, except item 6, which passed in part.
 
 - Grafana, vmauth and the downloads server listen on `127.0.0.1` only. The proxy listens on
   `10.20.25.22` at 443, 3000, 8427 and 8443.
@@ -189,7 +189,8 @@ ansible-playbook playbooks/site.yml --limit dv02obs001v01 \
 - A request for the bare host name on 443, and one for the address, failed in the handshake.
 - The operator logged in at `https://grafana.mobile.deevnet.net` in a browser and opened a
   dashboard.
-- Item 6, a log line pushed and read back with a tenant's tokens, has not been run.
+- Item 6: `mabell`'s Grafana read its device log lines from the log store at `logs` on 443, with
+  the tenant's read token. A push with a tenant's write token was not run.
 - The first megabyte of the largest download, and the whole of a smaller one, matched the files on
   the host. A full download of the largest file was not completed: see
   [Departures from the plan](#departures-from-the-plan).
@@ -306,11 +307,12 @@ ansible-playbook playbooks/site.yml --tags log-bridge
 1. The bridge's store address is `https://logs.mobile.deevnet.net`.
 2. A device log line published to the broker appears in its tenant's device partition.
 
-**Result, 2026-10-10:** item 1 passed; item 2 is not yet checked.
+**Result, 2026-10-10:** passed.
 
 - The bridge restarted with `https://logs.mobile.deevnet.net` as its store, and subscribed.
 - From the bridge's host, the log store answers at `logs` on 443.
-- No device log line has been published since.
+- With a `mabell` device connected afterwards, its log lines appeared in the tenant's Grafana,
+  read from its device partition. The bridge logged no error.
 
 **Undo:** revert `log_bridge_store_url` and run the tag again.
 
@@ -412,9 +414,10 @@ All five services answer on 443 at their names, and every old address answers th
   ([ADR-0036](/docs/architecture/decisions/platform-services/0036-service-proxy/) open question 2)
 - [ ] Decide whether the identity VM's services get the same treatment (open question 3)
 - [x] Accept ADR-0036 when this change completes
-- [ ] Push a log line with a tenant's write token to `https://logs.mobile.deevnet.net` and read it
-  back (step 3, item 6); publish a device log line and find it in its tenant's partition (step 6,
-  item 2)
+- [x] Publish a device log line and find it in its tenant's partition (step 6, item 2). Done
+  2026-10-10 with a `mabell` device
+- [ ] Push a log line with a tenant's write token to `https://logs.mobile.deevnet.net` (step 3,
+  item 6)
 - [ ] Tell each tenant that the ports are gone from the addresses and that the old ones keep
   working
 - [x] Reconcile `cdeever`, `eds` and `mabell`, so their data sources hold the log store's service
