@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Accepted (2026-10-05): built and deployed by [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), which amends it (see [As built](#as-built-chg-0024)) |
+| **Amended by** | [ADR-0036: A Service Proxy on Each Service VM](/docs/architecture/decisions/platform-services/0036-service-proxy/): Grafana listens on loopback over plain HTTP, and the service proxy serves it at `grafana` on 443 (As built §1) |
 | **Date** | 2026-09-21 |
 | **Scope** | How the operator and each tenant view their metrics and logs as dashboards, how people log in to do it, how dashboards are declared as code, and what a tenant may and may not configure. Not alerting, which ADR-0023 decides. |
 | **Extends** | [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), whose §5 deferred saved dashboards and named Grafana with one organization per tenant as the likely shape |

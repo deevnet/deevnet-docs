@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Accepted, as narrowed by ADR-0027 |
+| **Amended by** | [ADR-0036: A Service Proxy on Each Service VM](/docs/architecture/decisions/platform-services/0036-service-proxy/): vmauth listens on loopback, and the service proxy is the listener tenants reach, at `logs` on 443 (§3) |
 | **Accepted** | 2026-09-26, by the operator. What stands after [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) is built and in use: the store, vmauth, the partitions and the API-issued tenant tokens ([CHG-0018](/docs/changes/2026/0018-central-log-store/) to [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)). Tenants read it through Grafana since [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/). The v1 deferrals are on the [Extended Management Plane](/docs/roadmap/infrastructure/mobile/management-plane/) roadmap. |
 | **Date** | 2026-09-21 |
 | **Scope** | Where substrate and tenant logs are sent and kept, how they are partitioned, who may read which partition, and which substrate events a tenant sees. Logs only: metrics and alerting are left for their own records. |

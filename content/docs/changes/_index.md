@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0046 | Unscheduled | [Tenant-Facing Services on 443](2026/0046-service-proxy/) | Deployment · Configuration | mobile | Planned |
+| CHG-0046 | 2026-10-10 | [Tenant-Facing Services on 443](2026/0046-service-proxy/) | Deployment · Configuration | mobile | Complete |
 | CHG-0045 | 2026-10-10 | [A Service Name for Grafana](2026/0045-grafana-service-name/) | Configuration | mobile | Complete |
 | CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](2026/0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Complete |
 | CHG-0043 | Unscheduled | [A Local Package Mirror](2026/0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |

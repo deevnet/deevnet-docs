@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
+| **Amended by** | [ADR-0036: A Service Proxy on Each Service VM](/docs/architecture/decisions/platform-services/0036-service-proxy/): the store serves plain HTTP on loopback, and the service proxy holds the certificate (§5) |
 | **Date** | 2026-09-21 |
 | **Scope** | What the substrate's S3 service must guarantee, which engine provides it, and how it serves both Terraform state and tenants' own buckets. Covers isolation, quotas, locking, versioning, transport and replication. |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered a state store and chose MinIO as a detail; [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), whose data disk and replica this store needs before it holds anything more |
