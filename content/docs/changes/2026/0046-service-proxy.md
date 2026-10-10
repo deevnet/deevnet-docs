@@ -359,8 +359,8 @@ before, during a host's minute, and after.
   store, Grafana and the log store each answered at its name on 443 with a chain that verified.
 - ~~Whether Grafana's data sources, which hold the log store's host name and `:8427`, are rewritten
   to the service name by a reconcile or only on create.~~ **Found 2026-10-10:** a reconcile
-  rewrites them. `tdemo`'s three hold `https://logs.mobile.deevnet.net`; `cdeever`'s, `eds`'s and
-  `mabell`'s hold the old address until each is reconciled.
+  rewrites them. `tdemo`'s three held `https://logs.mobile.deevnet.net` after its reconcile, and the other
+  three tenants' did after a reconcile of all tenants the same day.
 - Whether anything else dials these services by an address this record does not list. The exit
   node's egress agent dials the API at `:8080`.
 
@@ -417,8 +417,8 @@ All five services answer on 443 at their names, and every old address answers th
   item 2)
 - [ ] Tell each tenant that the ports are gone from the addresses and that the old ones keep
   working
-- [ ] Reconcile `cdeever`, `eds` and `mabell`, so their data sources hold the log store's service
-  name
+- [x] Reconcile `cdeever`, `eds` and `mabell`, so their data sources hold the log store's service
+  name. Done 2026-10-10: every tenant's three data sources hold `https://logs.mobile.deevnet.net`
 - [ ] Find why `tdemo`'s plan fails in its outputs
 - [ ] Make the DHCP role report no change when the router's reservations match
 - [ ] Make MinIO's bucket and policy tasks report no change when nothing changed
