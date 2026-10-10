@@ -80,7 +80,9 @@ tenant guide and the operator's check scripts.
 
 ## Prerequisites
 
-- [ ] Pull requests merged: `deevnet.mgmt`, the inventory, `deevnet.net` (`segment-check.sh`)
+- [ ] Pull requests merged: `deevnet.mgmt` and the inventory
+- [ ] Pull request open and not merged: `deevnet.net`'s `segment-check.sh` with the 443 checks.
+  Tenants fetch that script from `main`, where it must keep matching the site until step 5 passes
 - [ ] Vault decrypted, collections built
 - [ ] A backup taken ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)), before the
   state store changes how it listens
@@ -214,9 +216,12 @@ ansible-playbook playbooks/opnsense.yml -e firewall_apply=true
 1. The report shows two rules to add, `tenant dev -> provisioning services (https)` and
    `tenant dev -> observability services (https)`, and nothing else.
 2. After the apply, a second report shows no drift.
-3. From `DVNTM-TD`: `segment-check.sh DVNTM-TD` passes, with the five names on 443.
+3. From `DVNTM-TD`: `segment-check.sh DVNTM-TD`, taken from its branch, passes with the five names
+   on 443.
 4. From `DVNTM-TD`: a name neither host serves is refused on 443, and `:9001` times out.
-5. From `DVNTM-IOT`: `segment-check.sh DVNTM-IOT` passes, with both hosts blocked on 443.
+5. From `DVNTM-IOT`: the branch's `segment-check.sh DVNTM-IOT` passes, with both hosts blocked on
+   443.
+6. Merge the `segment-check.sh` pull request.
 
 **Undo:** remove the two rules from inventory and apply.
 
@@ -243,7 +248,8 @@ ansible-playbook playbooks/site.yml --tags log-bridge
 Not disruptive.
 
 **Run:** merge the tenant guide's port-free addresses and the provider's scripts, stage the scripts
-to the downloads, and tell each tenant. A tenant does nothing unless it wants the shorter addresses
+to the downloads, and tell each tenant. None of these merges before step 5 passes: until then the
+published guide and the scripts tenants fetch describe the ports that are deployed. A tenant does nothing unless it wants the shorter addresses
 in its own code: its next plan reads the new `dashboard_url` and `log_endpoint`, and its backend
 keeps working as written.
 
