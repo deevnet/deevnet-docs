@@ -29,7 +29,7 @@ The login comes back as attributes of your tenant:
 
 | Attribute | |
 |---|---|
-| `dashboard_url` | where Grafana is: `https://grafana.mobile.deevnet.net:3000` |
+| `dashboard_url` | where Grafana is: `https://grafana.mobile.deevnet.net` |
 | `dashboard_org_id` | your organization |
 | `dashboard_username` | your tenant's name |
 | `dashboard_password` | sensitive; in your state, like your log tokens |

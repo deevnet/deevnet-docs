@@ -14,7 +14,7 @@ Check its SHA-256 fingerprint before you trust it:
 `F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52`.
 
 ```bash
-curl -fsSLk -O https://downloads.mobile.deevnet.net:8443/deevnet-root-ca.pem
+curl -fsSLk -O https://downloads.mobile.deevnet.net/deevnet-root-ca.pem
 openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256
 ```
 
@@ -69,7 +69,7 @@ sudo cp deevnet-root-ca.pem /etc/pki/ca-trust/source/anchors/ && sudo update-ca-
 ## Check the root is trusted
 
 ```bash
-curl -fsS https://api.mobile.deevnet.net:8080/version
+curl -fsS https://api.mobile.deevnet.net/version
 ```
 
 It answers with no `--cacert` once the root is trusted. Open the appliances by name, for example

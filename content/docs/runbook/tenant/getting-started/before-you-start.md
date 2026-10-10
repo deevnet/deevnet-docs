@@ -76,7 +76,7 @@ At [admission](/docs/runbook/tenant/getting-started/admission/):
 | | |
 |---|---|
 | An enrollment token | one-time, bound to your tenant name, valid 72 hours |
-| The API endpoint | `https://api.mobile.deevnet.net:8080` |
+| The API endpoint | `https://api.mobile.deevnet.net` |
 | The `DVNTM-TD` Wi-Fi key | the network you work from ([below](#connecting-wi-fi-only)) |
 | The Deevnet Root CA | the certificate authority everything this site serves over TLS chains to: one for every Deevnet site, the same for every tenant (`O=Deevnet, OU=Deevnet PKI, CN=Deevnet Root CA`). You download it, and keep it, as **`deevnet-root-ca.pem`**. Your tools and apps name it through a variable (`DEEVNET_API_CACERT`, `MQTT_CA_FILE`, `GRAFANA_CA_CERT`), so on a [take-home Pi](/docs/runbook/tenant/tenant-to-pi-image/) the same variables name the Pi's own CA instead. Check its SHA-256 fingerprint: `F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52` |
 
@@ -106,7 +106,7 @@ DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.
 ## Tenant downloads
 
 **At the site**, on `DVNTM-TD`, everything above that isn't a package-manager install is served
-at **`https://downloads.mobile.deevnet.net:8443/`**. It is read-only and verified with the Deevnet Root CA
+at **`https://downloads.mobile.deevnet.net/`**. It is read-only and verified with the Deevnet Root CA
 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)):
 
 | Path | What |
@@ -127,9 +127,9 @@ The provider isn't on the public registry. It goes into Terraform's local mirror
 (`~/.terraform.d/plugins/…`), where `terraform init` finds it. **At the site:**
 
 ```bash
-curl -fsSLk -O https://downloads.mobile.deevnet.net:8443/deevnet-root-ca.pem
+curl -fsSLk -O https://downloads.mobile.deevnet.net/deevnet-root-ca.pem
 openssl x509 -in deevnet-root-ca.pem -noout -fingerprint -sha256     # must match the fingerprint above
-curl -fsSL --cacert deevnet-root-ca.pem -O https://downloads.mobile.deevnet.net:8443/scripts/install-provider.sh
+curl -fsSL --cacert deevnet-root-ca.pem -O https://downloads.mobile.deevnet.net/scripts/install-provider.sh
 bash install-provider.sh
 ```
 

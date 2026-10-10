@@ -33,7 +33,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 |---|---|
 | `No API token` | `DEEVNET_API_TOKEN` is not exported in *this* shell |
 | `Failed to query available provider packages` for `deevnet/deevnet` | the provider is not in your filesystem mirror, or not at a version your constraint allows. See [Before you start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider) |
-| Connection timed out to `api.mobile.deevnet.net:8080` or `tfstate…:9000` | you are not on `DVNTM-TD` (or a trusted seat) — [where to sit](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only) |
+| Connection timed out to `api.mobile.deevnet.net` or `tfstate.mobile.deevnet.net` | you are not on `DVNTM-TD` (or a trusted seat) — [where to sit](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only) |
 | `api.mobile.deevnet.net` does not resolve on `DVNTM-TD` | a VPN, Private Relay or hard-coded DNS is bypassing the site's resolver `10.20.45.1` |
 | `x509: certificate signed by unknown authority` | `DEEVNET_API_CACERT` does not point at `deevnet-root-ca.pem` |
 | `401` on the first apply | the enrollment token was for a different name, and is now spent. Ask for a new admission |

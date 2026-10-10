@@ -138,6 +138,8 @@ infrastructure-as-code and its test clients.
 - Tenant dev segment MUST reach only the tenant-facing services (the onboarding API, the tenant
   state store, the message broker, the tenant log store, tenant dashboards and the read-only tenant
   downloads), each by host **and** port, never a whole segment
+- Where several tenant-facing services share a host behind one port, the zone policy MUST name
+  what decides which services answer there, and a request for any other service MUST be refused
 - Tenant dev segment MUST NOT route to management, trusted, storage, IoT, IoT vendor or tenant
   segments
 - Tenant dev segment MAY have internet access

@@ -84,15 +84,15 @@ The substrate service VMs, and one check each.
 
 | Service | Host | Check | Expected |
 |---|---|---|---|
-| Deevnet API | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA https://api.mobile.deevnet.net:8080/readyz` | `200` (recorded: the `deevnet_api` role asserts it) |
-| | | `curl --cacert $CA https://api.mobile.deevnet.net:8080/version` | the deployed tag |
-| Terraform state store | `dv02prv001v01`, 10.20.25.20 | `curl -I http://tfstate.mobile.deevnet.net:9000/minio/health/live` | `200` |
+| Deevnet API | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA https://api.mobile.deevnet.net/readyz` | `200` (recorded: the `deevnet_api` role asserts it) |
+| | | `curl --cacert $CA https://api.mobile.deevnet.net/version` | the deployed tag |
+| Terraform state store | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA -I https://tfstate.mobile.deevnet.net/minio/health/live` | `200` |
 | OpenBao | `dv02idn001v01`, 10.20.25.21 | `curl --cacert $CA https://dv02idn001v01.mobile.deevnet.net:8200/v1/sys/health` | `200`: initialized, unsealed, active |
 | Tenant DNS (PowerDNS) | `dv02idn001v01`, 10.20.25.21 | `dig @10.20.25.21 tdemo.mobile.deevnet.net SOA` | an answer for each admitted tenant's zone |
 | MQTT broker (VerneMQ) | `dv02msg001v01`, 10.20.35.20 | `openssl s_client -connect mqtt.mobile.deevnet.net:8883 -CAfile $CA </dev/null` | `Verify return code: 0` (recorded: [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) |
-| Log store (vmauth) | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -o /dev/null -w '%{http_code}\n' https://dv02obs001v01.mobile.deevnet.net:8427/select/logsql/query` | `401`: vmauth is up and refuses a request with no token (recorded: [CHG-0018](/docs/changes/2026/0018-central-log-store/)) |
-| Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://grafana.mobile.deevnet.net:3000/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
-| Tenant downloads | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -I https://downloads.mobile.deevnet.net:8443/` | `200` |
+| Log store (vmauth) | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -o /dev/null -w '%{http_code}\n' https://logs.mobile.deevnet.net/select/logsql/query` | `401`: vmauth is up and refuses a request with no token (recorded: [CHG-0018](/docs/changes/2026/0018-central-log-store/)) |
+| Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://grafana.mobile.deevnet.net/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
+| Tenant downloads | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -I https://downloads.mobile.deevnet.net/` | `200` |
 | Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl --cacert $CA -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
 | Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/` | `200` |
 
@@ -104,7 +104,7 @@ reconcile:
 ```bash
 # OPERATOR_TOKEN is vault_deevnet_api_token, in the deevnet_api group vault
 curl --cacert $CA -X POST -H "Authorization: Bearer $OPERATOR_TOKEN" \
-  https://api.mobile.deevnet.net:8080/v1/tenants/tdemo/reconcile
+  https://api.mobile.deevnet.net/v1/tenants/tdemo/reconcile
 ```
 
 The tenant ends `ready`, and every step succeeded. A `502` names the backend that is down
