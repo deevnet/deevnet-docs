@@ -22,7 +22,7 @@ terraform {
     bucket       = "tf-state"
     key          = "tenants/bench1/terraform.tfstate"    # state_key_prefix + terraform.tfstate
     region       = "us-east-1"
-    endpoints    = { s3 = "https://tfstate.mobile.deevnet.net:9000" }
+    endpoints    = { s3 = "https://tfstate.mobile.deevnet.net" }
     use_lockfile = true
 
     # TLS verified against the Deevnet Root CA, the same deevnet-root-ca.pem the provider uses.

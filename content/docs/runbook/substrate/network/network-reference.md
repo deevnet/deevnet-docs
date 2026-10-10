@@ -73,7 +73,7 @@ From inventory (`env.interfaces` in `host_vars`). Trusted, Tenant Dev and Guest 
 | IoT Backend | Medium | IoT application backends (MQTT, Home Assistant, data pipelines) |
 | IoT Vendor | Very Low | Vendor-managed IoT containment zone (cloud-dependent, unauditable) |
 | IoT | Medium | Custom-developed embedded devices with controlled firmware (Pis, sensors) |
-| Tenant Dev | Low | Tenant developers' laptops: the API, state store and broker only, plus internet |
+| Tenant Dev | Low | Tenant developers' laptops: the tenant-facing services (the API, state store, log store, dashboards, downloads and broker) only, plus internet |
 | Guest | Untrusted | Transient visitor access (internet only) |
 
 ---

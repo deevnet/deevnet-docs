@@ -124,7 +124,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | **vmauth** | `dv02obs001v01` | **v1.152.0** | Apache-2.0 | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-21 |
 | **Grafana OSS** | `dv02obs001v01` | **13.2.2** | AGPL-3.0 | Community, commercial available (Grafana Labs) | Pin; deployed 2026-09-24 ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
 | victoriametrics-logs-datasource plugin | `dv02obs001v01` | **0.32.0** | not checked | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-24 |
-| **nginx** (tenant downloads) | `dv02obs001v01` | **1.29.1-alpine** | BSD-2-Clause | Community, commercial available (F5) | Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)) |
+| **nginx** (tenant downloads, service proxy) | `dv02obs001v01`, `dv02prv001v01` | **1.29.1-alpine** | BSD-2-Clause | Community, commercial available (F5) | Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)) |
 | `deevnet-log-user` | `dv02obs001v01` | Built from the API's tag; deployed as `-latest` | No license file | In-house | Not pinned |
 | (collector) | `dv02col001v01` | Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) | | | |
 

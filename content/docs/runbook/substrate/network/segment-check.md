@@ -63,7 +63,7 @@ dependable check on the IoT side.
 | SSID | Segment | Reaches | Must be blocked from |
 |---|---|---|---|
 | `DVNTM` | trusted | management (lab exception), the provisioning API, state store, broker, Pis, tenant workloads, the edge router, the internet | the router on iot_vendor, guest and tenant_dev |
-| `DVNTM-TD` | tenant_dev | the provisioning API `:8080`, state store `:9000`, broker `:8883`, the internet | management, the router's own address, other ports on those hosts, iot, tenant workloads, the edge router |
+| `DVNTM-TD` | tenant_dev | the provisioning API, state store, log store, dashboards and downloads by name on `:443` (and on their old ports until those are retired), the broker `:8883`, the internet | management, the router's own address, other ports on those hosts, a name a host does not serve, iot, tenant workloads, the edge router |
 | `DVNTM-IOT` | iot | the broker `:8883`, the internet | management, the router's own address, the API and state store, tenant workloads, trusted, the edge router |
 | `DVNTM-IOTV` | iot_vendor | the internet | everything internal, including the broker, and the edge router |
 | `DVNTM-GUEST` | guest | the internet | everything internal, and the edge router |

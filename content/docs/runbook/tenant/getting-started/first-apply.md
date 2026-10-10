@@ -59,7 +59,7 @@ Everything else — workloads, names, Wi-Fi keys, devices, broker accounts — h
 ## Apply
 
 ```bash
-export DEEVNET_API_ENDPOINT=https://api.mobile.deevnet.net:8080
+export DEEVNET_API_ENDPOINT=https://api.mobile.deevnet.net
 export DEEVNET_API_CACERT=$PWD/deevnet-root-ca.pem
 export DEEVNET_API_TOKEN=<the enrollment token>
 
