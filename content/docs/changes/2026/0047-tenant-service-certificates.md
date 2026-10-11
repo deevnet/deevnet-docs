@@ -7,11 +7,11 @@ weight: -47
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-11 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | Unscheduled. Step 3 waits on an Issuing CA ceremony |
+| **Status** | Complete |
+| **Window** | 2026-10-11, about 17:30 to 18:55 UTC, with the ceremony in the middle |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao: a new PKI mount and CA), `dv02prv001v01` (the Deevnet API); the provider; one tenant's workload (`eds`) |
 | **Automation** | `deevnet.mgmt` `playbooks/tenant-service-ca.yml`, `site.yml --tags openbao,deevnet-api`; `deevnet-provisioning-api`; `terraform-provider-deevnet`; inventory `mobile` |
@@ -72,14 +72,14 @@ architecture pages, which are written when this is built.
 
 ## Prerequisites
 
-- [ ] Pull requests merged: `deevnet-docs` (ADR-0037, this record, the standard), `deevnet.mgmt`,
-  the inventory
-- [ ] The inventory's vaults re-encrypted and its working branch closed
-- [ ] Vault decrypted, collections built
-- [ ] The ceremony kit to hand: the offline Pi, the `pi-pki` media, the key media, the transfer
+- [x] Pull requests merged: `deevnet-docs` (ADR-0037, this record, the standard) and `deevnet.mgmt`
+- [ ] Pull request merged: the inventory. Not done before the change
+- [ ] The inventory's vaults re-encrypted and its working branch closed. Not done before the change
+- [x] Vault decrypted, collections built
+- [x] The ceremony kit to hand: the offline Pi, the `pi-pki` media, the key media, the transfer
   media and the paper record
-- [ ] `deevnet-provisioning-api` and `terraform-provider-deevnet` released with the certificate
-  route and resource
+- [x] `deevnet-provisioning-api` and `terraform-provider-deevnet` merged with the certificate
+  route and resource. Released during step 5, not before
 
 ## Procedure
 
@@ -211,16 +211,73 @@ for a key that no longer exists, which is harmless and stays on the paper record
 
 ## Outcome
 
-*Completed after the change has run.*
-
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-10-11, about 17:38 UTC | 1 | The Tenant Device CA read as the inventory's certificate (`66:05:74:BC…`). `pki-tenant-service` did not exist. |
+| 17:39 | 2 | `tenant-service-ca.yml` enabled the mount, made the key and request inside OpenBao and wrote the request to the inventory: `O=Deevnet, OU=Mobile Site, CN=Deevnet Mobile Tenant Service CA`, RSA 3072. It also wrote the signing role and read it back. The Tenant Device CA was unchanged. |
+| 18:38 | 3 | `deevnet-pki-transfer.sh prepare … --ca tenant-service` passed. Manifest `201ec5cd…bba0c8`, request public key `ed734df3…668867`. |
+| about 18:40 | 3 | Signed on the offline Pi with the `pi-pki` image as flashed. |
+| 18:43 | 3 | `accept` passed and wrote the certificate to the inventory. Fingerprint `3D:D2:97:32:D5:A3:FB:82:93:8B:1D:D1:06:28:11:4F:40:4C:5B:D6:E1:53:00:5C:8A:7B:18:F5:64:DE:20:98`. Valid to 2031-10-11. |
+| 18:44 | 4 | Installed with the Site CA and made the default issuer. A second run changed nothing. The mount's CA is the inventory's certificate, and the Tenant Device CA still reads as before. |
+| 18:45 | 4 | `tenant-service-ca-verify.yml` passed. From a request that named `grafana.mobile.deevnet.net`, `example.com` and an address, and asked to be a CA and a client, the role issued a certificate for the two names passed beside it and nothing else: subject `O=Deevnet, OU=Mobile Tenant Services, CN=probe.chg0047.mobile.deevnet.net`, `CA:FALSE`, server authentication only, 365 days though ten years were asked for, a chain of two, verifying with the root alone. It refused all eleven names it must: a substrate service, the API, the site's zone, a tenant's zone itself, a wildcard, another site's zone, a public name, a substrate name beside a good one, an address, a URI, and no name. |
+| 18:46 | 5 | `deevnet-provisioning-api` v0.11.0 tagged and staged, at the second attempt (below). |
+| 18:48 | 5 | `site.yml --limit deevnet_api --tags deevnet-api`. `GET /version` answered `v0.11.0`. With the `eds` tenant's token: its own tenant `200`, its certificates `200` and empty, another tenant's certificates `404`. |
+| 18:49 | 5 | `terraform-provider-deevnet` v0.7.0 tagged, released and staged. |
+| 18:50 | 6 | The `eds` tenant applied `deevnet_certificate.console`: three resources added, and a second plan showed nothing to change. The leaf is for `console.eds.mobile.deevnet.net` alone, to 2027-10-11, serial `3d:0e:05:17:…:af:3d`. |
+| 18:53 | 6 | `https://console.eds.mobile.deevnet.net/` verified with the root alone, TLS 1.3, and with a trusted computer's own trust store. The plain address redirects to it. |
+
+All seven of the Goal's facts hold. One was read with `curl` and `openssl`, not by a person looking
+at a browser.
 
 ### Departures from the plan
 
--
+- **The API's signing permission was written at step 2, not step 5.** `tenant-service-ca.yml` writes
+  every policy before it enables the mount, the API's among them. The risk table had the role
+  tested "before the API is given the policy". The API then deployed was v0.10.0, which has no code
+  that signs, so nothing could use the permission until step 5, and the role was tested before
+  that. The order the plan wanted held in effect, not in the letter.
+- **Step 5's first command was not run.** The policy was already written, so there was nothing for
+  an `openbao` play to add. OpenBao is also administered from `playbooks/openbao.yml`, not from
+  `site.yml` with a limit, which the plan had wrong.
+- **Step 4's verification became a playbook.** The plan described the checks; they were written as
+  `playbooks/tenant-service-ca-verify.yml` during the change, and that is what ran.
+- **The offline Pi's clock was four hours behind.** The certificate's validity starts at 14:40:41
+  UTC on the day, about four hours before it was signed: local time, entered as UTC. It is valid
+  now and expires four hours early in 2031. The signing tool refuses a date before its image was
+  built, and has no way to notice one that is merely a few hours off.
+- **The Builder's `/home` was full.** `make stage` for the API failed with *no space left on
+  device*: 20 GB of 20 GB, mostly container build layers and Go's build cache, with this change's
+  own builds on top. The Go build cache and dangling images were cleared, which freed about 3.7 GB,
+  and the second attempt staged. The tag had already been pushed.
+- **The API and provider were merged before they were tagged.** Neither could be tested against a
+  CA that had not been signed. Each was tagged only after step 4 had shown what the role really
+  returns.
+- **The pages that describe what exists were written after, not before.** Prerequisite 1 named the
+  documentation; ADR-0037, this record and the standard were merged first, and Trust and Identity,
+  the runbooks and the tenant's page with this record's completion.
+- **The inventory was not merged first.** Its working tree held decrypted vaults on another branch
+  when the change began, so the request and the certificate were written into it and left
+  uncommitted. See Follow-ups.
+- The offline ceremony's menu still read "Substrate or Tenant Device". The image was not rebuilt
+  for a label: nothing offline is specific to which issuing CA is signed.
 
 ## Follow-ups
 
-- [ ]
+- [ ] **Commit the Tenant Service CA's request and certificate to the inventory**, with
+  `site_tenant_service_ca_file`, once its vaults are re-encrypted. Until then they exist on the
+  Builder's disk and in OpenBao only.
+- [ ] How a tenant service certificate is revoked (ADR-0037 open question 1).
+- [ ] Nothing tells a tenant a certificate is close to expiring (ADR-0037 open question 2). The
+  first one expires 2027-10-11.
+- [ ] Where OpenBao's CA keys are kept now covers two CAs
+  ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)).
+- [ ] The Builder's `/home` is 20 GB and holds every container build. Move the container store to
+  `/srv`, or prune on a schedule. The API's image build also copies `bin/`, 369 MB of old tarballs,
+  into its build context.
+- [ ] The `pi-pki` image's menu and banner name two issuing CAs. The collection's script is
+  corrected; the next image built for another reason carries it.
+- [ ] The signing role admits any name two or more labels below the site's zone, so
+  `a.b.<tenant>.<site>.deevnet.net` would be signed if asked. Only the API asks, and it sends one
+  label. A role per tenant would close it (ADR-0037, alternatives).
+- [ ] The provider's `TestAccCertificate` has not been run. It needs a throwaway tenant.
+- [ ] A check that the offline machine's clock is within reason of the request's own date.

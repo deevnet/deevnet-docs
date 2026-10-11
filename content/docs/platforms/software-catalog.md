@@ -114,7 +114,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | Podman | all | not recorded (the Fedora 44 package) | Apache-2.0 | Community | Not recorded |
 | **OpenBao** | `dv02idn001v01` | **2.6.2** | MPL-2.0 | Community (Linux Foundation project) | Pin; staged 2026-09-17 ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)) |
 | **PowerDNS Authoritative** | `dv02idn001v01` | **4.9.17** | GPL-2.0 | Community, commercial available (PowerDNS) | Pin |
-| **Deevnet API** | `dv02prv001v01` | **v0.10.0** | No license file | In-house | Pin; deployed 2026-10-06 ([CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/)) |
+| **Deevnet API** | `dv02prv001v01` | **v0.11.0** | No license file | In-house | Pin; deployed 2026-10-11 ([CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/)) |
 | **PostgreSQL** | `dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth) | **17.11** | PostgreSQL License | Community | Pin |
 | **MinIO** | `dv02prv001v01` (Terraform state) | **RELEASE.2025-09-07T16-13-09Z** | AGPL-3.0 | **Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled | Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/) |
 | **Omada Software Controller** | `dv02nms001v01` | 6.3.0.45 | See [Network](#switching-wireless-and-edge) | | |
@@ -207,7 +207,7 @@ What the site hands a tenant developer, from the [tenant downloads](/docs/change
 
 | Component | Version | License | Support | Version source |
 |---|---|---|---|---|
-| **`deevnet/deevnet` provider** | **v0.4.1** | No license file | In-house | Pin (tenant downloads); tag |
+| **`deevnet/deevnet` provider** | **v0.7.0** | No license file | In-house | Pin (tenant downloads); tag |
 | `install-provider.sh`, `tenant-check.sh` | ship with the provider | No license file | In-house | Follow the provider tag |
 | Terraform | 1.16.4 | BUSL-1.1 | Vendor, no contract | Pin |
 | `grafana/grafana` provider | 4.46.0 | MPL-2.0 | Community, commercial available | Pin |
@@ -223,8 +223,8 @@ What each piece does, where it runs and what it holds is in [Deevnet Software](/
 
 | Repository | Version | License | What it builds |
 |---|---|---|---|
-| `deevnet-provisioning-api` | tag **v0.10.0**, deployed **v0.10.0** | **No license file** | The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag) |
-| `terraform-provider-deevnet` | tag **v0.6.0** | **No license file** | The provider, `install-provider.sh`, `tenant-check.sh` |
+| `deevnet-provisioning-api` | tag **v0.11.0**, deployed **v0.11.0** | **No license file** | The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag) |
+| `terraform-provider-deevnet` | tag **v0.7.0** | **No license file** | The provider, `install-provider.sh`, `tenant-check.sh` |
 | `deevnet-log-bridge` | **v0.1.1** deployed | not checked | The MQTT log bridge |
 | `ansible-collection-deevnet.builder` | 1.0.0, no tags | MIT | Builder, artifact server, PXE roles |
 | `ansible-collection-deevnet.mgmt` | 1.0.0, no tags | **`galaxy.yml` says MIT; `LICENSE` is Apache-2.0** | Management-plane roles |

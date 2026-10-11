@@ -16,7 +16,7 @@ listener included. Certificates last a year and are laid down by the roles that 
 
 ## The chain
 
-**Four CAs, two of them offline, sign everything on the site:**
+**Five CAs, two of them offline, sign everything on the site:**
 
 | CA | Where its key is | Signs | Valid to |
 |---|---|---|---|
@@ -24,6 +24,10 @@ listener included. Certificates last a year and are laid down by the roles that 
 | `Deevnet Mobile Site CA` | offline | the mobile site's issuing CAs only | 2036-10-04 |
 | `Deevnet Mobile Substrate CA` | the inventory vault, `vault_site_substrate_ca_key` | every substrate certificate, on the control node (`deevnet.builder.substrate_cert`) | 2031-10-04 |
 | `Deevnet Mobile Tenant Device CA` | inside OpenBao, `pki-tenant-device`, never exported | tenant devices' client certificates (not yet issuing) | 2031-10-04 |
+| `Deevnet Mobile Tenant Service CA` | inside OpenBao, `pki-tenant-service`, never exported | server certificates for names in a tenant's own zone, through the Deevnet API ([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)) | 2031-10-11 |
+
+**No substrate certificate comes from either tenant CA.** A tenant's service serves its own leaf,
+the Tenant Service CA and the Site CA, which the API hands it with the certificate.
 
 **Every substrate service serves its leaf, the Substrate CA and the Site CA,** so a client that holds
 only the root can build the chain. Omada also sends the root, which its image wants in the chain.

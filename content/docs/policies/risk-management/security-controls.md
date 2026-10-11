@@ -51,8 +51,11 @@ transit, IoT, IoT vendor and guest
 The site runs its own certificate authority; clients trust the Deevnet Root CA rather than a public
 CA, because nothing Deevnet serves is public. The Root CA and each Site CA are kept offline; the
 Substrate CA, whose key is in the inventory vault, issues every substrate certificate through Ansible,
-and the Tenant Device CA lives in OpenBao
-([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)).
+and the Tenant Device CA and the Tenant Service CA live in OpenBao
+([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/),
+[ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)). The Tenant
+Service CA certifies names in tenants' own zones: the Deevnet API builds each name inside the
+caller's zone, and the secret store's signing role refuses a name outside tenant space.
 
 ## Credentials
 

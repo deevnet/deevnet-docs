@@ -8,14 +8,17 @@ weight: 7
 Deevnet runs its own **private PKI**: every certificate on a Deevnet site comes from Deevnet's own
 certificate authorities, and is trusted only where Deevnet has installed its root. Every TLS
 connection verifies against that one anchor, the **Deevnet Root CA**. The root and each site's
-**Site CA** are held offline by a person, never by a system. Under each Site CA, two
-**issuing CAs** separate the two kinds of identity a site has:
+**Site CA** are held offline by a person, never by a system. Under each Site CA, three
+**issuing CAs** separate the kinds of identity a site has:
 
 - the **Substrate CA** issues the substrate's server certificates, through automation;
 - the **Tenant Device CA** issues tenants' device certificates, through the tenant interface as
-  devices are registered.
+  devices are registered;
+- the **Tenant Service CA** issues server certificates for tenants' own services, through the
+  tenant interface, for names in a tenant's own zone
+  ([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)).
 
-The substrate builds itself without the Tenant Device CA, and no tenant ever touches the Substrate
+The substrate builds itself without either tenant CA, and no tenant ever touches the Substrate
 CA.
 
 Deevnet uses a private PKI because a public CA cannot certify what a site serves: private addresses,
@@ -27,7 +30,7 @@ explains keys, signatures, chains and CAs from the beginning.
 
 ---
 
-**The hierarchy: Deevnet Root CA → Site CA → two issuing CAs**
+**The hierarchy: Deevnet Root CA → Site CA → three issuing CAs**
 
 {{< graphviz >}}
 digraph pki {
@@ -72,18 +75,22 @@ digraph pki {
 
         sub [label=<<b>Substrate CA</b><br/><font point-size="10">site automation · 5 years</font>>, fillcolor="#e0f0ff"]
         dev [label=<<b>Tenant Device CA</b><br/><font point-size="10">secret store, via the tenant interface · 5 years</font>>, fillcolor="#d0e8d0"]
-        { rank=same; sub; dev }
+        svc [label=<<b>Tenant Service CA</b><br/><font point-size="10">secret store, via the tenant interface · 5 years</font>>, fillcolor="#d0e8d0"]
+        { rank=same; sub; dev; svc }
     }
 
     srv [label=<<b>serverAuth</b><br/><font point-size="10">hosts, appliances, services</font>>, shape=note, style=filled, fillcolor=white]
     cli [label=<<b>clientAuth</b><br/><font point-size="10">tenant devices (mTLS)</font>>, shape=note, style=filled, fillcolor=white]
+    tsv [label=<<b>serverAuth</b><br/><font point-size="10">tenants' own services,<br/>in their own zones</font>>, shape=note, style=filled, fillcolor=white]
 
     root -> site  [label="  What organization do I trust?", weight=10]
     site -> split [label="  Which Deevnet site owns this authority?", arrowhead=none, weight=10]
     split -> sub
     split -> dev
+    split -> svc
     sub -> srv    [label="  Who is this server?"]
     dev -> cli    [label="  Who is this device?"]
+    svc -> tsv    [label="  Whose service is this?"]
 }
 {{< /graphviz >}}
 
@@ -133,15 +140,21 @@ Every edge device belongs to a tenant
 ([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)), so device
 identity is always a tenant's: the tenant is named in every device certificate.
 
-| | Substrate server | Tenant device |
-|---|---|---|
-| Proves | "I am this host or service" | "I am this tenant's device" |
-| Issued by | Substrate CA | Tenant Device CA |
-| Named by | DNS names and addresses, from the inventory | a URI naming site, tenant and device |
-| Used for | server authentication only | client authentication only |
-| Its key is made | by automation, for the server | on the device, never inside the substrate |
+| | Substrate server | Tenant device | Tenant service |
+|---|---|---|---|
+| Proves | "I am this host or service" | "I am this tenant's device" | "I am the service at this name in this tenant's zone" |
+| Issued by | Substrate CA | Tenant Device CA | Tenant Service CA |
+| Named by | DNS names and addresses, from the inventory | a URI naming site, tenant and device | DNS names in the tenant's own zone, built by the Deevnet API from labels |
+| Used for | server authentication only | client authentication only | server authentication only |
+| Its key is made | by automation, for the server | on the device, never inside the substrate | by the tenant, never inside the substrate |
 
-A certificate is one or the other, never both. A service that accepts devices trusts only the Tenant
+**A tenant's service is a server, and is still not the substrate's.** Its certificate comes from a
+CA of its own, so a tenant never holds a key certified by the CA that identifies the substrate. The
+API builds every name from a label and the tenant's zone, and reads a tenant's signing request for
+its public key alone, so a tenant cannot ask for a name that is not its own. The secret store's
+signing role refuses a name outside tenant space as well, so the two checks do not share a fault.
+
+A certificate is a server's or a client's, never both. A service that accepts devices trusts only the Tenant
 Device CA for its clients, so a stolen server certificate cannot log in as a device, and a device
 certificate cannot impersonate a service.
 

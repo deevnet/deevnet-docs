@@ -32,8 +32,14 @@ OpenAPI specification in the repository, which a test holds to the code.
 |---|---|
 | `/healthz`, `/readyz`, `/version` | Anyone; no token |
 | Admissions, the tenant list, reconcile | The operator only |
-| A tenant, and its workloads, names, devices, addresses, Wi-Fi keys and broker accounts | The tenant, with its own token, or the operator |
+| A tenant, and its workloads, names, devices, addresses, Wi-Fi keys, broker accounts and service certificates | The tenant, with its own token, or the operator |
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
+
+**A service certificate is signed in the secret store, not by the API.** A tenant sends a signing
+request for a label in its own zone; the API appends the zone, asks the site's Tenant Service CA to
+sign on the one role its policy allows, and checks what comes back before returning it
+([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)). The tenant's
+key never reaches it.
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,
 restoring and reconciling a tenant, and come back in those responses.

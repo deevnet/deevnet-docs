@@ -5,13 +5,14 @@ weight: 2
 
 # Issuing CA
 
-A site's certificates are issued by two **issuing CAs** under its Site CA, each signed in this
+A site's certificates are issued by three **issuing CAs** under its Site CA, each signed in this
 ceremony:
 
 | Issuing CA | Its key lives in | Issues |
 |---|---|---|
 | Deevnet Mobile Substrate CA | site automation, which signs on the control node | every substrate certificate: hosts, appliances, service VMs and their services, the secret store's own listener |
 | Deevnet Mobile Tenant Device CA | the secret store, behind the Deevnet API | tenant devices' client certificates (mTLS) |
+| Deevnet Mobile Tenant Service CA | the secret store, behind the Deevnet API | server certificates for tenants' own services, for names in a tenant's own zone |
 
 Each is valid for five years. **Its key is generated where it lives,** and only its signing request
 comes to the ceremony. The Site CA's holder never sees an issuing CA's key, and the issuing CA's
@@ -69,7 +70,8 @@ On a [Fedora live USB](/docs/runbook/root-of-trust/ceremony/#without-a-pi-a-fedo
 It prints the manifest's own hash and the request's public-key hash. **Write both in the paper
 record.**
 
-`--ca tenant-device` does the same for the Tenant Device CA.
+`--ca tenant-device` does the same for the Tenant Device CA, and `--ca tenant-service` for the
+Tenant Service CA.
 
 ## 2. Sign (offline)
 
