@@ -7,7 +7,7 @@ weight: -37
 
 |  |  |
 |--|--|
-| **Status** | Proposed: to be built by [CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/) |
+| **Status** | Accepted (2026-10-11): built by [CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/) |
 | **Date** | 2026-10-11 |
 | **Scope** | Where a tenant workload's own service gets a server certificate that chains to the Deevnet Root CA: which CA signs it, who may ask, for which names, and what the certificate says. Not device identity ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) §6, unchanged), not who may reach a tenant's service, and not revocation, which stays open. |
 | **Extends** | [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/): answers its open question 2, and adds a third issuing CA to §3's two. |

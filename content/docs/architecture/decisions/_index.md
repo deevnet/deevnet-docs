@@ -324,7 +324,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Substrate](substrate/)
 
 - [ADR-0037: Tenant Service Certificates](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) —
-  *Proposed; to be built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
+  *Accepted; built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
   issuing CA, the Tenant Service CA, its key inside OpenBao, which issues server certificates for
   names in a tenant's own zone through the Deevnet API. The tenant makes the key and sends a signing
   request, read for its public key alone; it sends labels, and the API appends the zone. The

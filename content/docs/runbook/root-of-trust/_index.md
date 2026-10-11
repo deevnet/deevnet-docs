@@ -20,7 +20,7 @@ These pages are the key holder's procedures. They run on an offline machine, rar
 | Ceremony | When | Page |
 |---|---|---|
 | Make the Deevnet Root CA and a Site CA, on the Pi with `deevnet-pki-ceremony.sh` | the root once, for the whole organization; a Site CA once per site (mobile, home, …) and every ten years | [Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/) |
-| Sign an issuing CA | when a site's Substrate CA or Tenant Device CA is created or rotated, about every five years | [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) |
+| Sign an issuing CA | when one of a site's three issuing CAs (Substrate, Tenant Device, Tenant Service) is created or rotated, about every five years | [Issuing CA](/docs/runbook/root-of-trust/issuing-ca/) |
 | Check, back up, recover | yearly, and after a loss | [Custody](/docs/runbook/root-of-trust/custody/) |
 
 ## What crosses to automation
@@ -36,7 +36,7 @@ plugged into the offline machine. A key never leaves the offline machine except 
 onto that key media.
 
 An issuing CA's key is generated where it will live (site automation for the Substrate CA, the secret
-store for the Tenant Device CA), and only its request is brought to the ceremony. Two small tools in
+store for the Tenant Device CA and the Tenant Service CA), and only its request is brought to the ceremony. Two small tools in
 `ansible-collection-deevnet.mgmt/scripts/pki/` move it and its certificate across, with a manifest of
 hashes each way, a refusal of any private key on the transfer media, and checks of the request, the
 signature and the chain ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)). They automate the
@@ -53,3 +53,4 @@ By* read plainly ([Certificates standard](/docs/standards/certificates/)):
 | Site CA | Deevnet | Mobile Site | Deevnet Mobile Site CA |
 | Substrate CA | Deevnet | Mobile Site | Deevnet Mobile Substrate CA |
 | Tenant Device CA | Deevnet | Mobile Site | Deevnet Mobile Tenant Device CA |
+| Tenant Service CA | Deevnet | Mobile Site | Deevnet Mobile Tenant Service CA |

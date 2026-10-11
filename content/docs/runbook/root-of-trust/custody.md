@@ -49,6 +49,7 @@ not open is replaced from the other at once, by copying the file, never by gener
 | Site CA | the operator, offline | its site's issuing CAs | ten years | 9 years after it was made |
 | Substrate CA | site automation | every substrate server certificate | five years | 4 years after it was made |
 | Tenant Device CA | the site's secret store | tenant devices' client certificates | five years | 4 years after it was made |
+| Tenant Service CA | the site's secret store | server certificates for tenants' own services | five years | 4 years after it was made |
 
 Rotating a CA means making a new one with the same ceremony:
 - [Root and Site CA Ceremony](/docs/runbook/root-of-trust/ceremony/), path 2, for a Site CA;
@@ -65,9 +66,10 @@ start is for that.
 | Rotating | Made again | Reissued | Handed out | Who notices |
 |---|---|---|---|---|
 | **Deevnet Root CA** | the root, every site's Site CA, and every site's issuing CAs | every certificate at every site | the new root, to every trust store that holds the old one: substrate hosts, operator computers, tenants' computers and Pis, device firmware | everyone: each trust store must take the new root before the old one expires |
-| **Site CA** | that site's Site CA and both its issuing CAs | every certificate at that site | nothing: the root is unchanged | only that site's services, as automation reinstalls their chains |
+| **Site CA** | that site's Site CA and all three of its issuing CAs | every certificate at that site | nothing: the root is unchanged | only that site's services, as automation reinstalls their chains |
 | **Substrate CA** | that site's Substrate CA | that site's substrate server certificates | nothing | no one: the certificates roll over at their yearly renewal |
 | **Tenant Device CA** | that site's Tenant Device CA | that site's tenant device certificates | nothing | no one: devices pick up new certificates at their yearly renewal |
+| **Tenant Service CA** | that site's Tenant Service CA | that site's tenant service certificates | nothing | no one: each tenant's certificate moves to the new CA when the tenant next renews it, within the year |
 
 **A Deevnet Root CA rotation runs the old and new roots side by side.**
 1. Make the new root.
@@ -80,7 +82,7 @@ Treat it as a planned change of its own.
 
 **A Site CA rotation reaches only its own site.**
 1. Make the new Site CA.
-2. Sign new Substrate and Tenant Device CAs under it.
+2. Sign new Substrate, Tenant Device and Tenant Service CAs under it.
 3. Reissue every certificate at the site before the old Site CA expires.
 
 Clients trust the root, not the Site CA, so nothing is handed out. Other sites are untouched.
@@ -115,6 +117,7 @@ Deevnet's own names and private addresses; a public site cannot be impersonated.
 |---|---|---|---|
 | **Substrate CA** (online, in the vault) | up to 5 years | sign a new one ([Issuing CA](/docs/runbook/root-of-trust/issuing-ca/)), rotate the vault password, reissue everything (`certs.yml`) | re-root, or accept the risk until it expires |
 | **Tenant Device CA** (online, in OpenBao) | up to 5 years | sign a new one, re-enroll every device | re-root, or accept the risk until it expires |
+| **Tenant Service CA** (online, in OpenBao) | up to 5 years | sign a new one, and have every tenant renew its certificates. A thief can certify any name under `deevnet.net`, a substrate name included, and every client would accept it | re-root, or accept the risk until it expires |
 | **Site CA** (offline) | up to 10 years | new Site CA and new issuing CAs ([ceremony](/docs/runbook/root-of-trust/ceremony/), path 2) | re-root, or accept the risk until it expires |
 | **Root CA** (offline) | up to 20 years | re-root | — |
 

@@ -36,6 +36,34 @@ ansible-playbook playbooks/tenant-device-ca.yml -e openbao_tenant_device_rotate=
 It makes a new key and request inside OpenBao. Sign it in the Issuing CA ceremony, accept it, and run
 `tenant-device-ca.yml` again to install it.
 
+## Rotate the Tenant Service CA inside OpenBao
+
+Valid to 2031-10-11. Remove its request and certificate from `pki/mobile/`, then:
+
+```bash
+ansible-playbook playbooks/tenant-service-ca.yml -e openbao_tenant_service_rotate=true
+```
+
+It makes a new key and request inside OpenBao. Sign it in the Issuing CA ceremony
+(`--ca tenant-service`), accept it, and run `tenant-service-ca.yml` again to install it. Then check
+what it signs:
+
+```bash
+ansible-playbook playbooks/tenant-service-ca-verify.yml
+```
+
+Certificates the old CA issued stay valid until they expire. Each tenant's moves to the new CA when
+the tenant next renews it.
+
+## Check what the Tenant Service CA will sign
+
+**After any change to the signing role, ask it for what it must refuse.**
+`playbooks/tenant-service-ca-verify.yml` sends a request that names a substrate host, a public name
+and an address, and asks to be a CA and a client. It checks that none of that is in the certificate
+that comes back, and then that eleven names are refused, among them a substrate service, the site's
+zone, a wildcard and an address. It issues one certificate each run, for a name under a tenant that
+does not exist, and deletes the key.
+
 ## A new Site CA or root is a re-root of that scope
 
 A new Site CA means new issuing CAs and every certificate at the site reissued; a new root means
