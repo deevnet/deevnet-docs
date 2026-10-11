@@ -12,6 +12,7 @@ weight: -31
 | **Scope** | The certificate hierarchy for every Deevnet site: the root and each site's CA and who holds them, the issuing CAs and what each may issue, subject names, and the target for tenant device identity (mTLS). Not automatic renewal or expiry alerting ([ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) open questions 1–2, unchanged). |
 | **Supersedes** | ADR-0030 §1–§4 |
 | **Amends** | [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) §3 (the `pki/` row) |
+| **Extended by** | [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/): a third issuing CA per site, the Tenant Service CA, for server certificates in a tenant's own zone. It answers open question 2 and amends §3 and §4. |
 | **Related** | [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) §4, [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §8, [ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §2, [ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/) §8, [CHG-0031](/docs/changes/2026/0031-site-root-ca/), [CHG-0032](/docs/changes/2026/0032-appliance-certificates/) |
 
 ---
@@ -73,6 +74,9 @@ In use, it falls short in four ways:
   sign stays the operator's ([Certificates standard](/docs/standards/certificates/) 5.5–5.8).
 
 ### 3. Two issuing CAs per site, separating server and device identity
+
+*Amended by [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/): a
+site has three. The two below are unchanged.*
 
 | | Substrate CA | Tenant Device CA |
 |---|---|---|
@@ -225,7 +229,9 @@ what is done about it, and what is not.
 1. **Which Site CA issues the Builder's certificate?** `dv00bld001p01` belongs to no site (site code
    `00`), and will need one when it serves the artifact server over TLS.
 2. **Where do tenant workloads' own services get server certificates?** From the site, as a third
-   issuing CA, or from the tenant itself.
+   issuing CA, or from the tenant itself. *Answered by
+   [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/): from the
+   site, as a third issuing CA.*
 3. **How is a device certificate revoked?** Short-lived certificates, a CRL, or deregistration alone
    (§6).
 4. **How does a device that cannot make a key get one?** The tenant's computer generates it (§6); a

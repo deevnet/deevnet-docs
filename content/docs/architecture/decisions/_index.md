@@ -323,6 +323,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Substrate](substrate/)
 
+- [ADR-0037: Tenant Service Certificates](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) —
+  *Proposed; to be built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
+  issuing CA, the Tenant Service CA, its key inside OpenBao, which issues server certificates for
+  names in a tenant's own zone through the Deevnet API. The tenant makes the key and sends a signing
+  request, read for its public key alone; it sends labels, and the API appends the zone. The
+  Substrate CA still issues nothing for a tenant. There is no revocation, and renewal is an apply.
+  Extends ADR-0031; amends its §3 and §4 and the Certificates standard.
 - [ADR-0031: Deevnet PKI](/docs/architecture/decisions/substrate/0031-deevnet-pki/) —
   *Accepted; built by CHG-0033, §6 (mTLS) still to build.* One Deevnet Root CA and a Site CA per site, both generated and held offline by the
   operator, so no online system can mint a CA. Under each Site CA, two issuing CAs separate server and

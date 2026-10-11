@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0047 | Unscheduled | [Server Certificates for Tenants' Services](0047-tenant-service-certificates/) | Deployment · Configuration | mobile | Planned |
 | CHG-0046 | 2026-10-10 | [Tenant-Facing Services on 443](0046-service-proxy/) | Deployment · Configuration | mobile | Complete |
 | CHG-0045 | 2026-10-10 | [A Service Name for Grafana](0045-grafana-service-name/) | Configuration | mobile | Complete |
 | CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Complete |
