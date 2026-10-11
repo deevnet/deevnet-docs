@@ -263,9 +263,9 @@ at a browser.
 
 ## Follow-ups
 
-- [ ] **Commit the Tenant Service CA's request and certificate to the inventory**, with
-  `site_tenant_service_ca_file`, once its vaults are re-encrypted. Until then they exist on the
-  Builder's disk and in OpenBao only.
+- [x] **Commit the Tenant Service CA's request and certificate to the inventory**, with
+  `site_tenant_service_ca_file`, once its vaults are re-encrypted. Done 2026-10-11, about an hour
+  after the change: inventory pull request 83, with the vaults re-encrypted.
 - [ ] How a tenant service certificate is revoked (ADR-0037 open question 1).
 - [ ] Nothing tells a tenant a certificate is close to expiring (ADR-0037 open question 2). The
   first one expires 2027-10-11.
