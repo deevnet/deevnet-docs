@@ -9,8 +9,9 @@ weight: 7
 
 This standard defines what every Deevnet X.509 certificate looks like: who may issue it, what its
 subject and names say, which keys and lifetimes it uses, and where its key may live. The model it
-serves is in [Trust and Identity](/docs/architecture/trust-and-identity/) and
-[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/).
+serves is in [Trust and Identity](/docs/architecture/trust-and-identity/),
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) and
+[ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/).
 
 A certificate that does not meet this standard is a defect, whatever issued it.
 
@@ -22,12 +23,13 @@ A certificate that does not meet this standard is a defect, whatever issued it.
 |---|---|---|---|
 | **Root CA** | itself | Site CAs only | one, for the organization |
 | **Site CA** | the Root CA | that site's issuing CAs only | one per site |
-| **Issuing CA** | its Site CA | end-entity certificates only | per site: the **Substrate CA** and the **Tenant Device CA** |
-| **End entity** | an issuing CA | nothing | servers and devices |
+| **Issuing CA** | its Site CA | end-entity certificates only | per site: the **Substrate CA**, the **Tenant Device CA** and the **Tenant Service CA** |
+| **End entity** | an issuing CA | nothing | the substrate's servers, tenants' devices and tenants' services |
 
 - 1.1 A Root CA MUST NOT sign an end-entity certificate, and a Site CA MUST NOT sign one.
 - 1.2 The Substrate CA MUST issue only server certificates for the substrate. The Tenant Device CA
-  MUST issue only client certificates for tenant devices.
+  MUST issue only client certificates for tenant devices. The Tenant Service CA MUST issue only
+  server certificates for names in a tenant's own zone.
 - 1.3 Every client MUST trust the Root CA as its anchor. A client MUST NOT be configured to trust a
   Site CA or an issuing CA as an anchor in its place.
 
@@ -45,12 +47,15 @@ itself.
 | Site CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Site CA` |
 | Substrate CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Substrate CA` |
 | Tenant Device CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Tenant Device CA` |
+| Tenant Service CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Tenant Service CA` |
 | Substrate server | `Deevnet` | `<Site> Substrate` | the host's primary FQDN, e.g. `pve.mobile.deevnet.net` |
 | Tenant device | `Deevnet` | `Tenant <tenant>` | `<device>.<tenant>.<site>.deevnet.net`, e.g. `lp-stand-01.eds.mobile.deevnet.net` |
+| Tenant service | `Deevnet` | `<Site> Tenant Services` | `<label>.<tenant>.<site>.deevnet.net`, e.g. `console.eds.mobile.deevnet.net` |
 
 - 2.1 `<Site>` MUST be the site's name in title case, as in the [naming standard](/docs/standards/naming/):
   `Mobile`, `Home`.
-- 2.2 `<tenant>` and `<device>` MUST be the names the Deevnet API holds, exactly.
+- 2.2 `<tenant>` and `<device>` MUST be the names the Deevnet API holds, exactly. `<label>` is one
+  DNS label the tenant chose; the issuer, never the tenant, appends the zone.
 - 2.3 Subjects MUST NOT carry C, ST, L or an email address.
 
 ---
@@ -68,6 +73,9 @@ is valid for.
 - 3.3 A tenant device certificate MUST carry exactly one URI SAN:
   `urn:deevnet:<site>:tenant:<tenant>:device:<device>`, lower case. It is the identity a service
   authorizes. It MUST NOT carry a DNS or IP SAN.
+- 3.4 A tenant service certificate MUST carry, as DNS SANs, its CN and any further names asked for,
+  each of them one label inside the tenant's own zone, `<tenant>.<site>.deevnet.net`. It MUST NOT
+  carry a wildcard, an IP SAN, a URI SAN or a name outside that zone.
 
 ---
 
@@ -80,6 +88,7 @@ is valid for.
 | Issuing CA | RSA 3072 | 5 years | `critical, CA:TRUE, pathlen:0` | `critical, keyCertSign, cRLSign` | — |
 | Substrate server | RSA 2048; P-256 where every client of it supports ECDSA | 1 year | `critical, CA:FALSE` | `critical, digitalSignature, keyEncipherment` | `serverAuth` only |
 | Tenant device | P-256, or RSA 2048 where the device cannot do ECDSA | 1 year | `critical, CA:FALSE` | `critical, digitalSignature` | `clientAuth` only |
+| Tenant service | RSA 2048 or larger, or P-256 | 1 year | `critical, CA:FALSE` | `critical, digitalSignature, keyEncipherment` | `serverAuth` only |
 
 - 4.1 RSA throughout the CA tiers keeps the chain verifiable by the oldest device TLS stacks on the
   site.
@@ -88,9 +97,11 @@ is valid for.
   `subjectKeyIdentifier`.
 - 4.4 Serial numbers MUST be random, at least 64 bits.
 - 4.5 A certificate MUST NOT carry both `serverAuth` and `clientAuth`. Server identity and device
-  identity are different things, issued by different CAs.
+  identity are different things, issued by different CAs. So are the substrate's servers and
+  tenants' services.
 - 4.6 Extensions MUST come from the issuer's profile. An issuer MUST NOT copy extensions from a
-  signing request.
+  signing request. A tenant's signing request is read for its public key alone: its subject and
+  names are not used either.
 - 4.7 An end-entity certificate MUST be reissued once fewer than 60 days remain.
 - 4.8 A Site CA MUST carry `nameConstraints` permitting only DNS `deevnet.net` and `localhost`, and
   IP `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`, `fc00::/7` and `::1`. It MUST NOT
@@ -108,15 +119,18 @@ is valid for.
 | Root CA, Site CA | passphrase-encrypted files on two offline media, generated and maintained offline; never available to site automation or networked systems | on an offline machine ([Root of Trust](/docs/runbook/root-of-trust/)) |
 | Substrate CA | the site's ansible-vault | by automation, on the control node |
 | Tenant Device CA | the site's secret store; it never leaves | inside the secret store |
+| Tenant Service CA | the site's secret store; it never leaves | inside the secret store |
 | Substrate server | the server it identifies | by automation, then installed |
 | Tenant device | the device | on the device, or on the tenant's own computer for a device that cannot |
+| Tenant service | the tenant's own state, and the workload that serves with it | by the tenant |
 
 - 5.1 The Root CA's and every Site CA's key MUST NOT be present on a networked machine, in any form.
 - 5.2 An issuing CA's key MUST be generated where it lives. Only its signing request travels to be
   signed.
 - 5.3 A tenant device's key MUST NOT enter the substrate. The device's signing request does; the
   issued certificate goes back. This is [Secure Identity](/docs/standards/secure-identity/) 3.1
-  applied to devices.
+  applied to devices. A tenant service's key MUST NOT enter the substrate either: the tenant makes
+  it, and sends a signing request.
 - 5.4 The substrate's certificates MUST NOT depend on the secret store. The Substrate CA is
   automation's, so a substrate rebuilt from nothing can issue every certificate it needs before the
   secret store exists.
@@ -154,6 +168,7 @@ is valid for.
 | `deevnet-<site>-site-ca.pem` | a Site CA's certificate |
 | `deevnet-<site>-substrate-ca.pem` | a Substrate CA's certificate |
 | `deevnet-<site>-tenant-device-ca.pem` | a Tenant Device CA's certificate |
+| `deevnet-<site>-tenant-service-ca.pem` | a Tenant Service CA's certificate |
 
 `<site>` is lower case: `deevnet-mobile-site-ca.pem`. A key file is named for its certificate with
 `.key`.
