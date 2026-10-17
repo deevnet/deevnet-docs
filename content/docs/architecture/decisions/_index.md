@@ -293,6 +293,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Edge Devices](edge-devices/)
 
+- [ADR-0038: Tenants Update Their Own Devices](/docs/architecture/decisions/edge-devices/0038-tenants-update-their-own-devices/) —
+  *Accepted.* A device's firmware updates are its tenant's: the tenant decides how a build reaches its
+  devices and carries it out, over services the device already reaches, such as the broker with
+  grants in its tenant Terraform. The platform hosts no firmware and runs no OTA service, and no new
+  network path is opened for updates. Answers ADR-0011's open question 6 on where images are hosted;
+  amends ADR-0012 §3, which listed firmware release hosting and OTA as later platform layers. The
+  device counterpart of ADR-0034. Already how `eds` updates its three devices.
 - [ADR-0035: A Fixed Address for a Tenant's Device](/docs/architecture/decisions/edge-devices/0035-fixed-address-for-a-tenant-device/) —
   *Accepted.* A fixed address on the device network is a tenant service: a tenant asks the
   Deevnet API for one for a device it registered with a MAC, the API reserves it from a range set
