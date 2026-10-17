@@ -13,7 +13,7 @@ aliases:
 | **Accepted** | 2026-09-15, once its four open questions were answered. Questions 1–3 were settled by the operator on 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) Step 9's controller work made the platform side real); question 4 was settled on 2026-09-14. |
 | **Date** | 2026-09-13 |
 | **Amended** | 2026-09-19, reconciling against ADR-0019 and ADR-0020. An editing error had deleted the heading that numbered two further open questions, leaving them orphaned — they are now **5** (tenant ingress, answered by ADR-0020) and **6** (the firmware supply chain, still open). Five statements overtaken by CHG-0013 and by ADR-0012 §8 are corrected in place. The decision is unchanged. |
-| **Extended by** | [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/) — why a device does not join its tenant's network. [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) — how it reaches that tenant's services instead, answering open question 5. Both leave this record `Accepted` and unchanged in substance. |
+| **Extended by** | [ADR-0019: Tenant Layer 2 at the Access Edge](/docs/architecture/decisions/tenant-networking/0019-tenant-l2-at-the-access-edge/) — why a device does not join its tenant's network. [ADR-0020: Direct Device Access to Tenant Services](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) — how it reaches that tenant's services instead, answering open question 5. Both leave this record `Accepted` and unchanged in substance. [ADR-0038: Tenants Update Their Own Devices](/docs/architecture/decisions/edge-devices/0038-tenants-update-their-own-devices/) — a tenant updates its own devices through services it already has, and the platform hosts no images, answering open question 6's hosting bullet. |
 | **Validated** | 2026-09-14, read-only, before acceptance. See [Validation](#validation-2026-09-14) |
 | **Scope** | Who owns a physical device an application uses, what the platform knows about it, which network it joins, and how it reaches the services it needs |
 | **Depends on** | [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/) |
@@ -388,6 +388,9 @@ found. The evidence and its sources are in [Validation](#validation-2026-09-14).
      ([Espressif](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/security/secure-boot-v2.html)),
      so whoever holds the key owns every future image for that chip.
    - where OTA images are hosted so the IoT segment can reach them
+     - **Answered 2026-10-17 by [ADR-0038: Tenants Update Their Own Devices](/docs/architecture/decisions/edge-devices/0038-tenants-update-their-own-devices/).** Nowhere, by the platform: a device's
+       updates are its tenant's, carried over services the device already reaches, such as the
+       broker with grants in the tenant's Terraform. The bullets above and below stay open.
    - keeping secrets out of firmware binaries
    - recovery once flash encryption blocks USB reflashing
 
