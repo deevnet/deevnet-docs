@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0050 | 2026-10-18 | [Extra Names on a Pi's Certificate (deevnet-kit 0.12.0)](0050-kit-extra-names/) | Deployment | mobile | Complete |
 | CHG-0049 | 2026-10-18 | [The Take-Home Image on deevnet-kit v0.11.0](0049-pi-backend-on-kit-0-11/) | Deployment | mobile | Complete |
 | CHG-0048 | 2026-10-18 | [A Switch Port for dv02rpi003p01](0048-rpi003-switch-port/) | Configuration | mobile | Complete |
 | CHG-0047 | 2026-10-11 | [Server Certificates for Tenants' Services](0047-tenant-service-certificates/) | Deployment · Configuration | mobile | Complete |
