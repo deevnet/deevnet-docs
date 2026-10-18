@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0048 | 2026-10-18 | [A Switch Port for dv02rpi003p01](0048-rpi003-switch-port/) | Configuration | mobile | Complete |
 | CHG-0047 | 2026-10-11 | [Server Certificates for Tenants' Services](0047-tenant-service-certificates/) | Deployment · Configuration | mobile | Complete |
 | CHG-0046 | 2026-10-10 | [Tenant-Facing Services on 443](0046-service-proxy/) | Deployment · Configuration | mobile | Complete |
 | CHG-0045 | 2026-10-10 | [A Service Name for Grafana](0045-grafana-service-name/) | Configuration | mobile | Complete |
