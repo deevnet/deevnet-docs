@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0051 | 2026-10-18 | [The Take-Home Image on deevnet-kit 0.12.0](2026/0051-pi-backend-on-kit-0-12/) | Deployment | mobile | Complete |
 | CHG-0050 | 2026-10-18 | [Extra Names on a Pi's Certificate (deevnet-kit 0.12.0)](2026/0050-kit-extra-names/) | Deployment | mobile | Complete |
 | CHG-0049 | 2026-10-18 | [The Take-Home Image on deevnet-kit v0.11.0](2026/0049-pi-backend-on-kit-0-11/) | Deployment | mobile | Complete |
 | CHG-0048 | 2026-10-18 | [A Switch Port for dv02rpi003p01](2026/0048-rpi003-switch-port/) | Configuration | mobile | Complete |
