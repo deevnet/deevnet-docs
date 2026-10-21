@@ -16,4 +16,5 @@ closes through the usual records: an ADR for a decision, a change record for wor
 
 | Review | Date | Criteria |
 |---|---|---|
+| [Tenant PKI](2026-10-tenant-pki/) | 2026-10-21 | ADR-0039's first draft against the mobile site as an autonomous tenant factory: identity outlives location, stable CA custody, enforceable boundaries, self-service onboarding |
 | [Rebuild and Access](2026-10-rebuild-and-access/) | 2026-10-06 | Clean rebuilds, no circular rebuild dependencies, everything as code, practical accounts and access |

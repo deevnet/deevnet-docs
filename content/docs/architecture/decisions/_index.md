@@ -62,6 +62,11 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0041: Take-Home Pi PKI Lifecycle](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) —
+  *Proposed.* A take-home Pi chooses `pki=deevnet` (a leaf from the tenant's Service CA, renewed at
+  maintenance), `own` (its own CA, backed up; the default) or `bring` (the tenant's PKI), and may
+  change choice by an ordered trust transition that never hands over Deevnet's keys. Devices dial an
+  address and verify a name, so no certificate carries an address.
 - [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/) —
   *Accepted* (2026-10-05). A tenant pushes its own code to its workloads over SSH, from its own
   computer or CI, with whatever tools it likes; the guide's pattern is a container image, `kit.env`
@@ -280,6 +285,12 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Naming and DNS](naming-and-dns/)
 
+- [ADR-0040: Tenant Names Without a Site](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) —
+  *Proposed.* A tenant's zone stays the same wherever it lives: directly under the apex
+  (`<tenant>.deevnet.net`, the owner's preference) or under a tenant subtree (the review's leaning,
+  the only bound a CA keeps as names are added). Reserved labels enforced by the API; the hosting
+  site answers the zone; reverse zones stay per site. Amends the naming standard §5, ADR-0004 §2 and
+  ADR-0015 §13.
 - [ADR-0008: Host Naming and Site Codes](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/) —
   A fixed-width site code in every hostname, so the short name is unambiguous wherever
   it appears rather than only inside the inventory that loaded it; site zones renamed to say what
@@ -331,12 +342,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Substrate](substrate/)
 
 - [ADR-0039: Tenants Beside Sites in the PKI](/docs/architecture/decisions/substrate/0039-tenants-beside-sites-in-the-pki/) —
-  *Proposed.* So that a tenant's certificates move with it, the root signs a Deevnet Tenants CA
-  beside the Site CAs, its key in OpenBao, and the API has it sign two CAs for each tenant when the
-  tenant is created: a Service CA and a Device CA, which replace the site-level tenant CAs. Tenant
-  names drop the site (`<tenant>.deevnet.net`). A take-home Pi holds a leaf, not a CA, and devices
-  trust their tenant's CA, not the root. Options and leanings recorded for each. Extends ADR-0031;
-  amends its §3, §5 and §6, ADR-0037 and the Certificates standard.
+  *Proposed; revised 2026-10-21 after the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/).*
+  A tenant's PKI identity belongs to the tenant, and the mobile site, as an autonomous tenant
+  factory, holds its authority for life: a Deevnet Tenants CA beside the Site CAs signs a Service CA
+  and a Device CA for each tenant at creation, and those keys never move when the tenant does. Devices
+  anchor at their tenant's Service CA; sites present tenant-issued certificates; the broker binds a
+  device to its tenant. Renewal is maintenance. The Tenants CA's custody and the kit's seal are its
+  open risks. Extends ADR-0031; amends its §3, §5, §6, ADR-0037 and the Certificates standard.
 - [ADR-0037: Tenant Service Certificates](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) —
   *Accepted; built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
   issuing CA, the Tenant Service CA, its key inside OpenBao, which issues server certificates for
