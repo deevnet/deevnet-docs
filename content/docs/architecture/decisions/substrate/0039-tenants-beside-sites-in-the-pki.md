@@ -3,203 +3,250 @@ title: "ADR-0039: Tenants Beside Sites in the PKI"
 weight: -39
 ---
 
-# ADR-0039: A Tenants CA Beside the Site CAs, So a Tenant's Certificates Move With It
+# ADR-0039: A Tenant's PKI Identity Belongs to the Tenant, and the Factory Holds Its Authority
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) |
+| **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-20 |
-| **Scope** | Where a tenant's own CAs sit in the hierarchy, what signs them, which names they may vouch for, what devices and take-home Pis trust, and how the site-level tenant CAs retire. Not revocation, which stays open (ADR-0031), and not who may reach a tenant's service. |
+| **Revised** | 2026-10-21, twice, before review ([Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/)). The first draft moved a tenant's CA keys between sites; that is rejected (§1). Names went to [ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/), the take-home Pi to [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/), and where the keys are held to [ADR-0042](/docs/architecture/decisions/substrate/0042-pki-and-platform-secrets-separated/). The second revision constrains the Tenants CA to the tenant subtree and qualifies what pinning protects |
+| **Scope** | Who holds a tenant's certificate authority, where it sits in the hierarchy, what a device trusts, how a device is bound to its tenant, and how all of that survives the tenant moving. Not names (ADR-0040), not a take-home Pi's own PKI (ADR-0041), not the secret store's deployment (ADR-0042) |
 | **Extends** | [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/): a second branch under the root, beside the Site CAs |
-| **Amends** | ADR-0031 §3 (the tenant issuing CAs per site), §5 (device subjects and URIs) and §6 (which CA signs a device); [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) §1 and §3 (the Tenant Service CA and the zone it issues for); the [Certificates standard](/docs/standards/certificates/) §1, §2, §4, §5 and §6, once accepted |
-| **Related** | [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §13 (a tenant's names), [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) §4, [CHG-0034](/docs/changes/2026/0034-device-certificates/) (device certificates, planned), [CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/) (the Tenant Service CA), the take-home Pi image and [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) |
+| **Amends** | ADR-0031 §3 (the tenant issuing CAs per site), §5 (device subjects and URIs) and §6 (which CA signs a device, and how the broker accepts it); [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) §1 and §3; the [Certificates standard](/docs/standards/certificates/) §1 (the tiers, and 1.3's root-only anchor), §3.3, §4, §5 and §6, once accepted |
+| **Depends on** | [ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) *(Proposed)* for the tenant subtree; [ADR-0042](/docs/architecture/decisions/substrate/0042-pki-and-platform-secrets-separated/) *(Proposed)* for where its keys live |
+| **Related** | [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/) §4, [ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §8, [ADR-0020](/docs/architecture/decisions/edge-devices/0020-direct-device-access-to-tenant-services/) §2, [CHG-0034](/docs/changes/2026/0034-device-certificates/), [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/), [CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/) |
 
 ---
 
 ## Context
 
-**A tenant's certificates descend from its site.** The hierarchy is
-`Deevnet Root CA → <Site> Site CA → Substrate CA | Tenant Device CA | Tenant Service CA`
-(ADR-0031, ADR-0037). The Tenant Service CA issues for `<label>.<tenant>.<site>.deevnet.net`, and
-the Tenant Device CA will issue device identities whose URI names the site.
+**The mobile site is a tenant factory, and it runs on its own.** It travels to meetups, often with
+no upstream at all, and never depends on the home site. A tenant is admitted by the operator,
+created by one call to the Deevnet API, developed there, and then usually leaves: for the home site,
+another Deevnet site, a take-home Pi, or another environment. It may come back for renewal, a new
+device, or maintenance.
 
-**A tenant does not stay on one site.** A tenant is created on the mobile site, often at a meetup
-and always by one call to the Deevnet API. It is developed there, and later it moves: to another
-site, or off Deevnet onto its own take-home Pi. Each move today changes the CA its certificates
-chain to and the names they carry. Its devices, which hold their broker's CA, are provisioned again.
+**Today a tenant's certificates descend from the site it was created on.**
+`Deevnet Root CA → Mobile Site CA → Tenant Service CA | Tenant Device CA` (ADR-0031, ADR-0037). Its
+names, and the planned device URI (`urn:deevnet:<site>:…`), carry the site. A tenant that moves
+changes the CA its certificates chain to, and its devices are provisioned again for a new anchor.
 
-**A take-home Pi makes a root of its own.** On first boot `deevnet-kit` generates a self-signed CA
-for the card and issues the Pi's server certificate from it. Every computer that opens the tenant's
-pages then trusts another root, one per tenant, whose key sits on a Pi in someone's house. One root
-was chosen so that nobody would do this (ADR-0031 §1).
+**The root's `pathlen:2` fixes the depth.** Under the root there is room for one CA above every
+tenant, the tenant's own CAs below that, and then leaves.
 
-**The root's path length fixes the depth.** The Deevnet Root CA is `pathlen:2`: two CAs below it,
-then a leaf. A branch for tenants therefore has room for one CA above every tenant and the tenant's
-own CAs below that, and no more.
-
-**Two certificates are in service under the tenant CAs.** The Mobile Tenant Service CA has issued one
-certificate (`eds`'s console). The Mobile Tenant Device CA has issued none: CHG-0034 is planned and
-not built.
+**What constrains any answer** (evidence in the
+[review](/docs/architecture/reviews/2026-10-tenant-pki/)):
+- **mbedTLS, on most tenant devices, enforces no name constraints.** Constraints are marked
+  non-critical so that it parses them at all (ADR-0031 §2).
+- **A URN has no host**, so no URI name constraint can bound a device's identity.
+- **There is no revocation** (ADR-0031, R-14).
+- **The ceremony tools let only a Site CA sign a request**, never the root.
+- **The mobile site's OpenBao unseals itself and has no backup.** ADR-0042 is about that.
 
 ## Decision
 
-### 1. A Deevnet Tenants CA, beside the Site CAs
+### 1. The factory is the authority for every Deevnet-managed tenant
 
-**The root signs one more CA, for tenants, at the level of a site:**
-`O=Deevnet, OU=Deevnet Tenants, CN=Deevnet Tenants CA`, RSA 3072, ten years, `pathlen:1`. It is
-signed in one ceremony, through the existing transfer tools with a `tenants` kind and its own profile.
+**A Deevnet-managed tenant's CAs are made at the factory and stay there for the tenant's life.**
+Wherever the tenant runs (the mobile site, the home site, another site, a Pi), it is given
+certificates. It never inherits the authority. Renewal and new devices come back to the factory as
+maintenance (§8).
 
-**Its key is inside OpenBao, so the API signs a tenant's CAs when the tenant is created.** Creating a
-tenant stays one API call, with no ceremony and no operator. This is the one CA at its level that is
-online; the Site CAs stay offline.
+**A tenant that moves takes no key with it.** Moving is deployment, configuration, networking and
+DNS. The first draft of this record exported a tenant's CA keys between sites; that is rejected.
 
-**It is name-constrained, not critically** (mbedTLS, ADR-0031 §2): it permits `deevnet.net` and
-`localhost`, and excludes every site's zone. Nothing below it can vouch for a substrate name, whatever
-the API or a role does.
+**The factory depends on nothing at the home site.** Nothing here needs a path between sites.
 
-| Option | |
-|---|---|
-| **Online, in OpenBao** *(leaning)* | The only one that keeps onboarding self-service. The cost: an online key that can make CAs, bounded by its constraints |
-| Offline, a ceremony per tenant | The strongest custody, but every tenant waits for the operator and the offline media, which a meetup cannot |
-| The root signs each tenant directly | No room below for the tenant's two CAs (§2), and the root comes out for every tenant |
+### 2. A Tenants CA beside the Site CAs, and two CAs per tenant
 
-### 2. Each tenant has two CAs, made when it is created
+```
+Deevnet Root CA (offline, pathlen 2)
+├── Deevnet <Site> Site CA (offline, pathlen 1) ── Substrate CA, … (unchanged)
+├── Deevnet Tenants CA (factory, pathlen 1; permits t.deevnet.net only)
+│     ├── Deevnet <tenant> Service CA (pathlen 0; permits <tenant>.t.deevnet.net)
+│     └── Deevnet <tenant> Device CA  (pathlen 0; no name constraint, see §5)
+└── Deevnet Names CA (factory, pathlen 0; leaves for vanity names, ADR-0040)
+```
 
-**The API has the Tenants CA sign two CAs for each new tenant**, their keys generated inside OpenBao
-and never exported to the API:
+**The root signs the Tenants CA once**, in a ceremony:
+`O=Deevnet, OU=Deevnet Tenants, CN=Deevnet Tenants CA`, RSA 3072, ten years, `pathlen:1`. Its key is
+generated inside the factory's PKI secret store (ADR-0042), and only its request crosses to the
+offline signer. The ceremony tools gain the path for the root to sign a request, and file names that
+allow a CA with no site.
 
-| | `<tenant> Service CA` | `<tenant> Device CA` |
-|---|---|---|
-| Subject | `O=Deevnet, OU=Tenant <tenant>, CN=Deevnet <tenant> Service CA` | `O=Deevnet, OU=Tenant <tenant>, CN=Deevnet <tenant> Device CA` |
-| Issues | server certificates for the tenant's services and its take-home Pi | its devices' client certificates (mTLS) |
-| Usage | `serverAuth` only | `clientAuth` only |
-| Names | constrained to `<tenant>.deevnet.net`, `localhost` and loopback | none: a device is named by its URI |
-
-Both are `pathlen:0`, five years. **They replace the site's Tenant Service CA and Tenant Device CA
-for that tenant.** The separation of server and device identity (ADR-0031 §3) still rests on which
-CA signed, now per tenant.
+**When a tenant is created, the Tenants CA signs its two CAs**, automatically, as part of the same
+API call, during a PKI session (§9). Their keys are generated in the PKI secret store and never
+leave it. Separate Service and Device CAs keep server and device identity apart by signer
+(ADR-0031 §3).
 
 | Option | |
 |---|---|
-| **Two CAs per tenant** *(leaning)* | Keeps server and device identity apart by signer, as today |
-| One CA per tenant, issuing both | Half the CAs. The separation would rest on an extension in each certificate, which ADR-0037 rejected for the same reason |
+| **A. Per-tenant CAs, made online at creation** *(leaning)* | A device pins a key no other tenant shares (§4); a broker can accept a tenant's devices by its own Device CA (§5). Cost: an online key that can make CAs, and two issuers per tenant |
+| B. Two shared, site-independent issuing CAs | No online CA-maker. But every tenant's devices share one anchor, so what separates tenants is the API's issuance check alone, and one stolen key forges every tenant |
+| C. Per-tenant CAs signed offline | Rejected: a ceremony per tenant, which a meetup cannot wait for |
 
-### 3. Tenant names drop the site
+### 3. The Tenants CA is constrained to the tenant subtree
 
-**A tenant's zone is `<tenant>.deevnet.net`**, and a service is `<label>.<tenant>.deevnet.net`. The
-Service CA's constraint is fixed when it is signed, so names that move with the tenant are what make
-a move free. The site or the Pi where the tenant lives answers for its zone. A tenant may not be
-named after a site code or a reserved zone label.
+**It permits `t.deevnet.net` and nothing else** (ADR-0040), and each tenant's Service CA permits only
+`<tenant>.t.deevnet.net`. Under RFC 5280 a DNS constraint matches the name itself and every name
+below it. A subtree does not age as names are added elsewhere under `deevnet.net`. That is why the
+first draft's exclusions of site zones are dropped.
+
+**Vanity names under `deevnet.net` are not the Tenants CA's.** A CA cannot vouch for names outside
+its parent's constraints, so they get a CA of their own (the Names CA, ADR-0040).
+
+### 4. What pinning protects, and what it does not
+
+**A device that anchors at its own tenant's Service CA refuses any certificate that does not chain
+to that CA's key**, including one from a CA a thief made with a stolen Tenants CA. So a compromised
+Tenants CA does not, by itself, defeat a pinned device.
+
+**Everyone else is still exposed.** Browsers, computers and tools anchor at the root. A stolen
+Tenants CA key can make a CA that every one of them accepts for any tenant name, and with no
+revocation that lasts until the forged CA expires. Constraints keep it inside `t.deevnet.net` for
+clients that enforce them, which mbedTLS does not.
+
+**A stolen tenant CA key defeats that tenant's devices.** The pin is only as good as the tenant CA's
+custody.
+
+### 5. A device trusts its tenant's Service CA, and is bound to its tenant by the broker
+
+**A device anchors at its tenant's Service CA, not the root.** This amends standard 1.3 for devices
+only. Every other client still anchors at the root.
+
+**A device's identity is `urn:deevnet:tenant:<tenant>:device:<device>`**, set by the API from its
+registration, never taken from the request.
+
+**Where certificate authentication ends and tenant authorization begins:**
+- **Authentication**: the client certificate chains to a tenant's Device CA.
+- **Tenant binding**: the URI's tenant is the tenant whose Device CA signed it. Both §6 options
+  enforce this at the broker, and a per-tenant listener enforces it in TLS itself (only that
+  tenant's Device CA is accepted there).
+- **Authorization**: the URI names a device the API has registered and not removed, and its grants
+  are that device's topics (ADR-0012 §10).
+
+A valid chain alone authorizes nothing. Deregistering a device is how it is refused, in place of
+revocation.
+
+**The Device CAs carry no name constraint.** URI constraints cannot match a URN, and a CA with one
+would make Go and OpenSSL refuse every device certificate.
+
+### 6. How a shared broker presents a tenant's certificate: unresolved, two candidates
+
+**The goal is that a device keeps one anchor as its tenant moves.** On a site, devices share the
+site's broker, whose certificate today is the site's (Substrate CA).
 
 | Option | |
 |---|---|
-| **Drop the site** *(leaning)* | One name for the tenant's life |
-| Keep the site; constrain the Service CA to each zone the tenant may use | Every new site the tenant moves to means a new Service CA and new trust on its devices |
+| **A. SNI routing to a per-tenant listener** *(leaning, pending a proof of concept)* | A stream proxy reads the SNI (`mqtt.<tenant>.t.deevnet.net`) without terminating TLS and passes the connection to that tenant's broker listener. The listener presents a certificate from the tenant's Service CA and accepts client certificates from the tenant's Device CA only. mTLS stays end to end, so no identity has to be carried through a proxy. VerneMQ 2.2.0 supports named SSL listeners, each with its own certificate and CA file; it cannot itself choose a certificate by SNI |
+| B. The device's bundle adds the site's Substrate CA | No proxy. But a device is provisioned again for every new site, and its anchor set grows |
 
-### 4. Leaves are what ADR-0037 made them
+**Not chosen: a proxy that terminates TLS.** The broker would then have to trust the proxy's word
+for the device's identity, which is the weakening to avoid.
 
-**A leaf is issued as today**: the tenant makes the key; the API reads the request for its public key
-alone; one year; renewal by asking again inside 60 days (ADR-0037 §2–§5). Its zone is §3's. **A
-device's URI drops the site:** `urn:deevnet:tenant:<tenant>:device:<device>`.
+### 7. Lifetimes, rollover and expiry
 
-### 5. The site-level tenant CAs retire
+**The Tenants CA lives ten years, a tenant CA five, a leaf one.** No certificate outlives its issuer.
 
-**The Mobile Tenant Service CA issues nothing more.** Its one certificate is reissued from
-`eds Service CA` on that tenant's next apply, and the mount is removed once nothing it issued is in
-service. **The Mobile Tenant Device CA is retired before it issues anything**: CHG-0034 is planned
-again against the per-tenant Device CAs before it is built. Browsers and hosts change nothing,
-because the root is still their only anchor.
+**A tenant CA is renewed by re-signing the same key**, inside the Tenants CA's validity, before it
+expires. **Whether a device still accepts a renewed anchor it does not yet hold** depends on whether
+mbedTLS checks an anchor's own dates. That is to be tested. If it does, devices need a way to take a
+new anchor every five years, which is the application's (ADR-0011).
 
-### 6. A tenant's CA keys move between sites once, secret store to secret store
+**The Tenants CA is renewed by the root**, on the same key, in a ceremony, inside its last five
+years.
 
-**When a tenant moves to another Deevnet site, its two CA keys are exported once from the source
-site's OpenBao and imported into the destination's**, and the source stops issuing for it. They never
-pass through the API, a workload or a Pi. This needs the keys created exportable, which no other
-tenant CA key is.
+**A lost key and a compromised key are different events.**
+- **Lost:** restore the key from backup (ADR-0042); its identity is unchanged.
+- **Compromised:** make a new CA, reissue under it, move every anchor, and accept that the old one
+  stays valid until it expires.
 
-| Option | |
-|---|---|
-| **Move custody once** *(leaning)* | The tenant's CAs live where it lives; the exception is one transfer between two secret stores |
-| The site that created the tenant keeps issuing | One site depends on another for every reissue, and the mobile site travels and runs offline |
-| New CAs at the destination | Its devices are provisioned again: the cost this record exists to remove |
+### 8. Renewal and enrollment are maintenance, not a connection
 
-### 7. A take-home Pi holds a leaf, never a CA
+**Certificates stay valid while the factory is away.** A deployed tenant needs the factory only to
+renew, to add a device, or for maintenance.
 
-**`deevnet-kit` takes a choice on the card, `pki=`:**
+**What authorizes a certificate is the tenant's token, never the request.** The API admits a request
+only from the tenant or the operator (`ownTenant`). A request and its certificate are public, so
+they may travel by any medium: the API directly, a VPN when there is one, or files the owner
+carries. A one-year leaf with a 60-day window means a visit every year, inside two months.
 
-- **`own`**: today's behavior and the default, a CA of the card's own, for a house with no Deevnet;
-- **`deevnet`**: the kit makes the key and a request for the tenant's names. The owner sends the
-  request through the API from their computer, and the kit installs the leaf with its chain
-  (leaf, Service CA, Tenants CA). Renewal is the same each year, and `status` warns at 60 days. No
-  CA is on the card, and the server certificate names no `.local` host;
-- **`bring`**: the tenant hands in its own CA, or a leaf and its chain. Deevnet trusts none of it.
+### 9. Onboarding has five distinct steps, and a sealed PKI stops it cleanly
 
-Losing a Pi then costs one certificate, not a CA.
+1. **The operator admits a tenant name** (exists today).
+2. **The operator opens a PKI session**, unsealing the PKI secret store (ADR-0042).
+3. **The API creates the tenant and has its two CAs signed**, automatically.
+4. **Certificates are issued and renewed** on the tenant's token.
+5. **Devices and workloads are authorized** by registration and grants.
 
-### 8. Devices trust a bundle, never the root
+**If no PKI session is open, tenant creation refuses before it changes anything**, with an error
+that says the PKI is not available. **Creating a tenant's CAs is idempotent**: issuers are named for
+the tenant, so an interrupted creation is resumed by the next call, and a reconcile finds a tenant
+whose CAs are incomplete.
 
-**A device holds its tenant's Service CA and, while it lives on a site, that site's Substrate CA**,
-for the shared broker. mbedTLS does not enforce name constraints, so a device anchored at the root
-would accept any Deevnet CA's certificate for its broker's name. With the bundle, a device that moves
-needs new Wi-Fi settings and nothing else. On a site, the broker accepts client certificates from the
-Tenants branch and authorizes each device by its URI.
+### 10. Independence is a lifecycle choice, and a trust transition
+
+**A tenant may be Deevnet-managed, become independent, or bring its own PKI.** Independence is a new
+authority the tenant holds, its anchors installed beside Deevnet's before Deevnet's are removed.
+Deevnet's tenant CA keys are never handed over. The detail is ADR-0041's.
+
+### 11. The site-level tenant CAs retire
+
+**The Mobile Tenant Service CA issues nothing more.** What it issued runs to expiry: `eds`'s console
+certificate and CHG-0047's probe certificates. Then its mount is removed. **The Mobile Tenant
+Device CA has issued nothing and retires unused.** CHG-0034 is planned again against per-tenant
+Device CAs before it is built. Both stay in the platform secret store until removed; nothing moves.
 
 ---
 
 ## Consequences
 
-**A tenant's names, CAs and device trust last its whole life.** A move to another site or to a Pi
-changes where its zone is answered and which secret store holds its keys, not what anything trusts.
+**A tenant's names, CAs and device anchor last its whole life.** A move changes where its zone is
+answered and where its broker listener runs, not what anything trusts.
 
-**Every person keeps one anchor.** A take-home Pi under `pki=deevnet` presents a chain to the Deevnet
-Root CA, which every Deevnet computer already trusts.
+**Every person keeps one anchor**, the Deevnet Root.
 
-**An online key can now make CAs.** The Tenants CA is bounded by its constraints and by the API's
-single signing grant, as the Tenant Service CA is today, but a CA it signs can itself sign. A tenant
-CA key that leaked could vouch for any name in that tenant's zone until it expires. There is no
-revocation (ADR-0031).
+**The factory is the one place a managed tenant renews.** A tenant that cannot reach it before a
+certificate expires is down until it does.
 
-**Two CAs per tenant is many CAs.** Each is a PKI issuer in OpenBao, made by the API. OpenBao's
-policy grants the API one path to have the Tenants CA sign; it cannot read a key or change a role.
+**An online key that can make CAs exists, on a kit that travels.** ADR-0042 keeps it sealed except in
+PKI sessions. It remains the hierarchy's weakest point for every relying party that anchors at the
+root. The risk register gains a row for it on acceptance.
 
-**Tenants' names change once.** Every name under `<tenant>.<site>.deevnet.net` moves to
-`<tenant>.deevnet.net`, in DNS, in the API and in the provider.
+**The API grows several OpenBao paths**: making a tenant's issuers, having the Tenants issuer sign
+them, signing on a tenant's issuers. `sign-intermediate` takes its constraints from the caller, so
+the Tenants CA's own constraints, not OpenBao's roles, are what bound a faulty or compromised API.
 
-**One more ceremony**, for the Tenants CA, every ten years and after any loss of it.
+**Brokers grow per-tenant listeners** (if §6 A is chosen) and a binding check.
+
+**The root signs more than Site CAs**: the Tenants CA and the Names CA. Standard §1 changes.
 
 ---
 
 ## Alternatives considered
 
-- **Rejected: a Site CA for each place a tenant lives**, with the tenant's CAs under it. Every move
-  would be a new Service CA and new device trust.
-- **Rejected: every take-home Pi keeps its own root.** One anchor per tenant on every computer, with
-  each root's key on a Pi.
-- **Rejected: the take-home Pi holds the tenant's Service CA.** A CA key on field hardware; the Pi
-  needs one certificate, not the power to make them.
-- **Rejected: devices anchor at the Deevnet Root CA.** One file everywhere, but mbedTLS would accept
-  any Deevnet CA's certificate for the broker's name.
+- **Rejected: a tenant's CA keys move with it** (the first draft).
+- **Rejected: a Site CA for each place a tenant lives.** Every move is a new Service CA and new
+  device anchors.
+- **Rejected: the Tenants CA excludes site zones** in place of a subtree. Exclusions fixed at signing
+  miss every name added later, and re-signing leaves the old certificate valid.
+- **Rejected: the Tenants CA also permits vanity names.** Its bound would become all of
+  `deevnet.net`.
+- **Rejected: a take-home Pi holds the tenant's Service CA.** A CA key on field hardware.
+- **Rejected: devices anchor at the root.** mbedTLS would accept any Deevnet CA's certificate.
 
 ---
 
 ## Open questions
 
-1. **Is the naming change its own record?** It reaches ADR-0015 §13, DNS and the provider, and may
-   deserve one.
-2. **Does a second site have a Tenants CA of its own**, for tenants created there? Then tenant names
-   must be unique across sites.
-3. **A two-year leaf for take-home Pis?** Their owner may not reach the API every year.
-4. **How does a tenant leave Deevnet completely?** Under `pki=own` or `bring` nothing of Deevnet's
-   stays; its devices are then given the tenant's own CA.
+1. **§6: SNI routing or a Substrate CA in the bundle?** Settled by the proof of concept.
+2. **Does mbedTLS check an anchor's own validity dates?** It decides whether devices take a new
+   anchor when a tenant CA is renewed.
+3. **Does a second site ever create tenants?** If so, does it get a Tenants CA of its own?
 
 ---
 
 ## What would settle it
 
-1. **On an ESP32**, mbedTLS accepts a CA that is not self-signed as a trust anchor, and a bundle of two
-   CAs fits a device's CA field.
-2. **OpenBao holds two issuers per tenant**, as mounts or multiple issuers, signed by a Tenants CA
-   issuer, with a policy that lets the API sign and nothing more.
-3. **Go and OpenSSL refuse** a certificate from a tenant's Service CA for a site's name, and for
-   another tenant's.
-4. **The Tenants CA ceremony runs** through the existing transfer tools, with its kind and profile.
+The [validation plan](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan) holds every
+test and its acceptance criterion. This record is settled by V1, V2, V3, V5, V6 and V9.
