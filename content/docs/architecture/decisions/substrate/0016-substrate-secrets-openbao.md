@@ -10,6 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Accepted |
+| **Amended by** | [ADR-0042: PKI and Platform Secrets Separated](/docs/architecture/decisions/substrate/0042-pki-and-platform-secrets-separated/) *(Proposed)*: CA keys move to a second store sealed by the operator; this store keeps its static seal for the platform's secrets only |
 | **In conflict with** | [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) *(Proposed)*: OpenBao's data as kept data (§1, Consequences). To be revisited; the open part is the Tenant Device CA's key |
 | **Accepted** | 2026-09-19, recording what [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) built on 2026-09-17. The record's own Current state already read *"Proposed, and deployed"*; the status field had simply not caught up. |
 | **Date** | 2026-09-17 |
