@@ -330,6 +330,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Substrate](substrate/)
 
+- [ADR-0039: Tenants Beside Sites in the PKI](/docs/architecture/decisions/substrate/0039-tenants-beside-sites-in-the-pki/) —
+  *Proposed.* So that a tenant's certificates move with it, the root signs a Deevnet Tenants CA
+  beside the Site CAs, its key in OpenBao, and the API has it sign two CAs for each tenant when the
+  tenant is created: a Service CA and a Device CA, which replace the site-level tenant CAs. Tenant
+  names drop the site (`<tenant>.deevnet.net`). A take-home Pi holds a leaf, not a CA, and devices
+  trust their tenant's CA, not the root. Options and leanings recorded for each. Extends ADR-0031;
+  amends its §3, §5 and §6, ADR-0037 and the Certificates standard.
 - [ADR-0037: Tenant Service Certificates](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) —
   *Accepted; built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
   issuing CA, the Tenant Service CA, its key inside OpenBao, which issues server certificates for
