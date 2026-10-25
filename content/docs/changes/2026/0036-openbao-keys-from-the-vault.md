@@ -7,10 +7,10 @@ weight: -36
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-25 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | In progress. Step 1's keys and certificates are made; their import into OpenBao is next |
 | **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/). One issuing-CA ceremony for both tenant CAs; one OpenBao role run; one API deploy |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API), the offline ceremony machine |
@@ -138,6 +138,36 @@ closed, and *Build-Time Secrets* and the OpenBao drills page say what is true.
 
 Until Step 5, each step reverses: the previous tenant CAs and Transit key stay in OpenBao until
 the end. After Step 5, the old keys are gone by design.
+
+## Outcome
+
+### Step 1: keys and certificates, 2026-10-25
+
+`deevnet.mgmt` `playbooks/tenant-cas.yml`
+([#87](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/87)) generated both keys,
+RSA 3072, on the control node and wrote them into the mobile vault as
+`vault_tenant_service_ca_key` and `vault_tenant_device_ca_key`. They were encrypted, committed and
+pushed ([inventory #85](https://github.com/deevnet/ansible-inventory-deevnet/pull/85)) before the
+ceremony. `deevnet-pki-transfer.sh` was changed to expect the site-less CNs; the offline signing
+tool needed no change. Both requests were then signed by the Mobile Site CA in one Issuing CA
+ceremony, one round trip of the transfer drive each, and accepted against the inventory's root and
+Site CA.
+
+| CA | Subject | Valid | SHA-256 fingerprint |
+|---|---|---|---|
+| Tenant Service CA | `O=Deevnet, OU=Mobile Site, CN=Deevnet Tenant Service CA` | 2026-10-25 to 2031-10-25 | `68:C7:0F:24:9A:F9:AC:6A:1F:31:B7:65:0E:6D:E1:42:B5:7F:59:79:ED:E5:FC:A6:08:D0:39:05:C1:E0:70:F3` |
+| Tenant Device CA | `O=Deevnet, OU=Mobile Site, CN=Deevnet Tenant Device CA` | 2026-10-25 to 2031-10-25 | `52:E3:27:08:50:98:D4:55:1C:4D:AB:DF:73:7E:CD:8F:FF:29:34:9E:41:6D:CF:9F:AD:CE:08:C9:E8:B4:74:14` |
+
+Both are `CA:TRUE, pathlen:0`, Certificate Sign and CRL Sign. They are in `pki/mobile/rekey/`; the
+certificates in `pki/mobile/` are still the ones OpenBao holds.
+
+### Departures from the plan
+
+- **Step 1 ran before CHG-0052 was deployed.** Making and signing the keys changes nothing that
+  runs, so it does not need the API's sealed handling; the steps that touch OpenBao still wait for
+  it.
+- **The import is not done yet.** The `openbao` role does not import an issuer's key today; that
+  is the rest of Step 1.
 
 ## To discover
 
