@@ -11,7 +11,7 @@ weight: -20261021
 | **Scope** | The tenant PKI direction (ADR-0039, 0040, 0041, 0042) against the PKI, OpenBao, the API, the broker, the ceremony tools, `deevnet-kit` and the records they touch |
 | **Criteria** | The owner's principles for the mobile site as a tenant factory: identity outlives location; the factory is autonomous; CA custody is stable; certificates travel, authorities remain; runtime does not need PKI availability; PKI availability is deliberate; onboarding is self-service within a PKI session; human-facing names are friendly; boundaries are enforceable; independence is a choice; trust transitions are explicit; recovery is tested; architecture matches operational reality |
 | **Method** | A read of ADR-0012, 0016, 0031, 0037, the Certificates and Naming standards, `deevnet.mgmt` (OpenBao, VerneMQ, the service proxy, `scripts/pki/`), `deevnet-provisioning-api` (issuance, admission, the OpenBao client, `deevnet-kit`) and the inventory, at their GitHub heads on 2026-10-21. Findings come from reading code and records, not running them; the [validation plan](#validation-plan) is what would run them |
-| **Status** | Owner's responses complete (round 3, 2026-10-25). Rounds 1 and 2 (2026-10-21) assessed the drafts and consolidated the owner's first direction; round 3 records the owner's decisions, which redirected all four records. All four are Proposed, as rewritten. Two questions stay open: revocation, and another site's device registry and tenant DNS |
+| **Status** | Owner's responses complete (round 3, 2026-10-25). Rounds 1 and 2 (2026-10-21) assessed the drafts and consolidated the owner's first direction; round 3 records the owner's decisions, which redirected all four records. All four are Proposed, as rewritten. Nothing is open: revocation is an accepted risk, and a tenant at another site is a Deevnet Pi |
 
 ---
 
@@ -63,8 +63,8 @@ Deevnet Root CA                     offline · the one anchor for people, comput
 | R3-4 | **The secret store's signing role cannot tell a site-less tenant name from a site's substrate name** by label count | ADR-0040 §3; its open question |
 | R3-5 | **A certificate carrying the bus name could answer for every site's broker** | ADR-0040 §5: only a site broker's certificate carries it |
 | R3-6 | **A device CN under the tenant's name could collide with a service name** | ADR-0039 §4, ADR-0040 §4: devices under a reserved `device` label |
-| R3-7 | **Revocation is still absent.** A stolen issuing CA key can make server certificates that root-anchored devices accept until the CA expires | Open, as in ADR-0031 |
-| R3-8 | **Another site cannot host a tenant yet**: it has no device registry and no tenant DNS | Open, a design for that site |
+| R3-7 | **Revocation is still absent.** A stolen issuing CA key can make server certificates that root-anchored devices accept until the CA expires | Accepted by the owner, 2026-10-25: [risk R-14](/docs/policies/risk-management/risk-register/) |
+| R3-8 | **Another site cannot host a tenant yet**: it has no device registry and no tenant DNS | Resolved, 2026-10-25: at another site a tenant is a Deevnet Pi, its devices' broker and registry; the site gives it a network and DNS from its inventory (ADR-0039 §8) |
 
 ---
 
@@ -214,7 +214,7 @@ is built.
 | **P5** | Existing tenants (`eds`, `tdemo`, `mabell`, `cdeever`) reissued with site-less names | each serves its site-less name | the site-named certificates stay valid |
 | **P6** | Device certificates (CHG-0034 re-planned) with the broker's registration and fingerprint checks | V1 and V6 pass | passwords stay accepted throughout |
 | **P7** | `deevnet-kit` and the ceremony tools: `deevnet` / `non-deevnet`, request and install, `pki init` | V7, V8 and V11 pass | the previous image |
-| **P8** | Another site, when one is built: its Site CA and Substrate CA, its device registry and its tenant DNS | a tenant served there | — |
+| **P8** | The home site ([roadmap](/docs/roadmap/infrastructure/home-site/)): its Site CA and Substrate CA, its inventory and network, DNS and DHCP on its router, DNS for the Pis it hosts, deployed from the Builder | a Deevnet Pi served at home, its devices connecting | — |
 
 **P0 comes before P2.** Sealing OpenBao before the API can tell a sealed store from a lost secret
 would damage tenants.
@@ -265,9 +265,11 @@ would damage tenants.
 | D12 | `bring` | **Withdrawn** | ADR-0041 |
 | D13 | Backups before anything else | **Replaced**: the API's sealed handling (P0), then CHG-0036 (P1) | Migration plan |
 | D14 | Does another site create tenants? | **No.** Only the Mobile Factory | ADR-0039 |
+| D15 | Revocation | **Accepted risk**, no lifetime changes | R-14 |
+| D16 | What a tenant is at another site | **A Deevnet Pi**: its devices' broker and registry. The site gives a network and DNS from its inventory, deployed from the Builder; no self-service | ADR-0039 §8 |
 
 **Principles, as round 3 leaves them** (the owner's): the Mobile Factory alone creates tenants and is
-autonomous; certificates travel, authorities stay; key export between sites is rejected; identity
+autonomous, and builds sites as well as tenants; certificates travel, authorities stay; key export between sites is rejected; identity
 outlives location by site-less names, with a site only a SAN or a registration; a take-home Pi is a
 Deevnet Pi by default; recovery is a rebuild from code and the vault. *"`pki=own` the generic
 default"* is withdrawn.

@@ -123,12 +123,13 @@ The rest of the toolkit carries the breadboards, components and tools for protot
 
 ---
 
-## One instance of Deevnet
+## A factory of sites and tenants
 
-This site documents the Mobile Factory, the mobile instance of Deevnet. **Architecture, Standards and
-Policies** are written for any Deevnet site. **Implementation & Tooling, the Runbook, the records and
-the Roadmap** are this instance's. Another site would be its own instance, and would more likely run
-a variant of the take-home kit than a factory of its own.
+This site documents the Mobile Factory, the mobile instance of Deevnet. **The Mobile Factory builds
+sites and tenants.** Its sites are itself and, next, the home site; its tenants are the devices and
+services it creates, deployed at whichever site hosts them. **Architecture, Standards and Policies**
+are written for any Deevnet site. **Implementation & Tooling, the Runbook, the records and the
+Roadmap** are the factory's, including what it deploys at other sites.
 
 The patterns, automation and documentation are meant to be adaptable: the standards and architecture
 can be applied to your own collection of devices and networks.
