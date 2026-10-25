@@ -14,7 +14,7 @@ weight: -52
 | **Window** | Unscheduled. One API release and deploy. First of the tenant PKI changes: before [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/) |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API); `dv02idn001v01` (OpenBao), sealed only for the test |
-| **Automation** | `deevnet-provisioning-api`; `deevnet.mgmt` `site.yml --tags deevnet-api` |
+| **Automation** | `deevnet-provisioning-api` ([#32](https://github.com/deevnet/deevnet-provisioning-api/pull/32)); `deevnet.mgmt` ([#86](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/86)) `site.yml --tags deevnet-api` |
 | **Risk** | Medium. Most likely to go wrong: a decrypt that genuinely fails (a rebuilt Transit key) is mistaken for a sealed store, and the documented way back for a tenant, supplying its secrets again, stops working |
 | **Related changes** | [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/), [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/) |
 | **Related incidents** | [INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/) |
@@ -46,12 +46,19 @@ refuses is a lost secret.
 - `/readyz` reports OpenBao as well as the database, so a sealed store is visible without a tenant
   request.
 - A refused decrypt keeps today's behavior: the tenant's way back is unchanged.
+- A tenant token presented while OpenBao is sealed is answered `503`, not `401`: the token is
+  fine, and a tenant told otherwise would chase the wrong fault.
+- **The API starts while OpenBao is sealed.** Today it exits when it cannot read its backend
+  credentials and restarts until OpenBao opens. Once OpenBao is sealed by default (CHG-0053), that
+  would be every restart outside a work session. It serves readiness, answers `503` on `/v1`, and
+  reads its credentials as soon as OpenBao opens.
+- The `deevnet_api` role's readiness wait stops on a sealed OpenBao with a plain message.
 
 ## Scope
 
 **In scope:** the OpenBao client's error types; the store's `open` and `openOne` and every caller
-(tenant secrets, Wi-Fi keys, admission keys); the minting paths that re-mint an empty secret; the
-readiness report.
+(tenant secrets, Wi-Fi keys, admission keys); the minting paths that re-mint an empty secret;
+tenant authentication; the readiness report; startup; the `deevnet_api` role's readiness wait.
 **Out of scope:** changing the seal (CHG-0053); the Ansible plays' sealed stop (CHG-0053).
 
 ## Risk and impact
@@ -93,9 +100,17 @@ key read each return `503`, and the database rows are byte-for-byte unchanged.
 
 **Verify:** readiness is `503` with `openbao: sealed` against the sealed test store, `200` unsealed.
 
-### Step 4: Release and deploy
+### Step 4: Startup
 
-Tag the release, deploy with `site.yml --tags deevnet-api`.
+The API starts with OpenBao sealed and waits for it in the background, as it waits for its
+database migrations.
+
+**Verify:** started against a sealed store, readiness is `503 openbao: sealed` and `/v1` is `503`;
+unsealed, both turn `200` with no restart.
+
+### Step 5: Release and deploy
+
+Tag the release; merge the role's change; deploy with `site.yml --tags deevnet-api`.
 
 **Verify:** `/readyz` is `200`; every tenant's reconcile succeeds; validation plan V13's API half
 passes against the sealed test store.
@@ -111,5 +126,7 @@ Deploy the previous release. Nothing is migrated, so the undo is the deploy.
 
 ## To discover
 
-- What OpenBao returns for Transit decrypt while sealed, on the running version: status and body,
-  confirmed against the test store, not assumed.
+- ~~What OpenBao returns for Transit decrypt while sealed.~~ Found while building, against a
+  throwaway OpenBao 2.6.2: a ciphertext the key refuses is `400 cipher: message authentication
+  failed`; sealed, decrypt, encrypt and AppRole login are all `503 Vault is sealed`. The client
+  treats any `5xx` or transport error as unavailable.
