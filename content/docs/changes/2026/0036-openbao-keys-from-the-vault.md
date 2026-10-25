@@ -10,7 +10,7 @@ weight: -36
 | **Date** | 2026-10-25 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. Steps 1 to 4 are done: every key OpenBao uses is the vault's, the role stops until an initialization is locked in, and OpenBao's access is bound and audited. Step 5, the rebuild drill, is next |
+| **Status** | **Complete, 2026-10-25**, with Step 5, the rebuild drill, moved to a follow-up. Every key OpenBao uses is the vault's, the role stops until an initialization is locked in, and OpenBao's access is bound and audited |
 | **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/). One issuing-CA ceremony for both tenant CAs; one OpenBao role run; one API deploy |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API), the offline ceremony machine |
@@ -18,7 +18,7 @@ weight: -36
 | **Risk** | Medium. Most likely to go wrong: switching the Transit key leaves the API's stored copies unreadable until they are resealed or tenants resupply |
 | **Related changes** | [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) (built the Tenant Device CA inside OpenBao), [CHG-0047](/docs/changes/2026/0047-tenant-service-certificates/) (built the Tenant Service CA inside OpenBao), [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/) (before this), [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/) (after this) |
 | **Related incidents** | [INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/) |
-| **Related runbooks** | [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/), [OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/) |
+| **Related runbooks** | [OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/), [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/), [OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/) |
 
 ---
 
@@ -264,9 +264,23 @@ on the role`.
   ([#94](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/94) adds it only when set).
 - **A secret ID that expires needs a deploy within the year.** If none happens, the API cannot log
   in and refuses tenant work until it is redeployed.
+- **Step 5, the rebuild drill, is a follow-up, not done here.** The owner chose to finish the
+  tenant PKI's other changes first. Steps 1 to 4 were each verified on the live site, and the rebuild
+  itself was proven on throwaway OpenBao stores: a second store given the vault's Transit key opened
+  what the first sealed. The drill's procedure is written
+  ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)).
 - **Step 1 ran before CHG-0052 was deployed.** Making and signing the keys changes nothing that
   runs, so it does not need the API's sealed handling; the steps that touch OpenBao still wait for
   it.
+
+## Follow-ups
+
+- **Run the rebuild drill** ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)).
+  It also removes the old Transit key, `tenant-secrets`, and the old tenant CAs' issuers, which stay in
+  OpenBao unused until then.
+- **The image-factory AppRole's credentials are issued only when the vault has none**, so after a
+  rebuild they must be emptied by hand first. The role should notice OpenBao does not know them, as
+  the `deevnet_api` role now does for the API's.
 
 ## To discover
 

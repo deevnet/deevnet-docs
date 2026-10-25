@@ -7,122 +7,73 @@ aliases:
 
 # OpenBao Drills
 
-Two exercises, and they prove different things. The Transit half of the key-change drill and the
-snapshot restore were written from a run against the live mobile site on 2026-09-17. Every command below is one that was actually
-issued.
+**OpenBao is rebuilt from the vault, never restored**
+([ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/) §4).
+Two drills prove it:
 
 | Drill | What changes | What it proves | Destructive? |
 |---|---|---|---|
-| **Key change** | a new Transit key version | the site survives keys it has never seen before | No — every step reverses |
-| **Snapshot restore** | the instance is replaced and its data restored | the data survives at all ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)) | Yes, on a scratch instance |
+| **Rebuild** | OpenBao's storage is set aside and the instance rebuilt from the vault | a lost OpenBao comes back with the same keys and the API reads every stored secret | Yes; reversible until its last step |
+| **Key change** | the Transit key is replaced and every stored value resealed | the site survives a key it has never seen | No |
 
-**Why both.** A snapshot restore brings back the *same* Transit key, so nothing about a changed key is
-exercised — a stored secret still decrypts.
-The three defects [INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/) found were all in the
-*key change* path, and none of them would have appeared in a restore.
+The key change is the procedure on [OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#the-transit-key),
+run as a drill. It was first run for real in [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/),
+moving 26 stored values to a vault-held key.
 
----
-
-## Why the key-change drill matters
-
-Everything it exercises is a thing that happens for real: an OpenBao rebuilt after a loss, or a
-Transit key rotated after a suspected exposure. Each leaves the site holding
-credentials issued under something that no longer exists, and each of those paths had a defect in it
-the first time it ran.
-
-It is also the regression test for those three fixes. Run it after any change to the `openbao` or
-`deevnet_api` roles, or to the API's store and TLS handling.
-
-## Before starting
-
-- **Both tenants' state to hand**, because the Transit half deliberately makes their stored secrets
-  unreadable and they must resupply. `terraform show -json` from each tenant gives the values.
-- **A token for OpenBao.** Log in as Ansible's AppRole from the inventory vault; do not use a root
-  token, and there should not be one.
-- Note the current state so the drill has a baseline: the serial of the certificate the API serves,
-  and the Transit key's `latest_version` and `min_decryption_version`.
+**The rebuild drill has not been run yet.** It is CHG-0036's follow-up. The procedure below is
+written from the role as it stands; correct it from the first run.
 
 ---
 
-## The Transit key changes
+## Before the rebuild
 
-**Rotate, then forbid the old version.** Rotation alone proves nothing: old ciphertext still decrypts
-under its own version. Raising `min_decryption_version` is what makes the stored secrets unreadable.
+**Tenant work through the API stops for the drill.** Devices and workloads keep running.
 
-```bash
-curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
-  https://<openbao>:8200/v1/transit/keys/tenant-secrets/rotate
+- The inventory decrypted (`make unvault`): the rebuild writes new values into it.
+- A baseline, to compare after:
+  - each tenant CA's fingerprint, from `pki-tenant-service/ca/pem` and `pki-tenant-device/ca/pem`;
+  - every tenant reading back with `secrets_stored` true;
+  - `eval "$(make -s -C deevnet-image-factory pve2-env)"` exiting 0.
+- **Empty `vault_openbao_image_factory_role_id` and `_secret_id`** in `group_vars/all/vault.yml`. The
+  role issues them only when they are empty, and the rebuilt OpenBao will not know the old ones.
 
-curl --cacert <listener.pem> -H "X-Vault-Token: $TOK" -X POST \
-  https://<openbao>:8200/v1/transit/keys/tenant-secrets/config \
-  -d '{"min_decryption_version":2}'
-```
+## The rebuild
 
-**What must happen:**
+1. **Set the storage aside**, on `dv02idn001v01`. Moved, not deleted, so the drill can be undone:
 
-1. **A tenant still authenticates.** `terraform plan` succeeds. This is the whole point: the token's
-   MAC is verified without the registry and the token hash is not sealed, so an unreadable secret must
-   not make the tenant unauthenticatable. Before this was fixed, every call answered `401` and the
-   documented recovery was unreachable.
-2. **The API says so plainly.** `podman logs deevnet-api` carries
-   `stored secret will not open; it must be supplied again`, once per secret, with OpenBao's own reason
-   (`ciphertext or signature version is disallowed by policy (too old)`).
-3. **The tenant read says so, and a plan notices.** `secrets_stored` goes false, and the tenant's next
-   `terraform plan` shows **one in-place change** on the tenant resource: the three secrets and the flag.
-   Everything else is untouched — index, subnet, zones, gateway — because the registry row is still
-   there and only the secrets are unreadable:
-
-   ```text
-   ~ resource "deevnet_tenant" "this" {
-       ~ api_token        = (sensitive value)
-       ~ secrets_stored   = false -> (known after apply)
-       ~ state_secret_key = (sensitive value)
-       ~ tsig_secret      = (sensitive value)
-         # (18 unchanged attributes hidden)
-     }
-   Plan: 0 to add, 1 to change, 0 to destroy.
+   ```bash
+   sudo systemctl stop openbao
+   sudo mv /srv/openbao/data /srv/openbao/data.before-drill
    ```
 
-4. **`terraform apply` reseals it.** The tenant sends the copies from its own state, which are the
-   authoritative ones
-   ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §4). No operator call
-   is needed: the resupply is an ordinary apply, on each tenant.
+2. **Run `ansible-playbook playbooks/openbao.yml`.** OpenBao starts empty and is initialized; the run
+   imports both tenant CAs and the Transit key from the vault, writes the policies and AppRoles, and
+   revokes the root token. It writes the new recovery key and Ansible's AppRole to
+   `.openbao/dv02idn001v01-init.json`.
+3. **Lock it in.** Move `vault_openbao_ansible_role_id`, `vault_openbao_ansible_secret_id` and the
+   recovery key into the openbao vault; `make vault`, commit, push; then delete the file.
+4. **Run `openbao.yml` again.** It logs in as Ansible, writes the build secrets, and issues the
+   image-factory AppRole's credentials to `.openbao/image-factory-approle.json`. Move them into
+   `group_vars/all/vault.yml`, `make vault`, commit, push, delete the file.
+5. **Deploy the API** (`site.yml --tags deevnet-api --limit deevnet_api`). It writes its backend
+   credentials into OpenBao's KV, and issues itself a secret ID, since the rebuilt OpenBao does not
+   know its old one.
 
-**Verify:** the stored columns carry the new key version, and `secrets_stored` is true again.
+## Verify
 
-```sql
-SELECT name, left(tsig_secret,10), left(state_secret,10) FROM tenants ORDER BY idx;
-```
-
-**To reverse:** set `min_decryption_version` back to `1`. It is harmless once everything is resealed,
-and it leaves the older key version readable for anything missed.
-
----
+- Both tenant CAs serve the baseline's fingerprints, and `playbooks/tenant-service-ca-verify.yml`
+  passes.
+- `transit/keys/<openbao_transit_key>` reports `imported_key: true`.
+- **Every tenant reads back with `secrets_stored` true**: the rebuilt OpenBao opens what the old one
+  sealed. This is the drill's point.
+- `pve2-env` exits 0 again.
+- The audit log shows each caller from its listed address.
 
 ## Finish
 
-Also check the build path still works: `eval "$(make -s -C deevnet-image-factory pve2-env)"` exits 0
-and prints the exports. It logs in as the image-factory AppRole and reads
-`image-factory/proxmox/<node>` ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
+Delete `/srv/openbao/data.before-drill`. **It is a full copy of every secret**, openable with the seal
+key, so it does not outlive the drill.
 
-Both plays `changed=0`, `/readyz` `200`, every tenant name resolving forward, every reverse record
-naming its workload, and both tenants' plans clean.
-
-**A tenant learns this by itself.** `secrets_stored` on the tenant read was added after the first run
-of this drill, precisely because the resupply had been a `curl` call an operator had to remember. Both
-halves of the drill are now ordinary role runs and ordinary applies.
-
-**Older stored ciphertext stays readable** once `min_decryption_version` is set back, so setting it
-back is safe and is the last step. Nothing should still need it — both tenants resealed — but a tenant
-that was not applied during the drill would.
-
----
-
-## Snapshot restore
-
-Still unproven, and it is [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)'s
-last unconfirmed claim. The shape: take a Raft snapshot, stand up a fresh instance with **the same
-seal key** from the vault, restore into it, and confirm KV, Transit and PKI come back and the API
-decrypts its stored secrets. Run it on a scratch instance rather than the live one — the seal key is
-what makes a copy of the data readable, so a restored snapshot elsewhere is a full copy of every secret
-and is treated as such.
+**To undo before that**, stop OpenBao, move the old storage back, start it, and revert the vault
+commits from steps 3 and 4. The old OpenBao's keys are the vault's, so nothing it holds differs from
+the rebuilt one but the AppRoles.
