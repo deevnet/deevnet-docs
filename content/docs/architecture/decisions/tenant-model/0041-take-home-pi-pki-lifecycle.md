@@ -3,152 +3,137 @@ title: "ADR-0041: Take-Home Pi PKI Lifecycle"
 weight: -41
 ---
 
-# ADR-0041: A Take-Home Pi Is Managed by the Factory, Independent, or Brings Its Own PKI
+# ADR-0041: A Take-Home Pi Is a Deevnet Pi by Default, and Carries a Starter Kit for a PKI of Its Own
 
 |  |  |
 |--|--|
 | **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
-| **Revised** | 2026-10-21, before review: the default is the generic image's, and a card written for a managed tenant sets its mode deliberately; `own` issues device certificates too; the Pi's own services dial canonical names, not `localhost` |
-| **Scope** | The certificates on a tenant's take-home Pi and its devices: how each is provisioned, renewed, backed up and recovered under each of three modes, how devices are added away from the factory, and how a tenant moves between modes. Not the tenant CA hierarchy ([ADR-0039](/docs/architecture/decisions/substrate/0039-tenants-beside-sites-in-the-pki/)), not names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)) |
-| **Depends on** | ADR-0039 *(Proposed)* and ADR-0040 *(Proposed)*, for `deevnet` |
-| **Related** | [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) §4, [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/), the [take-home Pi image](/docs/runbook/tenant/tenant-to-pi-image/), [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/), the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/) |
+| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 gave a card three modes (`deevnet`, `own` as the generic default, `bring`). That is withdrawn for one default and a starter kit |
+| **Scope** | The certificates on a take-home Pi and its devices: what the card is given, what an owner who leaves Deevnet uses to make a PKI of their own, and how the card's first-boot configuration chooses between them. Not the tenant CAs ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)), not names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)) |
+| **Depends on** | ADR-0039 *(Proposed)* and ADR-0040 *(Proposed)* |
+| **Related** | [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) §4, [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/), the [take-home Pi image](/docs/runbook/tenant/tenant-to-pi-image/), [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) |
 
 ---
 
 ## Context
 
 **A take-home Pi is a small Deevnet of the tenant's own**: broker, log store and Grafana on one card,
-with `deevnet-kit` doing what the API does on a site. Today the kit makes a CA on first boot and
-issues the Pi's certificate from it. The certificate names the card's `.local` name, `localhost`,
-and every address the Pi has, because a device that cannot resolve a name dials the address.
+with `deevnet-kit` doing what the API does on a site. One generic image is built and published to
+the tenant downloads, and the tenant is set on the card at first boot.
 
-**Owners want different things.** The owner's own tenants stay under Deevnet's PKI and return to the
-factory for maintenance. A meetup attendee may never reconnect. An advanced user may run a CA
-already.
+**Today the card makes its own CA at first boot**, ten years, and issues the Pi's server certificate
+from it, 825 days, for the card's `.local` name, `localhost` and its addresses. Apps and devices
+are pointed at the exported `deevnet-kit-ca.pem`. There is no other mode.
+
+**The offline ceremony tools already exist** (`deevnet.mgmt` `scripts/pki/`): a root and a Site CA
+on encrypted key media, issuing CAs signed across a transfer drive. They are written for Deevnet's
+names.
 
 ## Decision
 
-### 1. Three modes, chosen on the card
+### 1. The card's first-boot configuration chooses `deevnet` or `non-deevnet`
 
-| | `deevnet` | `own` | `bring` |
-|---|---|---|---|
-| For | a Deevnet-managed tenant | a tenant that is, or becomes, independent | a tenant with a PKI of its own |
-| Server certificate | a leaf from the tenant's Service CA, for canonical names (and vanity names from the Names CA) | issued by the card's CA | the tenant's |
-| Device certificates | from the tenant's Device CA, at the factory | issued by the card's CA, on the Pi | the tenant's |
-| Device anchor | the tenant's Service CA | the card's CA | the tenant's |
-| Computers trust | the Deevnet Root, already there | the card's CA | the tenant's root |
-| Needs the factory | to renew, and to enroll devices by certificate | never | never |
-| Deevnet trusts it | yes | no | no |
+**One generic image stays.** The choice is made on the card, at first boot, with `deevnet` the
+default.
 
-**The generic image defaults to `own`**, as today: a card with nothing written has no arrangement
-with anyone. **A card written for a Deevnet-managed tenant sets `pki=deevnet` deliberately**, as part
-of writing that card. It is never left to the default.
+| | `deevnet` (default) | `non-deevnet` |
+|---|---|---|
+| Server certificate | from the Tenant Service CA, for the tenant's site-less names and its site names (ADR-0040) | from the owner's own issuing CA, once set up |
+| Device certificates | from the Tenant Device CA, at the Mobile Factory | from the owner's own issuing CA |
+| Computers and devices trust | the Deevnet Root | the owner's root |
+| Renewal | each year, at a visit or by a request that travels | the owner's, on the Pi |
+| The starter kit | on the card, unused | the owner's to run |
 
-### 2. Devices dial an address and verify a name
+### 2. A Deevnet Pi holds certificates, never a CA key
 
-**A device is given the Pi's address to dial and the broker's canonical name to verify**
-(`mqtt.<tenant>.t.deevnet.net`). mbedTLS sets the expected name apart from the address. ESP-MQTT and
-MicroPython expose it, and it also becomes the SNI. So no certificate needs an address in it, and
-the home network needs no DNS for the tenant's names.
+**At provisioning, the kit makes the server key and a request; the Mobile Factory signs it in a work
+session; the kit installs the certificate and its chain.** Renewal is the same three steps. A
+request and a certificate are public and may travel on a USB stick; the tenant's token, which
+authorizes, stays with the owner.
 
-**The Pi's own services dial canonical names too**, mapped to the loopback address on the Pi. So no
-certificate needs `localhost`, which the tenant subtree does not permit.
+**Devices dial a name and the Pi's address, and verify the name.** mbedTLS sets the expected name
+apart from the address, and ESP-MQTT and MicroPython expose it. The Pi's own services dial its
+names too, mapped to loopback on the Pi, so its certificate needs neither `localhost` nor an
+address.
 
-**Under `own`, the card's certificate may keep addresses**, for devices that cannot set a name apart.
+**A Deevnet Pi's certificate never carries the bus name** (ADR-0040 §5).
 
-### 3. `deevnet`: the Pi holds leaves and renews at maintenance
+**Off Deevnet, the certificate stops serving people first.** At the owner's house a browser reaches
+the Pi by its `.local` name or address, which the certificate does not name, unless the owner
+trusts the Deevnet Root and resolves the Pi's Deevnet names locally. Devices keep working until it
+expires, a year at most, because they verify a name and trust the Deevnet Root. That year is the
+owner's time to move to a PKI of their own.
 
-**At provisioning**, on the factory's network or with the API reachable:
-1. the kit makes the server key and a request for the tenant's canonical names (and any vanity
-   names);
-2. the owner sends the request with the tenant's token;
-3. the kit installs each leaf with its chain.
+### 3. The starter kit makes a two-tier PKI
 
-**No CA key is on the card.**
+**Every image carries the ceremony tools, given parameters for the owner's names**, and
+`deevnet-kit pki init` walks a `non-deevnet` owner through them:
+1. the owner's organization name, for the CA subjects;
+2. the names the Pi answers to: its `.local` name, the owner's domain if any, its addresses;
+3. a USB stick for the root key, encrypted as the ceremony's key media are.
 
-**Renewal is the same three steps, each year, inside the window.** `deevnet-kit status` warns from
-60 days. A request and a certificate are public and may travel on a USB stick. The token, which is
-what authorizes, stays with the owner.
+**It then makes the owner's root on the stick and an issuing CA on the Pi**, issues and installs the
+Pi's server certificate, exports the root for computers and devices, and shows how to enroll a
+device.
 
-**A device added away from the factory gets a password account** (`deevnet-kit account add`), as
-today. It gets a certificate from its Device CA at the next maintenance.
+**The root never sits on the Pi.** A failed or stolen card costs the issuing CA: the owner signs a
+new one from the stick, and nothing their devices trust changes. Renewal and enrollment need only
+the Pi.
 
-**A failed card**: a new card, a new key, a leaf at the next maintenance. Until then the service is
-down. Options, the owner's:
-- back up the leaf's key and certificate when issued;
-- a longer leaf for take-home, up to what clients accept (825 days on Apple platforms, to confirm).
+**It is a starter kit**, with instructions on how to take it further. Deevnet holds nothing of it and
+trusts none of it.
 
-### 4. `own`: the tenant's authority, and where its key lives
+**Until the owner runs it, a `non-deevnet` card keeps today's first-boot certificate as a
+placeholder.**
 
-**The card's CA issues and renews both server and device certificates, with no contact with
-Deevnet.** A device enrolls on the Pi (`deevnet-kit device enroll`). Renewal is local and automatic,
-because the authority is local.
+### 4. Leaving Deevnet is a trust transition, in order
 
-**Its CA is constrained to the tenant's canonical subtree and private addresses**, which costs
-nothing and binds every client that enforces it.
+1. The owner's root reaches every device and computer **beside** the Deevnet Root.
+2. The Pi's certificates are reissued by the owner's issuing CA.
+3. Once every device is known to hold the owner's root, the Deevnet Root is removed from them.
 
-**Where the CA key lives:**
-
-| Option | |
-|---|---|
-| **A CA on the card, with an encrypted backup taken at first boot** *(leaning)* | `deevnet-kit ca backup` writes the CA key, passphrase-encrypted, to the owner's USB stick. The kit does not finish first boot until a backup exists, and the owner is told to keep it off the Pi. A failed card is restored from it, and no device changes anchor |
-| A root the owner keeps off the Pi, and an issuing CA on the card | A lost or stolen card costs an issuing CA, not the anchor: devices that trust the owner's root accept the replacement. More to understand and to keep; worth it for a tenant with many devices |
-| A CA on the card, no backup (today) | A failed card means every device takes a new anchor |
-
-**A backup counts only once a restore from it has worked.** The kit can check a backup by loading it
-on the same card.
-
-### 5. `bring`: the tenant's PKI, the kit's mechanics
-
-**The kit takes a leaf and chain, or an issuing CA, and an anchor for devices.** It renews nothing it
-did not issue. Deevnet holds nothing of it and trusts none of it.
-
-### 6. Changing mode is a trust transition, in order
-
-**From `deevnet` to `own` or `bring` (graduation), or back:**
-1. The new anchor reaches every device and computer **beside** the old one.
-2. The Pi's certificates are reissued by the new authority.
-3. Once every device is known to hold the new anchor, the old one is removed.
-
-**The service stays up throughout**, because each device trusts both while it matters. **Deevnet's
-keys are never handed over**: independence is a new authority. A device that can take an anchor only
-by cable is provisioned again at step 1. How a device takes an anchor is its application's
-(ADR-0011).
+**The service stays up throughout. Deevnet's keys are never handed over**: independence is a new
+authority. A device that takes an anchor only by cable is provisioned again at step 1, which is its
+application's to plan (ADR-0011).
 
 ---
 
 ## Consequences
 
-**Every take-home Pi chooses its relationship with Deevnet**, deliberately when managed, and can
-change it.
+**Every Pi starts as a Deevnet Pi**, and an owner who leaves has the tools to do it.
 
-**Under `deevnet`, uptime depends on a visit a year**, or less often with a longer leaf.
+**The ceremony tools gain parameters** (organization, names, constraints) and a step that issues
+leaves, server and device.
 
-**Under `own`, the backup is what stands between a failed card and re-anchoring every device.**
+**`deevnet-kit` grows** a first-boot `deevnet` / `non-deevnet` setting, a request-and-install path
+for Deevnet certificates, and `pki init`. Its first-boot CA becomes the `non-deevnet` placeholder.
 
-**The kit grows**: `pki=`; a request and install path; a CA backup and its check; device enrollment;
-a constraint on its own CA; canonical names in place of `localhost` and addresses.
+**On the operator's own Deevnet Pis the tools sit unused**, or are removed as a step of deploying the
+Pi to production. They hold no key.
 
 ---
 
 ## Alternatives considered
 
-- **Rejected: every take-home Pi is managed by Deevnet.** Some owners never come back.
-- **Rejected: every take-home Pi is independent.** The owner's own tenants would each carry a root.
-- **Rejected: under `deevnet`, the Pi holds the tenant's Service CA** (ADR-0039).
+- **Withdrawn: three modes on the card** (`deevnet`, `own` as the generic default, `bring`). `own`
+  recorded what the kit already did rather than a choice. `bring` served an owner with a PKI of their
+  own, who needs no starter kit.
+- **Rejected: a single CA on the card for `non-deevnet`.** Losing the card would re-anchor every
+  device.
+- **Rejected: two images, with and without the tools.** Two artifacts to build and publish for a few
+  kilobytes of scripts, and a Deevnet Pi could not leave without a new card.
+- **Rejected: a Deevnet Pi holds a tenant CA.** A CA key on field hardware.
 
 ---
 
 ## Open questions
 
-1. **`own`: a CA on the card with a backup, or an owner-held root** (§4)?
-2. **`deevnet`: a longer leaf, or a key backup** (§3)?
-3. **`bring`: an issuing CA, or leaves only?**
+None.
 
 ---
 
 ## What would settle it
 
-V1, V7, V8 and V11 of the
+V7, V8 and V11 of the
 [validation plan](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan).
