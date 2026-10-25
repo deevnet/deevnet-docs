@@ -39,9 +39,11 @@ Deevnet Root CA (offline): the one anchor for people, computers and devices
 - **Only the Mobile Factory creates tenants.** It is a contractor site: it goes to the devices, or
   devices are brought to it, for creation, renewal and development. Its long form is the Deevnet
   IoTaaS Mobile Development Factory.
-- **"Identity outlives location" is dropped as a principle.** Being in development on the kit is part
-  of a deployment's identity; moving between sites is reissuing certificates, as a visa is added to a
-  passport.
+- **Identity outlives location by names, not by CAs.** The owner first set the principle aside: being
+  in development on the kit is part of a deployment's identity. The design that followed keeps
+  identity site-less anyway. A service's identity is its site-less name, and a device's is its URI.
+  A site appears only as an extra SAN on a service's certificate and as a device's registration,
+  its visa. A move to a site already in the SANs needs no new certificate.
 - **A site has only its substrate's CAs**; the Mobile Factory's existing tenant CAs serve every site;
   devices trust the Deevnet Root (ADR-0039).
 - **A tenant service is named without a site**, `<service>.<tenant>.deevnet.net`, in its CN and first
@@ -265,7 +267,7 @@ would damage tenants.
 | D14 | Does another site create tenants? | **No.** Only the Mobile Factory | ADR-0039 |
 
 **Principles, as round 3 leaves them** (the owner's): the Mobile Factory alone creates tenants and is
-autonomous; certificates travel, authorities stay; key export between sites is rejected; a move is a
-reissue, not a new identity; a take-home Pi is a Deevnet Pi by default; recovery is a rebuild from
-code and the vault. *"Identity outlives location"* and *"`pki=own` the generic default"* are
-withdrawn.
+autonomous; certificates travel, authorities stay; key export between sites is rejected; identity
+outlives location by site-less names, with a site only a SAN or a registration; a take-home Pi is a
+Deevnet Pi by default; recovery is a rebuild from code and the vault. *"`pki=own` the generic
+default"* is withdrawn.

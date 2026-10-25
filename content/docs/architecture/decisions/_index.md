@@ -352,8 +352,8 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   Only the Mobile Factory creates tenants. A site has only its own Site and Substrate CAs; the
   Mobile Factory's Tenant Service and Device CAs issue for tenants at every site; every client,
   devices included, trusts the Deevnet Root. A device's certificate carries no site; a site's broker
-  admits it by registration and by a key fingerprint recorded at issuance. A move is a reissue and a
-  registration. Extends ADR-0031; amends its §3, §5 and ADR-0037.
+  admits it by registration and by a key fingerprint recorded at issuance. A planned move changes no
+  certificate: a service's sites are SANs, and a device needs only a registration. Extends ADR-0031; amends its §3, §5 and ADR-0037.
 - [ADR-0037: Tenant Service Certificates](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) —
   *Accepted; built by CHG-0047.* Answers ADR-0031's open question 2. Each site gains a third
   issuing CA, the Tenant Service CA, its key inside OpenBao, which issues server certificates for
