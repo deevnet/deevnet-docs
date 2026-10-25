@@ -47,7 +47,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0039 | 2026-10-07 | [Backup to an Attached SSD](2026/0039-backup-to-an-attached-ssd/) | Deployment | mobile | In Progress |
 | CHG-0038 | Unscheduled | [The Reconcile Restores Everything](2026/0038-reconcile-restores-everything/) | Deployment · Configuration | mobile | Planned |
 | CHG-0037 | Unscheduled | [Substrate Builds Off OpenBao](2026/0037-builds-off-openbao/) | Configuration | mobile | Planned |
-| CHG-0036 | 2026-10-25 | [OpenBao's Keys From the Vault](2026/0036-openbao-keys-from-the-vault/) | Configuration | mobile | In Progress |
+| CHG-0036 | 2026-10-25 | [OpenBao's Keys From the Vault](2026/0036-openbao-keys-from-the-vault/) | Configuration | mobile | Complete |
 | CHG-0035 | 2026-10-06 | [Previously Exposed Credentials Checked and Rotated](2026/0035-exposed-credentials/) | Configuration | mobile | Complete |
 | CHG-0034 | Unscheduled | [Device Certificates Through the Deevnet API](2026/0034-device-certificates/) | Deployment · Configuration | mobile | Planned |
 | CHG-0033 | 2026-10-03 | [The Deevnet PKI](2026/0033-deevnet-pki/) | Configuration | mobile | Complete |
