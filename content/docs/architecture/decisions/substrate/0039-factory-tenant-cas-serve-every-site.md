@@ -125,11 +125,14 @@ genuine device. With it, a forged certificate carries a key that no registration
 maintenance connects as it is, and a device deployed at another site needs a registration there,
 not a new certificate. Deregistering a device is how it is refused, in place of revocation.
 
-### 6. Moving between sites is reissue and registration
+### 6. A planned move changes no certificate
+
+**Identity is site-less, so a move to a site the tenant was headed for changes only DNS and
+registration.**
 
 | What moves | What changes |
 |---|---|
-| A tenant service | Its certificate gains the new site's name (ADR-0040), issued in a work session. Its vanity name, and so what devices dial, does not change |
+| A tenant service | Nothing, if the site is already in its certificate's SANs (ADR-0040 §3). A site not yet listed is added by a reissue, in a work session. Its site-less name, and so what devices dial, never changes |
 | A device | A registration at the new site. Its certificate and its anchor stay |
 | Anything | Nothing a client trusts |
 
