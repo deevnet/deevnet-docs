@@ -67,8 +67,9 @@ and they issue for every tenant wherever it runs. A certificate for a service at
 `leaf → Tenant Service CA → Mobile Site CA → Deevnet Root`, and the Site CA's `deevnet.net`
 constraint permits every name in `home.deevnet.net`. Their keys were made inside OpenBao and cannot
 leave it, so ADR-0042 §4 replaces each once, outside it. The new CAs are signed by the Mobile Site
-CA under names without a site, `Deevnet Tenant Service CA` and `Deevnet Tenant Device CA`. A CA's
-name is a label, not a scope.
+CA under names without a site, `Deevnet Tenant Service CA` and `Deevnet Tenant Device CA`. They stay
+children of the Mobile Site CA because the mobile site is the Mobile Factory, and the factory is
+what *mobile* means here. A CA's name is a label, not a scope.
 
 ```
 Deevnet Root CA (offline, 20 yrs, pathlen 2): the one anchor for people, computers and devices
