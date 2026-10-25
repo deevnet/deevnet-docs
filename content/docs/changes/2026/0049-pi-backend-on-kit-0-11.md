@@ -16,7 +16,7 @@ weight: -49
 | **Systems** | The artifact server: `binaries/deevnet-kit/`, `binaries/deevnet-log-user/` and `tenant/pi/` |
 | **Automation** | `deevnet-provisioning-api` `make stage-pi`; `deevnet-image-factory` `make pi-backend`, `make pi-backend-publish` |
 | **Risk** | Low. A tenant downloading the image mid-publish could take a mixed file; the checksum beside it would catch it |
-| **Related changes** | [CHG-0025](../0025-tenant-downloads/), which first published the image |
+| **Related changes** | [CHG-0025](/docs/changes/2026/0025-tenant-downloads/), which first published the image |
 | **Related incidents** | None |
 | **Related runbooks** | None |
 

@@ -16,7 +16,7 @@ weight: -50
 | **Systems** | `deevnet-provisioning-api` (`v0.12.0`); the artifact server's `binaries/deevnet-kit/` and `binaries/deevnet-log-user/`; `dv02rpi003p01`'s `/usr/local/bin/deevnet-kit` |
 | **Automation** | `deevnet-provisioning-api` PR #31, tag `v0.12.0`, `make stage-pi` |
 | **Risk** | Low. A card that sets no names behaves as before. On the Pi, 0.11.0 is kept beside the new binary |
-| **Related changes** | [CHG-0049](../0049-pi-backend-on-kit-0-11/), the take-home image on 0.11.0 |
+| **Related changes** | [CHG-0049](/docs/changes/2026/0049-pi-backend-on-kit-0-11/), the take-home image on 0.11.0 |
 | **Related incidents** | None |
 | **Related runbooks** | None |
 

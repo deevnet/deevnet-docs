@@ -201,20 +201,20 @@ and no snapshot, and three AppRoles with no secret-ID TTL or address binding.
 
 ## Migration plan
 
-**Each phase is its own change record, and none starts without the owner's approval.** Nothing below
-is built.
+**Each phase has a change record, Planned, and none starts without the owner's approval.** P3 and
+P4 share one. Nothing below is built.
 
 | Phase | Work | Done when | Rolls back by |
 |---|---|---|---|
-| **P0** | The API treats a sealed OpenBao as unavailable: it refuses tenant work before changing anything, and never marks, empties or re-mints a secret for it (R3-1) | V13's API half passes against a sealed test store | the API's previous release |
-| **P1** | CHG-0036, extended: a new Transit key from the vault, stored tenant secrets resealed under it; both tenant CAs re-keyed outside OpenBao, signed by the Mobile Site CA, held in the vault and imported; the lock-in stop | V3 and V12 pass | the old Transit key and CAs stay until the reseal is verified |
-| **P2** | The Shamir seal (ADR-0042): three shares, threshold two, one in the vault; every pair proven; Ansible's OpenBao plays stop plainly when sealed | V13 and V14 pass | the static seal, from the vault |
-| **P3** | Names: `<tenant>.deevnet.net` zones, the reserved labels (`device` and the bus name among them), `mqtt.deevnet.net` on each broker's certificate, the signing role's guard | V4 passes | removing the zones; site names untouched |
-| **P4** | Issuance: site-less CN and site SANs; device URI and CN without a site; the key fingerprint recorded | V2 and V10 pass | the API's previous release |
-| **P5** | Existing tenants (`eds`, `tdemo`, `mabell`, `cdeever`) reissued with site-less names | each serves its site-less name | the site-named certificates stay valid |
-| **P6** | Device certificates (CHG-0034 re-planned) with the broker's registration and fingerprint checks | V1 and V6 pass | passwords stay accepted throughout |
-| **P7** | `deevnet-kit` and the ceremony tools: `deevnet` / `non-deevnet`, request and install, `pki init` | V7, V8 and V11 pass | the previous image |
-| **P8** | The home site ([roadmap](/docs/roadmap/infrastructure/home-site/)): its Site CA and Substrate CA, its inventory and network, DNS and DHCP on its router, DNS for the Pis it hosts, deployed from the Builder | a Deevnet Pi served at home, its devices connecting | — |
+| **P0** ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) | The API treats a sealed OpenBao as unavailable: it refuses tenant work before changing anything, and never marks, empties or re-mints a secret for it (R3-1) | V13's API half passes against a sealed test store | the API's previous release |
+| **P1** ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)) | CHG-0036, extended: a new Transit key from the vault, stored tenant secrets resealed under it; both tenant CAs re-keyed outside OpenBao, signed by the Mobile Site CA, held in the vault and imported; the lock-in stop | V3 and V12 pass | the old Transit key and CAs stay until the reseal is verified |
+| **P2** ([CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/)) | The Shamir seal (ADR-0042): three shares, threshold two, one in the vault; every pair proven; Ansible's OpenBao plays stop plainly when sealed | V13 and V14 pass | the static seal, from the vault |
+| **P3** ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) | Names: `<tenant>.deevnet.net` zones, the reserved labels (`device` and the bus name among them), `mqtt.deevnet.net` on each broker's certificate, the signing role's guard | V4 passes | removing the zones; site names untouched |
+| **P4** ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) | Issuance: site-less CN and site SANs. A device's site-less URI and CN, and its key fingerprint, are issued with P6, where device certificates are first signed | V2 and V10 pass | the API's previous release |
+| **P5** ([CHG-0055](/docs/changes/2026/0055-reissue-tenants-site-less/)) | Existing tenants (`eds`, `tdemo`, `mabell`, `cdeever`) reissued with site-less names | each serves its site-less name | the site-named certificates stay valid |
+| **P6** ([CHG-0034](/docs/changes/2026/0034-device-certificates/)) | Device certificates (CHG-0034 re-planned) with the broker's registration and fingerprint checks | V1 and V6 pass | passwords stay accepted throughout |
+| **P7** ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)) | `deevnet-kit` and the ceremony tools: `deevnet` / `non-deevnet`, request and install, `pki init` | V7, V8 and V11 pass | the previous image |
+| **P8** ([CHG-0057](/docs/changes/2026/0057-build-the-home-site/)) | The home site ([roadmap](/docs/roadmap/infrastructure/home-site/)): its Site CA and Substrate CA, its inventory and network, DNS and DHCP on its router, DNS for the Pis it hosts, deployed from the Builder | a Deevnet Pi served at home, its devices connecting | — |
 
 **P0 comes before P2.** Sealing OpenBao before the API can tell a sealed store from a lost secret
 would damage tenants.

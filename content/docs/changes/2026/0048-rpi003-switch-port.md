@@ -16,7 +16,7 @@ weight: -48
 | **Systems** | `dv02acc001p01` (switch port `Gi1/0/11`); `dv02rpi003p01` reached, not changed |
 | **Automation** | `deevnet.net` `playbooks/switch-vlans.yml --tags access`; inventory `host_vars/dv02acc001p01.yml` |
 | **Risk** | Low. One port that carried only this Pi. The run rewrites the other declared access ports with the configuration they already had |
-| **Related changes** | [CHG-0027](../0027-rpi004-switch-port/), the same trap on `Gi1/0/5`, whose follow-up named this Pi |
+| **Related changes** | [CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/), the same trap on `Gi1/0/5`, whose follow-up named this Pi |
 | **Related incidents** | None |
 | **Related runbooks** | None |
 
@@ -26,7 +26,7 @@ weight: -48
 
 The operator cabled `dv02rpi003p01` with a card of unknown origin and asked what was on it. It did
 not answer at `10.20.30.13`, and `a_autoprov` timed out. The switch told the story, as it did for
-`dv02rpi004p01` in [CHG-0027](../0027-rpi004-switch-port/):
+`dv02rpi004p01` in [CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/):
 
 - `show mac address-table address dc:a6:32:c5:a1:4d`: learned on **`Gi1/0/11`, VLAN 1**.
 - `Gi1/0/11` was **undeclared**, so it sat in untagged VLAN 1: no DHCP, no route. CHG-0027 left

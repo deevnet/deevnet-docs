@@ -16,7 +16,7 @@ weight: -51
 | **Systems** | The artifact server's `tenant/pi/` |
 | **Automation** | `deevnet-image-factory` `make pi-backend`, `make pi-backend-publish` |
 | **Risk** | Low. As CHG-0049; the checksum beside the image catches a download taken mid-publish |
-| **Related changes** | [CHG-0049](../0049-pi-backend-on-kit-0-11/), the same image on 0.11.0 earlier the same day; [CHG-0050](../0050-kit-extra-names/), the kit release this carries |
+| **Related changes** | [CHG-0049](/docs/changes/2026/0049-pi-backend-on-kit-0-11/), the same image on 0.11.0 earlier the same day; [CHG-0050](/docs/changes/2026/0050-kit-extra-names/), the kit release this carries |
 | **Related incidents** | None |
 | **Related runbooks** | None |
 
