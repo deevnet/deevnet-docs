@@ -10,7 +10,7 @@ weight: -36
 | **Date** | 2026-10-25 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. Steps 1 and 2 are done: both tenant CAs and the Transit key are the vault's, imported into OpenBao, and every stored secret is under the new key. Step 3, the lock-in stop, is next |
+| **Status** | In progress. Steps 1 to 4 are done: every key OpenBao uses is the vault's, the role stops until an initialization is locked in, and OpenBao's access is bound and audited. Step 5, the rebuild drill, is next |
 | **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/). One issuing-CA ceremony for both tenant CAs; one OpenBao role run; one API deploy |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API), the offline ceremony machine |
@@ -209,12 +209,61 @@ Before the run, it was all tested against throwaway OpenBao 2.6.2 and PostgreSQL
 OpenBao given the same key decrypted what the first had encrypted, and with the old key deleted,
 every resealed secret still opened.
 
+### Step 3: the lock-in stop, 2026-10-25
+
+`tasks/ansible_login.yml` ([#92](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/92)),
+used wherever the role logs in as Ansible: a refused login stops the run, naming
+`.openbao/<host>-init.json` and the vault variables to move when that file is there, and saying not
+to reinitialize when it is not. A file left after the vault's AppRole logs in is reported.
+
+**Verify:** against a throwaway OpenBao 2.6.2, with stale vault values and an init output, the role
+stopped with that message; with stale values and none, it stopped and said not to reinitialize; with
+good values it logged in, and reported a file left behind.
+
+### Step 4: OpenBao's own access, 2026-10-25
+
+**The audit device** ([#93](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/93)):
+every request to `/srv/openbao/logs/audit.log` on the identity VM, secrets HMAC'd, rotated at 50M
+with ten kept, and the role stops when the disk under it has under 1 GiB. It is declared in
+`openbao.hcl`: OpenBao 2.6.2 refuses to enable an audit device through its API.
+
+**The bindings** ([#95](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/95),
+[inventory #89](https://github.com/deevnet/ansible-inventory-deevnet/pull/89)), from the addresses
+the audit log showed for each caller, not where each was thought to be:
+
+| AppRole | Logs in from |
+|---|---|
+| `deevnet-api` | `10.20.25.20`, the API's host |
+| `ansible` | `10.88.0.1`, podman's bridge on the identity VM, for the role's own calls; the Builder, `10.20.99.95`; the temporary builder, `10.20.99.97` |
+| `image-factory` | the Builder and the temporary builder |
+
+The role's calls on the identity VM reach OpenBao through podman's bridge, so anything on that host
+shares `10.88.0.1`: that binding is only as narrow as the host.
+
+**The API's secret ID expires after a year.** The `deevnet_api` role looks it up rather than trying
+it, since the binding refuses a login from the Builder, and issues a new one when OpenBao does not
+know it, it has no expiry, or fewer than 60 days remain; it destroys the one replaced once the API
+is up on the new one. The `ansible` AppRole is described as root-equivalent, held in the vault only.
+
+**Verify:** the deploy looked up the API's secret ID, issued one with an expiry and destroyed the
+old one, and the API logged in from `10.20.25.20`; every tenant reads back. The API's secret ID
+tried from the Builder was refused: `source address "10.20.99.95" unauthorized by CIDR restrictions
+on the role`.
+
 ### Departures from the plan
 
 - **Staging v0.14.0 filled the Builder's `/home` again**: the build context carried every image
   tarball in the repository's `bin/`. They were moved out, and a `.containerignore` keeps them out
   from the next release
   ([deevnet-provisioning-api#36](https://github.com/deevnet/deevnet-provisioning-api/pull/36)).
+- **The audit device was deployed before its PR was merged.** The control node's checkout was left
+  on the PR's branch when `openbao.yml` was run for another step. It was reviewed and merged after,
+  with no difference from what ran.
+- **Retiring the old Transit key failed once**: the `deevnet_api` role refused the empty
+  `OPENBAO_TRANSIT_KEY_PREVIOUS`, because it asserts every setting is non-empty
+  ([#94](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/94) adds it only when set).
+- **A secret ID that expires needs a deploy within the year.** If none happens, the API cannot log
+  in and refuses tenant work until it is redeployed.
 - **Step 1 ran before CHG-0052 was deployed.** Making and signing the keys changes nothing that
   runs, so it does not need the API's sealed handling; the steps that touch OpenBao still wait for
   it.
@@ -228,5 +277,6 @@ every resealed secret still opened.
   and a second import onto the same name is refused.
 - ~~Whether the API can reseal its stored copies itself, or needs a one-off tool.~~ Found while
   building: a subcommand of the API's own binary, run in its container, `deevnet-api reseal`.
-- Whether CIDR binding of secret IDs behaves as expected through the routing between the Builder and
-  the identity VM.
+- ~~Whether CIDR binding of secret IDs behaves as expected through the routing between the Builder
+  and the identity VM.~~ Found by the audit log: the routed callers keep their own addresses; the
+  role's calls on the identity VM itself arrive from podman's bridge gateway.
