@@ -31,7 +31,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0055 | Unscheduled | [Existing Tenants Reissued Under Site-Less Names](2026/0055-reissue-tenants-site-less/) | Configuration · Migration | mobile | Planned |
 | CHG-0054 | Unscheduled | [Tenant Names Without a Site](2026/0054-site-less-tenant-names/) | Deployment · Configuration | mobile | Planned |
 | CHG-0053 | Unscheduled | [OpenBao Sealed by Shamir Shares](2026/0053-openbao-shamir-seal/) | Configuration | mobile | Planned |
-| CHG-0052 | Unscheduled | [A Sealed OpenBao Is Unavailable, Not a Lost Secret](2026/0052-sealed-openbao-is-unavailable/) | Deployment | mobile | Planned |
+| CHG-0052 | 2026-10-25 | [A Sealed OpenBao Is Unavailable, Not a Lost Secret](2026/0052-sealed-openbao-is-unavailable/) | Deployment | mobile | Complete |
 | CHG-0051 | 2026-10-18 | [The Take-Home Image on deevnet-kit 0.12.0](2026/0051-pi-backend-on-kit-0-12/) | Deployment | mobile | Complete |
 | CHG-0050 | 2026-10-18 | [Extra Names on a Pi's Certificate (deevnet-kit 0.12.0)](2026/0050-kit-extra-names/) | Deployment | mobile | Complete |
 | CHG-0049 | 2026-10-18 | [The Take-Home Image on deevnet-kit v0.11.0](2026/0049-pi-backend-on-kit-0-11/) | Deployment | mobile | Complete |
