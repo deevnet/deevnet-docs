@@ -11,7 +11,7 @@ aliases:
 |--|--|
 | **Status** | Accepted |
 | **Date** | 2026-09-01 |
-| **Amended by** | [ADR-0040: Tenant Names Without a Site](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) *(Proposed)*: §2's forward-zone pattern drops the site |
+| **Amended by** | [ADR-0040: Tenant Names Without a Site](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) *(Proposed)*: a tenant gains a site-less zone, `<tenant>.deevnet.net`, beside §2's site zone |
 | **Scope** | How a tenant's own DNS records reach the resolver substrate clients use |
 | **Depends on** | [ADR-0001: Tenant Network Fabric](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/), [ADR-0002: Tenant Fabric Numbering](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/) |
 | **Extended by** | [ADR-0005: Tenant Zone Apex Ownership](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/) — the zone apex, which §4 does not assign |

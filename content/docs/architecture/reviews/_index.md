@@ -16,5 +16,5 @@ closes through the usual records: an ADR for a decision, a change record for wor
 
 | Review | Date | Criteria |
 |---|---|---|
-| [Tenant PKI](2026-10-tenant-pki/) | 2026-10-21 | The tenant PKI direction (ADR-0039 to ADR-0042) against the mobile site as an autonomous tenant factory: identity outlives location, stable CA custody, deliberate PKI availability, enforceable boundaries, tested recovery |
+| [Tenant PKI](2026-10-tenant-pki/) | 2026-10-21 | The tenant PKI direction (ADR-0039 to ADR-0042) against the Mobile Factory as the one place tenants are created: stable CA custody, deliberate PKI availability, enforceable boundaries, rebuild from code. Round 3 (2026-10-25) records the owner's decisions |
 | [Rebuild and Access](2026-10-rebuild-and-access/) | 2026-10-06 | Clean rebuilds, no circular rebuild dependencies, everything as code, practical accounts and access |
