@@ -10,7 +10,7 @@ weight: -36
 | **Date** | 2026-10-25 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. Step 1's keys and certificates are made; their import into OpenBao is next |
+| **Status** | In progress. Step 1 is done: both tenant CAs are the vault's, imported into OpenBao. Step 2, the Transit key, is next |
 | **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/). One issuing-CA ceremony for both tenant CAs; one OpenBao role run; one API deploy |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API), the offline ceremony machine |
@@ -161,13 +161,28 @@ Site CA.
 Both are `CA:TRUE, pathlen:0`, Certificate Sign and CRL Sign. They are in `pki/mobile/rekey/`; the
 certificates in `pki/mobile/` are still the ones OpenBao holds.
 
+### Step 1: the import, 2026-10-25
+
+`deevnet.mgmt` [#89](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/89) changed
+`issuing_ca.yml`: OpenBao no longer generates a CA key. The role checks the vault's key is the
+inventory certificate's, imports both with the Site CA (`issuers/import/bundle`), and makes that
+issuer the default; a mount already serving the certificate is left alone. Before the run it was
+tested against a throwaway OpenBao 2.6.2 set up as the live mounts were: a mismatched key stopped
+before importing, the import switched the default, a second run changed nothing, and a leaf from
+the new issuer chained to the root.
+[Inventory #86](https://github.com/deevnet/ansible-inventory-deevnet/pull/86) put the new
+certificates in place. Then `playbooks/tenant-service-ca.yml`, `tenant-device-ca.yml` and
+`tenant-service-ca-verify.yml` were run.
+
+**Verify:** both mounts serve the ceremony's certificates, by fingerprint (the table above).
+`console.eds.mobile.deevnet.net`, issued by the old Tenant Service CA, still verifies against the
+root alone through its own chain. The old issuers stay in their mounts, not the default.
+
 ### Departures from the plan
 
 - **Step 1 ran before CHG-0052 was deployed.** Making and signing the keys changes nothing that
   runs, so it does not need the API's sealed handling; the steps that touch OpenBao still wait for
   it.
-- **The import is not done yet.** The `openbao` role does not import an issuer's key today; that
-  is the rest of Step 1.
 
 ## To discover
 
