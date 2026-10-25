@@ -10,7 +10,7 @@ weight: -36
 | **Date** | 2026-10-25 |
 | **Change type** | Configuration |
 | **Classification** | Structural |
-| **Status** | In progress. Step 1 is done: both tenant CAs are the vault's, imported into OpenBao. Step 2, the Transit key, is next |
+| **Status** | In progress. Steps 1 and 2 are done: both tenant CAs and the Transit key are the vault's, imported into OpenBao, and every stored secret is under the new key. Step 3, the lock-in stop, is next |
 | **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/). One issuing-CA ceremony for both tenant CAs; one OpenBao role run; one API deploy |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API), the offline ceremony machine |
@@ -178,16 +178,55 @@ certificates in place. Then `playbooks/tenant-service-ca.yml`, `tenant-device-ca
 `console.eds.mobile.deevnet.net`, issued by the old Tenant Service CA, still verifies against the
 root alone through its own chain. The old issuers stay in their mounts, not the default.
 
+### Step 2: the Transit key, 2026-10-25
+
+`deevnet.mgmt` `playbooks/transit-key.yml` made a 32-byte key into the openbao vault
+(`vault_openbao_transit_key`), committed and pushed before anything used it
+([inventory #87](https://github.com/deevnet/ansible-inventory-deevnet/pull/87)). The `openbao` role
+([#90](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/90)) imports it as
+`tenant-secrets-v2` by OpenBao's bring-your-own-key route: wrapped on the control node, in RAM,
+with an ephemeral AES key that is itself wrapped with OpenBao's wrapping key. A key already there
+must be an imported one. While values moved, the API's policy could also decrypt, and only
+decrypt, with the old key.
+
+API v0.14.0 ([deevnet-provisioning-api#34](https://github.com/deevnet/deevnet-provisioning-api/pull/34))
+reads with the previous key when the current one refuses a ciphertext, and adds
+`deevnet-api reseal`, run in the API's container:
+
+| Run | Result |
+|---|---|
+| Before | `eds`, `tdemo`, `mabell` and `cdeever` read back with their secrets stored, through the fallback |
+| `reseal` | 26 values moved: each tenant's TSIG, state, two log tokens and dashboard password, and 6 Wi-Fi keys. None failed |
+| `reseal` again | 26 current, none moved |
+| After | every tenant reads back with its secrets stored |
+
+Then `openbao_transit_key_previous` was emptied
+([inventory #88](https://github.com/deevnet/ansible-inventory-deevnet/pull/88)), dropping the old key
+from the API's policy and environment. The old key, `tenant-secrets`, stays in OpenBao unused until
+the rebuild drill.
+
+Before the run, it was all tested against throwaway OpenBao 2.6.2 and PostgreSQL stores: a second
+OpenBao given the same key decrypted what the first had encrypted, and with the old key deleted,
+every resealed secret still opened.
+
 ### Departures from the plan
 
+- **Staging v0.14.0 filled the Builder's `/home` again**: the build context carried every image
+  tarball in the repository's `bin/`. They were moved out, and a `.containerignore` keeps them out
+  from the next release
+  ([deevnet-provisioning-api#36](https://github.com/deevnet/deevnet-provisioning-api/pull/36)).
 - **Step 1 ran before CHG-0052 was deployed.** Making and signing the keys changes nothing that
   runs, so it does not need the API's sealed handling; the steps that touch OpenBao still wait for
   it.
 
 ## To discover
 
-- OpenBao's exact mechanism for importing a Transit key (the "bring your own key" path) and a PKI
-  issuer with its key, confirmed against OpenBao's current documentation, not assumed.
-- Whether the API can reseal its stored copies itself, or needs a one-off tool.
+- ~~OpenBao's exact mechanism for importing a Transit key and a PKI issuer with its key.~~ Found
+  by testing against OpenBao 2.6.2, the running version, before any live run: a PKI issuer and its
+  key import together through `issuers/import/bundle`, which leaves the default issuer alone and
+  is idempotent; a Transit key imports through `transit/keys/<name>/import`, wrapped as above,
+  and a second import onto the same name is refused.
+- ~~Whether the API can reseal its stored copies itself, or needs a one-off tool.~~ Found while
+  building: a subcommand of the API's own binary, run in its container, `deevnet-api reseal`.
 - Whether CIDR binding of secret IDs behaves as expected through the routing between the Builder and
   the identity VM.
