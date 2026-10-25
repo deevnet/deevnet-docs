@@ -143,6 +143,20 @@ the mobile site's pair serves every site. It is re-keyed once (ADR-0042 §4), an
 keys issued runs to expiry: `eds`'s console certificate and CHG-0047's probe certificates. The
 Tenant Device CA has issued nothing.
 
+### 8. At another site, a tenant is a Deevnet Pi
+
+**A tenant deployed at another site runs on its Deevnet Pi**, which carries its broker, log store and
+dashboards (ADR-0041). **The Pi is its devices' broker and registry**: its devices' registrations and
+key fingerprints are written at the Mobile Factory when it is provisioned, and its broker applies §5's
+checks.
+
+**The site gives the Pi a network and names, nothing else.** Its VLANs, firewall and Wi-Fi, and DNS for
+the Pi's names (ADR-0040), come from that site's inventory, applied by Ansible from the Builder on a
+visit. The site runs no broker, registry or Deevnet API for tenants.
+
+**A tenant at another site has no self-service.** A change starts at the Mobile Factory and arrives as
+a new image or a configuration change.
+
 ---
 
 ## Consequences
@@ -152,8 +166,8 @@ and the tenant CAs serve every site.
 
 **One compromise of a tenant CA reaches tenants at every site.** That was already so for devices:
 none enforces a per-site boundary on mbedTLS. With no revocation, a forged server certificate stays
-usable until the issuing CA expires, up to five years. That is the
-[open question](#open-questions) that remains.
+usable until the issuing CA expires, up to five years. That is accepted
+([risk R-14](/docs/policies/risk-management/risk-register/)).
 
 **The broker gains two checks**: a device registered at this site, and a key that matches its
 recorded fingerprint. The registry records a fingerprint at each issuance.
@@ -161,9 +175,8 @@ recorded fingerprint. The registry records a fingerprint at each issuance.
 **The Mobile Factory is where tenant certificates are renewed.** A deployed tenant needs it once a year, at a
 visit or by a request that travels.
 
-**Another site needs a device registry and tenant DNS** before a tenant can run there: a broker
-that knows the devices registered at that site, and a resolver that answers the tenant's zones.
-Neither is designed yet.
+**Another site needs no broker, registry or API for tenants** while its tenants are Pis (§8). A site
+that hosts tenant workloads would need them, and that is decided when one does.
 
 ---
 
@@ -190,11 +203,7 @@ Neither is designed yet.
 
 ## Open questions
 
-1. **Revocation.** A stolen issuing CA key can make server certificates that root-anchored devices
-   accept until the CA expires. Shorter issuing CA lifetimes, or an accepted risk? ADR-0031's open
-   question, unchanged.
-2. **Another site's registry and tenant DNS.** How its broker learns the devices registered there,
-   and how it answers a tenant's zones. A design for that site, outside this record.
+None. Revocation is an accepted risk (R-14), and a tenant at another site is a Deevnet Pi (§8).
 
 ---
 
