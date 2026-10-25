@@ -26,13 +26,13 @@ stood; the dependency matrix, the migration and validation plans and the registe
 **The model, in one picture:**
 
 ```
-Deevnet Root CA (offline): the one anchor for people, computers and devices
-├── Deevnet Mobile Site CA (offline)
-│   ├── Mobile Substrate CA: mobile's vault, issued by Ansible
-│   ├── Tenant Service CA: the Mobile Factory's, tenant servers at every site
-│   └── Tenant Device CA: the Mobile Factory's, device client certificates
-└── Deevnet <Site> Site CA, for another site (offline)
-    └── <Site> Substrate CA: that site's vault, issued by Ansible there
+Deevnet Root CA                     offline · the one anchor for people, computers and devices
+├── Deevnet Mobile Site CA          offline · the Mobile Factory
+│   ├── Deevnet Mobile Substrate CA     the factory's own infrastructure      key: vault, used by Ansible
+│   ├── Deevnet Tenant Service CA       tenant servers, at every site         key: vault → imported into OpenBao
+│   └── Deevnet Tenant Device CA        tenant devices, at every site         key: vault → imported into OpenBao
+└── Deevnet <Site> Site CA          offline · any other site
+    └── Deevnet <Site> Substrate CA     that site's own infrastructure        key: that site's vault, used by Ansible
 ```
 
 **What the owner decided:**

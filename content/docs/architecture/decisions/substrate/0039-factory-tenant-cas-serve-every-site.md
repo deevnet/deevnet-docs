@@ -72,13 +72,13 @@ children of the Mobile Site CA because the mobile site is the Mobile Factory, an
 what *mobile* means here. A CA's name is a label, not a scope.
 
 ```
-Deevnet Root CA (offline, 20 yrs, pathlen 2): the one anchor for people, computers and devices
-├── Deevnet Mobile Site CA (offline, 10 yrs, pathlen 1)
-│   ├── Mobile Substrate CA: mobile's vault, issued by Ansible
-│   ├── Tenant Service CA: the Mobile Factory's, tenant servers at every site
-│   └── Tenant Device CA: the Mobile Factory's, device client certificates
-└── Deevnet <Site> Site CA, for another site (offline, 10 yrs, pathlen 1)
-    └── <Site> Substrate CA: that site's vault, issued by Ansible there
+Deevnet Root CA                     offline · the one anchor for people, computers and devices
+├── Deevnet Mobile Site CA          offline · the Mobile Factory
+│   ├── Deevnet Mobile Substrate CA     the factory's own infrastructure      key: vault, used by Ansible
+│   ├── Deevnet Tenant Service CA       tenant servers, at every site         key: vault → imported into OpenBao
+│   └── Deevnet Tenant Device CA        tenant devices, at every site         key: vault → imported into OpenBao
+└── Deevnet <Site> Site CA          offline · any other site
+    └── Deevnet <Site> Substrate CA     that site's own infrastructure        key: that site's vault, used by Ansible
 ```
 
 **A new site costs two CAs, its Site CA and its Substrate CA.** Both are for its own
