@@ -36,10 +36,25 @@ OpenAPI specification in the repository, which a test holds to the code.
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
 
 **A service certificate is signed in the secret store, not by the API.** A tenant sends a signing
-request for a label in its own zone; the API appends the zone, asks the site's Tenant Service CA to
-sign on the one role its policy allows, and checks what comes back before returning it
-([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)). The tenant's
-key never reaches it.
+request with a label, any further labels, and the sites to name; the API builds every name, asks the
+Tenant Service CA to sign on the one role its policy allows, and checks what comes back before
+returning it ([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)).
+The tenant's key never reaches it.
+
+**A certificate names its service without a site first, then at each site asked for**
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §3). Its
+common name and first name are `<label>.<tenant>.deevnet.net`, each further label follows the same
+way, then each label at each site, `<label>.<tenant>.<site>.deevnet.net`. The sites come from the
+request (`sites`), among those the API is configured to issue for (`DEEVNET_CERTIFICATE_SITES`,
+`mobile` and `home` here); none asked means this site alone. A certificate asked for again with
+other names is reissued.
+
+**The API's reserved list is what keeps a tenant's names apart from a site's.** Tenant names that are
+a site, a site code, a global alias or `mqtt` are refused at create and admission (`home`, `mobile`,
+`mgmt`, `dvnt`, `dvntm`, `device`, `mqtt`, `artifacts`), and `device` is refused as a certificate
+label: it holds a tenant's device names. The signing role allows any name two labels under
+`deevnet.net`, so it cannot tell a tenant from a site by itself; a role per tenant is an open
+follow-up of [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/).
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,
 restoring and reconciling a tenant, and come back in those responses.
@@ -48,9 +63,9 @@ restoring and reconciling a tenant, and come back in those responses.
 
 ## What it holds
 
-**Backend credentials**, in OpenBao (KV mount `deevnet-api`, path `backends`), read at start with the
-API's own AppRole. Each comes from the inventory vault, and rotating one is a vault edit and a role
-run:
+**Backend credentials**, in OpenBao (KV mount `deevnet-api`, path `backends`), read with the API's
+own AppRole once OpenBao is open. Each comes from the inventory vault, and rotating one is a vault
+edit and a role run:
 
 | Backend | Credential |
 |---|---|
@@ -74,19 +89,33 @@ only the token is issued by hand
 
 Both are granted to the user `deevnet-api@pve` and to its token.
 
-**Tenant secrets** it issues are sealed with the OpenBao Transit key `tenant-secrets`, and enrollment
-tokens use response wrapping. Tenant tokens are HMACs of a key in the vault, so they verify
+**Its AppRole logs in only from its own address**, and its secret ID lives a year. The
+`deevnet_api` role looks the secret ID up on each deploy, issues a new one when fewer than 60 days
+remain, and destroys the old one once the API is up on the new; a year with no deploy leaves the API
+unable to log in ([OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#logging-in)).
+
+**Tenant secrets** it issues are sealed with an OpenBao Transit key, named in the inventory
+(`openbao_transit_key`) and imported from the vault, never made inside OpenBao. Enrollment tokens use
+response wrapping. **A new Transit key does not strand what the old one sealed:** with
+`OPENBAO_TRANSIT_KEY_PREVIOUS` set, the API decrypts with the old key when the new one refuses, and
+`deevnet-api reseal`, run in its container, moves every stored value to the new key
+([OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#the-transit-key)). Tenant tokens are HMACs of a key in the vault, so they verify
 without the registry, as long as that key is unchanged.
 
 **The registry**: PostgreSQL, at `/srv/deevnet-api/pgdata` on the VM's own disk: tenants, their
 workloads, records, keys, devices and broker accounts, each step's outcome, and an audit log.
-**Nothing copies it off the host**
-([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), Proposed).
+**Nothing copies it off the host, by design**: a tenant's code is the authoritative copy, and a lost
+registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)).
 
 ---
 
 ## How it behaves on repair
 
+- **A sealed or unreachable OpenBao is unavailable, never a lost secret.** Tenant work answers `503`
+  before anything changes, a tenant token gets `503` rather than `401`, and `/readyz` names the
+  state (`ok`, `sealed`, `uninitialized`, `unreachable`). The API starts while OpenBao is sealed and
+  reads its backend credentials when it opens. Only a ciphertext OpenBao answers and refuses is a
+  lost secret, which the tenant supplies again from its state on its next apply.
 - **Create, restore, resume.** A tenant applied with its three secrets from its own state is a
   *restore*: the same index, the same keys. A create that was interrupted resumes and issues a new
   API token.

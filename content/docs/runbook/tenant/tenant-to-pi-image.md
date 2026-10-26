@@ -27,6 +27,10 @@ with the same three data source UIDs. What changes is the host
 name, the CA and the secrets. **Nothing on the Pi belongs to Deevnet.** It has no Deevnet account,
 key or route, and its CA and tokens are generated on the card the first time it boots.
 
+**A Pi can instead take a certificate from Deevnet**, and answer to your tenant's own names under
+the Deevnet Root. That is a [Deevnet Pi](#8-make-it-a-deevnet-pi), and it is how a Pi runs at a
+Deevnet production site.
+
 ---
 
 ## The one rule: configure from the environment
@@ -202,7 +206,9 @@ If a check fails, it names it. Each run leaves two log lines marked `deevnet-kit
 **If the Pi's address changes after first boot,** for example because your router later gives it a
 different lease, the certificate no longer names the address your devices dial. `status` says so.
 Run `sudo deevnet-kit regen-certs`. It reissues the certificate from the same card CA, so no device
-needs a new CA. On a network where the Pi's MAC has a DHCP reservation, the first boot can still
+needs a new CA. On a [Deevnet Pi](#8-make-it-a-deevnet-pi), `regen-certs` refuses: its
+certificate names no address, and is renewed from Deevnet. On a network where the Pi's MAC has a
+DHCP reservation, the first boot can still
 land on a pool address if an older OS on the same Pi holds the reserved lease. It moves once that
 lease expires.
 
@@ -315,6 +321,53 @@ curl -sS --cacert ~/deevnet-kit/deevnet-kit-ca.pem -H "Authorization: Bearer $LO
 ```
 
 ---
+
+## 8. Make it a Deevnet Pi
+
+**A Deevnet Pi serves a certificate from Deevnet's Tenant Service CA for your tenant's names, and
+trusts the Deevnet Root** ([ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) §2).
+Every card starts on its own CA, as above, and becomes a Deevnet Pi when a certificate is installed.
+The key is made on the Pi and never leaves it; only a signing request travels. Signing it is a
+Terraform apply, so it is done while you have the tenant at the Mobile Factory.
+
+1. **On the Pi, make the key and the request:**
+
+   ```bash
+   sudo deevnet-kit cert request
+   ```
+
+   It prints the request and keeps it in `/etc/deevnet-kit/tls/server.csr`; the new key waits beside
+   the certificate it will replace.
+2. **Have it signed, in your tenant's Terraform.** A
+   [`deevnet_certificate`](/docs/runbook/tenant/services/certificates/) with that request, `name =
+   "mqtt"`, `names = ["logs", "grafana"]` plus any of your app's own, and `sites` listing where the Pi
+   runs or is headed, such as `["mobile", "home"]`. Apply, and copy `fullchain_pem` and
+   `deevnet-root-ca.pem` to the Pi.
+3. **Install it:**
+
+   ```bash
+   sudo deevnet-kit cert install fullchain.pem deevnet-root-ca.pem
+   ```
+
+   It checks the certificate is for the waiting key, chains to the root given, and names `mqtt`,
+   `logs` and `grafana` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
+   makes the root what every service on the Pi trusts, keeps the card's own CA as
+   `/etc/deevnet-kit/tls/card-ca.pem`, and restarts the broker, the log store, Grafana and the
+   bridge.
+
+**The Pi then answers to `mqtt.<tenant>.deevnet.net`, `logs.<tenant>.deevnet.net` and
+`grafana.<tenant>.deevnet.net`.** Its own services dial those names, which it maps to itself in
+`/etc/hosts`. Devices and computers dial them too, so the network the Pi runs on has to answer them
+with the Pi's address: at a Deevnet production site, its DNS does
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1).
+Run `sudo deevnet-kit export ~/deevnet-kit` again: `kit.env` names those hosts, and the CA is
+`deevnet-root-ca.pem`. Devices then trust the Deevnet Root, as they do on Deevnet.
+
+**It is renewed the same way, within the year:** `cert request`, an apply, `cert install`.
+
+**Not built yet:** choosing on the card, before first boot, whether it is to be a Deevnet Pi, and
+`deevnet-kit pki init`, which sets up a PKI of the owner's own
+([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)).
 
 ## What does not come along
 

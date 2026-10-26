@@ -146,6 +146,12 @@ the PowerDNS HTTP API. For each tenant it ensures:
 - `ALLOW-DNSUPDATE-FROM`, the management, trusted and tenant-transit subnets
 - the apex NS, `dv02idn001v01.mobile.deevnet.net`
 
+**The Mobile Factory serves a tenant's site zone only, never `<tenant>.deevnet.net`.** A tenant's
+site-less names resolve only at the production sites where it runs
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1); at the
+factory a tenant is reached by its site names, though its certificates carry both. There is no
+platform-wide bus name either: a device dials its own tenant's broker (ADR-0040 §5).
+
 **The TSIG secret comes from the API, never generated on the server.** A generated key would not
 survive a rebuild, and every tenant's IaC would need re-issuing. After a rebuild, a reconcile puts
 the same keys back.

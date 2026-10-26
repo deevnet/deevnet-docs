@@ -11,7 +11,7 @@ This document defines the canonical naming conventions for the Deevnet ecosystem
 - Deterministic (predictable, repeatable)
 - Scalable (works as the lab grows)
 - Readable (humans can understand intent quickly)
-- Environment-safe (the site is always explicit in the name)
+- Environment-safe (the site is explicit in every substrate name, and in a tenant's site names)
 - Service-oriented (service names are stable even if hosts move)
 
 This naming standard applies to:
@@ -258,6 +258,16 @@ artifacts.deevnet.net → artifacts.mobile.deevnet.net
 ### 5.1 Tenant Names
 Tenant names represent workload namespaces and MUST be distinct from site names.
 
+Rules:
+- MUST match `^[a-z][a-z0-9]{0,7}$`
+- MUST NOT be a reserved label: a site (`home`, `mobile`), a site code or retired zone (`mgmt`,
+  `dvnt`, `dvntm`), a global alias under §4.3 (`artifacts` among them), `mqtt`, or `device`
+- Tenant names are one namespace across every site: only the Mobile Factory creates tenants, so a
+  name taken is taken everywhere
+
+The provisioning API enforces both rules
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §4).
+
 Examples:
 - grooveiq
 - vintronics
@@ -266,24 +276,44 @@ Examples:
 ---
 
 ### 5.2 Tenant DNS Patterns
-Tenants SHOULD be expressed under the site zone:
+A tenant has a site zone at each site it runs on:
 
 tenant.site.deevnet.net
 
+and, at a production site, its site-less zone:
+
+tenant.deevnet.net
+
+Rules:
+- Site-less zones MUST be answered only at production sites, each for the tenants it hosts
+- The Mobile Factory MUST answer a tenant only under its site zone
+
 Examples:
-- grooveiq.mobile.deevnet.net
-- vintronics.mobile.deevnet.net
+- grooveiq.mobile.deevnet.net — at the Mobile Factory
+- grooveiq.deevnet.net — where grooveiq runs in production
 
 ---
 
 ### 5.3 Tenant Service Names
-Tenant services SHOULD be expressed as:
+A tenant service's identity is its site-less name:
+
+service.tenant.deevnet.net
+
+and it has a site name at each site it runs on or is headed for:
 
 service.tenant.site.deevnet.net
 
+Rules:
+- A tenant service's certificate MUST carry its site-less name as CN and first SAN, then its site
+  names
+- A service label MUST be one label, and MUST NOT be `device`, which holds the tenant's device names
+- There is no platform-wide broker name: a device dials its own tenant's broker, at a production
+  site by its site-less name (`mqtt.tenant.deevnet.net`), at the Mobile Factory the shared broker
+  by its site name (`mqtt.mobile.deevnet.net`)
+
 Examples:
-- api.grooveiq.mobile.deevnet.net
-- mqtt.grooveiq.mobile.deevnet.net
+- api.grooveiq.deevnet.net, with api.grooveiq.mobile.deevnet.net beside it
+- mqtt.grooveiq.deevnet.net, a tenant's own broker in production
 
 ---
 

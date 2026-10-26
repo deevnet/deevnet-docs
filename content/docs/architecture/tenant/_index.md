@@ -85,17 +85,30 @@ Tenants express **intent** (what's running), not **identity** (what the host is)
 
 ### DNS Naming Pattern
 
-Tenant services follow a hierarchical DNS pattern:
+**A tenant service has one name for its whole life, with no site in it**
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)):
 
 ```
-service.tenant.site.deevnet.net
+service.tenant.deevnet.net
 ```
 
-**Example:** `service.eds.mobile.deevnet.net`
-- `service` — the service
+**Example:** `console.eds.deevnet.net`
+- `console` — the service
 - `eds` — the tenant
-- `mobile` — the site
 - `deevnet.net` — the domain
+
+**Each site it runs on, or is headed for, adds a site name beside it:**
+`console.eds.mobile.deevnet.net`. Both are in the service's certificate, so a move to a site
+already named changes nothing a client trusts.
+
+**Site-less names resolve only where a tenant runs in production.** The Mobile Factory builds
+tenants and answers a tenant only under its site zone, `<tenant>.mobile.deevnet.net`; a tenant is
+reached and tried there by its site names, and takes its site-less names to the site it is deployed
+to.
+
+**Some names are not a tenant's to take.** A tenant may not be named after a site, a site code, a
+retired zone, a global alias or a site broker (`home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `mqtt`,
+`artifacts`, …), and `device` is reserved for its devices' names. The provisioning API refuses them.
 
 ---
 
@@ -113,17 +126,14 @@ service.tenant.site.deevnet.net
 
 ## Multi-Site Tenants
 
-A tenant may be deployed to multiple sites. The name is logically the same; the instances are
-site-scoped and independent:
-
-```
-service.eds.mobile.deevnet.net   — the instance that exists
-service.eds.home.deevnet.net     — what a second instance would be called
-```
+**A tenant is built at the Mobile Factory and may be deployed to another site.** Its service names
+stay the same; the site it runs on adds a site name, and that site answers its site-less names
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1, §2).
+At another site a tenant runs on a Deevnet Pi, which is its devices' broker
+([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) §8).
 
 Only `mobile` is built today; `home` is a reserved zone
-([Limits](/docs/policies/risk-management/resiliency/)). Each instance would be built separately, against that
-site's own substrate, from the same tenant repository.
+([Limits](/docs/policies/risk-management/resiliency/)).
 
 ---
 

@@ -43,7 +43,7 @@ argument and attribute of the seven resources:
 | [`deevnet_iot_device`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_device/) | A device in the tenant's registry |
 | [`deevnet_iot_address`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_address/) | A fixed address for a registered device |
 | [`deevnet_iot_broker_account`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_broker_account/) | An MQTT account for a device or a workload |
-| [`deevnet_certificate`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/certificate/) | A server certificate for one of the tenant's own services, for a name in its zone; the tenant keeps the key |
+| [`deevnet_certificate`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/certificate/) | A server certificate for one of the tenant's own services: its site-less name, `<name>.<tenant>.deevnet.net`, then that name at each of `sites`; the tenant keeps the key |
 
 There are no data sources. The state store is used through Terraform's own `backend "s3"`.
 

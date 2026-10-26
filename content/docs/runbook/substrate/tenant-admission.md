@@ -57,6 +57,7 @@ binds it to one laptop. When the tenant creates itself, the key becomes its own 
 | | |
 |---|---|
 | The name | `^[a-z][a-z0-9]{0,7}$` — it becomes a PVE SDN zone ID, a DNS label and a state-store user |
+| A reserved name | refused with `400`: `home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `device`, `mqtt` and `artifacts`. A tenant's name is the second label of its site-less names, `<service>.<tenant>.deevnet.net`, so a tenant named for a site or a global alias would hold that site's or alias's names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §4). The list grows with the sites and aliases |
 | The token | single-use, expires after `DEEVNET_ENROLLMENT_TTL` (72h by default) |
 | A name already registered | answers `409`. Admission creates nothing but that key; it only authorizes |
 | Admitting the name again | issues a new key; the one handed over before stops working. `make admit` refuses while `~/<name>-admission.txt` exists; `FORCE=1` admits anyway |
@@ -130,7 +131,7 @@ rotates its own with `terraform apply -replace=<the key's resource>`.
 | | |
 |---|---|
 | Network | an EVPN zone and VRF on the tenant hypervisor, one VNet, a `/24` from `10.20.128.0/18`, anycast `.1`, SNAT at the exit node |
-| DNS | `<tenant>.<site>.deevnet.net` and its reverse, delegated, with a TSIG key the tenant writes records with |
+| DNS | `<tenant>.<site>.deevnet.net` and its reverse, delegated, with a TSIG key the tenant writes records with. The Mobile Factory serves no site-less zone: a tenant's `<tenant>.deevnet.net` names resolve only at a production site ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1) |
 | State | a bucket prefix and keys in the state store |
 | Logs | partitions `(index, 0..2)`, an ingest and a read token, and the vmauth routes that separate them from every other tenant ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)) |
 | Dashboards | a Grafana organization named for the tenant, one Editor login, and three log data sources carrying its read token, with fixed UIDs ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)). A delete renames the emptied organization `deleted-<tenant>-<id>`, because Grafana 13 cannot delete one |

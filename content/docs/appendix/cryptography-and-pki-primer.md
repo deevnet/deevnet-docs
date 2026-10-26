@@ -410,10 +410,10 @@ public log.
 | Primer idea | Deevnet's version |
 |---|---|
 | Offline root, in every trust store | the **Deevnet Root CA**, held offline by the operator ([Trust and Identity](/docs/architecture/trust-and-identity/)) |
-| Intermediate CAs | a **Site CA** per site, also offline, and under it three issuing CAs per site |
+| Intermediate CAs | a **Site CA** per site, also offline, and under it the site's issuing CAs |
 | Leaf certificates for servers (`serverAuth`) | issued by the site's **Substrate CA**, through site automation |
-| Client certificates for mTLS (`clientAuth`) | issued by the site's **Tenant Device CA**, to tenant devices |
-| Leaf certificates for a tenant's own servers | issued by the site's **Tenant Service CA**, for names in the tenant's own zone; the tenant keeps the key |
+| Client certificates for mTLS (`clientAuth`) | issued by the **Tenant Device CA**, one for every site, to tenant devices |
+| Leaf certificates for a tenant's own servers | issued by the **Tenant Service CA**, one for every site, for the tenant's own names; the tenant keeps the key |
 | The rulebook | the [Certificates standard](/docs/standards/certificates/) and [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) |
 | Signing with an offline key, hashes compared on paper | the [Root of Trust](/docs/runbook/root-of-trust/) ceremonies |
 | Installing the root where it is trusted | [where the Deevnet Root CA is trusted](/docs/architecture/trust-and-identity/#where-the-deevnet-root-ca-is-trusted) |

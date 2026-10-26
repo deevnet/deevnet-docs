@@ -205,6 +205,13 @@ tenants would need to commit to a substrate repository to publish a name, or sub
 reconciliation would be free to delete records it did not create. Separating the zone removes the
 conflict rather than managing it.
 
+**At the Mobile Factory a tenant's zone is its site zone, `<tenant>.mobile.deevnet.net`, and nothing
+else.** A tenant service's identity is its site-less name, `<service>.<tenant>.deevnet.net`, but
+that name resolves only at a site where the tenant runs in production, and the factory, which builds
+tenants, is not one
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1). Both
+names are in the service's certificate, so where a name resolves never changes what a client trusts.
+
 ---
 
 ## How a Query Reaches a Tenant Name

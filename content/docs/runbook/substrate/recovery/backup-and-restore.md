@@ -77,7 +77,7 @@ substrate issued it.
 
 | Not in the backup | On | What brings it back |
 |---|---|---|
-| OpenBao: its storage, the key that seals tenant secrets in the database, the Tenant Device CA key | `dv02idn001v01` | Nothing yet. A restored database's sealed values are readable only by the OpenBao that sealed them ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)) |
+| OpenBao's storage | `dv02idn001v01` | A rebuild, never a restore ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)). Both tenant CAs' keys and the Transit key that seals tenant secrets are the vault's, imported on every build, so a rebuilt OpenBao opens what the old one sealed ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)). The rebuild drill has not been run yet |
 | The state store's users and access policies | `dv02prv001v01` | A reconcile, with the secrets tenants already hold |
 | Earlier versions of a state file | `dv02prv001v01` | Nothing. The archives are the history: one copy per backup |
 | Anything in the store outside `tf-state` | `dv02prv001v01` | Its owner |
