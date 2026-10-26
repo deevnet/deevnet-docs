@@ -61,7 +61,7 @@ Deevnet Root CA                     offline · the one anchor for people, comput
 | R3-2 | **A stolen Tenant Device CA key could impersonate any registered device**, because authorization is by URI | ADR-0039 §5: the broker checks the key against a fingerprint recorded at issuance |
 | R3-3 | **The vault password guards every key OpenBao uses**, and git history keeps old ciphertext | ADR-0042 §5: a vault password exposed means replacing the keys, not only the password |
 | R3-4 | **The secret store's signing role cannot tell a site-less tenant name from a site's substrate name** by label count | ADR-0040 §3; its open question |
-| R3-5 | **A certificate carrying the bus name could answer for every site's broker** | ADR-0040 §5: only a site broker's certificate carries it |
+| R3-5 | **A certificate carrying the bus name could answer for every site's broker** | Moot: the bus name is withdrawn (D18) |
 | R3-6 | **A device CN under the tenant's name could collide with a service name** | ADR-0039 §4, ADR-0040 §4: devices under a reserved `device` label |
 | R3-7 | **Revocation is still absent.** A stolen issuing CA key can make server certificates that root-anchored devices accept until the CA expires | Accepted by the owner, 2026-10-25: [risk R-14](/docs/policies/risk-management/risk-register/) |
 | R3-8 | **Another site cannot host a tenant yet**: it has no device registry and no tenant DNS | Resolved, 2026-10-25: at another site a tenant is a Deevnet Pi, its devices' broker and registry; the site gives it a network and DNS from its inventory (ADR-0039 §8) |
@@ -186,13 +186,13 @@ and no snapshot, and three AppRoles with no secret-ID TTL or address binding.
 | Area | ADR-0039 | ADR-0040 | ADR-0041 | ADR-0042 |
 |---|---|---|---|---|
 | **ADRs** | ADR-0031 §3, §5; ADR-0037 §1, §6 | ADR-0004 §2; ADR-0015 §13; ADR-0037 §3 | ADR-0030 §4 | ADR-0016 §2, §6; resolves its conflict with ADR-0033 |
-| **Standards** | Certificates §1 tables | Naming §5.1–§5.3; §4.3 gains the bus name | — | Certificates §5 |
+| **Standards** | Certificates §1 tables | Naming §5.1–§5.3 | — | Certificates §5 |
 | **Records** | CHG-0034 re-planned | — | — | CHG-0036 extended |
 | **API** | device URI and CN without a site; key fingerprint at issuance | site-less CN and site SANs; reserved labels; the tenant's sites | request and install for Pi certificates | sealed means unavailable (R3-1) |
 | **OpenBao** | — | the signing role's guard (R3-4) | — | Shamir seal; Transit and tenant CA keys imported from the vault |
 | **Ceremony tools** | another site's Site and Substrate CAs (exist: paths 2 and 3); the tenant CAs re-keyed (path 3) | — | parameters for the owner's names; a leaf step | — |
-| **DNS** | — | `<tenant>.deevnet.net` zones; `mqtt.deevnet.net` per site | — | — |
-| **Broker** | registration and key fingerprint checks | the bus name as a SAN | — | — |
+| **DNS** | — | `<tenant>.deevnet.net` zones at production sites (D17) | — | — |
+| **Broker** | registration and key fingerprint checks | — | — | — |
 | **Firmware (tenants')** | trust the Deevnet Root | dial site-less names | dial an address, verify a name | — |
 | **deevnet-kit** | — | site-less names | `deevnet` / `non-deevnet`; request and install; `pki init` | — |
 | **Risk register** | tenant CAs serve every site; no revocation | — | — | the vault as the one custody |
@@ -209,7 +209,7 @@ P4 share one. Nothing below is built.
 | **P0** ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) | The API treats a sealed OpenBao as unavailable: it refuses tenant work before changing anything, and never marks, empties or re-mints a secret for it (R3-1) | V13's API half passes against a sealed test store | the API's previous release |
 | **P1** ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)) | CHG-0036, extended: a new Transit key from the vault, stored tenant secrets resealed under it; both tenant CAs re-keyed outside OpenBao, signed by the Mobile Site CA, held in the vault and imported; the lock-in stop | V3 and V12 pass | the old Transit key and CAs stay until the reseal is verified |
 | **P2** ([CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/)) | The Shamir seal (ADR-0042): three shares, threshold two, one in the vault; every pair proven; Ansible's OpenBao plays stop plainly when sealed | V13 and V14 pass | the static seal, from the vault |
-| **P3** ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) | Names: `<tenant>.deevnet.net` zones, the reserved labels (`device` and the bus name among them), `mqtt.deevnet.net` on each broker's certificate, the signing role's guard | V4 passes | removing the zones; site names untouched |
+| **P3** ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) | Names: `<tenant>.deevnet.net` zones, the reserved labels (`device` and `mqtt` among them), the signing role's guard | V4 passes | removing the zones; site names untouched |
 | **P4** ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) | Issuance: site-less CN and site SANs. A device's site-less URI and CN, and its key fingerprint, are issued with P6, where device certificates are first signed | V2 and V10 pass | the API's previous release |
 | **P5** ([CHG-0055](/docs/changes/2026/0055-reissue-tenants-site-less/)) | Existing tenants (`eds`, `tdemo`, `mabell`, `cdeever`) reissued with site-less names | each serves its site-less name | the site-named certificates stay valid |
 | **P6** ([CHG-0034](/docs/changes/2026/0034-device-certificates/)) | Device certificates (CHG-0034 re-planned) with the broker's registration and fingerprint checks | V1 and V6 pass | passwords stay accepted throughout |
@@ -228,16 +228,16 @@ would damage tenants.
 
 | # | Test | Accepted when |
 |---|---|---|
-| V1 | **ESP32 trust.** A device holding only the Deevnet Root dials a site broker's address and verifies `mqtt.deevnet.net`; then a Deevnet Pi's address, verifying the Pi's name; then a broker with a certificate from a CA outside Deevnet | it connects to both genuine ones and refuses the outsider |
+| V1 | **ESP32 trust.** A device holding only the Deevnet Root dials a site broker's address and verifies its site name; then a Deevnet Pi's address, verifying the Pi's name; then a broker with a certificate from a CA outside Deevnet | it connects to both genuine ones and refuses the outsider |
 | V2 | **One CA for every site.** Go, OpenSSL, a browser and an ESP32 verify a Tenant Service CA certificate for `console.eds.deevnet.net` and `console.eds.home.deevnet.net` | all accept both names; a name outside `deevnet.net` fails under Go, OpenSSL and the browser |
 | V3 | **Imported keys.** The Transit key and both tenant CA keys made outside OpenBao and imported | each issuer has the expected subject key identifier; a sealed tenant secret opens; a certificate chains to the root |
-| V4 | **DNS.** The resolver forwards `<tenant>.deevnet.net`; each site answers `mqtt.deevnet.net` with its own broker; the API refuses reserved labels | names resolve on the site; `home`, `mobile`, `device`, `mqtt` and every global alias are refused as tenant names |
+| V4 | **DNS.** A production site answers `<tenant>.deevnet.net` for what it hosts, and the Mobile Factory does not (D17); the API refuses reserved labels | names resolve where D17 says; `home`, `mobile`, `device`, `mqtt` and every global alias are refused as tenant names |
 | V5 | *Withdrawn: SNI routing to per-tenant listeners* | — |
 | V6 | **Device admission.** A certificate for a registered device's URI with another key; a device not registered at this site; a deregistered device | all three refused by the broker; the genuine device connects |
 | V7 | **Renewal away from the Mobile Factory.** A Deevnet Pi renews from a request carried on a USB stick | renewed with the token; the same request without it refused |
 | V8 | **Leaving Deevnet.** A Deevnet Pi moves to its owner's PKI with the service up | no connection lost; the Deevnet Root removed last |
 | V9 | *Withdrawn: onboarding with a separate PKI store* | — |
-| V10 | **Names in a certificate.** A browser opens `console.eds.deevnet.net` and `console.eds.mobile.deevnet.net`; tenant B asks for an `eds` name; a wildcard, the bus name and a `device` label are asked for | both open with one certificate; every request refused |
+| V10 | **Names in a certificate.** A browser opens `console.eds.deevnet.net` and `console.eds.mobile.deevnet.net`; tenant B asks for an `eds` name; a wildcard, a site broker's name and a `device` label are asked for | both open with one certificate; every request refused |
 | V11 | **The starter kit.** `pki init` on a `non-deevnet` card; the card destroyed; a new card given a new issuing CA from the stick | every device connects to the new card unchanged |
 | V12 | **Rebuild from the vault.** OpenBao destroyed and rebuilt, nothing restored | tenant secrets open; issuers keep their subject key identifiers; a new certificate chains as before |
 | V13 | **Sealed.** OpenBao sealed while the API, the broker and devices run; a tenant request; an Ansible OpenBao play | devices and workloads continue; the request is refused with no secret marked, emptied or re-minted; the play stops with a plain error |
@@ -252,7 +252,7 @@ would damage tenants.
 | # | Decision | Answer | Record |
 |---|---|---|---|
 | D1 | Per-tenant CAs, or shared issuing CAs | **Shared: the Mobile Factory's existing Tenant Service and Device CAs, for every site.** Per-tenant CAs withdrawn | ADR-0039 §2 |
-| D2 | How a shared broker serves a tenant's certificate | **It does not.** The broker is the platform's, with its site's certificate and the bus name. SNI routing, a Substrate CA in each bundle and a Bus CA all rejected | ADR-0039, ADR-0040 §5 |
+| D2 | How a shared broker serves a tenant's certificate | **It does not.** The broker is the platform's, with its site's certificate. SNI routing, a Substrate CA in each bundle and a Bus CA all rejected | ADR-0039, ADR-0040 §5 |
 | D3 | Standard 1.3 amended so devices anchor at their tenant's Service CA | **No.** Devices trust the Deevnet Root, like every client | ADR-0039 §3 |
 | D4 | Vanity issuer | **The Tenant Service CA.** The site-less name is the service's identity, not a vanity | ADR-0040 §1, §3 |
 | D5 | Old site-scoped names kept as CNAMEs | **Not needed.** Site names stay, as SANs | ADR-0040 §2 |
@@ -267,6 +267,8 @@ would damage tenants.
 | D14 | Does another site create tenants? | **No.** Only the Mobile Factory | ADR-0039 |
 | D15 | Revocation | **Accepted risk**, no lifetime changes | R-14 |
 | D16 | What a tenant is at another site | **A Deevnet Pi**: its devices' broker and registry. The site gives a network and DNS from its inventory, deployed from the Builder; no self-service | ADR-0039 §8 |
+| D17 | Where site-less names resolve | **At production sites only** (2026-10-26). The Mobile Factory names a tenant only under its site zone; certificates carry both. CHG-0054's step 2 is dropped | ADR-0040 §1 |
+| D18 | The bus name `mqtt.deevnet.net` | **Withdrawn** (2026-10-26). Every device belongs to a tenant (ADR-0032) and dials its tenant's broker; `mqtt` stays reserved. CHG-0054's step 3 is dropped | ADR-0040 §5 |
 
 **Principles, as round 3 leaves them** (the owner's): the Mobile Factory alone creates tenants and is
 autonomous, and builds sites as well as tenants; certificates travel, authorities stay; key export between sites is rejected; identity
