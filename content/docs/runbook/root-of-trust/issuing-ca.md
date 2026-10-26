@@ -5,16 +5,19 @@ weight: 2
 
 # Issuing CA
 
-A site's certificates are issued by three **issuing CAs** under its Site CA, each signed in this
-ceremony:
+Certificates are issued by **issuing CAs** under a Site CA, each signed in this ceremony. Every site
+has its own Substrate CA; the two tenant CAs are the Mobile Site CA's alone, and serve tenants
+wherever they run
+([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)):
 
 | Issuing CA | Its key lives in | Issues |
 |---|---|---|
-| Deevnet Mobile Substrate CA | site automation, which signs on the control node | every substrate certificate: hosts, appliances, service VMs and their services, the secret store's own listener |
-| Deevnet Mobile Tenant Device CA | the secret store, behind the Deevnet API | tenant devices' client certificates (mTLS) |
-| Deevnet Mobile Tenant Service CA | the secret store, behind the Deevnet API | server certificates for tenants' own services, for names in a tenant's own zone |
+| Deevnet Mobile Substrate CA | the inventory vault; Ansible signs on the control node | every substrate certificate: hosts, appliances, service VMs and their services, the secret store's own listener |
+| Deevnet Tenant Device CA | the inventory vault, imported into the secret store behind the Deevnet API | tenant devices' client certificates (mTLS) |
+| Deevnet Tenant Service CA | the inventory vault, imported into the secret store behind the Deevnet API | server certificates for tenants' own services |
 
-Each is valid for five years. **Its key is generated where it lives,** and only its signing request
+Each is valid for five years. **Its key is made by Ansible on the control node and kept in the
+vault** (`playbooks/substrate-ca.yml`, `playbooks/tenant-cas.yml`), and only its signing request
 comes to the ceremony. The Site CA's holder never sees an issuing CA's key, and the issuing CA's
 system never sees the Site CA's.
 
@@ -71,7 +74,8 @@ It prints the manifest's own hash and the request's public-key hash. **Write bot
 record.**
 
 `--ca tenant-device` does the same for the Tenant Device CA, and `--ca tenant-service` for the
-Tenant Service CA.
+Tenant Service CA, with their requests from `pki/mobile/rekey/` and the subjects
+`O=Deevnet, OU=Mobile Site, CN=Deevnet Tenant Device CA` and `…CN=Deevnet Tenant Service CA`.
 
 ## 2. Sign (offline)
 

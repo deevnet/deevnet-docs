@@ -7,11 +7,13 @@ weight: 8
 
 ## What you get
 
-A server certificate for a service you run on a workload, for a name in your own zone, such as
-`console.<name>.mobile.deevnet.net`. It is signed by the site's Tenant Service CA and chains to the
-**Deevnet Root CA**, which every computer on the site that reaches your service already trusts. A
-browser opens your page with no warning and nothing extra to install
-([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)).
+A server certificate for a service you run, named for its whole life without a site, such as
+`console.<name>.deevnet.net`, and at each site you list, such as `console.<name>.mobile.deevnet.net`.
+It is signed by the Tenant Service CA and chains to the **Deevnet Root CA**, which every computer on
+a Deevnet site that reaches your service already trusts. A browser opens your page with no warning
+and nothing extra to install
+([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/),
+[ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)).
 
 **You make the key and you keep it.** Only a signing request goes to the platform. The key is in
 your Terraform state and on your workload, and nowhere else.
@@ -36,11 +38,17 @@ resource "tls_cert_request" "console" {
 
 resource "deevnet_certificate" "console" {
   tenant  = deevnet_tenant.this.name
-  name    = "console"         # -> console.<name>.mobile.deevnet.net
-  names   = ["www"]           # optional: more labels in your zone
+  name    = "console"         # -> console.<name>.deevnet.net
+  names   = ["www"]           # optional: more labels, named the same way
+  sites   = ["mobile"]        # optional: -> console.<name>.mobile.deevnet.net, and www's too
   csr_pem = tls_cert_request.console.cert_request_pem
 }
 ```
+
+**The certificate names each label without a site, then at each of `sites`.** Its common name is
+`console.<name>.deevnet.net`. `sites` may list the Mobile Factory, `mobile`, and the home site,
+`home`; left out, it is the Mobile Factory alone. List every site the service runs on or is headed
+for, and a move between them needs no new certificate.
 
 **You write labels, not names.** The platform appends your zone, as it does for a
 [DNS record](/docs/runbook/tenant/services/dns/). A label with a dot, a wildcard or an address is
@@ -50,6 +58,11 @@ refused.
 are the platform's, the same for every tenant. Only the key in the request is yours.
 
 Publish the name as well: a certificate does not create a DNS record.
+
+**On the Mobile Factory, a service is reached by its site name**, `console.<name>.mobile.deevnet.net`,
+in your zone there. The name without a site resolves only at a production site where your service
+runs, from that site's DNS: on the Mobile Factory it answers nothing. The certificate carries both,
+so it serves either.
 
 ## Serve with it
 
@@ -76,11 +89,17 @@ workload. The key stays the same unless you replace it.
 **Nothing renews it for you.** A tenant that applies nothing for a year serves an expired
 certificate, and every browser refuses it. Run a plan at least every ten months.
 
+**A certificate issued before the site-less names is reissued at your next apply**, with the new
+names and the same key. Put the new one on your workload; until you do, the old one keeps serving its
+site name.
+
 ## What it does not do
 
-- **Your zone only.** A certificate is for names under `<name>.mobile.deevnet.net`. You cannot ask
-  for another tenant's name or a platform name, and there is no field to ask with
-- **No wildcards and no addresses.** One certificate holds up to eight names, each a single label
+- **Your names only.** A certificate is for names under `<name>.deevnet.net` and
+  `<name>.<site>.deevnet.net`. You cannot ask for another tenant's name or a platform name, and
+  there is no field to ask with
+- **No wildcards and no addresses.** One certificate holds up to eight labels, each a single label,
+  each named without a site and at each of `sites`
 - **No revocation.** Destroying the resource, or replacing the key, does not withdraw the old
   certificate. It stays valid until it expires, wherever its key still is. Guard the key
 - **No renewal on a clock.** See above

@@ -116,10 +116,12 @@ recovered by rebuilding it from the tiers beneath; what that takes is in
 | **T2: runtime services** | OpenBao, the Deevnet API and its database, PowerDNS, the state store, the broker, the log store, Grafana, the Omada controller | T1, seeded from ansible-vault |
 | **T3: tenants** | Each tenant's networks, workloads, names, devices and applications | The tenant's repository, through the provider, and its own push |
 
+**OpenBao holds nothing that the vault cannot recreate.** Both tenant CAs' keys and the Transit key
+are the vault's, imported on every build ([OpenBao's Keys](openbao-keys/)), and an initialization's
+recovery key and Ansible login are locked into the vault before its output is deleted
+([Vault Operations](vault-operations/)).
+
 **Some T2 services hold data nothing below them can recreate today:**
-- OpenBao holds the Tenant Device CA's key, generated inside it, and its recovery key and Ansible
-  login exist only in the vault once an initialization's output is locked in
-  ([Vault Operations](vault-operations/)).
 - The Deevnet API's database is the tenant registry, and the state store holds tenants' Terraform
   state, which carries their device secrets. Both are on the provisioning VM's OS disk, with no copy.
 - The Omada controller holds tenants' Wi-Fi keys, and the broker's database their device accounts.

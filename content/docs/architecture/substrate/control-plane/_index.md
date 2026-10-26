@@ -38,7 +38,7 @@ restart among them must never take tenant name resolution with it.
 |---|---|---|
 | **Provisioning API**, and the **state store** offered to tenant infrastructure code | Platform | Tenants reach it across the tenant perimeter |
 | **Tenant name service**: one delegated zone per tenant | Platform | Tenants write their own records |
-| **Secret store**: the substrate's runtime credentials, the encryption of tenant secrets, the internal CA | Platform | The provisioning API and tenant-facing services read from it |
+| **Secret store**: the substrate's runtime credentials, the encryption of tenant secrets, the two tenant CAs, each key imported from the vault | Platform | The provisioning API and tenant-facing services read from it |
 | **Tenant observability**: logs, dashboards | Platform | Tenants read their own |
 | **Device messaging**: the message broker and its authentication store | IoT Backend | It serves **devices**, and devices can reach IoT Backend and nothing else inside the substrate |
 

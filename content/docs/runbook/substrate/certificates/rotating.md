@@ -25,28 +25,13 @@ the certificate into `pki/mobile/`, then `certs.yml`. Certificates under the old
 chaining to the root, so clients trust both until each is reissued; ordinary renewal moves them all
 within the year.
 
-## Rotate the Tenant Device CA inside OpenBao
+## Rotate a tenant CA with a new key from the vault
 
-Valid to 2031-10-04. Remove its request and certificate from `pki/mobile/`, then:
-
-```bash
-ansible-playbook playbooks/tenant-device-ca.yml -e openbao_tenant_device_rotate=true
-```
-
-It makes a new key and request inside OpenBao. Sign it in the Issuing CA ceremony, accept it, and run
-`tenant-device-ca.yml` again to install it.
-
-## Rotate the Tenant Service CA inside OpenBao
-
-Valid to 2031-10-11. Remove its request and certificate from `pki/mobile/`, then:
-
-```bash
-ansible-playbook playbooks/tenant-service-ca.yml -e openbao_tenant_service_rotate=true
-```
-
-It makes a new key and request inside OpenBao. Sign it in the Issuing CA ceremony
-(`--ca tenant-service`), accept it, and run `tenant-service-ca.yml` again to install it. Then check
-what it signs:
+**A tenant CA is replaced by a new key made in the vault, signed in the Issuing CA ceremony and
+imported into OpenBao.** Both are valid to 2031-10-25. The steps, and how to check the result, are on
+[OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#the-tenant-cas): in short,
+`playbooks/tenant-cas.yml` makes the key and request, the ceremony signs it (`--ca tenant-service` or
+`--ca tenant-device`), and `tenant-service-ca.yml` or `tenant-device-ca.yml` imports the pair. Then:
 
 ```bash
 ansible-playbook playbooks/tenant-service-ca-verify.yml
@@ -59,10 +44,18 @@ the tenant next renews it.
 
 **After any change to the signing role, ask it for what it must refuse.**
 `playbooks/tenant-service-ca-verify.yml` sends a request that names a substrate host, a public name
-and an address, and asks to be a CA and a client. It checks that none of that is in the certificate
-that comes back, and then that eleven names are refused, among them a substrate service, the site's
-zone, a wildcard and an address. It issues one certificate each run, for a name under a tenant that
-does not exist, and deletes the key.
+and an address, and asks to be a CA and a client. It asks for `probe.chg0047.deevnet.net`, a
+site-less name, and checks that none of the rest is in the certificate that comes back. Then it
+checks that nine requests are refused: the site's zone itself, one label under the root, the root, a
+wildcard, a public name alone and beside a good one, an address, a URI, and no name at all. It
+issues one certificate each run, for a name under a tenant that does not exist, and deletes the key.
+
+**The role does not refuse a substrate service's name**, such as `grafana.mobile.deevnet.net`. It
+allows any name at least two labels under `deevnet.net`, so that a tenant's site-less names can be
+issued. What keeps a tenant from a site's names is the Deevnet API, which refuses a tenant named
+after a site or a global alias
+([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)). A role per tenant, which would let
+OpenBao refuse them too, is a follow-up of that change.
 
 ## A new Site CA or root is a re-root of that scope
 

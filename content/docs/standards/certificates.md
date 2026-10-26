@@ -10,8 +10,10 @@ weight: 7
 This standard defines what every Deevnet X.509 certificate looks like: who may issue it, what its
 subject and names say, which keys and lifetimes it uses, and where its key may live. The model it
 serves is in [Trust and Identity](/docs/architecture/trust-and-identity/),
-[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) and
-[ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/).
+[ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/),
+[ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/),
+[ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) and
+[ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/).
 
 A certificate that does not meet this standard is a defect, whatever issued it.
 
@@ -22,16 +24,18 @@ A certificate that does not meet this standard is a defect, whatever issued it.
 | Tier | Issued by | Signs | Count |
 |---|---|---|---|
 | **Root CA** | itself | Site CAs only | one, for the organization |
-| **Site CA** | the Root CA | that site's issuing CAs only | one per site |
-| **Issuing CA** | its Site CA | end-entity certificates only | per site: the **Substrate CA**, the **Tenant Device CA** and the **Tenant Service CA** |
+| **Site CA** | the Root CA | issuing CAs only | one per site |
+| **Issuing CA** | its Site CA | end-entity certificates only | per site, the **Substrate CA**; and once, under the Mobile Site CA, the **Tenant Device CA** and the **Tenant Service CA**, which issue for tenants at every site |
 | **End entity** | an issuing CA | nothing | the substrate's servers, tenants' devices and tenants' services |
 
 - 1.1 A Root CA MUST NOT sign an end-entity certificate, and a Site CA MUST NOT sign one.
 - 1.2 The Substrate CA MUST issue only server certificates for the substrate. The Tenant Device CA
   MUST issue only client certificates for tenant devices. The Tenant Service CA MUST issue only
-  server certificates for names in a tenant's own zone.
+  server certificates for a tenant's own names (3.4).
 - 1.3 Every client MUST trust the Root CA as its anchor. A client MUST NOT be configured to trust a
   Site CA or an issuing CA as an anchor in its place.
+- 1.4 A site other than the Mobile Factory MUST NOT have tenant CAs of its own. Its Site CA signs
+  only its Substrate CA; its tenants' certificates come from the Mobile Factory's tenant CAs.
 
 ---
 
@@ -46,14 +50,15 @@ itself.
 | Root CA | `Deevnet` | `Deevnet PKI` | `Deevnet Root CA` |
 | Site CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Site CA` |
 | Substrate CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Substrate CA` |
-| Tenant Device CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Tenant Device CA` |
-| Tenant Service CA | `Deevnet` | `<Site> Site` | `Deevnet <Site> Tenant Service CA` |
+| Tenant Device CA | `Deevnet` | `Mobile Site` | `Deevnet Tenant Device CA` |
+| Tenant Service CA | `Deevnet` | `Mobile Site` | `Deevnet Tenant Service CA` |
 | Substrate server | `Deevnet` | `<Site> Substrate` | the host's primary FQDN, e.g. `pve.mobile.deevnet.net` |
-| Tenant device | `Deevnet` | `Tenant <tenant>` | `<device>.<tenant>.<site>.deevnet.net`, e.g. `lp-stand-01.eds.mobile.deevnet.net` |
-| Tenant service | `Deevnet` | `<Site> Tenant Services` | `<label>.<tenant>.<site>.deevnet.net`, e.g. `console.eds.mobile.deevnet.net` |
+| Tenant device | `Deevnet` | `Tenant <tenant>` | `<device>.device.<tenant>.deevnet.net`, e.g. `lp-stand-01.device.eds.deevnet.net` |
+| Tenant service | `Deevnet` | `Mobile Tenant Services` | `<label>.<tenant>.deevnet.net`, e.g. `console.eds.deevnet.net` |
 
 - 2.1 `<Site>` MUST be the site's name in title case, as in the [naming standard](/docs/standards/naming/):
-  `Mobile`, `Home`.
+  `Mobile`, `Home`. The tenant CAs and their certificates carry `Mobile`, the site that issues them,
+  wherever the tenant runs. A tenant CA's CN names no site: its name is a label, not a scope.
 - 2.2 `<tenant>` and `<device>` MUST be the names the Deevnet API holds, exactly. `<label>` is one
   DNS label the tenant chose; the issuer, never the tenant, appends the zone.
 - 2.3 Subjects MUST NOT carry C, ST, L or an email address.
@@ -68,14 +73,29 @@ is valid for.
 - 3.1 A substrate server certificate MUST carry, as DNS SANs, the host's A record and every CNAME of
   it, and, as IP SANs, every address it serves on. They MUST be derived from the inventory, the same
   data the site's DNS is published from, never written by hand.
-- 3.2 A server certificate MAY carry more where a client dials it so: `localhost`, `127.0.0.1`, or a
+- 3.2 A substrate server certificate MAY carry more where a client dials it so: `localhost`, `127.0.0.1`, or a
   router's gateway addresses on every segment.
 - 3.3 A tenant device certificate MUST carry exactly one URI SAN:
-  `urn:deevnet:<site>:tenant:<tenant>:device:<device>`, lower case. It is the identity a service
-  authorizes. It MUST NOT carry a DNS or IP SAN.
-- 3.4 A tenant service certificate MUST carry, as DNS SANs, its CN and any further names asked for,
-  each of them one label inside the tenant's own zone, `<tenant>.<site>.deevnet.net`. It MUST NOT
-  carry a wildcard, an IP SAN, a URI SAN or a name outside that zone.
+  `urn:deevnet:tenant:<tenant>:device:<device>`, lower case, naming no site, so a device keeps it
+  wherever it is registered. It is the identity a service authorizes. It MUST NOT carry a DNS or IP
+  SAN. Its subject and URI MUST come from the device's registration, never from the request.
+  No tenant device certificate is issued yet: devices authenticate to the broker with a password
+  until [CHG-0034](/docs/changes/2026/0034-device-certificates/).
+- 3.4 A tenant service certificate MUST carry, as DNS SANs, each label it is issued for under the
+  tenant's site-less zone, `<label>.<tenant>.deevnet.net`, its CN first; then each of those labels
+  at each site the request names, `<label>.<tenant>.<site>.deevnet.net`. Each label MUST be one DNS
+  label and MUST NOT be `device`; each site MUST be one the issuing API is configured to name. It
+  MUST NOT carry a wildcard, an IP SAN, a URI SAN, `localhost`, or a name outside the tenant's own.
+  The issuer builds every name from the labels and sites; the tenant never sends a name.
+- 3.5 A tenant MUST NOT be named with a reserved label: a site (`home`, `mobile`), a retired zone or
+  site code (`mgmt`, `dvnt`, `dvntm`), `device`, `mqtt`, or any global alias, `artifacts` among them
+  ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §4).
+  The Deevnet API refuses them. Its refusal is what keeps a tenant's names apart from a site's: the
+  secret store's signing role permits any name two labels under `deevnet.net`, and does not tell a
+  tenant from a site on its own.
+- 3.6 A Deevnet Pi MAY hold a Tenant Service CA certificate for its tenant's names, under 3.4. It
+  MUST NOT carry `localhost` or an address: the Pi's own services dial its names, mapped to
+  loopback on the Pi.
 
 ---
 
@@ -118,19 +138,22 @@ is valid for.
 |---|---|---|
 | Root CA, Site CA | passphrase-encrypted files on two offline media, generated and maintained offline; never available to site automation or networked systems | on an offline machine ([Root of Trust](/docs/runbook/root-of-trust/)) |
 | Substrate CA | the site's ansible-vault | by automation, on the control node |
-| Tenant Device CA | the site's secret store; it never leaves | inside the secret store |
-| Tenant Service CA | the site's secret store; it never leaves | inside the secret store |
+| Tenant Device CA | the Mobile Factory's ansible-vault, and imported into its secret store, which signs with it | by automation, on the control node |
+| Tenant Service CA | the Mobile Factory's ansible-vault, and imported into its secret store, which signs with it | by automation, on the control node |
 | Substrate server | the server it identifies | by automation, then installed |
 | Tenant device | the device | on the device, or on the tenant's own computer for a device that cannot |
-| Tenant service | the tenant's own state, and the workload that serves with it | by the tenant |
+| Tenant service | the tenant's own state, and the workload that serves with it; or the Deevnet Pi that serves with it | by the tenant; on a Deevnet Pi, on the Pi itself |
 
 - 5.1 The Root CA's and every Site CA's key MUST NOT be present on a networked machine, in any form.
-- 5.2 An issuing CA's key MUST be generated where it lives. Only its signing request travels to be
-  signed.
+- 5.2 An issuing CA's key MUST be generated by automation on the control node and held in
+  ansible-vault. Only its signing request travels to be signed. A tenant CA's key MUST be imported
+  into the secret store together with its signed certificate. The secret store MUST NOT generate a
+  CA key, so a secret store rebuilt from nothing comes back with the same tenant CAs by importing
+  them again.
 - 5.3 A tenant device's key MUST NOT enter the substrate. The device's signing request does; the
   issued certificate goes back. This is [Secure Identity](/docs/standards/secure-identity/) 3.1
-  applied to devices. A tenant service's key MUST NOT enter the substrate either: the tenant makes
-  it, and sends a signing request.
+  applied to devices. A tenant service's key MUST NOT enter the substrate either: the tenant, or its
+  Deevnet Pi, makes it, and sends a signing request.
 - 5.4 The substrate's certificates MUST NOT depend on the secret store. The Substrate CA is
   automation's, so a substrate rebuilt from nothing can issue every certificate it needs before the
   secret store exists.
@@ -167,10 +190,11 @@ is valid for.
 | `deevnet-root-ca.pem` | the Root CA's certificate |
 | `deevnet-<site>-site-ca.pem` | a Site CA's certificate |
 | `deevnet-<site>-substrate-ca.pem` | a Substrate CA's certificate |
-| `deevnet-<site>-tenant-device-ca.pem` | a Tenant Device CA's certificate |
-| `deevnet-<site>-tenant-service-ca.pem` | a Tenant Service CA's certificate |
+| `deevnet-mobile-tenant-device-ca.pem` | the Tenant Device CA's certificate |
+| `deevnet-mobile-tenant-service-ca.pem` | the Tenant Service CA's certificate |
 
-`<site>` is lower case: `deevnet-mobile-site-ca.pem`. A key file is named for its certificate with
+`<site>` is lower case: `deevnet-mobile-site-ca.pem`. The tenant CAs' files carry `mobile`, the Site
+CA they are filed under. A key file is named for its certificate with
 `.key`.
 
 ---

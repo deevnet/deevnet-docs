@@ -25,11 +25,11 @@ VM from code, each keeping its allocated VMID, MAC and address.
 The VMs come back empty unless their data disks survived. Before rebuilding one, check what its
 service keeps and where:
 
-- **OpenBao** (`dv02idn001v01`) holds the site's secrets. A fresh instance generates new
-  once-only credentials: encrypt, commit and push them before going further
-  ([INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/)). Restoring its data from a
-  snapshot is still unproven
-  ([OpenBao Drills → Snapshot restore](/docs/runbook/substrate/recovery/substrate-secrets-drills/#snapshot-restore)).
+- **OpenBao** (`dv02idn001v01`) is rebuilt from the vault, never restored: its keys are the
+  vault's, imported on every build. A fresh instance generates new once-only credentials: encrypt,
+  commit and push them before going further
+  ([INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/),
+  [OpenBao Drills → The rebuild](/docs/runbook/substrate/recovery/substrate-secrets-drills/#the-rebuild)).
 - **The Deevnet API** registry and the **tenant state store** (`dv02prv001v01`) sit on the VM's own
   disks with no copy ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/)).
 - **The Omada controller** (`dv02nms001v01`) has no snapshot

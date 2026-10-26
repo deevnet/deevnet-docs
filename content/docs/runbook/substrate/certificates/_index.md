@@ -23,11 +23,17 @@ listener included. Certificates last a year and are laid down by the roles that 
 | `Deevnet Root CA` | offline ([Root of Trust](/docs/runbook/root-of-trust/)) | Site CAs only | 2046-10-04 |
 | `Deevnet Mobile Site CA` | offline | the mobile site's issuing CAs only | 2036-10-04 |
 | `Deevnet Mobile Substrate CA` | the inventory vault, `vault_site_substrate_ca_key` | every substrate certificate, on the control node (`deevnet.builder.substrate_cert`) | 2031-10-04 |
-| `Deevnet Mobile Tenant Device CA` | inside OpenBao, `pki-tenant-device`, never exported | tenant devices' client certificates (not yet issuing) | 2031-10-04 |
-| `Deevnet Mobile Tenant Service CA` | inside OpenBao, `pki-tenant-service`, never exported | server certificates for names in a tenant's own zone, through the Deevnet API ([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)) | 2031-10-11 |
+| `Deevnet Tenant Device CA` | the inventory vault, `vault_tenant_device_ca_key`, imported into OpenBao's `pki-tenant-device` | tenant devices' client certificates (not yet issuing) | 2031-10-25 |
+| `Deevnet Tenant Service CA` | the inventory vault, `vault_tenant_service_ca_key`, imported into OpenBao's `pki-tenant-service` | server certificates for tenants' own services, through the Deevnet API ([ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/)) | 2031-10-25 |
 
 **No substrate certificate comes from either tenant CA.** A tenant's service serves its own leaf,
 the Tenant Service CA and the Site CA, which the API hands it with the certificate.
+
+**The two tenant CAs carry no site in their names, and serve tenants wherever they run**
+([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)). They
+are the Mobile Site CA's, because the Mobile Factory makes every tenant. Their keys are made by
+Ansible and held in the vault, and OpenBao imports them on every build, so a rebuilt OpenBao comes
+back with the same CAs ([OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/)).
 
 **Every substrate service serves its leaf, the Substrate CA and the Site CA,** so a client that holds
 only the root can build the chain. Omada also sends the root, which its image wants in the chain.
