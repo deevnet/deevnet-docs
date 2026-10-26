@@ -38,7 +38,7 @@ root on an encrypted USB stick, an issuing CA on the Pi
 - `deevnet-kit` makes a server key and a request, writes the request where it can be carried, and
   installs a certificate and its chain from a work session. The same three steps renew it.
 - A Deevnet Pi's own services dial its names, mapped to loopback; its certificate carries neither
-  `localhost`, an address nor the bus name.
+  `localhost`, an address nor a site broker's name.
 - The ceremony tools take parameters for an owner's names, and issue a leaf.
 - Every image carries them. `deevnet-kit pki init` asks for the owner's organization, the Pi's
   names and a USB stick, makes the root on the stick and an issuing CA on the Pi, installs the Pi's

@@ -57,7 +57,7 @@ apart from the address, and ESP-MQTT and MicroPython expose it. The Pi's own ser
 names too, mapped to loopback on the Pi, so its certificate needs neither `localhost` nor an
 address.
 
-**A Deevnet Pi's certificate never carries the bus name** (ADR-0040 §5).
+**A Deevnet Pi's certificate carries only its tenant's names** (ADR-0040 §3, §5), never a site broker's.
 
 **Off Deevnet, the certificate stops serving people first.** At the owner's house a browser reaches
 the Pi by its `.local` name or address, which the certificate does not name, unless the owner

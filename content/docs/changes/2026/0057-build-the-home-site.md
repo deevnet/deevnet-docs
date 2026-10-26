@@ -38,7 +38,7 @@ registry ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-
 - The home inventory declares its hosts, VLANs, firewall policy and Wi-Fi, beside the mobile site's.
 - The core router runs DNS (Unbound) and DHCP for `home.deevnet.net`, from the inventory, with a
   certificate from the Home Substrate CA.
-- `mqtt.deevnet.net` is not answered at home: there is no site broker.
+- No site broker at home: a hosted Pi is its devices' broker, at `mqtt.<tenant>.deevnet.net` (ADR-0040 §5).
 - A hosted Pi's site-less names and its home site name resolve at home.
 - One tenant's Deevnet Pi served at home, its devices connecting to it.
 

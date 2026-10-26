@@ -27,7 +27,7 @@ weight: -54
 A tenant service is named under its site today, `console.eds.mobile.deevnet.net`.
 [ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) names it
 `console.eds.deevnet.net` for its whole life, with each site it runs on or is headed for as an extra
-name, and devices dial one bus name, `mqtt.deevnet.net`, at every site. This change builds the names,
+name. This change builds the names,
 the reserved labels that keep tenants and sites apart, and issuance under the new rule
 ([review](/docs/architecture/reviews/2026-10-tenant-pki/), phases P3 and P4).
 
@@ -40,18 +40,19 @@ its site names follow; a tenant cannot take a reserved label.
   resolver, answering with this site's deployment.~~ Dropped: site-less names resolve only at
   production sites, and the Mobile Factory is not one (ADR-0040 §1, 2026-10-26).
 - The API refuses reserved tenant labels: `home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `device`, every
-  global alias, and the bus name. A service label may not be `device`.
+  global alias, and `mqtt`. A service label may not be `device`.
 - The signing role enforces the same list, so OpenBao refuses a reserved name even if the API asked.
 - The API builds each certificate's names from a label and the tenant's sites: the site-less name as
   CN and first SAN, then a site name for each site in the tenant's record.
 - A tenant's record lists the sites it runs on and is headed for; the provider sets them.
-- `mqtt.deevnet.net` answers with this site's broker, and the broker's certificate, from the Mobile
-  Substrate CA, carries it as a SAN.
+- ~~`mqtt.deevnet.net` answers with this site's broker, and the broker's certificate, from the Mobile
+  Substrate CA, carries it as a SAN.~~ Dropped: there is no bus name; a device dials its own
+  tenant's broker (ADR-0040 §5, 2026-10-26).
 
 ## Scope
 
 **In scope:** zones, the resolver's forward, the reserved list in the API and the signing role,
-issuance, the tenants' site list, the bus name.
+issuance, the tenants' site list.
 **Out of scope:** reissuing existing tenants (CHG-0055); device certificates and their site-less URI
 (CHG-0034); other sites' DNS (CHG-0057).
 
@@ -61,7 +62,6 @@ issuance, the tenants' site list, the bus name.
 |---|---|---|
 | A tenant takes a site's or an alias's label | the API, the signing role | The list in both; V4 and V10 try each reserved label |
 | A new zone shadows a substrate name | tenant DNS, the resolver | Only `<tenant>.deevnet.net` for admitted tenants is forwarded; `mobile.deevnet.net` and the aliases are unchanged |
-| A broker certificate change drops devices | the broker | The bus name is added beside the existing names; nothing is removed |
 | Site-named certificates stop working | tenants | Nothing is revoked; they run to expiry and CHG-0055 replaces them |
 
 ## Prerequisites
@@ -86,9 +86,8 @@ for what it hosts, as the home network's DNS does for eds's home Pi (EdS CHG-004
 
 ### Step 3: The bus name
 
-`mqtt.deevnet.net` in the site's DNS; the broker's certificate reissued with it as a SAN.
-
-**Verify:** a client dialing `mqtt.deevnet.net` verifies the broker with the root alone.
+**Dropped (2026-10-26).** Every device belongs to a tenant (ADR-0032) and dials its tenant's broker,
+so no site answers `mqtt.deevnet.net` and no broker certificate carries it (ADR-0040 §5).
 
 ### Step 4: Issuance
 
@@ -121,7 +120,7 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 |---|---|
 | 1 | The API refuses the reserved tenant names and the `device` label (unit tests). The signing role: see the departures |
 | 2 | Dropped |
-| 3 | Not started |
+| 3 | Dropped |
 | 4 | On `dv02prv001v01`, 2026-10-26: `/version` is v0.15.0 (commit `ffaa1e8`), `/readyz` `ok` for the database and OpenBao. The signing role read back with the widened domain after `openbao.yml`. No certificate has yet been issued with the new names, so V2 and V10 wait on the first: eds's home Pi (EdS CHG-0042) |
 
 ### Departures from the plan
@@ -132,11 +131,12 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 - **A certificate's sites come from the request**, `sites` on `deevnet_certificate`, among the
   site's `DEEVNET_CERTIFICATE_SITES`, not from a site list on the tenant's record (ADR-0040 §3).
 - **Step 2 was dropped** by ADR-0040's production-only rule, after the release.
+- **Step 3 was dropped**: the bus name is withdrawn (ADR-0040 §5). `mqtt` stays a reserved tenant
+  name, since a tenant named so would own a site broker's name.
 
 ## Follow-ups
 
 - [ ] A signing role per tenant, so OpenBao refuses a reserved name even if the API asked.
-- [ ] Step 3, once ADR-0040's second open question (the bus name at the factory) is answered.
 
 ## To discover
 

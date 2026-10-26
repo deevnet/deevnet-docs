@@ -9,8 +9,8 @@ weight: -40
 |--|--|
 | **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
-| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it. 2026-10-26: site-less names resolve only at production sites (§1), so the Mobile Factory answers a tenant by its site names alone |
-| **Scope** | A tenant's DNS names: the name that identifies each service, the per-site names beside it, what a tenant certificate carries, which labels a tenant may not take, the bus name devices dial, and how names follow a tenant between sites. Not reverse zones or addresses, which stay per site |
+| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it. 2026-10-26: site-less names resolve only at production sites (§1), so the Mobile Factory answers a tenant by its site names alone; and the bus name is withdrawn (§5), since every device dials its own tenant's broker |
+| **Scope** | A tenant's DNS names: the name that identifies each service, the per-site names beside it, what a tenant certificate carries, which labels a tenant may not take, the broker name devices dial, and how names follow a tenant between sites. Not reverse zones or addresses, which stay per site |
 | **Amends** | [Naming standard](/docs/standards/naming/) §5.1–§5.3; [ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/) §2 (a tenant has a site-less zone beside its site zone); [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §13 (the names it publishes); [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) §3 (the names a tenant certificate carries, and the secret store's signing role) |
 | **Related** | [ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) *(Proposed)*, which depends on this; [ADR-0005](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/); [ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/); [ADR-0036](/docs/architecture/decisions/platform-services/0036-service-proxy/) |
 
@@ -89,24 +89,30 @@ OpenBao's roles can express) is an [open question](#open-questions).
 
 **A tenant may not take a label that is a site, a site code, a retired zone, a global alias, or
 `device`**: `home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `device`, every global alias under naming
-§4.3 (`artifacts` among them), and the bus name (§5), now and as the list grows. A tenant named
-`artifacts` would own `artifacts.deevnet.net`, the alias, and a tenant named `mobile` would own the
-site's substrate names.
+§4.3 (`artifacts` among them), and `mqtt`, now and as the list grows. A tenant named
+`artifacts` would own `artifacts.deevnet.net`, the alias; a tenant named `mobile` would own the
+site's substrate names; and a tenant named `mqtt` would own `mqtt.<site>.deevnet.net`, a site
+broker's name.
 
 **A service label may not be `device`**, which holds a tenant's device CNs (ADR-0039 §4).
 
 **The API's name check enforces the list**, in place of §5.1's sentence alone. Tenant names are one
 namespace: only the Mobile Factory creates tenants (ADR-0039), so a name taken is taken everywhere.
 
-### 5. Devices dial one bus name at every site
+### 5. A device dials its own tenant's broker
 
-**The broker is reached at `mqtt.deevnet.net`**, a global alias under naming §4.3 that each site
-answers with its own broker. **Each site's broker certificate carries it as a SAN**, issued by that
-site's Substrate CA, beside the broker's site name. A device dials the same name at every site.
+**There is no platform-wide bus name.** Every edge device belongs to a tenant
+([ADR-0032](/docs/architecture/decisions/edge-devices/0032-every-device-belongs-to-a-tenant/)), so a
+device dials its tenant's broker, by the name §1 gives it where it is:
 
-**Only a site broker's certificate may carry the bus name.** The API refuses it as a tenant label
-and as a SAN, and no take-home Pi's certificate carries it, so a stolen Pi key cannot answer for the
-bus.
+- **At a production site**, the tenant's own broker, by its site-less name:
+  `mqtt.<tenant>.deevnet.net`.
+- **At the Mobile Factory**, where tenants share the platform's broker, that broker by its site
+  name: `mqtt.mobile.deevnet.net`.
+
+**No site answers `mqtt.deevnet.net`, and no certificate carries it.** A tenant's certificate
+carries only its tenant's names (§3), so a stolen Pi key answers for that tenant alone, never for a
+site's broker. Withdrawn 2026-10-26; see the alternatives.
 
 ### 6. What stays per site
 
@@ -141,6 +147,9 @@ names stay valid, so nothing breaks while firmware moves to site-less names.
 - **Rejected: a CNAME alone for the site-less name.** TLS checks the name dialed.
 - **Rejected: keep the site in the only name.** Every move would change what devices dial.
 - **Rejected: wildcard certificates.** ADR-0037 already refuses them.
+- **Withdrawn: one bus name, `mqtt.deevnet.net`, answered by each site's broker** (2026-10-26).
+  Every device belongs to a tenant (ADR-0032) and dials its tenant's broker, so no device needs a
+  name for every site's broker, and a certificate carrying one could answer for all of them.
 
 ---
 
@@ -149,8 +158,6 @@ names stay valid, so nothing breaks while firmware moves to site-less names.
 1. **How the signing role enforces the reserved list** (§3): a role per tenant, written by the API
    at creation, or a constraint OpenBao's roles can express. A role the API writes needs a policy
    that lets it write roles, which a faulty API could abuse.
-2. **Whether the Mobile Factory answers the bus name** (§5). `mqtt.deevnet.net` is the platform's
-   alias, not a tenant's, so §1's production-only rule does not decide it.
 
 ---
 

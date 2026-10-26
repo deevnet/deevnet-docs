@@ -289,8 +289,9 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 - [ADR-0040: Tenant Names Without a Site](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) —
   *Proposed.* A tenant service is named `<service>.<tenant>.deevnet.net` for life, in its
   certificate's CN and first SAN, and people and devices dial it; each site it runs on adds
-  `<service>.<tenant>.<site>.deevnet.net` as a SAN. Devices reach the bus at `mqtt.deevnet.net`,
-  which only a site broker's certificate carries. Reserved labels enforced by the API. Amends the
+  `<service>.<tenant>.<site>.deevnet.net` as a SAN. Site-less names resolve only at production
+  sites; a device dials its own tenant's broker, and there is no platform-wide bus name. Reserved
+  labels enforced by the API. Amends the
   naming standard §5, ADR-0004 §2, ADR-0015 §13 and ADR-0037 §3.
 - [ADR-0008: Host Naming and Site Codes](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/) —
   A fixed-width site code in every hostname, so the short name is unambiguous wherever
