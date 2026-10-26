@@ -32,8 +32,9 @@ beside it ([review](/docs/architecture/reviews/2026-10-tenant-pki/), phase P5).
 
 ## Goal
 
-- `eds`, `tdemo`, `mabell` and `cdeever` each list their sites in their records.
-- Each tenant's site-less names resolve on the site.
+- `eds`, `tdemo`, `mabell` and `cdeever` each name their sites on their certificates (`sites`, CHG-0054).
+- Each tenant's site names resolve on the Mobile Factory, and its site-less names only where it runs
+  in production (ADR-0040 §1).
 - `eds`'s console holds a certificate from the re-keyed Tenant Service CA, its CN the site-less name,
   its site name as a SAN, and serves both.
 - CHG-0047's probe certificates from the old CA are left to expire.
@@ -60,15 +61,15 @@ beside it ([review](/docs/architecture/reviews/2026-10-tenant-pki/), phase P5).
 
 ### Step 1: Each tenant in turn
 
-Update the provider, set the tenant's sites, apply.
+Update the provider, set each certificate's `sites`, apply.
 
-**Verify:** a browser opens `console.eds.deevnet.net` and `console.eds.mobile.deevnet.net` with one
-certificate, chained to the root; each other tenant's site-less names resolve.
+**Verify:** a browser opens `console.eds.mobile.deevnet.net` with a certificate chained to the root
+that also names `console.eds.deevnet.net`; each other tenant's site names resolve.
 
 ## Verification
 
-Every tenant's site-less names resolve, and every tenant service certificate is from the re-keyed
-Tenant Service CA under its site-less name.
+Every tenant's site names resolve on the Mobile Factory, and every tenant service certificate is
+from the re-keyed Tenant Service CA under its site-less name.
 
 ## Undo
 

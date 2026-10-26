@@ -27,9 +27,9 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
 | CHG-0057 | Unscheduled | [Build the Home Site](2026/0057-build-the-home-site/) | Deployment · Configuration | home | Planned |
-| CHG-0056 | Unscheduled | [A Deevnet Pi by Default, With a Starter PKI Kit](2026/0056-kit-deevnet-or-own-pki/) | Deployment | mobile | Planned |
+| CHG-0056 | 2026-10-25 | [A Deevnet Pi by Default, With a Starter PKI Kit](2026/0056-kit-deevnet-or-own-pki/) | Deployment | mobile | In Progress |
 | CHG-0055 | Unscheduled | [Existing Tenants Reissued Under Site-Less Names](2026/0055-reissue-tenants-site-less/) | Configuration · Migration | mobile | Planned |
-| CHG-0054 | Unscheduled | [Tenant Names Without a Site](2026/0054-site-less-tenant-names/) | Deployment · Configuration | mobile | Planned |
+| CHG-0054 | 2026-10-25 | [Tenant Names Without a Site](2026/0054-site-less-tenant-names/) | Deployment · Configuration | mobile | In Progress |
 | CHG-0053 | Unscheduled | [OpenBao Sealed by Shamir Shares](2026/0053-openbao-shamir-seal/) | Configuration | mobile | Planned |
 | CHG-0052 | 2026-10-25 | [A Sealed OpenBao Is Unavailable, Not a Lost Secret](2026/0052-sealed-openbao-is-unavailable/) | Deployment | mobile | Complete |
 | CHG-0051 | 2026-10-18 | [The Take-Home Image on deevnet-kit 0.12.0](2026/0051-pi-backend-on-kit-0-12/) | Deployment | mobile | Complete |

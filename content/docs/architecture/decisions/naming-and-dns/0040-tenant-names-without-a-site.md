@@ -9,7 +9,7 @@ weight: -40
 |--|--|
 | **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
-| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it |
+| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it. 2026-10-26: site-less names resolve only at production sites (§1), so the Mobile Factory answers a tenant by its site names alone |
 | **Scope** | A tenant's DNS names: the name that identifies each service, the per-site names beside it, what a tenant certificate carries, which labels a tenant may not take, the bus name devices dial, and how names follow a tenant between sites. Not reverse zones or addresses, which stay per site |
 | **Amends** | [Naming standard](/docs/standards/naming/) §5.1–§5.3; [ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/) §2 (a tenant has a site-less zone beside its site zone); [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §13 (the names it publishes); [ADR-0037](/docs/architecture/decisions/substrate/0037-tenant-service-certificates/) §3 (the names a tenant certificate carries, and the secret store's signing role) |
 | **Related** | [ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) *(Proposed)*, which depends on this; [ADR-0005](/docs/architecture/decisions/naming-and-dns/0005-tenant-zone-apex-ownership/); [ADR-0008](/docs/architecture/decisions/naming-and-dns/0008-host-naming-site-codes/); [ADR-0036](/docs/architecture/decisions/platform-services/0036-service-proxy/) |
@@ -43,15 +43,22 @@ zone to the tenant DNS server; nothing is published publicly.
 runs: `console.eds.deevnet.net`, `mqtt.eds.deevnet.net`. People and devices both dial it. It is
 the passport of a service, as a device's URI is of a device (ADR-0039 §4).
 
-**The site that hosts the tenant answers `<tenant>.deevnet.net`** with its own deployment. A tenant
-in development on the Mobile Factory and in production elsewhere gets a different answer at each
-site, which is correct, because each site answers for what it hosts.
+**Site-less names resolve only at the sites where a tenant runs in production.** Such a site
+answers `<tenant>.deevnet.net` with its own deployment. **The Mobile Factory does not:** it builds
+tenants, and names a tenant there only under its site zone, `<tenant>.mobile.deevnet.net`. A tenant
+built at the factory is reached and tried there by its site names, and takes its site-less names
+to the site it is deployed to. The factory never answers for a tenant's production names, so no
+site's DNS shadows another's.
+
+**The certificate carries both regardless** (§3): the names a certificate holds do not depend on
+where they resolve, so moving a tenant from the factory to production needs no reissue.
 
 ### 2. A site name is an extra name for one deployment
 
 **A tenant service also has `<service>.<tenant>.<site>.deevnet.net` at each site it runs on or is
 headed for**: `console.eds.mobile.deevnet.net`, `console.eds.home.deevnet.net`. A site name reaches
-one deployment in particular, for instance dev beside prod. Nothing depends on it.
+one deployment in particular, for instance dev beside prod. At the Mobile Factory it is the only
+name that resolves (§1).
 
 ### 3. A tenant certificate names the service, then its sites
 
@@ -110,11 +117,12 @@ leave the site.
 
 ## Consequences
 
-**Every tenant gains a second zone, `<tenant>.deevnet.net`**, created and answered by each site that
-hosts it, and forwarded by the resolver like the site zone.
+**A tenant in production gains a second zone, `<tenant>.deevnet.net`**, answered by the production
+site that hosts it. The Mobile Factory creates no site-less zone (§1).
 
-**Firmware dials site-less names**: `mqtt.deevnet.net` for the bus, `<service>.<tenant>.deevnet.net`
-for the tenant's own services. A device moved between sites changes nothing.
+**Firmware at a production site dials site-less names** for the tenant's own services,
+`<service>.<tenant>.deevnet.net`. At the Mobile Factory it dials site names, so a device that is
+moved between the two holds what each site needs.
 
 **Existing tenants are reissued once**, their certificates gaining the site-less name. Their site
 names stay valid, so nothing breaks while firmware moves to site-less names.
@@ -141,6 +149,8 @@ names stay valid, so nothing breaks while firmware moves to site-less names.
 1. **How the signing role enforces the reserved list** (§3): a role per tenant, written by the API
    at creation, or a constraint OpenBao's roles can express. A role the API writes needs a policy
    that lets it write roles, which a faulty API could abuse.
+2. **Whether the Mobile Factory answers the bus name** (§5). `mqtt.deevnet.net` is the platform's
+   alias, not a tenant's, so §1's production-only rule does not decide it.
 
 ---
 

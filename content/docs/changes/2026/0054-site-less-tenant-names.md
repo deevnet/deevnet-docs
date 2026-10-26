@@ -7,10 +7,10 @@ weight: -54
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-10-25 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Step 2 dropped; step 3 open; V2 and V10 wait on the first reissue |
 | **Window** | Unscheduled. After [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the re-keyed Tenant Service CA); one API release, one provider release, Ansible runs for DNS, the resolver, OpenBao and the broker |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (tenant DNS, OpenBao), the core router (Unbound), `dv02msg001v01` (the broker); the provider |
@@ -36,8 +36,9 @@ its site names follow; a tenant cannot take a reserved label.
 
 ## Goal
 
-- Each tenant's `<tenant>.deevnet.net` zone, served by tenant DNS and forwarded by the site's
-  resolver, answering with this site's deployment.
+- ~~Each tenant's `<tenant>.deevnet.net` zone, served by tenant DNS and forwarded by the site's
+  resolver, answering with this site's deployment.~~ Dropped: site-less names resolve only at
+  production sites, and the Mobile Factory is not one (ADR-0040 §1, 2026-10-26).
 - The API refuses reserved tenant labels: `home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `device`, every
   global alias, and the bus name. A service label may not be `device`.
 - The signing role enforces the same list, so OpenBao refuses a reserved name even if the API asked.
@@ -78,9 +79,10 @@ The API's name check refuses the list; the signing role is given a guard that re
 
 ### Step 2: The zones and the resolver
 
-Tenant DNS serves `<tenant>.deevnet.net` for each admitted tenant; the resolver forwards each.
-
-**Verify:** `console.eds.deevnet.net` resolves on the site to eds's console.
+**Dropped (2026-10-26).** Site-less names resolve only at production sites
+([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1). The
+Mobile Factory serves a tenant's site zone alone, and a production site answers the site-less names
+for what it hosts, as the home network's DNS does for eds's home Pi (EdS CHG-0042).
 
 ### Step 3: The bus name
 
@@ -103,6 +105,38 @@ V2, V4 and V10 of the
 
 The previous API and provider; the zones and forwards removed. Site names were never touched, so
 nothing that used them breaks.
+
+## Outcome
+
+Built in [deevnet-provisioning-api#37](https://github.com/deevnet/deevnet-provisioning-api/pull/37)
+and released as **v0.15.0**; `sites` on `deevnet_certificate` in
+[terraform-provider-deevnet#24](https://github.com/deevnet/terraform-provider-deevnet/pull/24),
+released as **v0.8.0**; the signing role and `DEEVNET_CERTIFICATE_SITES` in
+[deevnet.mgmt #96](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/96), the sites
+(`mobile`, `home`) in [inventory #90](https://github.com/deevnet/ansible-inventory-deevnet/pull/90),
+and the version in [deevnet.mgmt #97](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/97).
+Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limit deevnet_api`.
+
+| Step | Result |
+|---|---|
+| 1 | The API refuses the reserved tenant names and the `device` label (unit tests). The signing role: see the departures |
+| 2 | Dropped |
+| 3 | Not started |
+| 4 | On `dv02prv001v01`, 2026-10-26: `/version` is v0.15.0 (commit `ffaa1e8`), `/readyz` `ok` for the database and OpenBao. The signing role read back with the widened domain after `openbao.yml`. No certificate has yet been issued with the new names, so V2 and V10 wait on the first: eds's home Pi (EdS CHG-0042) |
+
+### Departures from the plan
+
+- **The signing role was widened, not given a guard.** It allows `*.*.deevnet.net`; the API's
+  reserved list is what keeps tenant names from site names. The owner accepted that the role alone
+  no longer tells the two apart. A role per tenant is a follow-up.
+- **A certificate's sites come from the request**, `sites` on `deevnet_certificate`, among the
+  site's `DEEVNET_CERTIFICATE_SITES`, not from a site list on the tenant's record (ADR-0040 §3).
+- **Step 2 was dropped** by ADR-0040's production-only rule, after the release.
+
+## Follow-ups
+
+- [ ] A signing role per tenant, so OpenBao refuses a reserved name even if the API asked.
+- [ ] Step 3, once ADR-0040's second open question (the bus name at the factory) is answered.
 
 ## To discover
 

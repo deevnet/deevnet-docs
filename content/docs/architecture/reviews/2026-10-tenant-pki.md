@@ -231,7 +231,7 @@ would damage tenants.
 | V1 | **ESP32 trust.** A device holding only the Deevnet Root dials a site broker's address and verifies `mqtt.deevnet.net`; then a Deevnet Pi's address, verifying the Pi's name; then a broker with a certificate from a CA outside Deevnet | it connects to both genuine ones and refuses the outsider |
 | V2 | **One CA for every site.** Go, OpenSSL, a browser and an ESP32 verify a Tenant Service CA certificate for `console.eds.deevnet.net` and `console.eds.home.deevnet.net` | all accept both names; a name outside `deevnet.net` fails under Go, OpenSSL and the browser |
 | V3 | **Imported keys.** The Transit key and both tenant CA keys made outside OpenBao and imported | each issuer has the expected subject key identifier; a sealed tenant secret opens; a certificate chains to the root |
-| V4 | **DNS.** The resolver forwards `<tenant>.deevnet.net`; each site answers `mqtt.deevnet.net` with its own broker; the API refuses reserved labels | names resolve on the site; `home`, `mobile`, `device`, `mqtt` and every global alias are refused as tenant names |
+| V4 | **DNS.** A production site answers `<tenant>.deevnet.net` for what it hosts, and the Mobile Factory does not (D17); each site answers `mqtt.deevnet.net` with its own broker; the API refuses reserved labels | names resolve where D17 says; `home`, `mobile`, `device`, `mqtt` and every global alias are refused as tenant names |
 | V5 | *Withdrawn: SNI routing to per-tenant listeners* | — |
 | V6 | **Device admission.** A certificate for a registered device's URI with another key; a device not registered at this site; a deregistered device | all three refused by the broker; the genuine device connects |
 | V7 | **Renewal away from the Mobile Factory.** A Deevnet Pi renews from a request carried on a USB stick | renewed with the token; the same request without it refused |
@@ -267,6 +267,7 @@ would damage tenants.
 | D14 | Does another site create tenants? | **No.** Only the Mobile Factory | ADR-0039 |
 | D15 | Revocation | **Accepted risk**, no lifetime changes | R-14 |
 | D16 | What a tenant is at another site | **A Deevnet Pi**: its devices' broker and registry. The site gives a network and DNS from its inventory, deployed from the Builder; no self-service | ADR-0039 §8 |
+| D17 | Where site-less names resolve | **At production sites only** (2026-10-26). The Mobile Factory names a tenant only under its site zone; certificates carry both. CHG-0054's step 2 is dropped | ADR-0040 §1 |
 
 **Principles, as round 3 leaves them** (the owner's): the Mobile Factory alone creates tenants and is
 autonomous, and builds sites as well as tenants; certificates travel, authorities stay; key export between sites is rejected; identity
