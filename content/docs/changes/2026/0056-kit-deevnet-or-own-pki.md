@@ -106,6 +106,8 @@ on it (`make pi-backend`) and published to the Builder's tenant downloads tree, 
 | 1 | Not started |
 | 2 | In part. `deevnet-kit cert request` makes a key and a request on the Pi; `cert install FULLCHAIN ROOT` checks the certificate is for that key, chains to the root given and names `mqtt`, `logs` and `grafana` under `<tenant>.deevnet.net`, then installs it, keeps the card's CA as `card-ca.pem`, maps the names to loopback in `/etc/hosts` and restarts the services (unit tests). No `pki` switch and no `pki init` yet |
 | 3 | The image built with v0.15.0; its kit matches the staged binaries by checksum. Not yet in the downloads on `dv02obs001v01`, and not yet booted |
+| 3 | **First booted, 2026-10-27:** EdS's home Pi, from EdS's backend image built on this `pi-backend` (2026-10-26). The card came up on its own CA, as designed |
+| 2 | **First used, 2026-10-29** (EdS [CHG-0042](https://cdeever.github.io/eds/docs/changes/2026/0042-the-home-pi-becomes-a-deevnet-pi/)): `cert request` on the Pi, the request signed by eds's `deevnet_certificate`, `cert install` with the full chain and the Root. It checked the key and the chain, said "installed", made the Pi a Deevnet Pi, mapped the names to loopback and restarted the services. `selftest` then passed 13 of 15: Grafana's log data sources still dialed `https://localhost:8427`, which the new certificate does not name, until `deevnet-kit-dashboards` was restarted by hand; then 15 of 15. Three ESP32 devices moved to the Pi's broker on the Root alone |
 
 ### Departures from the plan
 
@@ -114,4 +116,16 @@ on it (`make pi-backend`) and published to the Builder's tenant downloads tree, 
   only for `non-deevnet`, which waits on `pki init`.
 - **The image is held back from `dv02obs001v01`.** Copying it there moves about 940 MB across the
   core router; the first card from it is EdS's home Pi, flashed from the Builder.
+
+## Follow-ups
+
+Found on the first Deevnet Pi (EdS CHG-0042):
+
+- [ ] `cert install` does not rerun the dashboards step, so Grafana's data sources keep
+      `localhost` ([deevnet-provisioning-api#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)).
+- [ ] `status` and `selftest` warn on a Deevnet Pi that the certificate names none of its
+      addresses, and suggest `regen-certs`, which refuses
+      ([deevnet-provisioning-api#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)).
+- [ ] The provider's same-key renewal cannot be installed by `cert install`; the documented renewal
+      is a new request ([deevnet-provisioning-api#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)).
 

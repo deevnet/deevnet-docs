@@ -10,7 +10,7 @@ weight: -54
 | **Date** | 2026-10-25 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Step 2 dropped; step 3 open; V2 and V10 wait on the first reissue |
+| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Step 2 dropped; step 3 open. The first certificate was issued with the new names on 2026-10-29 (EdS CHG-0042): V2 and V10 in part, see Outcome |
 | **Window** | Unscheduled. After [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the re-keyed Tenant Service CA); one API release, one provider release, Ansible runs for DNS, the resolver, OpenBao and the broker |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (tenant DNS, OpenBao), the core router (Unbound), `dv02msg001v01` (the broker); the provider |
@@ -122,6 +122,9 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 | 2 | Dropped |
 | 3 | Dropped |
 | 4 | On `dv02prv001v01`, 2026-10-26: `/version` is v0.15.0 (commit `ffaa1e8`), `/readyz` `ok` for the database and OpenBao. The signing role read back with the widened domain after `openbao.yml`. No certificate has yet been issued with the new names, so V2 and V10 wait on the first: eds's home Pi (EdS CHG-0042) |
+| 4 | **The first, 2026-10-29** (EdS [CHG-0042](https://cdeever.github.io/eds/docs/changes/2026/0042-the-home-pi-becomes-a-deevnet-pi/)): `deevnet_certificate.backend` for eds, with provider v0.8.0, `name` `mqtt`, `names` `logs`, `grafana`, `console`, `sites` `home` and `mobile`, for a Deevnet Pi's request. Serial `55:c1:0d:cb:…:9d:0a`, valid to 2027-10-28. It named all twelve: each label site-less, then at `eds.home` and `eds.mobile`, CN `mqtt.eds.deevnet.net`, issued by the Tenant Service CA and chaining to the Deevnet Root through the Mobile Site CA |
+| V2 | **In part.** Go: `deevnet-kit cert install` verified it for every kit name, and every EdS service on the Pi then dialed `mqtt.eds.deevnet.net`. OpenSSL: `openssl verify -purpose sslserver` against the Root. A browser: the owner's, on a Mac that trusts the Root, opened `console.eds.deevnet.net` and used its controls; `console.eds.home.deevnet.net` answered over TLS to curl. An ESP32: three (a beacon, a cover screen, a light stand) connected to `mqtt.eds.deevnet.net` with only the Root, no firmware change. **Not tried:** a name outside `deevnet.net` failing |
+| V10 | **In part.** A browser opened `console.eds.deevnet.net`. **Not tried:** `console.eds.mobile.deevnet.net` with this certificate (at the factory that name is the workload's console, with its own), and none of the refusals: tenant B asking for an `eds` name, a wildcard, a site broker's name, a `device` label |
 
 ### Departures from the plan
 
