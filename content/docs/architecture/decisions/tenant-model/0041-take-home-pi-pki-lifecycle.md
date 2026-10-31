@@ -7,7 +7,7 @@ weight: -41
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
+| **Status** | Proposed. Built in part, as of 2026-10-31: §2, `cert request` and `cert install`, first used on 2026-10-29 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)). §1's first-boot switch was dropped there; §3 and §4 wait on `pki init`; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 gave a card three modes (`deevnet`, `own` as the generic default, `bring`). That is withdrawn for one default and a starter kit |
 | **Scope** | The certificates on a take-home Pi and its devices: what the card is given, what an owner who leaves Deevnet uses to make a PKI of their own, and how the card's first-boot configuration chooses between them. Not the tenant CAs ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)), not names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)) |

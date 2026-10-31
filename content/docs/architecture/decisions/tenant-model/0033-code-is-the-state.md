@@ -154,6 +154,8 @@ ADR-0014 recorded for option E, and it falls on the tenant.
    vault and imported into OpenBao, so that losing OpenBao doesn't change the device CA? Until device
    keys are built, nothing depends on it. *The 2026-10 review's response is yes
    ([R1](/docs/architecture/reviews/2026-10-rebuild-and-access/#r1-tenant-device-ca-key)), and the same for the Transit key.*
+   *Built by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (2026-10-25), which
+   closes this question once its rebuild drill (V12) has run.*
 
 ---
 

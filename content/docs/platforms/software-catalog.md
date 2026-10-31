@@ -170,7 +170,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 | vmauth (vmutils) | v1.152.0 | Apache-2.0 | Pin |
 | Grafana OSS | 13.2.2 | AGPL-3.0 | Pin (sha256) |
 | victoriametrics-logs-datasource | 0.32.0 | not checked | Pin |
-| `deevnet-kit` | the API's tag | No license file | Built from the API repository |
+| `deevnet-kit` | the API's tag. The `pi-backend` image in the tenant downloads still carries 0.12.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3) | No license file | Built from the API repository |
 | `deevnet-log-bridge` | `-latest` | not checked | Not pinned |
 | Mosquitto, Podman | Bookworm packages (Podman 4.3) | EPL-2.0 / EDL-1.0; Apache-2.0 | Not pinned |
 
@@ -207,7 +207,7 @@ What the site hands a tenant developer, from the [tenant downloads](/docs/change
 
 | Component | Version | License | Support | Version source |
 |---|---|---|---|---|
-| **`deevnet/deevnet` provider** | **v0.8.0** | No license file | In-house | Pin (tenant downloads; `dv02obs001v01` still serves v0.7.0 until the next downloads run); tag |
+| **`deevnet/deevnet` provider** | **v0.8.0** | No license file | In-house | Pin (tenant downloads, which serve it); tag |
 | `install-provider.sh`, `tenant-check.sh` | ship with the provider | No license file | In-house | Follow the provider tag |
 | Terraform | 1.16.4 | BUSL-1.1 | Vendor, no contract | Pin |
 | `grafana/grafana` provider | 4.46.0 | MPL-2.0 | Community, commercial available | Pin |

@@ -10,7 +10,7 @@ weight: -54
 | **Date** | 2026-10-25 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Step 2 dropped; step 3 open. The first certificate was issued with the new names on 2026-10-29 (EdS CHG-0042): V2 and V10 in part, see Outcome |
+| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Steps 2 and 3 dropped. The first certificate was issued with the new names on 2026-10-29 (EdS CHG-0042): V2 and V10 in part, see Outcome |
 | **Window** | Unscheduled. After [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the re-keyed Tenant Service CA); one API release, one provider release, Ansible runs for DNS, the resolver, OpenBao and the broker |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (tenant DNS, OpenBao), the core router (Unbound), `dv02msg001v01` (the broker); the provider |
@@ -66,7 +66,7 @@ issuance, the tenants' site list.
 
 ## Prerequisites
 
-- [ ] CHG-0036 complete (the Tenant Service CA re-keyed, under its new name)
+- [x] CHG-0036 complete (the Tenant Service CA re-keyed, under its new name): 2026-10-25
 - [ ] The current API, provider and broker certificate noted for the undo
 
 ## Procedure

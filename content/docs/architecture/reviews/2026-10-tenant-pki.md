@@ -201,8 +201,9 @@ and no snapshot, and three AppRoles with no secret-ID TTL or address binding.
 
 ## Migration plan
 
-**Each phase has a change record, Planned, and none starts without the owner's approval.** P3 and
-P4 share one. Nothing below is built.
+**Each phase has a change record, and none starts without the owner's approval.** P3 and P4 share
+one. As of 2026-10-31: P0 and P1 are complete, P1's rebuild drill (V12) still to run; P3, P4 and
+P7 are in progress; P2, P5, P6 and P8 are planned.
 
 | Phase | Work | Done when | Rolls back by |
 |---|---|---|---|
@@ -242,6 +243,14 @@ would damage tenants.
 | V12 | **Rebuild from the vault.** OpenBao destroyed and rebuilt, nothing restored | tenant secrets open; issuers keep their subject key identifiers; a new certificate chains as before |
 | V13 | **Sealed.** OpenBao sealed while the API, the broker and devices run; a tenant request; an Ansible OpenBao play | devices and workloads continue; the request is refused with no secret marked, emptied or re-minted; the play stops with a plain error |
 | V14 | **Shares and custody.** Each pair of shares unseals; the kit is inspected | every pair works; no unseal share or seal key is found on the kit |
+
+**Where each stands, as of 2026-10-31.** Passed in part: V2 and V10 (EdS's home Pi, recorded in
+[CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)), V1 (three ESP32s holding only the
+Root connected, by name, to that Pi), V3 (both mounts serve the ceremony certificates and every
+tenant read back after the reseal, [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/);
+the key-identifier check is not recorded), V4 (the reserved labels in the API's unit tests, not yet
+against the deployed API) and V13 (the API's half, [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)).
+Not run: V6, V7, V8, V11, V12 and V14.
 
 ---
 
