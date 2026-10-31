@@ -63,7 +63,7 @@ before the Pi has them.
 
 ## Follow-ups
 
-- [ ] Rebuild and republish `pi-backend` on 0.12.0.
+- [x] Rebuild and republish `pi-backend` on 0.12.0: [CHG-0051](/docs/changes/2026/0051-pi-backend-on-kit-0-12/).
 - [ ] `deevnet-kit init` issues the CA and certificate before the clock is set: on
       `dv02rpi003p01` they began `2025-11-24`, the image's saved clock. Wait for time sync first.
 - [ ] Two x86-64 binaries are committed in `deevnet-provisioning-api` (`deevnet-kit` and

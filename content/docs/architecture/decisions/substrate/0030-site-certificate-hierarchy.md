@@ -199,4 +199,6 @@ re-applies for ten months will expire.
    listener directly, which removes the reason it was left self-signed.
 4. **An organization root, if a second site is built.** An offline `Deevnet root CA` can cross-sign
    each site root, so that one anchor trusts every site while everything that trusts a site root
-   keeps working, with no re-root.
+   keeps working, with no re-root. *Answered by
+   [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/) §1: one offline Deevnet Root
+   CA above the Site CAs, made by CHG-0033.*

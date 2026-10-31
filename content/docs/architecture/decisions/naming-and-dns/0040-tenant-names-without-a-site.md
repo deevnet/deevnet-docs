@@ -7,7 +7,7 @@ weight: -40
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
+| **Status** | Proposed. Built in part, as of 2026-10-31: §3 and §4 in the API and the provider ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)), the first certificate issued on 2026-10-29. The signing role is widened rather than guarded; a role per tenant is a follow-up; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it. 2026-10-26: site-less names resolve only at production sites (§1), so the Mobile Factory answers a tenant by its site names alone; and the bus name is withdrawn (§5), since every device dials its own tenant's broker |
 | **Scope** | A tenant's DNS names: the name that identifies each service, the per-site names beside it, what a tenant certificate carries, which labels a tenant may not take, the broker name devices dial, and how names follow a tenant between sites. Not reverse zones or addresses, which stay per site |

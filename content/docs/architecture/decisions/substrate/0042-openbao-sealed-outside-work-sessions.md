@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Nothing is built; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
+| **Status** | Proposed. Built in part, as of 2026-10-31: §3 ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) and §4 ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)). §1 and §2, the Shamir seal and work sessions, wait on [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/); see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-25, in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The draft of 2026-10-21 split OpenBao in two, a platform store that unseals itself and a PKI store on a VM of its own, and recovered the PKI store from snapshots. Both are withdrawn: one OpenBao, sealed, rebuilt from the vault |
 | **Scope** | How the Mobile Factory's OpenBao is sealed and opened, what the Deevnet API does while it is sealed, where the keys it uses are authoritatively held, and how it is rebuilt. Not the CA hierarchy ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)) |

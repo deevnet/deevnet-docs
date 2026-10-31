@@ -48,7 +48,7 @@ host and tool, with no browser warning and no client skipping verification.
 
 - ✅ An offline Deevnet Root CA and Mobile Site CA, made on the `pi-pki` machine ([Root of Trust](/docs/runbook/root-of-trust/)), CHG-0033
 - ✅ The Mobile Substrate CA, its key in the site vault, signing every substrate certificate by Ansible
-- ✅ The Mobile Tenant Device CA, its key inside OpenBao
+- ✅ The Mobile Tenant Device CA, its key made outside OpenBao, held in the site vault and imported (CHG-0036)
 - ✅ The Site CA name-constrained to Deevnet names and private addresses
 - ✅ The ADR-0030 root, bootstrap intermediate and OpenBao intermediate retired; no online key can mint a CA (R-11 closed)
 - ✅ Ceremony tooling: transfer manifests and checks (`deevnet-pki-transfer.sh`, `deevnet-pki-sign.sh`), the media tool (`deevnet-pki-media.sh`), the guided ceremony (`deevnet-pki-ceremony.sh`), and the `pi-pki` image

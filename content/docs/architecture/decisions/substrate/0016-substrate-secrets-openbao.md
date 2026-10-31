@@ -11,7 +11,7 @@ aliases:
 |--|--|
 | **Status** | Accepted |
 | **Amended by** | [ADR-0042: OpenBao Sealed Outside Work Sessions](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/) *(Proposed)*: §2's static seal becomes Shamir shares, opened for a work session; every key OpenBao uses is held in the vault and imported, which resolves the conflict below |
-| **In conflict with** | [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) *(Proposed)*: OpenBao's data as kept data (§1, Consequences). To be revisited; the open part is the Tenant Device CA's key |
+| **In conflict with** | [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) *(Proposed)*: OpenBao's data as kept data (§1, Consequences). To be revisited; the open part is the Tenant Device CA's key. *Built by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (2026-10-25), which closes this row once its rebuild drill (V12) has run.* |
 | **Accepted** | 2026-09-19, recording what [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) built on 2026-09-17. The record's own Current state already read *"Proposed, and deployed"*; the status field had simply not caught up. |
 | **Date** | 2026-09-17 |
 | **Scope** | Where the credentials substrate services use at runtime are kept, how tenant secrets are protected at rest and in transit, and where the internal certificate authority lives |
@@ -232,7 +232,8 @@ reads every secret. The key gets the same care as the vault password.
    offline, for example in ansible-vault? [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/)
    (Proposed) answers it: an intermediate, under a root kept in ansible-vault.
 2. **Audit device.** A file audit log inside the VM, or shipped to substrate observability
-   (`dv02sob001v01`)?
+   (`dv02sob001v01`)? *Answered by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/): a file audit
+   device on the identity VM's disk, rotated.*
 3. **Router key scope.** Carried from ADR-0015: now that the key lives in KV, can it also be narrowed
    to the resolver's endpoints?
 
