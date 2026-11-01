@@ -1,9 +1,11 @@
 ---
 title: "Builder Upkeep"
 weight: 4
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "More space for `/home`, its build caches under `/srv`"
+    status: planned
+  - title: "The Builder's Wi-Fi onto the home network, decided in a record (EdS ADR-0053)"
+    status: planned
 ---
 
 # Builder Upkeep
@@ -17,7 +19,6 @@ home network when the factory is parked there.
 
 ---
 
-- ⏳ More space for `/home`, its build caches under `/srv`
-- ⏳ The Builder's Wi-Fi onto the home network, decided in a record (EdS ADR-0053)
+{{< milestones >}}
 
 **Project plan:** [Builder Upkeep](/projects/builder-upkeep/)

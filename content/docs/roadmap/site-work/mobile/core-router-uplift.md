@@ -1,9 +1,15 @@
 ---
 title: "Core Router Uplift"
 weight: 2
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Hardware chosen (the N100 Router Appliance is the candidate)"
+    status: planned
+  - title: "Built from code and swapped in, the ZimaBoard kept"
+    status: planned
+  - title: "Proven under a multi-gigabyte transfer and a full deploy"
+    status: planned
+  - title: "INC-0004 closed"
+    status: planned
 ---
 
 # Core Router Uplift
@@ -19,9 +25,6 @@ them.
 
 ---
 
-- ⏳ Hardware chosen (the N100 Router Appliance is the candidate)
-- ⏳ Built from code and swapped in, the ZimaBoard kept
-- ⏳ Proven under a multi-gigabyte transfer and a full deploy
-- ⏳ INC-0004 closed
+{{< milestones >}}
 
 **Project plan:** [Core Router Uplift](/projects/core-router-uplift/)

@@ -2,9 +2,6 @@
 title: "Site Work"
 weight: 2
 bookCollapseSection: true
-tasks_completed: 5
-tasks_in_progress: 0
-tasks_planned: 17
 ---
 
 # Site Work

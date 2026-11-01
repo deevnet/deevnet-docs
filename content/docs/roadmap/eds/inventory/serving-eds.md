@@ -1,9 +1,21 @@
 ---
 title: "Serving EdS"
 weight: 4
-tasks_completed: 2
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "On EdS's workload, beside voiced (eds-inventory ADR-0003)"
+    group: "Clients"
+    status: done
+    date: "2026-10-24"
+  - title: "voiced asks it for artists and albums (EdS ADR-0047)"
+    group: "Clients"
+    status: done
+    date: "2026-10-24"
+  - title: "nowplayd asks it: a track's album, its cover, its original (EdS music-inventory proposal)"
+    group: "Clients"
+    status: planned
+  - title: "On the backend Pi at home too"
+    group: "Where it runs"
+    status: planned
 ---
 # Serving EdS
 
@@ -29,12 +41,10 @@ EdS asks the inventory, and the inventory alone, about the owner's music.
 
 ## Clients 🔄
 
-- ✅ On EdS's workload, beside voiced (eds-inventory ADR-0003)
-- ✅ voiced asks it for artists and albums (EdS ADR-0047)
-- ⏳ nowplayd asks it: a track's album, its cover, its original (EdS music-inventory proposal)
+{{< milestones group="Clients" >}}
 
 ---
 
 ## Where it runs ⏳
 
-- ⏳ On the backend Pi at home too
+{{< milestones group="Where it runs" >}}

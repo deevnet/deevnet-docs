@@ -3,9 +3,15 @@ title: "Hypervisor Storage"
 aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-storage/
 weight: 5
-tasks_completed: 0
-tasks_in_progress: 1
-tasks_planned: 3
+milestones:
+  - title: "Record the layout as code"
+    status: active
+  - title: "Decide the standard"
+    status: planned
+  - title: "Converge the nodes"
+    status: planned
+  - title: "Guest configuration survives a rebuild"
+    status: planned
 ---
 
 # Hypervisor Storage
@@ -19,9 +25,6 @@ depends on recoverable from code.
 
 ---
 
-- 🔄 Record the layout as code
-- ⏳ Decide the standard
-- ⏳ Converge the nodes
-- ⏳ Guest configuration survives a rebuild
+{{< milestones >}}
 
 **Project plan:** [Hypervisor Storage](/projects/hypervisor-storage/)

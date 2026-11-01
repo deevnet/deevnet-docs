@@ -3,9 +3,25 @@ title: "Extended Management Plane"
 aliases:
   - /docs/roadmap/infrastructure/mobile/management-plane/
 weight: 2
-tasks_completed: 0
-tasks_in_progress: 7
-tasks_planned: 2
+milestones:
+  - title: "Requirements"
+    status: active
+  - title: "Centralized Logging"
+    status: active
+  - title: "Telemetry"
+    status: active
+  - title: "Alerting"
+    status: active
+  - title: "Network Management"
+    status: planned
+  - title: "Secrets Management"
+    status: active
+  - title: "Identity Management"
+    status: active
+  - title: "Build Verification"
+    status: active
+  - title: "Documentation"
+    status: planned
 ---
 
 # Extended Management Plane
@@ -21,14 +37,6 @@ Extended management services for the mobile (mobile) site — logging, telemetry
 
 ---
 
-- 🔄 Requirements
-- 🔄 Centralized Logging
-- 🔄 Telemetry
-- 🔄 Alerting
-- ⏳ Network Management
-- 🔄 Secrets Management
-- 🔄 Identity Management
-- 🔄 Build Verification
-- ⏳ Documentation
+{{< milestones >}}
 
 **Project plan:** [Extended Management Plane](/projects/management-plane/)

@@ -4,9 +4,6 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/
 weight: 1
 bookCollapseSection: true
-tasks_completed: 6
-tasks_in_progress: 10
-tasks_planned: 27
 ---
 
 # Substrate Tooling

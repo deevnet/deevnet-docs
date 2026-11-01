@@ -1,9 +1,34 @@
 ---
 title: "Foundation and Collecting"
 weight: 1
-tasks_completed: 3
-tasks_in_progress: 0
-tasks_planned: 5
+milestones:
+  - title: "Go services and a SQLite store (eds-inventory ADR-0001)"
+    group: "Foundation"
+    status: done
+    date: "2026-10-24"
+  - title: "Its documentation and records"
+    group: "Foundation"
+    status: done
+    date: "2026-10-24"
+  - title: "The iTunes library, from its XML (eds-inventory ADR-0002)"
+    group: "Sources"
+    status: done
+    date: "2026-10-24"
+  - title: "Discogs, for the vinyl"
+    group: "Sources"
+    status: planned
+  - title: "MusicBee"
+    group: "Sources"
+    status: planned
+  - title: "Albums saved in Spotify and Tidal"
+    group: "Sources"
+    status: planned
+  - title: "Formats with no service: CDs and others"
+    group: "Sources"
+    status: planned
+  - title: "Matching one album across sources, and what happens when it is not sure"
+    group: "Sources"
+    status: planned
 ---
 # Foundation and Collecting
 
@@ -29,16 +54,10 @@ One inventory that keeps itself in step with every place the owner's music is ke
 
 ## Foundation ✅
 
-- ✅ Go services and a SQLite store (eds-inventory ADR-0001)
-- ✅ Its documentation and records
+{{< milestones group="Foundation" >}}
 
 ---
 
 ## Sources 🔄
 
-- ✅ The iTunes library, from its XML (eds-inventory ADR-0002)
-- ⏳ Discogs, for the vinyl
-- ⏳ MusicBee
-- ⏳ Albums saved in Spotify and Tidal
-- ⏳ Formats with no service: CDs and others
-- ⏳ Matching one album across sources, and what happens when it is not sure
+{{< milestones group="Sources" >}}

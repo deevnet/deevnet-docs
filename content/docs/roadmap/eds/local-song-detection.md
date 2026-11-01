@@ -1,9 +1,15 @@
 ---
 title: "EdS Local Song Detection"
 weight: 4
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Choose a fingerprinting engine, and whether one match holds across masterings"
+    status: planned
+  - title: "An index from the owner's rips, kept current as the library changes"
+    status: planned
+  - title: "A recognizer EdS's turntable driver can ask in place of today's"
+    status: planned
+  - title: "Vinyl-only records added from their captures"
+    status: planned
 ---
 
 # EdS Local Song Detection
@@ -37,7 +43,4 @@ collection, naming the edition owned, and nothing leaves the house. Open-source 
 
 ## Detection ⏳
 
-- ⏳ Choose a fingerprinting engine, and whether one match holds across masterings
-- ⏳ An index from the owner's rips, kept current as the library changes
-- ⏳ A recognizer EdS's turntable driver can ask in place of today's
-- ⏳ Vinyl-only records added from their captures
+{{< milestones >}}

@@ -3,9 +3,15 @@ title: "Software Discovery"
 aliases:
   - /docs/roadmap/infrastructure/software-discovery/
 weight: 11
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Catalog as data"
+    status: planned
+  - title: "Collectors"
+    status: planned
+  - title: "Report and cadence"
+    status: planned
+  - title: "Pins and licenses of Deevnet's own software"
+    status: planned
 ---
 
 # Software Discovery
@@ -19,9 +25,6 @@ the [Discovery](/docs/policies/lifecycle-management/discovery/) stage of Lifecyc
 
 ---
 
-- ⏳ Catalog as data
-- ⏳ Collectors
-- ⏳ Report and cadence
-- ⏳ Pins and licenses of Deevnet's own software
+{{< milestones >}}
 
 **Project plan:** [Software Discovery](/projects/software-discovery/)

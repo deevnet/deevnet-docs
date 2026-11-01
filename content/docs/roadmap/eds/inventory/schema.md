@@ -1,9 +1,17 @@
 ---
 title: "Schema v1"
 weight: 2
-tasks_completed: 1
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "Agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source"
+    group: "Review"
+    status: done
+    date: "2026-10-25"
+  - title: "Still to review: artist and album aliases, discography status, the enrichment counter, how enrichment fills the shape"
+    group: "Review"
+    status: planned
+  - title: "Schema v1 built as one, the iTunes importer changed, the store recollected"
+    group: "Build"
+    status: planned
 ---
 # Schema v1
 
@@ -28,11 +36,10 @@ Its own keys; album, edition and holding told apart; original release dates with
 
 ## Review 🔄
 
-- ✅ Agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source
-- ⏳ Still to review: artist and album aliases, discography status, the enrichment counter, how enrichment fills the shape
+{{< milestones group="Review" >}}
 
 ---
 
 ## Build ⏳
 
-- ⏳ Schema v1 built as one, the iTunes importer changed, the store recollected
+{{< milestones group="Build" >}}

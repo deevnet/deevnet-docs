@@ -369,3 +369,118 @@
 .adr-index td:nth-child(-n+2) {
   white-space: nowrap;
 }
+
+// -----------------------------------------------------------------------------
+// Milestones and Accomplishments
+// -----------------------------------------------------------------------------
+
+.milestone-date {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-left: 0.4em;
+}
+
+.acc-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin: 1em 0 0.5em;
+
+  button {
+    font: inherit;
+    font-size: 0.9em;
+    padding: 0.25em 0.8em;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+
+    &[aria-pressed="true"] {
+      background: var(--badge-complete);
+      border-color: var(--badge-complete);
+      color: #fff;
+    }
+  }
+}
+
+.acc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.4em 1.5em;
+  margin: 1em 0 0.5em;
+
+  .acc-views { margin: 0; }
+}
+
+// The theme's details is a padded, bordered box; a rollup is a plain row.
+.markdown details.acc-roll {
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0;
+  padding: 0.3em 0;
+  margin: 0;
+
+  > summary,
+  &[open] > summary {
+    line-height: 1.6;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  > ul.acc-list { margin: 0.3em 0 0.3em 1.4em; }
+  > details.acc-roll { margin-left: 1.4em; }
+  > details.acc-roll:last-child { border-bottom: 0; }
+  &.acc-area > summary { padding: 0.2em 0; }
+}
+
+.acc-done {
+  font-size: 0.8em;
+  color: var(--badge-complete);
+  margin-left: 0.4em;
+}
+
+.acc-totals {
+  font-size: 0.9em;
+  color: var(--text-muted);
+  margin-bottom: 1em;
+}
+
+.acc-group {
+  margin: 1.4em 0 0.4em;
+  font-size: 1.05em;
+
+  .acc-count {
+    font-weight: normal;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-left: 0.4em;
+  }
+}
+
+ul.acc-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+
+  li {
+    padding: 0.3em 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  time {
+    display: inline-block;
+    min-width: 7.5em;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+}
+
+.accomplishments .acc-item {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}

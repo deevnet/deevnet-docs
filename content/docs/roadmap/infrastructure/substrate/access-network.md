@@ -3,9 +3,11 @@ title: "Access Network"
 aliases:
   - /docs/roadmap/infrastructure/mobile/access-network/
 weight: 6
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "Management access ports"
+    status: planned
+  - title: "Unused ports"
+    status: planned
 ---
 
 # Access Network
@@ -19,7 +21,6 @@ management path.
 
 ---
 
-- ⏳ Management access ports
-- ⏳ Unused ports
+{{< milestones >}}
 
 **Project plan:** [Access Network](/projects/access-network/)

@@ -1,9 +1,15 @@
 ---
 title: "Network Automation"
 weight: 8
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "OPNsense's remaining manual steps automated: interface assignment, filter rules"
+    status: planned
+  - title: "The access switch's configuration idempotent"
+    status: planned
+  - title: "Omada: SSID VLANs set by the controller, its API driven through Ansible"
+    status: planned
+  - title: "Checks on every pull request"
+    status: planned
 ---
 
 # Network Automation
@@ -17,9 +23,6 @@ limits, and checks on every change.
 
 ---
 
-- ⏳ OPNsense's remaining manual steps automated: interface assignment, filter rules
-- ⏳ The access switch's configuration idempotent
-- ⏳ Omada: SSID VLANs set by the controller, its API driven through Ansible
-- ⏳ Checks on every pull request
+{{< milestones >}}
 
 **Project plan:** [Network Automation](/projects/network-automation/)

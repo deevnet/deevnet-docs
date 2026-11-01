@@ -3,9 +3,11 @@ title: "Patch Awareness"
 aliases:
   - /docs/roadmap/infrastructure/mobile/patch-automation/
 weight: 12
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "Release and advisory sources"
+    status: planned
+  - title: "Notification"
+    status: planned
 ---
 
 # Patch Awareness
@@ -20,7 +22,6 @@ patch is routine operations, not a roadmap item.
 
 ---
 
-- ⏳ Release and advisory sources
-- ⏳ Notification
+{{< milestones >}}
 
 **Project plan:** [Patch Awareness](/projects/patch-awareness/)

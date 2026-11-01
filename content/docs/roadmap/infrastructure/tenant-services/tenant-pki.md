@@ -1,9 +1,13 @@
 ---
 title: "Tenant PKI"
 weight: 2
-tasks_completed: 0
-tasks_in_progress: 2
-tasks_planned: 1
+milestones:
+  - title: "Site-less names"
+    status: active
+  - title: "The Deevnet Pi"
+    status: active
+  - title: "Device certificates"
+    status: planned
 ---
 
 # Tenant PKI
@@ -18,8 +22,6 @@ Deevnet Pi that holds them, and devices with certificates of their own. The CAs 
 
 ---
 
-- 🔄 Site-less names
-- 🔄 The Deevnet Pi
-- ⏳ Device certificates
+{{< milestones >}}
 
 **Project plan:** [Tenant PKI](/projects/tenant-pki/)

@@ -1,9 +1,22 @@
 ---
 title: "Open Questions"
 weight: 5
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 5
+milestones:
+  - title: "A MusicBrainz of its own: which host has the disk and memory"
+    group: "Upstreams"
+    status: planned
+  - title: "Identifying files by their sound: AcoustID and Chromaprint, run where the files are"
+    group: "Upstreams"
+    status: planned
+  - title: "Captured vinyl as copies of an edition, and what is still missing from one"
+    group: "Vinyl"
+    status: planned
+  - title: "Vinyl or CD first"
+    group: "Vinyl"
+    status: planned
+  - title: "What may be kept under Discogs' terms; how covers are stored; the contract; editing"
+    group: "Terms and shape"
+    status: planned
 ---
 # Open Questions
 
@@ -28,18 +41,16 @@ Each of these is a decision to make before it is built.
 
 ## Upstreams ⏳
 
-- ⏳ A MusicBrainz of its own: which host has the disk and memory
-- ⏳ Identifying files by their sound: AcoustID and Chromaprint, run where the files are
+{{< milestones group="Upstreams" >}}
 
 ---
 
 ## Vinyl ⏳
 
-- ⏳ Captured vinyl as copies of an edition, and what is still missing from one
-- ⏳ Vinyl or CD first
+{{< milestones group="Vinyl" >}}
 
 ---
 
 ## Terms and shape ⏳
 
-- ⏳ What may be kept under Discogs' terms; how covers are stored; the contract; editing
+{{< milestones group="Terms and shape" >}}

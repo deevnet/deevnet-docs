@@ -3,9 +3,11 @@ title: "Full Site Rebuild"
 aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
 weight: 5
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "Full Site Rebuild Event"
+    status: planned
+  - title: "Scheduled Rebuilds"
+    status: planned
 ---
 
 # Full Site Rebuild
@@ -18,7 +20,6 @@ End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery c
 
 ---
 
-- ⏳ Full Site Rebuild Event
-- ⏳ Scheduled Rebuilds
+{{< milestones >}}
 
 **Project plan:** [Full Site Rebuild](/projects/full-rebuild/)
