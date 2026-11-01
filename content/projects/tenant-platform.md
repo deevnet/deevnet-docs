@@ -14,7 +14,7 @@ Deliver the capability to run **tenants** on the mobile substrate — from netwo
 through a repeatable, code-defined tenant lifecycle. Each tenant is an isolated workload that
 supplies its own IaC/CaC to rebuild from scratch against the substrate.
 
-**Roadmap item:** [Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/)
+**Roadmap items:** [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/), [Tenant Lifecycle](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/), [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
 
 {{< overall-progress >}}
 

@@ -1,6 +1,6 @@
 ---
 title: "Tenant PKI"
-weight: 2
+weight: 4
 milestones:
   - title: "Tenants' own services on Deevnet certificates (CHG-0047)"
     status: done

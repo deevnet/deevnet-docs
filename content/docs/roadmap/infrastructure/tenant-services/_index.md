@@ -6,7 +6,7 @@ bookCollapseSection: true
 
 # Tenant Services Tooling
 
-What the site offers its tenants, and the tooling behind it: the tenant platform, tenant PKI, and removing a tenant cleanly.
+What the site offers its tenants, and the tooling behind it: the tenant fabric, the tenant lifecycle, platform services, tenant PKI, and removing a tenant cleanly.
 
 {{< overall-progress >}}
 

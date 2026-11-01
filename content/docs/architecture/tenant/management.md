@@ -71,7 +71,7 @@ Each tenant has a Grafana organization of its own, with its logs already wired i
 
 Tenants have no metrics store or alerting yet. The design is
 [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), and building it is part of the
-[Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/)
+[Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
 roadmap project.
 
 ---
@@ -126,7 +126,7 @@ A problem in one tenant should not affect others:
 - Independent lifecycle
 
 There are no per-tenant resource quotas: one tenant's workloads can use up the tenant hypervisor.
-Quotas are on the [Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/)
+Quotas are on the [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
 roadmap.
 
 ### No Shared State

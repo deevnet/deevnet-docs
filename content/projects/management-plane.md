@@ -15,7 +15,7 @@ Extended management services for the mobile (mobile) site — logging, telemetry
 - **GitHub:** https://github.com/deevnet/ansible-collection-deevnet.mgmt
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
 
-**Roadmap item:** [Extended Management Plane](/docs/roadmap/infrastructure/substrate/management-plane/)
+**Roadmap items:** [Extended Management Plane](/docs/roadmap/infrastructure/substrate/management-plane/), [Observability](/docs/roadmap/infrastructure/substrate/observability/), [Secrets and Identity](/docs/roadmap/infrastructure/substrate/secrets-identity/)
 
 {{< overall-progress >}}
 

@@ -34,7 +34,7 @@ major-version distribution upgrade on each node, not a package update.
 
 **Out of Scope**
 - Building the tenant fabric itself — tracked in
-  [Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/)
+  [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/)
 - Clustering either hypervisor — both remain standalone per
   [ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)
 - Applying patches — routine operations; knowing when one is needed is
@@ -121,7 +121,7 @@ Confirm the platform now supports what the tenant fabric design assumes.
 
 The tenant fabric is no longer blocked, and its underlay is defined as code rather than as
 hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
-[Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/).
+[Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/).
 
 **dv02hyp001p01 remains on PVE 8.4** ([current version](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01)). It carries the management plane, so it needs its own maintenance
 window; nothing in the tenant fabric waits on it. Nor does tenant DNS
