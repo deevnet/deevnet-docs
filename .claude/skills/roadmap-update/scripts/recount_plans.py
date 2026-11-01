@@ -6,8 +6,9 @@ with no task bullets beneath it counts as one task. Run from the repository root
     recount_plans.py          # show plans whose counts are wrong
     recount_plans.py write    # and fix them
 
-Plans are content/projects/*.md and content/projects/archive/*.md. Roadmap
-pages have no counts: their progress is computed from their milestones.
+Plans are a roadmap item's plan.md (or the pages of its plan/ section) and
+content/projects/archive/*.md. Roadmap items have no counts: their progress is
+computed from their milestones.
 """
 import glob, re, sys
 
@@ -18,7 +19,8 @@ FM = re.compile(r'^---\n(.*?)\n---\n', re.S)
 def main():
     write = len(sys.argv) > 1 and sys.argv[1] == "write"
     wrong = 0
-    for p in sorted(glob.glob("content/projects/*.md") + glob.glob("content/projects/archive/*.md")):
+    plans = glob.glob("content/docs/roadmap/**/plan.md", recursive=True) + glob.glob("content/docs/roadmap/**/plan/*.md", recursive=True)
+    for p in sorted(plans + glob.glob("content/projects/archive/*.md")):
         if p.endswith("_index.md"): continue
         s = open(p, encoding="utf-8").read()
         m = FM.match(s)

@@ -11,7 +11,7 @@ list is the rule; read it first):
 
 - A **roadmap item** (`content/docs/roadmap/**.md`) states intent and lists **3–8 milestones**
   in its front matter. Its progress is computed from them. It carries no `tasks_*`.
-- A **project plan** (`content/projects/<slug>.md`, outside the menu) holds the detail: phases,
+- A **project plan** (`<item>/plan.md`, beneath its item in the menu) holds the detail: phases,
   tasks as ✅ 🔄 ⏳ bullets, and hand-kept `tasks_*` counts. It is written once work starts.
 - When a project is done, the plan moves to `content/projects/archive/`, a short entry goes in
   Completed Projects, and the roadmap item is removed.
@@ -68,26 +68,29 @@ titles under three words.
      for what was reached, and one 🔄 or ⏳ for what remains.
    - If the work is an outcome no milestone covers, add one, placed in the order the item reads.
 4. **Keep the item at 3–8 milestones.** Beyond 8, split the item by theme into new roadmap pages.
-   The split pages share the plan. Give the plan a `**Roadmap items:**` line listing them all,
-   and give each item a line saying which of the plan's phases it covers.
+   Split its plan the same way: each item has its own plan and no plan serves two. Sibling plans
+   link to each other. Keep the old plan's aliases on the first.
 5. **Check:** `milestones.py check`, then the `hugo-docs` skill.
 
 ## When work starts on an item
 
-Write its plan at `content/projects/<slug>.md`. It holds:
-- the front matter, with title, weight and `tasks_*`;
+Make the item a section: `git mv <item>.md <item>/_index.md`, add `bookCollapseSection: true`, and
+write its plan at `<item>/plan.md`. The item stays the high-level summary; the plan is the detail,
+and its short tasks fit on the one page. A very large effort may use `<item>/plan/_index.md` with
+`requirements.md` and `tasks.md` beneath it. A plan holds:
+- the front matter, with `title: "<Item>: Project Plan"`, `linkTitle: "Project Plan"`, weight and `tasks_*`;
 - a `**Roadmap item:**` link back;
 - `{{< overall-progress >}}` and the Legend;
 - the phases with their tasks.
 
 Move any detail on the roadmap page into the plan, and leave the roadmap page as its intro, the
-progress bar, `{{< milestones >}}` and `**Project plan:** [Title](/projects/<slug>/)`. Use
+progress bar, `{{< milestones >}}` and `**Project plan:** [Title](/docs/roadmap/<item>/plan/)`. Use
 `git mv` when a page becomes a plan, so `git log --follow` keeps its history.
 
 ## When a project graduates
 
 1. Every task is done or explicitly dropped.
-2. `git mv` the plan to `content/projects/archive/<slug>.md`. Remove its roadmap link, and add the
+2. `git mv` the plan to `content/projects/archive/<slug>.md`, with `title` back to the project's name and `linkTitle` dropped. Remove its roadmap link, and add the
    roadmap item's `milestones:` list and `area:` (the roadmap area it left) to its front matter, so
    Roadmap Progress keeps listing them.
 3. Add a short entry in Completed Projects (`content/docs/completed/`) linking to the archived
