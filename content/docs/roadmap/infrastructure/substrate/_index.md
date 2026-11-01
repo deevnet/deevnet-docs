@@ -6,7 +6,7 @@ weight: 1
 bookCollapseSection: true
 tasks_completed: 6
 tasks_in_progress: 10
-tasks_planned: 29
+tasks_planned: 27
 ---
 
 # Substrate Tooling
