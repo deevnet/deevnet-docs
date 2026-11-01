@@ -1,29 +1,50 @@
 {{- /* Every milestone reached, newest first: from the roadmap's items, and
        from the plans of projects that have graduated. Grouped by month at
-       build time; the buttons regroup the same list by day, week, month,
-       quarter or year. */ -}}
+       build time. In the page, the buttons regroup it by day, week, month,
+       quarter or year; Summary rolls a month up by roadmap item, and a
+       quarter or a year by area, each line opening onto what it holds. */ -}}
+{{- $roadmap := site.GetPage "/docs/roadmap" -}}
+{{- $areas := slice -}}
+{{- range $roadmap.Pages -}}{{- if or .Params.milestones .IsSection -}}{{- $areas = $areas | append .Title -}}{{- end -}}{{- end -}}
 {{- $items := slice -}}
+{{- $ms := slice -}}
 {{- range site.Pages -}}
-  {{- if or (hasPrefix .Path "/docs/roadmap/") (hasPrefix .Path "/projects/archive/") -}}
-    {{- $page := . -}}
+  {{- $page := . -}}
+  {{- $roadmapItem := hasPrefix .Path "/docs/roadmap/" -}}
+  {{- if and .Params.milestones (or $roadmapItem (hasPrefix .Path "/projects/archive/")) -}}
+    {{- $area := .Params.area | default "Graduated projects" -}}
+    {{- if $roadmapItem -}}
+      {{- $top := . -}}
+      {{- range .Ancestors -}}{{- if and .Parent (eq .Parent.Path $roadmap.Path) -}}{{- $top = . -}}{{- end -}}{{- end -}}
+      {{- $area = $top.Title -}}
+    {{- end -}}
+    {{- $done := slice -}}
     {{- range .Params.milestones -}}
       {{- if and (eq .status "done") .date -}}
-        {{- $items = $items | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.Title "link" $page.RelPermalink "area" $page.Parent.Title) -}}
+        {{- $done = $done | append .date -}}
+        {{- $ms = $ms | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.RelPermalink "label" $page.Title "group" $page.Parent.Title) -}}
       {{- end -}}
     {{- end -}}
+    {{- $items = $items | append (dict "id" $page.RelPermalink "title" $page.Title "area" $area "total" (len .Params.milestones) "done" $done "graduated" (not $roadmapItem)) -}}
   {{- end -}}
 {{- end -}}
-{{- $items = sort $items "date" "desc" -}}
+{{- $ms = sort $ms "date" "desc" -}}
 <div class="accomplishments">
-<div class="acc-views" role="group" aria-label="Group by" hidden>
-  {{- range slice "day" "week" "month" "quarter" "year" }}
-  <button type="button" data-view="{{ . }}" aria-pressed="false">{{ title . }}</button>
-  {{- end }}
+<div class="acc-controls" hidden>
+  <div class="acc-views" role="group" aria-label="Group by">
+    {{- range slice "day" "week" "month" "quarter" "year" }}
+    <button type="button" data-view="{{ . }}" aria-pressed="false">{{ title . }}</button>
+    {{- end }}
+  </div>
+  <div class="acc-views" role="group" aria-label="Show">
+    <button type="button" data-mode="detail" aria-pressed="false">Detail</button>
+    <button type="button" data-mode="summary" aria-pressed="false">Summary</button>
+  </div>
 </div>
 <div class="acc-totals" hidden></div>
 <div class="acc-body">
 {{- $month := "" -}}
-{{- range $items -}}
+{{- range $ms -}}
   {{- $m := (time.AsTime .date).Format "January 2006" -}}
   {{- if ne $m $month -}}
     {{- if $month }}</ul>{{ end }}
@@ -31,83 +52,124 @@
 <ul class="acc-list">
     {{- $month = $m -}}
   {{- end }}
-  <li data-date="{{ .date }}"><time datetime="{{ .date }}">{{ if .approx }}by {{ end }}{{ .date }}</time> {{ .title }} <span class="acc-item">· <a href="{{ .link }}">{{ .item }}</a>, {{ .area }}</span></li>
+  <li><time datetime="{{ .date }}">{{ if .approx }}by {{ end }}{{ .date }}</time> {{ .title }} <span class="acc-item">· <a href="{{ .item }}">{{ .label }}</a>, {{ .group }}</span></li>
 {{- end -}}
 {{- if $month }}</ul>{{ end }}
 </div>
 </div>
+<script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "milestones" $ms | jsonify | safeJS }}</script>
 <script>
 (function () {
   var root = document.querySelector(".accomplishments");
-  if (!root) return;
+  var data = JSON.parse(document.getElementById("acc-data").textContent);
+  if (!root || !data) return;
   var body = root.querySelector(".acc-body");
-  var items = Array.prototype.slice.call(body.querySelectorAll("li[data-date]"));
+  var items = {}; data.items.forEach(function (it) { items[it.id] = it; });
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   var SHORT = MONTHS.map(function (m) { return m.slice(0, 3); });
   var DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var state = { view: "month", mode: "detail" };
+  var now = new Date(), today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 
   function parse(s) { var p = s.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
-  function isoWeek(d) {
-    var t = new Date(d.getTime());
-    var day = t.getUTCDay() || 7;
-    t.setUTCDate(t.getUTCDate() + 4 - day);
-    var y = t.getUTCFullYear();
-    var w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7);
-    var mon = new Date(d.getTime()); mon.setUTCDate(d.getUTCDate() - (day - 1));
-    var sun = new Date(mon.getTime()); sun.setUTCDate(mon.getUTCDate() + 6);
-    return { key: y + "-W" + w, label: "Week " + w + ", " + y + " (" + SHORT[mon.getUTCMonth()] + " " + mon.getUTCDate() + " – " + SHORT[sun.getUTCMonth()] + " " + sun.getUTCDate() + ")" };
-  }
+  function iso(d) { return d.toISOString().slice(0, 10); }
+  function addDays(d, n) { var t = new Date(d.getTime()); t.setUTCDate(t.getUTCDate() + n); return t; }
+  // A period: its key, its label, and its last day (to measure progress at its end).
   function group(view, d) {
     var y = d.getUTCFullYear(), m = d.getUTCMonth();
     switch (view) {
-      case "day": return { key: d.toISOString().slice(0, 10), label: DAYS[d.getUTCDay()] + ", " + MONTHS[m] + " " + d.getUTCDate() + ", " + y };
-      case "week": return isoWeek(d);
-      case "quarter": return { key: y + "-Q" + (Math.floor(m / 3) + 1), label: "Q" + (Math.floor(m / 3) + 1) + " " + y };
-      case "year": return { key: "" + y, label: "" + y };
-      default: return { key: y + "-" + m, label: MONTHS[m] + " " + y };
+      case "day": return { key: iso(d), label: DAYS[d.getUTCDay()] + ", " + MONTHS[m] + " " + d.getUTCDate() + ", " + y, end: iso(d) };
+      case "week":
+        var day = d.getUTCDay() || 7, mon = addDays(d, 1 - day), sun = addDays(mon, 6), th = addDays(mon, 3);
+        var wy = th.getUTCFullYear(), w = Math.ceil(((th - Date.UTC(wy, 0, 1)) / 86400000 + 1) / 7);
+        return { key: wy + "-W" + w, label: "Week " + w + ", " + wy + " (" + SHORT[mon.getUTCMonth()] + " " + mon.getUTCDate() + " – " + SHORT[sun.getUTCMonth()] + " " + sun.getUTCDate() + ")", end: iso(sun) };
+      case "quarter":
+        var q = Math.floor(m / 3);
+        return { key: y + "-Q" + (q + 1), label: "Q" + (q + 1) + " " + y, end: iso(new Date(Date.UTC(y, q * 3 + 3, 0))) };
+      case "year": return { key: "" + y, label: "" + y, end: y + "-12-31" };
+      default: return { key: y + "-" + m, label: MONTHS[m] + " " + y, end: iso(new Date(Date.UTC(y, m + 1, 0))) };
     }
   }
-  function render(view) {
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+  function milestoneLi(m, withItem) {
+    var it = items[m.item];
+    return el("li", null, '<time datetime="' + m.date + '">' + (m.approx ? "by " : "") + m.date + "</time> " + m.title +
+      (withItem ? ' <span class="acc-item">· <a href="' + m.item + '">' + esc(it.title) + "</a>, " + esc(m.group) + "</span>" : ""));
+  }
+  function list(ms, withItem) { var ul = el("ul", "acc-list"); ms.forEach(function (m) { ul.appendChild(milestoneLi(m, withItem)); }); return ul; }
+  // An item finished in a period when all its milestones are done and the last falls in it.
+  function finishedIn(it, g, view) {
+    if (it.done.length !== it.total || !it.total) return false;
+    var last = it.done.slice().sort().pop();
+    return group(view, parse(last)).key === g.key;
+  }
+  function doneBy(it, end) { return it.done.filter(function (d) { return d <= end; }).length; }
+  function byItem(ms) {
+    var out = {}, order = [];
+    ms.forEach(function (m) { if (!out[m.item]) { out[m.item] = []; order.push(m.item); } out[m.item].push(m); });
+    return order.map(function (id) { return { it: items[id], ms: out[id] }; })
+      .sort(function (a, b) { return b.ms.length - a.ms.length; });
+  }
+  function itemDetails(row, g, view, withArea) {
+    var it = row.it, fin = finishedIn(it, g, view);
+    var d = el("details", "acc-roll");
+    d.appendChild(el("summary", null, '<a href="' + it.id + '">' + esc(it.title) + "</a>" +
+      (withArea ? ' <span class="acc-item">' + esc(it.area) + "</span>" : "") + " — " + plural(row.ms.length, "milestone") +
+      (fin ? ' <span class="acc-done">' + (it.graduated ? "graduated" : "complete") + "</span>"
+           : ' <span class="acc-item">· ' + doneBy(it, g.end) + "/" + it.total + " done " + (g.end >= iso(today) ? "so far" : "by then") + "</span>")));
+    d.appendChild(list(row.ms, false));
+    return d;
+  }
+  function summary(g, ms, view) {
+    var frag = document.createDocumentFragment();
+    if (view === "day" || view === "week") { frag.appendChild(list(ms, true)); return frag; }
+    if (view === "month") { byItem(ms).forEach(function (row) { frag.appendChild(itemDetails(row, g, view, true)); }); return frag; }
+    var byArea = {};
+    ms.forEach(function (m) { var a = items[m.item].area; (byArea[a] = byArea[a] || []).push(m); });
+    data.areas.forEach(function (a) {
+      if (!byArea[a]) return;
+      var rows = byItem(byArea[a]);
+      var fin = rows.filter(function (r) { return finishedIn(r.it, g, view); }).map(function (r) { return esc(r.it.title); });
+      var d = el("details", "acc-roll acc-area");
+      d.appendChild(el("summary", null, "<strong>" + esc(a) + "</strong> — " + plural(byArea[a].length, "milestone") + " across " + plural(rows.length, "item") +
+        (fin.length ? ' <span class="acc-done">complete: ' + fin.join(", ") + "</span>" : "")));
+      rows.forEach(function (row) { d.appendChild(itemDetails(row, g, view)); });
+      frag.appendChild(d);
+    });
+    return frag;
+  }
+  function render() {
+    var view = state.view, mode = state.mode;
     body.textContent = "";
-    var key = null, ul = null, h = null, n = 0;
-    function close() { if (h) h.querySelector(".acc-count").textContent = n + (n === 1 ? " milestone" : " milestones"); }
-    items.forEach(function (li) {
-      var g = group(view, parse(li.getAttribute("data-date")));
-      if (g.key !== key) {
-        close();
-        h = document.createElement("h3"); h.className = "acc-group";
-        h.appendChild(document.createTextNode(g.label));
-        var c = document.createElement("span"); c.className = "acc-count"; h.appendChild(c);
-        ul = document.createElement("ul"); ul.className = "acc-list";
-        body.appendChild(h); body.appendChild(ul);
-        key = g.key; n = 0;
-      }
-      ul.appendChild(li); n++;
+    var groups = [], cur = null;
+    data.milestones.forEach(function (m) {
+      var g = group(view, parse(m.date));
+      if (!cur || cur.g.key !== g.key) { cur = { g: g, ms: [] }; groups.push(cur); }
+      cur.ms.push(m);
     });
-    close();
-    root.querySelectorAll(".acc-views button").forEach(function (b) {
-      b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false");
+    groups.forEach(function (gr) {
+      var h = el("h3", "acc-group"); h.appendChild(document.createTextNode(gr.g.label));
+      h.appendChild(el("span", "acc-count", plural(gr.ms.length, "milestone")));
+      body.appendChild(h);
+      body.appendChild(mode === "summary" ? summary(gr.g, gr.ms, view) : list(gr.ms, true));
     });
-    try { localStorage.setItem("acc-view", view); } catch (e) {}
+    root.querySelectorAll("[data-view]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });
+    root.querySelectorAll("[data-mode]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-mode") === mode ? "true" : "false"); });
+    try { localStorage.setItem("acc-view", view); localStorage.setItem("acc-mode", mode); } catch (e) {}
   }
 
-  var now = new Date();
-  var today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-  var totals = [["This month", "month"], ["this quarter", "quarter"], ["this year", "year"]].map(function (t) {
-    var k = group(t[1], today).key;
-    var n = items.filter(function (li) { return group(t[1], parse(li.getAttribute("data-date"))).key === k; }).length;
-    return t[0] + ": " + n;
-  });
   var tot = root.querySelector(".acc-totals");
-  tot.textContent = totals.join(" · ") + " · " + items.length + " in all";
+  tot.textContent = [["This month", "month"], ["this quarter", "quarter"], ["this year", "year"]].map(function (t) {
+    var k = group(t[1], today).key;
+    return t[0] + ": " + data.milestones.filter(function (m) { return group(t[1], parse(m.date)).key === k; }).length;
+  }).join(" · ") + " · " + data.milestones.length + " in all";
   tot.hidden = false;
-
-  root.querySelector(".acc-views").hidden = false;
-  root.querySelectorAll(".acc-views button").forEach(function (b) {
-    b.addEventListener("click", function () { render(b.getAttribute("data-view")); });
-  });
-  var saved = "month";
-  try { saved = localStorage.getItem("acc-view") || "month"; } catch (e) {}
-  render(saved);
+  root.querySelector(".acc-controls").hidden = false;
+  root.querySelectorAll("[data-view]").forEach(function (b) { b.addEventListener("click", function () { state.view = b.getAttribute("data-view"); render(); }); });
+  root.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { state.mode = b.getAttribute("data-mode"); render(); }); });
+  try { state.view = localStorage.getItem("acc-view") || "month"; state.mode = localStorage.getItem("acc-mode") || "detail"; } catch (e) {}
+  render();
 })();
 </script>
