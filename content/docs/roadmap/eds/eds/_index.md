@@ -2,7 +2,7 @@
 title: "EdS"
 weight: 1
 bookCollapseSection: true
-tasks_completed: 41
+tasks_completed: 42
 tasks_in_progress: 3
 tasks_planned: 29
 ---
