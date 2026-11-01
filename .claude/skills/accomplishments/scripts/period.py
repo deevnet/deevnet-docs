@@ -5,11 +5,17 @@ repository root. Prints; changes nothing.
     period.py 2026-11      # a month
     period.py 2026-Q4      # a quarter
     period.py 2026         # a year
-    period.py last         # the month before today, plus the quarter and year it closes
+    period.py catchup      # what a catch-up has to do today
 
-For the period it prints: the milestones reached, by area and item; the change
+For a period it prints: the milestones reached, by area and item; the change
 records and incidents dated in it; the open milestones of the items it touched;
 incidents still open; and which accounts exist for it and for the periods below it.
+
+Catchup prints each period from the earliest month with an account up to today,
+lowest level first, and whether its account is missing, stale or current. An
+account is stale when its `reached:` count differs from the milestones now done
+in the period, which also catches milestones backfilled into an earlier date. It
+then prints the records to check against the roadmap.
 """
 import calendar, datetime, glob, os, re, subprocess, sys
 
@@ -36,15 +42,6 @@ def below(key, kind):
         q = int(key[-1]); return [f"{y}-{m:02d}" for m in range(q * 3 - 2, q * 3 + 1)]
     return []
 
-def last_periods(today=None):
-    today = today or datetime.date.today()
-    first = today.replace(day=1)
-    prev = first - datetime.timedelta(days=1)
-    out = [f"{prev.year}-{prev.month:02d}"]
-    if prev.month % 3 == 0: out.append(f"{prev.year}-Q{prev.month // 3}")
-    if prev.month == 12: out.append(f"{prev.year}")
-    return out
-
 def title_of(path):
     s = open(path, encoding="utf-8").read()
     m = re.search(r'^title: "?(.*?)"?$', s, re.M)
@@ -61,7 +58,7 @@ def milestones(args):
     out = subprocess.run([sys.executable, ms, "list"] + args, capture_output=True, text=True, check=True).stdout
     return [l.split("\t") for l in out.splitlines() if l.strip()]
 
-def records(lo, hi):
+def all_records():
     rows = []
     for p in glob.glob("content/docs/changes/*/*.md") + glob.glob("content/docs/incidents/*/*.md"):
         if p.endswith("_index.md"): continue
@@ -69,7 +66,53 @@ def records(lo, hi):
         d = re.search(r'\|\s*\*\*Date\*\*\s*\|\s*(\d{4}-\d{2}-\d{2})', s)
         st = re.search(r'\|\s*\*\*Status\*\*\s*\|([^\n]*)', s)
         rows.append((d.group(1) if d else "", title_of(p), re.sub(r'\{\{<[^>]*"([^"]+)"[^>]*>\}\}', r'\1', st.group(1)).strip(" |")[:90] if st else ""))
+    return rows
+
+def records(lo, hi):
+    rows = all_records()
     return [r for r in rows if lo <= r[0] <= hi], [r for r in rows if r[1].startswith("INC") and not re.search(r'closed|resolved', r[2], re.I)]
+
+def account_field(key, field):
+    f = f"data/accomplishments/{key}.yaml"
+    if not os.path.exists(f): return None
+    m = re.search(rf'^{field}:\s*"?([^"\n]+?)"?\s*$', open(f, encoding="utf-8").read(), re.M)
+    return m.group(1) if m else None
+
+def catchup_periods(today):
+    this = f"{today.year}-{today.month:02d}"
+    written = [os.path.basename(f)[:-5] for f in glob.glob("data/accomplishments/*.yaml")]
+    y, mo = map(int, min([k for k in written if re.fullmatch(r'\d{4}-\d{2}', k)] + [this]).split("-"))
+    months, quarters, years = [], [], []
+    while f"{y}-{mo:02d}" <= this:
+        months.append(f"{y}-{mo:02d}")
+        for out, k in ((quarters, f"{y}-Q{(mo + 2) // 3}"), (years, f"{y}")):
+            if k not in out: out.append(k)
+        y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
+    return months + quarters + years
+
+def catchup(today=None):
+    today = today or datetime.date.today()
+    print(f"# Catch-up as of {today}\n\n## Accounts\n")
+    due, throughs = 0, []
+    for key in catchup_periods(today):
+        lo, hi, _ = bounds(key)
+        n = len(milestones(["--from", lo, "--to", hi, "--status", "done"]))
+        exists = os.path.exists(f"data/accomplishments/{key}.yaml")
+        reached, through = account_field(key, "reached"), account_field(key, "through")
+        if through: throughs.append(through)
+        if not exists: state = "missing" if n else "nothing reached"
+        elif reached != str(n): state = f"stale (written with {reached or 'no count'})"
+        else: state = "current"
+        due += state.startswith(("missing", "stale"))
+        partial = "  in progress" if hi >= today.isoformat() else ""
+        print(f"- {key}: {n} reached, {state}{partial}")
+    print(f"\nAccounts to write or revise: {due}")
+    since = max(throughs) if throughs else today.replace(day=1).isoformat()
+    print(f"\n## Records to check against the roadmap (dated from {since}, or in progress)\n")
+    for d, t, st in sorted(all_records()):
+        if d >= since or re.search(r'in progress', st, re.I):
+            print(f"- {d or '?':10}  {t}  — {st}")
+    print()
 
 def report(key):
     lo, hi, kind = bounds(key)
@@ -107,5 +150,5 @@ def report(key):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2: sys.exit(__doc__)
-    for k in (last_periods() if sys.argv[1] == "last" else [sys.argv[1]]):
-        report(k)
+    if sys.argv[1] == "catchup": catchup()
+    else: report(sys.argv[1])
