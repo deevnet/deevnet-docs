@@ -1,5 +1,7 @@
 ---
 title: "Home Site"
+aliases:
+  - /docs/projects/home-site/
 weight: 14
 tasks_completed: 0
 tasks_in_progress: 0

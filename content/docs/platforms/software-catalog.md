@@ -147,7 +147,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 
 | Component | Version | License | Support | Version source |
 |---|---|---|---|---|
-| **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/docs/projects/hypervisor-uplift/)) |
+| **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/projects/hypervisor-uplift/)) |
 | Debian | 13 (Trixie) | Free software, per package | Community | Bundled with Proxmox VE 9 |
 | Proxmox SDN (`libpve-network-perl`) | 1.6.7 | AGPL-3.0 | Bundled | Observed 2026-08-30 |
 | Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/)) | 1.32.0 (2024-09-03) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |

@@ -31,4 +31,4 @@ Extended management services for the mobile (mobile) site — logging, telemetry
 - 🔄 Build Verification
 - ⏳ Documentation
 
-**Project plan:** [Extended Management Plane](/docs/projects/management-plane/)
+**Project plan:** [Extended Management Plane](/projects/management-plane/)

@@ -21,4 +21,4 @@ End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery c
 - ⏳ Full Site Rebuild Event
 - ⏳ Scheduled Rebuilds
 
-**Project plan:** [Full Site Rebuild](/docs/projects/full-rebuild/)
+**Project plan:** [Full Site Rebuild](/projects/full-rebuild/)

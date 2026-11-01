@@ -1,5 +1,7 @@
 ---
 title: "Tenant Removal"
+aliases:
+  - /docs/projects/tenant-removal/
 weight: 13
 tasks_completed: 0
 tasks_in_progress: 0

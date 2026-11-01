@@ -1,5 +1,7 @@
 ---
 title: "Patch Awareness"
+aliases:
+  - /docs/projects/patch-awareness/
 weight: 10
 tasks_completed: 0
 tasks_in_progress: 0

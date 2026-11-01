@@ -26,4 +26,4 @@ Part of `deevnet-image-factory`. Not yet admitted as a tenant.
 - 🔄 simh Emulation
 - ⏳ Documentation
 
-**Project plan:** [PiPDP11](/docs/projects/pipdp11/)
+**Project plan:** [PiPDP11](/projects/pipdp11/)

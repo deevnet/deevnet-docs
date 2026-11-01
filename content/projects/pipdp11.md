@@ -1,5 +1,7 @@
 ---
 title: "PiPDP11"
+aliases:
+  - /docs/projects/pipdp11/
 weight: 18
 tasks_completed: 1
 tasks_in_progress: 1

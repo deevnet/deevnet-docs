@@ -1,5 +1,7 @@
 ---
 title: "Network Firmware"
+aliases:
+  - /docs/projects/network-firmware/
 weight: 22
 tasks_completed: 2
 tasks_in_progress: 0

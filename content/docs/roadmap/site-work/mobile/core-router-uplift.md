@@ -24,4 +24,4 @@ them.
 - ⏳ Proven under a multi-gigabyte transfer and a full deploy
 - ⏳ INC-0004 closed
 
-**Project plan:** [Core Router Uplift](/docs/projects/core-router-uplift/)
+**Project plan:** [Core Router Uplift](/projects/core-router-uplift/)

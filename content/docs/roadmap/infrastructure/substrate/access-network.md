@@ -22,4 +22,4 @@ management path.
 - ⏳ Management access ports
 - ⏳ Unused ports
 
-**Project plan:** [Access Network](/docs/projects/access-network/)
+**Project plan:** [Access Network](/projects/access-network/)

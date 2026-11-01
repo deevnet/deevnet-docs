@@ -24,4 +24,4 @@ depends on recoverable from code.
 - ⏳ Converge the nodes
 - ⏳ Guest configuration survives a rebuild
 
-**Project plan:** [Hypervisor Storage](/docs/projects/hypervisor-storage/)
+**Project plan:** [Hypervisor Storage](/projects/hypervisor-storage/)

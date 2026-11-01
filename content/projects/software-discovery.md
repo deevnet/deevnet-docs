@@ -1,5 +1,7 @@
 ---
 title: "Software Discovery"
+aliases:
+  - /docs/projects/software-discovery/
 weight: 9
 tasks_completed: 0
 tasks_in_progress: 0

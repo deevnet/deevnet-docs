@@ -65,7 +65,7 @@ confirm.
 
 Write the Proxmox VE ISO the Builder staged under `isos/proxmox` to a USB stick. **Install the
 version the node was running**; upgrading is a separate change
-([Hypervisor Platform Uplift](/docs/projects/hypervisor-uplift/)).
+([Hypervisor Platform Uplift](/projects/hypervisor-uplift/)).
 
 {{< hint info >}}
 `deevnet-image-factory` has an unattended ISO build (`make proxmox-pve-iso-ext4`) with the settings

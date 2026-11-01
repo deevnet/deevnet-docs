@@ -19,4 +19,4 @@ Firmware upgrades on the mobile site's network devices.
 - ✅ Access point firmware (CHG-0005)
 - ✅ Access switch firmware (CHG-0006)
 
-**Project plan:** [Network Firmware](/docs/projects/network-firmware/)
+**Project plan:** [Network Firmware](/projects/network-firmware/)

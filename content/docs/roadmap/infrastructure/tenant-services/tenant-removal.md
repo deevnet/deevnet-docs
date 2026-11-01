@@ -22,4 +22,4 @@ operator's procedure today is [Tenant Removal](/docs/runbook/substrate/tenant-re
 - ⏳ Leftovers
 - ⏳ Tokens
 
-**Project plan:** [Tenant Removal](/docs/projects/tenant-removal/)
+**Project plan:** [Tenant Removal](/projects/tenant-removal/)

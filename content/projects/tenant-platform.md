@@ -1,5 +1,7 @@
 ---
 title: "Tenant Platform"
+aliases:
+  - /docs/projects/tenant-platform/
 weight: 11
 tasks_completed: 21
 tasks_in_progress: 1

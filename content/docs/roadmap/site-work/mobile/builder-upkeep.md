@@ -20,4 +20,4 @@ home network when the factory is parked there.
 - ⏳ More space for `/home`, its build caches under `/srv`
 - ⏳ The Builder's Wi-Fi onto the home network, decided in a record (EdS ADR-0053)
 
-**Project plan:** [Builder Upkeep](/docs/projects/builder-upkeep/)
+**Project plan:** [Builder Upkeep](/projects/builder-upkeep/)

@@ -1,5 +1,7 @@
 ---
 title: "Full Site Rebuild"
+aliases:
+  - /docs/projects/full-rebuild/
 weight: 15
 tasks_completed: 0
 tasks_in_progress: 0

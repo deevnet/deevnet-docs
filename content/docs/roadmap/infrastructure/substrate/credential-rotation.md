@@ -23,4 +23,4 @@ Define how a credential gets replaced. The [Secure Identity Standard](/docs/stan
 - ⏳ Reducing Lifetime
 - ⏳ Handling Exposure
 
-**Project plan:** [Credential Rotation](/docs/projects/credential-rotation/)
+**Project plan:** [Credential Rotation](/projects/credential-rotation/)

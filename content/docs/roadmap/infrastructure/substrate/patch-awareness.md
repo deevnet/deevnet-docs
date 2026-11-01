@@ -23,4 +23,4 @@ patch is routine operations, not a roadmap item.
 - ⏳ Release and advisory sources
 - ⏳ Notification
 
-**Project plan:** [Patch Awareness](/docs/projects/patch-awareness/)
+**Project plan:** [Patch Awareness](/projects/patch-awareness/)

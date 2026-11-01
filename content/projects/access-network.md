@@ -1,5 +1,7 @@
 ---
 title: "Access Network"
+aliases:
+  - /docs/projects/access-network/
 weight: 6
 tasks_completed: 0
 tasks_in_progress: 0

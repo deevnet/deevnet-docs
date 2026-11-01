@@ -26,10 +26,18 @@ This site documents the **Mobile Factory**, the mobile instance of Deevnet (site
 5. **Operational Runbook** (`runbook/`) - `substrate/` for the operator (building, change and incident management with their record templates, lifecycle, network, recovery, tenant admission); `tenant/` for tenants (getting started, services, operating, recovery, Pi Lab). Tenant recovery lives under `tenant/recovery/`, not with substrate recovery
 6. **Policies & Procedures** (`policies/`) - Change management, incident management, risk management (vulnerabilities, security controls, traceability, resiliency, risk register), lifecycle management (the stages from selection to retirement, with evaluation beneath it: the hardware and software criteria (each with a level, a pass condition and how to check it), process and record template. The term is **evaluation**, verdicts **Approved / Approved with conditions / Rejected / Not yet evaluated**; not "certification")
 7. **Change / Incident Records** (`changes/`, `incidents/`) - Numbered records. Records, and ADRs (filed in topic folders under `architecture/decisions/<topic>/`), list **newest first**: `weight: -NNNN`, year folders `weight: -YYYY`, and new rows go at the top of each index
-8. **Projects** (`projects/`) - Active project plans: the detail behind a roadmap item (scope, reasoning, phases and their tasks, status, the change records that carry it out), written once work starts. The roadmap item keeps only its intent and 3–8 milestones, and links here
-9. **Completed Projects** (`completed/`) - Finished projects: a project's plan moves here from Projects when it graduates, and its roadmap item is removed
+8. **Projects** (`content/projects/`, outside `docs/` and so outside the menu) - Active project plans: the detail behind a roadmap item (scope, reasoning, phases and their tasks, status, the change records that carry it out), written once work starts. Flat, one page per project, whatever the roadmap's areas. The roadmap item keeps only its intent and 3–8 milestones and links here; the plan links back. Plans are transient: reached only from their roadmap item
+9. **Completed Projects** (`completed/`) - Finished projects: a short entry for each, linking to its plan or the project's own site. When a project graduates, its plan moves to `content/projects/archive/` unchanged but for its roadmap link, which goes, its roadmap item is removed, and the entry is added here
 10. **Platforms Integration** - How docs integrate into developer workflow
 11. **Appendix** (`appendix/`) - Background primers (cryptography and PKI first). Explanatory, not normative: the rules stay in Architecture and Standards, the procedures in the Runbook
+
+## To revisit
+
+- **Time boundaries on roadmap milestones** (noted 2026-11-01; revisit around 2027-02, once the
+  Projects split has settled): whether milestones get target quarters or dates, and how the
+  roadmap shows them.
+- **Whether plans are searched**: plans and the archive are in site search today; one
+  `bookSearchExclude: true` per page takes them out.
 
 ## Usage by Other Repos
 

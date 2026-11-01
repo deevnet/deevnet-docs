@@ -10,7 +10,8 @@ aliases:
 
 Projects that have left the [Roadmap](/docs/roadmap/) because they are **done**: built, running on
 their own hardware, and documented well enough to rebuild. Each entry records what the project is,
-how it is built and checked, and the plan it was delivered against.
+how it is built and checked, and links to the plan it was delivered against, kept in the
+[archive](/projects/archive/), or to the project's own site.
 
 The Deevnet side of each project is here; write-ups of these and other projects are on
 [my projects page](https://cdeever.github.io/projects/).
@@ -36,7 +37,8 @@ A project is complete when:
 4. **It is documented here** — hardware, purpose, network position, configuration, and how to
    validate it
 5. **Its project plan is closed** — every task done or explicitly dropped, the plan moved from
-   [Projects](/docs/projects/) into its entry here, and its roadmap item removed
+   [Projects](/projects/) to the [archive](/projects/archive/), its roadmap item removed, and an
+   entry here linking to it
 
 ## The path for Pi projects
 

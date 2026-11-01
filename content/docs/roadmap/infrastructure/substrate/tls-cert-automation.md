@@ -33,4 +33,4 @@ for device enrollment.
 - ⏳ Device Identity
 - ⏳ Later
 
-**Project plan:** [TLS Cert Automation](/docs/projects/tls-cert-automation/)
+**Project plan:** [TLS Cert Automation](/projects/tls-cert-automation/)
