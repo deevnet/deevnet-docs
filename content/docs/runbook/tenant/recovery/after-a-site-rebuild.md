@@ -20,7 +20,7 @@ A rebuilt tenant hypervisor comes back without your VMs. The site still lists th
 `terraform apply` shows **no changes** and rebuilds nothing. The API does rebuild a workload's VM,
 with the same address and name, whenever that workload is applied again. But there is no tested way
 yet to make your apply send it. Until there is, ask the operator. Closing this is on the
-[Tenant Platform](/docs/roadmap/infrastructure/mobile/tenant-platform/) roadmap.
+[Tenant Platform](/docs/roadmap/infrastructure/tenant-services/tenant-platform/) roadmap.
 
 Anything a workload kept on its own disk is gone. Your application comes back the way it arrived:
 you push it again ([Deploy Your App to a Workload](/docs/runbook/tenant/deploy-your-app/)). Keep the

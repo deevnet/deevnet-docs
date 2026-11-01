@@ -86,7 +86,7 @@ Read on `dv02prv001v01` and in the automation on 2026-09-16:
 - **The VM's disk is on a single physical disk.** `local-lvm-big-thin` is a thin pool on
   `vgbigdata`, one 1.8T disk with *"No redundancy. Each data disk is a single disk. Losing it loses
   every VM disk on it."*
-  ([Hypervisor Storage](/docs/roadmap/infrastructure/mobile/hypervisor-storage/)).
+  ([Hypervisor Storage](/docs/roadmap/infrastructure/substrate/hypervisor-storage/)).
 - **Nothing copies it off the host.** The `proxmox_vm` role attaches data disks with
   `backup: false`, and [Limits](/docs/policies/risk-management/resiliency/) records that *"No collection carries
   off-box backup automation"*.

@@ -193,6 +193,6 @@ tracks closing each of these.
 
 **Core Router** - No automated install exists, but this is an accepted manual prerequisite for the MVP. A fresh OPNsense install from USB is performed before the automated build begins, same as factory-resetting the switch and AP. Day-2 configuration is fully automated via the `deevnet.net` Ansible collection. Future options (pre-imaged NVMe, alternative whitebox solutions) are tracked under [Evaluations](/docs/platforms/evaluations/).
 
-**Hypervisors** - Proxmox VE is installed by hand from the ISO staged on the artifact server. An unattended ISO with an embedded answer file exists in `deevnet-image-factory` but is unfinished and has not installed either node; it is on the [Builder roadmap](/docs/roadmap/infrastructure/mobile/builder/).
+**Hypervisors** - Proxmox VE is installed by hand from the ISO staged on the artifact server. An unattended ISO with an embedded answer file exists in `deevnet-image-factory` but is unfinished and has not installed either node; it is on the [Builder roadmap](/docs/roadmap/infrastructure/substrate/builder/).
 
 **Post-Install Updates** - See [Patching](/docs/runbook/substrate/lifecycle/patching/) for day 2 considerations.

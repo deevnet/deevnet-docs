@@ -17,7 +17,7 @@ instead of stating its version. They keep a version only where the context needs
 - a literal value in a procedure, such as a firmware upgrade chain or an image tag
 
 When a change upgrades something, it updates this page. Versions are gathered by hand today:
-[Software Discovery](/docs/roadmap/infrastructure/software-discovery/) is the roadmap item for
+[Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) is the roadmap item for
 scanning the site instead.
 
 *As of 2026-09-26.*
@@ -147,7 +147,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 
 | Component | Version | License | Support | Version source |
 |---|---|---|---|---|
-| **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/)) |
+| **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/)) |
 | Debian | 13 (Trixie) | Free software, per package | Community | Bundled with Proxmox VE 9 |
 | Proxmox SDN (`libpve-network-perl`) | 1.6.7 | AGPL-3.0 | Bundled | Observed 2026-08-30 |
 | Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/)) | 1.32.0 (2024-09-03) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
@@ -244,7 +244,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 - **`dv02hyp001p01`'s Proxmox VE:** "8.4.1" on the platform page and roadmap, but "8.4.21" in
   [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (2026-09-15). One is a typo.
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
-- **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
+- **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
   and `pkg info`, which `opnsense-diag.sh` already collects); whether `os-wol` is installed; the
   GL.iNet firmware; the [ZimaBoard](/docs/platforms/hardware/network/zimaboard-832/)'s BIOS; the Pi bootloader EEPROMs; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
   Fedora release; the OS on `dv02rpi001p01` to `…003p01`.

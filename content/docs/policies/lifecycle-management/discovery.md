@@ -25,7 +25,7 @@ rebuilt by hand. Some entries were never written down at all.
 - The scan runs after any change that upgrades something, and as part of site verification.
 
 **Today:** versions are gathered by hand from inventory, roles and change records. The scan is the
-[Software Discovery](/docs/roadmap/infrastructure/software-discovery/) roadmap project.
+[Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) roadmap project.
 
 ---
 
@@ -61,4 +61,4 @@ Deevnet has to hear about both from the place that publishes them, not by chance
 
 **Today:** release notes are read when an upgrade is planned, and a few upstreams are followed by
 habit. Nothing is watched systematically. The sources and the watching are on the
-[Software Discovery](/docs/roadmap/infrastructure/software-discovery/) roadmap.
+[Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) roadmap.

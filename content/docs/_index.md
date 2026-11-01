@@ -10,7 +10,7 @@ This section contains all documentation that is cross-cutting, normative, and st
 
 This site documents the **Mobile Factory**, the mobile instance of Deevnet (site code `02`, zone
 `mobile.deevnet.net`), which delivers IoT as a Service. **The Mobile Factory builds sites and
-tenants**: sites, itself first and the home site next ([Home Site](/docs/roadmap/infrastructure/home-site/)),
+tenants**: sites, itself first and the home site next ([Home Site](/docs/roadmap/site-work/home-site/)),
 and tenants, the devices and services it creates for any site. **Architecture, Standards and
 Policies & Procedures** are written for any Deevnet site. **Implementation & Tooling, the Operational
 Runbook, the change and incident records, and the Roadmap** are the factory's, including what it

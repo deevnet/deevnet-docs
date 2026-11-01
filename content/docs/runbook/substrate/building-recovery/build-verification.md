@@ -163,5 +163,5 @@ Recorded results for comparison: `DVNTM-TD` 29/29 and `DVNTM-IOT` 15/15
 ## Automated verification
 
 Not built. One playbook that runs the checks above and produces a single pass/fail report is on the
-[Extended Management Plane](/docs/roadmap/infrastructure/mobile/management-plane/) roadmap, under
+[Extended Management Plane](/docs/roadmap/infrastructure/substrate/management-plane/) roadmap, under
 Build Verification.

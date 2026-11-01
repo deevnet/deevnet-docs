@@ -139,7 +139,7 @@ Rotation is not undone; the previous values are the exposed ones. The scan workf
 ## Follow-ups
 
 - [ ] Take Omada snapshots routinely. There is one, taken by hand
-      ([roadmap](/docs/roadmap/infrastructure/mobile/management-plane/))
+      ([roadmap](/docs/roadmap/infrastructure/substrate/management-plane/))
 - [ ] The Builder's firewall opens `1025-65535/tcp`, far wider than its services need. Found during
       this change, not changed by it
 

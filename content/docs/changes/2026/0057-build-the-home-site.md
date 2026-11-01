@@ -29,7 +29,7 @@ the next. This change builds what a site needs to host tenants' Deevnet Pis: its
 network from its inventory, and DNS and DHCP on its core router. The Builder comes home and applies
 it with Ansible. Home runs no broker, registry or Deevnet API: a Pi is its devices' broker and
 registry ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)
-§1, §8; [Home Site](/docs/roadmap/infrastructure/home-site/); review phase P8).
+§1, §8; [Home Site](/docs/roadmap/site-work/home-site/); review phase P8).
 
 ## Goal
 
@@ -46,7 +46,7 @@ registry ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-
 
 **In scope:** home's PKI, inventory, router, switch and access point, one Pi's DNS.
 **Out of scope:** Kea, a hypervisor at home, and anything for tenants beyond a Pi's network and names
-([Home Site](/docs/roadmap/infrastructure/home-site/), Later).
+([Home Site](/docs/roadmap/site-work/home-site/), Later).
 
 ## Risk and impact
 

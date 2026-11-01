@@ -371,7 +371,7 @@ a key held off the Builder. A site that needs that assurance should add it.
   machine;
 - the first ceremony, which made today's root, ran without a bootloader reset. A clean re-root is
   planned once the PKI is fully rolled out
-  ([TLS Certificate Automation](/docs/roadmap/infrastructure/tls-cert-automation/)).
+  ([TLS Certificate Automation](/docs/roadmap/infrastructure/substrate/tls-cert-automation/)).
 
 **There is no revocation.** A CA certificate stays valid until it expires; see
 [Custody](/docs/runbook/root-of-trust/custody/#exposed-key) for what an exposed key means, and when to

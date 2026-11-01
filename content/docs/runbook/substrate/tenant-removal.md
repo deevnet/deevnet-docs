@@ -84,7 +84,7 @@ the same prefix.
 away, so until the retention runs out its partitions still hold the previous tenant's lines.
 
 The last three rows are gaps in the delete itself, tracked on the
-[Tenant Removal roadmap](/docs/roadmap/infrastructure/tenant-removal/).
+[Tenant Removal roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-removal/).
 
 ---
 

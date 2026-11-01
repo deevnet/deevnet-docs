@@ -24,7 +24,7 @@ as a cold fallback, and a copy of the live controller's snapshot to restore into
 **There is one snapshot, taken by hand on 2026-10-06, and nothing takes them routinely.** It is
 the live controller's data on 6.3.0.45, with a copy on the Builder so it survives the management
 hypervisor. Restore it on either host. Taking snapshots routinely is on the
-[roadmap](/docs/roadmap/infrastructure/mobile/management-plane/).
+[roadmap](/docs/roadmap/infrastructure/substrate/management-plane/).
 {{< /hint >}}
 
 {{< hint danger >}}
