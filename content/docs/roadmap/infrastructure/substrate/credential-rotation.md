@@ -3,9 +3,15 @@ title: "Credential Rotation"
 aliases:
   - /docs/roadmap/infrastructure/credential-rotation/
 weight: 10
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Credential Inventory"
+    status: planned
+  - title: "Rotation Procedures"
+    status: planned
+  - title: "Reducing Lifetime"
+    status: planned
+  - title: "Handling Exposure"
+    status: planned
 ---
 
 # Credential Rotation
@@ -18,9 +24,6 @@ Define how a credential gets replaced. The [Secure Identity Standard](/docs/stan
 
 ---
 
-- ⏳ Credential Inventory
-- ⏳ Rotation Procedures
-- ⏳ Reducing Lifetime
-- ⏳ Handling Exposure
+{{< milestones >}}
 
 **Project plan:** [Credential Rotation](/projects/credential-rotation/)

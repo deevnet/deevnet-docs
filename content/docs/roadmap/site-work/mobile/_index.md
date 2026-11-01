@@ -2,9 +2,6 @@
 title: "Mobile Site"
 weight: 1
 bookCollapseSection: true
-tasks_completed: 5
-tasks_in_progress: 0
-tasks_planned: 14
 ---
 
 # Mobile Site

@@ -3,9 +3,25 @@ title: "Builder & Core Services"
 aliases:
   - /docs/roadmap/infrastructure/mobile/builder/
 weight: 1
-tasks_completed: 4
-tasks_in_progress: 1
-tasks_planned: 0
+milestones:
+  - title: "Requirements"
+    status: done
+    date: "2026-01-22"
+    approx: true
+  - title: "Substrate Provisioning"
+    status: done
+    date: "2026-01-04"
+    approx: true
+  - title: "Unattended Hypervisor Install"
+    status: active
+  - title: "Inventory & Standards"
+    status: done
+    date: "2026-01-04"
+    approx: true
+  - title: "Network Automation"
+    status: done
+    date: "2026-03-25"
+    approx: true
 ---
 
 # Builder & Core Services 🔄
@@ -21,10 +37,6 @@ Builder infrastructure, network automation, and core services required to provis
 
 ---
 
-- ✅ Requirements
-- ✅ Substrate Provisioning
-- 🔄 Unattended Hypervisor Install
-- ✅ Inventory & Standards
-- ✅ Network Automation
+{{< milestones >}}
 
 **Project plan:** [Builder & Core Services](/projects/builder/)

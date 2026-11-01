@@ -1,0 +1,12 @@
+{{- /* A roadmap item's milestones, from its front matter; with group="…",
+       only those of that group. A done milestone shows the day it was
+       reached, "by" when that day is only known as a latest possible one. */ -}}
+{{- $group := .Get "group" -}}
+<ul class="milestones">
+{{- range .Page.Params.milestones }}
+  {{- if or (not $group) (eq .group $group) }}
+  <li>{{ if eq .status "done" }}✅{{ else if eq .status "active" }}🔄{{ else }}⏳{{ end }} {{ $.Page.RenderString .title }}
+  {{- if and (eq .status "done") .date }} <span class="milestone-date">{{ if .approx }}by {{ end }}{{ .date }}</span>{{ end }}</li>
+  {{- end }}
+{{- end }}
+</ul>

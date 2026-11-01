@@ -1,0 +1,19 @@
+{{- /* A page's progress: its milestones (the roadmap) or its hand-counted
+       tasks_* (the plans); a section sums the pages beneath it. */ -}}
+{{- $c := 0 -}}{{- $a := 0 -}}{{- $p := 0 -}}
+{{- $pages := slice . -}}
+{{- if .IsSection -}}{{- $pages = .RegularPagesRecursive -}}{{- end -}}
+{{- range $pages -}}
+  {{- with .Params.milestones -}}
+    {{- range . -}}
+      {{- if eq .status "done" -}}{{- $c = add $c 1 -}}
+      {{- else if eq .status "active" -}}{{- $a = add $a 1 -}}
+      {{- else -}}{{- $p = add $p 1 -}}{{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $c = add $c (.Params.tasks_completed | default 0) -}}
+    {{- $a = add $a (.Params.tasks_in_progress | default 0) -}}
+    {{- $p = add $p (.Params.tasks_planned | default 0) -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "completed" $c "in_progress" $a "planned" $p) -}}

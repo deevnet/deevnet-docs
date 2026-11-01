@@ -3,9 +3,15 @@ title: "Declarative Reconciliation"
 aliases:
   - /docs/roadmap/infrastructure/mobile/reconciliation/
 weight: 4
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Known Orphans"
+    status: planned
+  - title: "Reconciliation Gaps"
+    status: planned
+  - title: "Settings That Exist Only in the Running Config"
+    status: planned
+  - title: "Drift Visibility"
+    status: planned
 ---
 
 # Declarative Reconciliation
@@ -18,9 +24,6 @@ Close the gap between what inventory declares and what the substrate actually ru
 
 ---
 
-- ⏳ Known Orphans
-- ⏳ Reconciliation Gaps
-- ⏳ Settings That Exist Only in the Running Config
-- ⏳ Drift Visibility
+{{< milestones >}}
 
 **Project plan:** [Declarative Reconciliation](/projects/reconciliation/)

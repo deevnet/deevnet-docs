@@ -1,9 +1,29 @@
 ---
 title: "Screens and Console"
 weight: 3
-tasks_completed: 4
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "The console, over TLS, looking at everything (EdS ADR-0018)"
+    group: "Console"
+    status: done
+    date: "2026-10-11"
+  - title: "Named site-less too: `console.eds.deevnet.net` beside the factory's name (EdS CHG-0047)"
+    group: "Console"
+    status: done
+    date: "2026-11-01"
+  - title: "Covers sent at full size; recently played lost on restart; strip length told, not reported (EdS CHG-0006, CHG-0010)"
+    group: "Console"
+    status: planned
+  - title: "Cover, play/pause, skip and volume by touch (EdS ADR-0020)"
+    group: "Cover screen"
+    status: done
+    date: "2026-10-11"
+  - title: "Sleeps when nothing has played for five minutes (EdS ADR-0036)"
+    group: "Cover screen"
+    status: done
+    date: "2026-10-17"
+  - title: "Why its first start after a provisioning write sent no presses (EdS CHG-0042)"
+    group: "Cover screen"
+    status: planned
 ---
 # Screens and Console
 
@@ -29,14 +49,10 @@ What is playing, what the stand shows and whether the parts are up, in one place
 
 ## Console 🔄
 
-- ✅ The console, over TLS, looking at everything (EdS ADR-0018)
-- ✅ Named site-less too: `console.eds.deevnet.net` beside the factory's name (EdS CHG-0047)
-- ⏳ Covers sent at full size; recently played lost on restart; strip length told, not reported (EdS CHG-0006, CHG-0010)
+{{< milestones group="Console" >}}
 
 ---
 
 ## Cover screen 🔄
 
-- ✅ Cover, play/pause, skip and volume by touch (EdS ADR-0020)
-- ✅ Sleeps when nothing has played for five minutes (EdS ADR-0036)
-- ⏳ Why its first start after a provisioning write sent no presses (EdS CHG-0042)
+{{< milestones group="Cover screen" >}}

@@ -1,0 +1,113 @@
+{{- /* Every milestone reached, newest first: from the roadmap's items, and
+       from the plans of projects that have graduated. Grouped by month at
+       build time; the buttons regroup the same list by day, week, month,
+       quarter or year. */ -}}
+{{- $items := slice -}}
+{{- range site.Pages -}}
+  {{- if or (hasPrefix .Path "/docs/roadmap/") (hasPrefix .Path "/projects/archive/") -}}
+    {{- $page := . -}}
+    {{- range .Params.milestones -}}
+      {{- if and (eq .status "done") .date -}}
+        {{- $items = $items | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.Title "link" $page.RelPermalink "area" $page.Parent.Title) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $items = sort $items "date" "desc" -}}
+<div class="accomplishments">
+<div class="acc-views" role="group" aria-label="Group by" hidden>
+  {{- range slice "day" "week" "month" "quarter" "year" }}
+  <button type="button" data-view="{{ . }}" aria-pressed="false">{{ title . }}</button>
+  {{- end }}
+</div>
+<div class="acc-totals" hidden></div>
+<div class="acc-body">
+{{- $month := "" -}}
+{{- range $items -}}
+  {{- $m := (time.AsTime .date).Format "January 2006" -}}
+  {{- if ne $m $month -}}
+    {{- if $month }}</ul>{{ end }}
+<h3 class="acc-group">{{ $m }}</h3>
+<ul class="acc-list">
+    {{- $month = $m -}}
+  {{- end }}
+  <li data-date="{{ .date }}"><time datetime="{{ .date }}">{{ if .approx }}by {{ end }}{{ .date }}</time> {{ .title }} <span class="acc-item">· <a href="{{ .link }}">{{ .item }}</a>, {{ .area }}</span></li>
+{{- end -}}
+{{- if $month }}</ul>{{ end }}
+</div>
+</div>
+<script>
+(function () {
+  var root = document.querySelector(".accomplishments");
+  if (!root) return;
+  var body = root.querySelector(".acc-body");
+  var items = Array.prototype.slice.call(body.querySelectorAll("li[data-date]"));
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var SHORT = MONTHS.map(function (m) { return m.slice(0, 3); });
+  var DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+  function parse(s) { var p = s.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+  function isoWeek(d) {
+    var t = new Date(d.getTime());
+    var day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    var y = t.getUTCFullYear();
+    var w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7);
+    var mon = new Date(d.getTime()); mon.setUTCDate(d.getUTCDate() - (day - 1));
+    var sun = new Date(mon.getTime()); sun.setUTCDate(mon.getUTCDate() + 6);
+    return { key: y + "-W" + w, label: "Week " + w + ", " + y + " (" + SHORT[mon.getUTCMonth()] + " " + mon.getUTCDate() + " – " + SHORT[sun.getUTCMonth()] + " " + sun.getUTCDate() + ")" };
+  }
+  function group(view, d) {
+    var y = d.getUTCFullYear(), m = d.getUTCMonth();
+    switch (view) {
+      case "day": return { key: d.toISOString().slice(0, 10), label: DAYS[d.getUTCDay()] + ", " + MONTHS[m] + " " + d.getUTCDate() + ", " + y };
+      case "week": return isoWeek(d);
+      case "quarter": return { key: y + "-Q" + (Math.floor(m / 3) + 1), label: "Q" + (Math.floor(m / 3) + 1) + " " + y };
+      case "year": return { key: "" + y, label: "" + y };
+      default: return { key: y + "-" + m, label: MONTHS[m] + " " + y };
+    }
+  }
+  function render(view) {
+    body.textContent = "";
+    var key = null, ul = null, h = null, n = 0;
+    function close() { if (h) h.querySelector(".acc-count").textContent = n + (n === 1 ? " milestone" : " milestones"); }
+    items.forEach(function (li) {
+      var g = group(view, parse(li.getAttribute("data-date")));
+      if (g.key !== key) {
+        close();
+        h = document.createElement("h3"); h.className = "acc-group";
+        h.appendChild(document.createTextNode(g.label));
+        var c = document.createElement("span"); c.className = "acc-count"; h.appendChild(c);
+        ul = document.createElement("ul"); ul.className = "acc-list";
+        body.appendChild(h); body.appendChild(ul);
+        key = g.key; n = 0;
+      }
+      ul.appendChild(li); n++;
+    });
+    close();
+    root.querySelectorAll(".acc-views button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false");
+    });
+    try { localStorage.setItem("acc-view", view); } catch (e) {}
+  }
+
+  var now = new Date();
+  var today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  var totals = [["This month", "month"], ["this quarter", "quarter"], ["this year", "year"]].map(function (t) {
+    var k = group(t[1], today).key;
+    var n = items.filter(function (li) { return group(t[1], parse(li.getAttribute("data-date"))).key === k; }).length;
+    return t[0] + ": " + n;
+  });
+  var tot = root.querySelector(".acc-totals");
+  tot.textContent = totals.join(" · ") + " · " + items.length + " in all";
+  tot.hidden = false;
+
+  root.querySelector(".acc-views").hidden = false;
+  root.querySelectorAll(".acc-views button").forEach(function (b) {
+    b.addEventListener("click", function () { render(b.getAttribute("data-view")); });
+  });
+  var saved = "month";
+  try { saved = localStorage.getItem("acc-view") || "month"; } catch (e) {}
+  render(saved);
+})();
+</script>

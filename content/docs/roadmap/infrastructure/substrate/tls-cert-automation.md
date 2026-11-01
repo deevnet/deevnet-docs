@@ -4,9 +4,20 @@ aliases:
   - /docs/roadmap/infrastructure/ssl-cert-automation/
   - /docs/roadmap/infrastructure/tls-cert-automation/
 weight: 9
-tasks_completed: 2
-tasks_in_progress: 1
-tasks_planned: 2
+milestones:
+  - title: "Certificate Authority"
+    status: done
+    date: "2026-10-25"
+  - title: "Trust Distribution"
+    status: active
+  - title: "Substrate Services"
+    status: done
+    date: "2026-10-05"
+    approx: true
+  - title: "Device Identity"
+    status: planned
+  - title: "Later"
+    status: planned
 ---
 
 # TLS Cert Automation
@@ -27,10 +38,6 @@ for device enrollment.
 
 ---
 
-- ✅ Certificate Authority
-- 🔄 Trust Distribution
-- ✅ Substrate Services
-- ⏳ Device Identity
-- ⏳ Later
+{{< milestones >}}
 
 **Project plan:** [TLS Cert Automation](/projects/tls-cert-automation/)

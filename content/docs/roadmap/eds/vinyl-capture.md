@@ -1,9 +1,9 @@
 ---
 title: "EdS Vinyl Capture"
 weight: 3
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 1
+milestones:
+  - title: "Each record played captured to FLAC, track by track (EdS capturing-vinyl proposal)"
+    status: planned
 ---
 
 # EdS Vinyl Capture
@@ -33,4 +33,4 @@ captured and what is missing.
 
 ## Capture ⏳
 
-- ⏳ Each record played captured to FLAC, track by track (EdS capturing-vinyl proposal)
+{{< milestones >}}

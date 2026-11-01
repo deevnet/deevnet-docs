@@ -1,7 +1,8 @@
 {{- range .Page.Pages -}}
-  {{- $completed := .Params.tasks_completed | default 0 -}}
-  {{- $in_progress := .Params.tasks_in_progress | default 0 -}}
-  {{- $planned := .Params.tasks_planned | default 0 -}}
+  {{- $n := partial "progress-counts.html" . -}}
+  {{- $completed := $n.completed -}}
+  {{- $in_progress := $n.in_progress -}}
+  {{- $planned := $n.planned -}}
   {{- $total := add $completed (add $in_progress $planned) -}}
 
   {{- if gt $total 0 -}}

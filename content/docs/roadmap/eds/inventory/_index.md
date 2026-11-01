@@ -2,9 +2,6 @@
 title: "EdS Music Inventory"
 weight: 2
 bookCollapseSection: true
-tasks_completed: 6
-tasks_in_progress: 1
-tasks_planned: 18
 ---
 
 # EdS Music Inventory

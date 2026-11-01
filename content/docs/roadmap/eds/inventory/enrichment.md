@@ -1,9 +1,22 @@
 ---
 title: "Enrichment"
 weight: 3
-tasks_completed: 0
-tasks_in_progress: 1
-tasks_planned: 4
+milestones:
+  - title: "Discographies from MusicBrainz: built on the old schema, to be reworked onto v1"
+    group: "Enrichment"
+    status: active
+  - title: "Covers: the original's when it is owned"
+    group: "Enrichment"
+    status: planned
+  - title: "Original release dates, and the original among reissues and box sets"
+    group: "Enrichment"
+    status: planned
+  - title: "Journey's *Infinity*, which a catalog never lists for its own tracks"
+    group: "Cases it must get right"
+    status: planned
+  - title: "Kansas' *Point of Know Return*, its 1977 sleeve rather than a live album's"
+    group: "Cases it must get right"
+    status: planned
 ---
 # Enrichment
 
@@ -29,13 +42,10 @@ Covers, originals and discographies found once by the inventory, so no client as
 
 ## Enrichment 🔄
 
-- 🔄 Discographies from MusicBrainz: built on the old schema, to be reworked onto v1
-- ⏳ Covers: the original's when it is owned
-- ⏳ Original release dates, and the original among reissues and box sets
+{{< milestones group="Enrichment" >}}
 
 ---
 
 ## Cases it must get right ⏳
 
-- ⏳ Journey's *Infinity*, which a catalog never lists for its own tracks
-- ⏳ Kansas' *Point of Know Return*, its 1977 sleeve rather than a live album's
+{{< milestones group="Cases it must get right" >}}

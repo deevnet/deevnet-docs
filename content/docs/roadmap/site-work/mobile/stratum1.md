@@ -3,9 +3,15 @@ title: "Stratum 1 NTP"
 aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
 weight: 6
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+milestones:
+  - title: "Requirements"
+    status: planned
+  - title: "Hardware"
+    status: planned
+  - title: "Image Build"
+    status: planned
+  - title: "Deployment"
+    status: planned
 ---
 
 # Pi Stratum 1 NTP Server
@@ -20,9 +26,6 @@ Part of `deevnet-image-factory`.
 
 ---
 
-- ⏳ Requirements
-- ⏳ Hardware
-- ⏳ Image Build
-- ⏳ Deployment
+{{< milestones >}}
 
 **Project plan:** [Stratum 1 NTP](/projects/stratum1/)

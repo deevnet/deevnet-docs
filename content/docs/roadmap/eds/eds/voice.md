@@ -1,9 +1,50 @@
 ---
 title: "Voice"
 weight: 4
-tasks_completed: 7
-tasks_in_progress: 0
-tasks_planned: 5
+milestones:
+  - title: "The reSpeaker runs EdS's firmware; a button, then a wake word (EdS ADR-0043)"
+    group: "Hearing"
+    status: done
+    date: "2026-10-24"
+  - title: "A request sent whole to the workload, written down and made a command (EdS ADR-0042)"
+    group: "Hearing"
+    status: done
+    date: "2026-10-24"
+  - title: "Only words scribe is sure of are acted on (EdS INC-0001)"
+    group: "Hearing"
+    status: done
+    date: "2026-10-24"
+  - title: "The music turned down while a request is heard (EdS ADR-0044)"
+    group: "Hearing"
+    status: done
+    date: "2026-10-24"
+  - title: "Silence, noise and hum tried through the real model (EdS INC-0001)"
+    group: "Hearing"
+    status: planned
+  - title: "An album asked for by name, played from iTunes' library (EdS ADR-0040)"
+    group: "Choosing the album"
+    status: done
+    date: "2026-10-23"
+  - title: "An artist's Nth album, counted in MusicBrainz, the next owned one if not (EdS ADR-0041, ADR-0045)"
+    group: "Choosing the album"
+    status: done
+    date: "2026-10-24"
+  - title: "voiced asks eds-inventory (EdS ADR-0047)"
+    group: "Choosing the album"
+    status: done
+    date: "2026-10-24"
+  - title: "Discographies from eds-inventory, and the old library index removed (EdS CHG-0041)"
+    group: "Choosing the album"
+    status: planned
+  - title: "voiced says at start whether it has an index (EdS INC-0003)"
+    group: "Choosing the album"
+    status: planned
+  - title: "Spotify plays an album by name: a demo branch, not yet a decision"
+    group: "Choosing the album"
+    status: planned
+  - title: "voiced and scribe on the backend Pi, and the reSpeaker moved there (EdS CHG-0042)"
+    group: "Where it runs"
+    status: planned
 ---
 # Voice
 
@@ -30,25 +71,16 @@ A spoken request becomes an album playing, chosen from what the owner has.
 
 ## Hearing 🔄
 
-- ✅ The reSpeaker runs EdS's firmware; a button, then a wake word (EdS ADR-0043)
-- ✅ A request sent whole to the workload, written down and made a command (EdS ADR-0042)
-- ✅ Only words scribe is sure of are acted on (EdS INC-0001)
-- ✅ The music turned down while a request is heard (EdS ADR-0044)
-- ⏳ Silence, noise and hum tried through the real model (EdS INC-0001)
+{{< milestones group="Hearing" >}}
 
 ---
 
 ## Choosing the album 🔄
 
-- ✅ An album asked for by name, played from iTunes' library (EdS ADR-0040)
-- ✅ An artist's Nth album, counted in MusicBrainz, the next owned one if not (EdS ADR-0041, ADR-0045)
-- ✅ voiced asks eds-inventory (EdS ADR-0047)
-- ⏳ Discographies from eds-inventory, and the old library index removed (EdS CHG-0041)
-- ⏳ voiced says at start whether it has an index (EdS INC-0003)
-- ⏳ Spotify plays an album by name: a demo branch, not yet a decision
+{{< milestones group="Choosing the album" >}}
 
 ---
 
 ## Where it runs ⏳
 
-- ⏳ voiced and scribe on the backend Pi, and the reSpeaker moved there (EdS CHG-0042)
+{{< milestones group="Where it runs" >}}

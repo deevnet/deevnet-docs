@@ -3,9 +3,25 @@ title: "Tenant Platform"
 aliases:
   - /docs/roadmap/infrastructure/mobile/tenant-platform/
 weight: 1
-tasks_completed: 2
-tasks_in_progress: 5
-tasks_planned: 1
+milestones:
+  - title: "Design tenant network architecture"
+    status: done
+    date: "2026-08-30"
+  - title: "Define tenant contracts"
+    status: active
+  - title: "Build the tenant fabric (Phase 1)"
+    status: active
+  - title: "Tenant DNS publication"
+    status: done
+    date: "2026-09-26"
+  - title: "Tenant provisioning tooling"
+    status: active
+  - title: "First tenant — end-to-end"
+    status: active
+  - title: "Platform services for tenants"
+    status: active
+  - title: "Windows tenant laptops"
+    status: planned
 ---
 
 # Tenant Platform
@@ -20,13 +36,6 @@ supplies its own IaC/CaC to rebuild from scratch against the substrate.
 
 ---
 
-- ✅ Design tenant network architecture
-- 🔄 Define tenant contracts
-- 🔄 Build the tenant fabric (Phase 1)
-- ✅ Tenant DNS publication
-- 🔄 Tenant provisioning tooling
-- 🔄 First tenant — end-to-end
-- 🔄 Platform services for tenants
-- ⏳ Windows tenant laptops
+{{< milestones >}}
 
 **Project plan:** [Tenant Platform](/projects/tenant-platform/)

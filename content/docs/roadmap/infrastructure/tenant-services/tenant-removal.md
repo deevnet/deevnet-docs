@@ -3,9 +3,11 @@ title: "Tenant Removal"
 aliases:
   - /docs/roadmap/infrastructure/tenant-removal/
 weight: 3
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 2
+milestones:
+  - title: "Leftovers"
+    status: planned
+  - title: "Tokens"
+    status: planned
 ---
 
 # Tenant Removal
@@ -19,7 +21,6 @@ operator's procedure today is [Tenant Removal](/docs/runbook/substrate/tenant-re
 
 ---
 
-- ⏳ Leftovers
-- ⏳ Tokens
+{{< milestones >}}
 
 **Project plan:** [Tenant Removal](/projects/tenant-removal/)

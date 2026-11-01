@@ -3,9 +3,13 @@ title: "Home Site"
 aliases:
   - /docs/roadmap/infrastructure/home-site/
 weight: 2
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 3
+milestones:
+  - title: "PKI"
+    status: planned
+  - title: "Network"
+    status: planned
+  - title: "Later"
+    status: planned
 ---
 
 # Home Site
@@ -20,8 +24,6 @@ zone and address space are reserved in the [Naming standard](/docs/standards/nam
 
 ---
 
-- ⏳ PKI
-- ⏳ Network
-- ⏳ Later
+{{< milestones >}}
 
 **Project plan:** [Home Site](/projects/home-site/)

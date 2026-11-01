@@ -4,9 +4,15 @@ aliases:
   - /docs/roadmap/raspberry-pi/
   - /docs/roadmap/raspberry-pi/pidp11/
 weight: 5
-tasks_completed: 0
-tasks_in_progress: 1
-tasks_planned: 3
+milestones:
+  - title: "Requirements"
+    status: planned
+  - title: "Kit Assembly"
+    status: planned
+  - title: "simh Emulation"
+    status: active
+  - title: "Documentation"
+    status: planned
 ---
 
 # PiPDP11
@@ -21,9 +27,6 @@ Part of `deevnet-image-factory`. Not yet admitted as a tenant.
 
 ---
 
-- ⏳ Requirements
-- ⏳ Kit Assembly
-- 🔄 simh Emulation
-- ⏳ Documentation
+{{< milestones >}}
 
 **Project plan:** [PiPDP11](/projects/pipdp11/)
