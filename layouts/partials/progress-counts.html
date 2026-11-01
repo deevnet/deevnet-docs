@@ -1,11 +1,18 @@
 {{- /* A page's progress: its milestones (the roadmap) or its hand-counted
-       tasks_* (the plans); a section sums the pages beneath it. */ -}}
+       tasks_* (the plans). A section sums itself and everything beneath it,
+       milestones if any have them, so a roadmap item or area never counts
+       the tasks of the plans under it; otherwise tasks. */ -}}
 {{- $c := 0 -}}{{- $a := 0 -}}{{- $p := 0 -}}
 {{- $pages := slice . -}}
-{{- if .IsSection -}}{{- $pages = .RegularPagesRecursive -}}{{- end -}}
+{{- if .IsSection -}}
+  {{- $under := printf "%s/" .Path -}}
+  {{- range site.Pages -}}{{- if hasPrefix .Path $under -}}{{- $pages = $pages | append . -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $hasMilestones := false -}}
+{{- range $pages -}}{{- if .Params.milestones -}}{{- $hasMilestones = true -}}{{- end -}}{{- end -}}
 {{- range $pages -}}
-  {{- with .Params.milestones -}}
-    {{- range . -}}
+  {{- if $hasMilestones -}}
+    {{- range .Params.milestones -}}
       {{- if eq .status "done" -}}{{- $c = add $c 1 -}}
       {{- else if eq .status "active" -}}{{- $a = add $a 1 -}}
       {{- else -}}{{- $p = add $p 1 -}}{{- end -}}

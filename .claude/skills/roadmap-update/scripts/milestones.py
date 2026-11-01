@@ -20,14 +20,25 @@ import argparse, glob, json, os, re, sys
 STATUSES = ("done", "active", "planned")
 ICON = {"done": "✅", "active": "🔄", "planned": "⏳"}
 
+def is_plan(p):
+    return p.endswith("/plan.md") or "/plan/" in p
+
+def is_item(p):
+    """A roadmap item: a plain page, or a section holding a plan or milestones. Other sections are areas."""
+    if is_plan(p): return False
+    if not p.endswith("_index.md"): return True
+    d = os.path.dirname(p)
+    return os.path.exists(f"{d}/plan.md") or os.path.isdir(f"{d}/plan") or "\nmilestones:" in open(p, encoding="utf-8").read()
+
 def pages():
-    out = [p for p in glob.glob("content/docs/roadmap/**/*.md", recursive=True) if not p.endswith("_index.md")]
-    out += glob.glob("content/projects/archive/*.md") + glob.glob("content/docs/completed/*.md")
-    return sorted(p for p in out if not p.endswith("_index.md"))
+    out = [p for p in glob.glob("content/docs/roadmap/**/*.md", recursive=True) if is_item(p)]
+    out += [p for p in glob.glob("content/projects/archive/*.md") + glob.glob("content/docs/completed/*.md") if not p.endswith("_index.md")]
+    return sorted(out)
 
 def resolve(page):
     if page.startswith("content/"): return page if page.endswith(".md") else page + ".md"
-    return f"content/docs/roadmap/{page.strip('/')}.md"
+    p = f"content/docs/roadmap/{page.strip('/')}"
+    return f"{p}/_index.md" if os.path.exists(f"{p}/_index.md") else f"{p}.md"
 
 def split(path):
     s = open(path, encoding="utf-8").read()
@@ -126,7 +137,7 @@ def cmd_list(a):
             if (a.date_from or a.date_to) and not d: continue
             if a.date_from and d < a.date_from: continue
             if a.date_to and d > a.date_to: continue
-            rel = p[len("content/docs/roadmap/"):-3] if p.startswith("content/docs/roadmap/") else "/" + p[len("content/"):-3]
+            rel = p[len("content/docs/roadmap/"):-3].removesuffix("/_index") if p.startswith("content/docs/roadmap/") else "/" + p[len("content/"):-3]
             print(f"{d or '-':10}\t{ICON[m['status']]}\t{rel}\t{title}\t{m['title']}" + ("\t(approx)" if m.get("approx") else ""))
     return 0
 

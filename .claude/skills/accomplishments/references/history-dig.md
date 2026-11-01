@@ -38,7 +38,7 @@ period and any hints about what is known to fall in it:
 > Sources: bare clones at `<scratch>/history/*.git` (`git -C X.git log --all --no-merges
 > --since=… --until=… --format='%ad %h %s%n%b' --date=short`; `--merges` gives PR titles); the
 > docs at `<repo>`: change records `content/docs/changes/`, incidents, ADRs, the roadmap's
-> `milestones:` front matter, and plans in `content/projects/`.
+> `milestones:` front matter, and each item's plan (`plan.md`) beneath it.
 >
 > Report, under ~2000 words:
 > 1. What happened, week by week: things that became true, each with a date and evidence
