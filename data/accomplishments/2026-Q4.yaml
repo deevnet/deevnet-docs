@@ -1,0 +1,12 @@
+# Q4 2026. Written from its months.
+headline: "Deevnet is its own certificate authority, and its first production tenant is in daily use."
+bullets:
+  - text: "**Deevnet is its own certificate authority,** from an offline root down to tenants' services and their Pis. Nothing it runs depends on an outside CA."
+    items: [infrastructure/substrate/tls-cert-automation, infrastructure/tenant-services/tenant-pki, infrastructure/substrate/secrets-identity]
+  - text: "**EdS, the first production tenant, is in daily use:** lights, screens, now playing across every source, and voice control."
+    items: [eds/eds/stand, eds/eds/now-playing, eds/eds/voice, eds/eds/devices, eds/eds/screens-console, eds/eds/platform, eds/eds/operations]
+  - text: "**The platform is safer to operate:** credentials rotated, every public repository scanned, backups proven by a restore."
+    items: [infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane]
+  - text: "**A second product started:** a catalog of the owner's music, which EdS already uses."
+    items: [eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema]
+watch: "The mobile site's core router is unreliable under load, with two incidents this quarter. Replacing it is the top infrastructure item."

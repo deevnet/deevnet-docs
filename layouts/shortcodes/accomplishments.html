@@ -1,8 +1,10 @@
 {{- /* Every milestone reached, newest first: from the roadmap's items, and
        from the plans and Completed Projects entries of projects that have graduated. Grouped by month at
        build time. In the page, the buttons regroup it by day, week, month,
-       quarter or year; Summary rolls a month up by roadmap item, and a
-       quarter or a year by area, each line opening onto what it holds. */ -}}
+       quarter or year. Summary shows a period's written narrative where it
+       has one, each bullet opening onto the milestones it rolls up; where
+       it has none, it rolls a month up by roadmap item, and a quarter or a
+       year by area. */ -}}
 {{- $roadmap := site.GetPage "/docs/roadmap" -}}
 {{- $areas := slice -}}
 {{- range $roadmap.Pages -}}{{- if or .Params.milestones .IsSection -}}{{- $areas = $areas | append .Title -}}{{- end -}}{{- end -}}
@@ -22,7 +24,7 @@
     {{- range .Params.milestones -}}
       {{- if and (eq .status "done") .date -}}
         {{- $done = $done | append .date -}}
-        {{- $ms = $ms | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.RelPermalink "label" $page.Title "group" $page.Parent.Title) -}}
+        {{- $ms = $ms | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.RelPermalink "label" $page.Title "group" (cond (and $roadmapItem (ne $page.Parent.Path $roadmap.Path)) $page.Parent.Title $area)) -}}
       {{- end -}}
     {{- end -}}
     {{- $items = $items | append (dict "id" $page.RelPermalink "title" $page.Title "area" $area "total" (len .Params.milestones) "done" $done "graduated" (not $roadmapItem)) -}}
@@ -57,7 +59,23 @@
 {{- if $month }}</ul>{{ end }}
 </div>
 </div>
-<script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "milestones" $ms | jsonify | safeJS }}</script>
+{{- /* A period's narrative, data/accomplishments/<period>.yaml (2026-10,
+       2026-Q4, 2026): a headline, bullets that each name the roadmap items
+       they roll up (and, for a year's, the period they cover), next, watch. */ -}}
+{{- $narratives := dict -}}
+{{- range $key, $n := site.Data.accomplishments -}}
+  {{- $bullets := slice -}}
+  {{- range $n.bullets -}}
+    {{- $ids := slice -}}
+    {{- range .items -}}
+      {{- $path := cond (hasPrefix . "/") . (printf "/docs/roadmap/%s" .) -}}
+      {{- with site.GetPage $path -}}{{- $ids = $ids | append .RelPermalink -}}{{- else -}}{{- errorf "accomplishments %s: no page %s" $key $path -}}{{- end -}}
+    {{- end -}}
+    {{- $bullets = $bullets | append (dict "html" (.text | markdownify) "items" $ids "within" (.within | default "")) -}}
+  {{- end -}}
+  {{- $narratives = merge $narratives (dict $key (dict "headline" ($n.headline | markdownify) "bullets" $bullets "next" (cond (isset $n "next") ($n.next | markdownify) "") "watch" (cond (isset $n "watch") ($n.watch | markdownify) ""))) -}}
+{{- end -}}
+<script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "milestones" $ms "narratives" $narratives | jsonify | safeJS }}</script>
 <script>
 (function () {
   var root = document.querySelector(".accomplishments");
@@ -87,7 +105,7 @@
         var q = Math.floor(m / 3);
         return { key: y + "-Q" + (q + 1), label: "Q" + (q + 1) + " " + y, end: iso(new Date(Date.UTC(y, q * 3 + 3, 0))) };
       case "year": return { key: "" + y, label: "" + y, end: y + "-12-31" };
-      default: return { key: y + "-" + m, label: MONTHS[m] + " " + y, end: iso(new Date(Date.UTC(y, m + 1, 0))) };
+      default: return { key: y + "-" + (m < 9 ? "0" : "") + (m + 1), label: MONTHS[m] + " " + y, end: iso(new Date(Date.UTC(y, m + 1, 0))) };
     }
   }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
@@ -122,7 +140,32 @@
     d.appendChild(list(row.ms, false));
     return d;
   }
+  // The view a period key belongs to: 2026, 2026-Q4, 2026-10.
+  function viewOf(key) { return /^\d{4}$/.test(key) ? "year" : /Q/.test(key) ? "quarter" : "month"; }
+  function narrative(g, n) {
+    var frag = document.createDocumentFragment();
+    frag.appendChild(el("p", "acc-headline", n.headline.replace(/^<p>|<\/p>\s*$/g, "")));
+    n.bullets.forEach(function (b) {
+      var key = b.within || g.key, v = viewOf(key);
+      var ms = data.milestones.filter(function (m) {
+        return b.items.indexOf(m.item) >= 0 && group(v, parse(m.date)).key === key;
+      });
+      var text = b.html.replace(/^<p>|<\/p>\s*$/g, "");
+      if (!ms.length) { frag.appendChild(el("div", "acc-roll acc-narr", text)); return; }
+      var counts = {}, order = [];
+      ms.forEach(function (m) { if (!counts[m.item]) { counts[m.item] = 0; order.push(m.item); } counts[m.item]++; });
+      var src = order.map(function (id) { return esc(items[id].title) + " (" + counts[id] + ")"; }).join(" · ");
+      var d = el("details", "acc-roll acc-narr");
+      d.appendChild(el("summary", null, text + ' <span class="acc-src">← ' + src + "</span>"));
+      d.appendChild(list(ms, true));
+      frag.appendChild(d);
+    });
+    if (n.next) frag.appendChild(el("p", "acc-next", "<strong>Next:</strong> " + n.next.replace(/^<p>|<\/p>\s*$/g, "")));
+    if (n.watch) frag.appendChild(el("p", "acc-next", "<strong>Watch:</strong> " + n.watch.replace(/^<p>|<\/p>\s*$/g, "")));
+    return frag;
+  }
   function summary(g, ms, view) {
+    if (data.narratives && data.narratives[g.key] && viewOf(g.key) === view) return narrative(g, data.narratives[g.key]);
     var frag = document.createDocumentFragment();
     if (view === "day" || view === "week") { frag.appendChild(list(ms, true)); return frag; }
     if (view === "month") { byItem(ms).forEach(function (row) { frag.appendChild(itemDetails(row, g, view, true)); }); return frag; }

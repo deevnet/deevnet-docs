@@ -1,0 +1,15 @@
+# October 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+headline: "Deevnet built its own chain of trust, and EdS went into daily use on top of it."
+bullets:
+  - text: "**Deevnet became its own certificate authority.** An offline Deevnet Root and Mobile Site CA (Oct 5), which every substrate service and client verifies against; certificates for tenants' services (Oct 11); tenant CAs keyed outside OpenBao, and OpenBao's own keys taken from the vault, its access bound and audited (Oct 25). Tenants got site-less names the same day, and the first Deevnet Pi was installed with one, from a take-home image kept current with deevnet-kit (Oct 29)."
+    items: [infrastructure/substrate/tls-cert-automation, infrastructure/tenant-services/tenant-pki, infrastructure/substrate/secrets-identity]
+  - text: "**Tenants got more of the platform.** Fixed addresses for their devices (Oct 7) and their services on 443 by name (Oct 10). MaBell joined as the third tenant sending its events (Oct 9)."
+    items: [infrastructure/tenant-services/platform-services, mabell]
+  - text: "**The site got safer to run.** Exposed credentials were rotated and every public repository is scanned on push (Oct 6); nightly encrypted backups run, and one restore was rehearsed (Oct 7)."
+    items: [infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane]
+  - text: "**EdS is in daily use.** The light stand, the touch screen and the console are in service; now playing follows the turntable, iTunes and Spotify; a spoken request plays an album end to end; its devices verify through the Deevnet Root."
+    items: [eds/eds/stand, eds/eds/now-playing, eds/eds/voice, eds/eds/devices, eds/eds/screens-console, eds/eds/platform, eds/eds/operations]
+  - text: "**A music inventory service launched,** answering EdS's requests, and its schema was agreed."
+    items: [eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema]
+next: "Device certificates through the API, devices that hold both sites, the Deevnet Pi in the tenant downloads, the home site's PKI."
+watch: "The core router hung again (INC-0005, Oct 7) and stalled during a change (Oct 10); its replacement is not chosen. Nine planned change records have not started, among them builds off OpenBao, the package mirror and the Shamir seal."
