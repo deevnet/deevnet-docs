@@ -4,6 +4,9 @@ aliases:
   - /docs/roadmap/infrastructure/credential-rotation/
 weight: 10
 milestones:
+  - title: "Exposed credentials rotated; every public repository scanned on push (CHG-0035)"
+    status: done
+    date: "2026-10-06"
   - title: "Credential Inventory"
     status: planned
   - title: "Rotation Procedures"

@@ -1,5 +1,5 @@
 {{- /* Every milestone reached, newest first: from the roadmap's items, and
-       from the plans of projects that have graduated. Grouped by month at
+       from the plans and Completed Projects entries of projects that have graduated. Grouped by month at
        build time. In the page, the buttons regroup it by day, week, month,
        quarter or year; Summary rolls a month up by roadmap item, and a
        quarter or a year by area, each line opening onto what it holds. */ -}}
@@ -11,7 +11,7 @@
 {{- range site.Pages -}}
   {{- $page := . -}}
   {{- $roadmapItem := hasPrefix .Path "/docs/roadmap/" -}}
-  {{- if and .Params.milestones (or $roadmapItem (hasPrefix .Path "/projects/archive/")) -}}
+  {{- if and .Params.milestones (or $roadmapItem (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
     {{- $area := .Params.area | default "Graduated projects" -}}
     {{- if $roadmapItem -}}
       {{- $top := . -}}

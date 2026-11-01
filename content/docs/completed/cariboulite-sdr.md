@@ -4,6 +4,10 @@ weight: 1
 aliases:
   - /docs/platforms/tenant-compute/pi-production/cariboulite-sdr/
   - /docs/roadmap/raspberry-pi/sdr/
+milestones:
+  - title: "The CaribouLite SDR image: checked on air, served remotely by SoapySDRServer"
+    status: done
+    date: "2026-01-15"
 ---
 
 # CaribouLite SDR {{< status-badge "complete" "Complete" >}}

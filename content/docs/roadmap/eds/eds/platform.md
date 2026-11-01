@@ -23,7 +23,7 @@ milestones:
   - title: "A Deevnet Pi, under the tenant's site-less names (EdS CHG-0042)"
     group: "At home"
     status: done
-    date: "2026-10-26"
+    date: "2026-10-29"
   - title: "On its cable alone, the radio off (EdS CHG-0046)"
     group: "At home"
     status: done

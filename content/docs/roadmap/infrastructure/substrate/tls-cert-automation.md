@@ -5,15 +5,20 @@ aliases:
   - /docs/roadmap/infrastructure/tls-cert-automation/
 weight: 9
 milestones:
-  - title: "Certificate Authority"
+  - title: "The Deevnet Root CA and Mobile Site CA, made offline (CHG-0033)"
+    status: done
+    date: "2026-10-05"
+  - title: "Tenant CAs keyed outside OpenBao (CHG-0036)"
     status: done
     date: "2026-10-25"
-  - title: "Trust Distribution"
+  - title: "The Deevnet Root trusted everywhere the site builds"
+    status: done
+    date: "2026-10-05"
+  - title: "Workloads cloned before the re-root replaced"
     status: active
   - title: "Substrate Services"
     status: done
     date: "2026-10-05"
-    approx: true
   - title: "Device Identity"
     status: planned
   - title: "Later"

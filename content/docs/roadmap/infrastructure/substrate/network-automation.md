@@ -2,12 +2,16 @@
 title: "Network Automation"
 weight: 8
 milestones:
-  - title: "OPNsense's remaining manual steps automated: interface assignment, filter rules"
+  - title: "The core router enforces a declared zone policy (CHG-0007)"
+    status: done
+    date: "2026-09-19"
+  - title: "OPNsense's interface assignment automated"
     status: planned
   - title: "The access switch's configuration idempotent"
     status: planned
-  - title: "Omada: SSID VLANs set by the controller, its API driven through Ansible"
-    status: planned
+  - title: "Omada: SSIDs and the AP set by the controller from inventory, through its API"
+    status: done
+    date: "2026-09-15"
   - title: "Checks on every pull request"
     status: planned
 ---
