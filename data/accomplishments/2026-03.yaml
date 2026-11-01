@@ -1,0 +1,10 @@
+# March 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-03-31"
+reached: 2
+headline: "The site's secrets moved into a vault, and its network came under code."
+bullets:
+  - text: "**The site's secrets moved into Ansible Vault,** with every commit guarded against an unencrypted one (Mar 14)."
+    items: [infrastructure/substrate/secrets-identity]
+  - text: "**The network came under code.** The core router, access switch, DNS and DHCP are configured from code, with 12 VLANs under a zone firewall policy (Mar 26)."
+    items: [infrastructure/substrate/builder]
+next: "No milestones followed until August: Deevnet is a part-time effort."

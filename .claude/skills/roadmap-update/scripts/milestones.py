@@ -84,7 +84,7 @@ def cmd_check(_):
         roadmap = p.startswith("content/docs/roadmap/")
         parsed = parse(fm)
         if not parsed:
-            if roadmap and p != "content/docs/roadmap/accomplishments.md": err(p, "no milestones: list")
+            if roadmap and p != "content/docs/roadmap/progress.md": err(p, "no milestones: list")
             continue
         _, ms, _ = parsed
         if roadmap and re.search(r'^tasks_(completed|in_progress|planned):', fm, re.M):

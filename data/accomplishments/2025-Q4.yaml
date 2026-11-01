@@ -1,0 +1,9 @@
+# Q4 2025. Written from its months.
+through: "2025-12-31"
+reached: 3
+headline: "The site started being built from code, and MaBell had a design."
+bullets:
+  - text: "**The build server can provision the site** from its own collection, images and offline package mirror."
+    items: [infrastructure/substrate/builder]
+  - text: "**MaBell moved from idea to finished design.**"
+    items: [mabell]

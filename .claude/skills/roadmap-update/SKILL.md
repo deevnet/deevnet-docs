@@ -45,7 +45,7 @@ A milestone is an **outcome someone would care about**, not a task: "Tenants' se
 certificates", not "write the API endpoint". Name the record that carried it, in parentheses,
 when there is one.
 
-**A milestone stands alone.** The Accomplishments page lists it away from its page and its
+**A milestone stands alone.** The Roadmap Progress page lists it away from its page and its
 headings, so someone new to Deevnet must be able to tell what it means from its title alone. Name
 the subject and say what became true: "Removing a tenant revokes its API token", not "Tokens";
 "Automatic certificate renewal and expiry monitoring", not "Later". Do not reuse a plan's phase
@@ -89,7 +89,7 @@ progress bar, `{{< milestones >}}` and `**Project plan:** [Title](/projects/<slu
 1. Every task is done or explicitly dropped.
 2. `git mv` the plan to `content/projects/archive/<slug>.md`. Remove its roadmap link, and add the
    roadmap item's `milestones:` list and `area:` (the roadmap area it left) to its front matter, so
-   Accomplishments keeps listing them.
+   Roadmap Progress keeps listing them.
 3. Add a short entry in Completed Projects (`content/docs/completed/`) linking to the archived
    plan, or to the project's own site.
 4. Remove the roadmap item. Put its URLs in the archived plan's `aliases:`.

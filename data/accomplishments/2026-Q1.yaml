@@ -1,0 +1,11 @@
+# Q1 2026. Written from its months.
+through: "2026-03-31"
+reached: 7
+headline: "The mobile site can be built and configured from code."
+bullets:
+  - text: "**New machines install themselves** from the build server over PXE."
+    items: [infrastructure/substrate/builder]
+  - text: "**The site's network is segmented and defined in code,** with its secrets in a vault."
+    items: [infrastructure/substrate/builder, infrastructure/substrate/secrets-identity]
+  - text: "**One project finished and one was specified:** the CaribouLite SDR is done, and MaBell has its requirements."
+    items: [/docs/completed/cariboulite-sdr, mabell]

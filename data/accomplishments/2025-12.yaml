@@ -1,0 +1,10 @@
+# December 2025. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2025-12-31"
+reached: 3
+headline: "The build server began deploying the site from code, and MaBell's design was finished."
+bullets:
+  - text: "**The build server started working from code.** It deployed the Omada Wi-Fi controller (Dec 7), and by the end of the month provisioned the site's infrastructure from its own Ansible collection, images and offline package mirror (Dec 31)."
+    items: [infrastructure/substrate/builder]
+  - text: "**MaBell's design was finished,** covering its system, power, audio and firmware (Dec 29)."
+    items: [mabell]
+next: "Machines that install themselves from the build server."

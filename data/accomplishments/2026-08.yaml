@@ -1,0 +1,10 @@
+# August 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-08-31"
+reached: 5
+headline: "The tenant hypervisor came back on new hardware, and the tenant network was designed for it."
+bullets:
+  - text: "**The tenant hypervisor returned to service** on new hardware (Aug 29). It moved to Proxmox 9 after a pre-upgrade assessment (Aug 30), and the networking API the tenant network depends on was verified afterward (Aug 31)."
+    items: [site-work/mobile/hypervisor-uplift]
+  - text: "**The tenant network architecture was designed** (Aug 30)."
+    items: [infrastructure/tenant-services/tenant-fabric]
+next: "The tenant network built on that hypervisor, and the first tenant on it."

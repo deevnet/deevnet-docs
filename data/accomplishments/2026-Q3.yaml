@@ -1,0 +1,14 @@
+# Q3 2026. Written from its months.
+through: "2026-09-30"
+reached: 25
+headline: "After a quiet spring, Deevnet became a platform that builds tenants through its own API."
+bullets:
+  - text: "**Tenants are built through the Deevnet API,** from their own repositories and on their own network, on a tenant hypervisor back in service on new hardware."
+    items: [site-work/mobile/hypervisor-uplift, infrastructure/tenant-services/tenant-fabric, infrastructure/tenant-services/tenant-lifecycle]
+  - text: "**Tenants have services to use:** Wi-Fi, a device registry, MQTT, logs and dashboards."
+    items: [infrastructure/tenant-services/platform-services, infrastructure/substrate/observability]
+  - text: "**The network now enforces what is declared,** and the site's management services and secrets moved onto dedicated VMs and OpenBao."
+    items: [infrastructure/substrate/network-automation, site-work/mobile/network-firmware, infrastructure/substrate/builder, infrastructure/substrate/management-plane, infrastructure/substrate/secrets-identity]
+  - text: "**EdS arrived as the first real tenant.**"
+    items: [eds/eds/platform, eds/eds/stand]
+watch: "The mobile site's core router began to hang (INC-0004), and that incident is still open."
