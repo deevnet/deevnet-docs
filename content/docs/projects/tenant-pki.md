@@ -1,0 +1,64 @@
+---
+title: "Tenant PKI"
+weight: 12
+tasks_completed: 3
+tasks_in_progress: 1
+tasks_planned: 11
+---
+
+# Tenant PKI
+
+What a tenant does with Deevnet's certificates: service certificates under site-less names, a
+Deevnet Pi that holds them, and devices with certificates of their own. The CAs themselves are
+[TLS Cert Automation](/docs/roadmap/infrastructure/substrate/tls-cert-automation/).
+
+**Roadmap item:** [Tenant PKI](/docs/roadmap/infrastructure/tenant-services/tenant-pki/)
+
+{{< overall-progress >}}
+
+**Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
+
+---
+
+## Project Vision & Scope
+
+The PKI review ([2026-10](/docs/architecture/reviews/2026-10-tenant-pki/)) decided the tenant side;
+this tracks building it.
+
+**In Scope**
+- Site-less names and their certificates, and reissuing the tenants under them
+- The Deevnet Pi: `deevnet-kit`'s request and install, `pki init`, the image tenants download
+- Device certificates and the broker's checks
+
+**Out of Scope**
+- The root, site and substrate CAs, and OpenBao's seal
+
+---
+
+## Site-less names 🔄
+
+- ✅ Reserved labels in the API, and `sites` on a certificate, API v0.15.0 and provider v0.8.0 (CHG-0054)
+- ✅ The first certificate under the new names, for eds's home Pi, 2026-10-29 (CHG-0054)
+- ⏳ A signing role per tenant, so OpenBao itself refuses a reserved name (CHG-0054)
+- 🔄 Reissue the existing tenants: `eds` done 2026-11-01; `tdemo`, `mabell`, `cdeever` to go (CHG-0055)
+
+---
+
+## The Deevnet Pi 🔄
+
+- ✅ `deevnet-kit cert request` and `cert install`, first used on eds's home Pi (CHG-0056)
+- ⏳ The image tenants download carries the kit with them: the downloads still serve the 18-Oct build (CHG-0056 step 3)
+- ⏳ `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41))
+- ⏳ No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42))
+- ⏳ A renewal that installs: same key, or the documented new request ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43))
+- ⏳ `pki init` and the starter kit: leaving Deevnet with a PKI of one's own (ADR-0041, CHG-0056)
+- ⏳ Ceremony tools that take names and issue a leaf (CHG-0056 step 1)
+
+---
+
+## Device certificates ⏳
+
+- ⏳ The API signs a device's request and records its key fingerprint (CHG-0034)
+- ⏳ A device certificate in the provider (CHG-0034)
+- ⏳ The broker requires a client certificate, with its three checks: chain, registration, fingerprint (CHG-0034, ADR-0039 §5)
+- ⏳ One real device on its certificate (CHG-0034)

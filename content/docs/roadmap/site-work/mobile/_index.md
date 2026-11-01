@@ -4,7 +4,7 @@ weight: 1
 bookCollapseSection: true
 tasks_completed: 5
 tasks_in_progress: 0
-tasks_planned: 32
+tasks_planned: 16
 ---
 
 # Mobile Site
