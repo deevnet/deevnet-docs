@@ -193,11 +193,11 @@ routine, not an emergency procedure.
   [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/),
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/). The switch and
   the AP are factory resets. All of them are rebuilt in the
-  [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/).
+  [Full Site Rebuild](/docs/roadmap/infrastructure/substrate/full-rebuild/).
 
 **Today:** rebuilds happen when something needs one. The Builder in service was built over PXE
 from the builder VM, and the builder VMs by template clone and by PXE. No scheduled round has been
-run yet; the first is on the [Full Site Rebuild](/docs/roadmap/infrastructure/mobile/full-rebuild/)
+run yet; the first is on the [Full Site Rebuild](/docs/roadmap/infrastructure/substrate/full-rebuild/)
 roadmap.
 
 ---

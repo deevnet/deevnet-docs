@@ -23,7 +23,7 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 |------|---------------------|-----------|
 | OS packages, at install | The staged install tree on the artifact server — no internet needed | [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/) |
 | OS packages, after install | Public Fedora mirrors — the host needs internet access | Per change record |
-| Proxmox VE (both hypervisors) | Proxmox's Debian repositories, in place. A major version is only reached through the one before it, following Proxmox's upgrade path (`pve8to9` before 8 → 9) | Per change record; the 8 → 9 move was the [Hypervisor Uplift](/docs/roadmap/infrastructure/mobile/hypervisor-uplift/) |
+| Proxmox VE (both hypervisors) | Proxmox's Debian repositories, in place. A major version is only reached through the one before it, following Proxmox's upgrade path (`pve8to9` before 8 → 9) | Per change record; the 8 → 9 move was the [Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/) |
 | OPNsense (core router) | OPNsense's firmware updates, in place, one major release after another in order | Per change record |
 | Omada controller | A staged image on the artifact server | [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/) |
 | Switch and AP firmware | Firmware staged on the artifact server | Per change record: [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) (switch), [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (AP) |
@@ -36,5 +36,6 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 cannot patch its hosts. The options (accept internet access, a full local mirror at roughly 200 GB
 per Fedora release, or security updates only) are recorded in the
 [Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/)
-candidate. Maintenance windows, patch testing, rollback criteria and automated patching are the
-[Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/) roadmap project.
+candidate. Maintenance windows, patch testing and rollback criteria are routine operations, not
+roadmap items; knowing when a patch is needed is the
+[Patch Awareness](/docs/roadmap/infrastructure/substrate/patch-awareness/) roadmap project.

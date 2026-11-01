@@ -2,14 +2,14 @@
 title: "Infrastructure Automation"
 weight: 1
 bookCollapseSection: true
-tasks_completed: 47
-tasks_in_progress: 16
-tasks_planned: 135
+tasks_completed: 75
+tasks_in_progress: 14
+tasks_planned: 131
 ---
 
 # Infrastructure Automation
 
-Automated provisioning, patching, and management of on-premise infrastructure.
+The automation that builds and runs Deevnet: the substrate's tooling, and the tooling that serves tenants.
 
 {{< overall-progress >}}
 

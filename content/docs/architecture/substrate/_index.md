@@ -24,7 +24,7 @@ block-beta
     ctp["Control Plane"]:1 ctpd["Provisioning API · Tenant DNS · Secrets · Broker"]:1
 {{< /mermaid >}}
 
-¹ Storage is each hypervisor's local disks. Shared storage is on the roadmap: [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/).
+¹ Storage is each hypervisor's local disks. Shared storage is on the roadmap: [Shared Storage](/docs/roadmap/infrastructure/substrate/shared-storage/).
 
 ### Network
 

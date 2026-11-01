@@ -215,7 +215,7 @@ P7 are in progress; P2, P5, P6 and P8 are planned.
 | **P5** ([CHG-0055](/docs/changes/2026/0055-reissue-tenants-site-less/)) | Existing tenants (`eds`, `tdemo`, `mabell`, `cdeever`) reissued with site-less names | each serves its site-less name | the site-named certificates stay valid |
 | **P6** ([CHG-0034](/docs/changes/2026/0034-device-certificates/)) | Device certificates (CHG-0034 re-planned) with the broker's registration and fingerprint checks | V1 and V6 pass | passwords stay accepted throughout |
 | **P7** ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)) | `deevnet-kit` and the ceremony tools: `deevnet` / `non-deevnet`, request and install, `pki init` | V7, V8 and V11 pass | the previous image |
-| **P8** ([CHG-0057](/docs/changes/2026/0057-build-the-home-site/)) | The home site ([roadmap](/docs/roadmap/infrastructure/home-site/)): its Site CA and Substrate CA, its inventory and network, DNS and DHCP on its router, DNS for the Pis it hosts, deployed from the Builder | a Deevnet Pi served at home, its devices connecting | — |
+| **P8** ([CHG-0057](/docs/changes/2026/0057-build-the-home-site/)) | The home site ([roadmap](/docs/roadmap/site-work/home-site/)): its Site CA and Substrate CA, its inventory and network, DNS and DHCP on its router, DNS for the Pis it hosts, deployed from the Builder | a Deevnet Pi served at home, its devices connecting | — |
 
 **P0 comes before P2.** Sealing OpenBao before the API can tell a sealed store from a lost secret
 would damage tenants.

@@ -32,7 +32,7 @@ The management hypervisor runs Proxmox VE.
 ### Automation Capability
 
 - **Installation**: manual, from the standard Proxmox VE ISO. An unattended ISO (embedded answer
-  file, install disk pinned by serial) is [unfinished work](/docs/roadmap/infrastructure/mobile/builder/) in `deevnet-image-factory`
+  file, install disk pinned by serial) is [unfinished work](/docs/roadmap/infrastructure/substrate/builder/) in `deevnet-image-factory`
 - **Post-install**: Ansible: `deevnet.builder` (`proxmox_node_base`, `proxmox_node_storage`) and
   `deevnet.net` (`proxmox_node_network`, bridge only on this node)
 - **VM provisioning**: Ansible-only (no Terraform for management plane)

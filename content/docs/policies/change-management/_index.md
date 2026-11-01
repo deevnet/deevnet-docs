@@ -55,4 +55,4 @@ A change that goes wrong in a way that affects service also gets an incident rec
 
 Validation is manual, from the [runbook checklist](/docs/runbook/substrate/change-management/#validation-checklist).
 Nothing runs it automatically yet; checks on every pull request are on the
-[Patch Automation](/docs/roadmap/infrastructure/mobile/patch-automation/) roadmap.
+[Network Automation](/docs/roadmap/infrastructure/substrate/network-automation/) roadmap.

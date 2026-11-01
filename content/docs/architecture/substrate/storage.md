@@ -56,5 +56,5 @@ down ([Compute → Nothing is clustered](/docs/architecture/substrate/compute/#n
 The storage segment exists in the segment model for storage traffic, and nothing sits on it yet.
 
 Storage that outlives a single host — persistent volumes for the management and control planes and
-for tenant workloads — is the [Shared Storage](/docs/roadmap/infrastructure/mobile/shared-storage/)
+for tenant workloads — is the [Shared Storage](/docs/roadmap/infrastructure/substrate/shared-storage/)
 roadmap project.
