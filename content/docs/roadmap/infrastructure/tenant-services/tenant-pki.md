@@ -22,4 +22,4 @@ Deevnet Pi that holds them, and devices with certificates of their own. The CAs 
 - 🔄 The Deevnet Pi
 - ⏳ Device certificates
 
-**Project plan:** [Tenant PKI](/docs/projects/tenant-pki/)
+**Project plan:** [Tenant PKI](/projects/tenant-pki/)

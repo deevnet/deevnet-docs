@@ -1,5 +1,7 @@
 ---
 title: "Core Router Uplift"
+aliases:
+  - /docs/projects/core-router-uplift/
 weight: 21
 tasks_completed: 0
 tasks_in_progress: 0

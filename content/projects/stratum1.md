@@ -1,5 +1,7 @@
 ---
 title: "Stratum 1 NTP"
+aliases:
+  - /docs/projects/stratum1/
 weight: 16
 tasks_completed: 0
 tasks_in_progress: 0

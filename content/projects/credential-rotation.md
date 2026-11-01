@@ -1,5 +1,7 @@
 ---
 title: "Credential Rotation"
+aliases:
+  - /docs/projects/credential-rotation/
 weight: 8
 tasks_completed: 0
 tasks_in_progress: 0

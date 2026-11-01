@@ -1,5 +1,7 @@
 ---
 title: "Builder & Core Services"
+aliases:
+  - /docs/projects/builder/
 weight: 2
 tasks_completed: 25
 tasks_in_progress: 1

@@ -24,4 +24,4 @@ the [Discovery](/docs/policies/lifecycle-management/discovery/) stage of Lifecyc
 - ⏳ Report and cadence
 - ⏳ Pins and licenses of Deevnet's own software
 
-**Project plan:** [Software Discovery](/docs/projects/software-discovery/)
+**Project plan:** [Software Discovery](/projects/software-discovery/)

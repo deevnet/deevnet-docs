@@ -1,5 +1,7 @@
 ---
 title: "Builder Upkeep"
+aliases:
+  - /docs/projects/builder-upkeep/
 weight: 20
 tasks_completed: 0
 tasks_in_progress: 0

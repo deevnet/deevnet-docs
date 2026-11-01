@@ -37,4 +37,4 @@ Bluetooth Phone Gateway for vintage telephone integration.
 - 🔄 Documentation
 - ⏳ Deployment & Operations
 
-**Project plan:** [MaBell Bluetooth Gateway](/docs/projects/mabell/)
+**Project plan:** [MaBell Bluetooth Gateway](/projects/mabell/)

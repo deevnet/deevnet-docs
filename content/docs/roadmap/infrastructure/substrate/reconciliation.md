@@ -23,4 +23,4 @@ Close the gap between what inventory declares and what the substrate actually ru
 - ⏳ Settings That Exist Only in the Running Config
 - ⏳ Drift Visibility
 
-**Project plan:** [Declarative Reconciliation](/docs/projects/reconciliation/)
+**Project plan:** [Declarative Reconciliation](/projects/reconciliation/)

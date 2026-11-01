@@ -1,5 +1,7 @@
 ---
 title: "Tenant PKI"
+aliases:
+  - /docs/projects/tenant-pki/
 weight: 12
 tasks_completed: 3
 tasks_in_progress: 1

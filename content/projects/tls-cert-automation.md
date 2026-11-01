@@ -1,5 +1,7 @@
 ---
 title: "TLS Cert Automation"
+aliases:
+  - /docs/projects/tls-cert-automation/
 weight: 7
 tasks_completed: 15
 tasks_in_progress: 1

@@ -22,4 +22,4 @@ limits, and checks on every change.
 - ⏳ Omada: SSID VLANs set by the controller, its API driven through Ansible
 - ⏳ Checks on every pull request
 
-**Project plan:** [Network Automation](/docs/projects/network-automation/)
+**Project plan:** [Network Automation](/projects/network-automation/)

@@ -25,4 +25,4 @@ Part of `deevnet-image-factory`.
 - ⏳ Image Build
 - ⏳ Deployment
 
-**Project plan:** [Stratum 1 NTP](/docs/projects/stratum1/)
+**Project plan:** [Stratum 1 NTP](/projects/stratum1/)

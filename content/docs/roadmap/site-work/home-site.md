@@ -24,4 +24,4 @@ zone and address space are reserved in the [Naming standard](/docs/standards/nam
 - ⏳ Network
 - ⏳ Later
 
-**Project plan:** [Home Site](/docs/projects/home-site/)
+**Project plan:** [Home Site](/projects/home-site/)

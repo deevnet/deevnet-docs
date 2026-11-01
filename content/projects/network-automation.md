@@ -1,5 +1,7 @@
 ---
 title: "Network Automation"
+aliases:
+  - /docs/projects/network-automation/
 weight: 19
 tasks_completed: 0
 tasks_in_progress: 0

@@ -1,5 +1,7 @@
 ---
 title: "Extended Management Plane"
+aliases:
+  - /docs/projects/management-plane/
 weight: 3
 tasks_completed: 11
 tasks_in_progress: 9

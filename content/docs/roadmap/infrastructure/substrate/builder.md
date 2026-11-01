@@ -27,4 +27,4 @@ Builder infrastructure, network automation, and core services required to provis
 - ✅ Inventory & Standards
 - ✅ Network Automation
 
-**Project plan:** [Builder & Core Services](/docs/projects/builder/)
+**Project plan:** [Builder & Core Services](/projects/builder/)

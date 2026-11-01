@@ -29,4 +29,4 @@ supplies its own IaC/CaC to rebuild from scratch against the substrate.
 - 🔄 Platform services for tenants
 - ⏳ Windows tenant laptops
 
-**Project plan:** [Tenant Platform](/docs/projects/tenant-platform/)
+**Project plan:** [Tenant Platform](/projects/tenant-platform/)

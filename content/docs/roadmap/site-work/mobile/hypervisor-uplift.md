@@ -24,4 +24,4 @@ Proxmox VE 8 → 9 on both hypervisors: PVE 9's SDN Fabrics make the tenant fabr
 - ⏳ Management hypervisor (dv02hyp001p01) on PVE 9, in its own maintenance window
 - ⏳ The provisioning toolchain aligned to PVE 9
 
-**Project plan:** [Hypervisor Platform Uplift](/docs/projects/hypervisor-uplift/)
+**Project plan:** [Hypervisor Platform Uplift](/projects/hypervisor-uplift/)

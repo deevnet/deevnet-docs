@@ -1,5 +1,7 @@
 ---
 title: "Hypervisor Storage"
+aliases:
+  - /docs/projects/hypervisor-storage/
 weight: 5
 tasks_completed: 0
 tasks_in_progress: 1
