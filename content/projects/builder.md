@@ -42,17 +42,14 @@ Achieve fully automated, repeatable provisioning of the mobile (mobile) site fro
 
 ---
 
-{{% details "Requirements — Complete" %}}
 ## Requirements ✅
 
 - ✅ Define substrate inventory and MAC addresses
 - ✅ Define network topology and VLANs
 - ✅ Define air-gap artifact requirements
-{{% /details %}}
 
 ---
 
-{{% details "Substrate Provisioning — Complete" %}}
 ## Substrate Provisioning ✅
 
 Core infrastructure for building and deploying the substrate.
@@ -63,7 +60,6 @@ Core infrastructure for building and deploying the substrate.
 - ✅ Image Packaging - Raspberry Pi Base Image
 - ✅ Bootstrap Node Provisioning Playbook
 - ✅ Full Air-Gap Support (Fedora Mirror)
-{{% /details %}}
 
 ---
 
@@ -78,7 +74,6 @@ Both Proxmox nodes were installed by hand from the standard ISO, and a rebuild i
 
 ---
 
-{{% details "Inventory & Standards — Complete" %}}
 ## Inventory & Standards ✅
 
 Documentation and inventory definitions.
@@ -86,11 +81,9 @@ Documentation and inventory definitions.
 - ✅ Hugo-based Documentation Site
 - ✅ Standards and Correctness Docs
 - ✅ mobile Site Bare-Metal Inventory (MAC addresses)
-{{% /details %}}
 
 ---
 
-{{% details "Network Automation — Complete" %}}
 ## Network Automation ✅
 
 Automated configuration of network infrastructure. Migration from flat 192.168.10.0/24 to segmented 10.20.x.0/24 VLANs completed 2026-03-25. Authority transition automation completed 2026-03-26.
@@ -108,4 +101,3 @@ Automated configuration of network infrastructure. Migration from flat 192.168.1
 - ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Automation project)
 - ✅ Authority transition automation (bootstrap-auth/core-auth playbooks, DNS/DHCP host records from inventory, IP swap)
 - ✅ Unify build sequence documentation (authority transitions and network segmentation inline)
-{{% /details %}}
