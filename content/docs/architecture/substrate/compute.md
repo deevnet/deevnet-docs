@@ -47,8 +47,7 @@ anything here:
 
 - **There is no shared storage.** VM disks live on the hypervisor's own local storage, so even if
   the nodes were clustered there would be nothing to migrate to. Losing a hypervisor is a
-  rebuild-and-restore, not a failover. Shared storage is the
-  [Shared Storage](/docs/roadmap/infrastructure/substrate/shared-storage/) roadmap project.
+  rebuild-and-restore, not a failover. Shared storage is not planned.
 - **Nothing enforces VMID uniqueness** across the substrate, because there is no cluster
   filesystem. Inventory does it instead, through an allocator.
 - **There is no network redundancy.** Each hypervisor reaches the network over a single link,

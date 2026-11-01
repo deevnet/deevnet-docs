@@ -1,13 +1,13 @@
 ---
-title: "eds-inventory"
+title: "EdS Music Inventory"
 weight: 2
 bookCollapseSection: true
 tasks_completed: 6
 tasks_in_progress: 1
-tasks_planned: 19
+tasks_planned: 18
 ---
 
-# eds-inventory
+# EdS Music Inventory
 
 One inventory of the owner's music in every format, enriched once, asked by EdS instead of the catalogs.
 

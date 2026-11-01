@@ -2,9 +2,9 @@
 title: "EdS"
 weight: 3
 bookCollapseSection: true
-tasks_completed: 47
+tasks_completed: 48
 tasks_in_progress: 4
-tasks_planned: 48
+tasks_planned: 50
 ---
 
 # EdS
@@ -15,7 +15,7 @@ EdS, a tenant: an LP jacket stand lit from the record's cover, with the now-play
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
-**Documentation:** [EdS](https://cdeever.github.io/eds/) · [eds-inventory](https://cdeever.github.io/eds-inventory/)
+**Documentation:** [EdS](https://cdeever.github.io/eds/) · [EdS Music Inventory](https://cdeever.github.io/eds-inventory/)
 
 ---
 

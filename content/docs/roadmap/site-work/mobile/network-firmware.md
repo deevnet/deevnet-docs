@@ -1,6 +1,6 @@
 ---
 title: "Network Firmware"
-weight: 2
+weight: 3
 tasks_completed: 2
 tasks_in_progress: 0
 tasks_planned: 0

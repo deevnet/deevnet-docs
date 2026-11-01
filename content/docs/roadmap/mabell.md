@@ -1,14 +1,15 @@
 ---
-title: "ESP32 Ma Bell Bluetooth Gateway"
+title: "MaBell Bluetooth Gateway"
 aliases:
+  - /docs/roadmap/esp32/
   - /docs/roadmap/esp32/ma-bell/
-weight: 1
+weight: 4
 tasks_completed: 19
 tasks_in_progress: 7
 tasks_planned: 50
 ---
 
-# Ma Bell Project
+# MaBell Bluetooth Gateway
 
 Bluetooth Phone Gateway for vintage telephone integration.
 

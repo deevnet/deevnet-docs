@@ -3,7 +3,7 @@ title: "Now Playing"
 weight: 2
 tasks_completed: 9
 tasks_in_progress: 0
-tasks_planned: 6
+tasks_planned: 3
 ---
 # Now Playing
 
@@ -24,7 +24,7 @@ One contract on the bus for every source, and a record named by what is on it an
 - Counting what is asked of outside services
 
 **Out of Scope**
-- Holding the owner's music: eds-inventory
+- Holding the owner's music: EdS Music Inventory
 
 ---
 
@@ -41,11 +41,10 @@ One contract on the bus for every source, and a record named by what is on it an
 
 ---
 
-## Naming the record 🔄
+## Naming the record ✅
 
 - ✅ The owner's Discogs collection names the record (EdS ADR-0022)
 - ✅ The original album by what is on it; the recognizer's album weighed as an original (EdS ADR-0038, CHG-0043)
-- ⏳ nowplayd asks eds-inventory for the album, its cover and its original (EdS music-inventory proposal)
 
 ---
 
@@ -53,10 +52,3 @@ One contract on the bus for every source, and a record named by what is on it an
 
 - ✅ Calls to outside services counted, a minute at a time (EdS ADR-0027)
 - ✅ How each track's album and cover were found, one line a track (EdS ADR-0050)
-
----
-
-## Vinyl ⏳
-
-- ⏳ Capturing each record played to FLAC (EdS capturing-vinyl proposal)
-- ⏳ Naming the turntable locally, from the owner's own rips (eds-inventory open question)

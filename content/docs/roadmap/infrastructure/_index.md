@@ -4,7 +4,7 @@ weight: 1
 bookCollapseSection: true
 tasks_completed: 75
 tasks_in_progress: 14
-tasks_planned: 131
+tasks_planned: 115
 ---
 
 # Infrastructure Automation

@@ -1,9 +1,9 @@
 ---
 title: "The Stand and Its Light"
 weight: 1
-tasks_completed: 8
+tasks_completed: 9
 tasks_in_progress: 0
-tasks_planned: 2
+tasks_planned: 3
 ---
 # The Stand and Its Light
 
@@ -32,7 +32,8 @@ The stand follows the record that is playing and draws its own effects; nothing 
 - ✅ The device draws its effects and owns gamma; it is sent scenes, never frames (EdS ADR-0001, ADR-0002)
 - ✅ palette, then lightd, then the stand: colors from the cover, chroma and gamut handled in lightd (EdS ADR-0009, CHG-0001, CHG-0003)
 - ✅ The stand reports what it shows; `chase` and `morph`; 18 LEDs (EdS CHG-0008, CHG-0009, CHG-0010)
-- ⏳ Effects checked on real LEDs; `morph` blends in RGB; an accent too close to the dominant color (EdS CHG-0009, CHG-0010)
+- ✅ Effects seen on real LEDs: the stand is in service (EdS CHG-0009, CHG-0010)
+- ⏳ `morph` blends in RGB; an accent too close to the dominant color (EdS CHG-0009, CHG-0010)
 
 ---
 
@@ -44,8 +45,14 @@ The stand follows the record that is playing and draws its own effects; nothing 
 
 ---
 
-## Which sources light it 🔄
+## Which sources light it ✅
 
 - ✅ Records only, dim while the turntable is on (EdS ADR-0028)
 - ✅ The console switches it to every source, and back (EdS ADR-0039)
-- ⏳ Lights for iTunes as their own thing, not the record's
+
+---
+
+## Hardware ⏳
+
+- ⏳ A printed circuit board for the stand
+- ⏳ A permanent enclosure for the stand
