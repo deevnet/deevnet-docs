@@ -1,6 +1,6 @@
 ---
 title: "Builder Upkeep"
-weight: 3
+weight: 4
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 4

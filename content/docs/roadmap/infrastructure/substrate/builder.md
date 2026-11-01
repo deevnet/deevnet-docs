@@ -34,7 +34,7 @@ Achieve fully automated, repeatable provisioning of the mobile (mobile) site fro
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
 - Patch automation and firmware upgrades — see [Patch Automation](/docs/roadmap/infrastructure/substrate/patch-awareness/)
-- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/infrastructure/substrate/full-rebuild/)
+- Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
 

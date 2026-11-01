@@ -4,7 +4,7 @@ weight: 2
 bookCollapseSection: true
 tasks_completed: 5
 tasks_in_progress: 0
-tasks_planned: 27
+tasks_planned: 39
 ---
 
 # Site Work

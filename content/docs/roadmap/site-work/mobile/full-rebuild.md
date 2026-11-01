@@ -2,7 +2,7 @@
 title: "Full Site Rebuild"
 aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
-weight: 3
+weight: 5
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 8

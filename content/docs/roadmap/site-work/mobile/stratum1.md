@@ -2,7 +2,7 @@
 title: "Stratum 1 NTP"
 aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
-weight: 4
+weight: 6
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 14

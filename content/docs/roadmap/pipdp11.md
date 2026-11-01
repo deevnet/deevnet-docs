@@ -1,18 +1,19 @@
 ---
-title: "PiDP-11"
+title: "PiPDP11"
 aliases:
+  - /docs/roadmap/raspberry-pi/
   - /docs/roadmap/raspberry-pi/pidp11/
-weight: 1
+weight: 5
 tasks_completed: 1
 tasks_in_progress: 1
 tasks_planned: 8
 ---
 
-# PiDP-11 Project
+# PiPDP11
 
 Hardware adoption of the PiDP-11 kit — a PDP-11 replica using simh emulation on Raspberry Pi.
 
-Part of `deevnet-image-factory`.
+Part of `deevnet-image-factory`. Not yet admitted as a tenant.
 
 {{< overall-progress >}}
 
