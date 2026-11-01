@@ -1,4 +1,6 @@
 # 2026. Written from its quarters.
+through: "2026-11-01"
+reached: 93
 headline: "Deevnet went from a build lab to a platform hosting three tenants, one of them in daily production use."
 bullets:
   - text: "**The first quarter laid the foundation.** The Builder installs nodes itself over PXE and runs the network's services from code, the substrate's secrets moved into a vault, and the mobile site was segmented into VLANs under a zone policy. The CaribouLite SDR was finished, and MaBell's requirements and design were set."

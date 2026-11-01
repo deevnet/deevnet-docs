@@ -1,7 +1,7 @@
 ---
 name: accomplishments
-description: Write up what Deevnet accomplished. Use to draft a month's, quarter's or year's account for the Accomplishments page (data/accomplishments/<period>.yaml), including the scheduled monthly run ("last" drafts the month just ended, and the quarter and year it closes); and to backfill missing or misdated milestones from the git history of every Deevnet repository.
-argument-hint: "<period: 2026-11 | 2026-Q4 | 2026 | last> | backfill <from> <to>"
+description: Write up what Deevnet accomplished. Use to draft a month's, quarter's or year's account for the Accomplishments page (data/accomplishments/<period>.yaml), to catch the roadmap and every account up at any time, which is also what the monthly scheduled run does; and to backfill missing or misdated milestones from the git history of every Deevnet repository.
+argument-hint: "[catch-up (the default)] | <period: 2026-11 | 2026-Q4 | 2026> | backfill <from> <to>"
 ---
 
 # Accomplishments
@@ -15,6 +15,8 @@ or `2026`:
 
 ```yaml
 # October 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-10-31"  # the day it was written up to
+reached: 59            # milestones done in the period when it was written
 headline: "One sentence: what the period amounted to."
 bullets:
   - text: "**A full-sentence bold lead-in.** Then what became true, with dates (Oct 5)."
@@ -25,7 +27,36 @@ next: "What comes next, from the open milestones."
 watch: "Risks: open incidents, stalled records."
 ```
 
-Every item named must exist; the build fails otherwise.
+Every item named must exist; the build fails otherwise. `through` and `reached` are not shown on
+the page. They are how a catch-up knows an account has fallen behind, so every account written or
+revised sets them; `period.py <period>` prints the count.
+
+## Catching up
+
+Run at any time, with no arguments or by the monthly schedule. It brings everything up to today,
+and running it again with nothing new does nothing.
+
+1. **See what is due:** `python3 .claude/skills/accomplishments/scripts/period.py catchup` lists
+   each period from the earliest month with an account up to today, lowest level first, as
+   missing, stale or current. It also lists the records to check against the roadmap. Earlier
+   periods stay on the automatic rollup unless asked for by name.
+2. **Catch the roadmap up first,** with the `roadmap-update` skill. Where a listed record clearly
+   reaches a milestone and gives its date, mark it done. List anything uncertain in the pull
+   request instead; do not guess. Tenants such as EdS keep their records in their own
+   repositories: check them if you can reach them, and otherwise say in the pull request that
+   they were not checked. Then run `period.py catchup` again, since new milestones change what is
+   due.
+3. **Write what is due,** lowest level first, by [Drafting a period](#drafting-a-period):
+   - **A missing account** is drafted. That includes a month, quarter or year still in progress,
+     which says only what has happened so far. Its bullets may be fewer than the usual number.
+   - **A stale account** is revised, not rewritten: keep every sentence still true, the owner's
+     wording above all, and change or add only what the new milestones call for. A revised month
+     makes its quarter and year stale, because they count the same milestones.
+   - **A period with nothing reached** gets no account.
+4. **Check and propose:** the `hugo-docs` check, then one pull request, `Accomplishments: catch-up
+   to <today>`, on a branch `accomplishments-catch-up-<today>`. Its description has each account's
+   headline and bullets, the milestones marked done, and anything left for the owner. **Do not
+   merge it.** If nothing was due and the roadmap needed nothing, open no pull request and say so.
 
 ## Drafting a period
 
@@ -56,19 +87,7 @@ Every item named must exist; the build fails otherwise.
    - CHG, INC and ADR IDs only where a reader would follow them;
    - no superlatives.
 5. **Check:** the `hugo-docs` check. Then open a pull request with the account, and paste the
-   headline and bullets into its description. **Do not merge it.**
-
-## Scheduled run (`last`)
-
-Run on the 1st of each month: `period.py last` names the month just ended, plus the quarter and
-year it closes. Then:
-1. Draft each missing account, lowest level first: the month, then the quarter, then the year.
-   Never overwrite an account that exists. If one already exists, note it and skip it.
-2. If the month reached no milestones, write no account; say so in the pull request instead.
-3. Before drafting, check that the month's work reached the roadmap. Look for change records
-   completed in the month whose milestone is not marked done, and list them in the pull request
-   as roadmap updates the owner may want. Do not apply them unasked.
-4. Open one pull request, `Accomplishments: <period(s)>`, on a branch `accomplishments-<month>`.
+   headline and bullets into its description. A catch-up opens one pull request for all of them. **Do not merge it.**
 
 ## Backfilling milestones from history
 

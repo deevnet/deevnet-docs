@@ -1,4 +1,6 @@
 # Q4 2026. Written from its months.
+through: "2026-11-01"
+reached: 61
 headline: "Deevnet is its own certificate authority, and its first production tenant is in daily use."
 bullets:
   - text: "**Deevnet is its own certificate authority,** from an offline root down to tenants' services and their Pis. Every substrate service, appliance and tenant tool now trusts that root."

@@ -1,4 +1,6 @@
 # October 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-10-31"
+reached: 59
 headline: "Deevnet built its own chain of trust, and EdS went into daily use on top of it."
 bullets:
   - text: "**Deevnet became its own certificate authority.** An offline Deevnet Root and Mobile Site CA (Oct 5), which every substrate service and client verifies against; certificates for tenants' services (Oct 11); tenant CAs keyed outside OpenBao, and OpenBao's own keys taken from the vault, its access bound and audited (Oct 25). Tenants got site-less names the same day, and the first Deevnet Pi was installed with one, from a take-home image kept current with deevnet-kit (Oct 29)."
