@@ -16,9 +16,7 @@ Firmware upgrades on the mobile site's network devices.
 
 ---
 
-## Firmware Upgrades ✅
+- ✅ Access point firmware (CHG-0005)
+- ✅ Access switch firmware (CHG-0006)
 
-Device firmware updates required for full automation coverage.
-
-- ✅ EAP650-Outdoor AP firmware update, so the controller can push VLAN configuration to it ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/))
-- ✅ SG2218 Access Switch firmware update ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Adoption into Omada is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold
+**Project plan:** [Network Firmware](/docs/projects/network-firmware/)

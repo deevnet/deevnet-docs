@@ -19,9 +19,9 @@ them.
 
 ---
 
-## Replacement ⏳
+- ⏳ Hardware chosen (the N100 Router Appliance is the candidate)
+- ⏳ Built from code and swapped in, the ZimaBoard kept
+- ⏳ Proven under a multi-gigabyte transfer and a full deploy
+- ⏳ INC-0004 closed
 
-- ⏳ Choose the hardware: the [N100 Router Appliance](/docs/platforms/evaluations/hardware/n100-router-appliance/) is the candidate under evaluation
-- ⏳ Build it from code and swap it in under a change record, the ZimaBoard kept to put back
-- ⏳ Prove it under load: a multi-gigabyte transfer and a full deploy through it, with no hang and no watchdog timeout
-- ⏳ Close INC-0004
+**Project plan:** [Core Router Uplift](/docs/projects/core-router-uplift/)

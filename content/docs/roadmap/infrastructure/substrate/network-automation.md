@@ -3,7 +3,7 @@ title: "Network Automation"
 weight: 8
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 6
+tasks_planned: 4
 ---
 
 # Network Automation
@@ -17,13 +17,9 @@ limits, and checks on every change.
 
 ---
 
-## Automation Improvements ⏳
+- ⏳ OPNsense's remaining manual steps automated: interface assignment, filter rules
+- ⏳ The access switch's configuration idempotent
+- ⏳ Omada: SSID VLANs set by the controller, its API driven through Ansible
+- ⏳ Checks on every pull request
 
-Improvements identified during the network migration and authority transition work. Non-blocking enhancements — the network is fully functional, but these items improve automation coverage, idempotency, and reduce manual steps for future rebuilds.
-
-- ⏳ Automate OPNsense interface assignment and IP config via SSH (eliminate manual GUI steps — OPNsense 25.7 has no API for this)
-- ⏳ TP-Link SG2218 cliconf idempotency (proper config diff support in the Ansible cliconf plugin)
-- ⏳ OPNsense automation filter API investigation (addRule saves but doesn't compile to pf on 25.7.10)
-- ⏳ Omada SSID VLAN provisioning via controller after AP firmware update
-- ⏳ Replace curl-based Omada API tasks with Ansible uri module (eliminate command-line secret exposure)
-- ⏳ Checks on every pull request (GitHub Actions): `ansible-playbook --syntax-check`, `packer validate` and the docs build, so the change-management validation checklist is not only manual
+**Project plan:** [Network Automation](/docs/projects/network-automation/)
