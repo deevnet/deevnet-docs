@@ -45,6 +45,13 @@ A milestone is an **outcome someone would care about**, not a task: "Tenants' se
 certificates", not "write the API endpoint". Name the record that carried it, in parentheses,
 when there is one.
 
+**A milestone stands alone.** The Accomplishments page lists it away from its page and its
+headings, so someone new to Deevnet must be able to tell what it means from its title alone. Name
+the subject and say what became true: "Removing a tenant revokes its API token", not "Tokens";
+"Automatic certificate renewal and expiry monitoring", not "Later". Do not reuse a plan's phase
+heading as a title, and explain an in-house name the first time a title needs it ("EdS's voice
+service, voiced"). `milestones.py check` warns on titles under three words.
+
 ## When something is done
 
 1. **Find what it completes.** A change record's `| **Date** |` row, its status, and the plan's

@@ -2,16 +2,16 @@
 title: "Tenant Fabric"
 weight: 1
 milestones:
-  - title: "Design tenant network architecture"
+  - title: "Tenant network architecture designed"
     status: done
     date: "2026-08-30"
-  - title: "Tenant DNS publication"
+  - title: "Tenants publish their own DNS names"
     status: done
     date: "2026-09-03"
-  - title: "The tenant fabric: single-member, egress at the perimeter"
+  - title: "The EVPN/VXLAN tenant network running on one hypervisor, with internet access through the perimeter"
     status: done
     date: "2026-09-17"
-  - title: "The core router reduced to the perimeter"
+  - title: "The core router reduced to the site's perimeter, no longer routing tenant traffic inside it"
     status: planned
   - title: "Tenants' workloads isolated from each other"
     status: planned

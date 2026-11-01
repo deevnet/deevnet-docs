@@ -4,10 +4,10 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/builder/
 weight: 1
 milestones:
-  - title: "Requirements"
+  - title: "Builder requirements defined: hardware inventory, network layout and offline artifacts"
     status: done
     date: "2026-01-09"
-  - title: "Substrate Provisioning"
+  - title: "The Builder provisions the substrate from its own Ansible collection, images and offline package mirror"
     status: done
     date: "2025-12-31"
   - title: "The Omada controller deployed from code on the Builder"
@@ -16,12 +16,12 @@ milestones:
   - title: "Nodes install themselves from the Builder over PXE, BIOS and UEFI"
     status: done
     date: "2026-01-10"
-  - title: "Unattended Hypervisor Install"
+  - title: "Hypervisors install unattended from a Proxmox ISO with an embedded answer file"
     status: active
-  - title: "Inventory & Standards"
+  - title: "Bare-metal inventory and standards documented on a Hugo docs site"
     status: done
     date: "2026-01-09"
-  - title: "Network Automation"
+  - title: "Core router, access switch, DNS and DHCP configured from code, with 12 VLANs under a zone firewall policy"
     status: done
     date: "2026-03-26"
   - title: "Hosts and zones renamed to the site-coded scheme (CHG-0003)"

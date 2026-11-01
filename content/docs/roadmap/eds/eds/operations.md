@@ -2,32 +2,32 @@
 title: "Operations and Secrets"
 weight: 7
 milestones:
-  - title: "Hand-kept secrets encrypted with sops and age: the key and `secrets/` made; Discogs, Spotify's settings and the state store's keys still to move (EdS ADR-0037)"
+  - title: "EdS's hand-kept secrets encrypted with sops and age: the key and `secrets/` made; Discogs, Spotify's settings and the state store's keys still to move (EdS ADR-0037)"
     group: "Secrets"
     status: active
-  - title: "Each Pi's iTunes pairing kept, so a new card starts paired (EdS ADR-0052)"
+  - title: "Each Pi's iTunes pairing kept, so a new SD card starts paired (EdS ADR-0052)"
     group: "Secrets"
     status: done
     date: "2026-10-29"
-  - title: "The relay paired as \"EdS relay\" and kept (EdS ADR-0052)"
+  - title: "The relay Pi paired with iTunes as \"EdS relay\", and the pairing kept (EdS ADR-0052)"
     group: "Secrets"
     status: planned
-  - title: "A second recipient for the key, and a secret scan on every push (EdS ADR-0037)"
+  - title: "A second recipient for EdS's secrets key, and a secret scan on every push (EdS ADR-0037)"
     group: "Secrets"
     status: planned
-  - title: "Spotify's authorization, before 2027-04-09 (EdS CHG-0004)"
+  - title: "EdS's Spotify authorization renewed before 2027-04-09 (EdS CHG-0004)"
     group: "Renewals"
     status: planned
-  - title: "The console's certificate, before 2027-11-01 (EdS CHG-0047)"
+  - title: "The EdS console's certificate renewed before 2027-11-01 (EdS CHG-0047)"
     group: "Renewals"
     status: planned
-  - title: "The backend Pi's certificate, before 2027-10-28, by a new request (EdS CHG-0042)"
+  - title: "The EdS backend Pi's certificate renewed by a new request before 2027-10-28 (EdS CHG-0042)"
     group: "Renewals"
     status: planned
-  - title: "lightd and palette served over TLS (EdS CHG-0007)"
+  - title: "EdS's lightd and palette services served over TLS (EdS CHG-0007)"
     group: "Hygiene"
     status: planned
-  - title: "The amplifier's tape selector cleaned (EdS INC-0004)"
+  - title: "The stereo amplifier's tape selector cleaned (EdS INC-0004)"
     group: "Hygiene"
     status: planned
 ---

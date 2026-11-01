@@ -5,23 +5,23 @@ aliases:
   - /docs/roadmap/infrastructure/tls-cert-automation/
 weight: 9
 milestones:
-  - title: "The Deevnet Root CA and Mobile Site CA, made offline (CHG-0033)"
+  - title: "Deevnet's own root and site certificate authorities created and kept offline (CHG-0033)"
     status: done
     date: "2026-10-05"
-  - title: "Tenant CAs keyed outside OpenBao (CHG-0036)"
+  - title: "Tenant certificate authorities' keys generated outside the OpenBao secrets manager (CHG-0036)"
     status: done
     date: "2026-10-25"
-  - title: "The Deevnet Root trusted everywhere the site builds"
+  - title: "Every machine the site builds trusts the Deevnet root certificate"
     status: done
     date: "2026-10-05"
-  - title: "Workloads cloned before the re-root replaced"
+  - title: "Tenant VMs that trust only the retired root certificate replaced"
     status: active
-  - title: "Substrate Services"
+  - title: "Every substrate service and appliance serves a Deevnet certificate, and its clients verify it"
     status: done
     date: "2026-10-05"
-  - title: "Device Identity"
+  - title: "IoT devices get their own certificates through the Deevnet API and use them to log in to the MQTT broker"
     status: planned
-  - title: "Later"
+  - title: "Automatic certificate renewal, expiry monitoring, and a clean new root once device certificates work"
     status: planned
 ---
 

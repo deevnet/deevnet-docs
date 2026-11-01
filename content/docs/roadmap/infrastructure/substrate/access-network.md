@@ -4,9 +4,9 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/access-network/
 weight: 6
 milestones:
-  - title: "Management access ports"
+  - title: "A labeled block of access switch ports for plugging in management devices"
     status: planned
-  - title: "Unused ports"
+  - title: "Unused access switch ports placed in a dead-end VLAN, so a device plugged into one reaches nothing"
     status: planned
 ---
 

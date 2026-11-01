@@ -4,9 +4,9 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/patch-automation/
 weight: 12
 milestones:
-  - title: "Release and advisory sources"
+  - title: "Every cataloged product's release and security advisory sources recorded and watched"
     status: planned
-  - title: "Notification"
+  - title: "One feed of the new advisories and releases that need attention, delivered to the operator"
     status: planned
 ---
 

@@ -4,13 +4,13 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-storage/
 weight: 5
 milestones:
-  - title: "Record the layout as code"
+  - title: "The management hypervisor's disk layout declared in inventory"
     status: active
-  - title: "Decide the standard"
+  - title: "A hypervisor storage standard written: what goes on which disk, and what a disk failure may cost"
     status: planned
-  - title: "Converge the nodes"
+  - title: "Both hypervisors brought to the storage standard"
     status: planned
-  - title: "Guest configuration survives a rebuild"
+  - title: "Hypervisor guest definitions survive an OS reinstall"
     status: planned
 ---
 

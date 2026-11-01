@@ -2,19 +2,19 @@
 title: "Devices and Firmware"
 weight: 5
 milestones:
-  - title: "The power beacon: its connection is the turntable switched on (EdS ADR-0023)"
+  - title: "A power beacon on the turntable: when it connects, the turntable is on (EdS ADR-0023)"
     group: "Devices"
     status: done
     date: "2026-10-12"
-  - title: "Secrets in NVS only; the broker's CA provisioned (EdS ADR-0004)"
+  - title: "EdS device secrets kept only in ESP32 flash storage (NVS), and the broker's CA provisioned (EdS ADR-0004)"
     group: "Devices"
     status: done
     date: "2026-10-10"
-  - title: "Events over the bus into the log store (EdS ADR-0005, ADR-0017)"
+  - title: "EdS device events sent over the message bus into the log store (EdS ADR-0005, ADR-0017)"
     group: "Devices"
     status: done
     date: "2026-10-11"
-  - title: "Presence said every thirty seconds (EdS ADR-0034)"
+  - title: "Each EdS device reports its presence every thirty seconds (EdS ADR-0034)"
     group: "Devices"
     status: done
     date: "2026-10-16"
@@ -22,21 +22,21 @@ milestones:
     group: "Devices"
     status: done
     date: "2026-10-26"
-  - title: "Over the air through the broker, undone if the build cannot reach it (EdS ADR-0035)"
+  - title: "EdS firmware updated over the air through the broker, rolled back if the new build cannot reach it (EdS ADR-0035)"
     group: "Updates"
     status: done
     date: "2026-10-17"
-  - title: "Updates at home, from the backend Pi (EdS CHG-0028)"
+  - title: "EdS firmware updates at home, served from the backend Pi (EdS CHG-0028)"
     group: "Updates"
     status: planned
-  - title: "Provisioning writes both sites (EdS ADR-0049)"
+  - title: "EdS device provisioning writes the settings for both sites (EdS ADR-0049)"
     group: "Two sites"
     status: done
     date: "2026-10-26"
-  - title: "The second site on the beacon, the screen and the stand (EdS CHG-0042)"
+  - title: "The beacon, cover screen and stand each hold a second site (EdS CHG-0042)"
     group: "Two sites"
     status: planned
-  - title: "Firmware that switches between them by a message (EdS ADR-0049)"
+  - title: "EdS firmware switches between its two sites on a message (EdS ADR-0049)"
     group: "Two sites"
     status: planned
 ---

@@ -4,9 +4,9 @@ aliases:
   - /docs/roadmap/infrastructure/tenant-removal/
 weight: 5
 milestones:
-  - title: "Leftovers"
+  - title: "Removing a tenant also deletes its state, logs and dashboards"
     status: planned
-  - title: "Tokens"
+  - title: "Removing a tenant revokes its API token"
     status: planned
 ---
 
