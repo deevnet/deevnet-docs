@@ -1,6 +1,6 @@
 ---
 title: "🏁 Completed Projects"
-weight: 9
+weight: 10
 bookCollapseSection: true
 aliases:
   - /docs/platforms/tenant-compute/pi-production/
@@ -35,8 +35,8 @@ A project is complete when:
 3. **It runs on its own hardware** — not on a shared bank or a borrowed workload
 4. **It is documented here** — hardware, purpose, network position, configuration, and how to
    validate it
-5. **Its roadmap page is closed** — every task done or explicitly dropped, and the plan folded into
-   its entry here
+5. **Its project plan is closed** — every task done or explicitly dropped, the plan moved from
+   [Projects](/docs/projects/) into its entry here, and its roadmap item removed
 
 ## The path for Pi projects
 
