@@ -231,7 +231,8 @@ approximate.
 | ~16:20 | 5 | `DELETE /v1/admissions/tprobe2`: `204`, then `404`. The phone could no longer join |
 | ~16:50 | 5 | `cdeever` created from tdemo's reworked README on the operator's Mac. `GET …/cdeever/wifi-keys` lists **`admission`** (`tenant_dev`, `DVNTM-TD`) beside `devices` (`iot`): the admission key is the tenant's own. The tenant's backend workload took its key, and `ssh tenant@backend.cdeever…` worked |
 
-{{< details "segment-check.sh DVNTM-TD on the tenant's own key, 2026-09-27" >}}
+### segment-check.sh DVNTM-TD on the tenant's own key, 2026-09-27
+
 ```text
 Segment check: DVNTM-TD (from 10.20.45.50)
 == Address and DNS
@@ -267,7 +268,6 @@ Segment check: DVNTM-TD (from 10.20.45.50)
 
 RESULT: DVNTM-TD - 29 passed, 0 failed
 ```
-{{< /details >}}
 
 ### Departures from the plan
 

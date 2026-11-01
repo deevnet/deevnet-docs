@@ -213,7 +213,7 @@ merged together in `ansible-collection-deevnet.net` PR #16 on 2026-09-08.
 Every open item was resolved by [CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/) on
 2026-09-19. The log of how each was worked through, dated as it was written, is kept below.
 
-{{% details "Open items log, 2026-09-08 to 2026-09-19" %}}
+#### Open items log, 2026-09-08 to 2026-09-19
 
 As recorded at the time, updated only where a later commit settles them:
 
@@ -303,7 +303,6 @@ and the read is described in
   recorded impact. No evidence remains that could raise this above a well-supported inference, and
   none is expected to appear.
 
-{{% /details %}}
 
 ## Preventive actions
 

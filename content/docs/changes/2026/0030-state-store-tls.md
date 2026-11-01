@@ -191,7 +191,8 @@ Run from the Builder on 2026-09-27, and verified last from a computer on `DVNTM-
 
 | 13:06 | Verification | From a computer on `DVNTM-TD` (`10.20.45.50`): `segment-check.sh DVNTM-TD` **29 passed, 0 failed**, the state store `REACH https://tfstate.mobile.deevnet.net:9000 - HTTP 403 (TLS verified)` among them. Log below |
 
-{{< details "segment-check.sh DVNTM-TD, 2026-09-27 13:06" >}}
+### segment-check.sh DVNTM-TD, 2026-09-27 13:06
+
 ```text
 Segment check: DVNTM-TD (from 10.20.45.50)
 == Address and DNS
@@ -227,7 +228,6 @@ Segment check: DVNTM-TD (from 10.20.45.50)
 
 RESULT: DVNTM-TD - 29 passed, 0 failed
 ```
-{{< /details >}}
 
 ### Departures from the plan
 
