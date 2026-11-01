@@ -3,7 +3,7 @@ title: "The Stand and Its Light"
 weight: 1
 tasks_completed: 9
 tasks_in_progress: 0
-tasks_planned: 2
+tasks_planned: 3
 ---
 # The Stand and Its Light
 
@@ -45,8 +45,14 @@ The stand follows the record that is playing and draws its own effects; nothing 
 
 ---
 
-## Which sources light it 🔄
+## Which sources light it ✅
 
 - ✅ Records only, dim while the turntable is on (EdS ADR-0028)
 - ✅ The console switches it to every source, and back (EdS ADR-0039)
-- ⏳ Lights for iTunes as their own thing, not the record's
+
+---
+
+## Hardware ⏳
+
+- ⏳ A printed circuit board for the stand
+- ⏳ A permanent enclosure for the stand
