@@ -6,7 +6,7 @@ milestones:
     group: "Light from the cover"
     status: done
     date: "2026-09-07"
-  - title: "The LP stand's colors come from the album cover: palette finds them, lightd makes the scene, the stand draws it (EdS ADR-0009, CHG-0001, CHG-0003)"
+  - title: "The LP stand's colors come from the album cover: one service finds them, another makes the scene, the stand draws it (EdS ADR-0009, CHG-0001, CHG-0003)"
     group: "Light from the cover"
     status: done
     date: "2026-10-11"
@@ -21,11 +21,11 @@ milestones:
   - title: "LP stand color fixes: `morph` blends in RGB, and an accent can sit too close to the dominant color (EdS CHG-0009, CHG-0010)"
     group: "Light from the cover"
     status: planned
-  - title: "Particular albums get their own light on the stand, named by nowplayd and drawn by lightd (EdS ADR-0019)"
+  - title: "Particular albums get their own light on the LP stand (EdS ADR-0019)"
     group: "Looks"
     status: done
     date: "2026-10-11"
-  - title: "A particular track gets its own light from any source, such as Knight Rider's `scanner` (EdS ADR-0030)"
+  - title: "A particular track gets its own light on the LP stand from any source, such as a `scanner` effect for Knight Rider (EdS ADR-0030)"
     group: "Looks"
     status: done
     date: "2026-10-13"
@@ -37,14 +37,14 @@ milestones:
     group: "Which sources light it"
     status: done
     date: "2026-10-13"
-  - title: "The console switches the LP stand between records only and every source (EdS ADR-0039)"
+  - title: "The EdS console switches the LP stand between records only and every source (EdS ADR-0039)"
     group: "Which sources light it"
     status: done
     date: "2026-10-19"
-  - title: "A printed circuit board for the stand"
+  - title: "A printed circuit board for the LP stand"
     group: "Hardware"
     status: planned
-  - title: "A permanent enclosure for the stand"
+  - title: "A permanent enclosure for the LP stand"
     group: "Hardware"
     status: planned
 ---

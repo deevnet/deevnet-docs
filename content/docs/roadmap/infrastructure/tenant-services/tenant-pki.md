@@ -11,15 +11,15 @@ milestones:
   - title: "The EdS tenant's certificates reissued under a name not tied to a site (CHG-0055)"
     status: done
     date: "2026-11-01"
-  - title: "Tenants tdemo, mabell and cdeever moved to names not tied to a site"
+  - title: "The other tenants (tdemo, mabell and cdeever) moved to names not tied to a site"
     status: active
-  - title: "The take-home Raspberry Pi image kept current with deevnet-kit (CHG-0049–0051)"
+  - title: "The Raspberry Pi image tenants take home kept current with its setup tool, deevnet-kit (CHG-0049–0051)"
     status: done
     date: "2026-10-18"
-  - title: "The first Deevnet Pi installed, using a name not tied to a site (CHG-0056)"
+  - title: "The first take-home Pi installed with Deevnet certificates, using a name not tied to a site (CHG-0056)"
     status: done
     date: "2026-10-29"
-  - title: "The Deevnet Pi image in the tenant downloads, with a starter PKI kit"
+  - title: "The take-home Pi image in the tenant downloads, using Deevnet certificates by default or a starter kit for an owner's own"
     status: active
   - title: "IoT devices issued their own certificates through the Deevnet API"
     status: planned

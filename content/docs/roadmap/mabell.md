@@ -15,7 +15,7 @@ milestones:
     status: active
   - title: "ESP32 firmware handles Bluetooth calls, phone tones, and rotary and touch-tone dialing"
     status: active
-  - title: "MaBell joined Deevnet as a tenant, its events in the log store"
+  - title: "MaBell joined Deevnet as a tenant, its events in the central log store"
     status: done
     date: "2026-10-09"
   - title: "A full-voltage prototype with the phone line interface and ring generator working safely (EVT-2)"

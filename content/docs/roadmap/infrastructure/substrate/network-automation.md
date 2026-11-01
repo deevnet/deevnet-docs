@@ -9,7 +9,7 @@ milestones:
     status: planned
   - title: "Rerunning the access switch's automation changes nothing unless something needs changing"
     status: planned
-  - title: "Omada: SSIDs and the AP set by the controller from inventory, through its API"
+  - title: "Wi-Fi networks and the access point set by the Omada controller from inventory, through its API"
     status: done
     date: "2026-09-15"
   - title: "Automation repositories' syntax and docs build checked on every pull request"

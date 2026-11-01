@@ -10,18 +10,18 @@ milestones:
     group: "Console"
     status: done
     date: "2026-11-01"
-  - title: "EdS console fixes: covers sent at full size, recently played lost on restart, strip length told rather than reported (EdS CHG-0006, CHG-0010)"
+  - title: "EdS console fixes: covers sent at full size, recently played lost on restart, LED strip length told rather than reported (EdS CHG-0006, CHG-0010)"
     group: "Console"
     status: planned
-  - title: "A touch screen by the stand with the album cover, play/pause, skip and volume (EdS ADR-0020)"
+  - title: "A touch screen by the LP stand with the album cover, play/pause, skip and volume (EdS ADR-0020)"
     group: "Cover screen"
     status: done
     date: "2026-10-11"
-  - title: "The cover screen sleeps when nothing has played for five minutes (EdS ADR-0036)"
+  - title: "The touch screen by the LP stand sleeps when nothing has played for five minutes (EdS ADR-0036)"
     group: "Cover screen"
     status: done
     date: "2026-10-17"
-  - title: "Find out why the cover screen sent no presses on its first start after a provisioning write (EdS CHG-0042)"
+  - title: "Find out why the touch screen by the LP stand sent no presses on its first start after new settings were written (EdS CHG-0042)"
     group: "Cover screen"
     status: planned
 ---

@@ -2,7 +2,7 @@
 title: "Secrets and Identity"
 weight: 7
 milestones:
-  - title: "Substrate secrets in Ansible Vault, guarded on every commit"
+  - title: "The site's infrastructure secrets in Ansible Vault, guarded on every commit"
     status: done
     date: "2026-03-14"
   - title: "OpenBao secrets manager deployed; the Deevnet API reads its credentials from it (CHG-0010)"
@@ -11,7 +11,7 @@ milestones:
   - title: "Builds take their secrets from OpenBao, none on disk (CHG-0026)"
     status: done
     date: "2026-09-25"
-  - title: "OpenBao's keys generated from the site vault, its access restricted and audited (CHG-0036)"
+  - title: "OpenBao's keys made outside it and loaded from the site's vault on every build, its access restricted and audited (CHG-0036)"
     status: done
     date: "2026-10-25"
   - title: "OpenBao moved to a split-key (Shamir) seal, and its rebuild drilled"
