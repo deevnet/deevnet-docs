@@ -2,19 +2,19 @@
 title: "Open Questions"
 weight: 5
 milestones:
-  - title: "A MusicBrainz of its own: which host has the disk and memory"
+  - title: "Decide whether to run a private MusicBrainz, and which host has the disk and memory"
     group: "Upstreams"
     status: planned
-  - title: "Identifying files by their sound: AcoustID and Chromaprint, run where the files are"
+  - title: "Decide on identifying music files by their sound: AcoustID and Chromaprint, run where the files are"
     group: "Upstreams"
     status: planned
-  - title: "Captured vinyl as copies of an edition, and what is still missing from one"
+  - title: "Decide how captured vinyl is held as copies of an edition, and what is still missing from one"
     group: "Vinyl"
     status: planned
-  - title: "Vinyl or CD first"
+  - title: "Decide whether the music inventory takes vinyl or CDs first"
     group: "Vinyl"
     status: planned
-  - title: "What may be kept under Discogs' terms; how covers are stored; the contract; editing"
+  - title: "Decide what the music inventory may keep under Discogs' terms, how it stores covers, its contract and its editing"
     group: "Terms and shape"
     status: planned
 ---

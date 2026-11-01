@@ -2,13 +2,13 @@
 title: "Core Router Uplift"
 weight: 2
 milestones:
-  - title: "Hardware chosen (the N100 Router Appliance is the candidate)"
+  - title: "Replacement core router hardware chosen (the N100 Router Appliance is the candidate)"
     status: planned
-  - title: "Built from code and swapped in, the ZimaBoard kept"
+  - title: "New core router built from code and swapped in, the old ZimaBoard kept to put back"
     status: planned
-  - title: "Proven under a multi-gigabyte transfer and a full deploy"
+  - title: "New core router proven under a multi-gigabyte transfer and a full deploy"
     status: planned
-  - title: "INC-0004 closed"
+  - title: "The core router hang incident (INC-0004) closed"
     status: planned
 ---
 

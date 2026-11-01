@@ -2,19 +2,19 @@
 title: "Enrichment"
 weight: 3
 milestones:
-  - title: "Discographies from MusicBrainz: built on the old schema, to be reworked onto v1"
+  - title: "Music inventory gets discographies from MusicBrainz: built on the old schema, to be reworked onto v1"
     group: "Enrichment"
     status: active
-  - title: "Covers: the original's when it is owned"
+  - title: "Music inventory shows the original album's cover when the owner has it"
     group: "Enrichment"
     status: planned
-  - title: "Original release dates, and the original among reissues and box sets"
+  - title: "Music inventory finds original release dates, and the original among reissues and box sets"
     group: "Enrichment"
     status: planned
-  - title: "Journey's *Infinity*, which a catalog never lists for its own tracks"
+  - title: "Music inventory test case: Journey's *Infinity*, which a catalog never lists for its own tracks"
     group: "Cases it must get right"
     status: planned
-  - title: "Kansas' *Point of Know Return*, its 1977 sleeve rather than a live album's"
+  - title: "Music inventory test case: Kansas' *Point of Know Return*, its 1977 sleeve rather than a live album's"
     group: "Cases it must get right"
     status: planned
 ---

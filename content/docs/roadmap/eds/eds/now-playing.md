@@ -2,48 +2,48 @@
 title: "Now Playing"
 weight: 2
 milestones:
-  - title: "One bus of drivers, one agent; nowplayd arbitrates (EdS ADR-0006, ADR-0007, ADR-0008)"
+  - title: "Each music source's driver reports on one bus, and nowplayd picks what is current (EdS ADR-0006, ADR-0007, ADR-0008)"
     group: "Drivers"
     status: done
     date: "2026-10-10"
-  - title: "iTunes by remote pairing (EdS ADR-0011)"
+  - title: "iTunes added as a now-playing source, by remote pairing (EdS ADR-0011)"
     group: "Drivers"
     status: done
     date: "2026-10-10"
-  - title: "Spotify shown and controlled, switched on and off from the console (EdS ADR-0031, ADR-0032, ADR-0051)"
+  - title: "Spotify added as a now-playing source and controlled, switched on and off from the console (EdS ADR-0031, ADR-0032, ADR-0051)"
     group: "Drivers"
     status: done
     date: "2026-10-29"
-  - title: "The turntable, heard through a sound card and named by a recognizer (EdS ADR-0021)"
+  - title: "The record on the turntable heard through a sound card and identified by a recognizer (EdS ADR-0021)"
     group: "Drivers"
     status: done
     date: "2026-10-11"
-  - title: "Gaps between tracks; paused long enough is idle; a turntable shows no controls (EdS ADR-0024, ADR-0025, ADR-0026)"
+  - title: "Now playing handles gaps between tracks and long pauses, and shows no controls for a turntable (EdS ADR-0024, ADR-0025, ADR-0026)"
     group: "Drivers"
     status: done
     date: "2026-10-12"
-  - title: "The turntable heard on both channels (EdS ADR-0048, INC-0004)"
+  - title: "The turntable's audio captured on both stereo channels (EdS ADR-0048, INC-0004)"
     group: "Drivers"
     status: planned
-  - title: "MusicBee (EdS ADR-0013)"
+  - title: "MusicBee added as a now-playing source (EdS ADR-0013)"
     group: "Drivers"
     status: planned
-  - title: "TIDAL, through Last.fm (EdS ADR-0014)"
+  - title: "TIDAL added as a now-playing source, through Last.fm (EdS ADR-0014)"
     group: "Drivers"
     status: planned
-  - title: "The owner's Discogs collection names the record (EdS ADR-0022)"
+  - title: "The record playing named from the owner's Discogs collection (EdS ADR-0022)"
     group: "Naming the record"
     status: done
     date: "2026-10-12"
-  - title: "The original album by what is on it; the recognizer's album weighed as an original (EdS ADR-0038, CHG-0043)"
+  - title: "A track's original album chosen by what is on it, with the recognizer's album weighed as an original (EdS ADR-0038, CHG-0043)"
     group: "Naming the record"
     status: done
     date: "2026-10-29"
-  - title: "Calls to outside services counted, a minute at a time (EdS ADR-0027)"
+  - title: "Now playing's calls to outside services counted per minute (EdS ADR-0027)"
     group: "Telemetry"
     status: done
     date: "2026-10-12"
-  - title: "How each track's album and cover were found, one line a track (EdS ADR-0050)"
+  - title: "One line per track recording how its album and cover were found (EdS ADR-0050)"
     group: "Telemetry"
     status: done
     date: "2026-10-27"

@@ -7,13 +7,13 @@ milestones:
   - title: "Exposed credentials rotated; every public repository scanned on push (CHG-0035)"
     status: done
     date: "2026-10-06"
-  - title: "Credential Inventory"
+  - title: "Every long-lived credential listed, with what it unlocks and what uses it"
     status: planned
-  - title: "Rotation Procedures"
+  - title: "A written rotation procedure for each kind of credential, naming everything that must change with it"
     status: planned
-  - title: "Reducing Lifetime"
+  - title: "Static credentials assessed for short lifetimes, and the ones that cannot be shortened recorded"
     status: planned
-  - title: "Handling Exposure"
+  - title: "A stated policy for what counts as an exposed credential and what happens next"
     status: planned
 ---
 

@@ -4,11 +4,11 @@ aliases:
   - /docs/roadmap/infrastructure/home-site/
 weight: 2
 milestones:
-  - title: "PKI"
+  - title: "The home site's certificate authorities created under the Deevnet root"
     status: planned
-  - title: "Network"
+  - title: "The home site's network defined in inventory, with DNS and DHCP on its core router"
     status: planned
-  - title: "Later"
+  - title: "Later at the home site: Kea for DHCP, and a hypervisor when a tenant needs one"
     status: planned
 ---
 

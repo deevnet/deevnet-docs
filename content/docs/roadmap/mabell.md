@@ -5,34 +5,34 @@ aliases:
   - /docs/roadmap/esp32/ma-bell/
 weight: 4
 milestones:
-  - title: "Requirements & Constraints"
+  - title: "MaBell requirements, constraints and acceptance criteria defined"
     status: done
     date: "2026-01-22"
-  - title: "Architecture & Design"
+  - title: "MaBell system, power, audio and firmware design finished"
     status: done
     date: "2025-12-29"
-  - title: "Low-Voltage Test Rig (EVT-1)"
+  - title: "A low-voltage breadboard rig simulating the phone passes the firmware test matrix (EVT-1)"
     status: active
-  - title: "Firmware Development"
+  - title: "ESP32 firmware handles Bluetooth calls, phone tones, and rotary and touch-tone dialing"
     status: active
-  - title: "Joined Deevnet as a tenant, its events in the log store"
+  - title: "MaBell joined Deevnet as a tenant, its events in the log store"
     status: done
     date: "2026-10-09"
-  - title: "Full-Voltage Prototype (EVT-2)"
+  - title: "A full-voltage prototype with the phone line interface and ring generator working safely (EVT-2)"
     status: planned
-  - title: "Firmware Adjustment (EVT-2 Integration)"
+  - title: "Firmware retuned and retested on full-voltage hardware with a real phone (EVT-2)"
     status: planned
-  - title: "Custom PCB (DVT)"
+  - title: "A custom circuit board designed, built and electrically verified (DVT)"
     status: planned
-  - title: "Enclosure & Mechanical Integration"
+  - title: "MaBell's enclosure designed and the final unit assembled"
     status: planned
-  - title: "Verification & Validation"
+  - title: "MaBell tested against its requirements: function, audio quality, latency and long-run stability"
     status: planned
-  - title: "Production Readiness (PVT)"
+  - title: "Assembly documents, test fixtures and manufacturing tests ready for building more units (PVT)"
     status: planned
-  - title: "Documentation"
+  - title: "MaBell's build, wiring, user and troubleshooting guides written"
     status: active
-  - title: "Deployment & Operations"
+  - title: "MaBell installed, with field diagnostics and a maintenance plan"
     status: planned
 ---
 

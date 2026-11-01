@@ -8,7 +8,7 @@ milestones:
   - title: "The Deevnet API and its provider deployed; tenants built through them (CHG-0010)"
     status: done
     date: "2026-09-17"
-  - title: "The first tenant end to end: code, egress, DNS, its own repository"
+  - title: "The first tenant built end to end from its own repository: code, internet access and DNS"
     status: done
     date: "2026-09-03"
   - title: "A reference tenant a newcomer can copy"
@@ -20,7 +20,7 @@ milestones:
   - title: "Tenants admitted, removed and rotated by Builder make target"
     status: done
     date: "2026-09-29"
-  - title: "Tenant provisioning: the credential-recovery drill and cleanup"
+  - title: "A drill for recovering tenant credentials, and provisioning cleanup"
     status: active
   - title: "A tenant rebuilt from its own code in a drill"
     status: planned

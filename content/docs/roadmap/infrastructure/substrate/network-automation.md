@@ -5,14 +5,14 @@ milestones:
   - title: "The core router enforces a declared zone policy (CHG-0007)"
     status: done
     date: "2026-09-19"
-  - title: "OPNsense's interface assignment automated"
+  - title: "The core router's (OPNsense) interface assignment automated"
     status: planned
-  - title: "The access switch's configuration idempotent"
+  - title: "Rerunning the access switch's automation changes nothing unless something needs changing"
     status: planned
   - title: "Omada: SSIDs and the AP set by the controller from inventory, through its API"
     status: done
     date: "2026-09-15"
-  - title: "Checks on every pull request"
+  - title: "Automation repositories' syntax and docs build checked on every pull request"
     status: planned
 ---
 

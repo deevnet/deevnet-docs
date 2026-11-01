@@ -7,19 +7,19 @@ milestones:
   - title: "Management services on six domain VMs (CHG-0008)"
     status: done
     date: "2026-09-16"
-  - title: "Requirements"
+  - title: "Management plane requirements defined: retention, alerting, secrets access and identity"
     status: active
-  - title: "Network Management"
+  - title: "Recovery copies of the network's configuration: routine controller snapshots, and core router configs that survive losing the Builder"
     status: planned
-  - title: "Each SSID's reach checked from a real client"
+  - title: "Each Wi-Fi network's reach checked from a real client"
     status: done
     date: "2026-09-23"
-  - title: "Build Verification"
+  - title: "Automated checks that a finished build matches inventory, with a pass/fail report"
     status: active
   - title: "Nightly encrypted backups, one restore rehearsed (CHG-0039)"
     status: done
     date: "2026-10-07"
-  - title: "Documentation"
+  - title: "Management plane architecture, deployment and troubleshooting documentation written"
     status: planned
 ---
 

@@ -4,9 +4,9 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
 weight: 5
 milestones:
-  - title: "Full Site Rebuild Event"
+  - title: "The whole mobile site rebuilt from scratch, tenants brought back and gaps fixed"
     status: planned
-  - title: "Scheduled Rebuilds"
+  - title: "Site rebuilds run on a schedule, each under a change record"
     status: planned
 ---
 

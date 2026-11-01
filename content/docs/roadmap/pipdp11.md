@@ -5,13 +5,13 @@ aliases:
   - /docs/roadmap/raspberry-pi/pidp11/
 weight: 5
 milestones:
-  - title: "Requirements"
+  - title: "PiDP-11 operating system and front panel behavior defined"
     status: planned
-  - title: "Kit Assembly"
+  - title: "PiDP-11 kit assembled, its front panel lights and switches verified"
     status: planned
-  - title: "simh Emulation"
+  - title: "PDP-11 emulated on the Pi with simh, running RT-11, RSX-11 and 2.11BSD"
     status: active
-  - title: "Documentation"
+  - title: "PiDP-11 build and usage guides written"
     status: planned
 ---
 

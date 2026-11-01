@@ -2,47 +2,47 @@
 title: "Voice"
 weight: 4
 milestones:
-  - title: "The reSpeaker runs EdS's firmware; a button, then a wake word (EdS ADR-0043)"
+  - title: "The reSpeaker microphone runs EdS's firmware, listening on a button and then a wake word (EdS ADR-0043)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "A request sent whole to the workload, written down and made a command (EdS ADR-0042)"
+  - title: "A spoken request sent whole to the workload, transcribed and made a command (EdS ADR-0042)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "Only words scribe is sure of are acted on (EdS INC-0001)"
+  - title: "Voice control acts only on words its transcriber, scribe, is sure of (EdS INC-0001)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "The music turned down while a request is heard (EdS ADR-0044)"
+  - title: "The music turned down while a voice request is heard (EdS ADR-0044)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "Silence, noise and hum tried through the real model (EdS INC-0001)"
+  - title: "Voice transcription tried with silence, noise and hum through the real model (EdS INC-0001)"
     group: "Hearing"
     status: planned
-  - title: "An album asked for by name, played from iTunes' library (EdS ADR-0040)"
+  - title: "An album asked for by voice, by name, plays from iTunes' library (EdS ADR-0040)"
     group: "Choosing the album"
     status: done
     date: "2026-10-23"
-  - title: "An artist's Nth album, counted in MusicBrainz, the next owned one if not (EdS ADR-0041, ADR-0045)"
+  - title: "A voice request for an artist's Nth album, counted in MusicBrainz, plays the next owned one if that one is not owned (EdS ADR-0041, ADR-0045)"
     group: "Choosing the album"
     status: done
     date: "2026-10-24"
-  - title: "voiced asks eds-inventory (EdS ADR-0047)"
+  - title: "EdS's voice service, voiced, asks the music inventory (EdS ADR-0047)"
     group: "Choosing the album"
     status: done
     date: "2026-10-24"
-  - title: "Discographies from eds-inventory, and the old library index removed (EdS CHG-0041)"
+  - title: "Voice control takes discographies from the music inventory, and its old library index is removed (EdS CHG-0041)"
     group: "Choosing the album"
     status: planned
-  - title: "voiced says at start whether it has an index (EdS INC-0003)"
+  - title: "EdS's voice service says at start whether it has an index (EdS INC-0003)"
     group: "Choosing the album"
     status: planned
-  - title: "Spotify plays an album by name: a demo branch, not yet a decision"
+  - title: "Spotify plays an album asked for by voice: a demo branch, not yet a decision"
     group: "Choosing the album"
     status: planned
-  - title: "voiced and scribe on the backend Pi, and the reSpeaker moved there (EdS CHG-0042)"
+  - title: "EdS's voice services and the reSpeaker microphone moved to the backend Pi (EdS CHG-0042)"
     group: "Where it runs"
     status: planned
 ---

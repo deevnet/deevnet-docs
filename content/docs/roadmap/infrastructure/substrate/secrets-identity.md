@@ -5,18 +5,18 @@ milestones:
   - title: "Substrate secrets in Ansible Vault, guarded on every commit"
     status: done
     date: "2026-03-14"
-  - title: "OpenBao deployed; the API reads its credentials from it (CHG-0010)"
+  - title: "OpenBao secrets manager deployed; the Deevnet API reads its credentials from it (CHG-0010)"
     status: done
     date: "2026-09-17"
   - title: "Builds take their secrets from OpenBao, none on disk (CHG-0026)"
     status: done
     date: "2026-09-25"
-  - title: "OpenBao's keys from the vault, its access bound and audited (CHG-0036)"
+  - title: "OpenBao's keys generated from the site vault, its access restricted and audited (CHG-0036)"
     status: done
     date: "2026-10-25"
-  - title: "Secrets: the Shamir seal and the rebuild drill"
+  - title: "OpenBao moved to a split-key (Shamir) seal, and its rebuild drilled"
     status: active
-  - title: "Identity Management"
+  - title: "Single sign-on and role-based access for infrastructure services"
     status: planned
 ---
 

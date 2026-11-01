@@ -5,9 +5,9 @@ milestones:
   - title: "Centralized logging: the log store, tenant scope, the MQTT bridge, Grafana"
     status: done
     date: "2026-09-24"
-  - title: "Telemetry"
+  - title: "Metrics collected from substrate hosts and shown on dashboards"
     status: active
-  - title: "Alerting"
+  - title: "Alerts on infrastructure problems, delivered to the operator"
     status: planned
 ---
 

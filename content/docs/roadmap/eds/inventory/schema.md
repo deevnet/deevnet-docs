@@ -2,14 +2,14 @@
 title: "Schema v1"
 weight: 2
 milestones:
-  - title: "Agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source"
+  - title: "Music inventory schema agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source"
     group: "Review"
     status: done
     date: "2026-10-25"
-  - title: "Still to review: artist and album aliases, discography status, the enrichment counter, how enrichment fills the shape"
+  - title: "Music inventory schema still to review: artist and album aliases, discography status, the enrichment counter, how enrichment fills the shape"
     group: "Review"
     status: planned
-  - title: "Schema v1 built as one, the iTunes importer changed, the store recollected"
+  - title: "Music inventory schema v1 built, the iTunes importer changed and the store recollected"
     group: "Build"
     status: planned
 ---

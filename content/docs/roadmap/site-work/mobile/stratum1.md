@@ -4,13 +4,13 @@ aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
 weight: 6
 milestones:
-  - title: "Requirements"
+  - title: "GPS time server requirements defined: accuracy, antenna placement and alerting"
     status: planned
-  - title: "Hardware"
+  - title: "Pi Zero and GPS module chosen and bought for the time server"
     status: planned
-  - title: "Image Build"
+  - title: "GPS time server image built, with Chrony, telemetry and accuracy tests"
     status: planned
-  - title: "Deployment"
+  - title: "GPS time server on the network, with clients using it"
     status: planned
 ---
 

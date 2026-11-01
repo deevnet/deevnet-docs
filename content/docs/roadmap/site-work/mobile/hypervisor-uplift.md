@@ -7,18 +7,18 @@ milestones:
   - title: "The tenant hypervisor (dv02hyp002p02) back in service on new hardware"
     status: done
     date: "2026-08-29"
-  - title: "Pre-upgrade assessment"
+  - title: "Proxmox 9 pre-upgrade assessment done"
     status: done
     date: "2026-08-30"
-  - title: "Tenant hypervisor (dv02hyp002p02) on PVE 9"
+  - title: "Tenant hypervisor (dv02hyp002p02) upgraded to Proxmox 9"
     status: done
     date: "2026-08-30"
-  - title: "The fabric API surface verified"
+  - title: "The Proxmox networking API the tenant network depends on verified after the upgrade"
     status: done
     date: "2026-08-31"
-  - title: "Management hypervisor (dv02hyp001p01) on PVE 9, in its own maintenance window"
+  - title: "Management hypervisor (dv02hyp001p01) upgraded to Proxmox 9, in its own maintenance window"
     status: planned
-  - title: "The provisioning toolchain aligned to PVE 9"
+  - title: "The provisioning toolchain aligned to Proxmox 9"
     status: planned
 ---
 

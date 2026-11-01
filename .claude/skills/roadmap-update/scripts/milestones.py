@@ -94,6 +94,8 @@ def cmd_check(_):
             t = m.get("title", "?")
             if t in seen: err(p, f"duplicate title {t!r}")
             seen.add(t)
+            if roadmap and len(re.sub(r'\([^)]*\)', '', t).split()) < 3:
+                warn(p, f"{t!r}: too short to stand alone; say what became true")
             if m.get("status") not in STATUSES: err(p, f"{t!r}: status {m.get('status')!r}")
             if m.get("status") == "done":
                 if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(m.get("date", ""))): err(p, f"{t!r}: done without a YYYY-MM-DD date")

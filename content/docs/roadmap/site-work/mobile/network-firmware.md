@@ -2,10 +2,10 @@
 title: "Network Firmware"
 weight: 3
 milestones:
-  - title: "Access point firmware (CHG-0005)"
+  - title: "Wi-Fi access point firmware updated, so the controller can push VLANs to it (CHG-0005)"
     status: done
     date: "2026-09-15"
-  - title: "Access switch firmware (CHG-0006)"
+  - title: "Access switch firmware updated (CHG-0006)"
     status: done
     date: "2026-09-16"
 ---

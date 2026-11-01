@@ -2,26 +2,26 @@
 title: "Screens and Console"
 weight: 3
 milestones:
-  - title: "The console, over TLS, looking at everything (EdS ADR-0018)"
+  - title: "The EdS console, over TLS, showing what is playing, the stand and whether each part is up (EdS ADR-0018)"
     group: "Console"
     status: done
     date: "2026-10-11"
-  - title: "Named site-less too: `console.eds.deevnet.net` beside the factory's name (EdS CHG-0047)"
+  - title: "The EdS console also at a name not tied to a site, `console.eds.deevnet.net` (EdS CHG-0047)"
     group: "Console"
     status: done
     date: "2026-11-01"
-  - title: "Covers sent at full size; recently played lost on restart; strip length told, not reported (EdS CHG-0006, CHG-0010)"
+  - title: "EdS console fixes: covers sent at full size, recently played lost on restart, strip length told rather than reported (EdS CHG-0006, CHG-0010)"
     group: "Console"
     status: planned
-  - title: "Cover, play/pause, skip and volume by touch (EdS ADR-0020)"
+  - title: "A touch screen by the stand with the album cover, play/pause, skip and volume (EdS ADR-0020)"
     group: "Cover screen"
     status: done
     date: "2026-10-11"
-  - title: "Sleeps when nothing has played for five minutes (EdS ADR-0036)"
+  - title: "The cover screen sleeps when nothing has played for five minutes (EdS ADR-0036)"
     group: "Cover screen"
     status: done
     date: "2026-10-17"
-  - title: "Why its first start after a provisioning write sent no presses (EdS CHG-0042)"
+  - title: "Find out why the cover screen sent no presses on its first start after a provisioning write (EdS CHG-0042)"
     group: "Cover screen"
     status: planned
 ---

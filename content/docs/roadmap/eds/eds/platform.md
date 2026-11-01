@@ -2,42 +2,42 @@
 title: "Platform"
 weight: 6
 milestones:
-  - title: "The broker is Deevnet's; the tenant and its workload (EdS ADR-0003)"
+  - title: "EdS set up as a Deevnet tenant with a workload, using Deevnet's MQTT broker (EdS ADR-0003)"
     group: "At the factory"
     status: done
     date: "2026-09-07"
-  - title: "The relay Pi, with a leg on the home network; EdS's own Pi images (EdS ADR-0010, ADR-0015)"
+  - title: "A relay Pi with a connection onto the home network, and EdS's own Pi images (EdS ADR-0010, ADR-0015)"
     group: "At the factory"
     status: done
     date: "2026-10-10"
-  - title: "A deploy sends only what changed (EdS INC-0002)"
+  - title: "An EdS deploy sends only what changed (EdS INC-0002)"
     group: "At the factory"
     status: done
     date: "2026-10-24"
-  - title: "Keep, retire or move the tenant, its workload and the relay (EdS CHG-0028)"
+  - title: "Decide whether to keep, retire or move EdS's factory tenant, workload and relay Pi (EdS CHG-0028)"
     group: "At the factory"
     status: planned
-  - title: "The whole back end on one Pi: in service, the record awaiting its evidence (EdS ADR-0033, CHG-0028)"
+  - title: "All of EdS's back end on one Pi at home: in service, the record awaiting its evidence (EdS ADR-0033, CHG-0028)"
     group: "At home"
     status: active
-  - title: "A Deevnet Pi, under the tenant's site-less names (EdS CHG-0042)"
+  - title: "EdS's backend Pi built as a Deevnet Pi, under names not tied to a site (EdS CHG-0042)"
     group: "At home"
     status: done
     date: "2026-10-29"
-  - title: "On its cable alone, the radio off (EdS CHG-0046)"
+  - title: "EdS's backend Pi runs on its network cable alone, the radio off (EdS CHG-0046)"
     group: "At home"
     status: done
     date: "2026-10-30"
-  - title: "The backend image rebuilt with all of it (EdS CHG-0048)"
+  - title: "EdS's backend Pi image rebuilt with all of its back end (EdS CHG-0048)"
     group: "At home"
     status: active
-  - title: "nginx on 80 and 443; Grafana by name (EdS CHG-0042)"
+  - title: "EdS's backend Pi serves through nginx on ports 80 and 443, with Grafana by name (EdS CHG-0042)"
     group: "At home"
     status: planned
-  - title: "The certificate named for the host, `backend.eds.deevnet.net` (EdS CHG-0042)"
+  - title: "EdS's backend Pi certificate named for the host, `backend.eds.deevnet.net` (EdS CHG-0042)"
     group: "At home"
     status: planned
-  - title: "The Builder's maintenance window onto the home network (EdS ADR-0053)"
+  - title: "A maintenance window that lets the Builder reach the home network (EdS ADR-0053)"
     group: "At home"
     status: planned
 ---

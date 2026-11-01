@@ -2,18 +2,18 @@
 title: "Tenant Platform Services"
 weight: 3
 milestones:
-  - title: "The first platform services: Wi-Fi keys, device registry, VerneMQ, logs, a dev network, dashboards, downloads"
+  - title: "The first services for tenants: Wi-Fi keys, device registry, MQTT broker, logs, a dev network, dashboards, downloads"
     status: done
     date: "2026-09-24"
   - title: "Fixed addresses for tenants' devices (CHG-0044)"
     status: done
     date: "2026-10-07"
-  - title: "Tenant-facing services on 443, by name (CHG-0046)"
+  - title: "Services for tenants reachable on port 443, by name (CHG-0046)"
     status: done
     date: "2026-10-10"
-  - title: "Platform services: secrets, metrics, identity, object storage, quotas"
+  - title: "More services for tenants: secrets, metrics, identity, object storage, quotas"
     status: active
-  - title: "Windows tenant laptops"
+  - title: "Tenants can work from Windows laptops"
     status: planned
 ---
 

@@ -4,13 +4,13 @@ aliases:
   - /docs/roadmap/infrastructure/software-discovery/
 weight: 11
 milestones:
-  - title: "Catalog as data"
+  - title: "The Software Catalog's rows moved into a data file that reports can compare against"
     status: planned
-  - title: "Collectors"
+  - title: "Installed versions collected from routers, hypervisors, VMs, network devices and Pis"
     status: planned
-  - title: "Report and cadence"
+  - title: "A dated report of installed versus cataloged versions, run as part of build verification"
     status: planned
-  - title: "Pins and licenses of Deevnet's own software"
+  - title: "Deevnet's own software pinned to exact versions and licensed"
     status: planned
 ---
 

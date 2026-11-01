@@ -4,13 +4,13 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/reconciliation/
 weight: 4
 milestones:
-  - title: "Known Orphans"
+  - title: "Leftover DHCP reservations, DNS records and boot files from deleted hosts removed"
     status: planned
-  - title: "Reconciliation Gaps"
+  - title: "Automation removes a host's DHCP, DNS and boot entries when it leaves inventory"
     status: planned
-  - title: "Settings That Exist Only in the Running Config"
+  - title: "Network settings that exist only on the running router declared in code"
     status: planned
-  - title: "Drift Visibility"
+  - title: "A read-only report of live network state with no matching declaration"
     status: planned
 ---
 
