@@ -1,6 +1,6 @@
 ---
 title: "Network Automation"
-weight: 8
+weight: 19
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 6
@@ -10,6 +10,8 @@ tasks_planned: 6
 
 Gaps in the network's automation found while building it: manual steps, idempotency, API
 limits, and checks on every change.
+
+**Roadmap item:** [Network Automation](/docs/roadmap/infrastructure/substrate/network-automation/)
 
 {{< overall-progress >}}
 

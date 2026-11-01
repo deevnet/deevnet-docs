@@ -1,6 +1,6 @@
 ---
 title: "Builder Upkeep"
-weight: 4
+weight: 20
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 4
@@ -10,6 +10,8 @@ tasks_planned: 4
 
 The Builder's own disks and links, as it is used: space where the work happens, and a way onto the
 home network when the factory is parked there.
+
+**Roadmap item:** [Builder Upkeep](/docs/roadmap/site-work/mobile/builder-upkeep/)
 
 {{< overall-progress >}}
 

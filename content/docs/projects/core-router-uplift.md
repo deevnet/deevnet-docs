@@ -1,6 +1,6 @@
 ---
 title: "Core Router Uplift"
-weight: 2
+weight: 21
 tasks_completed: 0
 tasks_in_progress: 0
 tasks_planned: 4
@@ -12,6 +12,8 @@ The mobile site's core router is a ZimaBoard 832. It hangs under large transfers
 log store deploy, then recurring `re0` watchdog timeouts
 ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)). It is replaced by hardware that carries
 them.
+
+**Roadmap item:** [Core Router Uplift](/docs/roadmap/site-work/mobile/core-router-uplift/)
 
 {{< overall-progress >}}
 

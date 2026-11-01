@@ -1,6 +1,6 @@
 ---
 title: "Network Firmware"
-weight: 3
+weight: 22
 tasks_completed: 2
 tasks_in_progress: 0
 tasks_planned: 0
@@ -9,6 +9,8 @@ tasks_planned: 0
 # Network Firmware
 
 Firmware upgrades on the mobile site's network devices.
+
+**Roadmap item:** [Network Firmware](/docs/roadmap/site-work/mobile/network-firmware/)
 
 {{< overall-progress >}}
 
