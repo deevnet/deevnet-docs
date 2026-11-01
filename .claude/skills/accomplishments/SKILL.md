@@ -75,7 +75,7 @@ and running it again with nothing new does nothing.
      dates, and a `watch` naming the one or two risks that matter. It says what changed and why it
      matters, not what was built. If a month has no account, draft that month first.
    - **A year** is written from its quarters. It has a headline, one bullet per quarter telling the
-     arc (with `within` set), a bullet on what the platform now carries, and `next` as the outlook.
+     arc, its lead-in opening `Q1:` (with `within` set), a bullet on what the platform now carries, and `next` as the outlook.
      It is for someone who wants the story in a minute.
    - **Never name the audience** (no "for a manager"). Write in that shape without saying so.
 3. **Stay true to the record.** Claim nothing the milestones and records do not show. If the

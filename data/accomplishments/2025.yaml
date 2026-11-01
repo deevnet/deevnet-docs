@@ -3,7 +3,7 @@ through: "2025-12-31"
 reached: 3
 headline: "The year ended with a build server that provisions the site from code, and a design for MaBell."
 bullets:
-  - text: "**The fourth quarter is the first with milestones on record.** The build server came to provision the site's infrastructure from code, and MaBell's design was finished."
+  - text: "**Q4: The first with milestones on record.** The build server came to provision the site's infrastructure from code, and MaBell's design was finished."
     items: [infrastructure/substrate/builder, mabell]
     within: "2025-Q4"
 next: "Machines that install themselves, and a network and secrets under the same automation."
