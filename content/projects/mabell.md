@@ -4,7 +4,7 @@ aliases:
   - /docs/projects/mabell/
 weight: 17
 tasks_completed: 19
-tasks_in_progress: 7
+tasks_in_progress: 8
 tasks_planned: 50
 ---
 

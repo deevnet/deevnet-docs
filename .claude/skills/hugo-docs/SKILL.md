@@ -1,42 +1,43 @@
 ---
 name: hugo-docs
-description: Validate and build Hugo documentation. Use after editing markdown files in content/ to verify syntax and catch build errors.
-argument-hint: "[--build]"
+description: Build and check the Deevnet docs site. Use after editing anything in content/, layouts/, data/ or assets/, and before committing or opening a pull request. Builds with Hugo (initializing the theme submodule first), compares warnings with origin/main, checks every internal link and anchor, and checks that moved or removed pages still answer at their old URLs.
+argument-hint: "[--base REF | --no-base]"
 ---
 
-# Hugo Documentation Validation
+# Check the docs site
 
-When invoked, validate Hugo documentation by running the build process.
+Run the check from the repository or any of its worktrees:
 
-## Validation Steps
+```bash
+python3 .claude/skills/hugo-docs/scripts/check.py            # against origin/main
+python3 .claude/skills/hugo-docs/scripts/check.py --no-base  # build and links only
+```
 
-1. **Run Hugo build with minification** to catch syntax errors and validate all content:
-   ```bash
-   cd /srv/dvnt/deevnet-docs && hugo --minify --destination /tmp/hugo-build-check
-   ```
+It builds into a temporary directory and changes nothing in the repository. It reports:
 
-2. **Check the output** for:
-   - Build errors (template issues, broken shortcodes)
-   - Warnings about missing files or invalid frontmatter
-   - Page render failures
+- **The build**, from Hugo's own exit code and the page count. Never judge a build by a pipe's
+  exit code (`hugo | tail` is always 0), and never by a quiet output alone.
+- **Warnings new against the base.** The site already has a few deprecation warnings from newer
+  Hugo releases; only warnings the change adds count.
+- **Old URLs lost.** Every page removed or renamed since the base must still build at its old
+  URL, through `aliases:` in the moved page's front matter.
+- **Internal links and anchors** (`](/docs/…)`, `](/projects/…)`) that do not resolve.
 
-3. **Report results** to the user:
-   - If successful: confirm the build passed with page count
-   - If errors: list the specific errors with file locations
+It exits 1 if any of these fail. Report the result plainly: what passed, what failed, with the
+file and link for each failure.
 
-4. **Clean up** the temporary build directory:
-   ```bash
-   rm -rf /tmp/hugo-build-check
-   ```
+## Things to know
 
-## Do NOT
+- **The theme is a git submodule** (`themes/hugo-book`). A fresh worktree has it empty, and Hugo
+  then builds a site with no layouts. The script initializes it; if building by hand, run
+  `git submodule update --init` first.
+- **CI builds with Hugo 0.140.1** (`.github/workflows/hugo.yml`), older than a local install may
+  be. Templates must work there: use `site.Data`, not `hugo.Data`, even though newer Hugo warns.
+- **The site deploys from `main`** through GitHub Pages; after a merge,
+  `gh run list --workflow hugo.yml --limit 1` shows whether it published.
 
-- Do not start the Hugo dev server (`hugo server`)
-- Do not deploy or publish
-- Do not modify any files during validation
+## Do not
 
-## When to Use
-
-- After editing any `.md` files in `content/`
-- After modifying templates in `layouts/`
-- Before committing documentation changes
+- Do not start `hugo server` unless asked; to look at a page, build it and read the HTML, or use
+  a browser on a server you stop afterward.
+- Do not deploy, publish or merge.
