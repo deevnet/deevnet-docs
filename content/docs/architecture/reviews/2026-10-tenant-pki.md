@@ -244,7 +244,8 @@ would damage tenants.
 | V13 | **Sealed.** OpenBao sealed while the API, the broker and devices run; a tenant request; an Ansible OpenBao play | devices and workloads continue; the request is refused with no secret marked, emptied or re-minted; the play stops with a plain error |
 | V14 | **Shares and custody.** Each pair of shares unseals; the kit is inspected | every pair works; no unseal share or seal key is found on the kit |
 
-**Where each stands, as of 2026-10-31.** Passed in part: V2 and V10 (EdS's home Pi, recorded in
+**Where each stands, as of 2026-10-31.** Passed in part: V2 and V10 (EdS's home Pi, and on 2026-11-01 its reissued workload console:
+a name outside `deevnet.net` refused, and one certificate for both console names; recorded in
 [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)), V1 (three ESP32s holding only the
 Root connected, by name, to that Pi), V3 (both mounts serve the ceremony certificates and every
 tenant read back after the reseal, [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/);

@@ -7,10 +7,10 @@ weight: -55
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-01 |
 | **Change type** | Configuration · Migration |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | **In progress.** `eds` reissued 2026-11-01 (EdS CHG-0047); `tdemo`, `mabell` and `cdeever` remain |
 | **Window** | Unscheduled. After [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/); one work session, each tenant's apply |
 | **Site** | mobile |
 | **Systems** | Tenants `eds`, `tdemo`, `mabell` and `cdeever`: their DNS, their certificates, their workloads' proxies |
@@ -75,3 +75,10 @@ from the re-keyed Tenant Service CA under its site-less name.
 
 The old site-named certificates stay valid until they expire. A tenant's previous apply restores its
 previous certificate.
+
+## Outcome
+
+| Tenant | Result |
+|---|---|
+| `eds` | **2026-11-01** (EdS [CHG-0047](https://cdeever.github.io/eds/docs/changes/2026/0047-the-tenant-switches-spotify-and-names-its-console-without-a-site/)). Provider v0.8.0; `deevnet_certificate.console` given `sites = ["mobile"]`, updated in place for the same key. Serial `24:d7:34:39:…:36:1b`, valid to 2027-11-01, for `console.eds.deevnet.net` and `console.eds.mobile.deevnet.net`, deployed to the workload. Served from `10.20.130.10`, it verified to the Root for both names under OpenSSL 4.0.3, Go 1.27.2 and curl; `console.eds.deevnet.net` was reached with `--resolve`, since the factory does not resolve site-less names (ADR-0040 §1) |
+| `tdemo`, `mabell`, `cdeever` | Not yet |
