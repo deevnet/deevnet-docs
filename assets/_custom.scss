@@ -436,6 +436,33 @@
   &.acc-area > summary { padding: 0.2em 0; }
 }
 
+.acc-headline {
+  font-size: 1.05em;
+  margin: 0.4em 0 0.6em;
+}
+
+.markdown details.acc-narr > summary,
+.acc-narr {
+  line-height: 1.55;
+}
+
+div.acc-narr {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.3em 0 0.3em 1.1em;
+}
+
+.acc-src {
+  display: block;
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin: 0.15em 0 0.1em 1.1em;
+}
+
+.acc-next {
+  font-size: 0.95em;
+  margin: 0.6em 0 0;
+}
+
 .acc-done {
   font-size: 0.8em;
   color: var(--badge-complete);
