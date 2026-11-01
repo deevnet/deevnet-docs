@@ -24,7 +24,7 @@ One contract on the bus for every source, and a record named by what is on it an
 - Counting what is asked of outside services
 
 **Out of Scope**
-- Holding the owner's music: eds-inventory
+- Holding the owner's music: EdS Music Inventory
 
 ---
 

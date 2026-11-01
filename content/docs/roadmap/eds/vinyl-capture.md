@@ -20,7 +20,7 @@ EdS's [Capturing Vinyl](https://cdeever.github.io/eds/docs/architecture/proposal
 
 ## Project Vision & Scope
 
-A stub: the project is proposed, not decided. EdS listens and captures; eds-inventory knows what is
+A stub: the project is proposed, not decided. EdS listens and captures; EdS Music Inventory knows what is
 captured and what is missing.
 
 **In Scope**

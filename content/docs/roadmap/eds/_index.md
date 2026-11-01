@@ -15,7 +15,7 @@ EdS, a tenant: an LP jacket stand lit from the record's cover, with the now-play
 
 **Legend:** ✅ Complete | 🔄 In Progress | ⏳ Planned
 
-**Documentation:** [EdS](https://cdeever.github.io/eds/) · [eds-inventory](https://cdeever.github.io/eds-inventory/)
+**Documentation:** [EdS](https://cdeever.github.io/eds/) · [EdS Music Inventory](https://cdeever.github.io/eds-inventory/)
 
 ---
 

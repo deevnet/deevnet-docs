@@ -1,5 +1,5 @@
 ---
-title: "MaBell"
+title: "MaBell Bluetooth Gateway"
 aliases:
   - /docs/roadmap/esp32/
   - /docs/roadmap/esp32/ma-bell/
@@ -9,7 +9,7 @@ tasks_in_progress: 7
 tasks_planned: 50
 ---
 
-# MaBell
+# MaBell Bluetooth Gateway
 
 Bluetooth Phone Gateway for vintage telephone integration.
 

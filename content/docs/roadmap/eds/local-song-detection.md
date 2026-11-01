@@ -30,7 +30,7 @@ collection, naming the edition owned, and nothing leaves the house. Open-source 
 - Records held only on vinyl, added to the index as they are captured (EdS Vinyl Capture)
 
 **Out of Scope**
-- Knowing what the owner holds: eds-inventory
+- Knowing what the owner holds: EdS Music Inventory
 - The turntable driver itself, which asks a recognizer: "a WAV in, a name out" (EdS ADR-0021)
 
 ---
