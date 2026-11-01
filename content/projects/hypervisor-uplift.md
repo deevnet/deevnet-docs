@@ -3,7 +3,7 @@ title: "Hypervisor Platform Uplift"
 aliases:
   - /docs/projects/hypervisor-uplift/
 weight: 1
-tasks_completed: 3
+tasks_completed: 7
 tasks_in_progress: 0
 tasks_planned: 2
 ---

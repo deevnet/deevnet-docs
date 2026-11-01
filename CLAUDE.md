@@ -31,6 +31,14 @@ This site documents the **Mobile Factory**, the mobile instance of Deevnet (site
 10. **Platforms Integration** - How docs integrate into developer workflow
 11. **Appendix** (`appendix/`) - Background primers (cryptography and PKI first). Explanatory, not normative: the rules stay in Architecture and Standards, the procedures in the Runbook
 
+## Skills
+
+Three skills in `.claude/skills/` carry this repository's routines, with their scripts:
+
+- **`hugo-docs`** builds and checks the site: Hugo's own exit code, warnings new against `main`, internal links and anchors, and old URLs kept. Run it before every pull request.
+- **`roadmap-update`** keeps the roadmap and plans true as work happens: milestones marked done with their dates, plans' counts recounted, plans written when work starts, and projects graduated.
+- **`accomplishments`** drafts a period's written account (a month from its milestones, a quarter from its months, a year from its quarters), and backfills milestones from the history of every Deevnet repository. A scheduled run on the 1st of each month drafts the month just ended as a pull request.
+
 ## To revisit
 
 - **Time boundaries on roadmap milestones** (noted 2026-11-01; revisit around 2027-02, once the
