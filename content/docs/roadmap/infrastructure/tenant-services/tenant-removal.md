@@ -2,7 +2,7 @@
 title: "Tenant Removal"
 aliases:
   - /docs/roadmap/infrastructure/tenant-removal/
-weight: 3
+weight: 5
 milestones:
   - title: "Leftovers"
     status: planned

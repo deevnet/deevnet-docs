@@ -126,7 +126,7 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
 - **Workloads are not part of a reconcile.** Applying a workload always ensures its VM, rebuilding a
   missing one with the same VMID, MAC and address. But a tenant's plain `terraform apply` does not
   re-apply a workload the registry already lists
-  ([Tenant Platform roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-platform/)).
+  ([Tenant Lifecycle roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/)).
 - **Losing the registry is recoverable.** A tenant's next apply restores it from the secrets in the
   tenant's state.
 - **Delete** refuses while a tenant has workloads, then removes dashboards, log tokens, Wi-Fi keys,
