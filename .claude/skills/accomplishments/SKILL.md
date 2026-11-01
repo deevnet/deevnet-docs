@@ -7,7 +7,7 @@ argument-hint: "[catch-up (the default)] | <period: 2026-11 | 2026-Q4 | 2026> | 
 # Roadmap Progress
 
 The Roadmap Progress page (`content/docs/roadmap/progress.md`) lists every roadmap milestone
-reached. In Summary, every month, quarter and year with a milestone has a **written account**.
+reached. Every month, quarter and year with a milestone shows a **written account**.
 Each bullet opens onto the milestones behind it. Milestones reached since the last account fall
 back to an automatic rollup until a catch-up writes it.
 

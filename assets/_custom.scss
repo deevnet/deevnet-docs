@@ -423,11 +423,14 @@
   padding: 0.3em 0;
   margin: 0;
 
+  // The arrow outside the text, so a long line wraps under its own start.
   > summary,
   &[open] > summary {
+    display: list-item;
+    list-style-position: outside;
     line-height: 1.6;
     padding: 0;
-    margin: 0;
+    margin: 0 0 0 1.1em;
     cursor: pointer;
   }
   > ul.acc-list { margin: 0.3em 0 0.3em 1.4em; }
@@ -437,8 +440,10 @@
 }
 
 .acc-headline {
-  font-size: 1.05em;
-  margin: 0.4em 0 0.6em;
+  font-size: 1.2em;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0.7em 0 0.6em;
 }
 
 .markdown details.acc-narr > summary,
@@ -455,12 +460,16 @@ div.acc-narr {
   display: block;
   font-size: 0.8em;
   color: var(--text-muted);
-  margin: 0.15em 0 0.1em 1.1em;
+  margin: 0.15em 0 0.1em;
 }
 
 .acc-next {
   font-size: 0.95em;
-  margin: 0.6em 0 0;
+  margin: 0.7em 0 0;
+  padding-left: 0.7em;
+  border-left: 3px solid var(--badge-active);
+
+  &.acc-watch { border-left-color: var(--badge-planned); }
 }
 
 .acc-done {
@@ -475,15 +484,42 @@ div.acc-narr {
   margin-bottom: 1em;
 }
 
-.acc-group {
-  margin: 1.4em 0 0.4em;
-  font-size: 1.05em;
+.markdown h3.acc-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 1em;
+  margin: 1em 0 0.3em;
+  font-size: 1.15em;
 
   .acc-count {
     font-weight: normal;
-    font-size: 0.85em;
+    font-size: 0.8em;
     color: var(--text-muted);
-    margin-left: 0.4em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// A month, quarter or year is a section: the heading carries the page.
+.accomplishments:not([data-view="day"]):not([data-view="week"]) h3.acc-group {
+  margin-top: 2.2em;
+  font-size: 1.7em;
+
+  .acc-count { font-size: 0.55em; }
+}
+
+.acc-meter {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-color);
+
+  span {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    border-radius: 2px;
+    background: var(--badge-complete);
   }
 }
 
@@ -492,14 +528,17 @@ ul.acc-list {
   padding-left: 0;
   margin: 0;
 
+  // The date in its own column, so a long title wraps under its own start.
   li {
+    display: grid;
+    grid-template-columns: 6.6em 1fr;
+    column-gap: 0.6em;
+    align-items: baseline;
     padding: 0.3em 0;
     border-bottom: 1px solid var(--border-color);
   }
 
   time {
-    display: inline-block;
-    min-width: 7.5em;
     font-size: 0.85em;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
@@ -508,6 +547,7 @@ ul.acc-list {
 }
 
 .accomplishments .acc-item {
+  display: inline-block;
   font-size: 0.85em;
   color: var(--text-muted);
 }

@@ -10,9 +10,9 @@ aliases:
 
 How far the roadmap has come: every milestone reached, newest first. Tasks are left out: they are
 in the [project plans](/projects/). A date marked **by** is the latest the milestone could have
-been reached, from the documentation's history, which starts on 2025-12-16. In **Summary**, each
-month, quarter and year has a written account, each line opening onto the milestones behind it.
-Milestones reached since the last account are rolled up by roadmap item or area until the next one
-is written.
+been reached, from the documentation's history, which starts on 2025-12-16. Each month, quarter
+and year has a written account: open a line's arrow to see the milestones behind it. Milestones
+reached since the last account are rolled up by roadmap item or area until the next one is written.
+The bar under each heading compares that period with the busiest one shown.
 
 {{< accomplishments >}}
