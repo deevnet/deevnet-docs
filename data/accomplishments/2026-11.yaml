@@ -1,0 +1,9 @@
+# November 2026, in progress. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-11-01"
+reached: 2
+headline: "EdS was the first tenant to move to names not tied to a site."
+bullets:
+  - text: "**EdS moved to names not tied to a site.** Its certificates were reissued (CHG-0055), and its console answers at `console.eds.deevnet.net` (Nov 1)."
+    items: [infrastructure/tenant-services/tenant-pki, eds/eds/screens-console]
+next: "The same move for tdemo, mabell and cdeever, and the take-home Pi image in the tenant downloads."
+watch: "The core router's hangs remain open (INC-0004, INC-0005)."

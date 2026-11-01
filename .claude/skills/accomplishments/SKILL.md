@@ -1,14 +1,15 @@
 ---
 name: accomplishments
-description: Write up what Deevnet accomplished. Use to draft a month's, quarter's or year's account for the Accomplishments page (data/accomplishments/<period>.yaml), to catch the roadmap and every account up at any time, which is also what the monthly scheduled run does; and to backfill missing or misdated milestones from the git history of every Deevnet repository.
+description: Track Deevnet's roadmap progress. Use to draft a month's, quarter's or year's account for the Roadmap Progress page (data/accomplishments/<period>.yaml), to catch the roadmap and every account up at any time, which is also what the monthly scheduled run does; and to backfill missing or misdated milestones from the git history of every Deevnet repository.
 argument-hint: "[catch-up (the default)] | <period: 2026-11 | 2026-Q4 | 2026> | backfill <from> <to>"
 ---
 
-# Accomplishments
+# Roadmap Progress
 
-The Accomplishments page (`content/docs/roadmap/accomplishments.md`) lists every roadmap
-milestone reached. In Summary, a period with a **written account** shows it. Each bullet opens
-onto the milestones behind it. Periods without an account fall back to an automatic rollup.
+The Roadmap Progress page (`content/docs/roadmap/progress.md`) lists every roadmap milestone
+reached. In Summary, every month, quarter and year with a milestone has a **written account**.
+Each bullet opens onto the milestones behind it. Milestones reached since the last account fall
+back to an automatic rollup until a catch-up writes it.
 
 An account is `data/accomplishments/<period>.yaml`, where the period is `2026-10`, `2026-Q4`
 or `2026`:
@@ -38,8 +39,7 @@ and running it again with nothing new does nothing.
 
 1. **See what is due:** `python3 .claude/skills/accomplishments/scripts/period.py catchup` lists
    each period from the earliest month with an account up to today, lowest level first, as
-   missing, stale or current. It also lists the records to check against the roadmap. Earlier
-   periods stay on the automatic rollup unless asked for by name.
+   missing, stale or current. It also lists the records to check against the roadmap.
 2. **Catch the roadmap up first,** with the `roadmap-update` skill. Where a listed record clearly
    reaches a milestone and gives its date, mark it done. List anything uncertain in the pull
    request instead; do not guess. Tenants such as EdS keep their records in their own
@@ -68,8 +68,8 @@ and running it again with nothing new does nothing.
 
    Read the records and plans behind anything unclear.
 2. **Write from the level below.** This is what makes each level read differently:
-   - **A month** is written from its milestones and records. It has a headline and 3–6 bullets,
-     each a theme rather than an item, with the days things landed. Then `next` and `watch`.
+   - **A month** is written from its milestones and records. It has a headline and 3–6 bullets
+     (fewer in a thin month), each a theme rather than an item, with the days things landed. Then `next` and `watch`.
      It names things and dates them. It is for someone who follows the work.
    - **A quarter** is written from its months' accounts. It has a headline and 3–5 outcomes, few
      dates, and a `watch` naming the one or two risks that matter. It says what changed and why it

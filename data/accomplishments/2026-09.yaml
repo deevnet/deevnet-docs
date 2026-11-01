@@ -1,0 +1,17 @@
+# September 2026. Written from the month's milestones; each bullet names the roadmap items it rolls up.
+through: "2026-09-30"
+reached: 20
+headline: "Deevnet became a platform: tenants are built through its API, on their own network, with services of their own."
+bullets:
+  - text: "**Tenants became real.** The first was built end to end from its own repository, publishing its own DNS names (Sep 3). The EVPN/VXLAN tenant network, the Deevnet API and its Terraform provider followed (Sep 17). By the end of the month tenants logged in to their own servers (Sep 27), had a reference tenant to copy (Sep 27), and were admitted and removed by make targets (Sep 29)."
+    items: [infrastructure/tenant-services/tenant-lifecycle, infrastructure/tenant-services/tenant-fabric]
+  - text: "**The first services for tenants went live.** Wi-Fi keys, a device registry, an MQTT broker, logs, a dev network, dashboards and downloads were all in place by Sep 24, with central logging behind them."
+    items: [infrastructure/tenant-services/platform-services, infrastructure/substrate/observability]
+  - text: "**The core router began enforcing a declared zone policy** (CHG-0007, Sep 19). Wi-Fi networks and the access point are set from inventory through the Omada API (Sep 15), after firmware updates on the access point and the access switch (Sep 15 and 16)."
+    items: [infrastructure/substrate/network-automation, site-work/mobile/network-firmware]
+  - text: "**The site's own services were reorganized.** Hosts and DNS zones were renamed to include the site's code (Sep 5), and management services grouped onto six VMs by domain (Sep 16). OpenBao was deployed (Sep 17), and builds take their secrets from it (Sep 25). Each Wi-Fi network's reach was checked from a real client (Sep 23)."
+    items: [infrastructure/substrate/builder, infrastructure/substrate/management-plane, infrastructure/substrate/secrets-identity]
+  - text: "**EdS became a tenant** with its own server, using Deevnet's MQTT broker, and its LP stand draws its own light effects (Sep 7)."
+    items: [eds/eds/platform, eds/eds/stand]
+next: "Deevnet's own certificate authority, and EdS in daily use."
+watch: "The core router hung and its re0 interface kept timing out (INC-0004, Sep 21), and the Omada controller VM went silent with no root cause found (INC-0002, Sep 15); both are still open. Two more incidents were closed: a deleted firewall policy (INC-0001) and OpenBao's recovery key lost to a git reset (INC-0003)."
