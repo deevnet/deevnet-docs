@@ -8,15 +8,16 @@ milestones:
   - title: "Requirements & Constraints"
     status: done
     date: "2026-01-22"
-    approx: true
   - title: "Architecture & Design"
     status: done
-    date: "2026-01-23"
-    approx: true
+    date: "2025-12-29"
   - title: "Low-Voltage Test Rig (EVT-1)"
     status: active
   - title: "Firmware Development"
     status: active
+  - title: "Joined Deevnet as a tenant, its events in the log store"
+    status: done
+    date: "2026-10-09"
   - title: "Full-Voltage Prototype (EVT-2)"
     status: planned
   - title: "Firmware Adjustment (EVT-2 Integration)"

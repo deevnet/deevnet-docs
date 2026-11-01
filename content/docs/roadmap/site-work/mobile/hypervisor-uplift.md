@@ -4,18 +4,18 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-uplift/
 weight: 1
 milestones:
+  - title: "The tenant hypervisor (dv02hyp002p02) back in service on new hardware"
+    status: done
+    date: "2026-08-29"
   - title: "Pre-upgrade assessment"
     status: done
     date: "2026-08-30"
-    approx: true
   - title: "Tenant hypervisor (dv02hyp002p02) on PVE 9"
     status: done
     date: "2026-08-30"
-    approx: true
   - title: "The fabric API surface verified"
     status: done
-    date: "2026-08-30"
-    approx: true
+    date: "2026-08-31"
   - title: "Management hypervisor (dv02hyp001p01) on PVE 9, in its own maintenance window"
     status: planned
   - title: "The provisioning toolchain aligned to PVE 9"
