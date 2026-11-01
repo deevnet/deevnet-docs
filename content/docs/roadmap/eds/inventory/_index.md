@@ -4,7 +4,7 @@ weight: 2
 bookCollapseSection: true
 tasks_completed: 6
 tasks_in_progress: 1
-tasks_planned: 19
+tasks_planned: 18
 ---
 
 # eds-inventory

@@ -3,7 +3,7 @@ title: "Open Questions"
 weight: 5
 tasks_completed: 0
 tasks_in_progress: 0
-tasks_planned: 6
+tasks_planned: 5
 ---
 # Open Questions
 
@@ -35,7 +35,6 @@ Each of these is a decision to make before it is built.
 
 ## Vinyl ⏳
 
-- ⏳ Naming the turntable locally, from an index of the owner's rips
 - ⏳ Captured vinyl as copies of an edition, and what is still missing from one
 - ⏳ Vinyl or CD first
 

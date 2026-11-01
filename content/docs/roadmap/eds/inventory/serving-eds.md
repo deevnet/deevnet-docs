@@ -31,7 +31,7 @@ EdS asks the inventory, and the inventory alone, about the owner's music.
 
 - ✅ On EdS's workload, beside voiced (eds-inventory ADR-0003)
 - ✅ voiced asks it for artists and albums (EdS ADR-0047)
-- ⏳ nowplayd asks it: a track's album, its cover, its original
+- ⏳ nowplayd asks it: a track's album, its cover, its original (EdS music-inventory proposal)
 
 ---
 
