@@ -6,11 +6,11 @@ milestones:
     group: "Devices"
     status: done
     date: "2026-10-12"
-  - title: "EdS device secrets kept only in ESP32 flash storage (NVS), and the broker's CA provisioned (EdS ADR-0004)"
+  - title: "EdS device secrets kept only in ESP32 flash storage, and the MQTT broker's CA loaded (EdS ADR-0004)"
     group: "Devices"
     status: done
     date: "2026-10-10"
-  - title: "EdS device events sent over the message bus into the log store (EdS ADR-0005, ADR-0017)"
+  - title: "EdS device events sent over MQTT into the central log store (EdS ADR-0005, ADR-0017)"
     group: "Devices"
     status: done
     date: "2026-10-11"
@@ -18,25 +18,25 @@ milestones:
     group: "Devices"
     status: done
     date: "2026-10-16"
-  - title: "ESP32s verify a broker through the Tenant Service CA to the Deevnet Root (EdS CHG-0042)"
+  - title: "EdS's ESP32 devices verify the MQTT broker's certificate up to the Deevnet root (EdS CHG-0042)"
     group: "Devices"
     status: done
     date: "2026-10-26"
-  - title: "EdS firmware updated over the air through the broker, rolled back if the new build cannot reach it (EdS ADR-0035)"
+  - title: "EdS firmware updated over the air through the MQTT broker, rolled back if the new build cannot reach it (EdS ADR-0035)"
     group: "Updates"
     status: done
     date: "2026-10-17"
-  - title: "EdS firmware updates at home, served from the backend Pi (EdS CHG-0028)"
+  - title: "EdS firmware updates at home, served from the Pi that runs its back end (EdS CHG-0028)"
     group: "Updates"
     status: planned
-  - title: "EdS device provisioning writes the settings for both sites (EdS ADR-0049)"
+  - title: "EdS device setup writes the settings for two locations, the mobile site and home (EdS ADR-0049)"
     group: "Two sites"
     status: done
     date: "2026-10-26"
-  - title: "The beacon, cover screen and stand each hold a second site (EdS CHG-0042)"
+  - title: "EdS's turntable beacon, touch screen and LP stand each hold settings for a second location (EdS CHG-0042)"
     group: "Two sites"
     status: planned
-  - title: "EdS firmware switches between its two sites on a message (EdS ADR-0049)"
+  - title: "EdS firmware switches between its two locations on a message (EdS ADR-0049)"
     group: "Two sites"
     status: planned
 ---

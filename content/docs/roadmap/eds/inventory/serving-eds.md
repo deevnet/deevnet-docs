@@ -2,7 +2,7 @@
 title: "Serving EdS"
 weight: 4
 milestones:
-  - title: "Music inventory runs on EdS's workload, beside its voice service (eds-inventory ADR-0003)"
+  - title: "Music inventory runs on EdS's server, beside its voice service (eds-inventory ADR-0003)"
     group: "Clients"
     status: done
     date: "2026-10-24"
@@ -10,10 +10,10 @@ milestones:
     group: "Clients"
     status: done
     date: "2026-10-24"
-  - title: "EdS's nowplayd asks the music inventory for a track's album, cover and original (EdS music-inventory proposal)"
+  - title: "EdS's now-playing service asks the music inventory for a track's album, cover and original (EdS music-inventory proposal)"
     group: "Clients"
     status: planned
-  - title: "Music inventory also runs on the backend Pi at home"
+  - title: "Music inventory also runs on EdS's Pi at home"
     group: "Where it runs"
     status: planned
 ---

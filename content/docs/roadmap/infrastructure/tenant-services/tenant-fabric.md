@@ -13,7 +13,7 @@ milestones:
     date: "2026-09-17"
   - title: "The core router reduced to the site's perimeter, no longer routing tenant traffic inside it"
     status: planned
-  - title: "Tenants' workloads isolated from each other"
+  - title: "Tenants' servers isolated from each other"
     status: planned
 ---
 

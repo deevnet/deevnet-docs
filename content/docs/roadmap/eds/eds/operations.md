@@ -9,7 +9,7 @@ milestones:
     group: "Secrets"
     status: done
     date: "2026-10-29"
-  - title: "The relay Pi paired with iTunes as \"EdS relay\", and the pairing kept (EdS ADR-0052)"
+  - title: "EdS's relay Pi paired with iTunes as \"EdS relay\", and the pairing kept (EdS ADR-0052)"
     group: "Secrets"
     status: planned
   - title: "A second recipient for EdS's secrets key, and a secret scan on every push (EdS ADR-0037)"
@@ -21,10 +21,10 @@ milestones:
   - title: "The EdS console's certificate renewed before 2027-11-01 (EdS CHG-0047)"
     group: "Renewals"
     status: planned
-  - title: "The EdS backend Pi's certificate renewed by a new request before 2027-10-28 (EdS CHG-0042)"
+  - title: "The certificate on the Pi that runs EdS's back end renewed by a new request before 2027-10-28 (EdS CHG-0042)"
     group: "Renewals"
     status: planned
-  - title: "EdS's lightd and palette services served over TLS (EdS CHG-0007)"
+  - title: "EdS's lighting and color-finding services served over TLS (EdS CHG-0007)"
     group: "Hygiene"
     status: planned
   - title: "The stereo amplifier's tape selector cleaned (EdS INC-0004)"

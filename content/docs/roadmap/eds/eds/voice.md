@@ -2,15 +2,15 @@
 title: "Voice"
 weight: 4
 milestones:
-  - title: "The reSpeaker microphone runs EdS's firmware, listening on a button and then a wake word (EdS ADR-0043)"
+  - title: "EdS's reSpeaker microphone runs its own firmware, listening on a button and then a wake word (EdS ADR-0043)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "A spoken request sent whole to the workload, transcribed and made a command (EdS ADR-0042)"
+  - title: "A spoken request sent whole to EdS's server, transcribed and made a command (EdS ADR-0042)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "Voice control acts only on words its transcriber, scribe, is sure of (EdS INC-0001)"
+  - title: "Voice control acts only on words its transcription service is sure of (EdS INC-0001)"
     group: "Hearing"
     status: done
     date: "2026-10-24"
@@ -29,7 +29,7 @@ milestones:
     group: "Choosing the album"
     status: done
     date: "2026-10-24"
-  - title: "EdS's voice service, voiced, asks the music inventory (EdS ADR-0047)"
+  - title: "EdS's voice service asks the music inventory (EdS ADR-0047)"
     group: "Choosing the album"
     status: done
     date: "2026-10-24"
@@ -42,7 +42,7 @@ milestones:
   - title: "Spotify plays an album asked for by voice: a demo branch, not yet a decision"
     group: "Choosing the album"
     status: planned
-  - title: "EdS's voice services and the reSpeaker microphone moved to the backend Pi (EdS CHG-0042)"
+  - title: "EdS's voice services and microphone moved to the Pi that runs its back end at home (EdS CHG-0042)"
     group: "Where it runs"
     status: planned
 ---

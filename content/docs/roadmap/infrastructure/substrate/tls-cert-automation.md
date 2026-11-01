@@ -16,7 +16,7 @@ milestones:
     date: "2026-10-05"
   - title: "Tenant VMs that trust only the retired root certificate replaced"
     status: active
-  - title: "Every substrate service and appliance serves a Deevnet certificate, and its clients verify it"
+  - title: "Every infrastructure service and appliance on the site serves a Deevnet certificate, and its clients verify it"
     status: done
     date: "2026-10-05"
   - title: "IoT devices get their own certificates through the Deevnet API and use them to log in to the MQTT broker"

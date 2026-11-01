@@ -2,10 +2,10 @@
 title: "Observability"
 weight: 3
 milestones:
-  - title: "Centralized logging: the log store, tenant scope, the MQTT bridge, Grafana"
+  - title: "Central logging: a log store, each tenant seeing its own logs, device logs over MQTT, and Grafana"
     status: done
     date: "2026-09-24"
-  - title: "Metrics collected from substrate hosts and shown on dashboards"
+  - title: "Metrics collected from the site's infrastructure hosts and shown on dashboards"
     status: active
   - title: "Alerts on infrastructure problems, delivered to the operator"
     status: planned

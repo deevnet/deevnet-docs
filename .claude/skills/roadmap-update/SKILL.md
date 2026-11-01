@@ -49,8 +49,10 @@ when there is one.
 headings, so someone new to Deevnet must be able to tell what it means from its title alone. Name
 the subject and say what became true: "Removing a tenant revokes its API token", not "Tokens";
 "Automatic certificate renewal and expiry monitoring", not "Later". Do not reuse a plan's phase
-heading as a title, and explain an in-house name the first time a title needs it ("EdS's voice
-service, voiced"). `milestones.py check` warns on titles under three words.
+heading as a title. Say what an in-house name is rather than using it: "the build server", not
+"the Builder"; "EdS's voice service", not "voiced"; "the site's infrastructure", not "the
+substrate". Products and industry terms (OpenBao, VLAN, MQTT) stay. `milestones.py check` warns on
+titles under three words.
 
 ## When something is done
 

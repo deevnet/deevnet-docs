@@ -2,9 +2,9 @@
 title: "Builder Upkeep"
 weight: 4
 milestones:
-  - title: "More space for `/home`, its build caches under `/srv`"
+  - title: "More space for the build server's `/home`, its build caches under `/srv`"
     status: planned
-  - title: "The Builder's Wi-Fi onto the home network, decided in a record (EdS ADR-0053)"
+  - title: "The build server's Wi-Fi onto the home network, decided in a change record (EdS ADR-0053)"
     status: planned
 ---
 

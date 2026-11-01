@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/tenant-services/tenant-platform/
 weight: 2
 milestones:
-  - title: "The Deevnet API and its provider deployed; tenants built through them (CHG-0010)"
+  - title: "The Deevnet API and its Terraform provider deployed; tenants built through them (CHG-0010)"
     status: done
     date: "2026-09-17"
   - title: "The first tenant built end to end from its own repository: code, internet access and DNS"
@@ -14,17 +14,17 @@ milestones:
   - title: "A reference tenant a newcomer can copy"
     status: done
     date: "2026-09-27"
-  - title: "Tenants log in to their own workloads and deploy their app (CHG-0028)"
+  - title: "Tenants log in to their own servers and deploy their app (CHG-0028)"
     status: done
     date: "2026-09-27"
-  - title: "Tenants admitted, removed and rotated by Builder make target"
+  - title: "Tenants admitted and removed, and their Wi-Fi keys rotated, by make targets on the build server"
     status: done
     date: "2026-09-29"
   - title: "A drill for recovering tenant credentials, and provisioning cleanup"
     status: active
   - title: "A tenant rebuilt from its own code in a drill"
     status: planned
-  - title: "The tenant–substrate boundary written as one specification"
+  - title: "The boundary between tenants and the site's infrastructure written as one specification"
     status: planned
 ---
 

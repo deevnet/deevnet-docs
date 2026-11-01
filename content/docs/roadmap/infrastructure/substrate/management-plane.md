@@ -4,12 +4,12 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/management-plane/
 weight: 2
 milestones:
-  - title: "Management services on six domain VMs (CHG-0008)"
+  - title: "Site management services grouped onto six VMs by domain (CHG-0008)"
     status: done
     date: "2026-09-16"
   - title: "Management plane requirements defined: retention, alerting, secrets access and identity"
     status: active
-  - title: "Recovery copies of the network's configuration: routine controller snapshots, and core router configs that survive losing the Builder"
+  - title: "Recovery copies of the network's configuration: routine Wi-Fi controller snapshots, and core router configs that survive losing the build server"
     status: planned
   - title: "Each Wi-Fi network's reach checked from a real client"
     status: done
