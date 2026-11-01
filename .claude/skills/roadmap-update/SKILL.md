@@ -59,7 +59,7 @@ titles under three words.
 1. **Find what it completes.** A change record's `| **Date** |` row, its status, and the plan's
    phase it belongs to. Read the plan and the roadmap item.
 2. **Update the plan:** mark the tasks ✅ (🔄 if partly), mark the phase heading, then
-   `recount_plans.py write`.
+   `recount_plans.py write`. A finished phase stays open on the page; do not fold it.
 3. **Update the roadmap item.**
    - If the work reaches a milestone, mark it done with `milestones.py done`. **The date is the
      day the last piece of work landed**: the record's date, or the commit's. It is not the day

@@ -230,7 +230,8 @@ Run from the Builder on 2026-09-27; the `DVNTM-TD` checks from the operator's ow
 
 | ~15:05 | Verification | From the operator's development computer on `DVNTM-TD`, with its own key: logged in to eds as `tenant`, `sudo-ok`. Output below |
 
-{{< details "segment-check.sh DVNTM-TD, 2026-09-27" >}}
+### segment-check.sh DVNTM-TD, 2026-09-27
+
 ```text
 Segment check: DVNTM-TD (from 10.20.45.50)
 == Address and DNS
@@ -266,15 +267,14 @@ Segment check: DVNTM-TD (from 10.20.45.50)
 
 RESULT: DVNTM-TD - 29 passed, 0 failed
 ```
-{{< /details >}}
 
-{{< details "Login from the development computer, 2026-09-27" >}}
+### Login from the development computer, 2026-09-27
+
 ```text
 cdeever@Chriss-MacBook-Pro scripts % ssh tenant@services.eds.mobile.deevnet.net 'id; sudo -n true && echo sudo-ok'
 uid=1000(tenant) gid=1000(tenant) groups=1000(tenant),4(adm),10(wheel),190(systemd-journal) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
 sudo-ok
 ```
-{{< /details >}}
 
 ### Departures from the plan
 
