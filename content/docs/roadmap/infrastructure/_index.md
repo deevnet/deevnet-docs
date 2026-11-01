@@ -2,9 +2,9 @@
 title: "Infrastructure Automation"
 weight: 1
 bookCollapseSection: true
-tasks_completed: 75
-tasks_in_progress: 14
-tasks_planned: 115
+tasks_completed: 8
+tasks_in_progress: 17
+tasks_planned: 33
 ---
 
 # Infrastructure Automation

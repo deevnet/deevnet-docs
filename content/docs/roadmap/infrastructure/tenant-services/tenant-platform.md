@@ -3,9 +3,9 @@ title: "Tenant Platform"
 aliases:
   - /docs/roadmap/infrastructure/mobile/tenant-platform/
 weight: 1
-tasks_completed: 21
-tasks_in_progress: 1
-tasks_planned: 13
+tasks_completed: 2
+tasks_in_progress: 5
+tasks_planned: 1
 ---
 
 # Tenant Platform
@@ -20,176 +20,13 @@ supplies its own IaC/CaC to rebuild from scratch against the substrate.
 
 ---
 
-## Design tenant network architecture ✅
+- ✅ Design tenant network architecture
+- 🔄 Define tenant contracts
+- 🔄 Build the tenant fabric (Phase 1)
+- ✅ Tenant DNS publication
+- 🔄 Tenant provisioning tooling
+- 🔄 First tenant — end-to-end
+- 🔄 Platform services for tenants
+- ⏳ Windows tenant laptops
 
-How tenant traffic is isolated, routed, and addressed.
-
-- **Decided:** the fabric model — an EVPN overlay owned by the tenant compute domain,
-  self-contained per hypervisor, single-member now and expandable to a cluster
-  ([ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)).
-- **Decided:** the numbering scheme — the site `/16` split so tenant overlays live at
-  `10.20.128.0/18` and fabric loopbacks at `10.20.255.0/24`, with every tenant identifier derived
-  from a single allocated index ([ADR-0002](/docs/architecture/decisions/tenant-networking/0002-tenant-fabric-numbering/)).
-- **Deferred — DNS:** how tenant records are authored and published into the substrate zone is
-  still undecided, and is tracked as its own thread below rather than holding this milestone open.
-  Proxmox's SDN DNS integration targets a PowerDNS API; the core router runs Unbound, so it does
-  not fit as-is.
-
-## Define tenant contracts 🔄
-
-The interface every tenant must satisfy to be rebuildable against the substrate.
-
-**In practice, the contract is now the Deevnet API and its Terraform provider**
-([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), deployed by
-[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)). A tenant is admitted with a single-use
-enrollment token, then declares itself, its workloads and its names through one provider. It holds
-no Proxmox credential, no vault access and no index. What it may consume is
-[ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)'s, and the tenant
-runbook describes each service. What is still missing is the boundary written down as one
-specification.
-
-- What a tenant **supplies** as code: network attachment, DNS records, compute/resource
-  declaration, naming.
-- What the substrate **guarantees** in return: a network to attach to, a perimeter, and a DNS
-  zone to publish into.
-- The tenant↔substrate boundary written as a specification, so any conforming tenant can be built.
-
-## Build the tenant fabric (Phase 1) 🔄
-
-Stand up the single-member fabric on dv02hyp002p02.
-
-**No longer gated** — dv02hyp002p02 runs PVE 9 and serves `/cluster/sdn/fabrics`, so the underlay is
-defined as code rather than as hand-maintained node state.
-
-- ✅ Substrate transport: `tenant_transit` (VLAN 50) and `tenant_underlay` (VLAN 51) in inventory;
-  `tenant_1/2/3` removed. The tenant hypervisor's switch port is a trunk carrying both plus
-  management.
-- ✅ Hypervisor attachment: the bridge is VLAN-aware and the transit and underlay sub-interfaces
-  are up, driven from inventory by the `proxmox_node_network` role.
-- ✅ EVPN SDN as code: fabric, VTEP identity and controller applied on dv02hyp002p02 from
-  `deevnet-tenant-fabric`.
-- ✅ Hypervisor default route moved onto transit, so the data plane stops riding the management
-  segment.
-- ✅ Tenant egress through the perimeter: transit forwarding and a default route inside each
-  tenant VRF, both code-managed
-  ([ADR-0003](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/)). Proxmox's
-  own exit-node behavior would have routed tenants *around* the perimeter onto the management
-  segment.
-- ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
-
-## Tenant DNS publication ✅
-
-How a tenant authors its own records and publishes them into the substrate zone so
-`service.tenant.site.deevnet.net` resolves.
-
-- **Decided:** RFC 2136 updates with a per-zone TSIG key, into substrate-run PowerDNS, reached
-  through the core router's forward
-  ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)).
-- Proven end to end with `tdemo` (below), and since
-  [CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/) issued through the Deevnet API.
-- Workloads resolve through the tenant-transit resolver, not the authoritative server
-  ([CHG-0011](/docs/changes/2026/0011-tenant-workload-resolver/)).
-
-## Tenant provisioning tooling 🔄
-
-A repeatable, code-defined tenant lifecycle.
-
-- ✅ Reusable Terraform (`bpg/proxmox`) module implementing the network and compute halves of the
-  tenant contract: VRF + VNet(s) + subnet + VMs from template, addressed by cloud-init.
-- ✅ One tenant = one instantiation, **in its own repository** (`deevnet-tenant-<name>`), consuming
-  the module by git tag and a fabric attachment the substrate issues at onboarding (ADR-0006).
-  Create, rebuild and destroy from code, with every identifier derived from one allocated index.
-- ✅ A reference implementation new tenants are copied from, which **cannot itself be applied** —
-  it ships with an index the module rejects, so the guard does not depend on being read.
-- ✅ DNS publication over RFC 2136 with a per-zone TSIG key (ADR-0004), and a state store tenants
-  may use or decline (ADR-0007).
-- ✅ Record the Deevnet API's Proxmox access: `DeevnetTenantBuilder`, `DeevnetNodeAudit`, the user
-  and ACLs are declared in inventory and recreated by `deevnet.builder`'s `proxmox_node_access` role
-  (2026-09-27)
-- ⏳ Remove the unused `TerraformProv` role on `dv02hyp002p02`, left from the retired tenant-module
-  flow; no ACL references it
-- ⏳ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
-  back in through an operator reconcile
-  ([Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/)), proven on `tdemo`
-- ⏳ Bring the Deevnet API's README up to date: its route table (Wi-Fi keys, devices and broker
-  accounts are live, not `501`) and its OpenBao field list (`broker_writer_key`, `log_writer_key`,
-  `grafana_admin_password`)
-
-## First tenant — end-to-end 🔄
-
-Prove the whole path with a real tenant.
-
-- ✅ Provisioned from code: `tdemo` (index 1, `10.20.129.0/24`), cloud-init addressed.
-- ✅ Egress via the perimeter, verified from inside the workload rather than from a NAT counter —
-  and verified *not* to reach the management segment on-link.
-- ✅ DNS publication end to end: `dig @10.20.99.1 tdemo-1.tdemo.mobile.deevnet.net` answers
-  `10.20.129.10`, and the reverse answers the name — records written by the tenant's own Terraform
-  over TSIG-signed RFC 2136, served by substrate-run PowerDNS, reached through the resolver's
-  forward.
-- ✅ Moved to its own repository with an empty plan as the acceptance gate: same state, same
-  resource addresses, same running VM, same records, zero API mutations.
-- 🔄 Inter-tenant isolation. There are now three tenants (`tdemo`, `eds`, `mabell`), and every
-  platform service's isolation is **measured**: state (a credential is refused for another tenant's
-  prefix), devices (`404` for another tenant's,
-  [CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)), broker topics
-  ([CHG-0016](/docs/changes/2026/0016-broker-accounts/)), logs in both directions
-  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/)) and dashboards
-  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)). Still untested: network isolation
-  between two tenants' workloads.
-- ⏳ Rebuild-from-scratch drill — now re-scoped to the reference implementation: create a throwaway
-  tenant repository from the reference tenant, `deevnet-tenant-tdemo`, apply, verify, destroy. Run at each module MAJOR tag.
-
-## Platform services for tenants 🔄
-
-What a tenant can declare today beyond networks, workloads and names, each through the provider.
-
-- ✅ Wi-Fi keys: a PPSK key per tenant on `DVNTM-IOT`
-  ([CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/))
-- ✅ Device registry ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/))
-- ✅ MQTT: VerneMQ, with broker accounts the API writes
-  ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/),
-  [CHG-0016](/docs/changes/2026/0016-broker-accounts/))
-- ✅ Logs: ingest and read tokens, and device logs over MQTT
-  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/),
-  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
-- ✅ Dashboards: a Grafana organization per tenant
-  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
-- ✅ A tenant dev network, `DVNTM-TD`, reaching only the API, the state store, the broker, logs,
-  Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
-- ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
-  site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
-- ⏳ Secrets, metrics and alerting, identity and object storage: designed, not built
-  ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
-- ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
-  the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the
-  restore path reads them from configuration, and `eds` and `mabell` move theirs from state into
-  their repositories
-- ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node
-- ⏳ Workloads and DNS records come back after a rebuild: a reconcile re-ensures neither, and a tenant's plain apply sees no change. Re-ensure them in the reconcile, or give the tenant a documented way to force a re-apply
-
-## Windows tenant laptops ⏳
-
-A tenant developer needs Terraform, the `deevnet/deevnet` provider and the `grafana` provider on their
-laptop. Terraform runs on Windows, but the provider's prebuilt releases are built for macOS and Linux
-only, and `install-provider.sh` and `tenant-check.sh` are bash. Today a Windows laptop can't be a
-tenant without building the provider from source.
-
-- ⏳ Cross-compile the provider for Windows (`amd64` and `arm64`): add `windows` to the GoReleaser
-  targets in `terraform-provider-deevnet`
-- ⏳ Mirror the Windows zips, and the `grafana` provider's, in the
-  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/)
-- ⏳ Install on Windows without bash: a PowerShell `install-provider.ps1` that puts both providers in
-  Terraform's plugin directory and checks them against `SHA256SUMS`, and a Windows equivalent of
-  `tenant-check.sh`
-- ⏳ [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) gains the Windows
-  path, proven from a Windows laptop on `DVNTM-TD`. WSL2 very likely works today with the Linux
-  build, but is untested
-
----
-
-## Future outlook: Phase 2 — tenant cluster
-
-Not scheduled, not counted. Reached by **adding** members to the Phase 1 fabric, not rebuilding it
-— same SDN objects re-applied at cluster scope, underlay peers formed, a QDevice for quorum.
-Trajectory detail is in [ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/#trajectory).
-The management hypervisor (dv02hyp001p01) follows a separate path and does not join the tenant fabric.
+**Project plan:** [Tenant Platform](/docs/projects/tenant-platform/)

@@ -2,9 +2,9 @@
 title: "Tenant Services Tooling"
 weight: 2
 bookCollapseSection: true
-tasks_completed: 24
-tasks_in_progress: 2
-tasks_planned: 28
+tasks_completed: 2
+tasks_in_progress: 7
+tasks_planned: 4
 ---
 
 # Tenant Services Tooling
