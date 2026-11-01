@@ -1,12 +1,14 @@
 # Q4 2026. Written from its months.
 headline: "Deevnet is its own certificate authority, and its first production tenant is in daily use."
 bullets:
-  - text: "**Deevnet is its own certificate authority,** from an offline root down to tenants' services and their Pis. Nothing it runs depends on an outside CA."
+  - text: "**Deevnet is its own certificate authority,** from an offline root down to tenants' services and their Pis. Every substrate service, appliance and tenant tool now trusts that root."
     items: [infrastructure/substrate/tls-cert-automation, infrastructure/tenant-services/tenant-pki, infrastructure/substrate/secrets-identity]
-  - text: "**EdS, the first production tenant, is in daily use:** lights, screens, now playing across every source, and voice control."
+  - text: "**EdS, the first production tenant, is in daily use:** lights, screens, now playing from the turntable, iTunes and Spotify, and voice control."
     items: [eds/eds/stand, eds/eds/now-playing, eds/eds/voice, eds/eds/devices, eds/eds/screens-console, eds/eds/platform, eds/eds/operations]
-  - text: "**The platform is safer to operate:** credentials rotated, every public repository scanned, backups proven by a restore."
+  - text: "**Tenants can rely on more of the platform:** fixed addresses for their devices and their services on 443 by name. MaBell now sends its events as a tenant."
+    items: [infrastructure/tenant-services/platform-services, mabell]
+  - text: "**The platform is safer to operate:** credentials rotated, every public repository scanned, nightly encrypted backups with one restore rehearsed."
     items: [infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane]
   - text: "**A second product started:** a catalog of the owner's music, which EdS already uses."
     items: [eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema]
-watch: "The mobile site's core router is unreliable under load, with two incidents this quarter. Replacing it is the top infrastructure item."
+watch: "The mobile site's core router is unreliable under large transfers. It failed twice this quarter, the fault is not fixed, and its replacement is not chosen."
