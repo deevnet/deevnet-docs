@@ -31,4 +31,8 @@ The records these procedures produce live in their own sections:
     <h3>Lifecycle Management</h3>
     <p>From selection to retirement, including evaluation: what hardware and software must demonstrate before they are relied on.</p>
   </a>
+  <a class="section-card" href="project-management/">
+    <h3>Project Management</h3>
+    <p>From an idea to done: a proposal, a plan with versions, progress on the roadmap, and graduation.</p>
+  </a>
 </div>
