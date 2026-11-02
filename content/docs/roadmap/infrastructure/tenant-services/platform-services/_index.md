@@ -2,6 +2,7 @@
 title: "Tenant Platform Services"
 bookCollapseSection: true
 weight: 3
+value: [product-not-plumbing]
 milestones:
   - title: "The first services for tenants: Wi-Fi keys, device registry, MQTT broker, logs, a dev network, dashboards, downloads"
     status: done

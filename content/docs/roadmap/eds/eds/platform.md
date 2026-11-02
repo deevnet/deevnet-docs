@@ -18,9 +18,11 @@ milestones:
     group: "At the factory"
     status: planned
   - title: "All of EdS's back end on one Pi at home: in service, the change record awaiting its evidence (EdS ADR-0033, CHG-0028)"
+    value: [works-anywhere]
     group: "At home"
     status: active
   - title: "EdS's home Pi uses Deevnet certificates, under names not tied to a site (EdS CHG-0042)"
+    value: [works-anywhere]
     group: "At home"
     status: done
     date: "2026-10-29"

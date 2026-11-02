@@ -1,0 +1,12 @@
+{{- /* One progress row per value objective, linked to its section. */ -}}
+{{- range site.Data.value_objectives.objectives -}}
+  {{- $m := partial "value-milestones.html" .id -}}
+  {{- $c := len $m.done -}}{{- $a := len $m.active -}}{{- $p := len $m.planned -}}
+  <div class="value-row">
+    <div class="value-row-head">
+      <a href="#{{ .id }}">{{ .title }}</a>
+      <span class="value-row-count">{{ $c }}/{{ add $c (add $a $p) }}</span>
+    </div>
+    {{- partial "progress-bar.html" (dict "completed" $c "in_progress" $a "planned" $p) -}}
+  </div>
+{{- end -}}

@@ -7,6 +7,7 @@ milestones:
   - title: "A song fingerprint index from the owner's rips, kept current as the library changes"
     status: planned
   - title: "A local song recognizer EdS's turntable can ask in place of today's outside service"
+    value: [works-anywhere]
     status: planned
   - title: "Vinyl-only records added to the fingerprint index from their captures"
     status: planned

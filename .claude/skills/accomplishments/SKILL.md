@@ -71,6 +71,7 @@ and running it again with nothing new does nothing.
    - **A month** is written from its milestones and records. It has a headline and 3–6 bullets
      (fewer in a thin month), each a theme rather than an item, with the days things landed. Then `next` and `watch`.
      It names things and dates them. It is for someone who follows the work.
+   - **A quarter or year** may speak in the value objectives (`data/value_objectives.yaml`) where that says more than the items do. Existing accounts stay as written.
    - **A quarter** is written from its months' accounts. It has a headline and 3–5 outcomes, few
      dates, and a `watch` naming the one or two risks that matter. It says what changed and why it
      matters, not what was built. If a month has no account, draft that month first.

@@ -5,6 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/tenant-platform/
   - /docs/roadmap/infrastructure/tenant-services/tenant-platform/
 weight: 2
+value: [fast-delivery]
 milestones:
   - title: "The Deevnet API and its Terraform provider deployed; tenants built through them (CHG-0010)"
     status: done
@@ -19,11 +20,14 @@ milestones:
     status: done
     date: "2026-09-27"
   - title: "Tenants admitted and removed, and their Wi-Fi keys rotated, by make targets on the build server"
+    value: [fast-delivery, one-operator]
     status: done
     date: "2026-09-29"
   - title: "A drill for recovering tenant credentials, and provisioning cleanup"
+    value: [rebuild-from-code]
     status: active
   - title: "A tenant rebuilt from its own code in a drill"
+    value: [rebuild-from-code]
     status: planned
   - title: "The boundary between tenants and the site's infrastructure written as one specification"
     status: planned

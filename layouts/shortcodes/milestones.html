@@ -2,6 +2,22 @@
        only those of that group. A done milestone shows the day it was
        reached, "by" when that day is only known as a latest possible one. */ -}}
 {{- $group := .Get "group" -}}
+{{- $values := slice -}}
+{{- range .Page.Params.milestones -}}
+  {{- if or (not $group) (eq .group $group) -}}
+    {{- $values = $values | append (partial "milestone-values.html" (dict "page" $.Page "milestone" .)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $values = uniq $values -}}
+{{- with $values }}
+<p class="milestone-values">Value objectives:
+{{- $page := site.GetPage "/docs/roadmap/value" -}}
+{{- $sep := " " -}}
+{{- range site.Data.value_objectives.objectives -}}
+  {{- if in $values .id }}{{ $sep }}<a href="{{ $page.RelPermalink }}#{{ .id }}">{{ .title }}</a>{{ $sep = ", " }}{{ end -}}
+{{- end -}}
+</p>
+{{- end }}
 <ul class="milestones">
 {{- range .Page.Params.milestones }}
   {{- if or (not $group) (eq .group $group) }}

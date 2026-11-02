@@ -2,6 +2,7 @@
 title: "Tenant Fabric"
 bookCollapseSection: true
 weight: 1
+value: [fast-delivery]
 milestones:
   - title: "Tenant network architecture designed"
     status: done
@@ -13,8 +14,10 @@ milestones:
     status: done
     date: "2026-09-17"
   - title: "The core router reduced to the site's perimeter, no longer routing tenant traffic inside it"
+    value: [contained-failure]
     status: planned
   - title: "Tenants' servers isolated from each other"
+    value: [contained-failure]
     status: planned
 ---
 

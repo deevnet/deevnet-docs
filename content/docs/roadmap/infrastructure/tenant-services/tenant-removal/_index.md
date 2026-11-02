@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/tenant-removal/
 weight: 5
+value: [contained-failure]
 milestones:
   - title: "Removing a tenant also deletes its state, logs and dashboards"
     status: planned

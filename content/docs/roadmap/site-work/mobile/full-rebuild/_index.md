@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
 weight: 5
+value: [rebuild-from-code]
 milestones:
   - title: "The whole mobile site rebuilt from scratch, tenants brought back and gaps fixed"
     status: planned

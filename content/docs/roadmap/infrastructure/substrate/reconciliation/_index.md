@@ -4,14 +4,17 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/reconciliation/
 weight: 4
+value: [one-operator]
 milestones:
   - title: "Leftover DHCP reservations, DNS records and boot files from deleted hosts removed"
     status: planned
   - title: "Automation removes a host's DHCP, DNS and boot entries when it leaves inventory"
     status: planned
   - title: "Network settings that exist only on the running router declared in code"
+    value: [rebuild-from-code]
     status: planned
   - title: "A read-only report of live network state with no matching declaration"
+    value: [no-surprises]
     status: planned
 ---
 

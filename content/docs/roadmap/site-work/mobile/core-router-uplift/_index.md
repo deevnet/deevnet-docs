@@ -2,6 +2,7 @@
 title: "Core Router Uplift"
 bookCollapseSection: true
 weight: 2
+value: [no-surprises]
 milestones:
   - title: "Replacement core router hardware chosen (the N100 Router Appliance is the candidate)"
     status: planned

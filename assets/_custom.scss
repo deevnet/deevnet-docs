@@ -386,6 +386,34 @@
   margin-left: 0.4em;
 }
 
+.milestone-values {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-bottom: 0.3em;
+}
+
+.value-row {
+  margin-bottom: 1.5em;
+}
+
+.value-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3em;
+}
+
+.value-row-count {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.milestone-item {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-left: 0.4em;
+}
+
 .acc-views {
   display: flex;
   flex-wrap: wrap;

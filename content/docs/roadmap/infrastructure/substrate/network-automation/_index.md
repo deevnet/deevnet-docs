@@ -2,8 +2,10 @@
 title: "Network Automation"
 bookCollapseSection: true
 weight: 8
+value: [one-operator]
 milestones:
   - title: "The core router enforces a declared zone policy (CHG-0007)"
+    value: [contained-failure]
     status: done
     date: "2026-09-19"
   - title: "The core router's (OPNsense) interface assignment automated"

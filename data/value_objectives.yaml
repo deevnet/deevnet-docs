@@ -1,0 +1,29 @@
+# What the roadmap's work is for. Each objective's page section is in
+# content/docs/roadmap/value.md, under a heading whose id is the objective's id.
+# Roadmap items and milestones name these ids in `value:`. An objective may add
+# a `measure:` once one is chosen.
+objectives:
+  - id: fast-delivery
+    title: "Fast tenant delivery"
+    promise: "A new tenant runs without touching the substrate."
+  - id: product-not-plumbing
+    title: "Build the product, not the plumbing"
+    promise: "Every tenant gets the common services ready-made."
+  - id: contained-failure
+    title: "Contained failure"
+    promise: "One tenant cannot harm another, and leaves nothing behind."
+  - id: rebuild-from-code
+    title: "Rebuild from code"
+    promise: "Losing anything costs time, not the project."
+  - id: works-anywhere
+    title: "Works anywhere"
+    promise: "The factory needs no outside service, and what it builds keeps working elsewhere."
+  - id: one-operator
+    title: "One part-time operator can run it"
+    promise: "Routine work takes little attention and little memory."
+  - id: secure-by-default
+    title: "Secure by default"
+    promise: "Doing the easy thing is doing the safe thing."
+  - id: no-surprises
+    title: "No surprises"
+    promise: "Problems and drift are found before they bite."

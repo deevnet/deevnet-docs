@@ -2,8 +2,10 @@
 title: "Observability"
 bookCollapseSection: true
 weight: 3
+value: [no-surprises]
 milestones:
   - title: "Central logging: a log store, each tenant seeing its own logs, device logs over MQTT, and Grafana"
+    value: [no-surprises, contained-failure]
     status: done
     date: "2026-09-24"
   - title: "Metrics collected from the site's infrastructure hosts and shown on dashboards"

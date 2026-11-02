@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/patch-automation/
 weight: 12
+value: [no-surprises]
 milestones:
   - title: "Every cataloged product's release and security advisory sources recorded and watched"
     status: planned

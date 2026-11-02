@@ -1,0 +1,28 @@
+{{- /* One value objective: its promise, its bar, and the milestones reached and
+       still open, each linked to its roadmap item. */ -}}
+{{- $id := .Get 0 -}}
+{{- $o := index (where site.Data.value_objectives.objectives "id" $id) 0 -}}
+{{- if not $o -}}{{- errorf "%s: unknown value objective %q" .Page.Path $id -}}{{- end -}}
+{{- $m := partial "value-milestones.html" $id -}}
+<p><strong>{{ $o.promise }}</strong></p>
+{{- with $o.measure }}<p>Measure: {{ . }}</p>{{ end -}}
+{{- partial "progress-bar.html" (dict "completed" (len $m.done) "in_progress" (len $m.active) "planned" (len $m.planned)) -}}
+{{- with $m.done }}
+<p>Reached:</p>
+<ul class="milestones">
+{{- range $row := . }}
+  <li>✅ {{ .page.RenderString .title }} <a class="milestone-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a>{{ with .date }} <span class="milestone-date">{{ if $row.approx }}by {{ end }}{{ . }}</span>{{ end }}</li>
+{{- end }}
+</ul>
+{{- end }}
+{{- if or $m.active $m.planned }}
+<p>Still open:</p>
+<ul class="milestones">
+{{- range $m.active }}
+  <li>🔄 {{ .page.RenderString .title }} <a class="milestone-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a></li>
+{{- end }}
+{{- range $m.planned }}
+  <li>⏳ {{ .page.RenderString .title }} <a class="milestone-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a></li>
+{{- end }}
+</ul>
+{{- end }}
