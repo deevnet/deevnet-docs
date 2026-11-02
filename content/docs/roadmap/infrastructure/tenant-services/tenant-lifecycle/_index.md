@@ -30,7 +30,8 @@ milestones:
     value: [rebuild-from-code]
     status: planned
   - title: "The boundary between tenants and the site's infrastructure written as one specification"
-    status: planned
+    status: done
+    date: "2026-11-01"
 ---
 
 # Tenant Lifecycle
