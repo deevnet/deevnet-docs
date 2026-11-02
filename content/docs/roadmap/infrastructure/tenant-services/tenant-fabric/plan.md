@@ -7,7 +7,7 @@ aliases:
 weight: 1
 tasks_completed: 7
 tasks_in_progress: 0
-tasks_planned: 1
+tasks_planned: 2
 ---
 
 # Tenant Fabric: Project Plan
@@ -61,6 +61,9 @@ defined as code rather than as hand-maintained node state.
   own exit-node behavior would have routed tenants *around* the perimeter onto the management
   segment.
 - ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
+- ⏳ Test network isolation between two tenants' workloads, in both directions, including the path
+  out through a tenant's default route to the core router and back. Network isolation is the
+  requirement here; tenants share a hypervisor, and need no hardware of their own.
 
 ---
 
