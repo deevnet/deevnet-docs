@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/builder/
 weight: 1
 value: [rebuild-from-code]
-milestones:
+waypoints:
   - title: "Build server requirements defined: hardware inventory, network layout and offline artifacts"
     status: done
     date: "2026-01-09"
@@ -48,6 +48,6 @@ Builder infrastructure, network automation, and core services required to provis
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Builder & Core Services](/docs/roadmap/infrastructure/substrate/builder/plan/)

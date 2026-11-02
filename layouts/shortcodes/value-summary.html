@@ -1,6 +1,6 @@
 {{- /* One progress row per value objective, linked to its section. */ -}}
 {{- range site.Data.value_objectives.objectives -}}
-  {{- $m := partial "value-milestones.html" .id -}}
+  {{- $m := partial "value-waypoints.html" .id -}}
   {{- $c := len $m.done -}}{{- $a := len $m.active -}}{{- $p := len $m.planned -}}
   <div class="value-row">
     <div class="value-row-head">

@@ -3,7 +3,7 @@ title: "Core Router Uplift"
 bookCollapseSection: true
 weight: 2
 value: [no-surprises]
-milestones:
+waypoints:
   - title: "Replacement core router hardware chosen (the N100 Router Appliance is the candidate)"
     status: planned
   - title: "New core router built from code and swapped in, the old ZimaBoard kept to put back"
@@ -27,6 +27,6 @@ them.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Core Router Uplift](/docs/roadmap/site-work/mobile/core-router-uplift/plan/)

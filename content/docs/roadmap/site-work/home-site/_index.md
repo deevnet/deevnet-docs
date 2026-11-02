@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/home-site/
 weight: 2
 value: [works-anywhere]
-milestones:
+waypoints:
   - title: "The home site's certificate authorities created under the Deevnet root"
     status: planned
   - title: "The home site's network defined in inventory, with DNS and DHCP on its core router"
@@ -26,6 +26,6 @@ zone and address space are reserved in the [Naming standard](/docs/standards/nam
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Home Site](/docs/roadmap/site-work/home-site/plan/)

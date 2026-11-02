@@ -37,7 +37,7 @@ A project is complete when:
 4. **It is documented here** — hardware, purpose, network position, configuration, and how to
    validate it
 5. **Its project plan is closed** — every task done or explicitly dropped, the plan moved from
-   beneath its roadmap item to the [archive](/projects/archive/) with its roadmap item's milestones, its roadmap item
+   beneath its roadmap item to the [archive](/projects/archive/) with its roadmap item's waypoints, its roadmap item
    removed, and an entry here linking to it
 
 ## The path for Pi projects

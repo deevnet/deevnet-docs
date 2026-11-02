@@ -6,7 +6,7 @@ aliases:
   - /docs/roadmap/infrastructure/tenant-services/tenant-platform/
 weight: 2
 value: [fast-delivery]
-milestones:
+waypoints:
   - title: "The Deevnet API and its Terraform provider deployed; tenants built through them (CHG-0010)"
     status: done
     date: "2026-09-17"
@@ -46,6 +46,6 @@ rebuilt from scratch against the substrate.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Tenant Lifecycle](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/plan/)

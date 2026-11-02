@@ -1,7 +1,7 @@
 ---
 title: "Screens and Console"
 weight: 3
-milestones:
+waypoints:
   - title: "The EdS console, over TLS, showing what is playing, the stand and whether each part is up (EdS ADR-0018)"
     group: "Console"
     status: done
@@ -49,10 +49,10 @@ What is playing, what the stand shows and whether the parts are up, in one place
 
 ## Console 🔄
 
-{{< milestones group="Console" >}}
+{{< waypoints group="Console" >}}
 
 ---
 
 ## Cover screen 🔄
 
-{{< milestones group="Cover screen" >}}
+{{< waypoints group="Cover screen" >}}

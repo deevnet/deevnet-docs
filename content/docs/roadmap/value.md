@@ -5,9 +5,9 @@ weight: 7
 
 # Value Objectives
 
-What the roadmap's work is for. **Each bar shows how many of an objective's listed milestones are
-done:** it measures work finished, not the promise proven, and it falls when new milestones are added.
-A milestone that serves two objectives counts in both. Tenants' own products, and upkeep that serves
+What the roadmap's work is for. **Each bar shows how many of an objective's listed waypoints are
+done:** it measures work finished, not the promise proven, and it falls when new waypoints are added.
+A waypoint that serves two objectives counts in both. Tenants' own products, and upkeep that serves
 no objective, are not counted.
 
 {{< value-summary >}}

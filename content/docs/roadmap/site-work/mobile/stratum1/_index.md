@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
 weight: 6
 value: [works-anywhere]
-milestones:
+waypoints:
   - title: "GPS time server requirements defined: accuracy, antenna placement and alerting"
     status: planned
   - title: "Pi Zero and GPS module chosen and bought for the time server"
@@ -28,6 +28,6 @@ Part of `deevnet-image-factory`.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Stratum 1 NTP](/docs/roadmap/site-work/mobile/stratum1/plan/)

@@ -3,7 +3,7 @@ title: "Network Automation"
 bookCollapseSection: true
 weight: 8
 value: [one-operator]
-milestones:
+waypoints:
   - title: "The core router enforces a declared zone policy (CHG-0007)"
     value: [contained-failure]
     status: done
@@ -30,6 +30,6 @@ limits, and checks on every change.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Network Automation](/docs/roadmap/infrastructure/substrate/network-automation/plan/)

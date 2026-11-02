@@ -2,7 +2,7 @@
 title: "Network Firmware"
 bookCollapseSection: true
 weight: 3
-milestones:
+waypoints:
   - title: "Wi-Fi access point firmware updated, so the controller can push VLANs to it (CHG-0005)"
     status: done
     date: "2026-09-15"
@@ -21,6 +21,6 @@ Firmware upgrades on the mobile site's network devices.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Network Firmware](/docs/roadmap/site-work/mobile/network-firmware/plan/)

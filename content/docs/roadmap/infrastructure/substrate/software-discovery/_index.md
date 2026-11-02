@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/software-discovery/
 weight: 11
 value: [no-surprises]
-milestones:
+waypoints:
   - title: "The Software Catalog's rows moved into a data file that reports can compare against"
     status: planned
   - title: "Installed versions collected from routers, hypervisors, VMs, network devices and Pis"
@@ -27,6 +27,6 @@ the [Discovery](/docs/policies/lifecycle-management/discovery/) stage of Lifecyc
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/plan/)

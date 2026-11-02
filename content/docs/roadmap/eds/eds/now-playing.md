@@ -1,7 +1,7 @@
 ---
 title: "Now Playing"
 weight: 2
-milestones:
+waypoints:
   - title: "Each music source reports on one message bus, and a now-playing service picks what is current (EdS ADR-0006, ADR-0007, ADR-0008)"
     group: "Drivers"
     status: done
@@ -73,16 +73,16 @@ One contract on the bus for every source, and a record named by what is on it an
 
 ## Drivers 🔄
 
-{{< milestones group="Drivers" >}}
+{{< waypoints group="Drivers" >}}
 
 ---
 
 ## Naming the record ✅
 
-{{< milestones group="Naming the record" >}}
+{{< waypoints group="Naming the record" >}}
 
 ---
 
 ## Telemetry ✅
 
-{{< milestones group="Telemetry" >}}
+{{< waypoints group="Telemetry" >}}

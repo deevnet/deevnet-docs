@@ -3,7 +3,7 @@ title: "Secrets and Identity"
 bookCollapseSection: true
 weight: 7
 value: [secure-by-default]
-milestones:
+waypoints:
   - title: "The site's infrastructure secrets in Ansible Vault, guarded on every commit"
     status: done
     date: "2026-03-14"
@@ -36,6 +36,6 @@ from the vault; and identity for the people and services that use them.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Secrets and Identity](/docs/roadmap/infrastructure/substrate/secrets-identity/plan/)

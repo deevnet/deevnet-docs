@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/credential-rotation/
 weight: 10
 value: [secure-by-default]
-milestones:
+waypoints:
   - title: "Exposed credentials rotated; every public repository scanned on push (CHG-0035)"
     status: done
     date: "2026-10-06"
@@ -29,6 +29,6 @@ Define how a credential gets replaced. The [Secure Identity Standard](/docs/stan
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Credential Rotation](/docs/roadmap/infrastructure/substrate/credential-rotation/plan/)

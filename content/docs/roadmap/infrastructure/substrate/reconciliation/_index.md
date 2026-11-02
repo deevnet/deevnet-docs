@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/reconciliation/
 weight: 4
 value: [one-operator]
-milestones:
+waypoints:
   - title: "Leftover DHCP reservations, DNS records and boot files from deleted hosts removed"
     status: planned
   - title: "Automation removes a host's DHCP, DNS and boot entries when it leaves inventory"
@@ -28,6 +28,6 @@ Close the gap between what inventory declares and what the substrate actually ru
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Declarative Reconciliation](/docs/roadmap/infrastructure/substrate/reconciliation/plan/)

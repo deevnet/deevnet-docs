@@ -1,6 +1,6 @@
 # Backfill from history
 
-How the roadmap's history was rebuilt in November 2026. Use it when milestones are missing,
+How the roadmap's history was rebuilt in November 2026. Use it when waypoints are missing,
 coarse, or dated only approximately, or when a stretch of work was never put on the roadmap.
 
 ## 1. Fetch every repository's history
@@ -33,34 +33,34 @@ each period to a general-purpose agent. Give each agent the same brief, changing
 period and any hints about what is known to fall in it:
 
 > Reconstruct what the Deevnet project accomplished from **<from> to <to>**, from its git
-> history, so its roadmap can show dated milestones. Read only.
+> history, so its roadmap can show dated waypoints. Read only.
 >
 > Sources: bare clones at `<scratch>/history/*.git` (`git -C X.git log --all --no-merges
 > --since=… --until=… --format='%ad %h %s%n%b' --date=short`; `--merges` gives PR titles); the
 > docs at `<repo>`: change records `content/docs/changes/`, incidents, ADRs, the roadmap's
-> `milestones:` front matter, and each item's plan (`plan.md`) beneath it.
+> `waypoints:` front matter, and each item's plan (`plan.md`) beneath it.
 >
 > Report, under ~2000 words:
 > 1. What happened, week by week: things that became true, each with a date and evidence
 >    (record ID or repo + short sha). Skip churn. Explain gaps.
-> 2. Mapping onto the roadmap: milestones the evidence shows reached, with the date the last
->    piece landed (flag disagreements with dates already there); 🔄/⏳ milestones partly or
->    fully done, with a proposed split into dated pieces plus what remains; missing milestones,
->    each with an outcome-shaped title, its item, a date and evidence. Milestone-sized only.
+> 2. Mapping onto the roadmap: waypoints the evidence shows reached, with the date the last
+>    piece landed (flag disagreements with dates already there); 🔄/⏳ waypoints partly or
+>    fully done, with a proposed split into dated pieces plus what remains; missing waypoints,
+>    each with an outcome-shaped title, its item, a date and evidence. Waypoint-sized only.
 > 3. The period in 3–5 lines.
 >
 > Be conservative: every date from evidence; say when it is a guess.
 
 ## 4. Merge, then ask
 
-Merge the reports into one proposal, grouped as date corrections, splits, new milestones, and
+Merge the reports into one proposal, grouped as date corrections, splits, new waypoints, and
 things left out on purpose. Fold duplicates: the same outcome is often found by two agents, or
 proposed under two items. Then put it to the owner before writing anything. Ask about facts that
 only the owner knows, such as why a stretch was quiet or what failed.
 
 ## 5. Apply
 
-Apply the agreed changes with the `roadmap-update` skill's `milestones.py`, or by editing the
-front matter directly for splits and inserts. Keep every reached milestone dated. Remove `approx`
-wherever the evidence now gives the day. Then run `milestones.py check` and the `hugo-docs`
+Apply the agreed changes with the `roadmap-update` skill's `waypoints.py`, or by editing the
+front matter directly for splits and inserts. Keep every reached waypoint dated. Remove `approx`
+wherever the evidence now gives the day. Then run `waypoints.py check` and the `hugo-docs`
 check, and open a pull request.

@@ -1,7 +1,7 @@
 ---
 title: "Platform"
 weight: 6
-milestones:
+waypoints:
   - title: "EdS set up as a Deevnet tenant with its own workload, using Deevnet's MQTT broker (EdS ADR-0003)"
     group: "At the factory"
     status: done
@@ -68,10 +68,10 @@ EdS runs at the factory as a Deevnet tenant and at home on one Pi, under Deevnet
 
 ## At the factory 🔄
 
-{{< milestones group="At the factory" >}}
+{{< waypoints group="At the factory" >}}
 
 ---
 
 ## At home 🔄
 
-{{< milestones group="At home" >}}
+{{< waypoints group="At home" >}}

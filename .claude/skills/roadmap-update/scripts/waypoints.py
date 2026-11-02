@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""Read, check and mark the roadmap's milestones (the `milestones:` lists in
+"""Read, check and mark the roadmap's waypoints (the `waypoints:` lists in
 front matter). Run from the repository root.
 
-    milestones.py check
-    milestones.py list [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--status done|active|planned] [--page PATH]
-    milestones.py done PAGE TITLE DATE [--approx]
-    milestones.py status PAGE TITLE active|planned
+    waypoints.py check
+    waypoints.py list [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--status done|active|planned] [--page PATH]
+    waypoints.py done PAGE TITLE DATE [--approx]
+    waypoints.py status PAGE TITLE active|planned
 
 PAGE is a path under content/docs/roadmap/ without .md (infrastructure/substrate/builder),
 or a path from the repository root (content/projects/archive/x.md). TITLE is the exact
-title, or a fragment that matches one milestone only.
+title, or a fragment that matches one waypoint only.
 
 Pages read: roadmap items, archived plans and Completed Projects entries. Only the
-list format this site writes is understood: one `- title:` per milestone, then
-`group:`, `status:`, `date:`, `approx:` on their own lines.
+list format this site writes is understood: one `- title:` per waypoint, then
+`group:`, `value:`, `milestone:`, `status:`, `date:`, `approx:` on their own lines.
+
+A waypoint with `milestone: true` closes a version: its definition of done, written in the
+item's plan, is met. `list` marks it with 🏁.
 """
 import argparse, glob, json, os, re, sys
 
@@ -24,11 +27,11 @@ def is_plan(p):
     return p.endswith("/plan.md") or "/plan/" in p
 
 def is_item(p):
-    """A roadmap item: a plain page, or a section holding a plan or milestones. Other sections are areas."""
+    """A roadmap item: a plain page, or a section holding a plan or waypoints. Other sections are areas."""
     if is_plan(p): return False
     if not p.endswith("_index.md"): return True
     d = os.path.dirname(p)
-    return os.path.exists(f"{d}/plan.md") or os.path.isdir(f"{d}/plan") or "\nmilestones:" in open(p, encoding="utf-8").read()
+    return os.path.exists(f"{d}/plan.md") or os.path.isdir(f"{d}/plan") or "\nwaypoints:" in open(p, encoding="utf-8").read()
 
 def pages():
     out = [p for p in glob.glob("content/docs/roadmap/**/*.md", recursive=True) if is_item(p)]
@@ -47,8 +50,8 @@ def split(path):
     return s[:end], s[end:]
 
 def parse(fm):
-    if "\nmilestones:" not in fm: return None
-    head, rest = fm.split("\nmilestones:", 1)
+    if "\nwaypoints:" not in fm: return None
+    head, rest = fm.split("\nwaypoints:", 1)
     lines = rest.split("\n")[1:]
     block, after = [], []
     for i, l in enumerate(lines):
@@ -59,18 +62,19 @@ def parse(fm):
     ms = []
     for chunk in re.split(r'\n  - ', "\n" + "\n".join(block))[1:]:
         m = {}
-        for k, v in re.findall(r'^\s*(title|group|value|status|date|approx): (.*)$', chunk, re.M):
-            m[k] = json.loads(v) if v.startswith('"') else (v == "true" if k == "approx" else v)
+        for k, v in re.findall(r'^\s*(title|group|value|milestone|status|date|approx): (.*)$', chunk, re.M):
+            m[k] = json.loads(v) if v.startswith('"') else (v == "true" if k in ("approx", "milestone") else v)
         ms.append(m)
     return head, ms, after
 
 def emit(head, ms, after):
     q = lambda s: json.dumps(s, ensure_ascii=False)
-    y = ["milestones:"]
+    y = ["waypoints:"]
     for m in ms:
         y.append(f"  - title: {q(m['title'])}")
         if m.get("group"): y.append(f"    group: {q(m['group'])}")
         if "value" in m: y.append(f"    value: {m['value']}")
+        if m.get("milestone"): y.append("    milestone: true")
         y.append(f"    status: {m['status']}")
         if m["status"] == "done":
             y.append(f"    date: {q(m['date'])}")
@@ -80,7 +84,7 @@ def emit(head, ms, after):
 def find(ms, title):
     hit = [m for m in ms if m["title"] == title] or [m for m in ms if title.lower() in m["title"].lower()]
     if len(hit) != 1:
-        sys.exit(f"{len(hit)} milestones match {title!r}:\n  " + "\n  ".join(m["title"] for m in ms))
+        sys.exit(f"{len(hit)} waypoints match {title!r}:\n  " + "\n  ".join(m["title"] for m in ms))
     return hit[0]
 
 def cmd_check(_):
@@ -97,14 +101,14 @@ def cmd_check(_):
         roadmap = p.startswith("content/docs/roadmap/")
         parsed = parse(fm)
         if not parsed:
-            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md"): err(p, "no milestones: list")
+            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md"): err(p, "no waypoints: list")
             continue
         head, ms, _ = parsed
         tags = re.findall(r'^value: \[(.*)\]$', head, re.M) + [m["value"].strip("[]") for m in ms if "value" in m]
         for v in {x.strip() for t in tags for x in t.split(",") if x.strip()} - known:
             err(p, f"value objective {v!r} is not in data/value_objectives.yaml")
         if roadmap and re.search(r'^tasks_(completed|in_progress|planned):', fm, re.M):
-            err(p, "tasks_* on a roadmap page; its progress is computed from milestones")
+            err(p, "tasks_* on a roadmap page; its progress is computed from waypoints")
         seen = set()
         for m in ms:
             t = m.get("title", "?")
@@ -115,18 +119,20 @@ def cmd_check(_):
             if m.get("status") not in STATUSES: err(p, f"{t!r}: status {m.get('status')!r}")
             if m.get("status") == "done":
                 if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(m.get("date", ""))): err(p, f"{t!r}: done without a YYYY-MM-DD date")
-            elif "date" in m: err(p, f"{t!r}: a date on a milestone not done")
+            elif "date" in m: err(p, f"{t!r}: a date on a waypoint not done")
+            if m.get("milestone") and roadmap and not os.path.exists(os.path.join(os.path.dirname(p), "plan.md")) and not os.path.isdir(os.path.join(os.path.dirname(p), "plan")):
+                warn(p, f"{t!r}: a milestone with no plan to hold its definition of done")
         if roadmap:
-            if "{{< milestones" not in body: err(p, "the body has no {{< milestones >}}")
-            groups = set(re.findall(r'\{\{< milestones group="([^"]+)" >\}\}', body))
+            if "{{< waypoints" not in body: err(p, "the body has no {{< waypoints >}}")
+            groups = set(re.findall(r'\{\{< waypoints group="([^"]+)" >\}\}', body))
             used = {m.get("group") for m in ms if m.get("group")}
             for g in used - groups: err(p, f"group {g!r} is never drawn")
-            for g in groups - used: err(p, f"{{{{< milestones group={g!r} >}}}} draws nothing")
-            # An item holds 3–8 milestones; one drawn under headings, 3–8 a heading.
+            for g in groups - used: err(p, f"{{{{< waypoints group={g!r} >}}}} draws nothing")
+            # An item holds 3–8 waypoints; one drawn under headings, 3–8 a heading.
             sizes = {}
             for m in ms: sizes[m.get("group")] = sizes.get(m.get("group"), 0) + 1
             for g, n in sizes.items():
-                if n > 8: warn(p, f"{n} milestones{' in ' + repr(g) if g else ''}; hold 3–8, split by theme")
+                if n > 8: warn(p, f"{n} waypoints{' in ' + repr(g) if g else ''}; hold 3–8, split by theme")
     print(f"{errors} errors, {warnings} warnings")
     return 1 if errors else 0
 
@@ -143,7 +149,7 @@ def cmd_list(a):
             if a.date_from and d < a.date_from: continue
             if a.date_to and d > a.date_to: continue
             rel = p[len("content/docs/roadmap/"):-3].removesuffix("/_index") if p.startswith("content/docs/roadmap/") else "/" + p[len("content/"):-3]
-            print(f"{d or '-':10}\t{ICON[m['status']]}\t{rel}\t{title}\t{m['title']}" + ("\t(approx)" if m.get("approx") else ""))
+            print(f"{d or '-':10}\t{ICON[m['status']]}\t{rel}\t{title}\t{m['title']}" + ("\t(approx)" if m.get("approx") else "") + ("\t🏁" if m.get("milestone") else ""))
     return 0
 
 def cmd_set(a, status, date=None, approx=False):

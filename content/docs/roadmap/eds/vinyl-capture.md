@@ -1,7 +1,7 @@
 ---
 title: "EdS Vinyl Capture"
 weight: 3
-milestones:
+waypoints:
   - title: "Each record played captured to FLAC, track by track (EdS capturing-vinyl proposal)"
     status: planned
 ---
@@ -33,4 +33,4 @@ captured and what is missing.
 
 ## Capture ⏳
 
-{{< milestones >}}
+{{< waypoints >}}

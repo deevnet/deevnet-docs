@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/tenant-removal/
 weight: 5
 value: [contained-failure]
-milestones:
+waypoints:
   - title: "Removing a tenant also deletes its state, logs and dashboards"
     status: planned
   - title: "Removing a tenant revokes its API token"
@@ -23,6 +23,6 @@ operator's procedure today is [Tenant Removal](/docs/runbook/substrate/tenant-re
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Tenant Removal](/docs/roadmap/infrastructure/tenant-services/tenant-removal/plan/)

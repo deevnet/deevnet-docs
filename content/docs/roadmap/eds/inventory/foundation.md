@@ -1,7 +1,7 @@
 ---
 title: "Foundation and Collecting"
 weight: 1
-milestones:
+waypoints:
   - title: "Music inventory built as Go services with a SQLite store (eds-inventory ADR-0001)"
     group: "Foundation"
     status: done
@@ -54,10 +54,10 @@ One inventory that keeps itself in step with every place the owner's music is ke
 
 ## Foundation ✅
 
-{{< milestones group="Foundation" >}}
+{{< waypoints group="Foundation" >}}
 
 ---
 
 ## Sources 🔄
 
-{{< milestones group="Sources" >}}
+{{< waypoints group="Sources" >}}

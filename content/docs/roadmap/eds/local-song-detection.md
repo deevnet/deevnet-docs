@@ -1,7 +1,7 @@
 ---
 title: "EdS Local Song Detection"
 weight: 4
-milestones:
+waypoints:
   - title: "Choose a fingerprinting engine, and whether one match holds across masterings"
     status: planned
   - title: "A song fingerprint index from the owner's rips, kept current as the library changes"
@@ -44,4 +44,4 @@ collection, naming the edition owned, and nothing leaves the house. Open-source 
 
 ## Detection ⏳
 
-{{< milestones >}}
+{{< waypoints >}}

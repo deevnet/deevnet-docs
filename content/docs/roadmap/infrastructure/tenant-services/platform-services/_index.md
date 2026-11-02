@@ -3,7 +3,7 @@ title: "Tenant Platform Services"
 bookCollapseSection: true
 weight: 3
 value: [product-not-plumbing]
-milestones:
+waypoints:
   - title: "The first services for tenants: Wi-Fi keys, device registry, MQTT broker, logs, a dev network, dashboards, downloads"
     status: done
     date: "2026-09-24"
@@ -30,6 +30,6 @@ dashboards, downloads, fixed addresses and services by name, and what is still t
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/plan/)

@@ -1,6 +1,6 @@
 # What the roadmap's work is for. Each objective's page section is in
 # content/docs/roadmap/value.md, under a heading whose id is the objective's id.
-# Roadmap items and milestones name these ids in `value:`. An objective may add
+# Roadmap items and waypoints name these ids in `value:`. An objective may add
 # a `measure:` once one is chosen.
 objectives:
   - id: fast-delivery
