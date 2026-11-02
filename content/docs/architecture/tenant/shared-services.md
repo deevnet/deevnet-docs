@@ -106,22 +106,10 @@ writing a device's broker account.
 ## 2. What a Tenant Can Consume
 
 The services themselves — what each domain holds, which segment it sits on, and why — are described
-in [Control Plane](/docs/architecture/substrate/control-plane/). From a tenant's side, these
-matter:
-
-| Service | What the tenant gets |
-|---------|----------------------|
-| **The provisioning API** | Its own existence: index, network, workloads, names, and the credentials for the rest |
-| **Tenant DNS** | A delegated zone under the site zone, and a key scoped to it |
-| **State store** | An S3-compatible bucket, scoped to the tenant's own prefix — or nothing, if the tenant keeps custody |
-| **Device messaging** | A device registry, and a broker account for each device the tenant owns, scoped to the tenant's topics |
-| **Device addresses** | A fixed address on the device network for a registered device, and its name in the tenant's zone |
-| **Wi-Fi keys** | A key on the IoT SSID that lands the tenant's devices on the IoT segment |
-| **Logs** | Partitions of its own in the tenant log store, with an ingest and a read token |
-| **Dashboards** | A dashboards organization of its own, with its logs wired in |
-
-Every one of them is declared through the provisioning API. The resources a tenant writes for each
-are in the [Terraform provider](/docs/platforms/deevnet-software/terraform-provider/).
+in [Control Plane](/docs/architecture/substrate/control-plane/). What a tenant gets from
+each is in the [contract](/docs/architecture/tenant/boundary/#what-every-tenant-gets). Every one of
+them is declared through the provisioning API, and the resources a tenant writes for each are in the
+[Terraform provider](/docs/platforms/deevnet-software/terraform-provider/).
 
 Two things a tenant does **not** get, and should not expect:
 
@@ -167,11 +155,7 @@ tenant's own act, through the service's interface.
 | **Identity** | Create the tenant's zone and issue its key | Add, change and remove records |
 | **Provisioning: state** | Issue a credential scoped to the tenant's prefix | Plan and apply against it |
 | **Provisioning: platform API** | Issue one API credential | Register devices, issue their wireless keys and broker accounts |
-| **Tenant observability** | *To be defined* | *To be defined* |
-
-The existing debt is named in
-[ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/): device broker
-accounts and topic permissions are still kept in substrate inventory.
+| **Tenant observability** | Create its log partitions and tokens, and its dashboards organization | Send and read logs, and build dashboards |
 
 ---
 

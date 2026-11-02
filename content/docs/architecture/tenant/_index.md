@@ -139,36 +139,10 @@ Only `mobile` is built today; `home` is a reserved zone
 
 ## The Tenant Contract
 
-A tenant is defined by the **contract** it satisfies with the substrate — a clean interface between
-what the tenant declares and what the substrate builds for it.
-
-The line between those two moved with
-[ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/). A tenant used to
-declare its own network, derive every identifier from an index it was issued, and hold a hypervisor
-credential to build with. It now **asks the provisioning API**, and the API builds all of that on its
-behalf. The tenant is left declaring only what is genuinely its own:
-
-| The tenant declares | The substrate builds and guarantees |
-|---------------------|--------------------------------------|
-| That it exists, and its name | Its index, and every identifier derived from it — VRF, VNet, subnet, gateway |
-| Its workloads: how many, how big, whose SSH keys | The VMs, their VMIDs, MACs and addresses, on the tenant hypervisor |
-| The names it wants in front of them | A delegated DNS zone, and the key that writes into it |
-| Whether to use the offered state store | An S3-compatible state store it may use or decline |
-| Its own repository, from which it is rebuilt | A perimeter for egress and shared-service access |
-
-Two properties of that interface matter more than the rows themselves:
-
-- **A tenant holds no substrate credential.** It is admitted with a single-use enrollment token and
-  trades it for its own token on first apply. It never holds a Proxmox login, a vault password or a
-  controller credential — so there is nothing it could use to reach around the interface.
-- **Nothing recurring needs a substrate commit.** Onboarding a tenant is a substrate act;
-  everything after it — adding a workload, publishing a name, issuing a device key — is the
-  tenant's own change
-  ([ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)).
-
-Because the interface is explicit, any conforming tenant can be built, rebuilt, or moved without
-changing the substrate. See [Substrate and Tenant](/docs/architecture/tenant/boundary/) for the
-boundary itself.
+A tenant is defined by the **contract** it satisfies with the substrate: the tenant declares what is
+genuinely its own, and the substrate builds the rest. A tenant holds no substrate credential, and
+nothing recurring needs a substrate commit. The contract itself, with how far each promise is
+enforced today, is [Substrate and Tenant](/docs/architecture/tenant/boundary/).
 
 ---
 

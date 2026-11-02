@@ -62,6 +62,11 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0043: The Terms of the Tenant Contract](/docs/architecture/decisions/tenant-model/0043-tenant-contract-terms/) —
+  *Accepted* (2026-11-01). Every service is best effort, with no uptime figure and no promise of
+  notice before an outage. What the first apply creates is every tenant's; the rest exists only if
+  declared, so a tenant with only devices conforms. A breaking change gets a change record and a
+  release note before it lands.
 - [ADR-0041: Take-Home Pi PKI Lifecycle](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) —
   *Proposed.* One generic image; the card's first-boot setting is `deevnet` (the default: certificates
   from the Mobile Factory's tenant CAs, renewed at a visit, no CA key on the card) or `non-deevnet`,

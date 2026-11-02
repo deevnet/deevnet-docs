@@ -2,8 +2,8 @@
 title: "Tenant Lifecycle: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 9
-tasks_in_progress: 2
+tasks_completed: 11
+tasks_in_progress: 1
 tasks_planned: 4
 ---
 
@@ -19,24 +19,19 @@ A repeatable, code-defined tenant lifecycle: each tenant is an isolated workload
 
 ---
 
-## Define tenant contracts 🔄
+## Define tenant contracts ✅
 
-The interface every tenant must satisfy to be rebuildable against the substrate.
-
-**In practice, the contract is now the Deevnet API and its Terraform provider**
+The contract is the Deevnet API and its Terraform provider
 ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/), deployed by
-[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)). A tenant is admitted with a single-use
-enrollment token, then declares itself, its workloads and its names through one provider. It holds
-no Proxmox credential, no vault access and no index. What it may consume is
-[ADR-0010](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/)'s, and the tenant
-runbook describes each service. What is still missing is the boundary written down as one
-specification.
+[CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)), and it is specified in one place:
+[Substrate and Tenant](/docs/architecture/tenant/boundary/). Its terms are
+[ADR-0043](/docs/architecture/decisions/tenant-model/0043-tenant-contract-terms/).
 
-- What a tenant **supplies** as code: network attachment, DNS records, compute/resource
-  declaration, naming.
-- What the substrate **guarantees** in return: a network to attach to, a perimeter, and a DNS
-  zone to publish into.
-- The tenant↔substrate boundary written as a specification, so any conforming tenant can be built.
+- ✅ The boundary written as one specification: what every tenant gets, what it may declare, what
+  makes it conforming, and how far each promise is enforced.
+- ✅ `tdemo` and the device-only `mabell` checked against the conformance rules on 2026-11-01, by
+  reading their repositories. Both conform. `mabell`'s backend still names the state store's old
+  port, `:9000`, which still answers.
 
 ---
 
