@@ -6,7 +6,7 @@ milestones:
     group: "Hearing"
     status: done
     date: "2026-10-24"
-  - title: "A spoken request sent whole to EdS's server, transcribed and made a command (EdS ADR-0042)"
+  - title: "A spoken request sent whole to EdS's workload, transcribed and made a command (EdS ADR-0042)"
     group: "Hearing"
     status: done
     date: "2026-10-24"

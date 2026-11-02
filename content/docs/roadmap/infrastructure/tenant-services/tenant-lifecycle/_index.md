@@ -16,7 +16,7 @@ milestones:
   - title: "A reference tenant a newcomer can copy"
     status: done
     date: "2026-09-27"
-  - title: "Tenants log in to their own servers and deploy their app (CHG-0028)"
+  - title: "Tenants log in to their own workloads and deploy their app (CHG-0028)"
     status: done
     date: "2026-09-27"
   - title: "Tenants admitted and removed, and their Wi-Fi keys rotated, by make targets on the build server"

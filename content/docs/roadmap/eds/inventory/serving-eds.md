@@ -2,7 +2,7 @@
 title: "Serving EdS"
 weight: 4
 milestones:
-  - title: "Music inventory runs on EdS's server, beside its voice service (eds-inventory ADR-0003)"
+  - title: "Music inventory runs on EdS's workload, beside its voice service (eds-inventory ADR-0003)"
     group: "Clients"
     status: done
     date: "2026-10-24"

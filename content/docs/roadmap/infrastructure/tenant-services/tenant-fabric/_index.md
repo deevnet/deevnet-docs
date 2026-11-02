@@ -16,7 +16,7 @@ milestones:
   - title: "The core router reduced to the site's perimeter, no longer routing tenant traffic inside it"
     value: [contained-failure]
     status: planned
-  - title: "Tenants' servers isolated from each other"
+  - title: "Network isolation between two tenants' workloads tested"
     value: [contained-failure]
     status: planned
 ---

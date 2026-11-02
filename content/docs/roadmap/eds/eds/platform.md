@@ -2,7 +2,7 @@
 title: "Platform"
 weight: 6
 milestones:
-  - title: "EdS set up as a Deevnet tenant with its own server, using Deevnet's MQTT broker (EdS ADR-0003)"
+  - title: "EdS set up as a Deevnet tenant with its own workload, using Deevnet's MQTT broker (EdS ADR-0003)"
     group: "At the factory"
     status: done
     date: "2026-09-07"
@@ -14,7 +14,7 @@ milestones:
     group: "At the factory"
     status: done
     date: "2026-10-24"
-  - title: "Decide whether to keep, retire or move EdS's tenant, server and relay Pi on the mobile site (EdS CHG-0028)"
+  - title: "Decide whether to keep, retire or move EdS's tenant, workload and relay Pi on the mobile site (EdS CHG-0028)"
     group: "At the factory"
     status: planned
   - title: "All of EdS's back end on one Pi at home: in service, the change record awaiting its evidence (EdS ADR-0033, CHG-0028)"
