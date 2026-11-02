@@ -32,7 +32,8 @@ waypoints:
     date: "2026-10-30"
   - title: "EdS's home Pi image rebuilt with all of its back end (EdS CHG-0048)"
     group: "At home"
-    status: active
+    status: done
+    date: "2026-11-01"
   - title: "EdS's home Pi serves through nginx on ports 80 and 443, with Grafana by name (EdS CHG-0042)"
     group: "At home"
     status: planned
