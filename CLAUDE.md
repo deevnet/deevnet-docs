@@ -33,11 +33,11 @@ This site documents the **Mobile Factory**, the mobile instance of Deevnet (site
 
 ## Skills
 
-Three skills in `.claude/skills/` carry this repository's routines, with their scripts:
+Two skills in `.claude/skills/` carry this repository's routines, with their scripts, and a third comes from the owner's `cd` plugin (`cdeever/claude-skills`):
 
 - **`hugo-docs`** builds and checks the site: Hugo's own exit code, warnings new against `main`, internal links and anchors, and old URLs kept. Run it before every pull request.
 - **`roadmap-update`** keeps the roadmap and plans true as work happens: waypoints marked done with their dates, plans' counts recounted, plans written when work starts, and projects graduated.
-- **`accomplishments`** tracks roadmap progress: it drafts a period's written account for the Roadmap Progress page (a month from its waypoints, a quarter from its months, a year from its quarters), catches the roadmap and every account up at any time, and backfills waypoints from the history of every Deevnet repository. A scheduled run on the 1st of each month runs the catch-up as a pull request.
+- **`/cd:progress-reporting`** (formerly `accomplishments`) tracks roadmap progress: it drafts a period's written account for the Roadmap Progress page (a month from its waypoints, a quarter from its months, a year from its quarters), catches the roadmap and every account up at any time, and backfills waypoints from the history of every Deevnet repository. A scheduled run on the 1st of each month runs the catch-up as a pull request.
 
 **A new idea is shaped before it is built**, with two user-level skills from the `cd` plugin (`cdeever/claude-skills`): `/cd:ideation` interviews the owner and writes a proposal in `content/docs/architecture/proposals/`, and `/cd:version-planning` turns an accepted proposal into versions, each with a definition of done, then writes the roadmap item and its plan. New scope found along the way goes to the next version.
 
