@@ -6,21 +6,28 @@ aliases:
 weight: 2
 milestones:
   - title: "Site management services grouped onto six VMs by domain (CHG-0008)"
+    value: [one-operator]
     status: done
     date: "2026-09-16"
   - title: "Management plane requirements defined: retention, alerting, secrets access and identity"
+    value: [no-surprises]
     status: active
   - title: "Recovery copies of the network's configuration: routine Wi-Fi controller snapshots, and core router configs that survive losing the build server"
+    value: [rebuild-from-code]
     status: planned
   - title: "Each Wi-Fi network's reach checked from a real client"
+    value: [no-surprises]
     status: done
     date: "2026-09-23"
   - title: "Automated checks that a finished build matches inventory, with a pass/fail report"
+    value: [no-surprises]
     status: active
   - title: "Nightly encrypted backups, one restore rehearsed (CHG-0039)"
+    value: [rebuild-from-code]
     status: done
     date: "2026-10-07"
   - title: "Management plane architecture, deployment and troubleshooting documentation written"
+    value: [one-operator]
     status: planned
 ---
 

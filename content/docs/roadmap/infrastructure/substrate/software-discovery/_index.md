@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/software-discovery/
 weight: 11
+value: [no-surprises]
 milestones:
   - title: "The Software Catalog's rows moved into a data file that reports can compare against"
     status: planned

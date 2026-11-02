@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/credential-rotation/
 weight: 10
+value: [secure-by-default]
 milestones:
   - title: "Exposed credentials rotated; every public repository scanned on push (CHG-0035)"
     status: done

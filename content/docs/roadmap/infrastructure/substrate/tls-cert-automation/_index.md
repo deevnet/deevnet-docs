@@ -5,8 +5,10 @@ aliases:
   - /docs/roadmap/infrastructure/ssl-cert-automation/
   - /docs/roadmap/infrastructure/tls-cert-automation/
 weight: 9
+value: [secure-by-default]
 milestones:
   - title: "Deevnet's own root and site certificate authorities created and kept offline (CHG-0033)"
+    value: [secure-by-default, works-anywhere]
     status: done
     date: "2026-10-05"
   - title: "Tenant certificate authorities' keys generated outside the OpenBao secrets manager (CHG-0036)"
@@ -23,6 +25,7 @@ milestones:
   - title: "IoT devices get their own certificates through the Deevnet API and use them to log in to the MQTT broker"
     status: planned
   - title: "Automatic certificate renewal, expiry monitoring, and a clean new root once device certificates work"
+    value: [secure-by-default, one-operator]
     status: planned
 ---
 

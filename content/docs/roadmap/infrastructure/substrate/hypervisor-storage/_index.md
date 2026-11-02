@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-storage/
 weight: 5
+value: [rebuild-from-code]
 milestones:
   - title: "The management hypervisor's disk layout declared in inventory"
     status: active

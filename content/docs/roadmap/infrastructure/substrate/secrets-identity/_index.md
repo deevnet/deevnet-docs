@@ -2,6 +2,7 @@
 title: "Secrets and Identity"
 bookCollapseSection: true
 weight: 7
+value: [secure-by-default]
 milestones:
   - title: "The site's infrastructure secrets in Ansible Vault, guarded on every commit"
     status: done
@@ -10,12 +11,15 @@ milestones:
     status: done
     date: "2026-09-17"
   - title: "Builds take their secrets from OpenBao, none on disk (CHG-0026)"
+    value: [secure-by-default, one-operator]
     status: done
     date: "2026-09-25"
   - title: "OpenBao's keys made outside it and loaded from the site's vault on every build, its access restricted and audited (CHG-0036)"
+    value: [secure-by-default, rebuild-from-code]
     status: done
     date: "2026-10-25"
   - title: "OpenBao moved to a split-key (Shamir) seal, and its rebuild drilled"
+    value: [secure-by-default, rebuild-from-code]
     status: active
   - title: "Single sign-on and role-based access for infrastructure services"
     status: planned

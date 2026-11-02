@@ -15,7 +15,8 @@ site offers tenants. Site Work is operational work on a site: upgrades, hardware
 EdS, MaBell and PiPDP11 are the tenants that live in Deevnet for good. Each has documentation of its
 own, and is tracked here because Deevnet builds, certifies and maintains it. Routine operations,
 such as applying a patch, are not roadmap items. Every milestone reached, with its date, is listed
-in [Roadmap Progress](/docs/roadmap/progress/).
+in [Roadmap Progress](/docs/roadmap/progress/). What the work is for, and how far each aim has come,
+is in [Value Objectives](/docs/roadmap/value/).
 
 {{< roadmap-progress >}}
 

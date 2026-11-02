@@ -59,7 +59,7 @@ def parse(fm):
     ms = []
     for chunk in re.split(r'\n  - ', "\n" + "\n".join(block))[1:]:
         m = {}
-        for k, v in re.findall(r'^\s*(title|group|status|date|approx): (.*)$', chunk, re.M):
+        for k, v in re.findall(r'^\s*(title|group|value|status|date|approx): (.*)$', chunk, re.M):
             m[k] = json.loads(v) if v.startswith('"') else (v == "true" if k == "approx" else v)
         ms.append(m)
     return head, ms, after
@@ -70,6 +70,7 @@ def emit(head, ms, after):
     for m in ms:
         y.append(f"  - title: {q(m['title'])}")
         if m.get("group"): y.append(f"    group: {q(m['group'])}")
+        if "value" in m: y.append(f"    value: {m['value']}")
         y.append(f"    status: {m['status']}")
         if m["status"] == "done":
             y.append(f"    date: {q(m['date'])}")
@@ -84,6 +85,7 @@ def find(ms, title):
 
 def cmd_check(_):
     errors = warnings = 0
+    known = set(re.findall(r'^  - id: (\S+)$', open("data/value_objectives.yaml", encoding="utf-8").read(), re.M))
     def err(p, msg):
         nonlocal errors; errors += 1; print(f"ERROR {p}: {msg}")
     def warn(p, msg):
@@ -95,9 +97,12 @@ def cmd_check(_):
         roadmap = p.startswith("content/docs/roadmap/")
         parsed = parse(fm)
         if not parsed:
-            if roadmap and p != "content/docs/roadmap/progress.md": err(p, "no milestones: list")
+            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md"): err(p, "no milestones: list")
             continue
-        _, ms, _ = parsed
+        head, ms, _ = parsed
+        tags = re.findall(r'^value: \[(.*)\]$', head, re.M) + [m["value"].strip("[]") for m in ms if "value" in m]
+        for v in {x.strip() for t in tags for x in t.split(",") if x.strip()} - known:
+            err(p, f"value objective {v!r} is not in data/value_objectives.yaml")
         if roadmap and re.search(r'^tasks_(completed|in_progress|planned):', fm, re.M):
             err(p, "tasks_* on a roadmap page; its progress is computed from milestones")
         seen = set()

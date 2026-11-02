@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/home-site/
 weight: 2
+value: [works-anywhere]
 milestones:
   - title: "The home site's certificate authorities created under the Deevnet root"
     status: planned

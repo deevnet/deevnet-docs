@@ -36,6 +36,7 @@ python3 $S/recount_plans.py [write]                  # plans' tasks_* from their
 milestones:
   - title: "The first Deevnet Pi (CHG-0056)"   # outcome-shaped; markdown allowed
     group: "Devices"      # only on pages drawn under headings, {{< milestones group="Devices" >}}
+    value: [secure-by-default]   # optional: replaces the item's `value:` for this milestone
     status: done          # done | active | planned
     date: "2026-10-29"    # done only: the day it was reached
     approx: true          # rare: the date is only a latest possible one
@@ -44,6 +45,11 @@ milestones:
 A milestone is an **outcome someone would care about**, not a task: "Tenants' services on Deevnet
 certificates", not "write the API endpoint". Name the record that carried it, in parentheses,
 when there is one.
+
+**A milestone serves value objectives.** Their ids are in `data/value_objectives.yaml`. Set `value:`
+on the item when all its milestones serve the same ones, and on a milestone when it differs. Tag each
+new milestone as it is added, because the bars on the Value Objectives page count them. Leave work
+that serves none untagged rather than stretch a tag. `milestones.py check` fails on an unknown id.
 
 **A milestone stands alone.** The Roadmap Progress page lists it away from its page and its
 headings, so someone new to Deevnet must be able to tell what it means from its title alone. Name

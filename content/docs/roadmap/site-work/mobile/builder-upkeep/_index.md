@@ -6,6 +6,7 @@ milestones:
   - title: "More space for the build server's `/home`, its build caches under `/srv`"
     status: planned
   - title: "The build server's Wi-Fi onto the home network, decided in a change record (EdS ADR-0053)"
+    value: [works-anywhere]
     status: planned
 ---
 

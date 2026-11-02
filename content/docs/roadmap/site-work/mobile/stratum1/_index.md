@@ -4,6 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
 weight: 6
+value: [works-anywhere]
 milestones:
   - title: "GPS time server requirements defined: accuracy, antenna placement and alerting"
     status: planned
