@@ -549,6 +549,29 @@ div.acc-narr {
   .acc-count { font-size: 0.55em; }
 }
 
+// The period today falls in.
+.acc-now {
+  margin-left: 0.6em;
+  padding: 0.1em 0.5em;
+  border-radius: 0.8em;
+  font-size: 0.5em;
+  font-weight: normal;
+  vertical-align: middle;
+  color: var(--badge-active);
+  border: 1px solid var(--badge-active);
+  white-space: nowrap;
+}
+.accomplishments[data-view="day"] .acc-now,
+.accomplishments[data-view="week"] .acc-now { font-size: 0.75em; }
+
+.acc-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0.4em 0;
+}
+
+.markdown details.acc-since > summary { color: var(--text-muted); }
+
 .acc-meter {
   height: 4px;
   border-radius: 2px;

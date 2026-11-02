@@ -4,7 +4,12 @@
        quarter or year. Days and weeks list their waypoints. A month, quarter
        or year shows its written narrative, each bullet opening onto the
        waypoints it rolls up; where it has none yet, it rolls a month up by
-       roadmap item, and a quarter or a year by area. */ -}}
+       roadmap item, and a quarter or a year by area. The period today falls
+       in is shown in progress, with the days left; it is shown even before
+       anything is reached in it. A month, quarter or year counts its
+       waypoints, milestones and projects completed, and the one in progress
+       its pace. Waypoints reached after an account's `through` are rolled up
+       beneath it until the account is written again. */ -}}
 {{- $roadmap := site.GetPage "/docs/roadmap" -}}
 {{- $areas := slice -}}
 {{- range $roadmap.Pages -}}{{- if or .Params.waypoints .IsSection -}}{{- $areas = $areas | append .Title -}}{{- end -}}{{- end -}}
@@ -69,7 +74,7 @@
     {{- end -}}
     {{- $bullets = $bullets | append (dict "html" (.text | markdownify) "items" $ids "within" (.within | default "")) -}}
   {{- end -}}
-  {{- $narratives = merge $narratives (dict $key (dict "headline" ($n.headline | markdownify) "bullets" $bullets "next" (cond (isset $n "next") ($n.next | markdownify) "") "watch" (cond (isset $n "watch") ($n.watch | markdownify) ""))) -}}
+  {{- $narratives = merge $narratives (dict $key (dict "headline" ($n.headline | markdownify) "bullets" $bullets "next" (cond (isset $n "next") ($n.next | markdownify) "") "watch" (cond (isset $n "watch") ($n.watch | markdownify) "") "through" (cond (isset $n "through") (time.AsTime $n.through | time.Format "2006-01-02") ""))) -}}
 {{- end -}}
 <script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "waypoints" $ms "narratives" $narratives | jsonify | safeJS }}</script>
 <script>
@@ -88,25 +93,40 @@
   function parse(s) { var p = s.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
   function iso(d) { return d.toISOString().slice(0, 10); }
   function addDays(d, n) { var t = new Date(d.getTime()); t.setUTCDate(t.getUTCDate() + n); return t; }
-  // A period: its key, its label, and its last day (to measure progress at its end).
+  // A period: its key, its label, its first day and its last (to measure progress at its end).
   function group(view, d) {
     var y = d.getUTCFullYear(), m = d.getUTCMonth();
     switch (view) {
-      case "day": return { key: iso(d), label: DAYS[d.getUTCDay()] + ", " + MONTHS[m] + " " + d.getUTCDate() + ", " + y, end: iso(d) };
+      case "day": return { key: iso(d), label: DAYS[d.getUTCDay()] + ", " + MONTHS[m] + " " + d.getUTCDate() + ", " + y, start: iso(d), end: iso(d) };
       case "week":
         var day = d.getUTCDay() || 7, mon = addDays(d, 1 - day), sun = addDays(mon, 6), th = addDays(mon, 3);
         var wy = th.getUTCFullYear(), w = Math.ceil(((th - Date.UTC(wy, 0, 1)) / 86400000 + 1) / 7);
-        return { key: wy + "-W" + w, label: "Week " + w + ", " + wy + " (" + SHORT[mon.getUTCMonth()] + " " + mon.getUTCDate() + " – " + SHORT[sun.getUTCMonth()] + " " + sun.getUTCDate() + ")", end: iso(sun) };
+        return { key: wy + "-W" + w, label: "Week " + w + ", " + wy + " (" + SHORT[mon.getUTCMonth()] + " " + mon.getUTCDate() + " – " + SHORT[sun.getUTCMonth()] + " " + sun.getUTCDate() + ")", start: iso(mon), end: iso(sun) };
       case "quarter":
         var q = Math.floor(m / 3);
-        return { key: y + "-Q" + (q + 1), label: "Q" + (q + 1) + " " + y, end: iso(new Date(Date.UTC(y, q * 3 + 3, 0))) };
-      case "year": return { key: "" + y, label: "" + y, end: y + "-12-31" };
-      default: return { key: y + "-" + (m < 9 ? "0" : "") + (m + 1), label: MONTHS[m] + " " + y, end: iso(new Date(Date.UTC(y, m + 1, 0))) };
+        return { key: y + "-Q" + (q + 1), label: "Q" + (q + 1) + " " + y, start: iso(new Date(Date.UTC(y, q * 3, 1))), end: iso(new Date(Date.UTC(y, q * 3 + 3, 0))) };
+      case "year": return { key: "" + y, label: "" + y, start: y + "-01-01", end: y + "-12-31" };
+      default: return { key: y + "-" + (m < 9 ? "0" : "") + (m + 1), label: MONTHS[m] + " " + y, start: iso(new Date(Date.UTC(y, m, 1))), end: iso(new Date(Date.UTC(y, m + 1, 0))) };
     }
   }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
   function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+  function days(a, b) { return Math.round((parse(b) - parse(a)) / 86400000); }
+  // Whether today falls in a period, and if so how much of it is left.
+  function current(view, g) { return group(view, today).key === g.key; }
+  function progressNote(view, g) {
+    if (view === "day") return "in progress";
+    var left = days(iso(today), g.end);
+    return "in progress · " + (left ? plural(left, "day") + " left" : "last day");
+  }
+  // Roadmap items whose last waypoint falls in the period: completed, or graduated.
+  function completedIn(g, view) { return data.items.filter(function (it) { return finishedIn(it, g, view); }).length; }
+  // At the pace so far, waypoints by the period's end.
+  function pace(g, n) {
+    var gone = days(g.start, iso(today)) + 1, all = days(g.start, g.end) + 1;
+    return gone < all && n ? Math.round(n / gone * all) : null;
+  }
   function waypointLi(m, withItem) {
     var it = items[m.item];
     return el("li", null, '<time datetime="' + m.date + '">' + (m.approx ? "by " : "") + m.date + '</time> <span class="acc-text">' + (m.milestone ? '<span class="waypoint-milestone">🏁 Milestone</span> ' : "") + m.title +
@@ -138,7 +158,7 @@
   }
   // The view a period key belongs to: 2026, 2026-Q4, 2026-10.
   function viewOf(key) { return /^\d{4}$/.test(key) ? "year" : /Q/.test(key) ? "quarter" : "month"; }
-  function narrative(g, n) {
+  function narrative(g, n, ms) {
     var frag = document.createDocumentFragment();
     frag.appendChild(el("p", "acc-headline", n.headline.replace(/^<p>|<\/p>\s*$/g, "")));
     n.bullets.forEach(function (b) {
@@ -158,10 +178,18 @@
     });
     if (n.next) frag.appendChild(el("p", "acc-next", "<strong>Next:</strong> " + n.next.replace(/^<p>|<\/p>\s*$/g, "")));
     if (n.watch) frag.appendChild(el("p", "acc-next acc-watch", "<strong>Watch:</strong> " + n.watch.replace(/^<p>|<\/p>\s*$/g, "")));
+    // What was reached after the account was written, until it is written again.
+    var since = n.through ? ms.filter(function (m) { return m.date > n.through; }) : [];
+    if (since.length) {
+      var d = el("details", "acc-roll acc-since");
+      d.appendChild(el("summary", null, "<strong>Since this account</strong> (written through " + esc(n.through) + ") — " + plural(since.length, "waypoint")));
+      d.appendChild(list(since, true));
+      frag.appendChild(d);
+    }
     return frag;
   }
   function summary(g, ms, view) {
-    if (data.narratives && data.narratives[g.key] && viewOf(g.key) === view) return narrative(g, data.narratives[g.key]);
+    if (data.narratives && data.narratives[g.key] && viewOf(g.key) === view) return narrative(g, data.narratives[g.key], ms);
     var frag = document.createDocumentFragment();
     if (view === "month") { byItem(ms).forEach(function (row) { frag.appendChild(itemDetails(row, g, view, true)); }); return frag; }
     var byArea = {};
@@ -188,10 +216,25 @@
       if (!cur || cur.g.key !== g.key) { cur = { g: g, ms: [] }; groups.push(cur); }
       cur.ms.push(m);
     });
-    var most = Math.max.apply(null, groups.map(function (gr) { return gr.ms.length; }));
+    // The period today falls in, even before anything is reached in it.
+    var thisOne = group(view, today);
+    if (!groups.length || groups[0].g.key !== thisOne.key) groups.unshift({ g: thisOne, ms: [] });
+    var most = Math.max(1, Math.max.apply(null, groups.map(function (gr) { return gr.ms.length; })));
     groups.forEach(function (gr) {
-      var h = el("h3", "acc-group"); h.appendChild(document.createTextNode(gr.g.label));
-      h.appendChild(el("span", "acc-count", plural(gr.ms.length, "waypoint")));
+      var live = current(view, gr.g);
+      var h = el("h3", "acc-group" + (live ? " acc-live" : ""));
+      var title = el("span"); title.appendChild(document.createTextNode(gr.g.label));
+      if (live) title.appendChild(el("span", "acc-now", progressNote(view, gr.g)));
+      h.appendChild(title);
+      var counts = [plural(gr.ms.length, "waypoint")];
+      if (rolled) {
+        counts.push(plural(gr.ms.filter(function (m) { return m.milestone; }).length, "milestone"));
+        var done = completedIn(gr.g, view);
+        counts.push(done + (done === 1 ? " project" : " projects") + " completed");
+        var p = live ? pace(gr.g, gr.ms.length) : null;
+        if (p) counts.push("on pace for ~" + p);
+      }
+      h.appendChild(el("span", "acc-count", counts.join(" · ")));
       body.appendChild(h);
       // How this period compares with the busiest one in the view.
       if (rolled) {
@@ -199,6 +242,7 @@
         var fill = el("span"); fill.style.width = (gr.ms.length / most * 100) + "%"; meter.appendChild(fill);
         body.appendChild(meter);
       }
+      if (!gr.ms.length) { body.appendChild(el("p", "acc-empty", "Nothing reached yet.")); return; }
       body.appendChild(rolled ? summary(gr.g, gr.ms, view) : list(gr.ms, true));
     });
     root.querySelectorAll("[data-view]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });
@@ -208,7 +252,9 @@
   var tot = root.querySelector(".acc-totals");
   tot.textContent = [["This month", "month"], ["this quarter", "quarter"], ["this year", "year"]].map(function (t) {
     var k = group(t[1], today).key;
-    return t[0] + ": " + data.waypoints.filter(function (m) { return group(t[1], parse(m.date)).key === k; }).length;
+    var ms = data.waypoints.filter(function (m) { return group(t[1], parse(m.date)).key === k; });
+    var mi = ms.filter(function (m) { return m.milestone; }).length;
+    return t[0] + ": " + ms.length + (mi ? " (" + plural(mi, "milestone") + ")" : "");
   }).join(" · ") + " · " + data.waypoints.length + " in all";
   tot.hidden = false;
   root.querySelector(".acc-controls").hidden = false;
