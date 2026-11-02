@@ -8,6 +8,8 @@ bookCollapseSection: true
 
 All Deevnet projects are hosted on GitHub: [github.com/deevnet](https://github.com/deevnet)
 
+The tenants that live in Deevnet for good have repositories of their own: see [Tenants](tenants/).
+
 <div class="section-cards">
   <a class="section-card" href="https://github.com/deevnet/ansible-collection-deevnet.builder">
     <h3>deevnet.builder</h3>
