@@ -1,7 +1,7 @@
 ---
 title: "Serving EdS"
 weight: 4
-milestones:
+waypoints:
   - title: "Music inventory runs on EdS's workload, beside its voice service (eds-inventory ADR-0003)"
     group: "Clients"
     status: done
@@ -41,10 +41,10 @@ EdS asks the inventory, and the inventory alone, about the owner's music.
 
 ## Clients 🔄
 
-{{< milestones group="Clients" >}}
+{{< waypoints group="Clients" >}}
 
 ---
 
 ## Where it runs ⏳
 
-{{< milestones group="Where it runs" >}}
+{{< waypoints group="Where it runs" >}}

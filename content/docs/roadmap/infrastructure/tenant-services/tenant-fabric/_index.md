@@ -3,7 +3,7 @@ title: "Tenant Fabric"
 bookCollapseSection: true
 weight: 1
 value: [fast-delivery]
-milestones:
+waypoints:
   - title: "Tenant network architecture designed"
     status: done
     date: "2026-08-30"
@@ -32,6 +32,6 @@ DNS each tenant publishes for itself, and tenants kept apart from each other.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/plan/)

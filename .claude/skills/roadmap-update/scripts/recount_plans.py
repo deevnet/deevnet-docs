@@ -8,7 +8,7 @@ with no task bullets beneath it counts as one task. Run from the repository root
 
 Plans are a roadmap item's plan.md (or the pages of its plan/ section) and
 content/projects/archive/*.md. Roadmap items have no counts: their progress is
-computed from their milestones.
+computed from their waypoints.
 """
 import glob, re, sys
 

@@ -6,7 +6,7 @@ aliases:
   - /docs/roadmap/infrastructure/tls-cert-automation/
 weight: 9
 value: [secure-by-default]
-milestones:
+waypoints:
   - title: "Deevnet's own root and site certificate authorities created and kept offline (CHG-0033)"
     value: [secure-by-default, works-anywhere]
     status: done
@@ -47,6 +47,6 @@ for device enrollment.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [TLS Cert Automation](/docs/roadmap/infrastructure/substrate/tls-cert-automation/plan/)

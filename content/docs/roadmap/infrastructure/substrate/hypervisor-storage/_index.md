@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-storage/
 weight: 5
 value: [rebuild-from-code]
-milestones:
+waypoints:
   - title: "The management hypervisor's disk layout declared in inventory"
     status: active
   - title: "A hypervisor storage standard written: what goes on which disk, and what a disk failure may cost"
@@ -27,6 +27,6 @@ depends on recoverable from code.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Hypervisor Storage](/docs/roadmap/infrastructure/substrate/hypervisor-storage/plan/)

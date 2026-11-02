@@ -14,7 +14,7 @@ Roadmaps are **informational**, not binding contracts.
 site offers tenants. Site Work is operational work on a site: upgrades, hardware, building one.
 EdS, MaBell and PiPDP11 are the tenants that live in Deevnet for good. Each has documentation of its
 own, and is tracked here because Deevnet builds, certifies and maintains it. Routine operations,
-such as applying a patch, are not roadmap items. Every milestone reached, with its date, is listed
+such as applying a patch, are not roadmap items. Every waypoint reached, with its date, is listed
 in [Roadmap Progress](/docs/roadmap/progress/). What the work is for, and how far each aim has come,
 is in [Value Objectives](/docs/roadmap/value/).
 

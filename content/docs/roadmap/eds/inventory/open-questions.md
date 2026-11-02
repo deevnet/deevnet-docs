@@ -1,7 +1,7 @@
 ---
 title: "Open Questions"
 weight: 5
-milestones:
+waypoints:
   - title: "Decide whether to run a private MusicBrainz, and which host has the disk and memory"
     group: "Upstreams"
     status: planned
@@ -41,16 +41,16 @@ Each of these is a decision to make before it is built.
 
 ## Upstreams ⏳
 
-{{< milestones group="Upstreams" >}}
+{{< waypoints group="Upstreams" >}}
 
 ---
 
 ## Vinyl ⏳
 
-{{< milestones group="Vinyl" >}}
+{{< waypoints group="Vinyl" >}}
 
 ---
 
 ## Terms and shape ⏳
 
-{{< milestones group="Terms and shape" >}}
+{{< waypoints group="Terms and shape" >}}

@@ -1,7 +1,7 @@
 ---
 title: "The Stand and Its Light"
 weight: 1
-milestones:
+waypoints:
   - title: "The LP stand draws its own light effects and handles gamma; it is sent scenes, never frames (EdS ADR-0001, ADR-0002)"
     group: "Light from the cover"
     status: done
@@ -72,22 +72,22 @@ The stand follows the record that is playing and draws its own effects; nothing 
 
 ## Light from the cover 🔄
 
-{{< milestones group="Light from the cover" >}}
+{{< waypoints group="Light from the cover" >}}
 
 ---
 
 ## Looks ✅
 
-{{< milestones group="Looks" >}}
+{{< waypoints group="Looks" >}}
 
 ---
 
 ## Which sources light it ✅
 
-{{< milestones group="Which sources light it" >}}
+{{< waypoints group="Which sources light it" >}}
 
 ---
 
 ## Hardware ⏳
 
-{{< milestones group="Hardware" >}}
+{{< waypoints group="Hardware" >}}

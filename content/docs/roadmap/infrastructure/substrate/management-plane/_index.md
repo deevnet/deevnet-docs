@@ -4,7 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/management-plane/
 weight: 2
-milestones:
+waypoints:
   - title: "Site management services grouped onto six VMs by domain (CHG-0008)"
     value: [one-operator]
     status: done
@@ -44,6 +44,6 @@ verification, backups and documentation. Observability and secrets are items of 
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Extended Management Plane](/docs/roadmap/infrastructure/substrate/management-plane/plan/)

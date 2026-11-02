@@ -2,7 +2,7 @@
 title: "Builder Upkeep"
 bookCollapseSection: true
 weight: 4
-milestones:
+waypoints:
   - title: "More space for the build server's `/home`, its build caches under `/srv`"
     status: planned
   - title: "The build server's Wi-Fi onto the home network, decided in a change record (EdS ADR-0053)"
@@ -21,6 +21,6 @@ home network when the factory is parked there.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Builder Upkeep](/docs/roadmap/site-work/mobile/builder-upkeep/plan/)

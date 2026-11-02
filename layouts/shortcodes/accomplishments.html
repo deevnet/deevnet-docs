@@ -1,19 +1,19 @@
-{{- /* Every milestone reached, newest first: from the roadmap's items, and
+{{- /* Every waypoint reached, newest first: from the roadmap's items, and
        from the plans and Completed Projects entries of projects that have graduated. Grouped by month at
        build time. In the page, the buttons regroup it by day, week, month,
-       quarter or year. Days and weeks list their milestones. A month, quarter
+       quarter or year. Days and weeks list their waypoints. A month, quarter
        or year shows its written narrative, each bullet opening onto the
-       milestones it rolls up; where it has none yet, it rolls a month up by
+       waypoints it rolls up; where it has none yet, it rolls a month up by
        roadmap item, and a quarter or a year by area. */ -}}
 {{- $roadmap := site.GetPage "/docs/roadmap" -}}
 {{- $areas := slice -}}
-{{- range $roadmap.Pages -}}{{- if or .Params.milestones .IsSection -}}{{- $areas = $areas | append .Title -}}{{- end -}}{{- end -}}
+{{- range $roadmap.Pages -}}{{- if or .Params.waypoints .IsSection -}}{{- $areas = $areas | append .Title -}}{{- end -}}{{- end -}}
 {{- $items := slice -}}
 {{- $ms := slice -}}
 {{- range site.Pages -}}
   {{- $page := . -}}
   {{- $roadmapItem := hasPrefix .Path "/docs/roadmap/" -}}
-  {{- if and .Params.milestones (or $roadmapItem (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
+  {{- if and .Params.waypoints (or $roadmapItem (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
     {{- $area := .Params.area | default "Graduated projects" -}}
     {{- if $roadmapItem -}}
       {{- $top := . -}}
@@ -21,13 +21,13 @@
       {{- $area = $top.Title -}}
     {{- end -}}
     {{- $done := slice -}}
-    {{- range .Params.milestones -}}
+    {{- range .Params.waypoints -}}
       {{- if and (eq .status "done") .date -}}
         {{- $done = $done | append .date -}}
-        {{- $ms = $ms | append (dict "date" .date "approx" (.approx | default false) "title" ($page.RenderString .title) "item" $page.RelPermalink "label" $page.Title "group" (cond (and $roadmapItem (ne $page.Parent.Path $roadmap.Path)) $page.Parent.Title $area)) -}}
+        {{- $ms = $ms | append (dict "date" .date "approx" (.approx | default false) "milestone" (.milestone | default false) "title" ($page.RenderString .title) "item" $page.RelPermalink "label" $page.Title "group" (cond (and $roadmapItem (ne $page.Parent.Path $roadmap.Path)) $page.Parent.Title $area)) -}}
       {{- end -}}
     {{- end -}}
-    {{- $items = $items | append (dict "id" $page.RelPermalink "title" $page.Title "area" $area "total" (len .Params.milestones) "done" $done "graduated" (not $roadmapItem)) -}}
+    {{- $items = $items | append (dict "id" $page.RelPermalink "title" $page.Title "area" $area "total" (len .Params.waypoints) "done" $done "graduated" (not $roadmapItem)) -}}
   {{- end -}}
 {{- end -}}
 {{- $ms = sort $ms "date" "desc" -}}
@@ -71,7 +71,7 @@
   {{- end -}}
   {{- $narratives = merge $narratives (dict $key (dict "headline" ($n.headline | markdownify) "bullets" $bullets "next" (cond (isset $n "next") ($n.next | markdownify) "") "watch" (cond (isset $n "watch") ($n.watch | markdownify) ""))) -}}
 {{- end -}}
-<script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "milestones" $ms "narratives" $narratives | jsonify | safeJS }}</script>
+<script type="application/json" id="acc-data">{{ dict "areas" ($areas | append "Graduated projects") "items" $items "waypoints" $ms "narratives" $narratives | jsonify | safeJS }}</script>
 <script>
 (function () {
   var root = document.querySelector(".accomplishments");
@@ -107,13 +107,13 @@
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
   function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
-  function milestoneLi(m, withItem) {
+  function waypointLi(m, withItem) {
     var it = items[m.item];
-    return el("li", null, '<time datetime="' + m.date + '">' + (m.approx ? "by " : "") + m.date + '</time> <span class="acc-text">' + m.title +
+    return el("li", null, '<time datetime="' + m.date + '">' + (m.approx ? "by " : "") + m.date + '</time> <span class="acc-text">' + (m.milestone ? '<span class="waypoint-milestone">🏁 Milestone</span> ' : "") + m.title +
       (withItem ? ' <span class="acc-item">· <a href="' + m.item + '">' + esc(it.title) + "</a>, " + esc(m.group) + "</span>" : "") + "</span>");
   }
-  function list(ms, withItem) { var ul = el("ul", "acc-list"); ms.forEach(function (m) { ul.appendChild(milestoneLi(m, withItem)); }); return ul; }
-  // An item finished in a period when all its milestones are done and the last falls in it.
+  function list(ms, withItem) { var ul = el("ul", "acc-list"); ms.forEach(function (m) { ul.appendChild(waypointLi(m, withItem)); }); return ul; }
+  // An item finished in a period when all its waypoints are done and the last falls in it.
   function finishedIn(it, g, view) {
     if (it.done.length !== it.total || !it.total) return false;
     var last = it.done.slice().sort().pop();
@@ -130,7 +130,7 @@
     var it = row.it, fin = finishedIn(it, g, view);
     var d = el("details", "acc-roll");
     d.appendChild(el("summary", null, '<a href="' + it.id + '">' + esc(it.title) + "</a>" +
-      (withArea ? ' <span class="acc-item">' + esc(it.area) + "</span>" : "") + " — " + plural(row.ms.length, "milestone") +
+      (withArea ? ' <span class="acc-item">' + esc(it.area) + "</span>" : "") + " — " + plural(row.ms.length, "waypoint") +
       (fin ? ' <span class="acc-done">' + (it.graduated ? "graduated" : "complete") + "</span>"
            : ' <span class="acc-item">· ' + doneBy(it, g.end) + "/" + it.total + " done " + (g.end >= iso(today) ? "so far" : "by then") + "</span>")));
     d.appendChild(list(row.ms, false));
@@ -143,7 +143,7 @@
     frag.appendChild(el("p", "acc-headline", n.headline.replace(/^<p>|<\/p>\s*$/g, "")));
     n.bullets.forEach(function (b) {
       var key = b.within || g.key, v = viewOf(key);
-      var ms = data.milestones.filter(function (m) {
+      var ms = data.waypoints.filter(function (m) {
         return b.items.indexOf(m.item) >= 0 && group(v, parse(m.date)).key === key;
       });
       var text = b.html.replace(/^<p>|<\/p>\s*$/g, "");
@@ -171,7 +171,7 @@
       var rows = byItem(byArea[a]);
       var fin = rows.filter(function (r) { return finishedIn(r.it, g, view); }).map(function (r) { return esc(r.it.title); });
       var d = el("details", "acc-roll acc-area");
-      d.appendChild(el("summary", null, "<strong>" + esc(a) + "</strong> — " + plural(byArea[a].length, "milestone") + " across " + plural(rows.length, "item") +
+      d.appendChild(el("summary", null, "<strong>" + esc(a) + "</strong> — " + plural(byArea[a].length, "waypoint") + " across " + plural(rows.length, "item") +
         (fin.length ? ' <span class="acc-done">complete: ' + fin.join(", ") + "</span>" : "")));
       rows.forEach(function (row) { d.appendChild(itemDetails(row, g, view)); });
       frag.appendChild(d);
@@ -183,7 +183,7 @@
     body.textContent = "";
     root.setAttribute("data-view", view);
     var groups = [], cur = null;
-    data.milestones.forEach(function (m) {
+    data.waypoints.forEach(function (m) {
       var g = group(view, parse(m.date));
       if (!cur || cur.g.key !== g.key) { cur = { g: g, ms: [] }; groups.push(cur); }
       cur.ms.push(m);
@@ -191,11 +191,11 @@
     var most = Math.max.apply(null, groups.map(function (gr) { return gr.ms.length; }));
     groups.forEach(function (gr) {
       var h = el("h3", "acc-group"); h.appendChild(document.createTextNode(gr.g.label));
-      h.appendChild(el("span", "acc-count", plural(gr.ms.length, "milestone")));
+      h.appendChild(el("span", "acc-count", plural(gr.ms.length, "waypoint")));
       body.appendChild(h);
       // How this period compares with the busiest one in the view.
       if (rolled) {
-        var meter = el("div", "acc-meter"); meter.title = plural(gr.ms.length, "milestone") + " in " + gr.g.label;
+        var meter = el("div", "acc-meter"); meter.title = plural(gr.ms.length, "waypoint") + " in " + gr.g.label;
         var fill = el("span"); fill.style.width = (gr.ms.length / most * 100) + "%"; meter.appendChild(fill);
         body.appendChild(meter);
       }
@@ -208,8 +208,8 @@
   var tot = root.querySelector(".acc-totals");
   tot.textContent = [["This month", "month"], ["this quarter", "quarter"], ["this year", "year"]].map(function (t) {
     var k = group(t[1], today).key;
-    return t[0] + ": " + data.milestones.filter(function (m) { return group(t[1], parse(m.date)).key === k; }).length;
-  }).join(" · ") + " · " + data.milestones.length + " in all";
+    return t[0] + ": " + data.waypoints.filter(function (m) { return group(t[1], parse(m.date)).key === k; }).length;
+  }).join(" · ") + " · " + data.waypoints.length + " in all";
   tot.hidden = false;
   root.querySelector(".acc-controls").hidden = false;
   root.querySelectorAll("[data-view]").forEach(function (b) { b.addEventListener("click", function () { state.view = b.getAttribute("data-view"); render(); }); });

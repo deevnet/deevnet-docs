@@ -1,7 +1,7 @@
 ---
 title: "Operations and Secrets"
 weight: 7
-milestones:
+waypoints:
   - title: "EdS's hand-kept secrets encrypted with sops and age: the key and `secrets/` made; Discogs, Spotify's settings and the state store's keys still to move (EdS ADR-0037)"
     group: "Secrets"
     status: active
@@ -54,16 +54,16 @@ Secrets kept encrypted beside the code, settings switched from the console, and 
 
 ## Secrets 🔄
 
-{{< milestones group="Secrets" >}}
+{{< waypoints group="Secrets" >}}
 
 ---
 
 ## Renewals ⏳
 
-{{< milestones group="Renewals" >}}
+{{< waypoints group="Renewals" >}}
 
 ---
 
 ## Hygiene ⏳
 
-{{< milestones group="Hygiene" >}}
+{{< waypoints group="Hygiene" >}}

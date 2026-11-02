@@ -1,7 +1,7 @@
 ---
 title: "Schema v1"
 weight: 2
-milestones:
+waypoints:
   - title: "Music inventory schema agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source"
     group: "Review"
     status: done
@@ -36,10 +36,10 @@ Its own keys; album, edition and holding told apart; original release dates with
 
 ## Review 🔄
 
-{{< milestones group="Review" >}}
+{{< waypoints group="Review" >}}
 
 ---
 
 ## Build ⏳
 
-{{< milestones group="Build" >}}
+{{< waypoints group="Build" >}}

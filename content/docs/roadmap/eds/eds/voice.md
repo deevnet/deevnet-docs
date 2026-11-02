@@ -1,7 +1,7 @@
 ---
 title: "Voice"
 weight: 4
-milestones:
+waypoints:
   - title: "EdS's reSpeaker microphone runs its own firmware, listening on a button and then a wake word (EdS ADR-0043)"
     group: "Hearing"
     status: done
@@ -71,16 +71,16 @@ A spoken request becomes an album playing, chosen from what the owner has.
 
 ## Hearing 🔄
 
-{{< milestones group="Hearing" >}}
+{{< waypoints group="Hearing" >}}
 
 ---
 
 ## Choosing the album 🔄
 
-{{< milestones group="Choosing the album" >}}
+{{< waypoints group="Choosing the album" >}}
 
 ---
 
 ## Where it runs ⏳
 
-{{< milestones group="Where it runs" >}}
+{{< waypoints group="Where it runs" >}}

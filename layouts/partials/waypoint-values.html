@@ -1,8 +1,8 @@
-{{- /* The value objectives a milestone serves: its own `value:` list if it has
+{{- /* The value objectives a waypoint serves: its own `value:` list if it has
        one, otherwise its item's. An id not in data/value_objectives.yaml fails
-       the build. Takes dict "page" and "milestone". */ -}}
+       the build. Takes dict "page" and "waypoint". */ -}}
 {{- $values := .page.Params.value | default slice -}}
-{{- if isset .milestone "value" -}}{{- $values = .milestone.value | default slice -}}{{- end -}}
+{{- if isset .waypoint "value" -}}{{- $values = .waypoint.value | default slice -}}{{- end -}}
 {{- $known := slice -}}
 {{- range site.Data.value_objectives.objectives -}}{{- $known = $known | append .id -}}{{- end -}}
 {{- range $values -}}

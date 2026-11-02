@@ -4,7 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/access-network/
 weight: 6
-milestones:
+waypoints:
   - title: "A labeled block of access switch ports for plugging in management devices"
     value: [one-operator]
     status: planned
@@ -24,6 +24,6 @@ management path.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Access Network](/docs/roadmap/infrastructure/substrate/access-network/plan/)

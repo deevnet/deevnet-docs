@@ -7,14 +7,14 @@ repository root. Prints; changes nothing.
     period.py 2026         # a year
     period.py catchup      # what a catch-up has to do today
 
-For a period it prints: the milestones reached, by area and item; the change
-records and incidents dated in it; the open milestones of the items it touched;
+For a period it prints: the waypoints reached, by area and item; the change
+records and incidents dated in it; the open waypoints of the items it touched;
 incidents still open; and which accounts exist for it and for the periods below it.
 
 Catchup prints each period from the earliest month with an account up to today,
 lowest level first, and whether its account is missing, stale or current. An
-account is stale when its `reached:` count differs from the milestones now done
-in the period, which also catches milestones backfilled into an earlier date. It
+account is stale when its `reached:` count differs from the waypoints now done
+in the period, which also catches waypoints backfilled into an earlier date. It
 then prints the records to check against the roadmap.
 """
 import calendar, datetime, glob, os, re, subprocess, sys
@@ -53,8 +53,8 @@ def area_of(rel):
     idx = f"{ROADMAP}{top}/_index.md"
     return title_of(idx) if os.path.exists(idx) else title_of(f"{ROADMAP}{top}.md")
 
-def milestones(args):
-    ms = os.path.join(os.path.dirname(__file__), "..", "..", "roadmap-update", "scripts", "milestones.py")
+def waypoints(args):
+    ms = os.path.join(os.path.dirname(__file__), "..", "..", "roadmap-update", "scripts", "waypoints.py")
     out = subprocess.run([sys.executable, ms, "list"] + args, capture_output=True, text=True, check=True).stdout
     return [l.split("\t") for l in out.splitlines() if l.strip()]
 
@@ -96,7 +96,7 @@ def catchup(today=None):
     due, throughs = 0, []
     for key in catchup_periods(today):
         lo, hi, _ = bounds(key)
-        n = len(milestones(["--from", lo, "--to", hi, "--status", "done"]))
+        n = len(waypoints(["--from", lo, "--to", hi, "--status", "done"]))
         exists = os.path.exists(f"data/accomplishments/{key}.yaml")
         reached, through = account_field(key, "reached"), account_field(key, "through")
         if through: throughs.append(through)
@@ -117,8 +117,8 @@ def catchup(today=None):
 def report(key):
     lo, hi, kind = bounds(key)
     print(f"# {key} ({kind}, {lo} to {hi})\n")
-    reached = milestones(["--from", lo, "--to", hi, "--status", "done"])
-    print(f"## Milestones reached: {len(reached)}\n")
+    reached = waypoints(["--from", lo, "--to", hi, "--status", "done"])
+    print(f"## Waypoints reached: {len(reached)}\n")
     by = {}
     for d, _, rel, item, title, *rest in reached:
         by.setdefault(area_of(rel), {}).setdefault((rel, item), []).append((d, title, bool(rest)))
@@ -132,7 +132,7 @@ def report(key):
     touched = {rel for _, _, rel, *_ in reached}
     print("## Still open in the items touched (for Next)\n")
     for rel in sorted(touched):
-        rows = [r for r in milestones(["--page", rel]) if r[1] != "✅"]
+        rows = [r for r in waypoints(["--page", rel]) if r[1] != "✅"]
         if rows:
             print(f"- {rows[0][3]}: " + "; ".join(f"{r[1]} {r[4]}" for r in rows))
     dated, open_inc = records(lo, hi)

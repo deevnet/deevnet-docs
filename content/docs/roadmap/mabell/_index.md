@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/esp32/
   - /docs/roadmap/esp32/ma-bell/
 weight: 4
-milestones:
+waypoints:
   - title: "MaBell requirements, constraints and acceptance criteria defined"
     status: done
     date: "2026-01-22"
@@ -52,6 +52,6 @@ Bluetooth Phone Gateway for vintage telephone integration.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [MaBell Bluetooth Gateway](/docs/roadmap/mabell/plan/)

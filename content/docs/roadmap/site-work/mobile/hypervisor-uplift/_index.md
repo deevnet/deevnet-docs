@@ -4,7 +4,7 @@ bookCollapseSection: true
 aliases:
   - /docs/roadmap/infrastructure/mobile/hypervisor-uplift/
 weight: 1
-milestones:
+waypoints:
   - title: "The tenant hypervisor back in service on new hardware"
     status: done
     date: "2026-08-29"
@@ -33,6 +33,6 @@ Proxmox VE 8 → 9 on both hypervisors: PVE 9's SDN Fabrics make the tenant fabr
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Hypervisor Platform Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/plan/)

@@ -1,7 +1,7 @@
 ---
 title: "Devices and Firmware"
 weight: 5
-milestones:
+waypoints:
   - title: "A power beacon on the turntable: when it connects, the turntable is on (EdS ADR-0023)"
     group: "Devices"
     status: done
@@ -64,16 +64,16 @@ Devices that fail soft, say where they are, take updates over the air and can be
 
 ## Devices ✅
 
-{{< milestones group="Devices" >}}
+{{< waypoints group="Devices" >}}
 
 ---
 
 ## Updates 🔄
 
-{{< milestones group="Updates" >}}
+{{< waypoints group="Updates" >}}
 
 ---
 
 ## Two sites 🔄
 
-{{< milestones group="Two sites" >}}
+{{< waypoints group="Two sites" >}}

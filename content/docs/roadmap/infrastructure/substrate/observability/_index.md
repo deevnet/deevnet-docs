@@ -3,7 +3,7 @@ title: "Observability"
 bookCollapseSection: true
 weight: 3
 value: [no-surprises]
-milestones:
+waypoints:
   - title: "Central logging: a log store, each tenant seeing its own logs, device logs over MQTT, and Grafana"
     value: [no-surprises, contained-failure]
     status: done
@@ -24,6 +24,6 @@ Seeing the site: logs, metrics and alerts for the substrate and, scoped to each,
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Observability](/docs/roadmap/infrastructure/substrate/observability/plan/)

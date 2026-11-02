@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/patch-automation/
 weight: 12
 value: [no-surprises]
-milestones:
+waypoints:
   - title: "Every cataloged product's release and security advisory sources recorded and watched"
     status: planned
   - title: "One feed of the new advisories and releases that need attention, delivered to the operator"
@@ -24,6 +24,6 @@ patch is routine operations, not a roadmap item.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Patch Awareness](/docs/roadmap/infrastructure/substrate/patch-awareness/plan/)

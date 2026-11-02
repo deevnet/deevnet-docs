@@ -3,7 +3,7 @@ title: "Tenant PKI"
 bookCollapseSection: true
 weight: 4
 value: [works-anywhere]
-milestones:
+waypoints:
   - title: "Tenants' own services on Deevnet certificates (CHG-0047)"
     value: [secure-by-default]
     status: done
@@ -42,6 +42,6 @@ Deevnet Pi that holds them, and devices with certificates of their own. The CAs 
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Tenant PKI](/docs/roadmap/infrastructure/tenant-services/tenant-pki/plan/)

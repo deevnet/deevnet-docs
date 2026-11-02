@@ -1,7 +1,7 @@
 ---
 title: "Enrichment"
 weight: 3
-milestones:
+waypoints:
   - title: "Music inventory gets discographies from MusicBrainz: built on the old schema, to be reworked onto v1"
     group: "Enrichment"
     status: active
@@ -42,10 +42,10 @@ Covers, originals and discographies found once by the inventory, so no client as
 
 ## Enrichment 🔄
 
-{{< milestones group="Enrichment" >}}
+{{< waypoints group="Enrichment" >}}
 
 ---
 
 ## Cases it must get right ⏳
 
-{{< milestones group="Cases it must get right" >}}
+{{< waypoints group="Cases it must get right" >}}

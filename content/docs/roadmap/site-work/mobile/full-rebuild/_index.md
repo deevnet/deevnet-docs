@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
 weight: 5
 value: [rebuild-from-code]
-milestones:
+waypoints:
   - title: "The whole mobile site rebuilt from scratch, tenants brought back and gaps fixed"
     status: planned
   - title: "Site rebuilds run on a schedule, each under a change record"
@@ -22,6 +22,6 @@ End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery c
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/plan/)

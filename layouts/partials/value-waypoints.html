@@ -1,13 +1,13 @@
-{{- /* Every milestone serving one value objective, from the roadmap, the
+{{- /* Every waypoint serving one value objective, from the roadmap, the
        archived plans and Completed Projects: {done, active, planned}, each a
-       list of dicts with the milestone and its page. */ -}}
+       list of dicts with the waypoint and its page. */ -}}
 {{- $id := . -}}
 {{- $done := slice -}}{{- $active := slice -}}{{- $planned := slice -}}
 {{- range site.Pages -}}
   {{- $page := . -}}
-  {{- if and .Params.milestones (or (hasPrefix .Path "/docs/roadmap/") (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
-    {{- range .Params.milestones -}}
-      {{- if in (partial "milestone-values.html" (dict "page" $page "milestone" .)) $id -}}
+  {{- if and .Params.waypoints (or (hasPrefix .Path "/docs/roadmap/") (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
+    {{- range .Params.waypoints -}}
+      {{- if in (partial "waypoint-values.html" (dict "page" $page "waypoint" .)) $id -}}
         {{- $row := dict "title" .title "status" .status "date" .date "approx" .approx "page" $page -}}
         {{- if eq .status "done" -}}{{- $done = $done | append $row -}}
         {{- else if eq .status "active" -}}{{- $active = $active | append $row -}}

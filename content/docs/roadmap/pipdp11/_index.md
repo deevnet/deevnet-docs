@@ -5,7 +5,7 @@ aliases:
   - /docs/roadmap/raspberry-pi/
   - /docs/roadmap/raspberry-pi/pidp11/
 weight: 5
-milestones:
+waypoints:
   - title: "PiDP-11 operating system and front panel behavior defined"
     status: planned
   - title: "PiDP-11 kit assembled, its front panel lights and switches verified"
@@ -28,6 +28,6 @@ Part of `deevnet-image-factory`. Not yet admitted as a tenant.
 
 ---
 
-{{< milestones >}}
+{{< waypoints >}}
 
 **Project plan:** [PiPDP11](/docs/roadmap/pipdp11/plan/)
