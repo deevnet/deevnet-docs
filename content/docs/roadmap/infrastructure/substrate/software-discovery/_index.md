@@ -14,7 +14,8 @@ waypoints:
   - title: "A dated report of installed versus cataloged versions, run as part of build verification"
     status: planned
   - title: "Deevnet's own software pinned to exact versions and licensed"
-    status: planned
+    status: done
+    date: "2026-11-03"
 ---
 
 # Software Discovery

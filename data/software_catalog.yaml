@@ -201,7 +201,7 @@ tables:
     - component: '**Deevnet API**'
       vm: '`dv02prv001v01`'
       version: '**v0.15.0**'
-      license: No license file
+      license: Apache-2.0
       support: In-house
       source: Pin; deployed 2026-10-25 ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/))
     - component: '**PostgreSQL**'
@@ -229,7 +229,7 @@ tables:
     - component: '**MQTT log bridge**'
       vm: '`dv02msg001v01`'
       version: '**v0.1.1**'
-      license: not checked (its repository isn't in this workspace)
+      license: Apache-2.0
       support: In-house
       source: Pin; deployed 2026-09-22 ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
     - component: '**VictoriaLogs**'
@@ -264,10 +264,16 @@ tables:
       source: Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
     - component: '`deevnet-log-user`'
       vm: '`dv02obs001v01`'
-      version: Built from the API's tag; deployed as `-latest`
-      license: No license file
+      version: '**v0.6.0**, staged from the API repository (behind its v0.15.0 tag)'
+      license: Apache-2.0
       support: In-house
-      source: Not pinned
+      source: Pin (`victorialogs_writer_binary`)
+    - component: '`deevnet-broker-account`'
+      vm: '`dv02msg001v01`'
+      version: '**v0.5.1**, staged from the API repository (behind its v0.15.0 tag)'
+      license: Apache-2.0
+      support: In-house
+      source: Pin (`vernemq_writer_binary`)
     - component: (collector)
       vm: '`dv02col001v01`'
       version: Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
@@ -416,13 +422,13 @@ tables:
       license: not checked
       source: Pin
     - component: '`deevnet-kit`'
-      version: the API's tag. The `pi-backend` image in the tenant downloads still carries 0.12.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
-      license: No license file
-      source: Built from the API repository
+      version: v0.15.0. The `pi-backend` image in the tenant downloads still carries 0.12.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
+      license: Apache-2.0
+      source: Pin (image factory)
     - component: '`deevnet-log-bridge`'
-      version: '`-latest`'
-      license: not checked
-      source: Not pinned
+      version: v0.1.1-1-g20abb75, one commit past its v0.1.1 tag
+      license: Apache-2.0
+      source: Pin (image factory)
     - component: Mosquitto, Podman
       version: Bookworm packages (Podman 4.3)
       license: EPL-2.0 / EDL-1.0; Apache-2.0
@@ -545,12 +551,12 @@ tables:
     rows:
     - component: '**`deevnet/deevnet` provider**'
       version: '**v0.8.0**'
-      license: No license file
+      license: Apache-2.0
       support: In-house
       source: Pin (tenant downloads, which serve it); tag
     - component: '`install-provider.sh`, `tenant-check.sh`'
       version: ship with the provider
-      license: No license file
+      license: Apache-2.0
       support: In-house
       source: Follow the provider tag
     - component: Terraform
@@ -591,40 +597,48 @@ tables:
     rows:
     - repository: '`deevnet-provisioning-api`'
       version: tag **v0.15.0**, deployed **v0.15.0**
-      license: '**No license file**'
+      license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'
       version: tag **v0.8.0**
-      license: '**No license file**'
+      license: Apache-2.0
       what_it_builds: The provider, `install-provider.sh`, `tenant-check.sh`
     - repository: '`deevnet-log-bridge`'
       version: '**v0.1.1** deployed'
-      license: not checked
+      license: Apache-2.0
       what_it_builds: The MQTT log bridge
     - repository: '`ansible-collection-deevnet.builder`'
       version: 1.0.0, no tags
-      license: MIT
+      license: Apache-2.0
       what_it_builds: Builder, artifact server, PXE roles
     - repository: '`ansible-collection-deevnet.mgmt`'
       version: 1.0.0, no tags
-      license: '**`galaxy.yml` says MIT; `LICENSE` is Apache-2.0**'
+      license: Apache-2.0
       what_it_builds: Management-plane roles
     - repository: '`ansible-collection-deevnet.net`'
       version: 1.0.0, no tags
-      license: '**`galaxy.yml` says MIT; `LICENSE` is Apache-2.0**'
+      license: Apache-2.0
       what_it_builds: Network roles, `segment-check.sh`, `opnsense-diag.sh`, the tenant egress agent
     - repository: '`ansible-inventory-deevnet`'
       version: no tags
-      license: MIT
+      license: Apache-2.0
       what_it_builds: Inventory
     - repository: '`deevnet-image-factory`'
       version: no tags
       license: Apache-2.0
       what_it_builds: Packer and Pi images
+    - repository: '`deevnet-container-image-factory`'
+      version: no tags
+      license: Apache-2.0
+      what_it_builds: Container images built from source, for software the substrate runs but does not write
     - repository: '`deevnet-tenant-fabric`'
       version: tags `tenant-module-v1.1.0` and earlier
-      license: not checked
+      license: Apache-2.0
       what_it_builds: Tenant fabric SDN (Terraform)
+    - repository: '`deevnet-filesync`'
+      version: no tags
+      license: Apache-2.0
+      what_it_builds: File synchronization, local-first (not deployed)
     - repository: '`deevnet-docs`'
       version: no tags
       license: Apache-2.0

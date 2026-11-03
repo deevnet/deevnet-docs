@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/software-discovery/
   - /projects/software-discovery/
 weight: 9
-tasks_completed: 1
+tasks_completed: 3
 tasks_in_progress: 0
-tasks_planned: 9
+tasks_planned: 7
 ---
 
 # Software Discovery: Project Plan
@@ -82,16 +82,17 @@ Hearing about new versions and advisories is
 
 ---
 
-## Pins and licenses of Deevnet's own software ⏳
+## Pins and licenses of Deevnet's own software ✅
 
 Found while writing [Deevnet Software](/docs/platforms/deevnet-software/), and listed in the
 catalog's Gaps.
 
-- ⏳ Pin what is deployed as `-latest`: `deevnet-broker-account` (the `vernemq` role),
+- ✅ Pin what is deployed as `-latest`: `deevnet-broker-account` (the `vernemq` role),
   `deevnet-log-user` (the `victorialogs` role), and the `deevnet-kit`, `deevnet-log-user` and
   `deevnet-log-bridge` binaries the Pi backend image fetches. Move the reference tenant's provider
-  constraint from `~> 0.1` to the 0.4 line it actually runs, and its README with it
-- ⏳ License every in-house repository: add a LICENSE file to `deevnet-provisioning-api`,
+  constraint from `~> 0.1` to the 0.4 line it actually runs, and its README with it. Each is pinned
+  to the file `-latest` pointed at; the reference tenant had already moved to `~> 0.5`, locked at 0.5.0
+- ✅ License every in-house repository: add a LICENSE file to `deevnet-provisioning-api`,
   `terraform-provider-deevnet`, `deevnet-log-bridge`, `deevnet-container-image-factory` and the
   tenant repositories, and make `galaxy.yml` agree with `LICENSE` in the `deevnet.mgmt` and
-  `deevnet.net` collections
+  `deevnet.net` collections. Every Deevnet repository is Apache-2.0
