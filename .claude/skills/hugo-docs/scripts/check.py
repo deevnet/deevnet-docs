@@ -79,9 +79,10 @@ def main():
 
         bad = n = 0
         link = re.compile(r'\]\((/(?:docs|projects)/[^)\s#]*)(#[^)\s]*)?\)')
-        for dp, _, fs in os.walk(os.path.join(root, "content")):
+        # Pages, and the data files whose markdown pages draw (the Software Catalog's rows).
+        for dp, _, fs in [*os.walk(os.path.join(root, "content")), *os.walk(os.path.join(root, "data"))]:
             for f in fs:
-                if not f.endswith(".md"): continue
+                if not f.endswith((".md", ".yaml")): continue
                 p = os.path.join(dp, f)
                 for target, anchor in link.findall(open(p, encoding="utf-8").read()):
                     if "..." in target + anchor: continue  # a template's placeholder

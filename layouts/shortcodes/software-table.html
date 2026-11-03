@@ -1,0 +1,15 @@
+{{- /* One table of the Software Catalog, drawn from data/software_catalog.yaml:
+       its columns in order, each row's cells as markdown. An unknown id fails
+       the build. */ -}}
+{{- $id := .Get 0 -}}
+{{- $t := index site.Data.software_catalog.tables $id -}}
+{{- if not $t -}}{{- errorf "%s: unknown Software Catalog table %q" .Page.Path $id -}}{{- end -}}
+{{- $titles := slice -}}{{- $rule := slice -}}
+{{- range $t.columns -}}{{- $titles = $titles | append .title -}}{{- $rule = $rule | append "---" -}}{{- end -}}
+{{- $md := slice (printf "| %s |" (delimit $titles " | ")) (printf "|%s|" (delimit $rule "|")) -}}
+{{- range $row := $t.rows -}}
+  {{- $c := slice -}}
+  {{- range $t.columns -}}{{- $c = $c | append (index $row .key | default "") -}}{{- end -}}
+  {{- $md = $md | append (printf "| %s |" (delimit $c " | ")) -}}
+{{- end -}}
+{{- .Page.RenderString (dict "display" "block") (delimit $md "\n") -}}

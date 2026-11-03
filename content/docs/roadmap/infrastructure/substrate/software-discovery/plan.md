@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/software-discovery/
   - /projects/software-discovery/
 weight: 9
-tasks_completed: 0
+tasks_completed: 1
 tasks_in_progress: 0
-tasks_planned: 10
+tasks_planned: 9
 ---
 
 # Software Discovery: Project Plan
@@ -50,9 +50,9 @@ catalog. The operator then updates the catalog from the report, or opens a chang
 
 ---
 
-## Catalog as data ⏳
+## Catalog as data ✅
 
-- ⏳ Move the catalog's rows into a data file the page renders from, so a report can be compared
+- ✅ Move the catalog's rows into a data file the page renders from, so a report can be compared
   with it mechanically. The page's grouping, columns and version-source terms stay as they are.
 
 ## Collectors ⏳
