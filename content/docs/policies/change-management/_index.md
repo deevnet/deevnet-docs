@@ -53,6 +53,8 @@ A change that goes wrong in a way that affects service also gets an incident rec
 
 ## How validation is done today
 
-Validation is manual, from the [runbook checklist](/docs/runbook/substrate/change-management/#validation-checklist).
-Nothing runs it automatically yet; checks on every pull request are on the
-[Network Automation](/docs/roadmap/infrastructure/substrate/network-automation/) roadmap.
+**The syntax checks run on every pull request; the rest of validation is manual.** Each Ansible
+collection syntax-checks every playbook, the image factory syntax-checks its Packer templates
+(`make check` in each), and this site is built, all in GitHub Actions. The dry run and the rest of
+the [runbook checklist](/docs/runbook/substrate/change-management/#validation-checklist) are run by
+hand.

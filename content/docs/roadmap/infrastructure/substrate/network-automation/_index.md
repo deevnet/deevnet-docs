@@ -16,7 +16,8 @@ waypoints:
     status: done
     date: "2026-09-15"
   - title: "Automation repositories' syntax and docs build checked on every pull request"
-    status: planned
+    status: done
+    date: "2026-11-03"
 ---
 
 # Network Automation
