@@ -33,8 +33,10 @@ A change has one type and one classification; the classification sets how much v
 
 Before applying changes:
 
-- [ ] Syntax check passes (`ansible-playbook --syntax-check`)
-- [ ] Packer validate passes (for image changes)
+- [ ] Syntax check passes (`ansible-playbook --syntax-check`; `make check` in each collection, run by
+      CI on every pull request)
+- [ ] Packer validate passes (for image changes; CI runs `make check`, syntax only, so run
+      `make validate` on the Builder)
 - [ ] Dry run shows expected changes (`--check --diff`) — **not available for the network roles, see below**
 - [ ] Changes committed to version control
 - [ ] Rollback plan documented (for disruptive changes)
