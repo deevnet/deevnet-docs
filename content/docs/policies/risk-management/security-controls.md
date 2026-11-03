@@ -72,6 +72,8 @@ need (Omada, the switch, the AP, Grafana, MinIO) are in the inventory's vault, e
   tokens. They go into the build's own process environment, never onto a command line
   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/),
   [CHG-0026](/docs/changes/2026/0026-build-secrets/))
+- **An exposed credential is rotated**, at once if a copy may have left Deevnet
+  ([Exposed Credentials](/docs/policies/risk-management/exposed-credentials/))
 - **Tenant credentials are issued, not chosen**, and the tenant's own state is their authoritative
   copy; the API keeps hashes where it can
 - The long-term direction — short-lived credentials, identity held by the client — is the
