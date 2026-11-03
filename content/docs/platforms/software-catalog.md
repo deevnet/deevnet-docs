@@ -145,11 +145,11 @@ What this catalog could not settle, and what it found out of step. Each is a sma
   Fedora release; the OS on `dv02rpi001p01` to `…003p01`.
 
 **Unpinned:** ansible-core, Terraform and Packer on the Builder; `packer-builder-arm:latest`;
-`tfplugindocs@latest`; `deevnet-log-user` and `deevnet-log-bridge` deployed as `-latest`; tdemo's
-`deevnet/deevnet ~> 0.1` against an actual 0.4.x.
+`tfplugindocs@latest`.
 
-**Licenses:** `deevnet.mgmt` and `deevnet.net` declare MIT in `galaxy.yml` and ship an Apache-2.0
-`LICENSE`. The API, the provider and the tenant repositories have no license file.
+**Behind their source:** `deevnet-log-user` and `deevnet-broker-account` are pinned to v0.6.0 and
+v0.5.1, the last builds staged, while the API they come from is at v0.15.0. The Pi's log bridge is an
+untagged build.
 
 **Unmaintained software still running:** MinIO (archived upstream; [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
