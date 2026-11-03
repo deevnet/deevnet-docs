@@ -7,7 +7,8 @@ weight: 11
 value: [no-surprises]
 waypoints:
   - title: "The Software Catalog's rows moved into a data file that reports can compare against"
-    status: planned
+    status: done
+    date: "2026-11-03"
   - title: "Installed versions collected from routers, hypervisors, VMs, network devices and Pis"
     status: planned
   - title: "A dated report of installed versus cataloged versions, run as part of build verification"

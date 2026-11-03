@@ -16,7 +16,8 @@ instead of stating its version. They keep a version only where the context needs
 - a minimum requirement, such as MicroPython 1.23 or later
 - a literal value in a procedure, such as a firmware upgrade chain or an image tag
 
-When a change upgrades something, it updates this page. Versions are gathered by hand today:
+When a change upgrades something, it updates this page: its rows are kept in
+`data/software_catalog.yaml`, where a report can compare them. Versions are gathered by hand today:
 [Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) is the roadmap item for
 scanning the site instead.
 
@@ -53,41 +54,22 @@ Third-party licenses are the upstream project's. In-house licenses are what the 
 
 ### Core router: OPNsense (`dv02cor002p01`)
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| **OPNsense** | **26.7.3_11** | BSD-2-Clause | Community, commercial available (Deciso) | Observed 2026-09-19 ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)) and 2026-09-21 ([INC-0004](/docs/incidents/2026/0004-core-router-lost/)) |
-| FreeBSD base | not recorded | BSD-2-Clause | Bundled | Bundled with OPNsense |
+{{< software-table "core-router" >}}
 
 **Bundled services in use.** What the `deevnet.net` roles configure, taken from the OPNsense APIs they
 call. Each follows the OPNsense release.
 
-| Service | Used for | License | Configured by |
-|---|---|---|---|
-| **Kea DHCPv4** | DHCP on every segment, and static reservations. ISC dhcpd and dnsmasq are not used on the router. | MPL-2.0 | `opnsense_dhcp` (`/api/kea/…`) |
-| **Unbound** | The site resolver: host overrides, aliases, and forwarding of tenant zones to PowerDNS | BSD-3-Clause | `opnsense_dns` (`/api/unbound/…`) |
-| **pf** (through the OPNsense filter and alias APIs) | Zone policy, and the `deevnet_private` alias | BSD | `opnsense_firewall` (`/api/firewall/…`) |
-| VLAN interfaces | One per segment, on `re0` | BSD-2-Clause | `opnsense_vlans` (`/api/interfaces/…`) |
-| Gateways and static routes | The tenant fabric route `10.20.128.0/18` | BSD-2-Clause | `opnsense_routes` (`/api/routing/…`, `/api/routes/…`) |
-| Configuration backup | Pre-change backups | BSD-2-Clause | Migration playbooks (`/api/core/backup/…`) |
+{{< software-table "core-router-services" >}}
 
 **Plugins.**
 
-| Plugin | State | License | Notes |
-|---|---|---|---|
-| `os-wol` | Required, but whether it is installed is not recorded | BSD-2-Clause | Wake-on-LAN for the Builder and both hypervisors (`opnsense_wol`) |
-| `os-realtek-re` | Proposed, not installed | BSD-2-Clause | Vendor NIC driver: an open corrective action on [INC-0004](/docs/incidents/2026/0004-core-router-lost/) |
+{{< software-table "core-router-plugins" >}}
 
 No other plugins are used. The collection has no plugin-install tasks.
 
 ### Switching, wireless and edge
 
-| Component | Where | Version | License | Support | Version source |
-|---|---|---|---|---|---|
-| **TP-Link SG2218 firmware** | Access switch `dv02acc001p01` (hardware 1.20) | **1.20.24** Build 20260509; 1.20.1 kept in the other image slot | Proprietary | Vendor, no contract | Observed 2026-09-16 ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)) |
-| **TP-Link EAP650-Outdoor firmware** | AP `dv02wap001p01` (v1.0) | **1.3.11** Build 20260703 | Proprietary | Vendor, no contract | Observed 2026-09-15 ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)) |
-| **Omada Software Controller** | Container on `dv02nms001v01`; cold spare on the Builder | **6.3.0.45** | Proprietary, free of charge | Vendor, no contract | Pin (`omada_image_tag`); observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/)) |
-| Omada container image | As above | `mbentley/omada-controller:6.3.0.45` | Community packaging of the vendor's software | Community | Pin. Fallbacks 6.2.14.11 and 6.1 are mirrored |
-| **GL.iNet firmware** | Travel router `dv02edg001p01` (GL-AXT1800) | not recorded | OpenWrt base GPL-2.0; GL.iNet additions proprietary | Vendor, no contract | Not recorded. Not managed by automation |
+{{< software-table "network-edge" >}}
 
 ---
 
@@ -95,12 +77,7 @@ No other plugins are used. The collection has no plugin-install tasks.
 
 ### Management hypervisor (`dv02hyp001p01`)
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| **Proxmox VE** | **8.4.1** (see [Gaps](#gaps)) | AGPL-3.0 | Community, commercial available. The nodes use the **no-subscription** repository | Observed, undated (platform page, roadmap) |
-| Debian | 12 (Bookworm) | Free software, per package | Community | Bundled with Proxmox VE 8 |
-| Linux kernel | 6.8.12 | GPL-2.0 | Bundled | Observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/)) |
-| Dell BIOS ([OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/)) | 1.27.0 (2023-09-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
+{{< software-table "management-hypervisor" >}}
 
 ### Substrate Service VMs
 
@@ -108,36 +85,11 @@ Every substrate service VM is **Fedora 44** from the template `fedora-server-44-
 Podman containers ([ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
 Image tags are pinned in the role defaults and mirrored on the Builder as tarballs.
 
-| Component | VM | Version | License | Support | Version source |
-|---|---|---|---|---|---|
-| **Fedora Server** | all | **44** (template build 1.7). Kernel 7.2.5, systemd 259 | Free software, per package (Fedora Project) | Community | Pin (`deevnet_fedora_current`); observed 2026-09-15/21 |
-| Podman | all | not recorded (the Fedora 44 package) | Apache-2.0 | Community | Not recorded |
-| **OpenBao** | `dv02idn001v01` | **2.6.2** | MPL-2.0 | Community (Linux Foundation project) | Pin; staged 2026-09-17 ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)) |
-| **PowerDNS Authoritative** | `dv02idn001v01` | **4.9.17** | GPL-2.0 | Community, commercial available (PowerDNS) | Pin |
-| **Deevnet API** | `dv02prv001v01` | **v0.15.0** | No license file | In-house | Pin; deployed 2026-10-25 ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)) |
-| **PostgreSQL** | `dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth) | **17.11** | PostgreSQL License | Community | Pin |
-| **MinIO** | `dv02prv001v01` (Terraform state) | **RELEASE.2025-09-07T16-13-09Z** | AGPL-3.0 | **Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled | Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/) |
-| **Omada Software Controller** | `dv02nms001v01` | 6.3.0.45 | See [Network](#switching-wireless-and-edge) | | |
-| **VerneMQ** | `dv02msg001v01` | **2.2.0**, built from source | Apache-2.0 (source). Upstream binaries carry an EULA, which is why it is built here | Community, commercial available (Octavo Labs) | Pin; observed 2026-09-20 ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/)) |
-| **MQTT log bridge** | `dv02msg001v01` | **v0.1.1** | not checked (its repository isn't in this workspace) | In-house | Pin; deployed 2026-09-22 ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)) |
-| **VictoriaLogs** | `dv02obs001v01` | **v1.52.0** | Apache-2.0 | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-21 ([CHG-0018](/docs/changes/2026/0018-central-log-store/)) |
-| **vmauth** | `dv02obs001v01` | **v1.152.0** | Apache-2.0 | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-21 |
-| **Grafana OSS** | `dv02obs001v01` | **13.2.2** | AGPL-3.0 | Community, commercial available (Grafana Labs) | Pin; deployed 2026-09-24 ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
-| victoriametrics-logs-datasource plugin | `dv02obs001v01` | **0.32.0** | not checked | Community, commercial available (VictoriaMetrics) | Pin; observed 2026-09-24 |
-| **nginx** (tenant downloads, service proxy) | `dv02obs001v01`, `dv02prv001v01` | **1.29.1-alpine** | BSD-2-Clause | Community, commercial available (F5) | Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)) |
-| `deevnet-log-user` | `dv02obs001v01` | Built from the API's tag; deployed as `-latest` | No license file | In-house | Not pinned |
-| (collector) | `dv02col001v01` | Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) | | | |
+{{< software-table "service-vms" >}}
 
 ### Builder (`dv00bld001p01`) and the provisioner VMs
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| Fedora Workstation (Builder) | "43 or later". The exact release is not recorded | Free software, per package | Community | Not recorded |
-| Fedora Server (`dv02bld001v01`, `dv02bld002v01`) | 44 | Free software, per package | Community | Pin |
-| nginx (artifact server) | Fedora package | BSD-2-Clause | Community | Not pinned |
-| tftp-server, syslinux, grub2 (PXE) | Fedora packages | BSD / GPL-2.0 / GPL-3.0 | Community | Not pinned |
-| dnsmasq | Fedora package; installed but disabled | GPL-2.0 | Community | Not pinned |
-| AOOSTAR BIOS ([N1 PRO](/docs/platforms/hardware/compute/aoostar-n1-pro/)) | HCN150_MI3_0.10 (2025-04-18) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
+{{< software-table "builder" >}}
 
 ---
 
@@ -145,59 +97,21 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 
 ### Tenant hypervisor (`dv02hyp002p02`)
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| **Proxmox VE** | **9.2.11** | AGPL-3.0 | Community, commercial available. No-subscription repository | Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/plan/)) |
-| Debian | 13 (Trixie) | Free software, per package | Community | Bundled with Proxmox VE 9 |
-| Proxmox SDN (`libpve-network-perl`) | 1.6.7 | AGPL-3.0 | Bundled | Observed 2026-08-30 |
-| Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/)) | 1.32.0 (2024-09-03) | Proprietary | Vendor, no contract | Observed 2026-09-26 (`dmidecode`) |
-| **FRR** (EVPN, OpenFabric underlay) | not recorded. `frr-pythontools` is 10.6.1-1+pve3 | GPL-2.0-or-later | Community | Observed 2026-08-30 (pythontools only) |
-| Tenant egress agent | follows `deevnet.net` 1.0.0 | Apache-2.0 (collection `LICENSE`) | In-house | Not versioned |
+{{< software-table "tenant-hypervisor" >}}
 
 ### Raspberry Pi
 
-| Component | Where | Version | License | Support | Version source |
-|---|---|---|---|---|---|
-| **Ubuntu** | `dv02rpi004p01` | **23.10** | Free software, per package | **Unmaintained** (end of life) | Observed 2026-09-25 ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/)) |
-| (OS) | `dv02rpi001p01`, `…002p01`, `…003p01` | not recorded | | | Not recorded |
-| **Raspberry Pi OS Lite** (arm64) | Base of the image-factory Pi builds and the take-home `pi-backend` image | **Bookworm, 2025-11-24**. Trixie 2025-11-24 is mirrored but unused | Free software, with some proprietary firmware | Community (Raspberry Pi Ltd) | Pin |
+{{< software-table "raspberry-pi" >}}
 
 **The take-home `pi-backend` image** runs, as native binaries rather than containers:
 
-| Component | Version | License | Version source |
-|---|---|---|---|
-| VictoriaLogs | v1.52.0 | Apache-2.0 | Pin |
-| vmauth (vmutils) | v1.152.0 | Apache-2.0 | Pin |
-| Grafana OSS | 13.2.2 | AGPL-3.0 | Pin (sha256) |
-| victoriametrics-logs-datasource | 0.32.0 | not checked | Pin |
-| `deevnet-kit` | the API's tag. The `pi-backend` image in the tenant downloads still carries 0.12.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3) | No license file | Built from the API repository |
-| `deevnet-log-bridge` | `-latest` | not checked | Not pinned |
-| Mosquitto, Podman | Bookworm packages (Podman 4.3) | EPL-2.0 / EDL-1.0; Apache-2.0 | Not pinned |
+{{< software-table "pi-backend" >}}
 
 ---
 
 ## Build and Automation Tooling
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| **ansible-core** | not pinned. Collections require `>=2.14` | GPL-3.0 | Community, commercial available (Red Hat) | Not pinned |
-| `ansible.posix` | `>=1.5.0` | GPL-3.0 | Community | Pin (constraint) |
-| `community.general` | `>=8.0.0` | GPL-3.0 | Community | Pin (constraint). `deevnet.builder` uses it without declaring it |
-| `ansible.netcommon` | `>=7.0.0` | GPL-3.0 | Community | Pin (constraint) |
-| paramiko, proxmoxer, requests | paramiko `>=2.12.0`; others not pinned | LGPL-2.1; MIT; Apache-2.0 | Community | Partly pinned |
-| **Terraform** (Builder, fabric) | not pinned. Configurations require `>= 1.5`; fabric state written by 1.14.3 | BUSL-1.1 | Vendor (HashiCorp), no contract | Not pinned |
-| Terraform (handed to tenants) | **1.16.4** | BUSL-1.1 | Vendor (HashiCorp), no contract | Pin (tenant downloads) |
-| `bpg/proxmox` provider | `~> 0.101`, locked **0.111.1** | MPL-2.0 | Community | Pin (lockfile) |
-| `grafana/grafana` provider | **4.46.0** | MPL-2.0 | Community, commercial available (Grafana Labs) | Pin (tenant downloads) |
-| **Packer** | not pinned | BUSL-1.1 | Vendor (HashiCorp), no contract | Not pinned |
-| `hashicorp/proxmox` Packer plugin | `~> 1` | MPL-2.0 | Community | Pin (constraint) |
-| `packer-builder-arm` (Pi builds) | `:latest` container | Apache-2.0 | Community | Not pinned |
-| **Go** | API `go 1.25.0`, built with 1.25.9; provider `go 1.25.5` | BSD-3-Clause | Community | Pin |
-| terraform-plugin-framework | v1.15.1 | MPL-2.0 | Community (HashiCorp) | Pin (`go.mod`) |
-| GoReleaser | v2 | MIT | Community, commercial available | Pin (major only) |
-| **Hugo** (extended) | **0.140.1** | Apache-2.0 | Community | Pin (CI workflow, Builder) |
-| hugo-book theme | v11.0.0-1-g24d3465 | MIT | Community | Pin (submodule commit) |
-| GitHub Actions | checkout v4, configure-pages v5, upload-pages-artifact v3, deploy-pages v4 | MIT | Vendor (GitHub) | Pin (major only) |
+{{< software-table "build-tooling" >}}
 
 ---
 
@@ -205,15 +119,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 
 What the site hands a tenant developer, from the [tenant downloads](/docs/changes/2026/0025-tenant-downloads/).
 
-| Component | Version | License | Support | Version source |
-|---|---|---|---|---|
-| **`deevnet/deevnet` provider** | **v0.8.0** | No license file | In-house | Pin (tenant downloads, which serve it); tag |
-| `install-provider.sh`, `tenant-check.sh` | ship with the provider | No license file | In-house | Follow the provider tag |
-| Terraform | 1.16.4 | BUSL-1.1 | Vendor, no contract | Pin |
-| `grafana/grafana` provider | 4.46.0 | MPL-2.0 | Community, commercial available | Pin |
-| MicroPython (Pico W) | 1.29.0 | MIT | Community | Pin |
-| Raspberry Pi Imager | 2.0.11.1 | Apache-2.0 | Community (Raspberry Pi Ltd) | Pin |
-| Arduino IDE, ESP32 board package, PubSubClient | not recorded | LGPL/GPL; LGPL-2.1; MIT | Community | Not recorded |
+{{< software-table "tenant-tools" >}}
 
 ---
 
@@ -221,18 +127,7 @@ What the site hands a tenant developer, from the [tenant downloads](/docs/change
 
 What each piece does, where it runs and what it holds is in [Deevnet Software](/docs/platforms/deevnet-software/).
 
-| Repository | Version | License | What it builds |
-|---|---|---|---|
-| `deevnet-provisioning-api` | tag **v0.15.0**, deployed **v0.15.0** | **No license file** | The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag) |
-| `terraform-provider-deevnet` | tag **v0.8.0** | **No license file** | The provider, `install-provider.sh`, `tenant-check.sh` |
-| `deevnet-log-bridge` | **v0.1.1** deployed | not checked | The MQTT log bridge |
-| `ansible-collection-deevnet.builder` | 1.0.0, no tags | MIT | Builder, artifact server, PXE roles |
-| `ansible-collection-deevnet.mgmt` | 1.0.0, no tags | **`galaxy.yml` says MIT; `LICENSE` is Apache-2.0** | Management-plane roles |
-| `ansible-collection-deevnet.net` | 1.0.0, no tags | **`galaxy.yml` says MIT; `LICENSE` is Apache-2.0** | Network roles, `segment-check.sh`, `opnsense-diag.sh`, the tenant egress agent |
-| `ansible-inventory-deevnet` | no tags | MIT | Inventory |
-| `deevnet-image-factory` | no tags | Apache-2.0 | Packer and Pi images |
-| `deevnet-tenant-fabric` | tags `tenant-module-v1.1.0` and earlier | not checked | Tenant fabric SDN (Terraform) |
-| `deevnet-docs` | no tags | Apache-2.0 | This site |
+{{< software-table "deevnet-software" >}}
 
 ---
 

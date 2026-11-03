@@ -1,0 +1,631 @@
+# The Software Catalog's rows: content/docs/platforms/software-catalog.md draws
+# each table with {{< software-table "<id>" >}}, its columns in order. Cells are
+# markdown, as they read on the page; a cell left out is drawn empty. A report
+# compares against `version` and `source` by the component, plugin or
+# repository's name. When a change upgrades something, it edits the row here.
+tables:
+  core-router:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**OPNsense**'
+      version: '**26.7.3_11**'
+      license: BSD-2-Clause
+      support: Community, commercial available (Deciso)
+      source: Observed 2026-09-19 ([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)) and 2026-09-21 ([INC-0004](/docs/incidents/2026/0004-core-router-lost/))
+    - component: FreeBSD base
+      version: not recorded
+      license: BSD-2-Clause
+      support: Bundled
+      source: Bundled with OPNsense
+  core-router-services:
+    columns:
+    - key: service
+      title: Service
+    - key: used_for
+      title: Used for
+    - key: license
+      title: License
+    - key: configured_by
+      title: Configured by
+    rows:
+    - service: '**Kea DHCPv4**'
+      used_for: DHCP on every segment, and static reservations. ISC dhcpd and dnsmasq are not used on the router.
+      license: MPL-2.0
+      configured_by: '`opnsense_dhcp` (`/api/kea/…`)'
+    - service: '**Unbound**'
+      used_for: 'The site resolver: host overrides, aliases, and forwarding of tenant zones to PowerDNS'
+      license: BSD-3-Clause
+      configured_by: '`opnsense_dns` (`/api/unbound/…`)'
+    - service: '**pf** (through the OPNsense filter and alias APIs)'
+      used_for: Zone policy, and the `deevnet_private` alias
+      license: BSD
+      configured_by: '`opnsense_firewall` (`/api/firewall/…`)'
+    - service: VLAN interfaces
+      used_for: One per segment, on `re0`
+      license: BSD-2-Clause
+      configured_by: '`opnsense_vlans` (`/api/interfaces/…`)'
+    - service: Gateways and static routes
+      used_for: The tenant fabric route `10.20.128.0/18`
+      license: BSD-2-Clause
+      configured_by: '`opnsense_routes` (`/api/routing/…`, `/api/routes/…`)'
+    - service: Configuration backup
+      used_for: Pre-change backups
+      license: BSD-2-Clause
+      configured_by: Migration playbooks (`/api/core/backup/…`)
+  core-router-plugins:
+    columns:
+    - key: plugin
+      title: Plugin
+    - key: state
+      title: State
+    - key: license
+      title: License
+    - key: notes
+      title: Notes
+    rows:
+    - plugin: '`os-wol`'
+      state: Required, but whether it is installed is not recorded
+      license: BSD-2-Clause
+      notes: Wake-on-LAN for the Builder and both hypervisors (`opnsense_wol`)
+    - plugin: '`os-realtek-re`'
+      state: Proposed, not installed
+      license: BSD-2-Clause
+      notes: 'Vendor NIC driver: an open corrective action on [INC-0004](/docs/incidents/2026/0004-core-router-lost/)'
+  network-edge:
+    columns:
+    - key: component
+      title: Component
+    - key: where
+      title: Where
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**TP-Link SG2218 firmware**'
+      where: Access switch `dv02acc001p01` (hardware 1.20)
+      version: '**1.20.24** Build 20260509; 1.20.1 kept in the other image slot'
+      license: Proprietary
+      support: Vendor, no contract
+      source: Observed 2026-09-16 ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/))
+    - component: '**TP-Link EAP650-Outdoor firmware**'
+      where: AP `dv02wap001p01` (v1.0)
+      version: '**1.3.11** Build 20260703'
+      license: Proprietary
+      support: Vendor, no contract
+      source: Observed 2026-09-15 ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/))
+    - component: '**Omada Software Controller**'
+      where: Container on `dv02nms001v01`; cold spare on the Builder
+      version: '**6.3.0.45**'
+      license: Proprietary, free of charge
+      support: Vendor, no contract
+      source: Pin (`omada_image_tag`); observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/))
+    - component: Omada container image
+      where: As above
+      version: '`mbentley/omada-controller:6.3.0.45`'
+      license: Community packaging of the vendor's software
+      support: Community
+      source: Pin. Fallbacks 6.2.14.11 and 6.1 are mirrored
+    - component: '**GL.iNet firmware**'
+      where: Travel router `dv02edg001p01` (GL-AXT1800)
+      version: not recorded
+      license: OpenWrt base GPL-2.0; GL.iNet additions proprietary
+      support: Vendor, no contract
+      source: Not recorded. Not managed by automation
+  management-hypervisor:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**Proxmox VE**'
+      version: '**8.4.1** (see [Gaps](#gaps))'
+      license: AGPL-3.0
+      support: Community, commercial available. The nodes use the **no-subscription** repository
+      source: Observed, undated (platform page, roadmap)
+    - component: Debian
+      version: 12 (Bookworm)
+      license: Free software, per package
+      support: Community
+      source: Bundled with Proxmox VE 8
+    - component: Linux kernel
+      version: 6.8.12
+      license: GPL-2.0
+      support: Bundled
+      source: Observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/))
+    - component: Dell BIOS ([OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/))
+      version: 1.27.0 (2023-09-18)
+      license: Proprietary
+      support: Vendor, no contract
+      source: Observed 2026-09-26 (`dmidecode`)
+  service-vms:
+    columns:
+    - key: component
+      title: Component
+    - key: vm
+      title: VM
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**Fedora Server**'
+      vm: all
+      version: '**44** (template build 1.7). Kernel 7.2.5, systemd 259'
+      license: Free software, per package (Fedora Project)
+      support: Community
+      source: Pin (`deevnet_fedora_current`); observed 2026-09-15/21
+    - component: Podman
+      vm: all
+      version: not recorded (the Fedora 44 package)
+      license: Apache-2.0
+      support: Community
+      source: Not recorded
+    - component: '**OpenBao**'
+      vm: '`dv02idn001v01`'
+      version: '**2.6.2**'
+      license: MPL-2.0
+      support: Community (Linux Foundation project)
+      source: Pin; staged 2026-09-17 ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/))
+    - component: '**PowerDNS Authoritative**'
+      vm: '`dv02idn001v01`'
+      version: '**4.9.17**'
+      license: GPL-2.0
+      support: Community, commercial available (PowerDNS)
+      source: Pin
+    - component: '**Deevnet API**'
+      vm: '`dv02prv001v01`'
+      version: '**v0.15.0**'
+      license: No license file
+      support: In-house
+      source: Pin; deployed 2026-10-25 ([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/))
+    - component: '**PostgreSQL**'
+      vm: '`dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth)'
+      version: '**17.11**'
+      license: PostgreSQL License
+      support: Community
+      source: Pin
+    - component: '**MinIO**'
+      vm: '`dv02prv001v01` (Terraform state)'
+      version: '**RELEASE.2025-09-07T16-13-09Z**'
+      license: AGPL-3.0
+      support: '**Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled'
+      source: Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
+    - component: '**Omada Software Controller**'
+      vm: '`dv02nms001v01`'
+      version: 6.3.0.45
+      license: See [Network](#switching-wireless-and-edge)
+    - component: '**VerneMQ**'
+      vm: '`dv02msg001v01`'
+      version: '**2.2.0**, built from source'
+      license: Apache-2.0 (source). Upstream binaries carry an EULA, which is why it is built here
+      support: Community, commercial available (Octavo Labs)
+      source: Pin; observed 2026-09-20 ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/))
+    - component: '**MQTT log bridge**'
+      vm: '`dv02msg001v01`'
+      version: '**v0.1.1**'
+      license: not checked (its repository isn't in this workspace)
+      support: In-house
+      source: Pin; deployed 2026-09-22 ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
+    - component: '**VictoriaLogs**'
+      vm: '`dv02obs001v01`'
+      version: '**v1.52.0**'
+      license: Apache-2.0
+      support: Community, commercial available (VictoriaMetrics)
+      source: Pin; observed 2026-09-21 ([CHG-0018](/docs/changes/2026/0018-central-log-store/))
+    - component: '**vmauth**'
+      vm: '`dv02obs001v01`'
+      version: '**v1.152.0**'
+      license: Apache-2.0
+      support: Community, commercial available (VictoriaMetrics)
+      source: Pin; observed 2026-09-21
+    - component: '**Grafana OSS**'
+      vm: '`dv02obs001v01`'
+      version: '**13.2.2**'
+      license: AGPL-3.0
+      support: Community, commercial available (Grafana Labs)
+      source: Pin; deployed 2026-09-24 ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
+    - component: victoriametrics-logs-datasource plugin
+      vm: '`dv02obs001v01`'
+      version: '**0.32.0**'
+      license: not checked
+      support: Community, commercial available (VictoriaMetrics)
+      source: Pin; observed 2026-09-24
+    - component: '**nginx** (tenant downloads, service proxy)'
+      vm: '`dv02obs001v01`, `dv02prv001v01`'
+      version: '**1.29.1-alpine**'
+      license: BSD-2-Clause
+      support: Community, commercial available (F5)
+      source: Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
+    - component: '`deevnet-log-user`'
+      vm: '`dv02obs001v01`'
+      version: Built from the API's tag; deployed as `-latest`
+      license: No license file
+      support: In-house
+      source: Not pinned
+    - component: (collector)
+      vm: '`dv02col001v01`'
+      version: Built empty. vmagent is proposed in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
+  builder:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: Fedora Workstation (Builder)
+      version: '"43 or later". The exact release is not recorded'
+      license: Free software, per package
+      support: Community
+      source: Not recorded
+    - component: Fedora Server (`dv02bld001v01`, `dv02bld002v01`)
+      version: '44'
+      license: Free software, per package
+      support: Community
+      source: Pin
+    - component: nginx (artifact server)
+      version: Fedora package
+      license: BSD-2-Clause
+      support: Community
+      source: Not pinned
+    - component: tftp-server, syslinux, grub2 (PXE)
+      version: Fedora packages
+      license: BSD / GPL-2.0 / GPL-3.0
+      support: Community
+      source: Not pinned
+    - component: dnsmasq
+      version: Fedora package; installed but disabled
+      license: GPL-2.0
+      support: Community
+      source: Not pinned
+    - component: AOOSTAR BIOS ([N1 PRO](/docs/platforms/hardware/compute/aoostar-n1-pro/))
+      version: HCN150_MI3_0.10 (2025-04-18)
+      license: Proprietary
+      support: Vendor, no contract
+      source: Observed 2026-09-26 (`dmidecode`)
+  tenant-hypervisor:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**Proxmox VE**'
+      version: '**9.2.11**'
+      license: AGPL-3.0
+      support: Community, commercial available. No-subscription repository
+      source: Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/plan/))
+    - component: Debian
+      version: 13 (Trixie)
+      license: Free software, per package
+      support: Community
+      source: Bundled with Proxmox VE 9
+    - component: Proxmox SDN (`libpve-network-perl`)
+      version: 1.6.7
+      license: AGPL-3.0
+      support: Bundled
+      source: Observed 2026-08-30
+    - component: Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/))
+      version: 1.32.0 (2024-09-03)
+      license: Proprietary
+      support: Vendor, no contract
+      source: Observed 2026-09-26 (`dmidecode`)
+    - component: '**FRR** (EVPN, OpenFabric underlay)'
+      version: not recorded. `frr-pythontools` is 10.6.1-1+pve3
+      license: GPL-2.0-or-later
+      support: Community
+      source: Observed 2026-08-30 (pythontools only)
+    - component: Tenant egress agent
+      version: follows `deevnet.net` 1.0.0
+      license: Apache-2.0 (collection `LICENSE`)
+      support: In-house
+      source: Not versioned
+  raspberry-pi:
+    columns:
+    - key: component
+      title: Component
+    - key: where
+      title: Where
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**Ubuntu**'
+      where: '`dv02rpi004p01`'
+      version: '**23.10**'
+      license: Free software, per package
+      support: '**Unmaintained** (end of life)'
+      source: Observed 2026-09-25 ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/))
+    - component: (OS)
+      where: '`dv02rpi001p01`, `…002p01`, `…003p01`'
+      version: not recorded
+      source: Not recorded
+    - component: '**Raspberry Pi OS Lite** (arm64)'
+      where: Base of the image-factory Pi builds and the take-home `pi-backend` image
+      version: '**Bookworm, 2025-11-24**. Trixie 2025-11-24 is mirrored but unused'
+      license: Free software, with some proprietary firmware
+      support: Community (Raspberry Pi Ltd)
+      source: Pin
+  pi-backend:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: source
+      title: Version source
+    rows:
+    - component: VictoriaLogs
+      version: v1.52.0
+      license: Apache-2.0
+      source: Pin
+    - component: vmauth (vmutils)
+      version: v1.152.0
+      license: Apache-2.0
+      source: Pin
+    - component: Grafana OSS
+      version: 13.2.2
+      license: AGPL-3.0
+      source: Pin (sha256)
+    - component: victoriametrics-logs-datasource
+      version: 0.32.0
+      license: not checked
+      source: Pin
+    - component: '`deevnet-kit`'
+      version: the API's tag. The `pi-backend` image in the tenant downloads still carries 0.12.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
+      license: No license file
+      source: Built from the API repository
+    - component: '`deevnet-log-bridge`'
+      version: '`-latest`'
+      license: not checked
+      source: Not pinned
+    - component: Mosquitto, Podman
+      version: Bookworm packages (Podman 4.3)
+      license: EPL-2.0 / EDL-1.0; Apache-2.0
+      source: Not pinned
+  build-tooling:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**ansible-core**'
+      version: not pinned. Collections require `>=2.14`
+      license: GPL-3.0
+      support: Community, commercial available (Red Hat)
+      source: Not pinned
+    - component: '`ansible.posix`'
+      version: '`>=1.5.0`'
+      license: GPL-3.0
+      support: Community
+      source: Pin (constraint)
+    - component: '`community.general`'
+      version: '`>=8.0.0`'
+      license: GPL-3.0
+      support: Community
+      source: Pin (constraint). `deevnet.builder` uses it without declaring it
+    - component: '`ansible.netcommon`'
+      version: '`>=7.0.0`'
+      license: GPL-3.0
+      support: Community
+      source: Pin (constraint)
+    - component: paramiko, proxmoxer, requests
+      version: paramiko `>=2.12.0`; others not pinned
+      license: LGPL-2.1; MIT; Apache-2.0
+      support: Community
+      source: Partly pinned
+    - component: '**Terraform** (Builder, fabric)'
+      version: not pinned. Configurations require `>= 1.5`; fabric state written by 1.14.3
+      license: BUSL-1.1
+      support: Vendor (HashiCorp), no contract
+      source: Not pinned
+    - component: Terraform (handed to tenants)
+      version: '**1.16.4**'
+      license: BUSL-1.1
+      support: Vendor (HashiCorp), no contract
+      source: Pin (tenant downloads)
+    - component: '`bpg/proxmox` provider'
+      version: '`~> 0.101`, locked **0.111.1**'
+      license: MPL-2.0
+      support: Community
+      source: Pin (lockfile)
+    - component: '`grafana/grafana` provider'
+      version: '**4.46.0**'
+      license: MPL-2.0
+      support: Community, commercial available (Grafana Labs)
+      source: Pin (tenant downloads)
+    - component: '**Packer**'
+      version: not pinned
+      license: BUSL-1.1
+      support: Vendor (HashiCorp), no contract
+      source: Not pinned
+    - component: '`hashicorp/proxmox` Packer plugin'
+      version: '`~> 1`'
+      license: MPL-2.0
+      support: Community
+      source: Pin (constraint)
+    - component: '`packer-builder-arm` (Pi builds)'
+      version: '`:latest` container'
+      license: Apache-2.0
+      support: Community
+      source: Not pinned
+    - component: '**Go**'
+      version: API `go 1.25.0`, built with 1.25.9; provider `go 1.25.5`
+      license: BSD-3-Clause
+      support: Community
+      source: Pin
+    - component: terraform-plugin-framework
+      version: v1.15.1
+      license: MPL-2.0
+      support: Community (HashiCorp)
+      source: Pin (`go.mod`)
+    - component: GoReleaser
+      version: v2
+      license: MIT
+      support: Community, commercial available
+      source: Pin (major only)
+    - component: '**Hugo** (extended)'
+      version: '**0.140.1**'
+      license: Apache-2.0
+      support: Community
+      source: Pin (CI workflow, Builder)
+    - component: hugo-book theme
+      version: v11.0.0-1-g24d3465
+      license: MIT
+      support: Community
+      source: Pin (submodule commit)
+    - component: GitHub Actions
+      version: checkout v4, configure-pages v5, upload-pages-artifact v3, deploy-pages v4
+      license: MIT
+      support: Vendor (GitHub)
+      source: Pin (major only)
+  tenant-tools:
+    columns:
+    - key: component
+      title: Component
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: support
+      title: Support
+    - key: source
+      title: Version source
+    rows:
+    - component: '**`deevnet/deevnet` provider**'
+      version: '**v0.8.0**'
+      license: No license file
+      support: In-house
+      source: Pin (tenant downloads, which serve it); tag
+    - component: '`install-provider.sh`, `tenant-check.sh`'
+      version: ship with the provider
+      license: No license file
+      support: In-house
+      source: Follow the provider tag
+    - component: Terraform
+      version: 1.16.4
+      license: BUSL-1.1
+      support: Vendor, no contract
+      source: Pin
+    - component: '`grafana/grafana` provider'
+      version: 4.46.0
+      license: MPL-2.0
+      support: Community, commercial available
+      source: Pin
+    - component: MicroPython (Pico W)
+      version: 1.29.0
+      license: MIT
+      support: Community
+      source: Pin
+    - component: Raspberry Pi Imager
+      version: 2.0.11.1
+      license: Apache-2.0
+      support: Community (Raspberry Pi Ltd)
+      source: Pin
+    - component: Arduino IDE, ESP32 board package, PubSubClient
+      version: not recorded
+      license: LGPL/GPL; LGPL-2.1; MIT
+      support: Community
+      source: Not recorded
+  deevnet-software:
+    columns:
+    - key: repository
+      title: Repository
+    - key: version
+      title: Version
+    - key: license
+      title: License
+    - key: what_it_builds
+      title: What it builds
+    rows:
+    - repository: '`deevnet-provisioning-api`'
+      version: tag **v0.15.0**, deployed **v0.15.0**
+      license: '**No license file**'
+      what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
+    - repository: '`terraform-provider-deevnet`'
+      version: tag **v0.8.0**
+      license: '**No license file**'
+      what_it_builds: The provider, `install-provider.sh`, `tenant-check.sh`
+    - repository: '`deevnet-log-bridge`'
+      version: '**v0.1.1** deployed'
+      license: not checked
+      what_it_builds: The MQTT log bridge
+    - repository: '`ansible-collection-deevnet.builder`'
+      version: 1.0.0, no tags
+      license: MIT
+      what_it_builds: Builder, artifact server, PXE roles
+    - repository: '`ansible-collection-deevnet.mgmt`'
+      version: 1.0.0, no tags
+      license: '**`galaxy.yml` says MIT; `LICENSE` is Apache-2.0**'
+      what_it_builds: Management-plane roles
+    - repository: '`ansible-collection-deevnet.net`'
+      version: 1.0.0, no tags
+      license: '**`galaxy.yml` says MIT; `LICENSE` is Apache-2.0**'
+      what_it_builds: Network roles, `segment-check.sh`, `opnsense-diag.sh`, the tenant egress agent
+    - repository: '`ansible-inventory-deevnet`'
+      version: no tags
+      license: MIT
+      what_it_builds: Inventory
+    - repository: '`deevnet-image-factory`'
+      version: no tags
+      license: Apache-2.0
+      what_it_builds: Packer and Pi images
+    - repository: '`deevnet-tenant-fabric`'
+      version: tags `tenant-module-v1.1.0` and earlier
+      license: not checked
+      what_it_builds: Tenant fabric SDN (Terraform)
+    - repository: '`deevnet-docs`'
+      version: no tags
+      license: Apache-2.0
+      what_it_builds: This site

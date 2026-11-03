@@ -21,7 +21,8 @@ It builds into a temporary directory and changes nothing in the repository. It r
   Hugo releases; only warnings the change adds count.
 - **Old URLs lost.** Every page removed or renamed since the base must still build at its old
   URL, through `aliases:` in the moved page's front matter.
-- **Internal links and anchors** (`](/docs/…)`, `](/projects/…)`) that do not resolve.
+- **Internal links and anchors** (`](/docs/…)`, `](/projects/…)`) that do not resolve, in pages and
+  in the data files pages draw from (`data/*.yaml`).
 
 It exits 1 if any of these fail. Report the result plainly: what passed, what failed, with the
 file and link for each failure.
