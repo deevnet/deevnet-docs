@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/credential-rotation/
   - /projects/credential-rotation/
 weight: 8
-tasks_completed: 2
+tasks_completed: 4
 tasks_in_progress: 0
-tasks_planned: 10
+tasks_planned: 8
 ---
 
 # Credential Rotation: Project Plan
@@ -99,7 +99,9 @@ at the top need their own:
 - ⏳ Assess which static credentials can become short-lived without a secrets manager — Proxmox API tokens support expiry dates, which would make rotation forced rather than optional
 - ⏳ Record which ones genuinely cannot yet, and why, so the gap is a documented decision rather than an oversight
 
-## Handling Exposure ⏳
+## Handling Exposure ✅
 
-- ⏳ Write down what "exposed" means here and what follows from it. A credential printed to a terminal, a log, a chat transcript or a CI job output is exposed even if the audience was trusted; the question is what the response is, not whether it felt risky at the time
-- ⏳ Establish the default: in a lab with an ephemeral substrate, "reissue at the next convenient rebuild" is a legitimate answer — but it should be a stated policy rather than an implicit one
+- ✅ Write down what "exposed" means here and what follows from it. A credential printed to a terminal, a log, a chat transcript or a CI job output is exposed even if the audience was trusted; the question is what the response is, not whether it felt risky at the time
+- ✅ Establish the default: in a lab with an ephemeral substrate, "reissue at the next convenient rebuild" is a legitimate answer — but it should be a stated policy rather than an implicit one
+
+Both are in the [Secure Identity Standard, §5](/docs/standards/secure-identity/#5-exposed-credentials).

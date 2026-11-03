@@ -17,7 +17,8 @@ waypoints:
   - title: "Static credentials assessed for short lifetimes, and the ones that cannot be shortened recorded"
     status: planned
   - title: "A stated policy for what counts as an exposed credential and what happens next"
-    status: planned
+    status: done
+    date: "2026-11-03"
 ---
 
 # Credential Rotation
