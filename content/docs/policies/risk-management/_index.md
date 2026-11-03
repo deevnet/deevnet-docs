@@ -8,16 +8,18 @@ aliases:
 
 # Risk Management
 
-Risk management is how Deevnet stays aware of what can go wrong and decides what to do about it.
-Each risk is identified, assessed for how likely it is and what it would cost, and measured for the
-exposure it leaves. It is then given a treatment (reduced, transferred, avoided or accepted), with
-an owner and a record, and tracked and reviewed until it closes. Security is one kind of risk,
-alongside losing state, losing a device, and not being able to explain why something is configured
-the way it is.
+Risk management is Deevnet's process for handling risk: the threats and vulnerabilities that
+could harm its sites, its tenants or their data. Each risk is identified, assessed for how likely it
+is and what it would cost, and measured for the exposure it leaves. It is then given a treatment
+(reduced, transferred, avoided or accepted), with an owner and a record, and tracked and reviewed
+until it closes. Security is one kind of risk, alongside losing state, losing a device, and not
+being able to explain why something is configured the way it is.
 
-Deevnet is a portable lab run by a small team on consumer hardware. The aim is not to eliminate
-risk — it is to **know** each risk, choose a treatment deliberately, and write the choice down, so
-nothing is a surprise.
+{{< hint info >}}
+**Deevnet is a portable lab, run by a small team on commodity hardware with little redundancy.**
+The aim is not to eliminate risk but to know each one, choose its treatment deliberately, and
+write the choice down, so nothing is a surprise.
+{{< /hint >}}
 
 ---
 
