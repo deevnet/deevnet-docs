@@ -10,7 +10,8 @@ waypoints:
     status: done
     date: "2026-10-06"
   - title: "Every long-lived credential listed, with what it unlocks and what uses it"
-    status: planned
+    status: done
+    date: "2026-11-03"
   - title: "A written rotation procedure for each kind of credential, naming everything that must change with it"
     status: planned
   - title: "Static credentials assessed for short lifetimes, and the ones that cannot be shortened recorded"
