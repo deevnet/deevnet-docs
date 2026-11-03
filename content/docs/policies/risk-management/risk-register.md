@@ -1,6 +1,6 @@
 ---
 title: "Risk Register"
-weight: 5
+weight: 6
 ---
 
 # Risk Register

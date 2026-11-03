@@ -1,6 +1,6 @@
 ---
 title: "Resiliency & Limits"
-weight: 4
+weight: 5
 aliases:
   - /docs/architecture/limits/
 ---
