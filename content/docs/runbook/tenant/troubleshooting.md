@@ -22,6 +22,9 @@ or iCloud Private Relay first. **All passing** means the network is fine and the
 Terraform or client side (below). **Anything failing:** send the whole output to the operator; the
 fix is on the substrate, not in your repo.
 
+`segment-check.sh` is bash: on Windows, run it under WSL2. Natively, `tenant-check.ps1` without
+`-Offline` checks the same services, but not what should be out of reach.
+
 **Can't join `DVNTM-TD` at all, or lost its password?** The password you were handed at admission is
 the only copy: nothing shows it again. Ask the operator to rotate your key. You get a new password, and
 the old one stops working on every device that had it. A key bound to one computer's MAC address
@@ -42,6 +45,10 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 | `400` on a DNS record | the address is outside your own subnet |
 | `Saved plan is stale` | the state moved between `plan` and `apply`. Re-plan |
 | `Permission denied (publickey)` logging in to a workload | the user is `tenant`, not your own; and one key your computer offers (`ssh -v … 2>&1 \| grep Offering`) must be in the workload's `ssh_keys`. Compare fingerprints, not comments ([Deploy Your App](/docs/runbook/tenant/deploy-your-app/#2-log-in)) |
+| `deevnet/deevnet` not found on Windows, though `install-provider.ps1` ran | the provider went into `%APPDATA%\terraform.d\plugins` for the CPU it saw. An `amd64` Terraform on an ARM laptop wants `windows_amd64`; install Terraform first, then rerun the script, which asks Terraform |
+| `$'\r': command not found`, `missing separator`, or a Makefile that fails on its first line, under WSL2 or Git Bash | the repository was checked out with Windows line endings. Clone inside WSL; or, with a `.gitattributes` that says `eol=lf`, `git add --renormalize .` |
+| WSL2: `api.mobile.deevnet.net` does not resolve, though Windows resolves it | WSL is in NAT mode: `networkingMode=mirrored` and `dnsTunneling=true` ([WSL2](/docs/runbook/tenant/getting-started/before-you-start/#wsl2)) |
+| `curl: (35) schannel: ... revocation` on Windows | add `--ssl-revoke-best-effort`: Windows' curl refuses a chain whose revocation it cannot check |
 | `REMOTE HOST IDENTIFICATION HAS CHANGED` for a workload | expected after you replaced it: `ssh-keygen -R <fqdn>`. If you did not replace it, stop and ask the operator |
 
 ## Device side

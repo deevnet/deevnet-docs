@@ -105,6 +105,21 @@ ssh $H 'sudo install -m 0600 kit.env /opt/my-app/ && sudo install -m 0644 deevne
 
 The workload has Podman already. `podman load` names the image `localhost/my-app:latest`.
 
+**On Windows, in PowerShell,** two lines differ: write `kit.env` through `cmd`, because PowerShell
+5.1's `>` writes UTF-16, and copy the image as a file, because its pipe re-encodes bytes. Under WSL2,
+the lines above work as they are.
+
+```powershell
+cmd /c "terraform output -raw kit_env > kit.env"
+$H = 'tenant@backend.bench1.mobile.deevnet.net'
+podman save -o my-app.tar my-app
+scp my-app.tar "${H}:"
+ssh $H 'sudo podman load -i my-app.tar && rm my-app.tar'
+```
+
+The `ssh`, `scp` and `ssh-keygen` lines on this page are the same in PowerShell: Windows has
+OpenSSH built in. `ssh-add -l` needs the `ssh-agent` service running.
+
 ## 5. Run it under systemd
 
 Put this unit on the workload as `/etc/systemd/system/my-app.service`:
@@ -168,7 +183,7 @@ The file sits on your workload's disk, readable by root only, as `kit.env` does.
 
 ```bash
 podman build --platform linux/amd64 -t my-app .
-podman save my-app | ssh $H sudo podman load
+podman save my-app | ssh $H sudo podman load            # Windows: save to a file and scp it, as in step 4
 ssh $H sudo systemctl restart my-app
 ```
 

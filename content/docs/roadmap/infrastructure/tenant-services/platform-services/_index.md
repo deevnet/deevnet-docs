@@ -16,7 +16,7 @@ waypoints:
   - title: "More services for tenants: secrets, metrics, identity, object storage, quotas"
     status: active
   - title: "Tenants can work from Windows laptops"
-    status: planned
+    status: active
 ---
 
 # Tenant Platform Services

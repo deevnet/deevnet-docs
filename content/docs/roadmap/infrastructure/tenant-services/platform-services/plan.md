@@ -49,20 +49,28 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 
 ---
 
-## Windows tenant laptops ⏳
+## Windows tenant laptops 🔄
 
 A tenant developer needs Terraform, the `deevnet/deevnet` provider and the `grafana` provider on their
-laptop. Terraform runs on Windows, but the provider's prebuilt releases are built for macOS and Linux
-only, and `install-provider.sh` and `tenant-check.sh` are bash. Today a Windows laptop can't be a
-tenant without building the provider from source.
+laptop, and a way to run the reference tenant's targets. On Windows, that works two ways, natively in
+PowerShell or under WSL2, and the tenant guide documents both
+([CHG-0058](/docs/changes/2026/0058-windows-tenant-laptops/)).
 
-- ⏳ Cross-compile the provider for Windows (`amd64` and `arm64`): add `windows` to the GoReleaser
-  targets in `terraform-provider-deevnet`
-- ⏳ Mirror the Windows zips, and the `grafana` provider's, in the
-  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/)
-- ⏳ Install on Windows without bash: a PowerShell `install-provider.ps1` that puts both providers in
-  Terraform's plugin directory and checks them against `SHA256SUMS`, and a Windows equivalent of
-  `tenant-check.sh`
-- ⏳ [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) gains the Windows
-  path, proven from a Windows laptop on `DVNTM-TD`. WSL2 very likely works today with the Linux
-  build, but is untested
+- 🔄 Cross-compile the provider for Windows (`amd64` and `arm64`), named `.exe` as Terraform
+  requires, in `make release-build` and GoReleaser. Built; not yet released
+- 🔄 Install on Windows without bash: `install-provider.ps1` into
+  `%APPDATA%\terraform.d\plugins`, checked against `SHA256SUMS`, and `tenant-check.ps1` with
+  `winget` hints. Written; not yet run on Windows
+- 🔄 `tenant-check.sh` under WSL2: networking mode, a checkout on a Windows drive, the site's names.
+  Written
+- 🔄 The reference tenant's targets without make: `tenant.ps1` in `deevnet-tenant-tdemo`, with the
+  Makefile's guards and a native `state-backend`. Written; not yet run on Windows
+- 🔄 LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo
+- ⏳ Mirror Terraform, the `grafana` provider and Pi Imager for Windows in the
+  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/). Declared in inventory; not yet fetched or
+  served
+- 🔄 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) and the other tenant pages
+  gain the Windows lines and a *Working from Windows* section
+- ⏳ Proven from a Windows laptop on `DVNTM-TD`, natively (Windows PowerShell 5.1 and PowerShell 7)
+  and under WSL2
+

@@ -154,6 +154,15 @@ and `tools/`; check the image against its `.sha256` before flashing.
      (`brew install openssl`, then `$(brew --prefix openssl)/bin/openssl passwd -6`), or run the
      command on any Linux machine and paste the result.
 
+     **On Windows** the card's `bootfs` appears as a drive, say `E:`. Git for Windows' `openssl` can
+     make the hash. In PowerShell, write the file as ASCII, because 5.1's default is UTF-16:
+
+     ```powershell
+     New-Item E:\ssh -ItemType File                                   # enables SSH on first boot
+     $h = & 'C:\Program Files\Git\usr\bin\openssl.exe' passwd -6     # asks for the password twice
+     Set-Content -Encoding Ascii -NoNewline E:\userconf.txt "you:$h`n"
+     ```
+
 ### How you sign in: your choice
 
 Every option works from the same `userconf.txt` user. Pick whichever you like:
