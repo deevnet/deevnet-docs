@@ -11,8 +11,9 @@ and a Wi-Fi connection to the tenant development network.
 
 ## Your development environment
 
-- **A computer running macOS or Linux, with Wi-Fi.** Tenants reach Deevnet over Wi-Fi only (see
-  [Connecting](#connecting-wi-fi-only)).
+- **A computer running macOS, Linux or Windows 10 or 11, with Wi-Fi.** Tenants reach Deevnet over
+  Wi-Fi only (see [Connecting](#connecting-wi-fi-only)). Windows works two ways, natively in
+  PowerShell or under WSL2 ([Working from Windows](#working-from-windows)).
 - **For devices:** the board itself (a Pico W or an ESP32) and a USB **data** cable.
 - **To move your tenant onto a Pi of your own:** a Raspberry Pi, a microSD card of 8 GB or more, and
   a card reader.
@@ -27,31 +28,31 @@ Terraform, Pi Imager, MicroPython and the Pi image are also served on the site's
 
 **Required** to apply your Terraform:
 
-| Tool | Why | macOS | Fedora | Debian / Ubuntu |
-|---|---|---|---|---|
-| `git` | your repository | `xcode-select --install` | `sudo dnf install git` | `sudo apt install git` |
-| Terraform ≥ 1.5 | applies your tenant | `brew install hashicorp/tap/terraform` | from [tenant downloads](#tenant-downloads) `terraform/`, or HashiCorp's repo | the same |
-| `deevnet/deevnet` provider **0.6.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same |
-| `curl`, `openssl` | TLS checks, the CA | built in | `sudo dnf install curl openssl` | `sudo apt install curl openssl` |
+| Tool | Why | macOS | Fedora | Debian / Ubuntu | Windows |
+|---|---|---|---|---|---|
+| `git` | your repository | `xcode-select --install` | `sudo dnf install git` | `sudo apt install git` | `winget install Git.Git` |
+| Terraform ≥ 1.5 | applies your tenant | `brew install hashicorp/tap/terraform` | from [tenant downloads](#tenant-downloads) `terraform/`, or HashiCorp's repo | the same | `winget install Hashicorp.Terraform`, or from `terraform/` |
+| `deevnet/deevnet` provider **0.9.x** | the Deevnet resources | [install-provider.sh](#getting-the-provider) | the same | the same | [install-provider.ps1](#getting-the-provider) |
+| `curl`, `openssl` | TLS checks, the CA | built in | `sudo dnf install curl openssl` | `sudo apt install curl openssl` | `curl.exe` built in; no `openssl` needed |
 
 **For devices:**
 
-| Tool | Why | macOS | Fedora | Debian / Ubuntu |
-|---|---|---|---|---|
-| `mosquitto_pub`, `mosquitto_sub` | MQTT test clients | `brew install mosquitto` | `sudo dnf install mosquitto` | `sudo apt install mosquitto-clients` |
-| `mpremote` | copies files to a Pico | `python3 -m pip install --user mpremote` | the same | the same |
-| MicroPython ≥ 1.23 for the Pico W | the Pico's firmware | from [tenant downloads](#tenant-downloads) `tools/` | the same | the same |
-| Thonny *or* the Arduino IDE with PubSubClient | editing firmware (Pico / ESP32) | thonny.org / arduino.cc | the same | the same |
-| `dig`, `python3` | name checks, scripting | `brew install bind`; `python3` built in | `sudo dnf install bind-utils python3` | `sudo apt install dnsutils python3` |
+| Tool | Why | macOS | Fedora | Debian / Ubuntu | Windows |
+|---|---|---|---|---|---|
+| `mosquitto_pub`, `mosquitto_sub` | MQTT test clients | `brew install mosquitto` | `sudo dnf install mosquitto` | `sudo apt install mosquitto-clients` | `winget install EclipseFoundation.Mosquitto`, then add `C:\Program Files\mosquitto` to `PATH` |
+| `mpremote` | copies files to a Pico | `python3 -m pip install --user mpremote` | the same | the same | `python -m pip install --user mpremote` |
+| MicroPython ≥ 1.23 for the Pico W | the Pico's firmware | from [tenant downloads](#tenant-downloads) `tools/` | the same | the same | the same |
+| Thonny *or* the Arduino IDE with PubSubClient | editing firmware (Pico / ESP32) | thonny.org / arduino.cc | the same | the same | the same |
+| `dig`, `python3` | name checks, scripting | `brew install bind`; `python3` built in | `sudo dnf install bind-utils python3` | `sudo apt install dnsutils python3` | `Resolve-DnsName` built in; `winget install Python.Python.3.12` |
 
 **To [convert your tenant to a Pi image](/docs/runbook/tenant/tenant-to-pi-image/):**
 
-| Tool | Why | macOS | Fedora | Debian / Ubuntu |
-|---|---|---|---|---|
-| Raspberry Pi Imager and an SD card reader | flashes your card | from [tenant downloads](#tenant-downloads) `tools/` (`.dmg`) | Imager from `tools/` (`.deb`) or Flathub | `.deb` from `tools/` |
-| An SSH client | reaches the Pi | built in | built in | built in |
-| `.local` names | `<hostname>.local` | built in | `sudo dnf install nss-mdns avahi` | `sudo apt install libnss-mdns avahi-daemon` |
-| Podman or Docker with arm64 builds | builds your app for the Pi | `brew install podman` | `sudo dnf install podman qemu-user-static` | `sudo apt install podman qemu-user-static` |
+| Tool | Why | macOS | Fedora | Debian / Ubuntu | Windows |
+|---|---|---|---|---|---|
+| Raspberry Pi Imager and an SD card reader | flashes your card | from [tenant downloads](#tenant-downloads) `tools/` (`.dmg`) | Imager from `tools/` (`.deb`) or Flathub | `.deb` from `tools/` | `.exe` from `tools/` |
+| An SSH client | reaches the Pi | built in | built in | built in | built in (OpenSSH) |
+| `.local` names | `<hostname>.local` | built in | `sudo dnf install nss-mdns avahi` | `sudo apt install libnss-mdns avahi-daemon` | built in |
+| Podman or Docker with arm64 builds | builds your app for the Pi | `brew install podman` | `sudo dnf install podman qemu-user-static` | `sudo apt install podman qemu-user-static` | `winget install RedHat.Podman`, then `podman machine init` |
 
 ### Check your development environment
 
@@ -64,7 +65,15 @@ bash tenant-check.sh --offline      # anywhere: the tools only
 bash tenant-check.sh                # on DVNTM-TD: tools and the site's services
 ```
 
-It is in [tenant downloads](#tenant-downloads) `scripts/`, and attached to every
+On Windows, `tenant-check.ps1` does the same and prints `winget` lines. Under WSL2, run
+`tenant-check.sh`, which also checks WSL's networking:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tenant-check.ps1 -Offline
+powershell -ExecutionPolicy Bypass -File tenant-check.ps1
+```
+
+Both are in [tenant downloads](#tenant-downloads) `scripts/`, and attached to every
 [provider release](https://github.com/deevnet/terraform-provider-deevnet/releases).
 
 ---
@@ -99,7 +108,8 @@ test clients and browser use (the API, the state store, the broker, the log stor
 tenant downloads), SSH to tenant workloads, and nothing else on the site.
 
 `DVNTM-TD` uses the site's own DNS. If your computer has a VPN, iCloud Private Relay or a hard-coded
-DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve.
+DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve. Under WSL2, the same goes
+for WSL's own DNS ([below](#wsl2)).
 
 ---
 
@@ -112,11 +122,11 @@ at **`https://downloads.mobile.deevnet.net/`**. It is read-only and verified wit
 | Path | What |
 |---|---|
 | `deevnet-root-ca.pem` | the Deevnet Root CA. Check its fingerprint against the one above before trusting it |
-| `scripts/` | `install-provider.sh`, `tenant-check.sh` |
-| `provider/<version>/` | the deevnet provider for macOS and Linux, Intel and ARM, with `SHA256SUMS` |
+| `scripts/` | `install-provider.sh`, `tenant-check.sh`, and for Windows `install-provider.ps1`, `tenant-check.ps1` |
+| `provider/<version>/` | the deevnet provider for macOS, Linux and Windows, Intel and ARM, with `SHA256SUMS` |
 | `providers/grafana/<version>/` | the Terraform `grafana` provider, for [dashboards](/docs/runbook/tenant/services/dashboards/) |
 | `terraform/<version>/` | Terraform itself |
-| `tools/` | Raspberry Pi Imager (macOS, Linux) and MicroPython for the Pico W |
+| `tools/` | Raspberry Pi Imager (macOS, Linux, Windows) and MicroPython for the Pico W |
 | `pi/` | the [tenant Pi](/docs/runbook/tenant/tenant-to-pi-image/) image and its sha256 |
 
 ---
@@ -133,8 +143,18 @@ curl -fsSL --cacert deevnet-root-ca.pem -O https://downloads.mobile.deevnet.net/
 bash install-provider.sh
 ```
 
-It installs `deevnet/deevnet` **and** the `grafana` provider, and checks every download against
-its `SHA256SUMS`. **Off-site,** `bash install-provider.sh --github` fetches the same prebuilt
+On Windows, in PowerShell:
+
+```powershell
+curl.exe -fsSLk -O https://downloads.mobile.deevnet.net/deevnet-root-ca.pem
+$c = [Security.Cryptography.X509Certificates.X509Certificate2]::new("$PWD\deevnet-root-ca.pem")
+[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($c.RawData))   # must match, with - for :
+curl.exe -fsSL --ssl-revoke-best-effort --cacert deevnet-root-ca.pem -O https://downloads.mobile.deevnet.net/scripts/install-provider.ps1
+powershell -ExecutionPolicy Bypass -File install-provider.ps1
+```
+
+Either script installs `deevnet/deevnet` **and** the `grafana` provider, and checks every download
+against its `SHA256SUMS`. On Windows the mirror is `%APPDATA%\terraform.d\plugins\…`. **Off-site,** `bash install-provider.sh --github` (on Windows, `install-provider.ps1 -GitHub`) fetches the same prebuilt
 provider from the
 [GitHub release](https://github.com/deevnet/terraform-provider-deevnet/releases). **From
 source** (needs Go and make): clone the repository, check out the latest tag
@@ -151,3 +171,46 @@ deevnet = {
 ```
 
 ---
+
+## Working from Windows
+
+**Pick one route and stay on it.** Each has its own provider install, its own Terraform and its
+own copy of your repository. Both reach the site the same way, over the laptop's Wi-Fi.
+
+| | Native, in PowerShell | WSL2 |
+|---|---|---|
+| Install and check | `install-provider.ps1`, `tenant-check.ps1` | `install-provider.sh`, `tenant-check.sh`, as on Linux |
+| Your tenant repository | `.\tenant.ps1 <target>`: the Makefile's targets, without make | `make <target>` |
+| The token | `$env:DEEVNET_API_TOKEN = terraform output -raw api_token` | `export DEEVNET_API_TOKEN=$(terraform output -raw api_token)` |
+| Devices over USB | as on macOS: Thonny, the Arduino IDE, `mpremote` | needs `usbipd-win` to hand the board to WSL |
+| Building for a Pi, deploying an app | Podman Desktop, `scp` | as on Linux |
+
+### Native, in PowerShell
+
+- Write **`curl.exe`**, not `curl`: in Windows PowerShell 5.1, `curl` is another command.
+- If PowerShell refuses to run a script, run it as
+  `powershell -ExecutionPolicy Bypass -File <script>.ps1`. That changes nothing for other scripts.
+- **`>` writes UTF-16 in Windows PowerShell 5.1**, which an env file reader cannot use. Let `cmd`
+  redirect byte for byte: `cmd /c "terraform output -raw kit_env > kit.env"`.
+- **Don't pipe an image between commands** (`podman save … | ssh …`). Windows PowerShell 5.1
+  re-encodes the bytes. Save to a file and copy it: `podman save -o app.tar my-app`, then `scp`.
+
+### WSL2
+
+Put this in `%UserProfile%\.wslconfig`, then run `wsl --shutdown` once:
+
+```ini
+[wsl2]
+networkingMode=mirrored
+dnsTunneling=true
+```
+
+**Mirrored mode gives WSL the laptop's own address on `DVNTM-TD` and the site's DNS.** The default
+NAT mode puts WSL behind a network Windows makes up, and the site's names may not resolve.
+
+- **Clone inside WSL** (`~/…`), not under `/mnt/c`: a Windows checkout rewrites line endings and
+  loses file modes, and the tenant Makefile and scripts then fail.
+- **Boards over USB:** install `usbipd-win` in Windows (`winget install usbipd`), then
+  `usbipd bind` and `usbipd attach --wsl` for the board. Flashing from Windows itself, with Thonny or
+  the Arduino IDE, avoids this.
+- Raspberry Pi Imager runs in Windows, not WSL.

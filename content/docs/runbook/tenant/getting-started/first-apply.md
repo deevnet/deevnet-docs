@@ -15,7 +15,7 @@ A tenant is code in its own repository
 
 - **A tenant repository of its own**, from the reference tenant
   [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo): clone it, then
-  `make new NAME=<your name>`. That makes the copy yours, and its README takes you from here to a
+  `make new NAME=<your name>` (on Windows, `.\tenant.ps1 new -Name <your name>`). That makes the copy yours, and its README takes you from here to a
   device, a workload and your state in the store
 - **Inside your application's repository**, at `infra/deevnet-tenant-<name>/`, beside the firmware.
   EdS and Ma Bell do this, so the device and the infrastructure it depends on change together
@@ -27,7 +27,8 @@ deevnet-tenant-<name>/
 ├── main.tf
 ├── deevnet-root-ca.pem        # from the operator; gitignored is fine, it is not secret
 ├── .gitignore         # *.tfstate*, .terraform/
-└── Makefile           # optional; tdemo's sets the endpoint and CA, and guards the copy
+├── Makefile           # optional; tdemo's sets the endpoint and CA, and guards the copy
+└── tenant.ps1         # optional; tdemo's Makefile for Windows PowerShell
 ```
 
 ## The minimum: one resource
@@ -68,6 +69,18 @@ terraform plan
 terraform apply
 ```
 
+On Windows, in PowerShell:
+
+```powershell
+$env:DEEVNET_API_ENDPOINT = 'https://api.mobile.deevnet.net'
+$env:DEEVNET_API_CACERT   = "$PWD\deevnet-root-ca.pem"
+$env:DEEVNET_API_TOKEN    = '<the enrollment token>'
+
+terraform init
+terraform plan
+terraform apply
+```
+
 The apply **spends the enrollment token**, the API allocates your tenant an index, and the
 substrate builds your network, DNS zone, state-store access and log partitions. It takes under a
 minute.
@@ -80,7 +93,11 @@ From now on the credential is your tenant's own token, which your state holds:
 export DEEVNET_API_TOKEN=$(terraform output -raw api_token)
 ```
 
-Put that line in whatever you use to set up a shell for this project. If a later command says
+```powershell
+$env:DEEVNET_API_TOKEN = terraform output -raw api_token
+```
+
+Put that line (in PowerShell, in your `$PROFILE` or a script you dot-source) in whatever you use to set up a shell for this project. If a later command says
 `No API token`, this is the line that is missing.
 
 {{< hint warning >}}
@@ -96,6 +113,7 @@ rest — which for a device means reflashing it. Once the tenant matters, move t
 ```bash
 terraform plan -detailed-exitcode     # exit 0: your declaration and the substrate agree
 terraform state show deevnet_tenant.this | grep -E 'index|subnet|gateway|dns_zone'
+# PowerShell: terraform state show deevnet_tenant.this | Select-String 'index|subnet|gateway|dns_zone'
 ```
 
 You should see an index, a `/24` inside `10.20.128.0/18`, its `.1` as the gateway, and

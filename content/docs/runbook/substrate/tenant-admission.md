@@ -25,7 +25,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | The API | `https://api.mobile.deevnet.net`, reachable from the Builder |
 | The operator token | nothing to fetch: `make admit` reads it from the running API container over SSH, and never prints it. It is also `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault, for calling the API by hand |
 | The Deevnet Root CA | `ansible-inventory-deevnet/pki/deevnet-root-ca.pem`: the one trust anchor for every Deevnet site, the same for every tenant ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). Tenants download it under the same name |
-| The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
+| The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` (on Windows, `install-provider.ps1`) from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: `deevnet.builder site.yml --tags fetched-artifacts`, the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
 
 ---
 
