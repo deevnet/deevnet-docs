@@ -56,8 +56,8 @@ laptop, and a way to run the reference tenant's targets. On Windows, that works 
 PowerShell or under WSL2, and the tenant guide documents both
 ([CHG-0058](/docs/changes/2026/0058-windows-tenant-laptops/)).
 
-- 🔄 Cross-compile the provider for Windows (`amd64` and `arm64`), named `.exe` as Terraform
-  requires, in `make release-build` and GoReleaser. Built; not yet released
+- ✅ Cross-compile the provider for Windows (`amd64` and `arm64`), named `.exe` as Terraform
+  requires, in `make release-build` and GoReleaser. Released in v0.9.0
 - 🔄 Install on Windows without bash: `install-provider.ps1` into
   `%APPDATA%\terraform.d\plugins`, checked against `SHA256SUMS`, and `tenant-check.ps1` with
   `winget` hints. Written; not yet run on Windows
@@ -66,9 +66,9 @@ PowerShell or under WSL2, and the tenant guide documents both
 - 🔄 The reference tenant's targets without make: `tenant.ps1` in `deevnet-tenant-tdemo`, with the
   Makefile's guards and a native `state-backend`. Written; not yet run on Windows
 - 🔄 LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo
-- ⏳ Mirror Terraform, the `grafana` provider and Pi Imager for Windows in the
-  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/). Declared in inventory; not yet fetched or
-  served
+- ✅ Mirror Terraform, the `grafana` provider and Pi Imager for Windows in the
+  [tenant downloads](/docs/changes/2026/0025-tenant-downloads/), with provider v0.9.0 and the
+  `.ps1` scripts. Served
 - 🔄 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) and the other tenant pages
   gain the Windows lines and a *Working from Windows* section
 - ⏳ Proven from a Windows laptop on `DVNTM-TD`, natively (Windows PowerShell 5.1 and PowerShell 7)
