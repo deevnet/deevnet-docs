@@ -98,14 +98,15 @@ The previous image stays in the downloads until this one is verified.
 
 Built in [deevnet-provisioning-api#38](https://github.com/deevnet/deevnet-provisioning-api/pull/38),
 released in **v0.15.0** with the API, and staged for the Pi (`make stage-pi`). The image was rebuilt
-on it (`make pi-backend`) and published to the Builder's tenant downloads tree, not yet to
-`dv02obs001v01`.
+on it (`make pi-backend`), published to the Builder's tenant downloads tree, and served from
+`dv02obs001v01` since 2026-11-04.
 
 | Step | Result |
 |---|---|
 | 1 | Not started |
 | 2 | In part. `deevnet-kit cert request` makes a key and a request on the Pi; `cert install FULLCHAIN ROOT` checks the certificate is for that key, chains to the root given and names `mqtt`, `logs` and `grafana` under `<tenant>.deevnet.net`, then installs it, keeps the card's CA as `card-ca.pem`, maps the names to loopback in `/etc/hosts` and restarts the services (unit tests). No `pki` switch and no `pki init` yet |
-| 3 | The image built with v0.15.0; its kit matches the staged binaries by checksum. Not yet in the downloads on `dv02obs001v01`, and not yet booted |
+| 3 | The image built with v0.15.0; its kit matches the staged binaries by checksum. Not yet in the downloads on `dv02obs001v01`, and not yet booted (as of 2026-10-25) |
+| 3 | **In the tenant downloads, 2026-11-04:** pushed to `dv02obs001v01` with rsync, capped at 5 MB/s, with the operator at the router's console. Delta transfer against the 2026-10-18 image sent 435 MB of the 941 MB in 90 seconds, and the router answered all 44 pings during it. Its checksum verifies on `obs`, and `downloads.mobile.deevnet.net` serves it |
 | 3 | **First booted, 2026-10-27:** EdS's home Pi, from EdS's backend image built on this `pi-backend` (2026-10-26). The card came up on its own CA, as designed |
 | 2 | **First used, 2026-10-29** (EdS [CHG-0042](https://cdeever.github.io/eds/docs/changes/2026/0042-the-home-pi-becomes-a-deevnet-pi/)): `cert request` on the Pi, the request signed by eds's `deevnet_certificate`, `cert install` with the full chain and the Root. It checked the key and the chain, said "installed", made the Pi a Deevnet Pi, mapped the names to loopback and restarted the services. `selftest` then passed 13 of 15: Grafana's log data sources still dialed `https://localhost:8427`, which the new certificate does not name, until `deevnet-kit-dashboards` was restarted by hand; then 15 of 15. Three ESP32 devices moved to the Pi's broker on the Root alone |
 
@@ -114,8 +115,11 @@ on it (`make pi-backend`) and published to the Builder's tenant downloads tree, 
 - **No first-boot switch.** A card starts on its own CA, as every card does, and becomes a Deevnet
   Pi when a certificate is installed; the kit's state records which (`pki`). The switch is needed
   only for `non-deevnet`, which waits on `pki init`.
-- **The image is held back from `dv02obs001v01`.** Copying it there moves about 940 MB across the
-  core router; the first card from it is EdS's home Pi, flashed from the Builder.
+- **The image reached `dv02obs001v01` nine days after it was built.** Copying it there crosses the
+  core router's `re0`, as in [INC-0004](/docs/incidents/2026/0004-core-router-lost/) and
+  [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/), so it waited for a window
+  with the operator at the console. The first card from it, EdS's home Pi, was flashed from the
+  Builder.
 
 ## Follow-ups
 
