@@ -45,6 +45,49 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 
 ---
 
+## Requirements & Constraints ✅
+
+Define what success means before building.
+
+- ✅ User scenarios (incoming/outgoing calls, edge cases)
+- ✅ Functional requirements (FR-xxx)
+- ✅ Non-functional requirements (latency, audio quality, reliability)
+- ✅ Electrical & mechanical constraints
+- ✅ Acceptance criteria for each requirement
+- ✅ Risk register (top technical risks + mitigations)
+
+---
+
+## Architecture & Design ✅
+
+Translate requirements into a complete system design.
+
+- ✅ System block diagram
+- ✅ Power architecture & protection strategy
+- ✅ Audio signal chain & gain staging plan
+- ✅ Hook switch, dial pulse, and ring detection design
+- ✅ Bluetooth integration architecture
+- ✅ Firmware architecture & state machine definition
+- ✅ Interface specifications (electrical, audio, software)
+- ✅ Verification & test plan (requirements → tests mapping)
+
+---
+
+## Firmware Development 🔄
+
+The ESP32 firmware, built first so the prototypes have something to talk to the hardware.
+
+- ✅ ESP32 base firmware & build system
+- ✅ Bluetooth HFP profile implementation
+- ✅ Call state machine implementation
+- ✅ Tone generation (dial tone, ringback, busy, reorder and the other call-progress tones)
+- ✅ Configuration storage (NVS schema)
+- ✅ Logging & diagnostics
+- ✅ Deevnet tenant: gateway state over MQTT, events in the central log store, a Grafana dashboard
+- 🔄 Firmware versioning & release tagging
+
+---
+
 ## How MaBell is built
 
 MaBell is one unit, built for one home, so it is prototyped in stages rather than through a
@@ -107,49 +150,6 @@ one is electrically verified, the enclosure, and the unit installed at home and 
 
 - The rarer tones (SIT, stutter dial tone, call waiting), if no earlier version needs them
 - Field diagnostics beyond the MQTT state and the event log
-
----
-
-## Requirements & Constraints ✅
-
-Define what success means before building.
-
-- ✅ User scenarios (incoming/outgoing calls, edge cases)
-- ✅ Functional requirements (FR-xxx)
-- ✅ Non-functional requirements (latency, audio quality, reliability)
-- ✅ Electrical & mechanical constraints
-- ✅ Acceptance criteria for each requirement
-- ✅ Risk register (top technical risks + mitigations)
-
----
-
-## Architecture & Design ✅
-
-Translate requirements into a complete system design.
-
-- ✅ System block diagram
-- ✅ Power architecture & protection strategy
-- ✅ Audio signal chain & gain staging plan
-- ✅ Hook switch, dial pulse, and ring detection design
-- ✅ Bluetooth integration architecture
-- ✅ Firmware architecture & state machine definition
-- ✅ Interface specifications (electrical, audio, software)
-- ✅ Verification & test plan (requirements → tests mapping)
-
----
-
-## Firmware Foundation 🔄
-
-The ESP32 firmware the stages build on.
-
-- ✅ ESP32 base firmware & build system
-- ✅ Bluetooth HFP profile implementation
-- ✅ Call state machine implementation
-- ✅ Tone generation (dial tone, ringback, busy, reorder and the other call-progress tones)
-- ✅ Configuration storage (NVS schema)
-- ✅ Logging & diagnostics
-- ✅ Deevnet tenant: gateway state over MQTT, events in the central log store, a Grafana dashboard
-- 🔄 Firmware versioning & release tagging
 
 ---
 
