@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/mabell/
   - /projects/mabell/
 weight: 17
-tasks_completed: 19
-tasks_in_progress: 8
-tasks_planned: 50
+tasks_completed: 21
+tasks_in_progress: 2
+tasks_planned: 23
 ---
 
 # MaBell Bluetooth Gateway: Project Plan
@@ -41,6 +41,72 @@ Restore full, authentic use of vintage analog telephones by bridging them to mod
 - VoIP provider integration
 - Multi-line PBX features
 - Smartphone UI replacement
+- Manufacturing and selling units: MaBell is built once, for one home
+
+---
+
+## How MaBell is built
+
+MaBell is one unit, built for one home, so it is prototyped in stages rather than through a
+manufacturing lifecycle. **Each stage proves every functional section of the gateway** before the
+next stage starts: call tones, ringing, hook detection, rotary and touch-tone (DTMF) detection,
+call audio, and the indicators. Dial tone, for example, is first heard on a speaker, then injected
+into a phone's earpiece and judged for authenticity. Ringing is first an LED and an electronic ring
+on the speaker, then a real bell.
+
+The gateway **detects** dialing; it never generates it. The phone, or a stand-in on the bench,
+makes the rotary pulses and DTMF tones. The gateway decodes them and asks the cell phone to dial
+over Bluetooth HFP.
+
+Each stage is a version. The line interface for the circuit board, the AG1171 SLIC module or the
+discrete HC-5504B SLIC, is chosen at the end of the line-voltage stage (v3), with what the
+prototypes taught. The decision and the options considered go in the project's design docs.
+
+---
+
+## Versions
+
+### v1, the MVP (current)
+
+The gateway works on the bench with stand-ins: a Bluetooth call runs end to end through a speaker
+and microphone, dialed with a bare rotary dial or DTMF from a phone app, and rung with an LED and an
+electronic ring.
+
+**Done when:**
+
+- [ ] Each functional section works on the bench with stand-ins: call tones, ringing, hook, rotary detection, DTMF detection, call audio and indicators.
+- [ ] The firmware detects rotary pulses and DTMF digits, and dials the collected number over HFP.
+- [ ] Dial tone and the call-progress tones are measured against the North American frequencies and cadences, and sound authentic by ear.
+- [ ] A full call works: dial out (rotary and DTMF), ring in and answer, talk, hang up.
+- [ ] The bench build is written up: a build guide in the gateway repository, and the tone results in the project's design docs.
+
+**Not in v1:** a real phone (v2), line voltage or a real bell (v3), the circuit board (v4).
+
+### v2 (next)
+
+A real phone on a low-voltage loop: a cheap corded phone on a 5V DC loop
+([low-voltage build guide](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/low-voltage-test-rig.md)).
+Tones in a real earpiece, the phone's own hook switch, rotary pulses and DTMF detected through the
+loop, and handset audio, including the echo the loop brings.
+
+### v3
+
+Line voltage and a real bell: the AG1171/KS0835F SLIC module
+([SLIC module build guide](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/slic-module-build-guide.md)),
+with the phone side on screw terminals or a protoboard, so a vintage rotary phone rings and works.
+The firmware inverts the module's hook signal and toggles F/R at 20 Hz to ring, with ring-trip on
+answer. A discrete HC-5504B SLIC and LT1684 ring generator build is optional. The version closes
+with the line-interface decision for the board.
+
+### v4
+
+MaBell boxed and installed: KiCad schematic and layout, circuit board revisions (Rev A, B…) until
+one is electrically verified, the enclosure, and the unit installed at home and in daily use.
+
+### Later
+
+- The rarer tones (SIT, stutter dial tone, call waiting), if no earlier version needs them
+- Field diagnostics beyond the MQTT state and the event log
 
 ---
 
@@ -72,138 +138,92 @@ Translate requirements into a complete system design.
 
 ---
 
-## Low-Voltage Test Rig (EVT-1) 🔄
+## Firmware Foundation 🔄
 
-Safe, breadboard-based simulator for firmware development — no line voltage required.
-
-📄 **Build guide:** [`impl/low-voltage-test-rig.md`](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/low-voltage-test-rig.md)
-
-- 🔄 Order & collect low-voltage components
-- ⏳ Breadboard ESP32 + PCM5100 DAC + PCM1808 ADC
-- ⏳ Hook switch simulator (GPIO 32)
-- ⏳ Pulse dial simulator (NE555 timer)
-- ⏳ Ring indicator & ring detect feedback
-- ⏳ Audio I/O validation (I2S wiring)
-- ⏳ DTMF tone generator for touch-tone dial simulation
-- ⏳ LED & button wiring
-- ⏳ Full 24-feature firmware test matrix pass
-
----
-
-## Firmware Development 🔄
-
-ESP32 firmware implementing telephony behavior and system control.
+The ESP32 firmware the stages build on.
 
 - ✅ ESP32 base firmware & build system
 - ✅ Bluetooth HFP profile implementation
 - ✅ Call state machine implementation
-- 🔄 Dial tone, ring, busy, reorder tone generation
-- 🔄 Rotary pulse detection & validation
-- ⏳ DTMF detection (touch-tone phone support)
+- ✅ Tone generation (dial tone, ringback, busy, reorder and the other call-progress tones)
 - ✅ Configuration storage (NVS schema)
 - ✅ Logging & diagnostics
+- ✅ Deevnet tenant: gateway state over MQTT, events in the central log store, a Grafana dashboard
 - 🔄 Firmware versioning & release tagging
-- ⏳ Validate firmware against low-voltage test rig
-
 
 ---
 
-## Full-Voltage Prototype (EVT-2) ⏳
+## v1: Bench Setup ⏳
 
-Production-representative prototype with SLIC, ring generator, and real telephone.
-Using **KS0835F SLIC module** (AG1171/AG1170 compatible) for the line interface.
+Sub-Assembly A from the
+[prototyping build guide](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/prototyping-build-guide.md),
+with a speaker, microphone, LEDs, buttons and a bare rotary dial as stand-ins for the phone.
 
-📄 **Build guide:** [`impl/prototyping-build-guide.md`](https://github.com/cdeever/esp32-ma-bell-gateway/blob/main/impl/prototyping-build-guide.md)
-
-- ⏳ Sub-A: ESP32 + codec breadboard (3.3V)
-- ⏳ Sub-B: KS0835F SLIC module + line interface (mixed voltage)
-- ⏳ Sub-C: Ring generator (48V→90V AC)
-- ⏳ Power sequencing & safety validation
-- ⏳ Integration of all sub-assemblies
-- ⏳ Audio path measurements (levels, noise, echo)
+- ⏳ Order the parts: Sub-A, speaker amplifier and speaker, electret microphone, LEDs, buttons, a bare rotary dial
+- ⏳ Build Sub-A (ESP32 + PCM5100 DAC + PCM1808 ADC on I2S) and pass its test points
+- ⏳ Wire the speaker to the DAC and the microphone to the ADC
+- ⏳ Resolve the GPIO 21 clash in the firmware's pin map (I2C SDA and an AEC line)
 
 ---
 
-## Firmware Adjustment (EVT-2 Integration) ⏳
+## v1: Call Tones ⏳
 
-Validate and tune firmware on the full-voltage prototype. Should be largely compatible from EVT-1 testing.
-
-- ⏳ Re-run test matrix against full-voltage hardware
-- ⏳ Tune audio gain staging for SLIC signal path
-- ⏳ Validate ring-trip and hook detection with real phone
+- ⏳ Dial tone plays on the speaker when the hook stand-in goes off-hook
+- ⏳ Each call-progress tone measured (frequencies, cadence) against the North American values
+- ⏳ Each tone judged authentic by ear
 
 ---
 
-## Custom PCB (DVT) ⏳
+## v1: Ringing ⏳
 
-Transition from prototype to a reproducible hardware design.
-
-- ⏳ Schematic capture
-- ⏳ BOM with alternates
-- ⏳ PCB layout & DFM/DFA review
-- ⏳ Test points & programming header
-- ⏳ Fabrication
-- ⏳ Assembly
-- ⏳ Hardware bring-up checklist
-- ⏳ Electrical verification against requirements
+- ⏳ An incoming Bluetooth call flashes the ring LED and plays an electronic ring on the speaker, 2s on / 4s off
+- ⏳ Going off-hook during ringing stops the ring and answers the call
 
 ---
 
-## Enclosure & Mechanical Integration ⏳
+## v1: Hook Detection ⏳
 
-Package the device for real-world use.
-
-- ⏳ Enclosure requirements & constraints
-- ⏳ Connector placement & strain relief
-- ⏳ Enclosure design (3D print or fabrication)
-- ⏳ Thermal and safety considerations
-- ⏳ Final mechanical assembly
+- ⏳ A toggle switch on GPIO 32 stands in for the hook switch, debounced in firmware
+- ⏳ Hook state shows in the web interface and the event log
 
 ---
 
-## Verification & Validation ⏳
+## v1: Rotary Dial Detection ⏳
 
-Prove the system meets its requirements.
-
-- ⏳ Requirements → test traceability
-- ⏳ Functional test execution
-- ⏳ Audio quality & latency validation
-- ⏳ Long-duration stability testing
-- ⏳ Regression testing after changes
-- ⏳ Issue tracking & resolution
+- ⏳ Firmware pulse decoder: counts loop breaks, splits digits on the inter-digit gap, debounces
+- ⏳ A bare rotary dial on GPIO 34 decodes every digit, 1 through 0
 
 ---
 
-## Production Readiness (PVT) ⏳
+## v1: Touch-Tone (DTMF) Detection ⏳
 
-Prepare the design for repeatable builds.
-
-- ⏳ Assembly documentation
-- ⏳ Manufacturing test procedure
-- ⏳ Test fixtures / jigs
-- ⏳ Calibration & setup process
-- ⏳ Revision control (Rev A, Rev B, etc.)
+- ⏳ Firmware Goertzel DTMF detector on the ADC audio
+- ⏳ DTMF from a phone app into the microphone decodes 0–9, * and #
 
 ---
 
-## Documentation 🔄
+## v1: Dialing to a Call ⏳
 
-Create durable documentation for users and future builders.
-
-- 🔄 Build instructions
-- 🔄 Installation & wiring guide
-- 🔄 User guide
-- ⏳ Troubleshooting guide
-- ⏳ Design notes & lessons learned
+- ⏳ End-of-dialing timeout, then the collected number is dialed over HFP
+- ⏳ Ringback plays until the far end answers, then the call connects
+- ⏳ Digits dialed during a call are passed to the cell phone (`esp_hf_client_send_dtmf`)
 
 ---
 
-## Deployment & Operations ⏳
+## v1: Call Audio ⏳
 
-Put the system into real use.
+- ⏳ Two-way Bluetooth call audio through the speaker and microphone
 
-- ⏳ Final integration testing
-- ⏳ Installation procedure
-- ⏳ Field diagnostics workflow
-- ⏳ Release notes
-- ⏳ Ongoing maintenance plan
+---
+
+## v1: Indicators ⏳
+
+- ⏳ Dial lamp LED (GPIO 27), status LED (GPIO 2), UI LED (GPIO 18)
+- ⏳ User button (GPIO 4) triggers its action
+
+---
+
+## v1: Documentation ⏳
+
+- ⏳ Bench build guide in the gateway repository (`impl/`), drawing on Sub-A, the speaker-and-microphone option and the stand-in modules in the low-voltage guide
+- ⏳ Tone results in the project's design docs

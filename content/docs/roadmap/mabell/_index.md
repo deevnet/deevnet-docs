@@ -12,28 +12,22 @@ waypoints:
   - title: "MaBell system, power, audio and firmware design finished"
     status: done
     date: "2025-12-29"
-  - title: "A low-voltage breadboard rig simulating the phone passes the firmware test matrix (EVT-1)"
-    status: active
-  - title: "ESP32 firmware handles Bluetooth calls, phone tones, and rotary and touch-tone dialing"
-    status: active
   - title: "MaBell joined Deevnet as a tenant, its events in the central log store"
     status: done
     date: "2026-10-09"
-  - title: "A full-voltage prototype with the phone line interface and ring generator working safely (EVT-2)"
+  - title: "MaBell's firmware detects rotary-dial pulses and touch-tone digits"
     status: planned
-  - title: "Firmware retuned and retested on full-voltage hardware with a real phone (EVT-2)"
+  - title: "MaBell v1 done: every part of the gateway proven on a breadboard, with a speaker, LEDs and a bare rotary dial standing in for the phone"
+    milestone: true
     status: planned
-  - title: "A custom circuit board designed, built and electrically verified (DVT)"
+  - title: "MaBell v2 done: a real telephone makes and receives calls through the gateway on a low-voltage loop"
+    milestone: true
     status: planned
-  - title: "MaBell's enclosure designed and the final unit assembled"
+  - title: "MaBell v3 done: a vintage rotary phone rings and works at line voltage, and the circuit board's line interface is chosen"
+    milestone: true
     status: planned
-  - title: "MaBell tested against its requirements: function, audio quality, latency and long-run stability"
-    status: planned
-  - title: "Assembly documents, test fixtures and manufacturing tests ready for building more units (PVT)"
-    status: planned
-  - title: "MaBell's build, wiring, user and troubleshooting guides written"
-    status: active
-  - title: "MaBell installed, with field diagnostics and a maintenance plan"
+  - title: "MaBell v4 done: the gateway on its own circuit board, in an enclosure, installed at home"
+    milestone: true
     status: planned
 ---
 
