@@ -14,8 +14,6 @@ waypoints:
   - title: "The EdS tenant's certificates reissued under a name not tied to a site (CHG-0055)"
     status: done
     date: "2026-11-01"
-  - title: "The other tenants (tdemo, mabell and cdeever) moved to names not tied to a site"
-    status: active
   - title: "The Raspberry Pi image tenants take home kept current with its setup tool, deevnet-kit (CHG-0049–0051)"
     status: done
     date: "2026-10-18"
