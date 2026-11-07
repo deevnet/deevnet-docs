@@ -44,7 +44,8 @@ this tracks building it.
 - ✅ Reserved labels in the API, and `sites` on a certificate, API v0.15.0 and provider v0.8.0 (CHG-0054)
 - ✅ The first certificate under the new names, for eds's home Pi, 2026-10-29 (CHG-0054)
 - ⏳ A signing role per tenant, so OpenBao itself refuses a reserved name (CHG-0054)
-- 🔄 Reissue the existing tenants: `eds` done 2026-11-01; `tdemo`, `mabell`, `cdeever` to go (CHG-0055)
+- ✅ Reissue `eds`'s certificate under its site-less name, 2026-11-01 (CHG-0055). `tdemo`, `mabell` and
+  `cdeever` hold no tenant service certificate; each names its sites when it is next worked on
 
 ---
 
