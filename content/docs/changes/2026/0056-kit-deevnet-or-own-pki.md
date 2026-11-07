@@ -125,11 +125,14 @@ on it (`make pi-backend`), published to the Builder's tenant downloads tree, and
 
 Found on the first Deevnet Pi (EdS CHG-0042):
 
-- [ ] `cert install` does not rerun the dashboards step, so Grafana's data sources keep
-      `localhost` ([deevnet-provisioning-api#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)).
-- [ ] `status` and `selftest` warn on a Deevnet Pi that the certificate names none of its
+- [x] `cert install` does not rerun the dashboards step, so Grafana's data sources keep
+      `localhost` ([deevnet-provisioning-api#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Fixed in
+      [deevnet-provisioning-api#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45), not yet released.
+- [x] `status` and `selftest` warn on a Deevnet Pi that the certificate names none of its
       addresses, and suggest `regen-certs`, which refuses
-      ([deevnet-provisioning-api#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)).
-- [ ] The provider's same-key renewal cannot be installed by `cert install`; the documented renewal
-      is a new request ([deevnet-provisioning-api#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)).
+      ([deevnet-provisioning-api#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Fixed in
+      [deevnet-provisioning-api#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45), not yet released.
+- [x] The provider's same-key renewal cannot be installed by `cert install`; the documented renewal
+      is a new request ([deevnet-provisioning-api#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Fixed in
+      [deevnet-provisioning-api#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45), not yet released.
 
