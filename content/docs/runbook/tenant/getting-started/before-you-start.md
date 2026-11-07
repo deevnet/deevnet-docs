@@ -111,6 +111,21 @@ tenant downloads), SSH to tenant workloads, and nothing else on the site.
 DNS server, turn it off, or `api.mobile.deevnet.net` will not resolve. Under WSL2, the same goes
 for WSL's own DNS ([below](#wsl2)).
 
+**If your laptop is also on ethernet** (or a second Wi-Fi network), the mobile subnet
+(`10.20.0.0/16`) may route out the wrong interface. Add a static route so mobile traffic goes
+through `DVNTM-TD`'s gateway (requires admin / elevated prompt):
+
+```
+# Windows
+route add 10.20.0.0 mask 255.255.0.0 <DVNTM-TD gateway, e.g. 10.20.45.1>
+
+# macOS / Linux
+sudo ip route add 10.20.0.0/16 via <DVNTM-TD gateway>
+```
+
+The route lasts until the next reboot. If downloads or the API time out and you are on
+`DVNTM-TD`, this is the most likely cause.
+
 ---
 
 ## Tenant downloads
@@ -147,8 +162,10 @@ On Windows, in PowerShell:
 
 ```powershell
 curl.exe -fsSLk -O https://downloads.mobile.deevnet.net/deevnet-root-ca.pem
-$c = [Security.Cryptography.X509Certificates.X509Certificate2]::new("$PWD\deevnet-root-ca.pem")
-[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($c.RawData))   # must match, with - for :
+$c = [Security.Cryptography.X509Certificates.X509Certificate2]::new("$PWD\deevnet-root-ca.pem");
+[BitConverter]::ToString(
+  [Security.Cryptography.SHA256]::Create().ComputeHash($c.RawData)
+)   # must match the fingerprint above, with - in place of :
 curl.exe -fsSL --ssl-revoke-best-effort --cacert deevnet-root-ca.pem -O https://downloads.mobile.deevnet.net/scripts/install-provider.ps1
 powershell -ExecutionPolicy Bypass -File install-provider.ps1
 ```
@@ -205,9 +222,14 @@ networkingMode=mirrored
 dnsTunneling=true
 ```
 
-**Mirrored mode gives WSL the laptop's own address on `DVNTM-TD` and the site's DNS.** The default
-NAT mode puts WSL behind a network Windows makes up, and the site's names may not resolve.
+**Both lines are required.** Mirrored mode gives WSL the laptop's own address on `DVNTM-TD`;
+`dnsTunneling` forwards the site's DNS into WSL. Without `dnsTunneling`, names like
+`api.mobile.deevnet.net` will not resolve inside WSL even though Windows resolves them. The default
+NAT mode (neither line) puts WSL behind a network Windows makes up, and nothing on the site works.
 
+- **Install `unzip` and `curl`** if your WSL distribution is fresh:
+  `sudo apt install -y unzip curl` (Ubuntu/Debian). Both are needed to download and extract
+  Terraform from the tenant downloads.
 - **Clone inside WSL** (`~/…`), not under `/mnt/c`: a Windows checkout rewrites line endings and
   loses file modes, and the tenant Makefile and scripts then fail.
 - **Boards over USB:** install `usbipd-win` in Windows (`winget install usbipd`), then

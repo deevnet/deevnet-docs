@@ -36,7 +36,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 |---|---|
 | `No API token` | `DEEVNET_API_TOKEN` is not exported in *this* shell |
 | `Failed to query available provider packages` for `deevnet/deevnet` | the provider is not in your filesystem mirror, or not at a version your constraint allows. See [Before you start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider) |
-| Connection timed out to `api.mobile.deevnet.net` or `tfstate.mobile.deevnet.net` | you are not on `DVNTM-TD` (or a trusted seat) — [where to sit](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only) |
+| Connection timed out to `api.mobile.deevnet.net` or `tfstate.mobile.deevnet.net` | you are not on `DVNTM-TD` (or a trusted seat), or your laptop is also on ethernet and mobile traffic is routing out the wrong interface — [where to sit](/docs/runbook/tenant/getting-started/before-you-start/#connecting-wi-fi-only) |
 | `api.mobile.deevnet.net` does not resolve on `DVNTM-TD` | a VPN, Private Relay or hard-coded DNS is bypassing the site's resolver `10.20.45.1` |
 | `x509: certificate signed by unknown authority` | `DEEVNET_API_CACERT` does not point at `deevnet-root-ca.pem` |
 | `401` on the first apply | the enrollment token was for a different name, and is now spent. Ask for a new admission |
@@ -50,6 +50,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 | WSL2: `api.mobile.deevnet.net` does not resolve, though Windows resolves it | WSL is in NAT mode: `networkingMode=mirrored` and `dnsTunneling=true` ([WSL2](/docs/runbook/tenant/getting-started/before-you-start/#wsl2)) |
 | `curl: (35) schannel: ... revocation` on Windows | add `--ssl-revoke-best-effort`: Windows' curl refuses a chain whose revocation it cannot check |
 | `REMOTE HOST IDENTIFICATION HAS CHANGED` for a workload | expected after you replaced it: `ssh-keygen -R <fqdn>`. If you did not replace it, stop and ask the operator |
+| `terraform destroy` times out partway through | if you are on Wi-Fi, the destroy may have removed your tenant's Wi-Fi key before deleting the rest. Run destroy from ethernet, or ask the operator to clean up the remaining state. The `errored.tfstate` file in your directory has what Terraform managed before it lost connectivity |
 
 ## Device side
 
