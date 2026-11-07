@@ -14,9 +14,12 @@ A tenant is code in its own repository
 ([ADR-0006](/docs/architecture/decisions/tenant-model/0006-tenant-code-boundary/)). Two layouts work:
 
 - **A tenant repository of its own**, from the reference tenant
-  [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo): clone it, then
-  `make new NAME=<your name>` (on Windows, `.\tenant.ps1 new -Name <your name>`). That makes the copy yours, and its README takes you from here to a
-  device, a workload and your state in the store
+  [`deevnet-tenant-tdemo`](https://github.com/deevnet/deevnet-tenant-tdemo): clone the whole
+  repository (all `.tf` files, the `Makefile`, `tenant.ps1` and the `.gitignore`), then
+  `make new NAME=<your name>` (on Windows,
+  `powershell -ExecutionPolicy Bypass -File tenant.ps1 new -Name <your name>`).
+  Copy `deevnet-root-ca.pem` into the same directory. That makes the copy yours, and its
+  README takes you from here to a device, a workload and your state in the store
 - **Inside your application's repository**, at `infra/deevnet-tenant-<name>/`, beside the firmware.
   EdS and Ma Bell do this, so the device and the infrastructure it depends on change together
 
@@ -97,8 +100,25 @@ export DEEVNET_API_TOKEN=$(terraform output -raw api_token)
 $env:DEEVNET_API_TOKEN = terraform output -raw api_token
 ```
 
-Put that line (in PowerShell, in your `$PROFILE` or a script you dot-source) in whatever you use to set up a shell for this project. If a later command says
-`No API token`, this is the line that is missing.
+After `state-backend`, `terraform output` needs the state store credentials. The `Makefile` and
+`tenant.ps1` load `.backend.env` automatically, but a bare `terraform output` in your shell does
+not. Source it first:
+
+```bash
+export $(cat .backend.env | xargs)        # bash
+```
+
+```powershell
+Get-Content .backend.env | ForEach-Object {
+  if ($_ -match '^(\w+)=(.*)$') {
+    Set-Item "env:$($Matches[1])" $Matches[2]
+  }
+}
+```
+
+Put the token line (and the `.backend.env` sourcing, once you have it) in whatever you use to set
+up a shell for this project. If a later command says `No API token`, this is the line that is
+missing.
 
 {{< hint warning >}}
 **Your Terraform state now holds every credential the tenant was issued**, and for most of them it
