@@ -38,11 +38,17 @@ and names `mqtt`, `logs` and `grafana` under `<tenant>.deevnet.net`. Then:
   the Pi trusts; the card's own CA is kept as `card-ca.pem`;
 - the Pi's own services dial its site-less names, mapped to loopback in a block of `/etc/hosts`, so
   the certificate needs neither `localhost` nor an address;
-- `kit.env` and `export` hand an app those names and `deevnet-root-ca.pem`.
+- `kit.env` and `export` hand an app those names and `deevnet-root-ca.pem`;
+- Grafana's log data sources are written again for `logs.<tenant>.deevnet.net`.
 
 **The key never leaves the Pi, and no CA key is on it.** `regen-certs` refuses on a Deevnet Pi,
-where it would sign with the card's CA; the certificate is renewed by requesting and installing
-again. The first-boot switch between Deevnet and an owner's own PKI, and `pki init` for the latter,
+where it would sign with the card's CA. The certificate is renewed by installing what
+`deevnet_certificate` issues for the same key once sixty days remain: `cert install` takes a
+certificate for the key the Pi already serves, if it chains to the root the Pi already trusts and
+names the same services, and replaces only the certificate. Requesting and installing again renews
+it with a new key. `status` and `selftest` warn on a Deevnet Pi when the certificate is missing one
+of those names, never about addresses, which it does not hold. `deevnet-kit` v0.15.0 renews only
+with a new key, leaves the data sources on `localhost`, and warns about every address. The first-boot switch between Deevnet and an owner's own PKI, and `pki init` for the latter,
 are not built yet (CHG-0056).
 
 It is not part of the deployed API. How a tenant uses the image is

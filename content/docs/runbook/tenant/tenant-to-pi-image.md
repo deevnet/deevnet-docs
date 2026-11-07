@@ -362,7 +362,9 @@ Terraform apply, so it is done while you have the tenant at the Mobile Factory.
    `logs` and `grafana` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
    makes the root what every service on the Pi trusts, keeps the card's own CA as
    `/etc/deevnet-kit/tls/card-ca.pem`, and restarts the broker, the log store, Grafana and the
-   bridge.
+   bridge. Then it writes Grafana's log data sources again, for `logs.<tenant>.deevnet.net`.
+   `deevnet-kit` v0.15.0 leaves them on `localhost`, which the new certificate does not name, so
+   Grafana's log queries fail: there, run `sudo systemctl restart deevnet-kit-dashboards` after it.
 
 **The Pi then answers to `mqtt.<tenant>.deevnet.net`, `logs.<tenant>.deevnet.net` and
 `grafana.<tenant>.deevnet.net`.** Its own services dial those names, which it maps to itself in
@@ -372,7 +374,13 @@ with the Pi's address: at a Deevnet production site, its DNS does
 Run `sudo deevnet-kit export ~/deevnet-kit` again: `kit.env` names those hosts, and the CA is
 `deevnet-root-ca.pem`. Devices then trust the Deevnet Root, as they do on Deevnet.
 
-**It is renewed the same way, within the year:** `cert request`, an apply, `cert install`.
+**It is renewed within the year, with the same key or a new one.** From sixty days before it
+expires, a plan of your tenant shows the certificate renewing for the same key. Apply, copy the new
+`fullchain_pem` to the Pi, and run `sudo deevnet-kit cert install fullchain.pem
+deevnet-root-ca.pem` with the root the Pi already trusts: it replaces the certificate and keeps the
+key. For a new key, run `cert request` first and replace the certificate's request with the new
+one, then apply and install. `deevnet-kit` v0.15.0 takes only the second: it refuses a certificate
+for the key it already serves.
 
 **Not built yet:** choosing on the card, before first boot, whether it is to be a Deevnet Pi, and
 `deevnet-kit pki init`, which sets up a PKI of the owner's own
