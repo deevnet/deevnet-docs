@@ -422,7 +422,7 @@ tables:
       license: not checked
       source: Pin
     - component: '`deevnet-kit`'
-      version: v0.16.0, in the `pi-backend` image on the Builder. The image in the tenant downloads carries v0.15.0 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
+      version: v0.16.0, in the `pi-backend` image the tenant downloads serve since 2026-11-07 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
       license: Apache-2.0
       source: Pin (image factory)
     - component: '`deevnet-log-bridge`'

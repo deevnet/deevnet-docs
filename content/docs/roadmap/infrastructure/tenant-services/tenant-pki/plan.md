@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/tenant-pki/
   - /projects/tenant-pki/
 weight: 12
-tasks_completed: 3
-tasks_in_progress: 1
-tasks_planned: 11
+tasks_completed: 8
+tasks_in_progress: 0
+tasks_planned: 7
 ---
 
 # Tenant PKI: Project Plan
@@ -52,10 +52,10 @@ this tracks building it.
 ## The Deevnet Pi 🔄
 
 - ✅ `deevnet-kit cert request` and `cert install`, first used on eds's home Pi (CHG-0056)
-- ✅ The image tenants download carries the kit with them: v0.15.0's, served since 2026-11-04 (CHG-0056 step 3). v0.16.0's is built and on the Builder; its push to the downloads waits for a window
-- 🔄 `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Released in v0.16.0 ([#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45)); in the image on the Builder, not yet in the downloads
-- 🔄 No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Released in v0.16.0; in the image on the Builder, not yet in the downloads
-- 🔄 A renewal that installs, for the same key ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Released in v0.16.0; in the image on the Builder, not yet in the downloads
+- ✅ The image tenants download carries the kit with them: v0.16.0's, served since 2026-11-07 (CHG-0056 step 3)
+- ✅ `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Released in v0.16.0 ([#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45)); in the tenant downloads' image since 2026-11-07
+- ✅ No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Released in v0.16.0; in the tenant downloads' image since 2026-11-07
+- ✅ A renewal that installs, for the same key ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Released in v0.16.0; in the tenant downloads' image since 2026-11-07
 - ⏳ `pki init` and the starter kit: leaving Deevnet with a PKI of one's own (ADR-0041, CHG-0056)
 - ⏳ Ceremony tools that take names and issue a leaf (CHG-0056 step 1)
 
