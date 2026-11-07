@@ -15,8 +15,9 @@ waypoints:
     date: "2026-10-10"
   - title: "More services for tenants: secrets, metrics, identity, object storage, quotas"
     status: active
-  - title: "Tenants can work from Windows laptops"
-    status: active
+  - title: "Tenants can work from Windows laptops (CHG-0058)"
+    status: done
+    date: "2026-11-07"
 ---
 
 # Tenant Platform Services

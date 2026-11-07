@@ -50,7 +50,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 | WSL2: `api.mobile.deevnet.net` does not resolve, though Windows resolves it | WSL is in NAT mode: `networkingMode=mirrored` and `dnsTunneling=true` ([WSL2](/docs/runbook/tenant/getting-started/before-you-start/#wsl2)) |
 | `curl: (35) schannel: ... revocation` on Windows | add `--ssl-revoke-best-effort`: Windows' curl refuses a chain whose revocation it cannot check |
 | `REMOTE HOST IDENTIFICATION HAS CHANGED` for a workload | expected after you replaced it: `ssh-keygen -R <fqdn>`. If you did not replace it, stop and ask the operator |
-| `terraform destroy` times out partway through | if you are on Wi-Fi, the destroy may have removed your tenant's Wi-Fi key before deleting the rest. Run destroy from ethernet, or ask the operator to clean up the remaining state. The `errored.tfstate` file in your directory has what Terraform managed before it lost connectivity |
+| `terraform destroy` times out partway through | expected at the end of a destroy: deleting the tenant removes its Wi-Fi key and its state-store login, so Terraform cannot save its state or release its lock. Ask the operator to remove your leftover state. `errored.tfstate` in your directory should hold no resources; delete it once they have |
 
 ## Device side
 
