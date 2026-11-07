@@ -10,7 +10,7 @@ weight: -54
 | **Date** | 2026-10-25 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25. Steps 2 and 3 dropped. The first certificate was issued with the new names on 2026-10-29 (EdS CHG-0042): V2 and V10 in part, see Outcome |
+| **Status** | **Complete, 2026-11-07.** API v0.15.0 deployed on `dv02prv001v01` and provider v0.8.0 released, 2026-10-25; steps 2 and 3 dropped. V4 and V10 pass; V2 passes but for a browser and an ESP32 on two names, see Outcome. A signing role per tenant moved to the [Tenant PKI roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-pki/plan/) |
 | **Window** | Unscheduled. After [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) (the re-keyed Tenant Service CA); one API release, one provider release, Ansible runs for DNS, the resolver, OpenBao and the broker |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (tenant DNS, OpenBao), the core router (Unbound), `dv02msg001v01` (the broker); the provider |
@@ -124,6 +124,8 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 | 4 | On `dv02prv001v01`, 2026-10-26: `/version` is v0.15.0 (commit `ffaa1e8`), `/readyz` `ok` for the database and OpenBao. The signing role read back with the widened domain after `openbao.yml`. No certificate has yet been issued with the new names, so V2 and V10 wait on the first: eds's home Pi (EdS CHG-0042) |
 | 4 | **The first, 2026-10-29** (EdS [CHG-0042](https://cdeever.github.io/eds/docs/changes/2026/0042-the-home-pi-becomes-a-deevnet-pi/)): `deevnet_certificate.backend` for eds, with provider v0.8.0, `name` `mqtt`, `names` `logs`, `grafana`, `console`, `sites` `home` and `mobile`, for a Deevnet Pi's request. Serial `55:c1:0d:cb:…:9d:0a`, valid to 2027-10-28. It named all twelve: each label site-less, then at `eds.home` and `eds.mobile`, CN `mqtt.eds.deevnet.net`, issued by the Tenant Service CA and chaining to the Deevnet Root through the Mobile Site CA |
 | V2 | **In part.** Go: `deevnet-kit cert install` verified it for every kit name, and every EdS service on the Pi then dialed `mqtt.eds.deevnet.net`. OpenSSL: `openssl verify -purpose sslserver` against the Root. A browser: the owner's, on a Mac that trusts the Root, opened `console.eds.deevnet.net` and used its controls; `console.eds.home.deevnet.net` answered over TLS to curl. An ESP32: three (a beacon, a cover screen, a light stand) connected to `mqtt.eds.deevnet.net` with only the Root, no firmware change. **Not tried:** a name outside `deevnet.net` failing. **2026-11-01, on the workload's reissued console** ([CHG-0055](/docs/changes/2026/0055-reissue-tenants-site-less/)): a name outside `deevnet.net` refused under OpenSSL 4.0.3, Go 1.27.2 and curl (`console.example.com`, `console.eds.example.net`), while both its names verified; and the Mobile Site CA's name constraints permit only `deevnet.net`, so a certificate claiming another name would fail too, which cannot be tried while the API refuses to issue one. Still not tried: a browser for the outside name, and `console.eds.home` in a browser or an ESP32 |
+| V4 | **Passes, 2026-11-07.** Against the deployed API (v0.15.0), as the operator: `home`, `mobile`, `mgmt`, `dvnt`, `dvntm`, `device` and `mqtt` refused `400` as a reserved name, both as an admission and as a tenant create (`home`, `mobile`, `device`, `mqtt`); `artifacts` refused `400` by the name rule, being nine characters. DNS: the factory's resolver answers `NXDOMAIN` for `console.eds.deevnet.net` and `mqtt.eds.deevnet.net` and `10.20.130.10` for `console.eds.mobile.deevnet.net`; the home network answers the site-less names for eds's home Pi (EdS CHG-0042) |
+| V10 | **Passes, 2026-11-07.** Against the deployed API, for `mabell`, each with an empty signing request so nothing could be signed: `console.eds` (another tenant's name), `*` and `*.mabell` (wildcards), `mqtt.mobile` (a site broker's name) refused `400` as not one label in the tenant's zone; `device` refused `400` as the certificate's name and as a further label. A control with valid labels failed only on the empty request. `mabell` holds no certificate afterwards. With the two names served by one certificate on 2026-11-01, every part of V10 has passed |
 | V10 | **In part.** A browser opened `console.eds.deevnet.net`. **Not tried:** `console.eds.mobile.deevnet.net` with this certificate (at the factory that name is the workload's console, with its own), and none of the refusals: tenant B asking for an `eds` name, a wildcard, a site broker's name, a `device` label. **2026-11-01:** the workload's console serves one certificate for `console.eds.deevnet.net` and `console.eds.mobile.deevnet.net`, both answering 200 from `10.20.130.10` (the site-less name by `--resolve`: the factory does not resolve it). The refusals are still not tried |
 
 ### Departures from the plan
@@ -136,10 +138,17 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 - **Step 2 was dropped** by ADR-0040's production-only rule, after the release.
 - **Step 3 was dropped**: the bus name is withdrawn (ADR-0040 §5). `mqtt` stays a reserved tenant
   name, since a tenant named so would own a site broker's name.
+- **Closed with V2 untried in a browser and an ESP32 for two names**: a name outside `deevnet.net`
+  in a browser, and `console.eds.home.deevnet.net` in a browser or an ESP32. Go, OpenSSL and curl
+  refuse the outside name, and the Mobile Site CA's name constraints permit only `deevnet.net`.
+- **The signing role per tenant moved** to the
+  [Tenant PKI roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-pki/plan/), where it
+  was already planned.
 
 ## Follow-ups
 
-- [ ] A signing role per tenant, so OpenBao refuses a reserved name even if the API asked.
+- [x] ~~A signing role per tenant, so OpenBao refuses a reserved name even if the API asked.~~ Moved
+  to the [Tenant PKI roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-pki/plan/).
 
 ## To discover
 
