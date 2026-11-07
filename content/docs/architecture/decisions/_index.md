@@ -292,7 +292,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Naming and DNS](naming-and-dns/)
 
 - [ADR-0040: Tenant Names Without a Site](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) —
-  *Proposed.* A tenant service is named `<service>.<tenant>.deevnet.net` for life, in its
+  *Accepted; built by CHG-0054.* A tenant service is named `<service>.<tenant>.deevnet.net` for life, in its
   certificate's CN and first SAN, and people and devices dial it; each site it runs on adds
   `<service>.<tenant>.<site>.deevnet.net` as a SAN. Site-less names resolve only at production
   sites; a device dials its own tenant's broker, and there is no platform-wide bus name. Reserved

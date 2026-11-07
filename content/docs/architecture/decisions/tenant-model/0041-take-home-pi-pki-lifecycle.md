@@ -11,7 +11,7 @@ weight: -41
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 gave a card three modes (`deevnet`, `own` as the generic default, `bring`). That is withdrawn for one default and a starter kit |
 | **Scope** | The certificates on a take-home Pi and its devices: what the card is given, what an owner who leaves Deevnet uses to make a PKI of their own, and how the card's first-boot configuration chooses between them. Not the tenant CAs ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)), not names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)) |
-| **Depends on** | ADR-0039 *(Proposed)* and ADR-0040 *(Proposed)* |
+| **Depends on** | ADR-0039 *(Proposed)* and ADR-0040 |
 | **Related** | [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) §4, [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/), the [take-home Pi image](/docs/runbook/tenant/tenant-to-pi-image/), [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) |
 
 ---
