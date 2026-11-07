@@ -52,10 +52,10 @@ this tracks building it.
 ## The Deevnet Pi 🔄
 
 - ✅ `deevnet-kit cert request` and `cert install`, first used on eds's home Pi (CHG-0056)
-- ⏳ The image tenants download carries the kit with them: the downloads still serve the 18-Oct build (CHG-0056 step 3)
-- 🔄 `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Merged in [#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45); not yet in a release or the image
-- 🔄 No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Merged in #45; not yet in a release or the image
-- 🔄 A renewal that installs, for the same key ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Merged in #45; not yet in a release or the image
+- ✅ The image tenants download carries the kit with them: v0.15.0's, served since 2026-11-04 (CHG-0056 step 3). v0.16.0's is built and on the Builder; its push to the downloads waits for a window
+- 🔄 `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Released in v0.16.0 ([#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45)); in the image on the Builder, not yet in the downloads
+- 🔄 No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Released in v0.16.0; in the image on the Builder, not yet in the downloads
+- 🔄 A renewal that installs, for the same key ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Released in v0.16.0; in the image on the Builder, not yet in the downloads
 - ⏳ `pki init` and the starter kit: leaving Deevnet with a PKI of one's own (ADR-0041, CHG-0056)
 - ⏳ Ceremony tools that take names and issue a leaf (CHG-0056 step 1)
 
