@@ -49,7 +49,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 
 ---
 
-## Windows tenant laptops 🔄
+## Windows tenant laptops ✅
 
 A tenant developer needs Terraform, the `deevnet/deevnet` provider and the `grafana` provider on their
 laptop, and a way to run the reference tenant's targets. On Windows, that works two ways, natively in
@@ -58,19 +58,18 @@ PowerShell or under WSL2, and the tenant guide documents both
 
 - ✅ Cross-compile the provider for Windows (`amd64` and `arm64`), named `.exe` as Terraform
   requires, in `make release-build` and GoReleaser. Released in v0.9.0
-- 🔄 Install on Windows without bash: `install-provider.ps1` into
+- ✅ Install on Windows without bash: `install-provider.ps1` into
   `%APPDATA%\terraform.d\plugins`, checked against `SHA256SUMS`, and `tenant-check.ps1` with
-  `winget` hints. Written; not yet run on Windows
-- 🔄 `tenant-check.sh` under WSL2: networking mode, a checkout on a Windows drive, the site's names.
-  Written
-- 🔄 The reference tenant's targets without make: `tenant.ps1` in `deevnet-tenant-tdemo`, with the
-  Makefile's guards and a native `state-backend`. Written; not yet run on Windows
-- 🔄 LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo
+  `winget` hints
+- ✅ `tenant-check.sh` under WSL2: networking mode, a checkout on a Windows drive, the site's names
+- ✅ The reference tenant's targets without make: `tenant.ps1` in `deevnet-tenant-tdemo`, with the
+  Makefile's guards and a native `state-backend`
+- ✅ LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo
 - ✅ Mirror Terraform, the `grafana` provider and Pi Imager for Windows in the
   [tenant downloads](/docs/changes/2026/0025-tenant-downloads/), with provider v0.9.0 and the
   `.ps1` scripts. Served
-- 🔄 [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) and the other tenant pages
+- ✅ [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) and the other tenant pages
   gain the Windows lines and a *Working from Windows* section
-- ⏳ Proven from a Windows laptop on `DVNTM-TD`, natively (Windows PowerShell 5.1 and PowerShell 7)
-  and under WSL2
+- ✅ Proven from a Windows laptop on `DVNTM-TD`, natively (Windows PowerShell 5.1 and PowerShell 7)
+  and under WSL2, on 2026-11-07
 

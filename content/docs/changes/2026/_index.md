@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0058 | 2026-11-04 | [Windows Tenant Laptops](0058-windows-tenant-laptops/) | Deployment · Configuration | mobile | In Progress |
+| CHG-0058 | 2026-11-04 | [Windows Tenant Laptops](0058-windows-tenant-laptops/) | Deployment · Configuration | mobile | Complete |
 | CHG-0057 | Unscheduled | [Build the Home Site](0057-build-the-home-site/) | Deployment · Configuration | home | Planned |
 | CHG-0056 | 2026-10-25 | [A Deevnet Pi by Default, With a Starter PKI Kit](0056-kit-deevnet-or-own-pki/) | Deployment | mobile | In Progress |
 | CHG-0055 | 2026-11-01 | [Existing Tenants Reissued Under Site-Less Names](0055-reissue-tenants-site-less/) | Configuration · Migration | mobile | In progress |
