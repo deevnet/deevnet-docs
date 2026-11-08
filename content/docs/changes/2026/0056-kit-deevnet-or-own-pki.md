@@ -165,8 +165,9 @@ Found on the test Pi, 2026-11-08:
       at most. In the tenant downloads' image since 2026-11-08.
 - [x] `pki issuing` on a new card says to hand out the trust bundle; its devices already hold the
       owner's root, and the next step is `pki switch`. Fixed in v0.18.0.
-- [ ] The API holds V7's certificate for `mabell` (`mqtt`), whose key is on the test card. Delete
-      its record when the card is wiped; it cannot be revoked.
+- [x] The API holds V7's certificate for `mabell` (`mqtt`), whose key is on the test card. Delete
+      its record when the card is wiped; it cannot be revoked. Deleted 2026-11-08 with the card
+      pulled for wiping: `mabell` holds no certificate.
 - [x] Step 3: release `deevnet-kit` with `pki`, build the image on it, and push it to the tenant
       downloads; then the [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) page and
       the [take-home image](/docs/runbook/tenant/tenant-to-pi-image/) runbook describe `pki`. Done

@@ -79,7 +79,4 @@ curl -sS --cacert deevnet-root-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN"
 
 ## What it does not do yet
 
-- **Device logging is proven end to end with a real tenant's credentials, but no shipped firmware
-  logs this way yet.** The store is built and deployed; ADR-0027 stays Proposed until a device's
-  firmware ships using it. You may be the first
 - **Destroying the tenant does not delete logs** already written; they age out with retention
