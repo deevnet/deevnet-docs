@@ -7,9 +7,9 @@ weight: -41
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Built in part, as of 2026-10-31: §2, `cert request` and `cert install`, first used on 2026-10-29 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)). §1's first-boot switch was dropped there; §3 and §4 wait on `pki init`; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
+| **Status** | Proposed. Built, and V7, V8 and V11 passed on a Pi of the Pi lab, 2026-11-08 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)): §2 by `cert request` and `cert install`, §3 and §4 by `deevnet-kit pki`. §1's first-boot switch was dropped: running `pki init` is the choice. The take-home image with `pki` is not yet in the tenant downloads; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
-| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 gave a card three modes (`deevnet`, `own` as the generic default, `bring`). That is withdrawn for one default and a starter kit |
+| **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). 2026-11-08: §4, a Deevnet Pi keeps its tenant's names on the owner's root, found in V8. The drafts of 2026-10-21 gave a card three modes (`deevnet`, `own` as the generic default, `bring`). That is withdrawn for one default and a starter kit |
 | **Scope** | The certificates on a take-home Pi and its devices: what the card is given, what an owner who leaves Deevnet uses to make a PKI of their own, and how the card's first-boot configuration chooses between them. Not the tenant CAs ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)), not names ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)) |
 | **Depends on** | ADR-0039 *(Proposed)* and ADR-0040 |
 | **Related** | [ADR-0030](/docs/architecture/decisions/substrate/0030-site-certificate-hierarchy/) §4, [ADR-0011](/docs/architecture/decisions/edge-devices/0011-edge-devices-application-owned/), the [take-home Pi image](/docs/runbook/tenant/tenant-to-pi-image/), [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) |
@@ -94,7 +94,13 @@ placeholder.**
 3. Once every device is known to hold the owner's root, the Deevnet Root is removed from them.
 
 **The service stays up throughout. Deevnet's keys are never handed over**: independence is a new
-authority. A device that takes an anchor only by cable is provisioned again at step 1, which is its
+authority.
+
+**A Deevnet Pi keeps its tenant's names across the transition.** A device verifies the name it
+dials, `mqtt.<tenant>.deevnet.net`, so the owner's issuing CA is also permitted `<tenant>.deevnet.net`,
+and the Pi's certificate from it keeps the kit's names there. A device then changes only the root
+it trusts, and moves to names of the owner's own at its own pace. The owner's root vouches for
+those names only to devices that trust it. A device that takes an anchor only by cable is provisioned again at step 1, which is its
 application's to plan (ADR-0011).
 
 ---

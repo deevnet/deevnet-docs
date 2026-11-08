@@ -251,7 +251,8 @@ Root connected, by name, to that Pi), V3 (both mounts serve the ceremony certifi
 tenant read back after the reseal, [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/);
 the key-identifier check is not recorded), V4 (the reserved labels in the API's unit tests, not yet
 against the deployed API) and V13 (the API's half, [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)).
-Not run: V6, V7, V8, V11, V12 and V14.
+V7, V8 and V11 passed on a Pi of the Pi lab, 2026-11-08 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)).
+Not run: V6, V12 and V14.
 
 ---
 
