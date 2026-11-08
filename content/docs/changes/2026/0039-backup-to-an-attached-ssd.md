@@ -1,17 +1,17 @@
 ---
-title: "CHG-0039: Backup to an Attached SSD"
+title: "CHG-0039: Backup to an Attached USB Drive"
 weight: -39
 ---
 
-# CHG-0039: Backup to an Attached SSD
+# CHG-0039: Backup to an Attached USB Drive
 
 | | |
 |---|---|
 | **Date** | Started 2026-10-07 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 to 4 are done on one USB flash drive: backups reach the drive, and one was restored into a rebuilt provisioning VM on the second attempt (the first was abandoned, INC-0005). Outstanding: a week unattended, the other tenants' plans, the second drive and the SSDs |
-| **Window** | Started 2026-10-07 with one USB flash drive standing in for the SSDs. A restore is readable in full only after [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) |
+| **Status** | In Progress. Steps 1 to 4 are done on one USB flash drive: backups reach the drive, and one was restored into a rebuilt provisioning VM on the second attempt (the first was abandoned, INC-0005). The job has taken backups on its own since 2026-10-08. Outstanding: the other tenants' plans and the second drive |
+| **Window** | Started 2026-10-07 on one USB flash drive. A restore is readable in full only after [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01` (the drives), `dv02prv001v01` (what is backed up) |
 | **Automation** | The `backup` role and `proxmox_vm`'s USB pass-through in `deevnet.mgmt`, a systemd timer, and `make backup-status`, `backup-now`, `backup-dry-run`, `backup-verify`, `backup-drive` |
@@ -34,7 +34,7 @@ code, it is also the only thing that spares devices a visit when the provisionin
 
 ## Goal
 
-- Two USB SSDs, one attached to the management hypervisor and one kept away from the kit, swapped on a
+- Two USB drives, one attached to the management hypervisor and one kept away from the kit, swapped on a
   schedule.
 - A job that runs **whenever the site is up and the newest backup is older than a day**, and on demand,
   writes a database dump and a mirror of the state bucket to the attached drive,
@@ -59,7 +59,7 @@ bucket contents (tenants' own); Keycloak (not built).
 |---|---|---|
 | A restore older than a tenant's last apply puts old values back | the API | A restore is always followed by a reconcile, and tenants' next apply resupplies anything newer |
 | The backup key is lost | the vault | It lives in ansible-vault, which is locked in like any other secret. No host holds a copy: the job encrypts to the public half |
-| Flash wears out or fails silently | the first drive | `make backup-verify` reads the newest archive back from the drive; the SSDs replace it |
+| Flash wears out or fails silently | the first drive | `make backup-verify` reads the newest archive back from the drive, and the second drive in the rotation holds its own copies |
 | Restore rehearsal disturbs the live site | `dv02prv001v01` | Rehearse on a declared, rebuildable substrate VM, never an ad-hoc one; experiments don't run on the hypervisors |
 | **Rebuilding the provisioning VM takes the core router down.** The rebuild pushes about 650 MB of container images from the Builder to Platform, across the router, and the router has hard-hung twice during such a push ([INC-0004](/docs/incidents/2026/0004-core-router-lost/), INC-0005). The site loses routing, DNS and the operator's path in | `dv02cor002p01` | The images and packages reach the VM on an ISO built on its hypervisor, and its first-boot upgrade is off, so nothing large crosses the router. Console attached to the router, operator present, and a fallback that does not cross it. This risk was missing from the record when the first rehearsal ran; the second ran with these guards |
 | The rehearsal leaves the site without its API and state store for longer than planned | `dv02prv001v01` | A dump of the VM on its own hypervisor, taken with the VM stopped, immediately before it is destroyed. `qmrestore` puts it back in a minute, with nothing crossing the router |
@@ -79,11 +79,12 @@ bucket contents (tenants' own); Keycloak (not built).
 | What counts as overdue | A backup is due and the VM has been up two hours without taking it | Time spent powered off is not a failure. `make backup-status` fails on this and nothing else |
 | How the drive reaches the VM | A Proxmox USB resource mapping by vendor and product ID, declared in the VM's `mgmt_vm.usb` | Automation's API token may not name a raw host device; a mapping is the form it may attach. A second drive of the same model takes the first one's place with no change |
 | Retention | The newest 30 archives per drive | Weeks of history at a few megabytes |
-| The first drive | A USB flash drive, until the SSDs arrive | A backup on flash now is worth more than one on an SSD later. The drive is not what makes a backup trustworthy; the rehearsal in step 3 is |
+| The drives | USB flash drives. SSDs were planned and dropped on 2026-11-08 | The archives are a few hundred kilobytes a day, so an SSD's speed and endurance buy nothing for the cost. The drive is not what makes a backup trustworthy; the rehearsal in step 3 and `make backup-verify` are |
+| What proves the job runs unattended | Backups taken by the timer alone, on several days, with no one running `make backup-now` | The kit is off most of the time, so a week of unbroken uptime is rarely met. A week was the first measure and was replaced on 2026-11-08 |
 
 ## Prerequisites
 
-- [ ] Two USB SSDs bought. Started without them, on one USB flash drive
+- [ ] Two USB drives. One USB flash drive is in place; the second is not yet
 - [ ] CHG-0036 complete (the Transit key in the vault). Not a blocker for writing backups: until then a
       restored database's sealed tenant secrets are readable only while the same OpenBao survives
 - [x] Vault decrypted; collections built
@@ -208,11 +209,16 @@ chart's provisioning VM row points at it.
 
 ## Verification
 
-Step 3 passes, and the job has run unattended for a week.
+Step 3 passes, and the job has taken several backups on its own.
 
 **State, 2026-10-07:** step 3 has passed for the registry, the state bucket and one tenant. Still to
-do: run the other three tenants' plans from where their credentials are, and let the job run for a
-week.
+do: run the other three tenants' plans from where their credentials are.
+
+**State, 2026-11-08:** the job has run unattended. From 2026-10-08 to 2026-11-08 the timer wrote 29
+archives, one on each day the kit was up, across 16 boots, several of them in the check ten minutes
+after a boot. No one ran `make backup-now`. `make backup-status` reports the newest,
+`deevnet-backup-dv02prv001v01-20261108T150029Z.tar.age`, with 30 archives on the drive, the retention
+limit.
 
 ## Undo
 
@@ -233,7 +239,6 @@ Remove the role and the timer; the drives keep what they hold until wiped.
 - [x] Step 2: the backup role writes encrypted files to the drive
 - [x] Step 3: a restore rehearsed into a rebuilt provisioning VM: the registry, the state bucket and one tenant, 2026-10-07
 - [x] Step 4: the docs
-- [ ] The job runs unattended for a week
+- [x] The job takes backups unattended: 29 by the timer alone, 2026-10-08 to 2026-11-08
 - [ ] The other three tenants' plans, run from where their credentials are
-- [ ] The second drive
-- [ ] The SSDs
+- [ ] The second drive, a USB flash drive

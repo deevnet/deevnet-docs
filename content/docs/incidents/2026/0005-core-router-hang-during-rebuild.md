@@ -203,7 +203,7 @@ The router's configuration was not checked against inventory after the power cyc
 
 ## Related changes
 
-- [CHG-0039: Backup to an Attached SSD](/docs/changes/2026/0039-backup-to-an-attached-ssd/): its step 3
+- [CHG-0039: Backup to an Attached USB Drive](/docs/changes/2026/0039-backup-to-an-attached-ssd/): its step 3
   was in progress when this happened.
 - [CHG-0018: The Central Log Store](/docs/changes/2026/0018-central-log-store/): in progress during
   INC-0004's first event, the same circumstance.
