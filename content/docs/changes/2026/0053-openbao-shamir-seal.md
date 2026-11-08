@@ -11,7 +11,7 @@ weight: -53
 | **Change type** | Configuration |
 | **Classification** | Structural |
 | **Status** | Planned |
-| **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/) and [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/); one OpenBao role run, then a seal and unseal |
+| **Window** | Unscheduled. After [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/), [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) and CHG-0037 step 1. OpenBao is down for the migration, minutes; tenant work is refused meanwhile, and nothing deployed stops |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao), `dv02prv001v01` (the Deevnet API) |
 | **Automation** | `deevnet.mgmt` `playbooks/openbao.yml` |
@@ -62,15 +62,28 @@ nothing).
 ## Prerequisites
 
 - [ ] CHG-0052 and CHG-0036 complete
+- [ ] [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/) step 1: template builds and the tenant fabric read the vault, not OpenBao, so a sealed store does not stop them
 - [ ] A place for each of the other two shares, apart from the vault and from each other, encrypted at rest
 - [ ] Vault decrypted; collections built
 
 ## Procedure
 
-### Step 1: Migrate or initialize
+### Step 1: Migrate the seal
 
-Migrate the static seal to Shamir in place if the running OpenBao supports it; otherwise initialize
-a fresh store and let the role import everything from the vault, which CHG-0036 made routine.
+**OpenBao migrates an auto seal to Shamir, keeping its data, with the store briefly down.** The static
+seal is an auto seal, so the store keeps every tenant secret and needs no import. The migration
+gives as many unseal keys as there were recovery keys: one, since the store was initialized with
+one. A rekey then splits it into three shares, threshold two, with the store open.
+
+1. Take a dump of the identity VM on its own hypervisor, as the fallback.
+2. Add `disabled = "true"` to the `seal "static"` block, leaving the key in place, and restart
+   OpenBao.
+3. `bao operator unseal -migrate` with the recovery key from the vault. The store comes up on Shamir.
+4. `bao operator rotate-keys -init -key-shares=3 -key-threshold=2`, finished with the one key. Its
+   output is the three shares.
+
+If the migration fails, initialize a fresh store instead and let the role import everything from
+the vault, which CHG-0036 made routine.
 
 **Verify:** `bao status` reports a Shamir seal, three shares, threshold two.
 
@@ -105,10 +118,27 @@ every pair unseals; no share or seal key is found on the kit.
 Until Step 3, the static seal key is still in the vault, and the store can go back to it. After
 Step 3, a rebuild from the vault with a static seal is the way back.
 
-## To discover
+## Found
 
-- Whether OpenBao migrates a static seal to Shamir in place on the running version, from its
-  current documentation.
+**OpenBao migrates an auto seal to Shamir, with the store down while it does**, from its
+[seal documentation](https://openbao.org/docs/concepts/seal/), read 2026-11-08 for OpenBao 2.6.2:
+
+- For "Auto seal to Shamir", "add `disabled = "true"` to the old seal block" and "run the unseal
+  command on each key, by supplying the `-migrate` flag".
+- The recovery keys are supplied "as Shamir unseal keys if the new seal is Shamir".
+- The process "cannot be performed without downtime". "Seal migration operation will require both
+  old and new seals to be available during the migration", and "A backup should be taken before
+  starting seal migration in case something goes wrong."
+
+The [rekey command](https://openbao.org/docs/commands/operator/rekey/) "generates a new set of unseal
+keys" and can change the number of shares and the threshold. "This operation is zero downtime, but
+it requires the OpenBao is unsealed and a quorum of existing unseal keys are provided." It is
+deprecated in favor of `rotate-keys`.
+
+**Inferred, not stated by the documentation:** that the static seal counts as an auto seal for
+migration (its own page calls it "a built-in auto-unseal mechanism", and the role's initialization
+returned recovery keys, not unseal keys), and that one recovery key becomes one unseal key. Step 1
+shows both, and its fallback covers them being wrong.
 
 ## To close
 
