@@ -124,3 +124,14 @@ until this change is verified.
 - OPNsense's privilege names for the resolver's pages, and for the DHCP server's reservations, from
   its current documentation.
 - Whether tdemo's workload re-clones with the same ordinal in practice.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: the API's reconcile steps, built and tested off the site
+- [ ] Step 2: the provider expects a changed dashboard password, tagged and published
+- [ ] Step 3: the API's own OPNsense and Grafana credentials, vaulted
+- [ ] Step 4: deployed, and `make reconcile --all` reconciles every tenant `ok`
+- [ ] Step 5: the recovery docs updated
+- [ ] Verification: after a runtime service is rebuilt, one `make reconcile --all` restores every tenant's infrastructure

@@ -86,3 +86,13 @@ Until Step 4, nothing has changed on the hypervisor. After it, restore from the 
   from the template, so an existing disk needs importing), other hardware, or a kept archive to restore
   later.
 - What VM 104 is used for, and whether it needs to run at all.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: VM 100 checked for anything the substrate still depends on
+- [ ] Step 2: both VMs backed up, off the host, and each restore checked
+- [ ] Step 3: both brought up at their destination
+- [ ] Step 4: both removed from `dv02hyp001p01`, and *Build a Hypervisor* updated
+- [ ] Verification: both run, or restore, at their destination, and neither is on the management hypervisor

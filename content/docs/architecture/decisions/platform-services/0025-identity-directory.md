@@ -231,6 +231,17 @@ local break-glass account.
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] An acceptance test: none is stated yet (no What would settle it).
+- [ ] Built by a change record: none planned yet.
+- [ ] Open question 1 answered: Keycloak Organizations instead of realms.
+- [ ] Open question 2 answered: SSH certificate lifetime and principals.
+- [x] Open question 3 answered: backup target, by [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (no replica).
+- [ ] Open question 4 answered: tenant realm limits.
+
 ## Open questions
 
 1. **Keycloak Organizations instead of realms.** Keycloak also has an in-realm organizations

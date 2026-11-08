@@ -95,3 +95,13 @@ Re-enable plain HTTP for every path; the HTTPS listener can stay.
 - Which CA issues the Builder's certificate: it belongs to no site (site code `00`), which is
   [ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)'s open question 1.
 - Whether anything else on the site fetches from the artifact server by HTTP and needs moving.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: HTTPS on the artifact server, from a Substrate CA certificate
+- [ ] Step 2: installs write the Root CA into the trust store, then fetch over HTTPS
+- [ ] Step 3: the hypervisor bootstrap checks the script's hash before running it
+- [ ] Step 4: plain HTTP serves the network-boot paths only
+- [ ] Verification: a fresh template build and a network-boot install complete with plain HTTP limited to the boot payload

@@ -145,6 +145,15 @@ ADR-0014 recorded for option E, and it falls on the tenant.
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] Device secrets moved into tenant code, by [CHG-0040](/docs/changes/2026/0040-device-secrets-in-tenant-code/).
+- [ ] A tenant rebuilt from its repository with no restore.
+- [ ] Open question 1 answered: re-admission at scale.
+- [ ] Open question 2 closed: the Tenant Device CA's key, built by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/), once its rebuild drill (V12) has run.
+
 ## Open questions
 
 1. **Re-admission at scale.** After a full rebuild, the operator re-admits every tenant and

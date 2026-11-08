@@ -614,3 +614,13 @@ ul.acc-list {
   font-size: 0.85em;
   color: var(--text-muted);
 }
+
+// The Open Records page (records-gauge shortcode): one item a line, no bullets.
+.records-gauge-items {
+  list-style: none;
+  padding-left: 0;
+  li { margin: 0.2rem 0; }
+}
+.records-gauge-back {
+  font-size: 0.85em;
+}

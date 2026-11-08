@@ -237,6 +237,18 @@ phone needs a path back to the site, which is Open question 3.
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] An acceptance test: none is stated yet (no What would settle it).
+- [ ] Built by a change record: none planned yet.
+- [ ] Open question 1 answered: who watches the watcher.
+- [ ] Open question 2 answered: delivering the VMID map to vmagent.
+- [ ] Open question 3 answered: off-site notifications.
+- [ ] Open question 4 answered: tenant limits.
+- [ ] Open question 5 answered: whether vmalert writes recording rules back to `(index, 0)`.
+
 ## Open questions
 
 1. **Who watches the watcher?** Something outside `obs` has to notice when `obs` stops.

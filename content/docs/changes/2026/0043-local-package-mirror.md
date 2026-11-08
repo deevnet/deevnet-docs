@@ -88,3 +88,13 @@ Point hosts back at the upstream repositories.
 ## To discover
 
 - Mirror sizing and sync time, from the evaluation.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: `updates` and the hypervisors' repositories mirrored to the artifact server
+- [ ] Step 2: the `base` roles point each host at the local mirror
+- [ ] Step 3: a management-plane VM rebuilt with the internet link down
+- [ ] Step 4: the standard's §5.4 restored to cover provisioning
+- [ ] Verification: the offline rebuild passes

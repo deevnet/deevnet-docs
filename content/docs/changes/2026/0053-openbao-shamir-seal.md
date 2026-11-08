@@ -109,3 +109,13 @@ Step 3, a rebuild from the vault with a static seal is the way back.
 
 - Whether OpenBao migrates a static seal to Shamir in place on the running version, from its
   current documentation.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: OpenBao on a Shamir seal, three shares, threshold two
+- [ ] Step 2: one share in the vault, the other two held apart
+- [ ] Step 3: the static seal key removed
+- [ ] Step 4: the plays stop with a plain error on a sealed store, and targets open and close a work session
+- [ ] Verification: V13 and V14 of the [validation plan](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan) pass

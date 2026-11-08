@@ -99,3 +99,13 @@ A Deevnet Pi is served at home and its devices connect to it.
 
 Each step reverses on its own: the router's exported configuration restored, the inventory's change
 reverted and applied. The CAs stay; they cost nothing unused.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: a Home Site CA and a Home Substrate CA
+- [ ] Step 2: the home inventory: hosts, VLANs, firewall policy and Wi-Fi
+- [ ] Step 3: the core router's DNS, DHCP and certificate
+- [ ] Step 4: the Pi's VLAN, firewall, Wi-Fi and names in home's DNS
+- [ ] Verification: a Deevnet Pi is served at home and its devices connect to it

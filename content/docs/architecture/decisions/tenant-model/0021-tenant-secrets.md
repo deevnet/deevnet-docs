@@ -279,6 +279,18 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] An acceptance test: none is stated yet (no What would settle it).
+- [ ] Built by a change record: none planned yet.
+- [ ] Open question 1 answered: namespace naming and depth.
+- [ ] Open question 2 answered: re-delivering workload identity after a rebuild.
+- [ ] Open question 3 answered: paths per workload or per tenant.
+- [ ] Open question 4 answered: the read client.
+- [ ] Open question 5 answered: whether the tenant's age recipients become an API concern.
+
 ## Open questions
 
 1. **Namespace naming and depth.** `tenants/<name>` under a parent namespace, or flat at the root?

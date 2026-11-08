@@ -45,6 +45,7 @@ Each record follows a lightweight ADR structure:
 | **Options considered** | The viable alternatives, each with its trade-offs |
 | **Decision** | What was chosen |
 | **Consequences** | What the decision commits us to — good and bad |
+| **To accept** | While `Proposed`: a checklist of what is left before it is accepted, one line an item. The [Open Records](/docs/roadmap/records/) page counts it |
 
 Records are numbered in the order they are **opened** (`0001`, `0002`, …) and never renumbered.
 A record may sit at `Proposed` for a while before it is accepted; the number is claimed when the

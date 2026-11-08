@@ -1,0 +1,106 @@
+{{- /*
+  What is left to accept each open ADR, close each open change and close each
+  open incident, read from the records themselves so it cannot drift:
+
+    ADR   open while its **Status** row's first status word is Proposed; its
+          items are the `- [ ]` / `- [x]` lines under `## To accept`.
+    CHG   open while its **Status** row starts Planned or In Progress; its items
+          are the checklist under `## To close`.
+    INC   open while its **Status** row says Open; its items are its action and
+          follow-up rows, by their {{< action-status >}}: Done and Declined are
+          done, In Progress and Scheduled under way, Open open.
+
+  An open record with no list is shown, flagged, rather than left out.
+  Usage: {{< records-gauge >}} - a summary of bars, each linking to its record's
+  section further down the page, which lists the items, outstanding first.
+*/ -}}
+{{- $kinds := slice
+      (dict "key" "adr" "title" "Decisions to accept" "section" "/docs/architecture/decisions" "id" `ADR-\d{4}` "list" "To accept")
+      (dict "key" "chg" "title" "Changes to close" "section" "/docs/changes" "id" `CHG-\d{4}` "list" "To close")
+      (dict "key" "inc" "title" "Incidents to close" "section" "/docs/incidents" "id" `INC-\d{4}` "list" "") -}}
+{{- $groups := slice -}}
+{{- range $kinds -}}
+  {{- $kind := . -}}
+  {{- $rows := slice -}}
+  {{- range (site.GetPage $kind.section).RegularPagesRecursive -}}
+    {{- $raw := .RawContent -}}
+    {{- $h1 := index (findRESubmatch (printf `(?m)^# (%s): (.+)$` $kind.id) $raw 1) 0 -}}
+    {{- if not $h1 }}{{ continue }}{{ end -}}
+    {{- $st := index (index (findRESubmatch `(?m)^\| \*\*Status\*\* \|([^\n]*)` $raw 1) 0) 1 | default "" -}}
+    {{- $open := false -}}
+    {{- if eq $kind.key "adr" -}}
+      {{- $open = eq (index (findRE `Proposed|Accepted|Superseded|Deprecated` $st 1) 0) "Proposed" -}}
+    {{- else if eq $kind.key "chg" -}}
+      {{- $open = findRE `(?i)^\W*(planned|in progress)` $st 1 | len | lt 0 -}}
+    {{- else -}}
+      {{- $open = findRE `\bOpen\b` $st 1 | len | lt 0 -}}
+    {{- end -}}
+    {{- if not $open }}{{ continue }}{{ end -}}
+
+    {{- $items := slice -}}
+    {{- $listed := false -}}
+    {{- if $kind.list -}}
+      {{- $sec := index (findRESubmatch (printf `(?s)\n## %s\n(.*?)(?:\n## |\n---|$)` $kind.list) $raw 1) 0 -}}
+      {{- if $sec -}}
+        {{- $listed = true -}}
+        {{- range findRESubmatch `(?m)^\s*- \[( |x|X)\] (.+)$` (index $sec 1) -}}
+          {{- $state := cond (eq (index . 1) " ") "open" "done" -}}
+          {{- $items = $items | append (dict "state" $state "text" (index . 2)) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- range findRESubmatch `(?m)^\|[^|\n]*\|([^|\n]+)\|.*\{\{< action-status "([A-Za-z ]+)" >\}\}` $raw -}}
+        {{- $listed = true -}}
+        {{- $a := index . 2 -}}
+        {{- $state := "open" -}}
+        {{- if in (slice "Done" "Declined") $a }}{{ $state = "done" }}{{ else if in (slice "In Progress" "Scheduled") $a }}{{ $state = "active" }}{{ end -}}
+        {{- $items = $items | append (dict "state" $state "text" (printf "%s (%s)" (trim (index . 1) " ") $a)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $done := where $items "state" "done" -}}
+    {{- $active := where $items "state" "active" -}}
+    {{- $todo := where $items "state" "open" -}}
+    {{- $rows = $rows | append (dict
+          "id" (index $h1 1) "title" (index $h1 2) "url" .RelPermalink
+          "anchor" (lower (index $h1 1)) "listed" $listed
+          "done" $done "active" $active "todo" $todo) -}}
+  {{- end -}}
+  {{- $groups = $groups | append (dict "kind" $kind "rows" (sort $rows "id" "desc")) -}}
+{{- end -}}
+
+{{- /* The summary: one bar per record, linking to its section below. */ -}}
+{{- range $groups }}
+<h2 id="{{ .kind.key }}">{{ .kind.title }}</h2>
+{{- if not .rows }}
+<p>None open.</p>
+{{- end }}
+{{- range .rows }}
+  {{- $c := len .done }}{{ $a := len .active }}{{ $p := len .todo }}
+  <div class="value-row">
+    <div class="value-row-head">
+      <a href="#{{ .anchor }}">{{ .id }}: {{ .title | markdownify }}</a>
+      <span class="value-row-count">{{ if .listed }}{{ $c }}/{{ add $c (add $a $p) }}{{ else }}⚠ no list{{ end }}</span>
+    </div>
+    {{- if .listed }}{{ partial "progress-bar.html" (dict "completed" $c "in_progress" $a "planned" $p) }}{{ end -}}
+  </div>
+{{- end }}
+{{- end }}
+
+{{- /* The drill-down: each record's items, outstanding first. */ -}}
+<h2 id="items">Every outstanding item</h2>
+{{- range $groups }}
+  {{- $kind := .kind }}
+  {{- range .rows }}
+<h3 id="{{ .anchor }}"><a href="{{ .url }}">{{ .id }}</a>: {{ .title | markdownify }}</h3>
+    {{- if not .listed }}
+<p>⚠ <strong>No {{ with $kind.list }}<code>## {{ . }}</code> list{{ else }}action or follow-up rows{{ end }} yet.</strong> The record is open, and says nowhere what is left.</p>
+    {{- else }}
+<ul class="records-gauge-items">
+      {{- range .todo }}<li>⏳ {{ .text | markdownify }}</li>{{ end }}
+      {{- range .active }}<li>🔄 {{ .text | markdownify }}</li>{{ end }}
+      {{- range .done }}<li>✅ {{ .text | markdownify }}</li>{{ end }}
+</ul>
+    {{- end }}
+<p class="records-gauge-back"><a href="#{{ $kind.key }}">↑ {{ $kind.title }}</a></p>
+  {{- end }}
+{{- end -}}
