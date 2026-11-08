@@ -43,19 +43,20 @@ the tenant next renews it.
 ## Check what the Tenant Service CA will sign
 
 **After any change to the signing role, ask it for what it must refuse.**
-`playbooks/tenant-service-ca-verify.yml` sends a request that names a substrate host, a public name
-and an address, and asks to be a CA and a client. It asks for `probe.chg0047.deevnet.net`, a
-site-less name, and checks that none of the rest is in the certificate that comes back. Then it
-checks that nine requests are refused: the site's zone itself, one label under the root, the root, a
-wildcard, a public name alone and beside a good one, an address, a URI, and no name at all. It
-issues one certificate each run, for a name under a tenant that does not exist, and deletes the key.
+`playbooks/tenant-service-ca-verify.yml` signs through the Tenant Service CA's CEL role, as the API
+does. It sends a request that names a substrate host, a public name and an address, and asks to be a
+CA and a client. It asks for `probe.chg0047.deevnet.net`, a site-less name, and checks that none of
+the rest is in the certificate that comes back. Then it checks that sixteen requests are refused: the
+site's zone itself, one label under the root, the root, a wildcard, a public name alone and beside a
+good one, an address, a URI, no name at all, a site's own name, a substrate host, a tenant named for
+a site or for the broker, two tenants, `device`, and a site no certificate names. It issues one
+certificate each run, for a name under a tenant that does not exist, and deletes the key.
 
-**The role does not refuse a substrate service's name**, such as `grafana.mobile.deevnet.net`. It
-allows any name at least two labels under `deevnet.net`, so that a tenant's site-less names can be
-issued. What keeps a tenant from a site's names is the Deevnet API, which refuses a tenant named
-after a site or a global alias
-([CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/)). A role per tenant, which would let
-OpenBao refuse them too, is a follow-up of that change.
+**The role refuses a substrate service's name**, such as `grafana.mobile.deevnet.net`, because
+`mobile` is a reserved tenant label. The role holds its own copy of the API's reserved list
+(`openbao_tenant_reserved_labels`), so a label added to one is added to the other
+([CHG-0059](/docs/changes/2026/0059-cel-signing-role/)). A CEL role refuses with an error, which
+OpenBao answers 500 for.
 
 ## A new Site CA or root is a re-root of that scope
 

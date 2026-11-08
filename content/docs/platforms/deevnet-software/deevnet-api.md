@@ -52,9 +52,11 @@ other names is reissued.
 **The API's reserved list is what keeps a tenant's names apart from a site's.** Tenant names that are
 a site, a site code, a global alias or `mqtt` are refused at create and admission (`home`, `mobile`,
 `mgmt`, `dvnt`, `dvntm`, `device`, `mqtt`, `artifacts`), and `device` is refused as a certificate
-label: it holds a tenant's device names. The signing role allows any name two labels under
-`deevnet.net`, so it cannot tell a tenant from a site by itself; a role per tenant is an open
-follow-up of [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/).
+label: it holds a tenant's device names. OpenBao refuses the same labels itself: the API signs
+through the Tenant Service CA's CEL role (`OPENBAO_TENANT_SERVICE_CEL`), a program Ansible writes
+with its own copy of the list, and its policy allows no other path
+([CHG-0059](/docs/changes/2026/0059-cel-signing-role/)). A label added to the API's list is added
+to that copy.
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,
 restoring and reconciling a tenant, and come back in those responses.

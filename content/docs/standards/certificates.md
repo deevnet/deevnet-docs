@@ -90,9 +90,8 @@ is valid for.
 - 3.5 A tenant MUST NOT be named with a reserved label: a site (`home`, `mobile`), a retired zone or
   site code (`mgmt`, `dvnt`, `dvntm`), `device`, `mqtt`, or any global alias, `artifacts` among them
   ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §4).
-  The Deevnet API refuses them. Its refusal is what keeps a tenant's names apart from a site's: the
-  secret store's signing role permits any name two labels under `deevnet.net`, and does not tell a
-  tenant from a site on its own.
+  The Deevnet API refuses them, and so does the secret store's signing role, on its own copy of
+  the list.
 - 3.6 A Deevnet Pi MAY hold a Tenant Service CA certificate for its tenant's names, under 3.4. It
   MUST NOT carry `localhost` or an address: the Pi's own services dial its names, mapped to
   loopback on the Pi.
