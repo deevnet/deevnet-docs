@@ -26,7 +26,8 @@ waypoints:
     status: done
     date: "2026-10-29"
   - title: "The take-home Pi image in the tenant downloads, using Deevnet certificates by default or a starter kit for an owner's own"
-    status: active
+    status: done
+    date: "2026-11-08"
   - title: "IoT devices issued their own certificates through the Deevnet API"
     value: [secure-by-default]
     status: planned

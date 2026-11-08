@@ -382,9 +382,59 @@ key. For a new key, run `cert request` first and replace the certificate's reque
 one, then apply and install. `deevnet-kit` v0.15.0 takes only the second: it refuses a certificate
 for the key it already serves.
 
-**Not built yet:** choosing on the card, before first boot, whether it is to be a Deevnet Pi, and
-`deevnet-kit pki init`, which sets up a PKI of the owner's own
-([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/)).
+## 9. A PKI of your own
+
+**When you leave Deevnet, the Pi can move to a PKI of your own, with its devices connected
+throughout** ([ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) §3, §4).
+It is two tiers: your root, on an encrypted USB stick you keep apart from the Pi, and an issuing CA
+on the Pi, which signs the Pi's certificate and your devices'. Deevnet holds nothing of it and
+trusts none of it. A Pi that never became a Deevnet Pi takes the same path.
+
+**You need a USB stick you can erase, and two passphrases.** One unlocks the stick, the other
+protects your root's key on it. Write both down, with the root's fingerprint the tool prints: they
+are the only way into your root.
+
+1. **Make your root and the Pi's issuing CA.** With the stick unplugged:
+
+   ```bash
+   sudo deevnet-kit pki init --org "Your Name Home"
+   ```
+
+   It asks for the stick, offers to erase and encrypt it, makes your root on it and the issuing CA
+   on the Pi, and closes the stick. Nothing the Pi serves changes. `--domain example.com` lets your
+   CA sign names in a domain of yours as well; `.local` names, `localhost` and private addresses it
+   always may.
+2. **Give every device and computer both roots.** `sudo deevnet-kit export ~/deevnet-kit` now writes
+   `trust-bundle.pem`, the root they trust now and yours, and `kit.env` names it. Put it on each
+   device in place of the CA file it has.
+3. **Switch the Pi.**
+
+   ```bash
+   sudo deevnet-kit pki switch
+   ```
+
+   The Pi then serves a certificate from your CA, and everything on it trusts your root. Devices
+   holding the bundle reconnect as the broker restarts, with nothing changed on them. A Deevnet Pi
+   keeps its names, `mqtt.<tenant>.deevnet.net` and the rest: your CA may sign names under
+   `<tenant>.deevnet.net`, so a device verifies the same name before and after.
+4. **Once every device holds the bundle, take the Deevnet Root off them.** `export` now writes
+   `owner-root-ca.pem` alone: put it on each device in place of the bundle.
+
+**A device's own certificate comes from the Pi.** `sudo deevnet-kit pki enroll DEVICE --out DIR`
+makes its key and certificate in `DIR`; with `--csr FILE`, it signs the request a device made
+itself. The Pi renews its own certificate with `sudo deevnet-kit regen-certs`, with no stick.
+
+**A lost or broken card costs the issuing CA, never your root.** Flash a new card, then with the
+stick:
+
+```bash
+sudo deevnet-kit pki issuing --org "Your Name Home" --domain <tenant>.deevnet.net
+sudo deevnet-kit pki switch
+```
+
+`--domain <tenant>.deevnet.net` only for a Pi that was a Deevnet Pi. Recreate your broker accounts
+with their passwords, as in step 3, and every device connects to the new card unchanged: it trusts
+the same root.
 
 ## What does not come along
 

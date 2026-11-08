@@ -10,7 +10,7 @@ weight: -56
 | **Date** | 2026-10-25 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1 and 2 built, and verified on a Pi of the Pi lab, 2026-11-08: V7, V8 and V11 passed. Step 3 waits on the kit's release and the image's push to the tenant downloads |
+| **Status** | **Complete, 2026-11-08.** `deevnet-kit` v0.18.0 carries `pki`; V7, V8 and V11 passed on a Pi of the Pi lab; the image built on it is in the tenant downloads |
 | **Window** | Unscheduled. After [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/) (site-less names to issue); one `deevnet-kit` release, one image build, the image staged to the tenant downloads |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; the take-home image `raspios-bookworm-mobile-pi-backend.img.xz`; the tenant downloads on `dv02obs001v01`; one Pi of the Pi lab for the test |
@@ -105,7 +105,10 @@ on it (`make pi-backend`), published to the Builder's tenant downloads tree, and
 |---|---|
 | 1 | **Built, 2026-11-08** ([ansible-collection-deevnet.mgmt#103](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/103)). `deevnet-pki-owner.sh`: `init` makes the owner's root on an encrypted USB stick and an issuing CA on the Pi; `issuing` makes a new card's issuing CA from the root on the stick; `leaf server` and `leaf device` issue from the issuing CA. The issuing CA may name only the owner's domains, `.local`, `localhost`, and private and loopback addresses, and a leaf naming anything else is refused before it is written. The root key goes only to an encrypted mount; a plain stick or a directory on the Pi is refused. `deevnet-pki-media.sh` labels the owner's stick `owner-keys-primary`, which Deevnet's own key media lookup does not find. `deevnet-pki.cnf` and `deevnet-pki-ceremony.sh` are unchanged, so a ceremony run with no parameters is the same as before. Tested on the Builder, and against a LUKS2 loop device in a Bookworm container |
 | 2 | **Built, 2026-11-08** ([deevnet-provisioning-api#50](https://github.com/deevnet/deevnet-provisioning-api/pull/50), [#51](https://github.com/deevnet/deevnet-provisioning-api/pull/51)). `deevnet-kit pki init` runs the tool and checks what it made: the issuing CA chains to the root beside it, has `pathlen:0` and name constraints, and no root key is on the Pi. Nothing served changes, and `export` hands out `trust-bundle.pem`, the root trusted now and the owner's. `pki switch` reissues the Pi's certificate from the owner's CA and moves every service to the owner's root, keeping the old one. On a Deevnet Pi the tenant's names, `mqtt`, `logs` and `grafana` under `<tenant>.deevnet.net`, are kept in the owner's certificate. `pki enroll` issues a device's certificate, `pki issuing` makes a new card's CA, and `regen-certs` renews from the owner's CA |
-| 3 | **The image carries the tools** ([deevnet-image-factory#38](https://github.com/deevnet/deevnet-image-factory/pull/38)): `deevnet-pki-owner.sh`, `deevnet-pki-media.sh` and the owner's profile, with `cryptsetup-bin`. Not yet built on a released kit, nor in the tenant downloads |
+| 3 | **The image carries the tools** ([deevnet-image-factory#38](https://github.com/deevnet/deevnet-image-factory/pull/38)): `deevnet-pki-owner.sh`, `deevnet-pki-media.sh` and the owner's profile, with `cryptsetup-bin` |
+| 3 | **Released and built, 2026-11-08.** `deevnet-kit` and `deevnet-log-user` v0.18.0 tagged ([deevnet-provisioning-api#52](https://github.com/deevnet/deevnet-provisioning-api/pull/52)), staged (`make stage-pi`) and pinned, with the clock fix ([deevnet-image-factory#39](https://github.com/deevnet/deevnet-image-factory/pull/39)). `make pi-backend` built the image, 938 MB, SHA-256 `f658215b…0afb966`: its kit and `deevnet-log-user` identical to the staged binaries, its tools to `deevnet.mgmt` `main` (`6d9fee9`) |
+| 3 | **Booted, 2026-11-08,** on the Pi lab's Pi, with `deevnet-kit.txt` left empty, as an owner who sets nothing has it: tenant `pi` on its own CA, as before. The card started at the build's time; NTP set it before first boot and Grafana started; the card's CA and certificate start that day; Grafana refused no plugin; `selftest` passed all 15 checks with no restart |
+| 3 | **In the tenant downloads, 2026-11-08:** published to the Builder's tree, then only `tenant/pi/` pushed to `dv02obs001v01` as on 2026-11-07, capped at 1 MB/s, with the operator at the router's console. Delta transfer against the 2026-11-07 image sent 488 MB of the 938 MB in 7 minutes 57 seconds; the router answered all 473 of the watchdog's pings. The checksum verifies on `obs`, and `downloads.mobile.deevnet.net` serves the new `.sha256` and the image at its size |
 | 2 | In part. `deevnet-kit cert request` makes a key and a request on the Pi; `cert install FULLCHAIN ROOT` checks the certificate is for that key, chains to the root given and names `mqtt`, `logs` and `grafana` under `<tenant>.deevnet.net`, then installs it, keeps the card's CA as `card-ca.pem`, maps the names to loopback in `/etc/hosts` and restarts the services (unit tests). No `pki` switch and no `pki init` yet |
 | 3 | The image built with v0.15.0; its kit matches the staged binaries by checksum. Not yet in the downloads on `dv02obs001v01`, and not yet booted (as of 2026-10-25) |
 | 3 | **In the tenant downloads, 2026-11-04:** pushed to `dv02obs001v01` with rsync, capped at 5 MB/s, with the operator at the router's console. Delta transfer against the 2026-10-18 image sent 435 MB of the 941 MB in 90 seconds, and the router answered all 44 pings during it. Its checksum verifies on `obs`, and `downloads.mobile.deevnet.net` serves it |
@@ -153,18 +156,21 @@ on it (`make pi-backend`), published to the Builder's tenant downloads tree, and
 
 Found on the test Pi, 2026-11-08:
 
-- [ ] **Grafana starts before the clock is set.** A Pi has no clock battery and boots with the base
+- [x] **Grafana starts before the clock is set.** A Pi has no clock battery and boots with the base
       image's date, 2025-11-24. Grafana started before NTP corrected it, refused every signed
       plugin, VictoriaLogs' included, as "signature expired", and served no device logs until it
       was restarted. The card's first-boot CA and certificate were dated 2025 too. Every card from
-      the image is exposed; Grafana, and first boot's certificates, should wait for time sync.
-- [ ] `pki issuing` on a new card says to hand out the trust bundle; its devices already hold the
-      owner's root, and the next step is `pki switch`.
+      the image is exposed. Fixed in [deevnet-image-factory#39](https://github.com/deevnet/deevnet-image-factory/pull/39):
+      a card's clock starts at the build's time, and Grafana and first boot wait for NTP, 90 seconds
+      at most. In the tenant downloads' image since 2026-11-08.
+- [x] `pki issuing` on a new card says to hand out the trust bundle; its devices already hold the
+      owner's root, and the next step is `pki switch`. Fixed in v0.18.0.
 - [ ] The API holds V7's certificate for `mabell` (`mqtt`), whose key is on the test card. Delete
       its record when the card is wiped; it cannot be revoked.
-- [ ] Step 3: release `deevnet-kit` with `pki`, build the image on it, and push it to the tenant
+- [x] Step 3: release `deevnet-kit` with `pki`, build the image on it, and push it to the tenant
       downloads; then the [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) page and
-      the [take-home image](/docs/runbook/tenant/tenant-to-pi-image/) runbook describe `pki`.
+      the [take-home image](/docs/runbook/tenant/tenant-to-pi-image/) runbook describe `pki`. Done
+      2026-11-08.
 
 Found on the first Deevnet Pi (EdS CHG-0042):
 

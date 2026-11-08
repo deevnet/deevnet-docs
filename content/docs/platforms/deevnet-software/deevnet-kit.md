@@ -50,9 +50,19 @@ it with a new key. `status` and `selftest` warn on a Deevnet Pi when the certifi
 of those names, never about addresses, which it does not hold. `deevnet-kit` v0.15.0 renews only
 with a new key, leaves the data sources on `localhost`, and warns about every address.
 
-**The released kit has no PKI of an owner's own yet.** `deevnet-kit pki` is built and was verified
-on a Pi of the Pi lab (CHG-0056), and comes with the next release and the image built on it. There
-is no first-boot switch between Deevnet and an owner's own PKI: running `pki init` is the choice.
+**`deevnet-kit pki` moves a Pi to a PKI of its owner's own** (ADR-0041 §3, §4). It runs the
+ceremony tools the image carries (`deevnet-pki-owner.sh`, from `deevnet.mgmt`): `pki init` makes the
+owner's root on an encrypted USB stick and an issuing CA on the Pi, and changes nothing served;
+`export` then hands out `trust-bundle.pem`, the root trusted now and the owner's. `pki switch`
+reissues the Pi's certificate from the owner's CA and makes the owner's root what every service
+trusts, keeping the one before as `previous-root.pem`. Before using anything the tool made, the kit
+checks the issuing CA chains to the root, may sign only leaves, is constrained to the owner's
+names, and that no root key is on the Pi. The issuing CA may name `.local`, `localhost`, private
+and loopback addresses and the owner's domains; on a Deevnet Pi, also `<tenant>.deevnet.net`, so
+the certificate keeps the kit's names and a device verifying one keeps working. `pki enroll` issues
+a device's certificate, `pki issuing` a new card's issuing CA from the stick, and `regen-certs`
+renews from the owner's CA. There is no first-boot switch between Deevnet and an owner's own PKI:
+running `pki init` is the choice.
 
 It is not part of the deployed API. How a tenant uses the image is
 [Tenant to Pi Image](/docs/runbook/tenant/tenant-to-pi-image/).
