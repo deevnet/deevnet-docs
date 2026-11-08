@@ -5,7 +5,7 @@ aliases:
   - /docs/projects/tenant-pki/
   - /projects/tenant-pki/
 weight: 12
-tasks_completed: 9
+tasks_completed: 11
 tasks_in_progress: 0
 tasks_planned: 6
 ---
@@ -39,7 +39,7 @@ this tracks building it.
 
 ---
 
-## Site-less names 🔄
+## Site-less names ✅
 
 - ✅ Reserved labels in the API, and `sites` on a certificate, API v0.15.0 and provider v0.8.0 (CHG-0054)
 - ✅ The first certificate under the new names, for eds's home Pi, 2026-10-29 (CHG-0054)
@@ -56,8 +56,10 @@ this tracks building it.
 - ✅ `cert install` reruns the dashboards step ([#41](https://github.com/deevnet/deevnet-provisioning-api/issues/41)). Released in v0.16.0 ([#45](https://github.com/deevnet/deevnet-provisioning-api/pull/45)); in the tenant downloads' image since 2026-11-07
 - ✅ No address warning on a Deevnet Pi ([#42](https://github.com/deevnet/deevnet-provisioning-api/issues/42)). Released in v0.16.0; in the tenant downloads' image since 2026-11-07
 - ✅ A renewal that installs, for the same key ([#43](https://github.com/deevnet/deevnet-provisioning-api/issues/43)). Released in v0.16.0; in the tenant downloads' image since 2026-11-07
-- ⏳ `pki init` and the starter kit: leaving Deevnet with a PKI of one's own (ADR-0041, CHG-0056)
-- ⏳ Ceremony tools that take names and issue a leaf (CHG-0056 step 1)
+- ✅ Ceremony tools that take an owner's names and issue a leaf: `deevnet-pki-owner.sh`, 2026-11-08 (CHG-0056 step 1)
+- ✅ `pki init` and the starter kit: leaving Deevnet with a PKI of one's own, a Deevnet Pi keeping its tenant's names, verified on a Pi of the Pi lab with an ESP32 (V7, V8, V11), 2026-11-08 (ADR-0041, CHG-0056 step 2)
+- ⏳ The image tenants download carries `pki`: the kit released, the image built on it and pushed to the tenant downloads (CHG-0056 step 3)
+- ⏳ Grafana and first boot's certificates wait for the clock: a Pi with no clock battery starts in the base image's year (CHG-0056 follow-up)
 
 ---
 

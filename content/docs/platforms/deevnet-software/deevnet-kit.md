@@ -48,8 +48,11 @@ certificate for the key the Pi already serves, if it chains to the root the Pi a
 names the same services, and replaces only the certificate. Requesting and installing again renews
 it with a new key. `status` and `selftest` warn on a Deevnet Pi when the certificate is missing one
 of those names, never about addresses, which it does not hold. `deevnet-kit` v0.15.0 renews only
-with a new key, leaves the data sources on `localhost`, and warns about every address. The first-boot switch between Deevnet and an owner's own PKI, and `pki init` for the latter,
-are not built yet (CHG-0056).
+with a new key, leaves the data sources on `localhost`, and warns about every address.
+
+**The released kit has no PKI of an owner's own yet.** `deevnet-kit pki` is built and was verified
+on a Pi of the Pi lab (CHG-0056), and comes with the next release and the image built on it. There
+is no first-boot switch between Deevnet and an owner's own PKI: running `pki init` is the choice.
 
 It is not part of the deployed API. How a tenant uses the image is
 [Tenant to Pi Image](/docs/runbook/tenant/tenant-to-pi-image/).
