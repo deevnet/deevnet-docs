@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-11-08): a device ships its own logs over MQTT, which is what it waited on. EdS's agent Pi, a registered device, published its events on `eds/log/np-relay` and they were read back from the store, on 2026-10-11 ([EdS CHG-0005](https://cdeever.github.io/eds/docs/changes/2026/0005-the-agent-reports-its-events/)). Open question 3, a per-device rate limit, stays open |
 | **Date** | 2026-09-22 |
 | **Scope** | Who the central log store is for, what writes into each tenant's partitions, how edge devices' logs reach it over MQTT, and what would justify moving it. |
 | **Supersedes, in part** | [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/). Its **scope**, which included substrate logs, and its §5 shipping of substrate hosts and network devices, including the syslog listener, are replaced. ADR-0022's store, proxy, partition scheme, tokens and "publish, don't filter" rule stand. |
@@ -261,10 +261,12 @@ today.
 
 ## Current state
 
-*Updated 2026-09-22.*
+*Updated 2026-11-08.*
 
-- **Proposed**, and it stays Proposed until a device ships its own logs. What exists is the whole
-  path, proven with a device's real credential — not the device.
+- **Accepted**, 2026-11-08: a device ships its own logs. EdS's agent Pi publishes its events on
+  `eds/log/np-relay`, and they are read back from the store
+  ([EdS CHG-0005](https://cdeever.github.io/eds/docs/changes/2026/0005-the-agent-reports-its-events/),
+  2026-10-11).
 - The store runs on `dv02obs001v01`. [CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/)
   stripped it to this record's scope: the syslog listener and the six substrate ingest users are
   gone, and `(0, 0)` was cleared.
@@ -279,9 +281,9 @@ today.
   publish under `log/` but its own, any subscribe there at all, and a workload account any publish
   there — including filters that reach the level without naming it, like a device asking to
   subscribe to `#`. Checked against the live API; the grants that exist all pass.
-- **No device firmware publishes yet.** mabell's gateway holds `mabell/log/ma-bell-gw-01` and logs to
-  serial; eds's stand holds a `log/lp-stand-01` grant (CHG-0021) and doesn't publish to it yet. That is the last link, and it is work in each
-  device's own repository.
+- **Device firmware publishes.** EdS's agent Pi and its LP stand publish their events under
+  `eds/log/`. mabell's gateway holds `mabell/log/ma-bell-gw-01` and still logs to serial; that is
+  work in its own repository.
 
 ### What reading a partition you have no route for does
 

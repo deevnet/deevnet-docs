@@ -68,11 +68,11 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   declared, so a tenant with only devices conforms. A breaking change gets a change record and a
   release note before it lands.
 - [ADR-0041: Take-Home Pi PKI Lifecycle](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) —
-  *Proposed.* One generic image; the card's first-boot setting is `deevnet` (the default: certificates
-  from the Mobile Factory's tenant CAs, renewed at a visit, no CA key on the card) or `non-deevnet`,
-  whose owner runs `deevnet-kit pki init`, a starter kit built from the ceremony tools: a root on a
-  USB stick, an issuing CA on the Pi. Leaving Deevnet is an ordered trust transition that never hands
-  over Deevnet's keys.
+  *Accepted (2026-11-08); built by CHG-0056.* One generic image. A card starts on its own CA and
+  becomes a Deevnet Pi when a certificate from the Mobile Factory's tenant CAs is installed, renewed at
+  a visit, with no CA key on the card. An owner who leaves runs `deevnet-kit pki init`, a starter kit
+  built from the ceremony tools: a root on a USB stick, an issuing CA on the Pi. Leaving Deevnet is an
+  ordered trust transition that keeps the Pi's tenant names and never hands over Deevnet's keys.
 - [ADR-0034: Tenants Deliver Their Own Code](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/) —
   *Accepted* (2026-10-05). A tenant pushes its own code to its workloads over SSH, from its own
   computer or CI, with whatever tools it likes; the guide's pattern is a container image, `kit.env`
@@ -204,7 +204,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   site or per tenant. Old ports keep answering until retired. Extends ADR-0013; amends ADR-0022,
   ADR-0024 and ADR-0026 on where each service listens.
 - [ADR-0027: Tenant Log Store](/docs/architecture/decisions/platform-services/0027-tenant-log-store/) —
-  *Proposed.* The central log store is for tenants only: their workloads' logs, and their edge devices'
+  *Accepted (2026-11-08).* The central log store is for tenants only: their workloads' logs, and their edge devices'
   logs arriving over MQTT. The substrate's own logs are not centralized, and the syslog listener and
   the substrate's per-host tokens go. The API still writes each tenant's events into that tenant's
   `(index, 1)`. Device logs land in a new `(index, 2)`:
