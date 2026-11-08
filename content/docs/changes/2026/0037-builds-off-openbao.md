@@ -10,8 +10,8 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | Planned |
-| **Window** | Unscheduled. No service is interrupted; a template build proves it |
+| **Status** | In Progress. Step 1 is done in code; its template build has not run |
+| **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
 | **Automation** | `deevnet-image-factory` (`scripts/pve-creds`, the Makefile), `deevnet.mgmt` `playbooks/openbao.yml`, `deevnet.builder` `site.yml --tags proxmox-access`, the `artifacts` role, the `proxmox_vm` role |
@@ -72,6 +72,17 @@ Remove the OpenBao source and its default; keep the output identical.
 
 **Verify:** `make pve1-env` and `make pve2-env` print the same exports as before; a template build runs.
 
+**State, 2026-11-08:** done in code, the template build not yet run
+([deevnet-image-factory #40](https://github.com/deevnet/deevnet-image-factory/pull/40),
+[deevnet-tenant-fabric #19](https://github.com/deevnet/deevnet-tenant-fabric/pull/19)).
+`pve-creds` has no OpenBao source and no `PVE_CREDS_SOURCE`.
+
+| Check | Result |
+|---|---|
+| `make pve1-env` and `make pve2-env` print the same exports as the OpenBao path did | Pass: identical by hash, for both hypervisors |
+| Each token answers the Proxmox API | Pass: HTTP 200 from `/nodes/<node>/version` on both |
+| A template build runs | Not run |
+
 ### Step 2: Remove the build path from OpenBao
 
 Remove `build_secrets.yml`'s AppRole, policy and KV entries, and the vault's image-factory AppRole
@@ -118,7 +129,7 @@ Administrator again.
 
 **What is left before this change closes, from its procedure and verification.**
 
-- [ ] Step 1: `pve-creds` reads the vault only, with the same output
+- [ ] Step 1: `pve-creds` reads the vault only, with the same output: done in code 2026-11-08, the template build not yet run
 - [ ] Step 2: the build path removed from OpenBao
 - [ ] Step 3: the build tokens narrowed to a custom Proxmox role per node
 - [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed

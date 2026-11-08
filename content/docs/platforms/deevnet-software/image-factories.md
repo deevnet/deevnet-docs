@@ -18,7 +18,7 @@ Packer and Ansible builds of:
 | Raspberry Pi images | `make pi-sdr`, `make pi-pidp11`, and `make pi-backend` (the take-home tenant backend, with [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/)) |
 | Proxmox VE install ISO and PXE artifacts | `make proxmox-pve-iso-ext4` and related targets. **Unfinished**: neither hypervisor has been installed from it ([Builder roadmap](/docs/roadmap/infrastructure/substrate/builder/)) |
 
-Its `scripts/pve-creds` fetches a hypervisor's Proxmox token per run, from OpenBao or the inventory
+Its `scripts/pve-creds` fetches a hypervisor's Proxmox token per run, from the inventory
 vault, and never writes it to disk; the tenant fabric's Terraform uses it too
 ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
 
