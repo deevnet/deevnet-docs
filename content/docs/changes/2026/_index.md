@@ -30,7 +30,7 @@ bookCollapseSection: true
 | CHG-0040 | Unscheduled | [Device Secrets in Tenant Code](0040-device-secrets-in-tenant-code/) | Deployment · Migration | mobile | Planned |
 | CHG-0039 | 2026-10-07 | [Backup to an Attached USB Drive](0039-backup-to-an-attached-ssd/) | Deployment | mobile | In Progress |
 | CHG-0038 | Unscheduled | [The Reconcile Restores Everything](0038-reconcile-restores-everything/) | Deployment · Configuration | mobile | Planned |
-| CHG-0037 | Unscheduled | [Substrate Builds Off OpenBao](0037-builds-off-openbao/) | Configuration | mobile | Planned |
+| CHG-0037 | 2026-11-08 | [Substrate Builds Off OpenBao](0037-builds-off-openbao/) | Configuration | mobile | In Progress |
 | CHG-0036 | 2026-10-25 | [OpenBao's Keys From the Vault](0036-openbao-keys-from-the-vault/) | Configuration | mobile | Complete |
 | CHG-0035 | 2026-10-06 | [Previously Exposed Credentials Checked and Rotated](0035-exposed-credentials/) | Configuration | mobile | Complete |
 | CHG-0034 | Unscheduled | [Device Certificates Through the Deevnet API](0034-device-certificates/) | Deployment · Configuration | mobile | Planned |

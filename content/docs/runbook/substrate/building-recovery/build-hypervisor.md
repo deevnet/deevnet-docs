@@ -197,8 +197,8 @@ Management stays untagged.
 
 1. **Template.** In `deevnet-image-factory`, run `make proxmox-fedora-pve1`. It builds the Fedora
    template directly onto the node, fetching its credentials per run
-   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)). If OpenBao isn't
-   rebuilt yet, prefix it with `PVE_CREDS_SOURCE=inventory`.
+   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)) from the inventory
+   vault, so it does not wait for OpenBao.
 2. **Orphaned volumes.** If the data disk survived, the old VMs' volumes are still in `vgbigdata`,
    and `lvs vgbigdata` lists them (`vm-<vmid>-disk-N`). Decide what to keep before rebuilding.
    A rebuilt VM gets new volumes. `lvremove` an orphan only once you're sure nothing on it is
