@@ -183,13 +183,15 @@ site issues for
 ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §3). A
 tenant cannot ask for a name that is not its own.
 
-**The API's reserved names are what keep a tenant's names apart from a site's.** A site-less tenant
-name, `console.eds.deevnet.net`, and a site's substrate name, `grafana.mobile.deevnet.net`, have the
-same shape, two labels under `deevnet.net`. The secret store's signing role allows any name at least
-two labels under `deevnet.net`, so it refuses a name outside it, but it cannot tell a tenant from a
-site. The API can: it refuses a tenant named after a site, a site code, a global alias or `mqtt`, and
-the label `device`, which holds a tenant's device names. Until the secret store has a signing role
-per tenant, that check is the API's alone.
+**Reserved names keep a tenant's names apart from a site's, in the API and again in the secret
+store.** A site-less tenant name, `console.eds.deevnet.net`, and a site's substrate name,
+`grafana.mobile.deevnet.net`, have the same shape, two labels under `deevnet.net`. What tells them
+apart is the second label, a tenant or a site. The API refuses a tenant named after a site, a site
+code, a global alias or `mqtt`, and the label `device`, which holds a tenant's device names. The
+secret store's signing role, a program the API may use and may not change, refuses the same labels
+on its own, along with any name of another shape and a certificate that names two tenants
+([CHG-0059](/docs/changes/2026/0059-cel-signing-role/)). Neither knows which tenant is asking: that
+check is the API's, since the API is the secret store's only caller.
 
 **A Deevnet Pi serves its tenant with a Tenant Service CA certificate**
 ([ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) §2). The

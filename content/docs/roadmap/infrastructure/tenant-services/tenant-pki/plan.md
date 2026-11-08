@@ -5,8 +5,8 @@ aliases:
   - /docs/projects/tenant-pki/
   - /projects/tenant-pki/
 weight: 12
-tasks_completed: 8
-tasks_in_progress: 1
+tasks_completed: 9
+tasks_in_progress: 0
 tasks_planned: 6
 ---
 
@@ -43,7 +43,7 @@ this tracks building it.
 
 - ✅ Reserved labels in the API, and `sites` on a certificate, API v0.15.0 and provider v0.8.0 (CHG-0054)
 - ✅ The first certificate under the new names, for eds's home Pi, 2026-10-29 (CHG-0054)
-- 🔄 OpenBao itself refuses a reserved name, through one CEL role rather than a role per tenant (CHG-0059; ADR-0040's open question)
+- ✅ OpenBao itself refuses a reserved name, through one CEL role rather than a role per tenant, 2026-11-07 (CHG-0059; ADR-0040's open question)
 - ✅ Reissue `eds`'s certificate under its site-less name, 2026-11-01 (CHG-0055). `tdemo`, `mabell` and
   `cdeever` hold no tenant service certificate; each names its sites when it is next worked on
 

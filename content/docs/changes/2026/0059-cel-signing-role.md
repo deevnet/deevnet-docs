@@ -10,7 +10,7 @@ weight: -59
 | **Date** | 2026-11-07 |
 | **Change type** | Configuration · Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **Complete, 2026-11-07.** API v0.17.0 deployed on `dv02prv001v01`, signing through the CEL role; the classic role deleted and the API's policy down to `cel/sign` |
 | **Window** | Unscheduled. One API release, then Ansible runs for OpenBao and the API, in that order |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao: the Tenant Service CA's mount and the API's policy), `dv02prv001v01` (the Deevnet API) |
@@ -75,7 +75,33 @@ After step 4, rerun the old commit of the collection with `--tags openbao` first
 
 ## Outcome
 
-*To be written.*
+**OpenBao itself now refuses a tenant certificate for a reserved label or a site's names, and the
+Deevnet API can sign through nothing else.** Every step passed. The logs are in
+`migration-logs/chg0059-2026-11-07/` on the Builder.
+
+| Step | Result |
+|---|---|
+| 1 | v0.17.0 tagged on the release merge and staged |
+| 2 | The CEL role written and read back as written. With the Ansible token, `cel/sign` refused all eight probes: a tenant named `home` or `mqtt`, `grafana.mobile`, `prv.mobile`, two tenants, a wildcard, `device`, an unknown site. Nothing was signed |
+| 3 | v0.17.0 running with `OPENBAO_TENANT_SERVICE_CEL=true`. A probe certificate for `mabell` with two labels at both sites issued with six names, the Tenant Service CA as issuer, digital signature and key encipherment, server use only, `CA:FALSE`, one year; then deleted. The V4 and V10 probes from CHG-0054 were refused by the API, as before |
+| 4 | The API's policy holds only `pki-tenant-service/cel/sign/tenant-service`; `pki-tenant-service/roles/tenant-service` answers 404. `tenant-service-ca-verify.yml`, moved to the CEL role, passes: its hostile request issues as the Certificates standard says (365 days), and all 16 refusals hold. A second probe certificate for `mabell` issued and was deleted |
+
+### Departures from the plan
+
+- **The CEL role at first dropped an address or a URI instead of refusing it.** The verifier,
+  rerun against the CEL role before step 4, found that a request with `ip_sans` or `uri_sans` was
+  signed with its DNS names only, where the classic role had answered 400. Nothing but the DNS
+  names reached either certificate. The program now refuses `ip_sans`, `uri_sans` and `other_sans`,
+  tested on the throwaway OpenBao and then live. The two certificates of that run name only
+  `probe.chg0047`, a tenant that does not exist, and their key was deleted at the end of the run.
+- **Ansible could not delete a role.** Its policy gave create, read, update and sudo on the mount,
+  so the first step 4 run stopped at the delete with 403, after the policies were written. A
+  narrower path, `pki-tenant-service/roles/*`, now adds delete, and the rerun passed.
+- **The verifier became part of the change.** `tenant-service-ca-verify.yml` signed through the
+  classic role; it now signs through the CEL role, accepts OpenBao's 500 for a CEL refusal, and asks
+  for seven more refusals: a site's own name, a substrate host, tenants named for a site and for the
+  broker, two tenants, `device`, and a site no certificate names.
+- **Steps 3 and 4 were run from the collection's branch** (pull request 102), before it merged.
 
 **One thing the CEL role does not do that the classic role does:** it can't see the issuer, so it
 doesn't stop a leaf at the CA's own expiry. A leaf lasts a year, and the Tenant Service CA runs to
@@ -83,5 +109,7 @@ October 2031. This matters only after October 2030, long after the CA should hav
 
 ## Follow-ups
 
+- Merge `ansible-collection-deevnet.mgmt` pull request 102, which steps 3 and 4 ran from, so `main`
+  is what is deployed.
 - The reserved list now has two copies: the API's (`internal/tenant/site.go`) and the openbao role's
   (`openbao_tenant_reserved_labels`). A label added to one is added to the other.
