@@ -10,7 +10,7 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Step 1 is done in code; its template build has not run |
+| **Status** | In Progress. Step 1 is done: builds read the vault, and a template built with them on 2026-11-08 |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -72,7 +72,7 @@ Remove the OpenBao source and its default; keep the output identical.
 
 **Verify:** `make pve1-env` and `make pve2-env` print the same exports as before; a template build runs.
 
-**State, 2026-11-08:** done in code, the template build not yet run
+**State, 2026-11-08:** done
 ([deevnet-image-factory #40](https://github.com/deevnet/deevnet-image-factory/pull/40),
 [deevnet-tenant-fabric #19](https://github.com/deevnet/deevnet-tenant-fabric/pull/19)).
 `pve-creds` has no OpenBao source and no `PVE_CREDS_SOURCE`.
@@ -81,7 +81,14 @@ Remove the OpenBao source and its default; keep the output identical.
 |---|---|
 | `make pve1-env` and `make pve2-env` print the same exports as the OpenBao path did | Pass: identical by hash, for both hypervisors |
 | Each token answers the Proxmox API | Pass: HTTP 200 from `/nodes/<node>/version` on both |
-| A template build runs | Not run |
+| A template build runs | Pass, on the third attempt: `fedora-server-44-1.7`, VMID 100 on `dv02hyp002p02`, 33 minutes |
+
+**The first two builds failed in the template recipe, not in the credentials.** Packer typed the GRUB
+boot command faster than the console took it: the first lost keys from the kernel's path, the second
+lost the `initrd` line and the installer panicked with no root filesystem. Both had already used the
+token to create and start the VM. The recipe now types at 200 ms a key and waits out each load
+(in [deevnet-image-factory #40](https://github.com/deevnet/deevnet-image-factory/pull/40)). The build's
+`dnf upgrade` brought 568 MiB across the core router in 47 seconds, with the operator at its console.
 
 ### Step 2: Remove the build path from OpenBao
 
@@ -129,7 +136,7 @@ Administrator again.
 
 **What is left before this change closes, from its procedure and verification.**
 
-- [ ] Step 1: `pve-creds` reads the vault only, with the same output: done in code 2026-11-08, the template build not yet run
+- [x] Step 1: `pve-creds` reads the vault only, with the same output, and a template builds with it, 2026-11-08
 - [ ] Step 2: the build path removed from OpenBao
 - [ ] Step 3: the build tokens narrowed to a custom Proxmox role per node
 - [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed
