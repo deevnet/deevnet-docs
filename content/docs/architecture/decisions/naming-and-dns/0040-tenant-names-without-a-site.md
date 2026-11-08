@@ -7,7 +7,7 @@ weight: -40
 
 |  |  |
 |--|--|
-| **Status** | Accepted (2026-11-07): built by [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/), where V2, V4 and V10 passed ([What would settle it](#what-would-settle-it)). The signing role is widened rather than guarded; a role per tenant, open question 1, is on the [Tenant PKI roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-pki/plan/) |
+| **Status** | Accepted (2026-11-07): built by [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/), where V2, V4 and V10 passed ([What would settle it](#what-would-settle-it)). The signing role is widened rather than guarded; open question 1 is answered by a CEL role, [CHG-0059](/docs/changes/2026/0059-cel-signing-role/) |
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-21, before review, and 2026-10-25 in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The drafts of 2026-10-21 put canonical names under `t.deevnet.net` and made vanity names optional, for people only, issued by a Names CA. All three are withdrawn: the site-less name is the service's identity, and the tenant CA issues it. 2026-10-26: site-less names resolve only at production sites (§1), so the Mobile Factory answers a tenant by its site names alone; and the bus name is withdrawn (§5), since every device dials its own tenant's broker |
 | **Scope** | A tenant's DNS names: the name that identifies each service, the per-site names beside it, what a tenant certificate carries, which labels a tenant may not take, the broker name devices dial, and how names follow a tenant between sites. Not reverse zones or addresses, which stay per site |
@@ -157,7 +157,10 @@ names stay valid, so nothing breaks while firmware moves to site-less names.
 
 1. **How the signing role enforces the reserved list** (§3): a role per tenant, written by the API
    at creation, or a constraint OpenBao's roles can express. A role the API writes needs a policy
-   that lets it write roles, which a faulty API could abuse.
+   that lets it write roles, which a faulty API could abuse. **Answered 2026-11-07: a constraint.**
+   OpenBao's CEL role, a program Ansible writes, refuses a reserved label, a request naming two
+   tenants and any name of another shape, and the API may sign through nothing else
+   ([CHG-0059](/docs/changes/2026/0059-cel-signing-role/))
 
 ---
 
