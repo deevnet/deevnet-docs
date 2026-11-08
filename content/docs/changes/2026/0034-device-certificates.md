@@ -120,3 +120,13 @@ Disable the certificate listener; password accounts were never removed.
 - How VerneMQ maps a client certificate's URI to an identity it authorizes, and where the
   fingerprint check can run, against its current documentation.
 - What each tenant's device hardware and firmware can do: make a key, present a certificate.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: the API signs a registered device's request with the Tenant Device CA and records its key fingerprint
+- [ ] Step 2: a device certificate resource in the provider
+- [ ] Step 3: the broker accepts Tenant Device CA certificates, checked against registrations and fingerprints (V6)
+- [ ] Step 4: one real device on a certificate, its key made on the device
+- [ ] Verification: a device's certificate can't reach another tenant's topics, and V1 and V6 of the [validation plan](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan) pass

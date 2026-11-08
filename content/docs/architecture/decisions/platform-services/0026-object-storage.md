@@ -209,6 +209,17 @@ reserve, and replication settings.
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] An acceptance test: none is stated yet (no What would settle it).
+- [ ] Built by a change record: none planned yet.
+- [ ] Open question 1 answered: the size of the state reserve.
+- [x] Open question 2 answered: where the replica lives, by [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (no replica).
+- [ ] Open question 3 answered: bucket lifecycle rules.
+- [ ] Open question 4 answered: whether a tenant bucket can be read publicly.
+
 ## Open questions
 
 1. **The size of the state reserve**, and the capacity of the data disk it comes out of.

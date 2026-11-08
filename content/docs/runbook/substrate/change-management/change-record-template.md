@@ -120,6 +120,13 @@ Steps are backed out in reverse order. Name the point where undo stops being pra
 
 <how to reverse step 1, or "No undo — <why>">
 
+## To close
+
+**This change closes when every item below is done.** One line each: the steps and the check.
+
+- [ ] Step 1: <name>
+- [ ] Verification: <the check>
+
 ## Outcome
 
 *Completed after the change has run.*

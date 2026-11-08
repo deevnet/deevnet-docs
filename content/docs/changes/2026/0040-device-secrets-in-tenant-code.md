@@ -110,3 +110,13 @@ the same values either way.
 - How the restore path should behave for a tenant with no secret in its configuration.
 - Whether the state store's credentials belong in the same encrypted file or the backend's own
   configuration.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: the API and provider accept a supplied secret on create and restore
+- [ ] Step 2: tdemo, the reference tenant, supplies its secrets from an encrypted file
+- [ ] Step 3: eds and mabell migrated, with no secret changed and devices connected throughout
+- [ ] Step 4: the rebuild drill: a tenant rebuilt from its repository, its devices connecting unchanged
+- [ ] Verification: the recovery chart no longer lists "devices need re-provisioning" for a lost provisioning VM

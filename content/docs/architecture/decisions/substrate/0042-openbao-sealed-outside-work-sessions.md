@@ -142,6 +142,17 @@ None.
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [ ] §1 and §2 built, the Shamir seal and work sessions, by [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/).
+- [x] §3 built, by [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/).
+- [x] §4 built, by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
+- [ ] [V12](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), rebuild from the vault, passed: not run.
+- [ ] [V13](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), sealed, passed: in part, the API's half in CHG-0052.
+- [ ] [V14](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), shares and custody, passed: not run.
+
 ## What would settle it
 
 V12, V13 and V14 of the

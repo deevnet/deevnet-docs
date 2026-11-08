@@ -113,3 +113,14 @@ Administrator again.
 
 - The minimal Proxmox privilege set for Packer's template build and for SDN on the tenant hypervisor,
   from Proxmox's documentation, confirmed by a build.
+
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: `pve-creds` reads the vault only, with the same output
+- [ ] Step 2: the build path removed from OpenBao
+- [ ] Step 3: the build tokens narrowed to a custom Proxmox role per node
+- [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed
+- [ ] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`
+- [ ] Verification: builds succeed with OpenBao stopped

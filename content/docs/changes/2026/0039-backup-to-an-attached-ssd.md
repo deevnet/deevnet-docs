@@ -224,3 +224,16 @@ Remove the role and the timer; the drives keep what they hold until wiped.
   product ID, so a different model means changing `mgmt_vm.usb`.
 - Whether the drive should also be encrypted as a whole. It would hide file names and sizes, and it
   would put an unlock key on the host beside the drive.
+
+## To close
+
+**What is left before this change closes, from its status and verification.**
+
+- [x] Step 1: the drives, on one USB flash drive
+- [x] Step 2: the backup role writes encrypted files to the drive
+- [x] Step 3: a restore rehearsed into a rebuilt provisioning VM: the registry, the state bucket and one tenant, 2026-10-07
+- [x] Step 4: the docs
+- [ ] The job runs unattended for a week
+- [ ] The other three tenants' plans, run from where their credentials are
+- [ ] The second drive
+- [ ] The SSDs

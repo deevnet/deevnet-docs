@@ -207,6 +207,18 @@ None. Revocation is an accepted risk (R-14), and a tenant at another site is a D
 
 ---
 
+## To accept
+
+**This record is accepted when every item below is done.**
+
+- [x] §2 built: the tenant CAs re-keyed under the Mobile Site CA, by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
+- [x] §3 built: devices hold only the Deevnet Root, shown by three ESP32s in [CHG-0054](/docs/changes/2026/0054-site-less-tenant-names/).
+- [ ] §4 and §5 built, by [CHG-0034](/docs/changes/2026/0034-device-certificates/).
+- [ ] [V1](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), ESP32 trust, passed: in part, three ESP32s holding only the Root connected by name to a Deevnet Pi.
+- [ ] [V2](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), one CA for every site, passed: in part, on EdS's home Pi and its workload console.
+- [ ] [V3](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), imported keys, passed: in part, the key-identifier check is not recorded.
+- [ ] [V6](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), device admission, passed: not run.
+
 ## What would settle it
 
 The [validation plan](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan) holds every

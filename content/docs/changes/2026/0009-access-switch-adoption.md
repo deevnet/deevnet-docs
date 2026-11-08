@@ -200,6 +200,16 @@ wifi and tenant VLANs, and the IoT access ports.
 
 ---
 
+## To close
+
+**What is left before this change closes, from its procedure and verification.**
+
+- [ ] Step 1: the missing networks created in the controller, VLAN only
+- [ ] Step 2: the switch's Inform URL pointed at the controller, and the switch pending there
+- [ ] Step 3: adopted, and every port's VLANs re-applied and verified against inventory
+- [ ] Step 4: ownership handed over: `switch_management: omada`, and `switch-vlans.yml` refuses
+- [ ] Step 5: what adoption kept recorded, port by port
+
 ## Outcome
 
 Not yet run.
