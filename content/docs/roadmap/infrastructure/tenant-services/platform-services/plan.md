@@ -2,9 +2,9 @@
 title: "Tenant Platform Services: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 7
+tasks_completed: 15
 tasks_in_progress: 0
-tasks_planned: 8
+tasks_planned: 4
 ---
 
 # Tenant Platform Services: Project Plan

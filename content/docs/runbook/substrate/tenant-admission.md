@@ -131,6 +131,25 @@ rotates its own with `terraform apply -replace=<the key's resource>`.
 
 ---
 
+## Reissuing a state secret
+
+**A tenant that has lost the keys to its own state gets a new state secret from the operator.** The
+keys live inside the state they unlock, and the site never hands back the stored secret, so a new
+one is the only way back in. OpenBao must be open, in a work session:
+
+```bash
+make reissue-state-secret NAME=<tenant>
+```
+
+It asks for the tenant's name, then has the API mint a new secret and set it on the state store. The
+old secret stops working for everyone who holds it, CI included. The new one goes to
+`~/<tenant>-state-secret.txt` (mode 0600), as the two lines of the tenant's `.backend.env`, to hand
+over like an admission.
+
+**The tenant must not restore from its old state afterwards.** That state still holds the old
+secret, and a restore sends back the secrets in state, which win. A restore from it would put the
+old secret back and lock the tenant out again.
+
 ## What the substrate does on the first apply
 
 | | |
