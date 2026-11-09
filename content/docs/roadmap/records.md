@@ -1,6 +1,7 @@
 ---
 title: "⛽ Open Records"
 weight: 8
+roadmap_view: true
 ---
 
 # Open Records

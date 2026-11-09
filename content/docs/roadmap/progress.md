@@ -1,6 +1,7 @@
 ---
 title: "📈 Roadmap Progress"
 weight: 6
+roadmap_view: true
 bookToC: false
 aliases:
   - /docs/roadmap/accomplishments/

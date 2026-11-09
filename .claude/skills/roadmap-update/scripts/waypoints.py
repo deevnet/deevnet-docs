@@ -26,9 +26,15 @@ ICON = {"done": "✅", "active": "🔄", "planned": "⏳"}
 def is_plan(p):
     return p.endswith("/plan.md") or "/plan/" in p
 
+def is_view(p):
+    """A page that only draws the roadmap (Roadmap Progress, Value Objectives, Open Records), marked
+    `roadmap_view: true` in its front matter. It is not an item and has no waypoints of its own."""
+    s = open(p, encoding="utf-8").read()
+    return s.startswith("---\n") and re.search(r'^roadmap_view: true$', s[:s.find("\n---\n", 4)], re.M) is not None
+
 def is_item(p):
     """A roadmap item: a plain page, or a section holding a plan or waypoints. Other sections are areas."""
-    if is_plan(p): return False
+    if is_plan(p) or is_view(p): return False
     if not p.endswith("_index.md"): return True
     d = os.path.dirname(p)
     return os.path.exists(f"{d}/plan.md") or os.path.isdir(f"{d}/plan") or "\nwaypoints:" in open(p, encoding="utf-8").read()
@@ -101,7 +107,7 @@ def cmd_check(_):
         roadmap = p.startswith("content/docs/roadmap/")
         parsed = parse(fm)
         if not parsed:
-            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md", "content/docs/roadmap/records.md"): err(p, "no waypoints: list")
+            if roadmap: err(p, "no waypoints: list (a page that only draws the roadmap takes roadmap_view: true)")
             continue
         head, ms, _ = parsed
         tags = re.findall(r'^value: \[(.*)\]$', head, re.M) + [m["value"].strip("[]") for m in ms if "value" in m]
