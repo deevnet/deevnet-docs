@@ -16,7 +16,7 @@ weight: -38
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02cor002p01` (an API user), `dv02obs001v01` (a Grafana login); the provider |
 | **Automation** | `deevnet-provisioning-api` (tag and stage), `terraform-provider-deevnet` (tag and publish), `deevnet.mgmt` `site.yml --tags deevnet-api,grafana`, `deevnet.net` for the OPNsense user, `make reconcile` |
 | **Risk** | Medium. Most likely to go wrong: a reconcile that rewrites a backend a tenant has since changed. The reconcile writes only what the registry holds, which is what the tenant last applied |
-| **Related changes** | [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) |
+| **Related changes** | [CHG-0060](/docs/changes/2026/0060-state-secret-reissue/) (the state-secret reissue, split from this), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/), [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) |
 | **Related incidents** | [INC-0003](/docs/incidents/2026/0003-openbao-credential-loss/) |
 | **Related runbooks** | [Recovery](/docs/runbook/substrate/recovery/), [After a Site Rebuild](/docs/runbook/tenant/recovery/after-a-site-rebuild/), [Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/) |
 
@@ -28,9 +28,11 @@ A reconcile re-ensures six things for a tenant today: its zone and key, the rout
 state user, its network, its log users and its Grafana organization. After a backend is rebuilt, a
 tenant's workloads, DNS records, Wi-Fi keys and broker accounts don't come back, and its own plain
 apply sees no change. This change makes one operator command put back **everything the registry
-holds**, with the same secrets. It fixes the edges of an OpenBao rebuild found by the review, adds an
-operator reissue for a lost state secret, and gives the API its own credentials on the router and in
-Grafana ([2026-10 review: T1, T5, T2, A6, A7](/docs/architecture/reviews/2026-10-rebuild-and-access/#t1-reconcile-coverage)).
+holds**, with the same secrets. It fixes the edges of an OpenBao rebuild found by the review, and
+gives the API its own credentials on the router and in Grafana
+([2026-10 review: T1, T5, A6, A7](/docs/architecture/reviews/2026-10-rebuild-and-access/#t1-reconcile-coverage)).
+The operator reissue for a lost state secret (T2) is
+[CHG-0060](/docs/changes/2026/0060-state-secret-reissue/).
 
 ## Goal
 
@@ -42,8 +44,6 @@ Grafana ([2026-10 review: T1, T5, T2, A6, A7](/docs/architecture/reviews/2026-10
 - A stored copy that can't be read is skipped and reported, never written empty.
 - A restore returns what it re-mints; `make reconcile` shows new log tokens instead of discarding them;
   the provider accepts a changed dashboard password.
-- An operator target reissues a tenant's state secret: a new secret, the store's user updated, handed
-  over like an enrollment token.
 - The API writes to the router with its own OPNsense user, limited to the resolver's settings and
   the DHCP server's reservations ([CHG-0044](/docs/changes/2026/0044-tenant-device-addresses/)), and to
   Grafana with its own server-admin login.
@@ -54,7 +54,7 @@ Grafana ([2026-10 review: T1, T5, T2, A6, A7](/docs/architecture/reviews/2026-10
 
 **In scope:** the API's reconcile and restore, the provider's tenant resource, the operator scripts,
 the API's router and Grafana credentials, reading the API's secrets from files (opportunistic).
-**Out of scope:** device secrets in tenant code (CHG-0040); token reissue and revocation (deferred,
+**Out of scope:** device secrets in tenant code (CHG-0040); the state-secret reissue (CHG-0060); token reissue and revocation (deferred,
 [T4](/docs/architecture/reviews/2026-10-rebuild-and-access/#t4-tenant-tokens)).
 
 ## Risk and impact
@@ -77,7 +77,7 @@ the API's router and Grafana credentials, reading the API's secrets from files (
 ### Step 1: The API, built and tested off the site
 
 Reconcile steps for workloads, records, Wi-Fi keys and broker accounts; the unreadable guard; restore
-returning re-minted tokens; the state-secret reissue route; reading secrets from `*_FILE`. Integration
+returning re-minted tokens; reading secrets from `*_FILE`. Integration
 tests for each, including an OpenBao rebuild.
 
 **Verify:** `make test-integration` passes.
@@ -105,7 +105,7 @@ the reconcile clones it again at the same address.
 
 ### Step 5: The docs
 
-Update the recovery chart, *After a Site Rebuild*, *Lost State or Credentials* (the reissue), the
+Update the recovery chart, *After a Site Rebuild*, the
 Deevnet API page, and *Verify Site*.
 
 ## Verification

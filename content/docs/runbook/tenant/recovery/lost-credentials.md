@@ -23,7 +23,7 @@ key back without them.**
 - **The access key is your tenant name.**
 - **The secret key can't be recovered from the site today.** A reconcile deliberately doesn't return
   it, and there is no reissue yet. An operator reissue of the state secret is planned
-  ([2026-10 review, T2](/docs/architecture/reviews/2026-10-rebuild-and-access/#t2-state-key-recovery)).
+  ([CHG-0060](/docs/changes/2026/0060-state-secret-reissue/)).
 
 Until then, the only way back is a copy you kept: `.backend.env`, or the
 `terraform.tfstate.backup` from before the move. Without one, ask the operator; the recovery is the
