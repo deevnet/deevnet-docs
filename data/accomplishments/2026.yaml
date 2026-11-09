@@ -1,6 +1,6 @@
 # 2026. Written from its quarters.
-through: "2026-11-01"
-reached: 93
+through: "2026-11-09"
+reached: 106
 headline: "Deevnet went from a build lab to a platform hosting three tenants, one of them in daily production use."
 bullets:
   - text: "**Q1: Laid the foundation.** The Builder installs nodes itself over PXE and runs the network's services from code, the substrate's secrets moved into a vault, and the mobile site was segmented into VLANs under a zone policy. The CaribouLite SDR was finished, and MaBell's requirements and design were set."
@@ -10,8 +10,8 @@ bullets:
   - text: "**Q3: Built the platform.** The tenant hypervisor came back on new hardware and moved to Proxmox 9; then the tenant network fabric, the Deevnet API and its Terraform provider, the core router's zone policy, and the first platform services: Wi-Fi, a device registry, MQTT, logs and dashboards."
     items: [site-work/mobile/hypervisor-uplift, infrastructure/tenant-services/tenant-fabric, infrastructure/tenant-services/tenant-lifecycle, infrastructure/tenant-services/platform-services, infrastructure/substrate/management-plane, infrastructure/substrate/observability, infrastructure/substrate/secrets-identity, infrastructure/substrate/network-automation, infrastructure/substrate/builder, site-work/mobile/network-firmware, eds/eds/platform, eds/eds/stand]
     within: "2026-Q3"
-  - text: "**Q4: Added trust and a real tenant.** Deevnet's own PKI, EdS in daily use, and a music catalog beside it."
-    items: [infrastructure/substrate/tls-cert-automation, infrastructure/tenant-services/tenant-pki, infrastructure/substrate/secrets-identity, infrastructure/tenant-services/platform-services, infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane, eds/eds/stand, eds/eds/now-playing, eds/eds/voice, eds/eds/devices, eds/eds/screens-console, eds/eds/platform, eds/eds/operations, eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema, mabell]
+  - text: "**Q4: Added trust and a real tenant.** Deevnet's own PKI, a secrets manager sealed between work sessions, EdS in daily use, and a music catalog beside it."
+    items: [infrastructure/substrate/tls-cert-automation, infrastructure/tenant-services/tenant-pki, infrastructure/substrate/secrets-identity, infrastructure/tenant-services/platform-services, infrastructure/tenant-services/tenant-lifecycle, infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane, infrastructure/substrate/software-discovery, eds/eds/stand, eds/eds/now-playing, eds/eds/voice, eds/eds/devices, eds/eds/screens-console, eds/eds/platform, eds/eds/operations, eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema, mabell]
     within: "2026-Q4"
   - text: "**Two products are in flight on it:** EdS with its music catalog, and MaBell, whose design is done and which now runs as a tenant."
 next: "A home site beside the mobile one, tenant self-service for devices, and a dependable core router."
