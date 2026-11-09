@@ -101,7 +101,7 @@ def cmd_check(_):
         roadmap = p.startswith("content/docs/roadmap/")
         parsed = parse(fm)
         if not parsed:
-            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md"): err(p, "no waypoints: list")
+            if roadmap and p not in ("content/docs/roadmap/progress.md", "content/docs/roadmap/value.md", "content/docs/roadmap/records.md"): err(p, "no waypoints: list")
             continue
         head, ms, _ = parsed
         tags = re.findall(r'^value: \[(.*)\]$', head, re.M) + [m["value"].strip("[]") for m in ms if "value" in m]
