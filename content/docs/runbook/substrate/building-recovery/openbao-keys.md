@@ -30,7 +30,7 @@ it ([Vault Operations](/docs/runbook/substrate/building-recovery/vault-operation
 The role checks the two are a pair, imports both with the Site CA (`issuers/import/bundle`), and makes
 that issuer the default. A mount already serving the inventory's certificate is left alone.
 
-**To replace one:**
+**To replace one,** with the import and the check in a [work session](#a-work-session):
 
 1. Remove both tenant CA keys from the vault (the playbook makes the pair), and run
    `ansible-playbook playbooks/tenant-cas.yml` with the vault decrypted. It writes the new keys into
@@ -62,7 +62,7 @@ OpenBao's bring-your-own-key route: wrapped on the control node, in RAM, with an
 itself wrapped with OpenBao's wrapping key. OpenBao refuses a second import onto the same name, so a
 new key always has a new name.
 
-**To move to a new key:**
+**To move to a new key,** with steps 3 to 5 in a [work session](#a-work-session):
 
 1. Remove `vault_openbao_transit_key` from the openbao vault, run
    `ansible-playbook playbooks/transit-key.yml`, then `make vault`, commit and push.

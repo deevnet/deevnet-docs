@@ -279,6 +279,9 @@ tenants, so an empty archive never becomes the newest.
 
 ### 5. Reconcile
 
+**The reconcile runs in a [work session](/docs/runbook/substrate/building-recovery/openbao-keys/#a-work-session): OpenBao open.** While it is sealed the API answers 503
+and reconciles nothing.
+
 ```bash
 make reconcile NAME=--all
 ```

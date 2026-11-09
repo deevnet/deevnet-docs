@@ -23,6 +23,7 @@ to make a tenant, and the tenant never holds a Proxmox credential, a vault passw
 | | |
 |---|---|
 | The API | `https://api.mobile.deevnet.net`, reachable from the Builder |
+| A work session | OpenBao open: `ANSIBLE_ASK_VAULT_PASS=true make bao-open` from `ansible-collection-deevnet.mgmt` ([A work session](/docs/runbook/substrate/building-recovery/openbao-keys/#a-work-session)). Admission, a Wi-Fi key rotation and every operator-only call below need it. While it is sealed the API answers 503, *OpenBao is sealed or unreachable; tenant work waits until it is opened*, and changes nothing |
 | The operator token | nothing to fetch: `make admit` reads it from the running API container over SSH, and never prints it. It is also `vault_deevnet_api_token`, in the inventory's `deevnet_api` group vault, for calling the API by hand |
 | The Deevnet Root CA | `ansible-inventory-deevnet/pki/deevnet-root-ca.pem`: the one trust anchor for every Deevnet site, the same for every tenant ([ADR-0031](/docs/architecture/decisions/substrate/0031-deevnet-pki/)). Tenants download it under the same name |
 | The provider | the tenant installs `deevnet/deevnet` 0.5.x itself with `install-provider.sh` (on Windows, `install-provider.ps1`) from the tenant downloads ([Before You Start](/docs/runbook/tenant/getting-started/before-you-start/#getting-the-provider)). No role installs it. Before tenants will be downloading from the site, check the downloads tree is current: `deevnet.builder site.yml --tags fetched-artifacts`, the provider repo's `make stage`, the image factory's `make pi-backend-publish`, then `deevnet.mgmt site.yml --tags tenant-downloads` |
@@ -86,6 +87,10 @@ apply the Wi-Fi key in it is the tenant's to keep, not yours.
 {{< /hint >}}
 
 ## 3. Where the tenant applies from
+
+**A tenant's applies need OpenBao open too, so they run inside a work session.** While it is sealed,
+every call with the tenant's token answers 503, *OpenBao is sealed or unreachable; tenant work waits until it is opened*, and nothing changes; the tenant applies again once
+the session is open.
 
 Every apply has to reach the API, and after the first one the state store too. Give the tenant the
 **`DVNTM-TD`** key, the one in the admission's `wifi`, not a shared one: that segment reaches the API, the state store,

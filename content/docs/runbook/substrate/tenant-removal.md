@@ -20,6 +20,9 @@ Either the tenant or the operator can delete a tenant. Both end in `DELETE /v1/t
 | The tenant | `terraform destroy` in its own repository, with its own API token. The workloads go first, then the tenant. The operator then [removes its state](#removing-the-tenants-state) |
 | The operator | `make remove-tenant` from `ansible-collection-deevnet.mgmt` on the Builder |
 
+**Either way, OpenBao must be open: delete in a [work session](/docs/runbook/substrate/building-recovery/openbao-keys/#a-work-session).** While it is sealed the API
+answers 503, *OpenBao is sealed or unreachable; tenant work waits until it is opened*, and nothing is removed.
+
 ```bash
 make remove-tenant NAME=<name>
 ```

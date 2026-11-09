@@ -31,7 +31,8 @@ within the year.
 imported into OpenBao.** Both are valid to 2031-10-25. The steps, and how to check the result, are on
 [OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#the-tenant-cas): in short,
 `playbooks/tenant-cas.yml` makes the key and request, the ceremony signs it (`--ca tenant-service` or
-`--ca tenant-device`), and `tenant-service-ca.yml` or `tenant-device-ca.yml` imports the pair. Then:
+`--ca tenant-device`), and `tenant-service-ca.yml` or `tenant-device-ca.yml` imports the pair, in a
+[work session](/docs/runbook/substrate/building-recovery/openbao-keys/#a-work-session): on a sealed OpenBao the play stops at its first task and changes nothing. Then:
 
 ```bash
 ansible-playbook playbooks/tenant-service-ca-verify.yml

@@ -41,6 +41,7 @@ also refuses any other computer, including the same one with a new private Wi-Fi
 | `x509: certificate signed by unknown authority` | `DEEVNET_API_CACERT` does not point at `deevnet-root-ca.pem` |
 | `401` on the first apply | the enrollment token was for a different name, and is now spent. Ask for a new admission |
 | `401` later | you are presenting the enrollment token (spent) instead of `terraform output -raw api_token` |
+| `503`, *OpenBao is sealed or unreachable; tenant work waits until it is opened* | the factory is closed between work sessions, and nothing was changed. Ask the operator to open one, then apply again |
 | `400` on a broker account | a topic pattern breaks the rules: a leading `/`, `$` or `%`, a `#` not at the end, or a device reaching into `log/` ([rules](/docs/runbook/tenant/services/devices-and-mqtt/#topic-rules)) |
 | `400` on a DNS record | the address is outside your own subnet |
 | `Saved plan is stale` | the state moved between `plan` and `apply`. Re-plan |

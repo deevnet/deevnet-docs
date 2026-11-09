@@ -39,6 +39,12 @@ written from the role as it stands; correct it from the first run.
 
 ## The rebuild
 
+**The rebuilt OpenBao is open from its initialization until it restarts.** The run unseals it with
+two of its new shares, so steps 2 to 5 need no `make bao-open`; if it restarts before step 5, open a
+[work session](/docs/runbook/substrate/building-recovery/openbao-keys/#a-work-session) with the new
+shares. **Keep the old shares until [Finish](#finish):** the set-aside storage opens only with them,
+and the undo needs it.
+
 1. **Set the storage aside**, on `dv02idn001v01`. Moved, not deleted, so the drill can be undone:
 
    ```bash
@@ -75,8 +81,9 @@ written from the role as it stands; correct it from the first run.
 ## Finish
 
 Delete `/srv/openbao/data.before-drill`. **It is a full copy of every secret**, openable with any two
-of the unseal shares it was sealed with, so it does not outlive the drill.
+of the unseal shares it was sealed with, so it does not outlive the drill. Then destroy the old
+shares, and close the session with `ANSIBLE_ASK_VAULT_PASS=true make bao-close`.
 
-**To undo before that**, stop OpenBao, move the old storage back, start it, and revert the vault
-commits from steps 3 and 4. The old OpenBao's keys are the vault's, so nothing it holds differs from
+**To undo before that**, stop OpenBao, move the old storage back, start it, open it with two of the
+old shares, and revert the vault commits from steps 3 and 4. The old OpenBao's keys are the vault's, so nothing it holds differs from
 the rebuilt one but the AppRoles.
