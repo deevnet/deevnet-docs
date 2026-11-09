@@ -74,8 +74,8 @@ written from the role as it stands; correct it from the first run.
 
 ## Finish
 
-Delete `/srv/openbao/data.before-drill`. **It is a full copy of every secret**, openable with the seal
-key, so it does not outlive the drill.
+Delete `/srv/openbao/data.before-drill`. **It is a full copy of every secret**, openable with any two
+of the unseal shares it was sealed with, so it does not outlive the drill.
 
 **To undo before that**, stop OpenBao, move the old storage back, start it, and revert the vault
 commits from steps 3 and 4. The old OpenBao's keys are the vault's, so nothing it holds differs from
