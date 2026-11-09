@@ -181,7 +181,7 @@ The following `vault.yml` files exist across the inventory:
 | `mobile/group_vars/routers/vault.yml` | Router credentials (mobile) |
 | `mobile/group_vars/switches/vault.yml` | Switch credentials (mobile) |
 | `mobile/group_vars/network_controllers/vault.yml` | Omada controller credentials (mobile) |
-| `mobile/group_vars/openbao/vault.yml` | OpenBao's bootstrap secrets: the static seal key, Ansible's AppRole, the recovery key (mobile) |
+| `mobile/group_vars/openbao/vault.yml` | OpenBao's bootstrap secrets: unseal share 1, Ansible's AppRole, the Transit key (mobile) |
 | `mobile/group_vars/deevnet_api/vault.yml` | Deevnet API operator token, database password, token MAC key, Proxmox token (mobile) |
 | `mobile/group_vars/mqtt_brokers/vault.yml` | The broker's Erlang cookie, its database passwords, the log bridge's broker account (mobile) |
 | `mobile/group_vars/observability_store/vault.yml` | The log store's operator read token, Grafana's secret key (mobile) |

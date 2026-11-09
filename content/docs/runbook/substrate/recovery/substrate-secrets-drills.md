@@ -46,12 +46,15 @@ written from the role as it stands; correct it from the first run.
    sudo mv /srv/openbao/data /srv/openbao/data.before-drill
    ```
 
-2. **Run `ansible-playbook playbooks/openbao.yml`.** OpenBao starts empty and is initialized; the run
-   imports both tenant CAs and the Transit key from the vault, writes the policies and AppRoles, and
-   revokes the root token. It writes the new recovery key and Ansible's AppRole to
-   `.openbao/dv02idn001v01-init.json`.
-3. **Lock it in.** Move `vault_openbao_ansible_role_id`, `vault_openbao_ansible_secret_id` and the
-   recovery key into the openbao vault; `make vault`, commit, push; then delete the file.
+2. **Run `ansible-playbook playbooks/openbao.yml`.** OpenBao starts empty and is initialized with
+   three new unseal shares, and the run unseals with two of them. It imports both tenant CAs and the
+   Transit key from the vault, writes the policies and AppRoles, and revokes the root token. It
+   writes the new shares and Ansible's AppRole to `.openbao/dv02idn001v01-init.json`.
+3. **Lock it in,** in the operator's own terminal: `vault_openbao_ansible_role_id`,
+   `vault_openbao_ansible_secret_id` and share 1 (`vault_openbao_unseal_share`) into the openbao vault
+   with `ansible-vault edit`; shares 2 and 3 to the operator in place of the old ones
+   ([The unseal shares](/docs/runbook/substrate/building-recovery/openbao-keys/#the-unseal-shares));
+   commit, push; then `shred -u` the file.
 4. **Run `openbao.yml` again.** It logs in as Ansible, writes the build secrets, and issues the
    image-factory AppRole's credentials to `.openbao/image-factory-approle.json`. Move them into
    `group_vars/all/vault.yml`, `make vault`, commit, push, delete the file.
