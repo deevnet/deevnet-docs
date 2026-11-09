@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0060 | Unscheduled | [An Operator Reissue of a Tenant's State Secret](2026/0060-state-secret-reissue/) | Deployment | mobile | Planned |
 | CHG-0059 | 2026-11-07 | [The Secret Store Refuses Reserved Names](2026/0059-cel-signing-role/) | Configuration · Deployment | mobile | Complete |
 | CHG-0058 | 2026-11-04 | [Windows Tenant Laptops](2026/0058-windows-tenant-laptops/) | Deployment · Configuration | mobile | Complete |
 | CHG-0057 | Unscheduled | [Build the Home Site](2026/0057-build-the-home-site/) | Deployment · Configuration | home | Planned |

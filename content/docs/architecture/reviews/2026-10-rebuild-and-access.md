@@ -824,12 +824,13 @@ fallback; R3's page is *Build the Builder*; A3 gains HTTPS on the artifact serve
 | [CHG-0035: Previously Exposed Credentials Checked and Rotated](/docs/changes/2026/0035-exposed-credentials/) | A1 |
 | [CHG-0036: OpenBao's Keys From the Vault](/docs/changes/2026/0036-openbao-keys-from-the-vault/) | R1, T1 (the Transit key), R5, A4 |
 | [CHG-0037: Substrate Builds Off OpenBao](/docs/changes/2026/0037-builds-off-openbao/) | R4, A5, R9 |
-| [CHG-0038: The Reconcile Restores Everything](/docs/changes/2026/0038-reconcile-restores-everything/) | T1, T5, T2, R7, A6, A7 |
+| [CHG-0038: The Reconcile Restores Everything](/docs/changes/2026/0038-reconcile-restores-everything/) | T1, T5, R7, A6, A7 |
 | [CHG-0039: Backup to an Attached USB Drive](/docs/changes/2026/0039-backup-to-an-attached-ssd/) | R2 |
 | [CHG-0040: Device Secrets in Tenant Code](/docs/changes/2026/0040-device-secrets-in-tenant-code/) | R2, T2 (ADR-0033) |
 | [CHG-0041: The Artifact Server Over HTTPS](/docs/changes/2026/0041-artifact-server-https/) | A3 |
 | [CHG-0042: Two Undeclared VMs Moved Off the Management Hypervisor](/docs/changes/2026/0042-rehome-stray-vms/) | R9 |
 | [CHG-0043: A Local Package Mirror](/docs/changes/2026/0043-local-package-mirror/) | R8 |
+| [CHG-0060: An Operator Reissue of a Tenant's State Secret](/docs/changes/2026/0060-state-secret-reissue/) | T2 (split from CHG-0038, 2026-11-09) |
 
 [CHG-0034: Device Certificates Through the Deevnet API](/docs/changes/2026/0034-device-certificates/),
 planned before this review, builds on CHG-0036.
