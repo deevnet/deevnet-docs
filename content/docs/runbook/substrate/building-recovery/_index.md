@@ -118,8 +118,9 @@ recovered by rebuilding it from the tiers beneath; what that takes is in
 
 **OpenBao holds nothing that the vault cannot recreate.** Both tenant CAs' keys and the Transit key
 are the vault's, imported on every build ([OpenBao's Keys](openbao-keys/)), and an initialization's
-recovery key and Ansible login are locked into the vault before its output is deleted
-([Vault Operations](vault-operations/)).
+unseal share and Ansible login are locked into the vault before its output is deleted
+([Vault Operations](vault-operations/)). It starts sealed; a build that configures it runs in a work
+session ([The unseal shares](openbao-keys/#the-unseal-shares)).
 
 **Some T2 services hold data nothing below them can recreate today:**
 - The Deevnet API's database is the tenant registry, and the state store holds tenants' Terraform
@@ -142,7 +143,7 @@ tracks closing each of these.
 | Install Proxmox from the ISO, run its console bootstrap, issue its API tokens | [Build a Hypervisor](build-hypervisor/) |
 | Put the Fedora ISO into the hypervisor's `local:iso` before a template build | Not yet in a runbook: the template build expects it there (`deevnet-image-factory/packer/proxmox/fedora-base-image/fedora.pkr.hcl`, `iso_download_pve`), and a reinstall wipes it |
 | Run the Omada setup wizard, create the Owner and the Open API clients | ADR-0009 §5 |
-| Generate OpenBao's seal key; lock in an initialization's output | [Vault Operations](vault-operations/) |
+| Lock in an initialization's output: share 1 and Ansible's AppRole into the vault, shares 2 and 3 to the operator | [OpenBao's Keys](openbao-keys/#the-unseal-shares), [Vault Operations](vault-operations/) |
 | The Root, Site and issuing CA ceremonies | [Root of Trust](/docs/runbook/root-of-trust/) |
 
 ---

@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed. Built in part, as of 2026-10-31: §3 ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) and §4 ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)). §1 and §2, the Shamir seal and work sessions, wait on [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/); see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
+| **Status** | Proposed. Built, as of 2026-11-08: §1 and §2, the Shamir seal and work sessions ([CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/)), §3 ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) and §4 ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)); V13 and V14 passed. Accepted once V12, the rebuild from the vault, has run; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
 | **Revised** | 2026-10-25, in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The draft of 2026-10-21 split OpenBao in two, a platform store that unseals itself and a PKI store on a VM of its own, and recovered the PKI store from snapshots. Both are withdrawn: one OpenBao, sealed, rebuilt from the vault |
 | **Scope** | How the Mobile Factory's OpenBao is sealed and opened, what the Deevnet API does while it is sealed, where the keys it uses are authoritatively held, and how it is rebuilt. Not the CA hierarchy ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)) |
@@ -146,12 +146,12 @@ None.
 
 **This record is accepted when every item below is done.**
 
-- [ ] §1 and §2 built, the Shamir seal and work sessions, by [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/).
+- [x] §1 and §2 built, the Shamir seal and work sessions, by [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/), 2026-11-08.
 - [x] §3 built, by [CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/).
 - [x] §4 built, by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
 - [ ] [V12](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), rebuild from the vault, passed: not run.
-- [ ] [V13](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), sealed, passed: in part, the API's half in CHG-0052.
-- [ ] [V14](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), shares and custody, passed: not run.
+- [x] [V13](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), sealed, passed: the API's half in CHG-0052, the plays' in CHG-0053, 2026-11-08.
+- [x] [V14](/docs/architecture/reviews/2026-10-tenant-pki/#validation-plan), shares and custody, passed: every pair proven, no unseal material on the kit, CHG-0053, 2026-11-08.
 
 ## What would settle it
 

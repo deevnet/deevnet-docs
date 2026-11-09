@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/credential-rotation/
   - /projects/credential-rotation/
 weight: 8
-tasks_completed: 4
+tasks_completed: 5
 tasks_in_progress: 0
-tasks_planned: 8
+tasks_planned: 7
 ---
 
 # Credential Rotation: Project Plan
@@ -60,9 +60,9 @@ replacing it is written down today. Read from the inventory and the collections 
 
 | Credential | Reaches | Used by | Reissue | Rotation written |
 |---|---|---|---|---|
-| The ansible-vault password | every secret in the vault, including OpenBao's seal key | Every Ansible run against the inventory, and the image factory's builds. The operator types it or sets `ANSIBLE_VAULT_PASSWORD_FILE`, so a copy lives wherever that file does | Alone (`ansible-vault rekey`), but every copy of the file changes | No |
+| The ansible-vault password | every secret in the vault, including OpenBao's unseal share 1 | Every Ansible run against the inventory, and the image factory's builds. The operator types it or sets `ANSIBLE_VAULT_PASSWORD_FILE`, so a copy lives wherever that file does | Alone (`ansible-vault rekey`), but every copy of the file changes | No |
 | The `a_autoprov` SSH key | root on every substrate host | Every collection's `ansible.cfg` (`remote_user`); the image factory bakes the public key into images, and the artifact server publishes it | Alone, with an overlap: every host accepts the new key before the old one goes | No |
-| OpenBao's seal key and recovery key | every secret OpenBao holds | `deevnet.mgmt` `openbao` role | Alone, but the role cannot yet | No |
+| OpenBao's unseal shares (any two of three) | every secret OpenBao holds | `make bao-open`, in a work session | Alone: `make bao-rotate-shares` | Yes ([OpenBao's Keys](/docs/runbook/substrate/building-recovery/openbao-keys/#rotating-the-shares)) |
 | The backup age identity | every backup | `deevnet.mgmt` `backup` role and playbook | Alone for new backups; old backups stay readable only with the old identity | No |
 | The Deevnet API operator token | every API route, every tenant | `deevnet.mgmt` `deevnet_api` role; read from the running container by `scripts/lib/deevnet-api.sh` (tenant admission) | Alone | No |
 | The API's tenant-token signing key | could forge any tenant's token | `deevnet.mgmt` `deevnet_api` role | Both sides: every tenant token stops working and each tenant needs a new one | No |
@@ -86,7 +86,7 @@ at the top need their own:
 
 - ⏳ Rekey the ansible-vault password (`ansible-vault rekey`), and what has to be updated with it
 - ⏳ Replace the `a_autoprov` SSH key on every host, from the artifact server's published copy onward
-- ⏳ Rotate OpenBao's seal key, which the role does not support yet
+- ✅ Rotate OpenBao's unseal shares: `make bao-rotate-shares`, run on 2026-11-08 (CHG-0053)
 
 ## Rotation Procedures ⏳
 

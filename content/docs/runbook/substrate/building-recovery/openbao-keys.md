@@ -89,14 +89,69 @@ tenant supplies again on its next apply
 
 ---
 
+## The unseal shares
+
+**OpenBao is sealed by three Shamir shares, any two of which unseal it, and it starts sealed**
+([ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/) §1,
+[CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/)). Share 1 is in the openbao vault as
+`vault_openbao_unseal_share`. Shares 2 and 3 are the operator's, held apart from each other, never on
+the kit and never on a machine that holds the vault password. No unseal material is on the identity
+VM.
+
+**A sealed OpenBao stops provisioning and nothing else.** Deployed tenants, their devices and the
+broker keep running. The Deevnet API refuses tenant work before it changes anything, and its
+`/readyz` answers `"openbao":"sealed"`. Every play that configures OpenBao, and the API role's OpenBao
+step, stops on its first task with *OpenBao … is sealed. Nothing was changed.*
+
+### A work session
+
+**A visit's provisioning work runs inside a work session: OpenBao opened at its start, sealed at its
+end.** Creating a tenant, renewing certificates, enrolling devices and deploying the API need it open.
+From `ansible-collection-deevnet.mgmt`, with the inventory **encrypted** (Ansible asks for the vault
+password instead of the vault being decrypted on disk):
+
+```bash
+make bao-status                                        # sealed or open; no vault needed
+ANSIBLE_ASK_VAULT_PASS=true make bao-open              # the vault's share, and one of yours
+ANSIBLE_ASK_VAULT_PASS=true make bao-open WITHOUT_VAULT=1   # two of yours, the vault unavailable
+ANSIBLE_ASK_VAULT_PASS=true make bao-close             # a restart: it comes back sealed
+```
+
+A share is typed without echo and goes straight to OpenBao. A refused share resets the attempt and
+changes nothing. Powering the kit off also ends the session.
+
+### Rotating the shares
+
+**A share that may have been exposed is replaced by rotating all three; the old ones then unseal
+nothing.** In a work session:
+
+```bash
+ANSIBLE_ASK_VAULT_PASS=true make bao-rotate-shares
+```
+
+It takes two current shares, as `bao-open` does, writes three new ones to
+`.openbao/<host>-shares.json` on the control node at once, and proves every pair by restart and
+unseal. Then, in the operator's own terminal:
+
+1. Store new shares 2 and 3 in place of the old ones.
+2. Put new share 1 into the openbao vault with `ansible-vault edit`, so the file stays encrypted on
+   disk; commit and push it through a pull request.
+3. `shred -u` the shares file, then `make bao-close`.
+
+**Never decrypt the vault, or open a shares file, inside an AI agent's session.** An agent's harness
+can record a file it has seen when the file changes. A share reached a session transcript that way
+during CHG-0053, and the shares were rotated.
+
 ## Logging in
 
 **Ansible's AppRole is root-equivalent**: it writes every policy, the others' included. Its role and
 secret IDs are held in the vault only (`vault_openbao_ansible_role_id`, `vault_openbao_ansible_secret_id`).
 
 **After a first initialization, the role stops until the vault's AppRole logs in.** Initialization
-writes the new AppRole and the recovery key to `.openbao/<host>-init.json` on the control node. Move
-them into the openbao vault, `make vault`, commit and push, and only then delete the file. A run in
+writes the new AppRole and the three unseal shares to `.openbao/<host>-init.json` on the control node,
+and unseals with two of them to carry on. Move the AppRole and share 1 into the openbao vault, take
+shares 2 and 3 as in [The unseal shares](#the-unseal-shares), `make vault`, commit and push, and only
+then delete the file. A run in
 between stops and names the file; with no file, it stops and says not to reinitialize.
 
 **Each AppRole logs in only from its own addresses** (`openbao_*_cidrs` in `group_vars/openbao`), the

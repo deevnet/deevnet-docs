@@ -18,9 +18,13 @@ waypoints:
     value: [secure-by-default, rebuild-from-code]
     status: done
     date: "2026-10-25"
-  - title: "OpenBao moved to a split-key (Shamir) seal, and its rebuild drilled"
+  - title: "OpenBao sealed by split-key (Shamir) shares, opened only for a work session (CHG-0053)"
+    value: [secure-by-default]
+    status: done
+    date: "2026-11-08"
+  - title: "OpenBao rebuilt from the site's vault alone in a drill, nothing restored (ADR-0042 V12)"
     value: [secure-by-default, rebuild-from-code]
-    status: active
+    status: planned
   - title: "Single sign-on and role-based access for infrastructure services"
     status: planned
 ---
