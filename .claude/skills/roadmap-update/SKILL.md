@@ -11,6 +11,9 @@ list is the rule; read it first):
 
 - A **roadmap item** (`content/docs/roadmap/**.md`) states intent and lists **3–8 waypoints**
   in its front matter. Its progress is computed from them. It carries no `tasks_*`.
+- A **view page** only draws the roadmap (Roadmap Progress, Value Objectives, Open Records). It
+  takes `roadmap_view: true` in its front matter, has no waypoints, and is not an item. A new page
+  of that kind takes the flag too, or `waypoints.py check` fails on it.
 - A **project plan** (`<item>/plan.md`, beneath its item in the menu) holds the detail: phases,
   tasks as ✅ 🔄 ⏳ bullets, and hand-kept `tasks_*` counts. It is written once work starts.
 - When a project is done, the plan moves to `content/projects/archive/`, a short entry goes in

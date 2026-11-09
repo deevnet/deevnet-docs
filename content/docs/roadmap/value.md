@@ -1,6 +1,7 @@
 ---
 title: "🎯 Value Objectives"
 weight: 7
+roadmap_view: true
 ---
 
 # Value Objectives
