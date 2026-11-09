@@ -31,7 +31,7 @@ OpenAPI specification in the repository, which a test holds to the code.
 | Routes | Who calls them |
 |---|---|
 | `/healthz`, `/readyz`, `/version` | Anyone; no token |
-| Admissions, the tenant list, reconcile | The operator only |
+| Admissions, the tenant list, reconcile, a state-secret reissue | The operator only |
 | A tenant, and its workloads, names, devices, addresses, Wi-Fi keys, broker accounts and service certificates | The tenant, with its own token, or the operator |
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
 
@@ -125,6 +125,10 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
   forwarding, state store, the fabric network, then the log store and dashboards. It stops at the
   first failure and records it; calling again resumes. It returns the tenant's log tokens and
   dashboard password, and nothing else: not its DNS or state secrets, and not its API token.
+- **A state-secret reissue** mints a new state-store secret for a tenant, records it, sets it on the
+  store and returns it, for an operator to hand over. The old one stops working. The registry is
+  written first, so a store that refused is put right by the next reconcile. It refuses a tenant
+  whose stored secrets the API can't read, which would otherwise be written back empty.
 - **Workloads are not part of a reconcile.** Applying a workload always ensures its VM, rebuilding a
   missing one with the same VMID, MAC and address. But a tenant's plain `terraform apply` does not
   re-apply a workload the registry already lists

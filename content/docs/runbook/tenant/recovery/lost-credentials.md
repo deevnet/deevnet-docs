@@ -17,17 +17,17 @@ the only copy. What you can get back depends on what you still have.
 
 ## Keys to the state store
 
-**Your state-store keys live inside the state they unlock, and there is no way yet to get the secret
-key back without them.**
+**Your state-store keys live inside the state they unlock, so without a copy the operator gives you a
+new secret key.**
 
 - **The access key is your tenant name.**
-- **The secret key can't be recovered from the site today.** A reconcile deliberately doesn't return
-  it, and there is no reissue yet. An operator reissue of the state secret is planned
-  ([CHG-0060](/docs/changes/2026/0060-state-secret-reissue/)).
+- **The secret key you had can't be recovered from the site.** Nothing hands it back.
+- **Ask the operator for a new one.** You receive the two lines of your `.backend.env`. Put them in
+  place of the old ones on every computer that reads your state, and in CI if you use it: the old
+  key stops working.
 
-Until then, the only way back is a copy you kept: `.backend.env`, or the
-`terraform.tfstate.backup` from before the move. Without one, ask the operator; the recovery is the
-same as having lost everything, in the last row above.
+**Don't restore your tenant from the state you had before.** It still holds the old key, and a
+restore would put that key back and lock you out again.
 
 ## Keep it from happening
 

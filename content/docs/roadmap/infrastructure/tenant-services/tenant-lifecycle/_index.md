@@ -23,9 +23,10 @@ waypoints:
     value: [fast-delivery, one-operator]
     status: done
     date: "2026-09-29"
-  - title: "A drill for recovering tenant credentials, and provisioning cleanup"
-    value: [rebuild-from-code]
-    status: active
+  - title: "A tenant that lost the keys to its own state gets back in with a new key from the operator (CHG-0060)"
+    value: [rebuild-from-code, one-operator]
+    status: done
+    date: "2026-11-09"
   - title: "A tenant rebuilt from its own code in a drill"
     value: [rebuild-from-code]
     status: planned

@@ -2,9 +2,9 @@
 title: "Tenant Lifecycle: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 11
+tasks_completed: 12
 tasks_in_progress: 1
-tasks_planned: 4
+tasks_planned: 3
 ---
 
 # Tenant Lifecycle: Project Plan
@@ -53,9 +53,10 @@ A repeatable, code-defined tenant lifecycle.
   (2026-09-27)
 - ⏳ Remove the unused `TerraformProv` role on `dv02hyp002p02`, left from the retired tenant-module
   flow; no ACL references it
-- ⏳ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
-  back in through an operator reconcile
+- ✅ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
+  back in with a new key the operator reissues
   ([Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/)), proven on `tdemo`
+  ([CHG-0060](/docs/changes/2026/0060-state-secret-reissue/), 2026-11-09)
 - ⏳ Bring the Deevnet API's README up to date: its route table (Wi-Fi keys, devices and broker
   accounts are live, not `501`) and its OpenBao field list (`broker_writer_key`, `log_writer_key`,
   `grafana_admin_password`)
