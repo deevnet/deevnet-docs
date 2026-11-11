@@ -11,7 +11,7 @@ weight: -61
 | **Change type** | Configuration |
 | **Classification** | Disruptive |
 | **Status** | **Complete, 2026-11-11.** The vaulted backup, decrypted from a fresh GitHub clone, restored onto `dv02cor002p01`; the site matched its baseline and the firewall plan showed no drift |
-| **Window** | 2026-11-11, 12:16–12:48, with the operator at the router's web UI. One router reboot: no routing, DNS or DHCP for the site for a few minutes |
+| **Window** | 2026-11-11, from the 12:16 baseline to the 12:47 firewall plan, with the operator at the router's web UI. One router reboot: no routing, DNS or DHCP for the site for a few minutes |
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (core router) |
 | **Automation** | `ansible-inventory-deevnet` `backups/mobile/dv02cor002p01/config.xml.vault`, written by `make backup-router` in `deevnet.net`; `ansible-vault decrypt` |
@@ -177,11 +177,11 @@ History**. If it does not, follow
 | When | Steps | What happened |
 |---|---|---|
 | 12:16 | Baseline | Taken from the Builder; recorded under Prerequisites |
-| ~12:30 | 1–2 | Backup decrypted on the operator's Mac from the inventory on GitHub, after PR #97 merged. It was decrypted with `--output` to `~/rehearsal/config.xml`, outside the checkout |
-| ~12:35 | 3 | Restored from the web UI with a reboot; the router came back on `10.20.99.1` |
+| Before 12:42 | 1–2 | Backup decrypted on the operator's Mac from the inventory on GitHub, after PR #97 merged. It was decrypted with `--output` to `~/rehearsal/config.xml`, outside the checkout |
+| Before 12:42 | 3 | Restored from the web UI with a reboot; the router came back on `10.20.99.1` |
 | 12:42 | 4 | The baseline checks again, identical line for line: the web UI answers, `dv02hyp001p01` and `api` resolve through the router, `10.20.25.20` and `1.1.1.1` answer ping, HTTPS to GitHub works. The `10.20.30.11` ping and `tdemo-1.tdemo` lookup failed, as they did before the change |
 | 12:47 | 4 | Firewall plan: 0 to add, 0 of 71 to update, 0 to delete; the `deevnet_private` alias matches inventory |
-| 12:50 | 5 | `~/rehearsal` deleted on the Mac; seven plaintext router configs deleted from the Builder's two `migration-logs/` directories |
+| After 12:47 | 5 | `~/rehearsal` deleted on the Mac; seven plaintext router configs deleted from the Builder's two `migration-logs/` directories |
 
 ### Departures from the plan
 
