@@ -24,9 +24,10 @@ Saved configurations live in two places:
 
 - **On the router**, in `/conf/backup`: one per change. Gone if the disk is.
 - **In the inventory**, at `backups/mobile/dv02cor002p01/config.xml.vault`: the whole configuration,
-  encrypted with the inventory vault password. `make backup-router` in `ansible-collection-deevnet.net`
-  writes it, and the `opnsense_firewall` role writes it before every apply. Each backup replaces the
-  file, and git history holds the earlier ones. It is in the repository, so it survives a
+  encrypted with the inventory vault password. Every `make` target in `ansible-collection-deevnet.net`
+  that writes to the router writes it at the end of the run; `make backup-router` writes it on
+  demand, after a change made by hand. Each backup replaces the file, and git history holds the
+  earlier ones. It is in the repository, so it survives a
   [Builder repave](/docs/runbook/substrate/building-recovery/repave-builder/).
 
 ---

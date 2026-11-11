@@ -5,8 +5,8 @@ aliases:
   - /docs/projects/management-plane/
   - /projects/management-plane/
 weight: 3
-tasks_completed: 6
-tasks_in_progress: 5
+tasks_completed: 7
+tasks_in_progress: 4
 tasks_planned: 4
 ---
 
@@ -60,19 +60,16 @@ Deploy a unified management plane providing observability, security, and identit
 
 ---
 
-## Network Management ⏳
+## Network Management ✅
 
-Recovery copies of the network's own configuration. The Omada controller runs on `dv02nms001v01`
-since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/). Its data has one snapshot, taken by
-hand on 2026-10-06, with a copy on the Builder.
-The core router's `config.xml` is backed up vault-encrypted into the inventory by `make backup-router`
-and before every firewall apply.
+Recovery copies of the network's own configuration. The core router and the Omada controller (on
+`dv02nms001v01` since [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/)) are each backed up,
+vault-encrypted, into the inventory at the end of every run that changes them, and on demand.
 
-- 🔄 Give the live controller a recovery path. One snapshot exists, taken by hand during
-  [CHG-0035](/docs/changes/2026/0035-exposed-credentials/), and the
-  [recovery runbook](/docs/runbook/substrate/recovery/omada-controller-recovery/) restores from it.
-  Still to do: take snapshots routinely, so a restore does not lose everything since one hand-taken
-  copy
+- ✅ Give the live controller a recovery path. Its settings are backed up after every change
+  (`make wireless APPLY=1`, `make backup-wireless`), and a restore onto the Builder's cold controller
+  was rehearsed in [CHG-0062](/docs/changes/2026/0062-device-backups-after-change/). The site is mostly
+  built, so a backup follows each change rather than a timer
 - ✅ Keep the core router's saved configurations somewhere that survives the Builder: they are what
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from,
   and they hold the router's secrets, so the copy is vault-encrypted. `make backup-router` seals it

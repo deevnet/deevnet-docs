@@ -12,9 +12,10 @@ waypoints:
   - title: "Management plane requirements defined: retention, alerting, secrets access and identity"
     value: [no-surprises]
     status: active
-  - title: "Recovery copies of the network's configuration: routine Wi-Fi controller snapshots, and core router configs that survive losing the build server"
+  - title: "Recovery copies of the network's configuration: the Wi-Fi controller and core router backed up after every change, where they survive losing the build server"
     value: [rebuild-from-code]
-    status: active
+    status: done
+    date: "2026-11-11"
   - title: "Each Wi-Fi network's reach checked from a real client"
     value: [no-surprises]
     status: done

@@ -10,7 +10,7 @@ weight: -62
 | **Date** | 2026-11-11 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **In progress.** Steps 1–5 run on 2026-11-11; closes when the decrypted rehearsal copy is deleted and the code and inventory pull requests merge |
 | **Window** | 2026-11-11. No outage: one sshd reload on `dv02nms001v01`; the rehearsal runs on the Builder's stopped cold controller, not the live one |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller and its host); `dv02cor002p01` (core router, read only); `dv00bld001p01` (the Builder's cold controller) |
@@ -41,8 +41,8 @@ This change:
 - **Backs up the Wi-Fi controller's settings the same way**, after `make wireless APPLY=1` and with
   `make backup-wireless`. The controller's documented Open API can only send a backup to a file
   server, so it sends it over SFTP to a dedicated account on its own host. The account has no shell,
-  is chrooted, can log in with a password only from the host itself, and is locked except while a
-  backup runs, with a new random password each time.
+  can log in with a password only from the host itself, and is locked except while a
+  backup runs, with a new random password each time. (It was planned chrooted; see Departures.)
 - **Seals each backup into the inventory**, encrypted with the vault password, at
   `backups/mobile/<host>/`. A backup that has not changed since the committed one is not rewritten.
 - **Rehearses a restore of the controller's backup** on the Builder's cold controller. The live
@@ -178,11 +178,12 @@ then `sudo userdel omada-backup && sudo rm -rf /var/lib/omada-backup`.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the first controller backup sealed; the account locked, the upload directory empty
-- [ ] Step 2: a router play that changed nothing left nothing to commit
-- [ ] Step 3: the controller's backup committed through a pull request
-- [ ] Step 4: the backup restored onto the Builder's cold controller, which is back to never-configured
-- [ ] Step 5: the runbooks describe the backups as they are
+- [x] Step 1: the first controller backup sealed; the account locked, the upload directory empty
+- [x] Step 2: a router play that changed nothing left nothing to commit
+- [ ] Step 3: the controller's backup committed through a pull request, merged
+- [ ] Step 4: the backup restored onto the Builder's cold controller, which is back to never-configured; the decrypted copy deleted
+- [x] Step 5: the runbooks describe the backups as they are
+- [ ] The `deevnet.net` pull request merged
 
 ## Outcome
 
@@ -190,12 +191,35 @@ then `sudo userdel omada-backup && sudo rm -rf /var/lib/omada-backup`.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 14:16 | 1 | Account and drop-in created, the four `sshd -T` checks passed, sshd reloaded. The controller logged in over SFTP and was refused the write (`-30320`, "Permission denied"). The role kept polling for a file for five minutes after the controller had given up |
+| 14:21 | 1 | Same refusal, with `internal-sftp -l VERBOSE` showing the path. Read as the chroot's fault (`ssh_selinux_change_context: getcon failed`); the chroot was dropped |
+| 14:24 | 1 | The run stopped at `usermod`: the controller's SFTP sessions from 14:16 and 14:21 were still open. Ended with `loginctl terminate-user`, which the role now does before and after each run |
+| 14:27 | 1 | Refused again. The audit log named the cause: SFTP sessions run in SELinux's `sftpd_t`, which may create files only in `user_home_t` and tmp types, not `var_lib_t`. The upload directory was labeled `user_home_t` with a persistent `semanage fcontext` rule |
+| 14:31 | 1 | Backup written, fetched and sealed: `omada-backup.cfg.vault`, 833 KB of ciphertext (about 400 KB of backup). Account locked, upload directory empty, no session left, no denials |
+| 14:34 | 2 | `make dns`: the router's backup was resealed as changed. OPNsense writes a `<revision>` stamp on every save, and the CHG-0061 restore had saved. The seal script now leaves the stamp out of its comparison |
+| 14:37 | 2 | `make dns` again: `dv02cor002p01: unchanged … nothing to commit` |
+| 14:38 | 3, 4 | Both backups in inventory pull request #98. The cold controller's never-configured state archived (`cold-empty-2026-11-11.tar.gz`, with its checksum) and the controller started: 6.3.0.45, `configured: false` |
+| 14:48 | 4 | Backup decrypted on the operator's Mac from the pull request's branch on GitHub and restored. The site, its five SSIDs on their VLANs, both PPSK profiles with keys and the AP (not connected) were all there |
+| After 14:48 | 4 | Cold controller stopped, its directory put back from the archive; started once to confirm `configured: false` and its original `omadacId`, then stopped |
 
 ### Departures from the plan
 
--
+- **No chroot.** The account was planned chrooted. The chroot was dropped at 14:21 on a wrong reading
+  of the failure; the refusal was SELinux's `sftpd_t` rule throughout. The owner chose to drop it
+  rather than turn on `ssh_chroot_rw_homedirs` host-wide. With the label in place a chroot may work;
+  that is a follow-up.
+- **No SFTP logging.** `-l VERBOSE` was added to see the refused path, then removed: `sftpd_t` may not
+  open the syslog socket, so it logged only denials.
+- **The wizard has no restore option.** The restore was done from **Settings → Maintenance → Backup &
+  Restore** after creating a throwaway local account, and that account still worked after the
+  restore. The runbook says so.
+- **The live Owner login on a restored controller was not tried.** The throwaway account was used.
+- **The controller keeps its own `omadacId` after a restore** (`d32dd…`, not the live `ddadd…`).
+  Automation reads it from `/api/info`, so nothing depends on it.
+- **The browser opened an old login page.** `10.20.99.95` was the live controller's address before
+  CHG-0008; a private window showed the wizard.
 
 ## Follow-ups
 
-- [ ]
+- [ ] Try the chroot again now that the upload directory is labeled `user_home_t`
+- [ ] Log in with the live Owner account on a restored controller, at the next rehearsal
