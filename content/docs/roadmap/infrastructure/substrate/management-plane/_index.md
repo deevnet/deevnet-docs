@@ -14,7 +14,7 @@ waypoints:
     status: active
   - title: "Recovery copies of the network's configuration: routine Wi-Fi controller snapshots, and core router configs that survive losing the build server"
     value: [rebuild-from-code]
-    status: planned
+    status: active
   - title: "Each Wi-Fi network's reach checked from a real client"
     value: [no-surprises]
     status: done
