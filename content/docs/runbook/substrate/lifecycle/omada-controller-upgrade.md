@@ -120,3 +120,13 @@ declared as the fallback.
 
 Until this is done, the next playbook run puts the old tag back, on data the new version has
 already upgraded.
+
+## 6. Back up the upgraded controller
+
+A settings backup restores onto its own version or newer, never older, so take one on the new version
+and commit it through a pull request:
+
+```bash
+cd ansible-collection-deevnet.net
+make backup-wireless
+```

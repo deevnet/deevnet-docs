@@ -121,6 +121,13 @@ Read the reporting tasks in the output rather than trusting `changed=0`, and see
 [Change Management](/docs/policies/change-management/) first — `--check --diff` will not
 preview any of it.
 
+Then take a backup, so the inventory's copy is the router as it now is, and commit it through a pull
+request:
+
+```bash
+make backup-router
+```
+
 {{< hint warning >}}
 **`opnsense_firewall` is guarded, but it has no savepoint.** It reports by default and writes
 nothing without `-e firewall_apply=true`, refuses a broken discovery, withholds deletions unless
@@ -129,8 +136,8 @@ the HTTP status, and verifies reachability afterwards.
 
 OPNsense has no firewall savepoint or automatic rollback: `firewall/filter/savepoint`,
 `/cancelRollback` and `/revert` each answer `404 "Endpoint not found"`. Instead, the role records the
-configuration revision from before the run, downloads the configuration to the control host, and
-reverts over the API if a path is lost **and the router still answers**.
+configuration revision from before the run and reverts over the API if a path is lost **and the
+router still answers**.
 
 **If the control host's own path is what broke, nothing reverts on its own.** No timer will fix
 it, and waiting is not a recovery step. That case is this page. The run prints the revision id
