@@ -23,10 +23,11 @@ API key. That is what decides the route below.
 Saved configurations live in two places:
 
 - **On the router**, in `/conf/backup`: one per change. Gone if the disk is.
-- **On the control host**, in `/srv/dvnt/migration-logs/`: `dv02cor002p01-pre-firewall-<date>.xml`,
-  written by the `opnsense_firewall` role before every apply. It holds the router's secrets, and it
-  sits on the Builder, so it goes with a [Builder repave](/docs/runbook/substrate/building-recovery/repave-builder/)
-  unless copied off.
+- **In the inventory**, at `backups/mobile/dv02cor002p01/config.xml.vault`: the whole configuration,
+  encrypted with the inventory vault password. `make backup-router` in `ansible-collection-deevnet.net`
+  writes it, and the `opnsense_firewall` role writes it before every apply. Each backup replaces the
+  file, and git history holds the earlier ones. It is in the repository, so it survives a
+  [Builder repave](/docs/runbook/substrate/building-recovery/repave-builder/).
 
 ---
 
@@ -36,10 +37,18 @@ Saved configurations live in two places:
    ([Build Network → Core Router](/docs/runbook/substrate/building-recovery/build-network/#core-router)).
    Use the same hardware or the same NIC names (`re0` LAN, `re1` WAN): the configuration refers to
    interfaces by name.
-2. **Reach the web UI** on the installer's default LAN (a laptop cabled to `re0`), and restore the
+2. **Decrypt the inventory's copy**, on the laptop or any machine with the inventory and the vault
+   password. The plaintext holds the router's private keys: delete it once the router has taken it.
+
+   ```bash
+   cd ansible-inventory-deevnet
+   ansible-vault decrypt --output config.xml backups/mobile/dv02cor002p01/config.xml.vault
+   ```
+
+3. **Reach the web UI** on the installer's default LAN (a laptop cabled to `re0`), and restore the
    saved `config.xml` from the configuration backup page. The router reboots into the restored
    configuration, on `10.20.99.1` and every VLAN.
-3. **Reconcile to inventory.** The file is as old as its last save, so bring the router forward to
+4. **Reconcile to inventory.** The file is as old as its last save, so bring the router forward to
    declared state, reading each report rather than trusting `changed=0`:
 
    ```bash
@@ -49,7 +58,7 @@ Saved configurations live in two places:
    ansible-playbook playbooks/wol.yml
    ```
 
-4. **Reconcile each tenant**, so the router's resolver forwards every tenant zone the API holds
+5. **Reconcile each tenant**, so the router's resolver forwards every tenant zone the API holds
    ([Tenant Admission → Operator-only calls](/docs/runbook/substrate/tenant-admission/#operator-only-calls)).
 
 The vault needs no change: the restored configuration carries the API key the vault already holds.
