@@ -37,6 +37,56 @@ depends on it:
 | **Network** | Routing, firewall, name resolution, address reservations, NAT, switching, wireless | [Networking](/docs/architecture/substrate/networking/) |
 | **Management Plane** | Services that need compute: network device management and substrate observability | This page |
 
+
+{{< graphviz >}}
+digraph plane {
+    graph [
+        rankdir=TB,
+        nodesep=0.45,
+        ranksep=0.55,
+        fontname="Helvetica",
+        bgcolor="#e0e0e0",
+        pad=0.25,
+        size="7,9!"
+    ]
+    node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=13, margin="0.25,0.12", penwidth=1.2]
+    edge [arrowsize=0.7, fontname="Helvetica", fontsize=11, fontcolor="#333333", color="#555555"]
+
+    builder [label=<<b>Builder</b><br/><font point-size="10">creates everything below from code</font>>, fillcolor="#f6e3c4"]
+    network [label=<<b>Core network</b><br/><font point-size="10">routing, zone policy, names, reservations</font>>, fillcolor="#e0f0ff"]
+
+    subgraph cluster_mgmt {
+        label=<<b>Management segment: </b>the management plane>
+        labeljust=l
+        fontname="Helvetica"
+        fontsize=11
+        style="dashed,rounded,filled"
+        fillcolor="#eef3f8"
+        color="#6b8aa8"
+        margin=14
+
+        nms [label=<<b>Network device management</b><br/><font point-size="10">applies inventory to the switch and APs</font>>, fillcolor="#d0e8d0"]
+        obs [label=<<b>Substrate observability</b><br/><font point-size="10">collects logs and metrics</font>>, fillcolor="#d0e8d0"]
+        { rank=same; nms; obs }
+    }
+
+    devices [label=<<b>Switch, access points</b><br/><font point-size="10">managed on Management</font>>, fillcolor=white]
+    cp [label=<<b>Control plane hosts</b><br/><font point-size="10">Platform and IoT Backend</font>>, fillcolor=white]
+
+    builder -> network [label="  builds"]
+    builder -> nms [label="  builds"]
+    builder -> obs [label="  builds"]
+    network -> nms [label="  carries", style=dashed]
+    network -> obs [label="  carries", style=dashed]
+    nms -> devices [label="  configures"]
+    obs -> cp [label="  pulls from", style=dashed]
+}
+{{< /graphviz >}}
+
+**Every arrow points down: the plane depends on the builder and the network, and nothing below it
+depends on the plane.** The collector reaches into Platform and IoT Backend by pulling, so nothing
+there ever opens a connection into Management.
+
 This ordering is what keeps a rebuild possible. The core network comes up without the plane, and
 the builder can rebuild the plane when every service in it is gone. **The plane helps a rebuild
 but is never needed for one.**
@@ -72,6 +122,31 @@ are packaged into VMs is [Substrate Service VMs](/docs/platforms/management-plan
 
 - **It collects by pull from the Platform and IoT Backend segments**, which the zone policy does not
   let reach Management. Hosts on Management push to it.
+
+---
+
+## How the plane is watched
+
+**Today the only watching is each service's own restart: a failed service restarts every few
+seconds, and nobody is told.** No collector runs yet, so nothing measures the plane, and a fault
+comes to light when someone next uses the service. Collection and alerting are proposed in
+[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/).
+
+Whatever watches the plane keeps to these rules:
+
+- **The plane is watched by pull, from Management.** Management reaches every zone, so a collector
+  there needs no new path into it, and no host on Platform or IoT Backend opens one.
+- **A service's health is measured from its own answer, not its host's state.** A VM the hypervisor
+  reports as running can still be off the network
+  ([INC-0002](/docs/incidents/2026/0002-controller-vm-network-hang/)).
+- **The watcher is part of the plane, so it is never needed for recovery.** Losing it loses sight of
+  the site, not the ability to rebuild it.
+- **A fault has to reach the operator wherever they are.** An alert that can only be read on the
+  site's own network is not delivered.
+
+**Who watches the watcher is open.** If the collector or the alert path is down, nothing yet notices.
+The [Extended Management Plane plan](/docs/roadmap/infrastructure/substrate/management-plane/plan/)
+carries it, with ADR-0023.
 
 ---
 
