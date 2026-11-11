@@ -76,8 +76,10 @@ and before every firewall apply.
 - 🔄 Keep the core router's saved configurations somewhere that survives the Builder: they are what
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from,
   and they hold the router's secrets, so the copy must be private and encrypted. `make backup-router` seals it
-  into the inventory with the vault password. Still to do: the first backup committed, and one
-  restore rehearsed from it
+  into the inventory with the vault password. The first backup is committed, and a restore from
+  it onto the running router was rehearsed in
+  [CHG-0061](/docs/changes/2026/0061-core-router-restore-rehearsal/). Still to decide: whether
+  ciphertext in the public inventory repository is private enough
 
 ---
 
