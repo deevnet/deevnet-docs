@@ -10,7 +10,7 @@ weight: -62
 | **Date** | 2026-11-11 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1–5 run on 2026-11-11; closes when the decrypted rehearsal copy is deleted and the code and inventory pull requests merge |
+| **Status** | **Complete, 2026-11-11.** Both devices back themselves up after every writing run; the controller's backup restored onto the Builder's cold controller with its SSIDs, PPSK keys and AP intact |
 | **Window** | 2026-11-11. No outage: one sshd reload on `dv02nms001v01`; the rehearsal runs on the Builder's stopped cold controller, not the live one |
 | **Site** | mobile |
 | **Systems** | `dv02nms001v01` (Omada controller and its host); `dv02cor002p01` (core router, read only); `dv00bld001p01` (the Builder's cold controller) |
@@ -78,8 +78,8 @@ if they changed after the backup (a tenant's next `terraform apply` puts them ba
 
 ## Prerequisites
 
-- [ ] `deevnet.net` checked out on `device-backups-after-change` on the Builder
-- [ ] On the computer whose browser does the rehearsal: `git`, `ansible-vault`, and the vault password
+- [x] `deevnet.net` checked out on `device-backups-after-change` on the Builder
+- [x] On the computer whose browser does the rehearsal: `git`, `ansible-vault`, and the vault password
 
 ## Procedure
 
@@ -180,10 +180,10 @@ then `sudo userdel omada-backup && sudo rm -rf /var/lib/omada-backup`.
 
 - [x] Step 1: the first controller backup sealed; the account locked, the upload directory empty
 - [x] Step 2: a router play that changed nothing left nothing to commit
-- [ ] Step 3: the controller's backup committed through a pull request, merged
-- [ ] Step 4: the backup restored onto the Builder's cold controller, which is back to never-configured; the decrypted copy deleted
+- [x] Step 3: the controller's backup committed through a pull request, merged
+- [x] Step 4: the backup restored onto the Builder's cold controller, which is back to never-configured; the decrypted copy deleted
 - [x] Step 5: the runbooks describe the backups as they are
-- [ ] The `deevnet.net` pull request merged
+- [x] The `deevnet.net` pull request merged
 
 ## Outcome
 
@@ -201,6 +201,7 @@ then `sudo userdel omada-backup && sudo rm -rf /var/lib/omada-backup`.
 | 14:38 | 3, 4 | Both backups in inventory pull request #98. The cold controller's never-configured state archived (`cold-empty-2026-11-11.tar.gz`, with its checksum) and the controller started: 6.3.0.45, `configured: false` |
 | 14:48 | 4 | Backup decrypted on the operator's Mac from the pull request's branch on GitHub and restored. The site, its five SSIDs on their VLANs, both PPSK profiles with keys and the AP (not connected) were all there |
 | After 14:48 | 4 | Cold controller stopped, its directory put back from the archive; started once to confirm `configured: false` and its original `omadacId`, then stopped |
+| Later 2026-11-11 | 3, 4, 5 | Decrypted copy deleted from the Mac. Inventory pull request #98, `deevnet.net` #52 and docs #403 merged |
 
 ### Departures from the plan
 
