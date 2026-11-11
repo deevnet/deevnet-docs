@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0061 | 2026-11-11 | [The Core Router Restored From Its Vaulted Backup](0061-core-router-restore-rehearsal/) | Configuration | mobile | Complete |
 | CHG-0060 | 2026-11-09 | [An Operator Reissue of a Tenant's State Secret](0060-state-secret-reissue/) | Deployment | mobile | Complete |
 | CHG-0059 | 2026-11-07 | [The Secret Store Refuses Reserved Names](0059-cel-signing-role/) | Configuration · Deployment | mobile | Complete |
 | CHG-0058 | 2026-11-04 | [Windows Tenant Laptops](0058-windows-tenant-laptops/) | Deployment · Configuration | mobile | Complete |
