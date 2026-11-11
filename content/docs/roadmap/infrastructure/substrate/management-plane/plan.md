@@ -5,14 +5,14 @@ aliases:
   - /docs/projects/management-plane/
   - /projects/management-plane/
 weight: 3
-tasks_completed: 2
+tasks_completed: 5
 tasks_in_progress: 5
-tasks_planned: 8
+tasks_planned: 5
 ---
 
 # Extended Management Plane: Project Plan
 
-Extended management services for the mobile (mobile) site. Builds on the core substrate once it is operational. Its logging, telemetry and alerting are in the [Observability plan](/docs/roadmap/infrastructure/substrate/observability/plan/), and its secrets and identity in the [Secrets and Identity plan](/docs/roadmap/infrastructure/substrate/secrets-identity/plan/).
+Extended management services for the mobile site. Builds on the core substrate once it is operational. Its logging, telemetry and alerting are in the [Observability plan](/docs/roadmap/infrastructure/substrate/observability/plan/), and its secrets and identity in the [Secrets and Identity plan](/docs/roadmap/infrastructure/substrate/secrets-identity/plan/).
 
 - **GitHub:** https://github.com/deevnet/ansible-collection-deevnet.mgmt
 - **Documentation:** https://deevnet.github.io/deevnet-docs/
@@ -27,7 +27,7 @@ Extended management services for the mobile (mobile) site. Builds on the core su
 
 ## Project Vision & Scope
 
-Deploy a unified management plane providing observability, security, and identity services for all substrate components, running as tenants on the Proxmox hypervisor.
+Deploy a unified management plane providing observability, security, and identity services for all substrate components, running as substrate service VMs on the management hypervisor.
 
 **In Scope**
 - Service selection, retention and alerting requirements
@@ -51,7 +51,7 @@ Deploy a unified management plane providing observability, security, and identit
   on ADR-0023
 - 🔄 Define alerting channels and escalation: proposed in
   [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) (one Alertmanager to ntfy on
-  Platform). Open: who watches the watcher, and reaching an off-site phone
+  Platform). Open: who watches the watcher, and reaching an off-site phone ([Management Plane → How the plane is watched](/docs/architecture/substrate/management-plane/#how-the-plane-is-watched))
 - ✅ Define secrets access policies: every OpenBao client is an AppRole whose policy names exactly
   its paths ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)); the image
   factory's is read-only ([CHG-0026](/docs/changes/2026/0026-build-secrets/))
@@ -93,8 +93,12 @@ Automated verification that the site was built according to inventory and is ful
 
 ---
 
-## Documentation ⏳
+## Documentation ✅
 
-- ⏳ Management plane architecture overview
-- ⏳ Service deployment runbook
-- ⏳ Operations and troubleshooting guide
+- ✅ Management plane architecture overview, with how the layers depend on each other and how the
+  plane is watched: [Management Plane](/docs/architecture/substrate/management-plane/)
+- ✅ Service deployment runbook:
+  [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/),
+  with the domains and packaging in [Substrate Service VMs](/docs/platforms/management-plane/substrate-service-vms/)
+- ✅ Operations and troubleshooting guide:
+  [Troubleshoot a Service VM](/docs/runbook/substrate/recovery/service-vm-troubleshooting/)

@@ -11,6 +11,7 @@ aliases:
 Getting service back when something has failed.
 
 - [Console Recovery](console-recovery/) — getting back into a device when the network cannot reach it: core router, hypervisors, access switch and AP
+- [Troubleshoot a Service VM](service-vm-troubleshooting/) — a substrate service VM that is off the network, a service that is down or looping, a name the service proxy refuses, and a full or missing disk
 - [Omada Controller Recovery](omada-controller-recovery/) — restoring the network controller from a data snapshot, including falling back from a bad upgrade
 - [Backup and Restore](backup-and-restore/) — what is backed up (the API's database and the state bucket, and nothing else), when, how to check it, and how to restore it into a rebuilt provisioning VM
 - [Rebuild the Core Router](rebuild-core-router/) — a fresh OPNsense install, brought back from a saved configuration or from nothing

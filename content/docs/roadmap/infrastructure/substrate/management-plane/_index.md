@@ -28,7 +28,8 @@ waypoints:
     date: "2026-10-07"
   - title: "Management plane architecture, deployment and troubleshooting documentation written"
     value: [one-operator]
-    status: planned
+    status: done
+    date: "2026-11-11"
 ---
 
 # Extended Management Plane
