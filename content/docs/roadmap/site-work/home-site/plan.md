@@ -37,6 +37,13 @@ self-service: a change starts at the factory and arrives as a new image or a con
 **Out of Scope**
 - A hypervisor at home, and tenant workloads on it, until a tenant needs them
 - A broker, a device registry or a Deevnet API at home: a Pi is its devices' broker and registry
+- A VPN between the sites, with home hosting it and the mobile site's router as a client. If one is
+  built, revisit how router backups are kept first. Each router's `config.xml` is backed up
+  vault-encrypted into the public inventory
+  ([Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/)), which is
+  acceptable today because nothing in it works from outside the network. VPN keys would. The
+  options then: a separate vault password for router backups, a private repository for them, or
+  rotating the VPN keys whenever the vault password changes
 
 ---
 
