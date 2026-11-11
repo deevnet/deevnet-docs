@@ -5,8 +5,8 @@ aliases:
   - /docs/projects/management-plane/
   - /projects/management-plane/
 weight: 3
-tasks_completed: 5
-tasks_in_progress: 6
+tasks_completed: 6
+tasks_in_progress: 5
 tasks_planned: 4
 ---
 
@@ -73,13 +73,12 @@ and before every firewall apply.
   [recovery runbook](/docs/runbook/substrate/recovery/omada-controller-recovery/) restores from it.
   Still to do: take snapshots routinely, so a restore does not lose everything since one hand-taken
   copy
-- 🔄 Keep the core router's saved configurations somewhere that survives the Builder: they are what
+- ✅ Keep the core router's saved configurations somewhere that survives the Builder: they are what
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from,
-  and they hold the router's secrets, so the copy must be private and encrypted. `make backup-router` seals it
-  into the inventory with the vault password. The first backup is committed, and a restore from
-  it onto the running router was rehearsed in
-  [CHG-0061](/docs/changes/2026/0061-core-router-restore-rehearsal/). Still to decide: whether
-  ciphertext in the public inventory repository is private enough
+  and they hold the router's secrets, so the copy is vault-encrypted. `make backup-router` seals it
+  into the inventory with the vault password, where the ciphertext is public like every other vault
+  file. A restore from the first backup was rehearsed in
+  [CHG-0061](/docs/changes/2026/0061-core-router-restore-rehearsal/)
 
 ---
 
