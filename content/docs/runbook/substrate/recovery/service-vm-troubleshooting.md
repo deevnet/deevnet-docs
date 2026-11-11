@@ -97,7 +97,7 @@ sudo podman logs --tail 100 <unit>
 | `activating (auto-restart)`, a restart count that keeps rising | The service is crash-looping. The reason is in the container's own log, not systemd's |
 | `active (running)`, but the service doesn't answer | It is up but not listening where callers expect. Behind the proxy, it listens on `127.0.0.1` only, so test it from the VM: `curl -sk https://127.0.0.1:<port>/` |
 | Fails at `ExecStart` with no container log | The container doesn't exist, often after a failed play. Re-run the host's play |
-| Starts, but finds no data | Its data directory is empty: see [Data disk missing](#data-disk-missing) |
+| `Dependency failed`, or a container error `no such file or directory` under `/srv` | Its data isn't there: see [Data disk missing](#data-disk-missing) |
 
 **Re-running the play is the fix for drift.** The roles converge configuration, the unit and the
 container. Run it with `--limit <host>`, using the project-local collections as
@@ -168,25 +168,25 @@ growing without limit.
 
 ## Data disk missing
 
-**`dv02obs001v01` mounts its data disk at `/srv` with `nofail`**, so if the disk is missing, the host
-still boots and is reachable for repair. The service units do not wait for the mount. As the units
-are written, with the disk absent, the log store, Grafana and the downloads start on an empty `/srv`
-on the OS disk. Data then appears to be lost, and new data goes to the wrong disk.
+**`dv02obs001v01` mounts its data disk at `/srv` with `nofail`, and every service on it requires
+that mount**, so without the disk the host still boots and can be repaired, but none of its services
+start. Each unit has `RequiresMountsFor=/srv`. A disk that never appears fails the mount after about
+45 seconds, and each service then fails with `Dependency failed` and stays inactive. It does not loop,
+and nothing is written to the OS disk. Unmounting `/srv` stops all five services first.
 
 ```bash
+systemctl status srv.mount                # failed, or waiting for its device
 findmnt /srv                              # nothing: the data disk is not mounted
 lsblk -o NAME,SIZE,SERIAL,MOUNTPOINT      # is a disk with serial deevnet-data present?
 ```
 
-1. Stop the services that write under `/srv`, so nothing more lands on the OS disk.
-2. If the disk is present but unmounted, re-run the play. The `data_disk` role finds the disk by its
+1. If the disk is present but unmounted, re-run the play. The `data_disk` role finds the disk by its
    serial, refuses to touch the disk backing `/`, refuses to mount over a populated directory, and
    makes a filesystem only on a disk that doesn't have one.
-3. If the disk is missing from the VM, check `qm config <vmid>` for `scsi1`. A re-run of the play
+2. If the disk is missing from the VM, check `qm config <vmid>` for `scsi1`. A re-run of the play
    attaches a disk that is declared but missing. Data on a destroyed volume is gone:
    `qm destroy` deletes every volume the VM owns.
-4. Move anything written to the OS disk's `/srv` while the disk was missing aside, before the
-   mount hides it.
+3. Start the services. Starting any one of them mounts `/srv` first.
 
 ---
 
