@@ -10,8 +10,8 @@ weight: -61
 | **Date** | 2026-11-11 |
 | **Change type** | Configuration |
 | **Classification** | Disruptive |
-| **Status** | Planned |
-| **Window** | 2026-11-11, with the operator at the router's web UI. One router reboot: no routing, DNS or DHCP for the site for a few minutes |
+| **Status** | **Complete, 2026-11-11.** The vaulted backup, decrypted from a fresh GitHub clone, restored onto `dv02cor002p01`; the site matched its baseline and the firewall plan showed no drift |
+| **Window** | 2026-11-11, 12:16–12:48, with the operator at the router's web UI. One router reboot: no routing, DNS or DHCP for the site for a few minutes |
 | **Site** | mobile |
 | **Systems** | `dv02cor002p01` (core router) |
 | **Automation** | `ansible-inventory-deevnet` `backups/mobile/dv02cor002p01/config.xml.vault`, written by `make backup-router` in `deevnet.net`; `ansible-vault decrypt` |
@@ -164,11 +164,11 @@ History**. If it does not, follow
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the revision to undo to noted, and no newer than the backup
-- [ ] Step 2: the backup decrypted from a fresh GitHub clone
-- [ ] Step 3: the backup restored, the router rebooted
-- [ ] Step 4: the baseline checks pass again, the firewall plan shows no drift
-- [ ] Step 5: the decrypted copy and the old plaintext copies deleted
+- [x] Step 1: the revision to undo to noted, and no newer than the backup
+- [x] Step 2: the backup decrypted from a fresh GitHub clone
+- [x] Step 3: the backup restored, the router rebooted
+- [x] Step 4: the baseline checks pass again, the firewall plan shows no drift
+- [x] Step 5: the decrypted copy and the old plaintext copies deleted
 
 ## Outcome
 
@@ -176,12 +176,25 @@ History**. If it does not, follow
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 12:16 | Baseline | Taken from the Builder; recorded under Prerequisites |
+| ~12:30 | 1–2 | Backup decrypted on the operator's Mac from the inventory on GitHub, after PR #97 merged. It was decrypted with `--output` to `~/rehearsal/config.xml`, outside the checkout |
+| ~12:35 | 3 | Restored from the web UI with a reboot; the router came back on `10.20.99.1` |
+| 12:42 | 4 | The baseline checks again, identical line for line: the web UI answers, `dv02hyp001p01` and `api` resolve through the router, `10.20.25.20` and `1.1.1.1` answer ping, HTTPS to GitHub works. The `10.20.30.11` ping and `tdemo-1.tdemo` lookup failed, as they did before the change |
+| 12:47 | 4 | Firewall plan: 0 to add, 0 of 71 to update, 0 to delete; the `deevnet_private` alias matches inventory |
+| 12:50 | 5 | `~/rehearsal` deleted on the Mac; seven plaintext router configs deleted from the Builder's two `migration-logs/` directories |
 
 ### Departures from the plan
 
--
+- **Decrypted from `main`, not a fresh clone of the branch.** PR #97 merged first, so the operator
+  pulled `main` into an existing checkout on a Mac and decrypted from it. The copy still came from
+  GitHub, and the Builder was not involved.
+- **Seven plaintext copies deleted, not six.** Besides the six `*-pre-firewall-*.xml`, the Builder held
+  `dv02cor002p01-pre-chg0032-20261002T180721Z.xml`, the snapshot taken before CHG-0032. It was
+  deleted with them.
+- **The reboot was not confirmed from the router's uptime.** The Builder has no saved host key for
+  the router's SSH, and one was not accepted just for this check. The operator watched the reboot.
 
 ## Follow-ups
 
-- [ ]
+- [ ] The checks that already failed in the baseline, a ping to `10.20.30.11` and the
+      `tdemo-1.tdemo` lookup, are unexplained and outside this change
