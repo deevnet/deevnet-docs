@@ -53,7 +53,7 @@ Implementation details live in their respective repositories. This repository de
   </a>
   <a class="section-card" href="completed/">
     <h3>Completed Projects</h3>
-    <p>Projects that are built, running on their own hardware, and documented.</p>
+    <p>Projects that are built from code, in service, and documented.</p>
   </a>
   <a class="section-card" href="github/">
     <h3>Code Repositories</h3>

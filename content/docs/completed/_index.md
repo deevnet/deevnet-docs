@@ -8,8 +8,8 @@ aliases:
 
 # Completed Projects
 
-Projects that have left the [Roadmap](/docs/roadmap/) because they are **done**: built, running on
-their own hardware, and documented well enough to rebuild. Each entry records what the project is,
+Projects that have left the [Roadmap](/docs/roadmap/) because they are **done**: built from code, in
+service, and documented well enough to rebuild. Each entry records what the project is,
 how it is built and checked, and links to the plan it was delivered against, kept in the
 [archive](/projects/archive/), or to the project's own site.
 
@@ -29,14 +29,17 @@ The Deevnet side of each project is here; write-ups of these and other projects 
 
 ## What "complete" means
 
-A project is complete when:
+**A project is complete when it can be rebuilt, works where it runs, and is written down.** The same
+five conditions hold for a device on its own hardware and for a change to the site's software:
 
-1. **It rebuilds from code** — its image or configuration is reproducible from its repository
-   (for Pi projects, `deevnet-image-factory`)
-2. **It proves itself** — its test scripts pass on the hardware it runs on
-3. **It runs on its own hardware** — not on a shared bank or a borrowed workload
-4. **It is documented here** — hardware, purpose, network position, configuration, and how to
-   validate it
+1. **It rebuilds from code** — its image, configuration or release is reproducible from its
+   repositories (for Pi projects, `deevnet-image-factory`)
+2. **It proves itself** — its checks pass where it runs: on its own hardware for a device, on the
+   live site for a change to the substrate or its software
+3. **It is in service** — a device runs on its own hardware, not on a shared bank or a borrowed
+   workload; a change to the site is deployed through its change records, and they are closed
+4. **It is documented here** — what it is for, how it is built and how to validate it; for a device,
+   also its hardware, network position and configuration
 5. **Its project plan is closed** — every task done or explicitly dropped, the plan moved from
    beneath its roadmap item to the [archive](/projects/archive/) with its roadmap item's waypoints, its roadmap item
    removed, and an entry here linking to it
