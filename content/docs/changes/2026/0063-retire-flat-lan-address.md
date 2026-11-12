@@ -10,8 +10,8 @@ weight: -0063
 | **Date** | 2026-11-12 |
 | **Change type** | Decommission |
 | **Classification** | Routine |
-| **Status** | In progress |
-| **Window** | 2026-11-12; address cleared by 11:20 EST |
+| **Status** | Complete |
+| **Window** | 2026-11-12; address cleared by 06:20 EST, after-change backup 06:27 EST |
 | **Site** | mobile |
 | **Systems** | dv02cor002p01 (`lan`, `re0`) |
 | **Automation** | None for the change itself: no `deevnet.net` role sets an interface's IPv4, so it is a GUI step. `make backup-router` in `ansible-collection-deevnet.net` against `ansible-inventory-deevnet/mobile`, before and after |
@@ -119,7 +119,7 @@ from the console, as rehearsed in [CHG-0061](/docs/changes/2026/0061-core-router
 
 - [x] Step 1: router backed up (the 2026-11-11 backup; see Departures)
 - [x] Step 2: address cleared on `lan`
-- [ ] Step 3: router backed up again, inventory pull request open
+- [x] Step 3: router backed up again
 - [x] Verification: Goal holds from clients and the router's API
 
 ## Outcome
@@ -131,6 +131,7 @@ from the console, as rehearsed in [CHG-0061](/docs/changes/2026/0061-core-router
 | 2026-11-12 | 2 | The owner set `lan`'s IPv4 Configuration Type to None in the GUI, with the interface left enabled. |
 | 2026-11-12 | Verification | From the router's API: `lan` enabled with no address; 10 of 11 `opt` interfaces addressed, the eleventh being `blackhole`, which has none by design; management `10.20.99.1/24`. ARP: 30 entries, none in `192.168.10.0/23`. Kea: 8 leases held. From the control host on management: the GUI on `10.20.99.1` answers 443, and the router routes to `10.20.10.1` and `10.20.25.1`. |
 | 2026-11-12 | Verification | Kea's 15 reservations include none for `BC:24:11:2E:26:4E`, `192.168.10.20` or `vyos-rt01`: the orphan the Reconciliation plan listed was already gone. |
+| 2026-11-12 | 3 | `make backup-router` sealed the after-change configuration into the inventory, staged with the owner's open inventory work. |
 
 ### Departures from the plan
 

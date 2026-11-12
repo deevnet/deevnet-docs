@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](2026/0063-retire-flat-lan-address/) | Decommission | mobile | In progress |
+| CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](2026/0063-retire-flat-lan-address/) | Decommission | mobile | Complete |
 | CHG-0062 | 2026-11-11 | [Router and Wi-Fi Controller Backed Up After Every Change](2026/0062-device-backups-after-change/) | Deployment · Configuration | mobile | Complete |
 | CHG-0061 | 2026-11-11 | [The Core Router Restored From Its Vaulted Backup](2026/0061-core-router-restore-rehearsal/) | Configuration | mobile | Complete |
 | CHG-0060 | 2026-11-09 | [An Operator Reissue of a Tenant's State Secret](2026/0060-state-secret-reissue/) | Deployment | mobile | Complete |
