@@ -118,7 +118,7 @@ Confirm the path before going further — if these fail, the fault is the switch
 not the AP:
 
 ```bash
-ping -c2 10.20.99.1          # core router
+curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200: core router
 curl https://10.20.99.40:8043/api/info      # Omada controller on dv02nms001v01 (the Builder trusts its certificate)
 ```
 

@@ -99,7 +99,7 @@ Proxmox uses `ifupdown2`, so interface changes can be reloaded without a reboot:
 # after editing /etc/network/interfaces back to a working state
 ifreload -a
 ip -br addr
-ping -c1 10.20.99.1
+curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200: the core router, reached
 ```
 
 If a pending configuration was staged but never applied, Proxmox keeps it as
