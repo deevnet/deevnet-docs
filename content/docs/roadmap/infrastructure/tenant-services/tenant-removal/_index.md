@@ -6,16 +6,21 @@ aliases:
 weight: 5
 value: [contained-failure]
 waypoints:
-  - title: "Removing a tenant also deletes its state, logs and dashboards"
-    status: planned
-  - title: "Removing a tenant revokes its API token"
-    status: planned
+  - title: "Removing a tenant also deletes its Terraform state and dashboards (CHG-0065)"
+    status: done
+    date: "2026-11-12"
+  - title: "Removing a tenant also deletes its log lines (CHG-0065)"
+    status: active
+  - title: "Removing a tenant revokes its API token (CHG-0065)"
+    status: done
+    date: "2026-11-12"
 ---
 
 # Tenant Removal
 
-A tenant delete removes what the tenant can use, but not everything the tenant leaves behind. The
-operator's procedure today is [Tenant Removal](/docs/runbook/substrate/tenant-removal/).
+A tenant delete removes what the tenant can use, its state and its dashboards, and revokes its
+token and name. Its log lines are what remain, until the retention runs out. The operator's
+procedure is [Tenant Removal](/docs/runbook/substrate/tenant-removal/).
 
 {{< overall-progress >}}
 
