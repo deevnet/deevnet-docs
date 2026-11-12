@@ -10,7 +10,7 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Step 1 is done: builds read the vault, and a template built with them on 2026-11-08 |
+| **Status** | In Progress. Steps 1 and 2 are done: builds read the vault (2026-11-08), and OpenBao holds no build credentials (2026-11-12) |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -97,6 +97,25 @@ values.
 
 **Verify:** the AppRole and its paths no longer exist; Step 1's build still runs.
 
+**State, 2026-11-12:** done
+([ansible-collection-deevnet.mgmt #117](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/117),
+[ansible-inventory-deevnet #101](https://github.com/deevnet/ansible-inventory-deevnet/pull/101),
+[#102](https://github.com/deevnet/ansible-inventory-deevnet/pull/102)).
+`build_secrets.yml` is gone, and the `openbao` role deletes what it once wrote: the `image-factory`
+mount, which held the copy of the tokens, its AppRole and its policy. Ansible's policy may delete
+those two by name and nothing else of their kind.
+
+| Check | Result |
+|---|---|
+| The `image-factory` mount is gone | Pass: not in `sys/mounts` |
+| The `image-factory` AppRole is gone | Pass: 404 for its role ID; the API's AppRole answers 200 |
+| A second `openbao.yml` run changes nothing | Pass: `changed=0` |
+| `make pve1-env` and `make pve2-env` still give working tokens | Pass: the same four exports; HTTP 200 from each hypervisor's `/version` |
+
+**The site's own list of retired mounts replaces the role's.** The first run removed the AppRole and
+policy but not the mount, because the inventory's `openbao_retired_mounts` named only `pki`. The
+inventory now names both (#102).
+
 ### Step 3: Narrow the build tokens
 
 A custom Proxmox role per node, declared in `proxmox_node_access`, replaces Administrator for the build
@@ -137,7 +156,7 @@ Administrator again.
 **What is left before this change closes, from its procedure and verification.**
 
 - [x] Step 1: `pve-creds` reads the vault only, with the same output, and a template builds with it, 2026-11-08
-- [ ] Step 2: the build path removed from OpenBao
+- [x] Step 2: the build path removed from OpenBao, 2026-11-12
 - [ ] Step 3: the build tokens narrowed to a custom Proxmox role per node
 - [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed
 - [ ] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`

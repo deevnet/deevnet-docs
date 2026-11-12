@@ -61,9 +61,8 @@ and the undo needs it.
    with `ansible-vault edit`; shares 2 and 3 to the operator in place of the old ones
    ([The unseal shares](/docs/runbook/substrate/building-recovery/openbao-keys/#the-unseal-shares));
    commit, push; then `shred -u` the file.
-4. **Run `openbao.yml` again.** It logs in as Ansible, writes the build secrets, and issues the
-   image-factory AppRole's credentials to `.openbao/image-factory-approle.json`. Move them into
-   `group_vars/all/vault.yml`, `make vault`, commit, push, delete the file.
+4. **Run `openbao.yml` again.** It logs in with the AppRole now in the vault,
+   which proves the lock-in worked.
 5. **Deploy the API** (`site.yml --tags deevnet-api --limit deevnet_api`). It writes its backend
    credentials into OpenBao's KV, and issues itself a secret ID, since the rebuilt OpenBao does not
    know its old one.

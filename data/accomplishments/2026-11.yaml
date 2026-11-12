@@ -13,5 +13,5 @@ bullets:
     items: [infrastructure/tenant-services/tenant-lifecycle, infrastructure/tenant-services/platform-services]
   - text: "**The site's own software is easier to account for.** The Software Catalog became a data file reports can compare against, Deevnet's own software is pinned and licensed, and the automation repositories are checked on every pull request (Nov 3)."
     items: [infrastructure/substrate/software-discovery, infrastructure/substrate/network-automation]
-next: "Devices' own certificates through the Deevnet API, builds that read OpenBao (CHG-0037, under way), and a tenant rebuilt from its own code in a drill."
+next: "Devices' own certificates through the Deevnet API, builds off OpenBao (CHG-0037, under way), and a tenant rebuilt from its own code in a drill."
 watch: "The core router's hangs remain open (INC-0004, INC-0005). Backups still run to one flash drive; the second drive is outstanding (CHG-0039)."
