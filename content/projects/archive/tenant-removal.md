@@ -1,23 +1,35 @@
 ---
-title: "Tenant Removal: Project Plan"
-linkTitle: "Project Plan"
+title: "Tenant Removal"
 aliases:
   - /docs/projects/tenant-removal/
   - /projects/tenant-removal/
+  - /docs/roadmap/infrastructure/tenant-removal/
+  - /docs/roadmap/infrastructure/tenant-services/tenant-removal/
+  - /docs/roadmap/infrastructure/tenant-services/tenant-removal/plan/
 weight: 13
 tasks_completed: 4
 tasks_in_progress: 0
 tasks_planned: 0
+area: "Infrastructure Automation"
+value: [contained-failure]
+waypoints:
+  - title: "Removing a tenant also deletes its Terraform state and dashboards (CHG-0065)"
+    status: done
+    date: "2026-11-12"
+  - title: "Removing a tenant also deletes its log lines (CHG-0065)"
+    status: done
+    date: "2026-11-12"
+  - title: "Removing a tenant revokes its API token (CHG-0065)"
+    status: done
+    date: "2026-11-12"
 ---
 
-# Tenant Removal: Project Plan
+# Tenant Removal
 
 A tenant delete removes what the tenant can use, its state, its dashboards and its log lines, and
-revokes its token and name. The work is carried out by
+revokes its token and name. The work was carried out by
 [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/). The operator's procedure is
 [Tenant Removal](/docs/runbook/substrate/tenant-removal/).
-
-**Roadmap item:** [Tenant Removal](/docs/roadmap/infrastructure/tenant-services/tenant-removal/)
 
 {{< overall-progress >}}
 

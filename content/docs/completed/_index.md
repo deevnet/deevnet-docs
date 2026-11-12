@@ -22,6 +22,7 @@ The Deevnet side of each project is here; write-ups of these and other projects 
 
 | Project | Hardware | Purpose |
 |---------|----------|---------|
+| [Tenant Removal](tenant-removal/) | None: the Deevnet API and the log store | A tenant delete leaves nothing behind |
 | [CaribouLite SDR](cariboulite-sdr/) | Pi 4 8GB + CaribouLite HAT | Software-defined radio receiver |
 
 ---

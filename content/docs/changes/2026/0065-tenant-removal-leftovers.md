@@ -36,7 +36,7 @@ itself after the registry is lost ([ADR-0015 §5](/docs/architecture/decisions/t
 Once the delete removed the row, the token looked exactly like that restore.
 
 This change makes the delete take all four with it. It closes both waypoints of the
-[Tenant Removal](/docs/roadmap/infrastructure/tenant-services/tenant-removal/) roadmap item.
+[Tenant Removal](/docs/completed/tenant-removal/) roadmap item, now a completed project.
 
 ## Goal
 
