@@ -43,8 +43,8 @@ endpoint and have not yet been run as part of this page.*
 ## Network
 
 ```bash
-# Core router answers on management
-ping -c 3 10.20.99.1
+# Core router answers on management. Not ping: management reaches the router itself on 443 and 22 only
+curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200
 
 # DNS: the router answers for site names, and forwards tenant zones
 dig +short @10.20.99.1 dv02hyp001p01.mobile.deevnet.net      # 10.20.99.21

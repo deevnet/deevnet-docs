@@ -103,7 +103,7 @@ Run as root:
 
 ```bash
 bash dv02hyp001p01-netconfig.sh
-ip -br a show vmbr0 && ping -c2 10.20.99.1
+ip -br a show vmbr0 && curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200
 ```
 
 ## Step 5: Automation account and packages

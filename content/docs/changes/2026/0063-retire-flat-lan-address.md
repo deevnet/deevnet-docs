@@ -143,6 +143,6 @@ from the console, as rehearsed in [CHG-0061](/docs/changes/2026/0061-core-router
 
 ## Follow-ups
 
-- [ ] [Core Router console recovery](/docs/runbook/substrate/recovery/console-recovery/core-router/)
-  checks the router with `ping -c1 10.20.99.1`, which the zone policy blocks from management. Use
-  the GUI's port 443 there instead.
+- [x] [Core Router console recovery](/docs/runbook/substrate/recovery/console-recovery/core-router/)
+  checked the router with `ping -c1 10.20.99.1`, which the zone policy blocks from management.
+  It and five other runbook pages now check ARP or the router's port 443 instead.

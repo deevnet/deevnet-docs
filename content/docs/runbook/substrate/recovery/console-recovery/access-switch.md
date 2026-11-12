@@ -141,7 +141,7 @@ From the builder:
 
 ```bash
 ping -c1 10.20.99.10        # the switch itself
-ping -c1 10.20.99.1         # the router, through the restored trunk
+curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200: the router, through the restored trunk
 ping -c1 10.20.30.11        # a host on another segment
 ```
 

@@ -36,22 +36,24 @@ able to reach.
 A trip to the rack is worth thirty seconds of triage. From a host on the management segment:
 
 ```bash
-ping -c1 10.20.99.1                                  # the router's LAN address
+ip neigh show 10.20.99.1                             # the router's management address: an entry, not FAILED
 timeout 3 bash -c 'exec 3<>/dev/tcp/10.20.99.1/443'  # web UI
 timeout 3 bash -c 'exec 3<>/dev/tcp/10.20.99.1/22'   # ssh
 ```
 
 | Symptom | Reading |
 |---|---|
-| Gateway answers, 443 and 22 both refused | Firewall policy — the anti-lockout rules are gone. This page. |
+| ARP resolves, 443 and 22 both refused | Firewall policy — the anti-lockout rules are gone. This page. |
 | Nothing answers, from any segment | Router down, or its LAN port. This page. |
 | Same-segment works, cross-segment does not | Zone policy. Still this page if the API is unreachable. |
 | Only one segment affected | Switch port or VLAN — see [access switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/) or [troubleshooting](/docs/changes/2026/0001-flat-network-to-vlans/troubleshooting/). |
 
 {{< hint warning >}}
-**A gateway answering ICMP proves nothing about the policy.** The router replies on its own
-interface addresses whether or not any transit rule survives. Test the ports and a
-cross-segment host, not the gateway.
+**Ping the router's management address and nothing answers, even when it is healthy.** The zone
+policy lets management reach the router itself on 443 and 22 only
+([CHG-0007](/docs/changes/2026/0007-core-router-zone-policy/)), so ICMP to `10.20.99.1` from
+management meets the default deny. ARP shows the router is on the segment; the ports show its
+policy. Test the ports and a cross-segment host, not ping.
 {{< /hint >}}
 
 ---
