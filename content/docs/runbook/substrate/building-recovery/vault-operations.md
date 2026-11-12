@@ -157,6 +157,41 @@ and hints for keys whose vault has no comment. Read the diff before committing: 
 
 ---
 
+## Changing the vault password
+
+**One vault password covers every `vault.yml` and every device backup under `backups/`, so a rekey
+does all of them in one run.** `make backup-router` and `make backup-wireless` seal backups with
+the same password, and check it against a `vault.yml` on `origin/main` before sealing.
+
+Run it in a terminal, never where the prompt's input could be captured, and on a branch from `main`:
+
+```bash
+cd ansible-inventory-deevnet
+ansible-vault rekey $(git ls-files | grep -E '(^|/)vault\.yml$|\.vault$')
+```
+
+It asks for the old password once and the new one twice. Then check the new password opens
+everything, printing nothing:
+
+```bash
+ansible-inventory -i mobile --list --ask-vault-pass > /dev/null && echo vault.yml ok
+for f in backups/mobile/*/*.vault; do
+  ansible-vault decrypt --ask-vault-pass --output - "$f" > /dev/null && echo "$f ok"
+done
+```
+
+`--output /dev/null` does not work: `ansible-vault` refuses a destination whose directory it cannot
+write. If `ANSIBLE_VAULT_PASSWORD_FILE` is set where you work, update that file too.
+
+**Merge the rekey before the next device backup.** Until `main` holds the rekeyed files, sealing
+checks the new password against old ciphertext and refuses.
+
+**A rekey protects only what is committed from then on.** Every earlier commit in this public
+repository still decrypts with the old password, so a rekey is not a substitute for rotating a
+secret.
+
+---
+
 ## Pre-commit Guard
 
 The `hooks/pre-commit` script runs automatically on every commit. It checks each staged `vault.yml` file by inspecting the staged blob (`git show ":$file"`), not the working tree. If any staged vault file does not begin with `$ANSIBLE_VAULT`, the commit is rejected with an error message. It also rejects any staged `vault.example.yml` that carries a value: examples hold keys only.
