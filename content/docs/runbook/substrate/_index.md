@@ -45,6 +45,6 @@ with inventory and vault access.
   </a>
   <a class="section-card" href="tenant-removal/">
     <h3>Tenant Removal</h3>
-    <p>Taking a tenant out of service: what a delete removes, and cleaning up what it leaves behind.</p>
+    <p>Taking a tenant out of service: what a delete removes, and the little it leaves.</p>
   </a>
 </div>

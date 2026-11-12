@@ -205,6 +205,14 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
     NS before binding it to the new key.
   - This was found in the drill on 2026-09-17, where the new tenant's reverse zone still held the
     previous tenant's PTR records.
+- **A deleted tenant is not restored** (added 2026-11-12,
+  [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/)).
+  - A tenant token verifies without the registry, so after a delete it would look exactly like a
+    tenant restoring after a lost registry.
+  - The delete therefore records the token and the name as revoked. Any token for a deleted name
+    is refused until the name is admitted again, which issues a new token.
+  - A restore after a genuinely lost registry is unaffected: the revocations are lost with the
+    registry.
 
 ### 6. The credentials the API holds, and what each can do
 

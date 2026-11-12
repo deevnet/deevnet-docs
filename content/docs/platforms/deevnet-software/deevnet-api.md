@@ -135,5 +135,13 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
   ([Tenant Lifecycle roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/)).
 - **Losing the registry is recoverable.** A tenant's next apply restores it from the secrets in the
   tenant's state.
-- **Delete** refuses while a tenant has workloads, then removes dashboards, log tokens, Wi-Fi keys,
-  network, resolver forwarding, DNS and state access, in that order.
+- **Delete** refuses while a tenant has workloads. It then removes, in order:
+  - dashboards, emptying the organization first;
+  - log tokens;
+  - Wi-Fi keys and the network;
+  - resolver forwarding and DNS;
+  - state access, then every version of the tenant's state.
+
+  It removes the registry row last, recording the tenant's token and name as revoked in the same
+  transaction. From then on any token for that name is refused, until the name is admitted again
+  ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/)).

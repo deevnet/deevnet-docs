@@ -200,10 +200,10 @@ tables:
       source: Pin
     - component: '**Deevnet API**'
       vm: '`dv02prv001v01`'
-      version: '**v0.19.0**'
+      version: '**v0.20.2**'
       license: Apache-2.0
       support: In-house
-      source: Pin; deployed 2026-11-09 ([CHG-0060](/docs/changes/2026/0060-state-secret-reissue/))
+      source: Pin; deployed 2026-11-12 ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/))
     - component: '**PostgreSQL**'
       vm: '`dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth)'
       version: '**17.11**'
@@ -596,7 +596,7 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.19.0**, deployed **v0.19.0**
+      version: tag **v0.20.2**, deployed **v0.20.2**
       license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'
