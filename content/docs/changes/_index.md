@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0065 | 2026-11-12 | [Removing a Tenant Leaves Nothing Behind](2026/0065-tenant-removal-leftovers/) | Deployment | mobile | In progress |
+| CHG-0065 | 2026-11-12 | [Removing a Tenant Leaves Nothing Behind](2026/0065-tenant-removal-leftovers/) | Deployment | mobile | Complete |
 | CHG-0064 | 2026-11-12 | [The Inventory Vault Under a New Password](2026/0064-vault-rekey/) | Configuration | mobile | In progress |
 | CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](2026/0063-retire-flat-lan-address/) | Decommission | mobile | Complete |
 | CHG-0062 | 2026-11-11 | [Router and Wi-Fi Controller Backed Up After Every Change](2026/0062-device-backups-after-change/) | Deployment · Configuration | mobile | Complete |

@@ -212,18 +212,17 @@ notes say what a tenant must do. Until 1.0, a minor release may be breaking.
 
 ## When a tenant leaves
 
-**A delete removes what a tenant can use and almost everything it leaves behind.** It removes:
+**A delete removes what a tenant can use and everything it leaves behind.** It removes:
 - its network, zones, accounts and keys, and its tokens for the shared services;
 - every version of its state;
+- every log line in its partitions, before its index can be given to another tenant;
 - everything it saved in its dashboards organization, which is then retired under another name.
 
 Its API token is revoked with its name: no token for that name works again until the name is
 admitted again.
 
-**One thing remains: its log lines, until the retention runs out.** The next tenant given the
-freed index can read them until then. Removing them is the last waypoint of the
-[Tenant Removal](/docs/roadmap/infrastructure/tenant-services/tenant-removal/) roadmap item. The
-audit log outlives every tenant on purpose.
+**Only the audit log remains, on purpose.** It records what each tenant did and outlives every
+tenant.
 
 ---
 

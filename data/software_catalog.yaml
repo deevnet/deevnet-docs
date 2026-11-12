@@ -200,7 +200,7 @@ tables:
       source: Pin
     - component: '**Deevnet API**'
       vm: '`dv02prv001v01`'
-      version: '**v0.20.2**'
+      version: '**v0.21.0**'
       license: Apache-2.0
       support: In-house
       source: Pin; deployed 2026-11-12 ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/))
@@ -264,10 +264,10 @@ tables:
       source: Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
     - component: '`deevnet-log-user`'
       vm: '`dv02obs001v01`'
-      version: '**v0.6.0**, staged from the API repository (behind its v0.15.0 tag)'
+      version: '**v0.21.0**, staged from the API repository'
       license: Apache-2.0
       support: In-house
-      source: Pin (`victorialogs_writer_binary`)
+      source: Pin (`victorialogs_writer_binary`); deployed 2026-11-12 ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/))
     - component: '`deevnet-broker-account`'
       vm: '`dv02msg001v01`'
       version: '**v0.5.1**, staged from the API repository (behind its v0.15.0 tag)'
@@ -596,7 +596,7 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.20.2**, deployed **v0.20.2**
+      version: tag **v0.21.0**, deployed **v0.21.0**
       license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'

@@ -5,7 +5,7 @@ weight: 9
 
 # Tenant Removal
 
-Taking a tenant out of service. The API tears down everything it built for the tenant and nearly
+Taking a tenant out of service. The API tears down everything it built for the tenant and
 everything the tenant left behind, then revokes the tenant's token and name. This page covers what
 a delete removes and the little it leaves. Creating a tenant is
 [Tenant Admission](/docs/runbook/substrate/tenant-admission/).
@@ -57,7 +57,7 @@ stopped part way resumes when it is run again.
 | Order | Backend | Removed |
 |---|---|---|
 | 1 | Dashboards | everything the tenant saved in its organization (folders, dashboards, library panels, snapshots, annotations), its Grafana login and its three log data sources; the emptied organization is renamed, not deleted (see below) |
-| 2 | Log store | the tenant's vmauth users, so its ingest and read tokens stop working |
+| 2 | Log store | the tenant's vmauth users, so its ingest and read tokens stop working; then every log line in its partitions `(index, 0..2)`, waiting until the store has finished |
 | 3 | Broker | every MQTT account the tenant holds |
 | 4 | Wi-Fi | every PPSK key the tenant holds, on the Omada controller |
 | 5 | Addresses | the tenant's devices' DHCP reservations on the core router |
@@ -79,18 +79,12 @@ free index.
 
 ## What a delete leaves
 
-**Three things outlive a delete.** One is a gap; two are by design.
+**Two things outlive a delete, both by design.**
 
 | Leftover | Where | What to do |
 |---|---|---|
-| Log lines | partitions `(index, 0..2)` in VictoriaLogs | nothing today: they age out after the 30-day retention |
 | The Grafana organization, empty | renamed `deleted-<name>-<id>` | nothing: Grafana 13 cannot delete an organization. `GET /api/orgs` as the Grafana admin lists them |
 | Audit entries | the API's `audit_log` | none; the audit log is kept on purpose |
-
-**Log lines are addressed by index, not by name.** A new tenant is given the freed index straight
-away, so until the retention runs out its partitions still hold the previous tenant's lines.
-Removing them is the last waypoint on the
-[Tenant Removal roadmap](/docs/roadmap/infrastructure/tenant-services/tenant-removal/).
 
 ---
 
