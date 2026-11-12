@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/tenant-platform/
   - /projects/tenant-platform/
 weight: 1
-tasks_completed: 7
+tasks_completed: 8
 tasks_in_progress: 0
-tasks_planned: 2
+tasks_planned: 1
 ---
 
 # Tenant Fabric: Project Plan
@@ -60,7 +60,11 @@ defined as code rather than as hand-maintained node state.
   ([ADR-0003](/docs/architecture/decisions/tenant-networking/0003-tenant-egress-single-member-fabric/)). Proxmox's
   own exit-node behavior would have routed tenants *around* the perimeter onto the management
   segment.
-- ⏳ Core router reduced to the perimeter (NAT, tenant↔management policy).
+- ✅ Core router confined to the perimeter (NAT, tenant↔management policy). Audited 2026-11-12: its
+  only tenant interface is the transit network, the underlay has no address on it, its one tenant
+  route is the overlay `/18` via the exit node that `opnsense_routes` applies, and the only rules
+  naming the overlay are the three declared in inventory (operator access, ADR-0018; tenant
+  developer SSH, ADR-0028). No interface, route, DHCP scope or DNS entry per tenant remains.
 - ⏳ Test network isolation between two tenants' workloads, in both directions, including the path
   out through a tenant's default route to the core router and back. Network isolation is the
   requirement here; tenants share a hypervisor, and need no hardware of their own.

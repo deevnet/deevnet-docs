@@ -13,9 +13,10 @@ waypoints:
   - title: "The EVPN/VXLAN tenant network running on one hypervisor, with internet access through the perimeter"
     status: done
     date: "2026-09-17"
-  - title: "The core router reduced to the site's perimeter, no longer routing tenant traffic inside it"
+  - title: "The core router confined to the tenant perimeter: one transit network and one route into the tenant overlay, nothing per tenant"
     value: [contained-failure]
-    status: planned
+    status: done
+    date: "2026-11-12"
   - title: "Network isolation between two tenants' workloads tested"
     value: [contained-failure]
     status: planned
