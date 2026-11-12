@@ -5,15 +5,15 @@ aliases:
   - /docs/projects/tenant-removal/
   - /projects/tenant-removal/
 weight: 13
-tasks_completed: 3
-tasks_in_progress: 1
+tasks_completed: 4
+tasks_in_progress: 0
 tasks_planned: 0
 ---
 
 # Tenant Removal: Project Plan
 
-A tenant delete removes what the tenant can use, its state and its dashboards, and revokes its
-token and name. Its log lines are what remain. The work is carried out by
+A tenant delete removes what the tenant can use, its state, its dashboards and its log lines, and
+revokes its token and name. The work is carried out by
 [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/). The operator's procedure is
 [Tenant Removal](/docs/runbook/substrate/tenant-removal/).
 
@@ -39,13 +39,12 @@ use, and nothing should need the operator's hands.
 
 ---
 
-## Leftovers 🔄
+## Leftovers ✅
 
 - ✅ **State.** The delete removes every version of every object under `tenants/<name>/`, after the
   tenant's store user. The API's store user may only list and delete there (API v0.20.0).
-- 🔄 **Logs.** The delete purges the index's three partitions through VictoriaLogs' own delete API,
-  after the tenant's log users and before the index is freed. Built and tested against v1.52.0;
-  in review, then the `victorialogs` role turns on `-delete.enable` and API v0.21.0 is deployed.
+- ✅ **Logs.** The delete purges the index's three partitions through VictoriaLogs' own delete API,
+  after the tenant's log users and before the index is freed (API v0.21.0).
 - ✅ **Dashboards.** The delete empties the organization (folders, dashboards, library panels,
   snapshots, annotations) before it is renamed `deleted-<name>-<id>` (API v0.20.1).
 

@@ -10,7 +10,7 @@ weight: -65
 | **Date** | 2026-11-12 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** API v0.20.2 deployed on `dv02prv001v01`: a delete revokes the tenant's token and name, and purges its state and dashboards, proven on a throwaway tenant. The log purge is built and in review |
+| **Status** | **Complete.** API v0.21.0 deployed on `dv02prv001v01` and `deevnet-log-user` v0.21.0 on `dv02obs001v01`: a delete revokes the tenant's token and name, and purges its state, dashboards and log lines, proven on a throwaway tenant |
 | **Window** | 2026-11-12, in an OpenBao work session. API deploys only; the log purge also restarts VictoriaLogs once for a new flag |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API, the state store); `dv02obs001v01` (the log store, its user writer, Grafana) |
@@ -71,7 +71,7 @@ and its user writer; `make remove-tenant`.
 
 - [x] OpenBao open (a work session) for every API deploy and live test
 - [x] Vault decrypted; collections built
-- [ ] For the log purge: the API pull request and the `victorialogs` role pull request merged
+- [x] For the log purge: the API pull request and the `victorialogs` role pull request merged
 
 ## Procedure
 
@@ -101,8 +101,8 @@ It then deletes itself with its own token. Afterwards:
 
 ## Outcome
 
-**A delete now revokes the tenant's token and name, and takes its state and dashboards with it.**
-Steps 1 to 4 are deployed and proven; step 5 is built and in review.
+**A delete now revokes the tenant's token and name, and takes its state, dashboards and log lines
+with it.** Every step is deployed and proven on the site.
 
 | Step | Result |
 |---|---|
@@ -110,7 +110,7 @@ Steps 1 to 4 are deployed and proven; step 5 is built and in review.
 | 2 | `deevnet.mgmt` pull request 111 applied on `dv02prv001v01`; `deevnet-api-admin` lists `s3:ListBucket`, `s3:ListBucketVersions` on `tf-state` and `s3:DeleteObject`, `s3:DeleteObjectVersion` on `tf-state/tenants/*` |
 | 3 | API pull requests 56 and 58; v0.20.1. Live on v0.20.1 and v0.20.2: `tf-state/tenants/trm/` went from 3 versions to none; the retired organization holds no folders, dashboards, annotations or library panels |
 | 4 | API pull request 60; v0.20.2. The table holds `eds`, `tdemo`, `tprobe`, `tprobe2`, `trm`, `twk` and `wtest`. `trm`, on that list, was admitted again: new token 200, old token 401 |
-| 5 | API pull request 62 and `deevnet.mgmt` pull request 115, open |
+| 5 | API pull request 62, v0.21.0; `deevnet.mgmt` pull request 115 applied on `dv02obs001v01`, which restarted VictoriaLogs once with `-delete.enable`. Live: `trm` (index 5) held 3 lines in each of `(5,0)`, `(5,1)` and `(5,2)`; after its own delete all three were empty and no delete task was left running. Lines written before the test in the partitions of `eds` and `mabell` were unchanged (123, 5805 and 207). Through the proxy, `trm`'s ingest and read tokens were both refused at `/delete` (`400`). No free index from 5 to 12 holds lines from an earlier delete |
 | 6 | This record, the runbook, the architecture page, ADR-0015 §5 and the roadmap |
 
 ### Departures from the plan
@@ -140,5 +140,5 @@ Steps 1 to 4 are deployed and proven; step 5 is built and in review.
 - [x] Step 2: the state-store policy applied
 - [x] Step 3: state and dashboards purge deployed and proven live
 - [x] Step 4: deleted names deployed; the table holds every deleted name
-- [ ] Step 5: the log purge merged, released (v0.21.0), the `victorialogs` role applied, deployed, and proven live
+- [x] Step 5: the log purge merged, released (v0.21.0), the `victorialogs` role applied, deployed, and proven live
 - [x] Step 6: the docs
