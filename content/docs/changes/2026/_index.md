@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](0063-retire-flat-lan-address/) | Decommission | mobile | Planned |
+| CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](0063-retire-flat-lan-address/) | Decommission | mobile | In progress |
 | CHG-0062 | 2026-11-11 | [Router and Wi-Fi Controller Backed Up After Every Change](0062-device-backups-after-change/) | Deployment · Configuration | mobile | Complete |
 | CHG-0061 | 2026-11-11 | [The Core Router Restored From Its Vaulted Backup](0061-core-router-restore-rehearsal/) | Configuration | mobile | Complete |
 | CHG-0060 | 2026-11-09 | [An Operator Reissue of a Tenant's State Secret](0060-state-secret-reissue/) | Deployment | mobile | Complete |
