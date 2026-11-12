@@ -39,8 +39,8 @@ eval "$(â€¦)" in the make recipe           TF_VAR_proxmox_* in that shell only â
 - It uses Ansible's own libraries in-process to read the hypervisor's `host_vars`, so templated
   values resolve as they do in a play. It needs the vault password: `ANSIBLE_VAULT_PASSWORD_FILE`,
   or a prompt.
-- **OpenBao still holds a copy that nothing reads**, at `image-factory/proxmox/<node>`, with the
-  image-factory AppRole. CHG-0037 step 2 removes both.
+- **OpenBao holds no build credential.** It has no `image-factory` mount, AppRole or policy; the
+  `openbao` role deletes them if they reappear.
 
 ## Everyday use
 
