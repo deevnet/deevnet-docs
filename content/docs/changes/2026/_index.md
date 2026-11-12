@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0064 | 2026-11-12 | [The Inventory Vault Under a New Password](0064-vault-rekey/) | Configuration | mobile | In progress |
 | CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](0063-retire-flat-lan-address/) | Decommission | mobile | Complete |
 | CHG-0062 | 2026-11-11 | [Router and Wi-Fi Controller Backed Up After Every Change](0062-device-backups-after-change/) | Deployment · Configuration | mobile | Complete |
 | CHG-0061 | 2026-11-11 | [The Core Router Restored From Its Vaulted Backup](0061-core-router-restore-rehearsal/) | Configuration | mobile | Complete |
