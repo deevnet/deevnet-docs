@@ -10,7 +10,7 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 and 2 are done: builds read the vault (2026-11-08), and OpenBao holds no build credentials (2026-11-12) |
+| **Status** | In Progress. Steps 1 to 3 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, and the automation tokens hold no Administrator (2026-11-12) |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -125,6 +125,49 @@ users. Document how to rotate the tokens.
 
 **Verify:** a template build on each node and `make fabric-plan` on the tenant hypervisor succeed.
 
+**State, 2026-11-12:** done
+([ansible-collection-deevnet.builder #34](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/34),
+[ansible-inventory-deevnet #104](https://github.com/deevnet/ansible-inventory-deevnet/pull/104),
+[ansible-collection-deevnet.mgmt #118](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/118)).
+`terraform-prov@pve` and its token hold no Administrator on either node.
+
+**The token serves more than builds.** Five things use it on each node: Packer's template build, the
+tenant fabric, `proxmox_vm` (the service VMs), `vm_identity`'s survey and `shutdown.yml`. One role,
+`DeevnetAutomation` (`group_vars/hypervisors.yml`), covers them, with each privilege tied to the call
+that needs it in Proxmox's API schema or code:
+
+| Node | Path | Role |
+|---|---|---|
+| both | `/` | `DeevnetAutomation`: VM create, configure, clone, power and console; the guest agent's address read; storage space; `SDN.Use`; `Sys.Audit` |
+| `dv02hyp001p01` | `/mapping/usb` | `DeevnetUsbMapping`, for prv's USB passthrough |
+| `dv02hyp002p02` | `/sdn` | `DeevnetFabric`: `SDN.Allocate`, `SDN.Audit`, `SDN.Use` |
+| `dv02hyp002p02` | `/nodes/dv02hyp002p02` | `DeevnetFabricNode`: `Sys.Audit`, `Sys.Modify`, which a fabric node requires |
+
+`proxmox_node_access` grants these first and then removes what `acls_absent` names, so the old
+Administrator entries went only after the new ones were in place.
+
+| Check | Result |
+|---|---|
+| Permissions as Proxmox computes them for each token | Pass: 18 privileges on `/`, VMs and storage; `SDN.Use` on the bridge; SDN only on hyp002's `/sdn`; `Sys.Modify` only on hyp002's own node |
+| A second `proxmox-access` run changes nothing | Pass: `changed=0` on both |
+| `make fabric-plan` | Pass: all five SDN resources read, no changes |
+| `proxmox_vm` against `dv02prv001v01` | Pass after #118: configuration, data disk, USB mapping, start |
+| A template build on `dv02hyp001p01` | Pass: `fedora-server-44-1.7`, VMID 102, 12 min 45 s; the core router answered throughout |
+| A tenant template build on `dv02hyp002p02` | Pass: `fedora-tenant-44-1.7`, VMID 101, 33 min 19 s; the address read from the guest agent with `VM.GuestAgent.Audit`; the core router answered throughout |
+
+**The guest agent's privilege depends on the Proxmox version.** Packer reads the build VM's address
+from the guest agent. Proxmox VE 9 checks `VM.GuestAgent.Audit` for that; 8.4, on `dv02hyp001p01`,
+checks `VM.Monitor`, which also allows commands inside a guest. Each node's `proxmox_ve_major` picks
+the privilege; [CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/) moves that node to 9.
+
+**A narrower path replaces what `/` grants rather than adding to it.** On `dv02hyp002p02`, `/sdn`
+holds only `DeevnetFabric`'s three privileges and the node path only its two. Each of those roles
+therefore repeats what its subtree still needs (`SDN.Use`, `Sys.Audit`).
+
+**A VM's boot order needs `Sys.Modify` on `/`.** The API schema does not say so; Proxmox's code checks
+it for `startup` *"since it changes host behaviour"*. Rather than grant that, `proxmox_vm` sets the
+boot order with `qm set`, as root on the node over SSH, and only when it differs (#118).
+
 ### Step 4: Remove the leftovers
 
 Remove `packer-prov@pve` and the `TerraformProv` role.
@@ -150,8 +193,9 @@ Administrator again.
 
 ## To discover
 
-- The minimal Proxmox privilege set for Packer's template build and for SDN on the tenant hypervisor,
-  from Proxmox's documentation, confirmed by a build.
+- ~~The minimal Proxmox privilege set for Packer's template build and for SDN on the tenant
+  hypervisor~~: found in Step 3, from Proxmox's API schema and code, and confirmed by a build on each
+  node.
 
 ## To close
 
@@ -159,7 +203,7 @@ Administrator again.
 
 - [x] Step 1: `pve-creds` reads the vault only, with the same output, and a template builds with it, 2026-11-08
 - [x] Step 2: the build path removed from OpenBao, 2026-11-12
-- [ ] Step 3: the build tokens narrowed to a custom Proxmox role per node
+- [x] Step 3: the automation tokens narrowed to custom Proxmox roles per node, 2026-11-12
 - [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed
 - [ ] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`
 - [ ] Verification: builds succeed with OpenBao stopped
