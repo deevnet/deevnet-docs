@@ -89,6 +89,7 @@ The management plane runs here, so this node carries real workloads and needs a 
 
 - Inventory what runs on dv02hyp001p01 and what an outage affects before scheduling
 - Same upgrade path; verify the management plane comes back whole
+- Carried out by [CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/)
 
 ## Verify the fabric API surface ✅
 
