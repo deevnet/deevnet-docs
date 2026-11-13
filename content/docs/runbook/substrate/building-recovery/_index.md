@@ -141,7 +141,6 @@ tracks closing each of these.
 | Install OPNsense from USB, set its interface addresses and `next_server`, create its API key | [Build Network](build-network/), [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) |
 | Factory-reset the switch and the AP | [Build Network](build-network/) |
 | Install Proxmox from the ISO, run its console bootstrap, issue its API tokens | [Build a Hypervisor](build-hypervisor/) |
-| Put the Fedora ISO into the hypervisor's `local:iso` before a template build | Not yet in a runbook: the template build expects it there (`deevnet-image-factory/packer/proxmox/fedora-base-image/fedora.pkr.hcl`, `iso_download_pve`), and a reinstall wipes it |
 | Run the Omada setup wizard, create the Owner and the Open API clients | ADR-0009 §5 |
 | Lock in an initialization's output: share 1 and Ansible's AppRole into the vault, shares 2 and 3 to the operator | [OpenBao's Keys](openbao-keys/#the-unseal-shares), [Vault Operations](vault-operations/) |
 | The Root, Site and issuing CA ceremonies | [Root of Trust](/docs/runbook/root-of-trust/) |

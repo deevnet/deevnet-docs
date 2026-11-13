@@ -182,6 +182,31 @@ Publish the ISO for every built release; make template builds fetch it. Add an e
 **Verify:** a template build on a hypervisor with an empty `local:iso` succeeds; an empty VM is
 created from inventory and network-boots.
 
+**State, 2026-11-13: the ISO done; the empty VM in review.**
+
+**Ansible stages the ISO; Proxmox does not fetch it.** The template build could have had Proxmox
+download the ISO itself (`iso_download_pve`), but Proxmox's `download-url` needs
+`Sys.AccessNetwork` on the node, and Step 3 had just narrowed the token. A new `deevnet.builder`
+role, `proxmox_node_isos`, stages each release's DVD ISO into `local:iso` as root over SSH, checked
+against a `.sha256` file the `artifacts` role now writes beside every Fedora ISO it publishes
+([ansible-collection-deevnet.builder #35](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/35),
+[ansible-inventory-deevnet #106](https://github.com/deevnet/ansible-inventory-deevnet/pull/106)).
+The template build reads `local:iso` only
+([deevnet-image-factory #42](https://github.com/deevnet/deevnet-image-factory/pull/42)). The artifact
+server now publishes the previous release's DVD ISO as well; Fedora 43's was copied from
+`dv02hyp001p01` and checked against Fedora's signed checksum list before publishing.
+
+| Check | Result |
+|---|---|
+| The artifact server's `.sha256` files match the hashes the image factory had pinned | Pass: 44-1.7 and 43-1.6 |
+| `--tags isos` on both nodes | Pass: nothing moved on `dv02hyp001p01`; `dv02hyp002p02` fetched 43-1.6 in under 3 minutes |
+| With the 44-1.7 ISO deleted from `dv02hyp002p02`, `--tags isos` stages it again | Pass: downloaded, checksum matched, listed by `pvesm` |
+| A tenant template build on `dv02hyp002p02` from the staged ISO | Pass: `fedora-tenant-44-1.7`, VMID 102, 33 min 19 s; the core router answered throughout |
+
+**The empty VM** is `mgmt_vm.source: pxe` in `proxmox_vm`
+([ansible-collection-deevnet.mgmt #119](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/119)).
+Its check, an empty VM created from inventory that network-boots, has not run yet.
+
 ## Verification
 
 Builds succeed with OpenBao stopped. That is the test of the change.
