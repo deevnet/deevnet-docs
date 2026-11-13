@@ -165,16 +165,15 @@ verifies tokens and never creates them.
 3. **Apply again.** With the tokens present, the role grants their ACLs. With privilege separation,
    *"effective permissions are calculated by intersecting user and token permissions"*, so both the
    user and the token hold each grant.
-4. **Hand the tokens to what uses them:** `ansible-playbook playbooks/site.yml --tags openbao` in
-   `deevnet.mgmt` for the build token, which the builds read from OpenBao
-   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)), and
-   `--limit deevnet_api` for the API's.
+4. **Hand the API's token to the API:** `ansible-playbook playbooks/site.yml --tags openbao
+   --limit deevnet_api` in `deevnet.mgmt`. The build token needs no hand-off: the builds read it
+   from the vault each run
+   ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)).
 
-Not declared, and not recreated: the user `packer-prov@pve` on `dv02hyp001p01`, which has
-`Administrator` at `/` and no token.
-
-**Follow-up:** both the `terraform-prov` name and `Administrator` at `/` predate the rule that the
-management plane is Ansible-only. Narrowing the token is a separate change.
+**The automation token holds a custom role, never Administrator.** `DeevnetAutomation` is declared
+once for every node in `group_vars/hypervisors.yml`, with each node's extras (USB mappings, the tenant
+fabric's SDN) in its own `vars.yml` ([CHG-0037](/docs/changes/2026/0037-builds-off-openbao/)).
+`acls_absent`, `users_absent` and `roles_absent` remove what a node should no longer have.
 
 ## Step 8: VLAN-aware bridge
 
