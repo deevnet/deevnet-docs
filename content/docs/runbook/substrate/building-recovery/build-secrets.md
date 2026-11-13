@@ -57,8 +57,9 @@ eval "$(make -s -C deevnet-image-factory pve2-env)"
 
 ## Rotating a Proxmox token
 
-1. On the node: `pveum user token add terraform-prov@pve <new-name> --privsep 0`. Note the secret;
-   Proxmox shows it once.
+1. On the node: `pveum user token add terraform-prov@pve <new-name> --privsep 1`. Note the secret;
+   Proxmox shows it once. A separated token holds only what its own ACL entries give, as well as
+   its user's, so it starts with nothing.
 2. Put it in `host_vars/<node>/vault.yml` (`vault_proxmox_token_id`, `vault_proxmox_token_secret`).
    Then `make vault`, **commit and push** (see
    [Vault Operations](/docs/runbook/substrate/building-recovery/vault-operations/#secrets-a-change-produces)).
@@ -69,7 +70,12 @@ eval "$(make -s -C deevnet-image-factory pve2-env)"
      -H "Authorization: PVEAPIToken=$TF_VAR_proxmox_token_id=$TF_VAR_proxmox_token_secret" \
      "$TF_VAR_proxmox_url/version"                       # 200
    ```
-4. Then delete the old token on the node: `pveum user token remove terraform-prov@pve <old-name>`.
+4. Give it the old token's roles: in `host_vars/<node>/vars.yml`, rename the token in
+   `proxmox_node_access` (its `users` entry and every ACL's `tokens`), and run
+   `ansible-playbook playbooks/site.yml --limit <node> --tags proxmox-access` in
+   `ansible-collection-deevnet.builder`. Check step 3 again.
+5. Then delete the old token on the node: `pveum user token remove terraform-prov@pve <old-name>`.
+   Its ACL entries go with it.
 
 The Deevnet API has its **own** Proxmox token (`vault_deevnet_api_proxmox_token_*`, in OpenBao's
 `deevnet-api/backends`). Rotating the build token doesn't touch it.
