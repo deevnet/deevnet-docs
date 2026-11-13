@@ -100,7 +100,8 @@ values.
 **State, 2026-11-12:** done
 ([ansible-collection-deevnet.mgmt #117](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/117),
 [ansible-inventory-deevnet #101](https://github.com/deevnet/ansible-inventory-deevnet/pull/101),
-[#102](https://github.com/deevnet/ansible-inventory-deevnet/pull/102)).
+[#102](https://github.com/deevnet/ansible-inventory-deevnet/pull/102),
+[#103](https://github.com/deevnet/ansible-inventory-deevnet/pull/103)).
 `build_secrets.yml` is gone, and the `openbao` role deletes what it once wrote: the `image-factory`
 mount, which held the copy of the tokens, its AppRole and its policy. Ansible's policy may delete
 those two by name and nothing else of their kind.
@@ -110,6 +111,7 @@ those two by name and nothing else of their kind.
 | The `image-factory` mount is gone | Pass: not in `sys/mounts` |
 | The `image-factory` AppRole is gone | Pass: 404 for its role ID; the API's AppRole answers 200 |
 | A second `openbao.yml` run changes nothing | Pass: `changed=0` |
+| The vault no longer holds the AppRole's credentials | Pass: the operator removed both values (#103) |
 | `make pve1-env` and `make pve2-env` still give working tokens | Pass: the same four exports; HTTP 200 from each hypervisor's `/version` |
 
 **The site's own list of retired mounts replaces the role's.** The first run removed the AppRole and
