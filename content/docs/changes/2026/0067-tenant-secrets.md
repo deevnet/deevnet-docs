@@ -200,9 +200,12 @@ nothing was granted for the drill. The reconcile that makes a namespace is the o
   the value it was started with until the agent gives up or is stopped. Deleting the workload, or
   stopping the app, is what ends it.
 
-- **Per-workload binding:** exempt tenant traffic bound for the platform zone from the exit node's
-  source NAT, so OpenBao sees each workload's own address, then unset the source CIDRs. It changes
-  the tenant hypervisor's fabric and the core router's zone rules, so it is a change of its own.
+- **Per-workload binding: deferred 2026-11-14.** Exempt tenant traffic bound for the platform zone
+  from the exit node's source NAT, so OpenBao sees each workload's own address, then unset the
+  source CIDRs. It changes the tenant hypervisor's fabric and the core router's zone rules, and no
+  other platform service needs it, so it waits in
+  [Security Hardening](/docs/roadmap/infrastructure/substrate/security-hardening/), accepted as
+  [R-16](/docs/policies/risk-management/risk-register/#register) meanwhile.
 
 ## To close
 
