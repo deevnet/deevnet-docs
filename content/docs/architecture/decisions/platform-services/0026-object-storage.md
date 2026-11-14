@@ -270,7 +270,7 @@ versioning, lifecycle and bucket policies.
 - [x] Open question 2 answered: where the replica lives, by [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (no replica).
 - [x] Open question 3 answered: lifecycle rules are tenant-declared (§3).
 - [x] Open question 4 answered: a tenant bucket can be read without a key, from the site only (§5).
-- [ ] CHG-0068 complete.
+- [x] CHG-0068 complete.
 - [ ] CHG-0069 complete.
 
 ## Open questions

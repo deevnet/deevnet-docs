@@ -2,8 +2,8 @@
 title: "Tenant Platform Services: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 16
-tasks_in_progress: 2
+tasks_completed: 17
+tasks_in_progress: 1
 tasks_planned: 4
 ---
 
@@ -41,9 +41,8 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Secrets: an optional OpenBao namespace per tenant, written through the provider and read by
   each workload under its own AppRole ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/),
   [CHG-0067](/docs/changes/2026/0067-tenant-secrets/))
-- 🔄 Object storage, step one: a VM of its own, `dv02obj001v01`, running silo as a state store and
-  a bucket store on separate disks, with tenants' state moved onto it and MinIO retired. Done on
-  2026-11-14 but for clean plans from eds and mabell
+- ✅ Object storage, step one: a VM of its own, `dv02obj001v01`, running silo as a state store and
+  a bucket store on separate disks, with tenants' state moved onto it and MinIO retired
   ([CHG-0068](/docs/changes/2026/0068-object-store-vm/),
   [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
 - 🔄 Object storage, step two: tenant buckets, with quotas, keys, versioning, lifecycle and
