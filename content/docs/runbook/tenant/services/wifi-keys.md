@@ -3,8 +3,9 @@ title: "Wi-Fi Keys"
 weight: 3
 ---
 
-# Wi-Fi Keys {{< status-badge "active" "Available" >}}
+# Wi-Fi Keys
 
+{{< status-badge "active" "Available" >}}
 ## What you get
 
 A **Wi-Fi key of your own** on the site's IoT SSID. Devices that join with it land on the IoT

@@ -7,10 +7,10 @@ weight: -67
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-14 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | **In progress.** OpenBao's `tenants` namespace and the API's grants applied; API v0.22.0 deployed; provider v0.10.0 released and in the tenant downloads. Readers move to the fabric exit node in v0.22.1 |
 | **Window** | OpenBao work sessions. The OpenBao configuration adds a namespace and a policy without a restart; the API deploys restart only the API |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao); `dv02prv001v01` (the Deevnet API) |
@@ -39,7 +39,7 @@ running in the tenant's own code.
 
 - A tenant declares a secret with the provider. Its value appears in neither plan nor state.
 - A tenant declares a reader for a workload, naming the paths it may read. The workload reads them,
-  and nothing else, from its own address only.
+  and nothing else, from inside the tenant fabric only.
 - A new value and an apply reach the workload without a replace or a push.
 - Deleting a reader stops the workload's next login.
 - After the namespace is lost, a reconcile and one apply bring everything back, with no secret lost.
@@ -64,7 +64,7 @@ an example in the reference tenant; the tenant guide.
 | The API's policy reaches the substrate's own paths | OpenBao | Every new grant is under `tenants/`. A test reads the root's `deevnet-api/` mount through the new grants and must be refused |
 | One tenant reaches another's namespace | OpenBao | Each call carries the caller's own namespace, derived from its token, never sent. A test uses tenant A's reader against tenant B's namespace |
 | The API hands back a secret value | the API | The API's policy has no read on `secrets/data/`; a GET returns presence and version only |
-| A leaked reader credential is used elsewhere | OpenBao | The secret ID and its tokens are bound to the workload's address |
+| A leaked reader credential is used elsewhere | OpenBao | The secret ID and its tokens are bound to the address OpenBao sees: the fabric's exit node at mobile, which source-NATs every workload. Inside the fabric, the reader's delete is what stops it |
 | A held token outlives its reader's delete | OpenBao | Deleting an AppRole stops new logins but not a token already issued. A reader delete removes the AppRole and its policy together, which cuts the token off at once |
 
 ## Prerequisites
@@ -125,7 +125,7 @@ can stay or be deleted; every value in them is a copy.
 - OpenBao Agent on the backend workload renders the secret.
 - A new value and an apply reach the workload with no replace.
 - Deleting the reader makes the next login fail.
-- A login with the reader's credential from another address is refused.
+- A login with the reader's credential from outside the tenant fabric is refused.
 
 **Loss of the namespace, inside the tenant only:** with `tenants/tdemo` deleted by hand, a reconcile
 makes it again, `terraform apply` writes the secrets and a new reader credential, and a push brings
@@ -135,14 +135,36 @@ the workload back with no replace.
 
 **Audit:** the workload's reads are in the audit log.
 
+## Departures from the plan
+
+**The first live login from a workload was refused, because the tenant fabric source-NATs.**
+- The reader was bound to its workload's address, `10.20.133.10/32` on the throwaway tenant
+  `tsec`. OpenBao refused the login: *source address "10.20.50.22" unauthorized by CIDR
+  restrictions on the role*.
+- `10.20.50.22` is the fabric exit node, `dv02hyp002p02`, on tenant transit. It source-NATs
+  everything leaving the fabric, so OpenBao sees that one address for every workload of every
+  tenant. The dev server could not show this: it had no fabric in front of it.
+- **Readers are now bound to the exit node** (API v0.22.1, `DEEVNET_TENANT_SECRETS_SOURCE_CIDRS`).
+  A leaked credential works only from inside the fabric, from any tenant's workload. Inside it,
+  the reader's delete is what stops one.
+- With the login refused, the workload had no token, so the reads it tried that day prove
+  nothing about isolation. They are run again once readers are rebound.
+
+## Follow-ups
+
+- **Per-workload binding:** exempt tenant traffic bound for the platform zone from the exit node's
+  source NAT, so OpenBao sees each workload's own address, then unset the source CIDRs. It changes
+  the tenant hypervisor's fabric and the core router's zone rules, so it is a change of its own.
+
 ## To close
 
 **What is left before this change closes, from its procedure and verification.**
 
-- [ ] Step 1: the `tenants` namespace applied (`deevnet.mgmt` pull request 120, then the inventory's pull request 108)
-- [ ] Step 2: the API's policy widened and proven refused at the root (`deevnet.mgmt` pull request 120)
-- [ ] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace (API pull request 64)
-- [ ] Step 4: provider v0.10.0 released and mirrored in the tenant downloads (provider pull request 29)
+- [x] Step 1: the `tenants` namespace applied (`deevnet.mgmt` pull request 120, then the inventory's pull request 108)
+- [x] Step 2: the API's policy widened, its live text identical to the policy proven refused at the root (`deevnet.mgmt` pull request 120)
+- [x] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace (API pull request 64)
+- [x] Step 4: provider v0.10.0 released and mirrored in the tenant downloads (provider pull request 29)
+- [ ] API v0.22.1 deployed with readers bound to the fabric exit node
 - [ ] Step 5: the reference tenant reads its secret through OpenBao Agent (`deevnet-tenant-tdemo` pull request 17)
 - [ ] Step 6: the docs
 - [ ] Verification: isolation, rotation, revocation, address binding, loss of the namespace, removal and audit, all proven live

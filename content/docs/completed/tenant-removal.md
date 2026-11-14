@@ -3,8 +3,9 @@ title: "Tenant Removal"
 weight: 0
 ---
 
-# Tenant Removal {{< status-badge "complete" "Complete" >}}
+# Tenant Removal
 
+{{< status-badge "complete" "Complete" >}}
 **A tenant delete leaves nothing of the tenant behind that a later tenant could read or use.** The
 Deevnet API's delete tears down what it built for the tenant, then removes what the tenant left:
 every version of its Terraform state, everything it saved in its dashboards organization, and every

@@ -3,8 +3,9 @@ title: "Dashboards"
 weight: 6
 ---
 
-# Dashboards {{< status-badge "active" "Available" >}}
+# Dashboards
 
+{{< status-badge "active" "Available" >}}
 ## What you get
 
 A **Grafana organization of your own**, with your logs already wired in

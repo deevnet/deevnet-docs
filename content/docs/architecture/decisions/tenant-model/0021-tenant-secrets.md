@@ -210,8 +210,14 @@ reissued, the problem ADR-0015 closed for the operator token.
   - The provider's reader resource returns a role ID, which is not secret, and a secret ID, held in
     tenant state as a substrate-issued credential (ADR-0012 §4).
   - The secret ID is reusable and does not expire, because the workload logs in again each time its
-    service starts. It is **bound to the workload's address**, as are the tokens it gets, so a copy
-    used from anywhere else is refused.
+    service starts. It is **bound to the address OpenBao sees the workload come from**, as are the
+    tokens it gets, so a copy used from anywhere else is refused.
+  - **At mobile that address is the tenant fabric's exit node, not the workload.** The exit node
+    source-NATs everything leaving the fabric, so OpenBao sees one address for every workload of
+    every tenant. A reader is bound to that address instead, and a leaked credential works only
+    from inside the fabric: from any tenant's workload, not from management, trusted or a
+    developer's computer. Binding to the workload's own address needs the fabric to stop
+    source-NATing traffic bound for the platform zone, a change of its own.
   - A response-wrapped, single-use secret ID was the earlier plan. It does not survive a service
     restart, and the push model has no channel to deliver a fresh one each time.
 - **Each workload reads only the paths its tenant names for it.** Identical workloads can name the
@@ -287,7 +293,9 @@ applying. The AppRole secret IDs given to workloads are gone, so the same apply 
 the tenant pushes them as it pushes any other setting (ADR-0034). No workload is replaced.
 
 **A secret ID sits in tenant state and in the workload's settings.** Both are already places the
-tenant keeps substrate-issued credentials. The address binding is what limits a copy that leaks.
+tenant keeps substrate-issued credentials. The address binding limits a copy that leaks to the
+tenant fabric while the fabric source-NATs, and to the one workload once it does not; past that,
+the reader's delete is what stops it.
 
 **The API gains a resource and a wider policy.** The provider gains a secret resource. The API's
 OpenBao policy gains namespace administration. Its OpenBao client adds the namespace header.
@@ -313,7 +321,8 @@ On the reference tenant, with the service declared:
 - plan and state hold no secret value;
 - the backend workload reads its secret through OpenBao Agent, and nothing it was not assigned;
 - a new value and an apply reach it with no replace or push;
-- deleting its reader stops its next login, and its credential is refused from another address;
+- deleting its reader stops its next login, and its credential is refused from outside the bound
+  address;
 - with the tenant's namespace deleted, a reconcile and one apply bring it back, and a push restores
   the workload;
 - a token from one tenant's namespace is refused in another's, and the API's grants are refused at
