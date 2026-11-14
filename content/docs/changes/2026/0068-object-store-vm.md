@@ -7,10 +7,10 @@ weight: -68
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | Started 2026-11-14 |
 | **Change type** | Deployment · Migration |
 | **Classification** | Structural |
-| **Status** | Planned |
+| **Status** | In Progress. Steps 1 to 3 done: silo built and staged, `dv02obj001v01` built with both disks. Waiting for the image push, which crosses the core router (INC-0005) |
 | **Window** | One evening. Tenants can't apply from Step 5 until Step 7's checks pass: about an hour |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (new), `dv02prv001v01` (MinIO leaves; the API and the backup job stay), `dv02hyp001p01` (the new VM and its data disk), the core router (rules), the tdemo, eds and mabell backends (unchanged, verified) |
@@ -38,10 +38,10 @@ no tenant changes anything. Tenant buckets come after, in
 
 ## Goal
 
-- `dv02obj001v01` runs silo, built by `deevnet-container-image-factory`, with its data on a 100 GB
-  data disk.
-- It answers on 443 by the names `s3` and `tfstate`, through the service proxy, and on 9000 as
-  today.
+- `dv02obj001v01` runs silo, built by `deevnet-container-image-factory`, as two stores: the state
+  store on a 5 GB disk of its own, and the bucket store on a 100 GB data disk.
+- It answers on 443 as `tfstate` (the state store) and `s3` (the bucket store), through the service
+  proxy, and as `tfstate` on 9000 as today.
 - ADR-0026's contract checks 1 to 4 and 6 to 9 pass against it.
 - Every existing tenant's `terraform plan` shows no changes, and locking still works.
 - The API creates, reissues and removes a scratch tenant's state access against it.
@@ -66,10 +66,12 @@ no tenant changes anything. Tenant buckets come after, in
 
 | Risk | Where | Guard |
 |---|---|---|
+| A tenant overruns its bucket quota and fills the disk under state | `dv02obj001v01` | Silo enforces a quota about a minute behind (ADR-0026 §1), so state has a store and a disk of its own; an overrun reaches only the bucket store's disk |
 | Silo does not read the copied directory, or reads it differently | `dv02obj001v01` | The copy leaves MinIO's directory on prv untouched. Step 4 checks the contract on an empty store first; Step 6 lists every tenant's state before the name moves |
 | A tenant applies during the copy and its write is lost | tenants | Tenants are told the window. MinIO is stopped before the copy, so a write either lands before it or fails |
 | Not enough room on the hypervisor for 100 GB more | `dv02hyp001p01` | Prerequisite: thin-pool headroom checked |
-| The copy crosses the core router | `dv02cor002p01` | Both VMs are on Platform, VLAN 25; the copy stays on the hypervisor's bridge. Nothing is pulled across the router (INC-0005) |
+| The copy crosses the core router | `dv02cor002p01` | Both VMs are on Platform, VLAN 25; the copy stays on the hypervisor's bridge (INC-0005) |
+| The image push hangs the core router | `dv02cor002p01` | The 252 MB image goes Builder → Platform, across the router. Trickled at 1 MB/s with a ping watchdog, the operator at the router's console |
 | A zone loses the store when the rules move | tenants, the API | Step 7 adds the new rules before the old ones go, and Step 7's checks are from `DVNTM-TD` and from a tenant workload |
 | The backup job stops taking state | `dv02prv001v01` | Step 8; `make backup-status` checks it |
 
@@ -95,10 +97,11 @@ versioned bucket. Stage the tarball where the store role pushes it from.
 
 `mobile/host_vars/dv02obj001v01/vars.yml`, after `dv02obs001v01`'s:
 - Platform, 10.20.25.23, VLAN 25.
-- A data disk: `{ device: scsi1, size: 100, storage: local-lvm-big-thin, mount: /srv }`.
+- A data disk for the bucket store: `{ device: scsi1, size: 100, storage: local-lvm-big-thin, mount: /srv }`.
+- A state disk, `extra_disks`: `{ device: scsi2, size: 5, serial: deevnet-state, label: dvnt-state, mount: /srv/state }`.
 - The CNAME `s3`. `tfstate` stays on `dv02prv001v01` until Step 7.
-- `service_proxy_vhosts` for `s3` and `tfstate`, each to `http://127.0.0.1:9000`, with
-  `legacy_port: 9000`.
+- `service_proxy_vhosts`: `s3` to the bucket store, `http://127.0.0.1:9100`. `tfstate` to the
+  state store, `http://127.0.0.1:9000` with `legacy_port: 9000`, joins at Step 7.
 
 Add the host to `management_plane` and let the allocator give it its VMID and MAC. Add a zone rule
 `tenant_dev -> obj` on 443 and 9000, beside the existing ones to prv. It is not yet in
@@ -111,14 +114,17 @@ Check the group's members before every play.
 
 ### Step 4: Silo, empty, and the contract
 
-Point the store role at the silo image, and add `dv02obj001v01` to `tenant_state` beside prv, for
-this play only. Deploy with `--limit dv02obj001v01`. Then run contract checks 1 to 4 and 6 to 9
-against the empty store, with test buckets and users that are removed afterwards.
+Deliver the image to obj: trickled at 1 MB/s with a ping watchdog, the operator at the router's
+console, then loaded on obj, so the role pushes nothing. Add `dv02obj001v01` to `tenant_state`
+beside prv, and to `tenant_buckets`. Deploy both stores with `--limit dv02obj001v01`. Then run
+contract checks 1 to 4 and 6 to 9 against the empty stores, with test buckets and users that are
+removed afterwards.
 
 ### Step 5: Stop MinIO and copy
 
 The window opens. Stop MinIO on `dv02prv001v01`, then stop silo on `dv02obj001v01` and empty its
-data directory. Copy `/srv/minio/data` from prv to obj with `rsync -aHAX`, between the two VMs.
+data directory. Copy `/srv/minio/data` from prv to the state store's `/srv/state/minio/data` on obj, between the
+two VMs.
 Start silo.
 
 ### Step 6: Read the state back
@@ -130,7 +136,7 @@ On obj, before any client is pointed at it:
 
 ### Step 7: Move the name, the rules and the API
 
-- Move `tfstate` from prv's CNAMEs and service proxy to obj's.
+- Move `tfstate` from prv's CNAMEs and service proxy to obj's, to the state store.
 - Move `tenant_state` to obj alone.
 - Point `deevnet_api_minio_endpoint` at `s3.<site>`, and redeploy the API.
 - Repoint the zone rules that reach the store at prv, including the `tenant_dev` rules on 9000
@@ -179,10 +185,10 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the silo image built from source, smoke test passed, staged
-- [ ] Step 2: `dv02obj001v01` in inventory, with its identity and data disk
-- [ ] Step 3: the VM built, the data disk mounted, the proxy answering
-- [ ] Step 4: contract checks 1 to 4 and 6 to 9 pass on the empty store
+- [x] Step 1: the silo image built from source, smoke test passed, staged
+- [x] Step 2: `dv02obj001v01` in inventory, with its identity and both disks
+- [x] Step 3: the VM built, both disks mounted, the proxy answering
+- [ ] Step 4: the image on obj; both stores up; contract checks 1 to 4 and 6 to 9 pass
 - [ ] Step 5: the data directory copied, silo started
 - [ ] Step 6: every tenant's state, user and policy read back
 - [ ] Step 7: `tfstate`, `tenant_state`, the API and the rules on obj; every tenant plans clean
@@ -193,8 +199,19 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
 
 ## Outcome
 
-*To be written.*
+*In progress.*
 
 ### Departures from the plan
+
+- **Two stores, not one (Steps 2 and 4).** The image's smoke test found that silo enforces a bucket
+  quota from its scanner, about a minute behind: 6.2 MB accepted against a 1 MiB quota over 63
+  seconds. ADR-0026's contract check 3 failed as written. The operator chose two silo instances on
+  obj, the state store on a 5 GB disk of its own and the bucket store on the 100 GB disk, so an
+  overrun can never reach state. ADR-0026 is revised to match. Roles gained `extra_disks` and a
+  tenant bucket store play.
+- **The state disk needed a SCSI rescan.** It was hot-plugged into the running VM on its LSI
+  controller, and the guest saw it only after a rescan of its SCSI hosts. A new VM gets its disks
+  before first boot.
+- **The Builder's `/home` was full.** The image was built in a container store on `/srv` instead.
 
 ## Follow-ups

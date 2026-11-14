@@ -224,7 +224,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   - a second `If-None-Match: *` write refused with 412, atomically, on a versioned bucket, which is
     what `use_lockfile` needs
   - keys confined by the server
-  - hard quotas
+  - enforced quotas
   - versioning and lifecycle rules
   - TLS
   - an admin API
@@ -232,13 +232,15 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   - anonymous read of one bucket and nothing else
 
   pgsty/silo, a maintained MinIO fork, meets it, built from source by the container image factory.
-  It runs on a VM of its own, `dv02obj001v01`, which holds every bucket on the site; the state moves
-  there by copying MinIO's data directory, under the same `tfstate` name. SeaweedFS is next in line:
+  It runs on a VM of its own, `dv02obj001v01`, which holds every bucket on the site, as two stores on
+  two disks: silo enforces a bucket quota about a minute behind, so Terraform state gets a store and
+  a 5 GB disk no tenant can fill. The state moves there by copying MinIO's data directory, under the
+  same `tfstate` name. SeaweedFS is next in line:
   its quotas are soft. Garage is ruled out, because it rejects conditional writes and has no
   versioning. Ceph RGW waits for a second box. One store holds two classes: Terraform state, as
   today, and tenant buckets through new `deevnet_bucket` and `deevnet_bucket_key` resources, each
   bucket with a required hard quota, optional versioning and lifecycle, and optional anonymous read
-  from the site only. A 5 GB reserve protects state from being starved, and the substrate stores
+  from the site only. The substrate stores
   tenant buckets without backing them up. Extends ADR-0007.
 - [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) —
   *Proposed.* Keycloak on the identity VM, with a `deevnet` realm for the operator and substrate UIs

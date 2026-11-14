@@ -10,7 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
-| **Date** | 2026-09-21; revised 2026-11-14 (a dedicated VM; the bucket resource's full shape; open questions 1, 3 and 4 answered) |
+| **Date** | 2026-09-21; revised 2026-11-14 (a dedicated VM; the bucket resource's full shape; open questions 1, 3 and 4 answered; two stores on separate disks, after contract check 3 failed on the site's build) |
 | **Scope** | What the substrate's S3 service must guarantee, which engine provides it, where it runs, and how it serves both Terraform state and tenants' own buckets. Covers isolation, quotas, locking, versioning, lifecycle, anonymous read and transport. |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered a state store and chose MinIO as a detail |
 | **Amended by** | [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) *(Proposed)*: no replica. State is re-derivable, and tenant buckets are the tenant's to copy; the `replicated` option is withdrawn (§3, §4). [ADR-0036: A Service Proxy on Each Service VM](/docs/architecture/decisions/platform-services/0036-service-proxy/): the store serves plain HTTP on loopback, and the service proxy holds the certificate (§5) |
@@ -119,16 +119,16 @@ checked again on 2026-11-14.
 | | Verdict |
 |---|---|
 | **In place on the provisioning VM**, with a data disk added | Rejected: the store would keep sharing a VM with the API and its database, though it serves every tenant's application, not provisioning |
-| **A second instance for tenant buckets**, beside the state store | Rejected: two stores to run, two admin credentials in the API, and still on the provisioning VM |
-| **A VM of its own, holding every bucket whatever its use** | **Chosen** |
+| **A second instance for tenant buckets**, beside the state store on the provisioning VM | Rejected: still on the provisioning VM |
+| **A VM of its own, holding every bucket whatever its use**, as two instances on two disks | **Chosen** (§2, §3) |
 
 ---
 
 ## Decision
 
-**The store is defined by a contract. pgsty/silo meets it today, on a VM of its own,
-`dv02obj001v01`, which holds every bucket on the site, state included.** State and tenant buckets
-are two classes in one store.
+**The store is defined by a contract. pgsty/silo meets it, on a VM of its own, `dv02obj001v01`,
+which holds every bucket on the site, state included.** State and tenant buckets are two classes,
+kept in two instances of the store on two disks, because silo's bucket quota is not hard (§1).
 
 ### 1. The contract comes first
 
@@ -139,7 +139,7 @@ readings of a documentation page:
 |---|---|
 | 1 | A second `PutObject` with `If-None-Match: *` returns **412, atomically, on a versioned bucket** |
 | 2 | A key confined to one tenant's prefix or buckets is **refused** everything else, and a read-only key is refused every write |
-| 3 | A bucket quota is **hard**: a write that would exceed it fails; it is never corrected later |
+| 3 | A bucket quota is **enforced**: an object larger than the quota is refused at once, and once the store has counted the bucket every write past it is refused, noncurrent versions included. Any write a quota lets through can fill only tenant buckets' disk, never state's |
 | 4 | **Object versioning** on a bucket, switchable by its owner |
 | 5 | **Lifecycle rules** on a bucket: expiry of current objects and of noncurrent versions |
 | 6 | Served behind the site's TLS, **path-style** addressing |
@@ -152,6 +152,16 @@ readings of a documentation page:
 - **These checks are the regression test for any engine change**, as the key-change drill is for
   OpenBao.
 
+**Silo's bucket quota is not hard, so check 3 says what it does guarantee.** The contract first
+asked for a hard quota: *"a write that would exceed it fails; it is never corrected later"*. On the
+site's build (CHG-0068), silo refused an object larger than the quota at once, but accepted 6.2 MB
+against a 1 MiB quota over 63 seconds before refusing. Its source shows why: it compares a write
+with the bucket's usage figure from its background scanner (`loadDataUsageFromBackend`, cached for
+ten seconds), which is about a minute behind, and is zero until the scanner has counted the bucket.
+MinIO has the same code. A tenant can therefore overrun its quota by whatever it can write in about
+a minute. That is acceptable for a tenant's own buckets, and never for Terraform state, so state
+gets a store and a disk of its own (§3).
+
 ### 2. The engine and the host
 
 - **pgsty/silo is built from its tagged source by `deevnet-container-image-factory`**, the way
@@ -159,14 +169,17 @@ readings of a documentation page:
   - The fork's own image is a fallback, not the supply.
   - Building it here is the point: the problem being solved is a supply chain that stopped.
 - **It runs on `dv02obj001v01`, the object storage VM**, on Platform, where every zone that has
-  something to store already reaches.
-  - **The data lives on a 100 GB data disk**, never the OS disk. It can grow later.
+  something to store already reaches. It runs twice, as two stores:
+  - **The state store**, on a 5 GB disk of its own: the state reserve, made a disk.
+  - **The bucket store**, on a 100 GB data disk, which can grow later.
+  - Neither is on the OS disk. The service proxy sends `tfstate` to the first and `s3` to the
+    second.
   - The provisioning VM keeps the Deevnet API and its database, and nothing else.
 - **The state moves by copying MinIO's data directory.** The on-disk format is compatible, so every
   tenant's user, policy, object version and lock arrives as it was. The API's `madmin-go` client
   carries over unchanged.
 
-### 3. Two classes in one store
+### 3. Two classes, two stores
 
 | | State class | Tenant bucket class |
 |---|---|---|
@@ -174,16 +187,19 @@ readings of a documentation page:
 | **Layout** | the one `tf-state` bucket; one prefix per tenant, as today | buckets named `<tenant>-<name>`, one or more per tenant |
 | **Created by** | the API, at tenant creation | the API, on a `deevnet_bucket` resource |
 | **Keys** | the tenant's state key, prefix-confined, as today | one read-write key returned when the bucket is created; more, read-write or read-only, on `deevnet_bucket_key` resources. Each key reaches one bucket. Secrets are returned in create responses only |
-| **Quota** | none per tenant; protected by the reserve below | **required**, hard, declared on the resource |
+| **Store and disk** | the state store, on its 5 GB disk | the bucket store, on the 100 GB disk |
+| **Quota** | none per tenant; protected by its own disk | **required**, declared on the resource, enforced as contract 3 says |
 | **Versioning** | on | the tenant's choice, off by default |
 | **Lifecycle** | none | the tenant's choice: days until current objects expire, days until noncurrent versions expire |
 | **Anonymous read** | never | the tenant's choice, `public_read`, off by default. See §5 for who can reach it |
 
-**State can't be starved.** The store keeps a **5 GB reserve** for the state class. The API refuses a
-bucket whose quota would push the sum of all quotas past the store's capacity minus that reserve:
-95 GB on the first disk. Quotas are allocated, never overcommitted. With hard quotas (contract 3),
-no tenant can write past what it was granted, so no tenant can fill the disk under another tenant's
-state.
+**State can't be starved.** The **5 GB reserve** for the state class is a disk of its own, which no
+tenant bucket is on. A tenant overrunning its quota for the minute silo takes to notice can fill
+only the bucket store's disk.
+
+**Quotas are allocated, never overcommitted.** The API refuses a bucket whose quota would push the
+sum of all quotas past the bucket store's capacity, 100 GB on the first disk. An overrun can still
+crowd other tenants' buckets for a minute, which is the cost of an engine without hard quotas.
 
 **Lifecycle is the tenant's, not a substrate default.** A substrate default would delete a tenant's
 data on a schedule the tenant never chose. A tenant that wants old versions cleaned up declares it,
@@ -227,6 +243,9 @@ database, and the provisioning VM is smaller and simpler.
 **The site gains a service VM.** It is one more host to build, patch and back up, on the management
 hypervisor.
 
+**A tenant can overrun its quota for about a minute.** That can crowd other tenants' buckets, never
+state. A hard limit in front of the bucket store, or an engine with hard quotas, would remove it.
+
 **The store's single point of failure is unchanged.** It is still one node on one VM, and the
 substrate does not back up tenant buckets. That is stated to tenants, and ADR-0033 accepts it for
 state.
@@ -245,7 +264,7 @@ versioning, lifecycle and bucket policies.
 
 - [x] An acceptance test: contract checks 1 to 9 pass on the site-built silo on `dv02obj001v01`, every tenant plans with no changes after the state move, and the reference tenant runs a bucket through its whole life (CHG-0069's verification).
 - [x] Built by change records: [CHG-0068](/docs/changes/2026/0068-object-store-vm/) (the store and the state move) and [CHG-0069](/docs/changes/2026/0069-tenant-buckets/) (tenant buckets).
-- [x] Open question 1 answered: a 5 GB reserve on a 100 GB disk (§3).
+- [x] Open question 1 answered: a 5 GB disk of its own for state, and 100 GB for buckets (§3).
 - [x] Open question 2 answered: where the replica lives, by [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (no replica).
 - [x] Open question 3 answered: lifecycle rules are tenant-declared (§3).
 - [x] Open question 4 answered: a tenant bucket can be read without a key, from the site only (§5).
@@ -255,7 +274,7 @@ versioning, lifecycle and bucket policies.
 ## Open questions
 
 1. **The size of the state reserve**, and the capacity of the data disk it comes out of.
-   *Answered: 5 GB of a 100 GB disk (§3).*
+   *Answered: a 5 GB disk of its own, beside the 100 GB bucket disk (§3).*
 2. **Where the ADR-0014 replica lives.**
    *Answered by [ADR-0033: Code Is the State](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/): there is no replica.*
 3. **Bucket lifecycle rules**, such as expiry and noncurrent-version cleanup. Tenant-declared, or
@@ -271,6 +290,8 @@ versioning, lifecycle and bucket policies.
   of it.
 - **A second on-site box.** Ceph RGW with multisite would then fit, and brings first-class tenants.
 - **RustFS proving itself** over a year of releases. It is Apache-licensed and MinIO-shaped.
+- **An engine with hard bucket quotas**, or a hard limit that can sit in front of silo. The two
+  stores could then become one again.
 - **A tenant needing objects served to the internet.** That is a new exposure for the site, not a
   bucket setting.
 
@@ -279,8 +300,8 @@ versioning, lifecycle and bucket policies.
 - Contract checks 1 to 9 against the site-built silo image, especially **412 on a versioned bucket**.
 - That silo reads the copied MinIO data directory in place, and that every tenant plans with no
   changes afterwards.
-- That hard bucket quotas refuse the overflowing write, on this build.
-- That a quota counts noncurrent versions, so versioning can't be used to write past it.
+- That a bucket quota refuses writes once counted, noncurrent versions included (§1). Confirmed on
+  `RELEASE.2026-11-12T00-00-00Z`, after 70 seconds.
 - That an anonymous `GetObject` policy on one bucket grants nothing on any other bucket, and no
   listing.
 
@@ -288,10 +309,13 @@ versioning, lifecycle and bucket policies.
 
 ## Current state
 
-*Updated 2026-11-14.* **Proposed. Nothing this record decides is built.**
+*Updated 2026-11-14.* **Proposed. Being built by [CHG-0068](/docs/changes/2026/0068-object-store-vm/).**
 
-- The store is MinIO community `RELEASE.2025-09-07` on the provisioning VM's OS disk. It serves
-  TLS from the site CA ([CHG-0030](/docs/changes/2026/0030-state-store-tls/)), and on 443 through
-  the service proxy ([CHG-0046](/docs/changes/2026/0046-service-proxy/)).
-- It holds every tenant's Terraform state, and nothing else.
-- The state is backed up to a drive on the provisioning VM ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)).
+- **Tenants' state is still in MinIO community `RELEASE.2025-09-07` on the provisioning VM's OS
+  disk.** It is served on 443 through the service proxy
+  ([CHG-0046](/docs/changes/2026/0046-service-proxy/)), and backed up to a drive on that VM
+  ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)).
+- **`dv02obj001v01` is built**, with its 5 GB state disk and 100 GB bucket disk, and answers as
+  `s3` through its service proxy. Silo is not running on it yet.
+- **Silo, built from source, passes contract checks 1, 2, 4, 5 and 9 and the revised check 3** in
+  its smoke test, and reads a MinIO data directory in place.
