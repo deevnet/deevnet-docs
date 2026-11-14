@@ -4,7 +4,7 @@ linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 16
 tasks_in_progress: 0
-tasks_planned: 4
+tasks_planned: 6
 ---
 
 # Tenant Platform Services: Project Plan
@@ -41,7 +41,13 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Secrets: an optional OpenBao namespace per tenant, written through the provider and read by
   each workload under its own AppRole ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/),
   [CHG-0067](/docs/changes/2026/0067-tenant-secrets/))
-- ⏳ Metrics and alerting, identity and object storage: designed, not built
+- ⏳ Object storage, step one: a VM of its own, `dv02obj001v01`, running silo, with the state
+  store moved onto it and MinIO retired ([CHG-0068](/docs/changes/2026/0068-object-store-vm/),
+  [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
+- ⏳ Object storage, step two: tenant buckets, with quotas, keys, versioning, lifecycle and
+  site-only anonymous read, through `deevnet_bucket` and `deevnet_bucket_key`
+  ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/))
+- ⏳ Metrics and alerting, and identity: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 - ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
   the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the
