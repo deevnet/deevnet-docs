@@ -10,7 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
-| **Parked** | 2026-10-06: tenants keep their secrets as code for now: encrypted in their own repositories, merged into the settings they push ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). This record stays Proposed as an optional service for a tenant that needs rotation without a redeploy, per-workload revocation or a read audit. Its delivery through ADR-0017's channel becomes the tenant pushing each workload's AppRole credential ([2026-10 review, S1](/docs/architecture/reviews/2026-10-rebuild-and-access/#s1-tenant-secrets)) |
+| **Being built** | By [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), as an **optional** service. Tenants keep their secrets as code by default: encrypted in their own repositories, merged into the settings they push ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). This service is for a tenant that needs rotation without a push, per-workload revocation or a read audit. Its delivery through ADR-0017's channel becomes the tenant pushing each workload's AppRole credential ([2026-10 review, S1](/docs/architecture/reviews/2026-10-rebuild-and-access/#s1-tenant-secrets)). Parked 2026-10-06; resumed 2026-11-14 |
 | **Date** | 2026-09-21 |
 | **Scope** | Where a tenant's own runtime secrets live, such as a third-party API key its backend service calls with, how they reach the workload that needs them, and who holds the authoritative copy. Not device credentials, and not how the workload itself is filled with code. |
 | **Extends** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), whose §8 left *"tenant namespaces"* out and said they need their own record. This is that record. |
@@ -155,6 +155,9 @@ and workloads read directly under their own identity.
 
 ### 1. One namespace per tenant, made by the API
 
+- **Each tenant's namespace is `tenants/<name>`, under one parent namespace, `tenants`.** The API's
+  policy grants administration below the parent and nothing above it, so the root's own mounts stay
+  out of its reach.
 - **The API creates the namespace when it creates the tenant**, as it creates the tenant's zone,
   state credential and network (ADR-0015). No substrate commit is involved, as ADR-0010 requires.
 - **Inside it:**
@@ -202,11 +205,20 @@ reissued, the problem ADR-0015 closed for the operator token.
 - **Each workload gets its own AppRole in the tenant's namespace.** Its policy grants read on the
   paths the tenant names for that workload, and nothing else. A workload never reads what its tenant
   did not assign to it.
-- **The workload's credential is delivered once, through ADR-0017's channel.**
-  - The role ID is not secret.
-  - The secret ID arrives response-wrapped: single-use and short-lived, the property ADR-0017's open
-    question 2 already needs from a bootstrap token.
-  - This record names the credential. ADR-0017 decides how it travels.
+- **The tenant pushes the workload's credential with its code** (ADR-0034, which superseded
+  ADR-0017's channel).
+  - The provider's reader resource returns a role ID, which is not secret, and a secret ID, held in
+    tenant state as a substrate-issued credential (ADR-0012 §4).
+  - The secret ID is reusable and does not expire, because the workload logs in again each time its
+    service starts. It is **bound to the workload's address**, as are the tokens it gets, so a copy
+    used from anywhere else is refused.
+  - A response-wrapped, single-use secret ID was the earlier plan. It does not survive a service
+    restart, and the push model has no channel to deliver a fresh one each time.
+- **Each workload reads only the paths its tenant names for it.** Identical workloads can name the
+  same paths; there is no tenant-wide read.
+- **The read client is OpenBao Agent, in the tenant's own code.** It logs in by AppRole and renders
+  secrets into the service's environment. The site ships no agent of its own; the reference tenant
+  carries an example.
 - **The API is never in the read path.** A workload talks to OpenBao and nothing else, so ADR-0012
   §8's provisioning-only stance is untouched.
 - **The ADR-0017 configuration may name secrets, but never contain them.** It says which paths the
@@ -216,7 +228,9 @@ reissued, the problem ADR-0015 closed for the operator token.
 
 - **Rotating a tenant-authored secret** is a new value in the repository and an apply. Workloads pick
   it up on their next read, with no replace.
-- **Revoking a workload** deletes its AppRole. It loses access at once, whatever it still has cached.
+- **Revoking a workload** deletes its AppRole and its policy. Deleting the AppRole alone stops new
+  logins but leaves a token already issued working until it expires; deleting the policy as well
+  cuts that token off at once.
 - **Destroying a workload** revokes its role as part of the destroy.
 
 ### 6. OpenBao is needed to *start*, not to keep running
@@ -243,6 +257,8 @@ declining is stated plainly: no rotation without a redeploy, no revocation per w
   ADR-0011 §4 and ADR-0012 §4.
 - **Dynamic secrets** such as database credentials for a tenant's own database.
 - **Tenant-enabled engines.** The namespace carries only what §1 lists.
+- **The tenant's age recipients as an API concern.** They stay a Makefile target in the tenant's
+  repository (ADR-0012 §9).
 
 ---
 
@@ -266,13 +282,12 @@ tenants from each other, not from the substrate.
 - **The Raft snapshot restore.** It is less critical here, because tenants can resupply. Workload
   identities, however, can't be resupplied (below).
 
-**An OpenBao rebuild costs every opted-in workload its identity.** Tenants rewrite their secrets by
-applying. The AppRole secret IDs delivered to workloads are gone, though, and each workload needs a
-new one through ADR-0017's channel. Under ADR-0017 §3 as written, that means a replace. That is
-acceptable for stateless workloads and costly for others. Open question 2.
+**An OpenBao rebuild costs every opted-in workload one push.** Tenants rewrite their secrets by
+applying. The AppRole secret IDs given to workloads are gone, so the same apply issues new ones, and
+the tenant pushes them as it pushes any other setting (ADR-0034). No workload is replaced.
 
-**This record depends on ADR-0017 being built.** Until a workload can receive a single credential,
-the namespace can be written and never read. The two are the same piece of work from different ends.
+**A secret ID sits in tenant state and in the workload's settings.** Both are already places the
+tenant keeps substrate-issued credentials. The address binding is what limits a copy that leaks.
 
 **The API gains a resource and a wider policy.** The provider gains a secret resource. The API's
 OpenBao policy gains namespace administration. Its OpenBao client adds the namespace header.
@@ -283,27 +298,32 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 
 **This record is accepted when every item below is done.**
 
-- [ ] An acceptance test: none is stated yet (no What would settle it).
-- [ ] Built by a change record: none planned yet.
-- [ ] Open question 1 answered: namespace naming and depth.
-- [ ] Open question 2 answered: re-delivering workload identity after a rebuild.
-- [ ] Open question 3 answered: paths per workload or per tenant.
-- [ ] Open question 4 answered: the read client.
-- [ ] Open question 5 answered: whether the tenant's age recipients become an API concern.
+- [x] An acceptance test: stated in What would settle it.
+- [ ] Built by a change record: [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), planned.
+- [x] An audit device on OpenBao (ADR-0016's open item): a file device, declared by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
+- [x] Open question 1 answered: namespace naming and depth (§1).
+- [x] Open question 2 answered: re-delivering workload identity after a rebuild (§4).
+- [x] Open question 3 answered: paths per workload or per tenant (§4).
+- [x] Open question 4 answered: the read client (§4).
+- [x] Open question 5 answered: the age recipients stay with the tenant (§8).
+
+## What would settle it
+
+On the reference tenant, with the service declared:
+- plan and state hold no secret value;
+- the backend workload reads its secret through OpenBao Agent, and nothing it was not assigned;
+- a new value and an apply reach it with no replace or push;
+- deleting its reader stops its next login, and its credential is refused from another address;
+- with the tenant's namespace deleted, a reconcile and one apply bring it back, and a push restores
+  the workload;
+- a token from one tenant's namespace is refused in another's, and the API's grants are refused at
+  the root;
+- the reads are in OpenBao's audit log.
 
 ## Open questions
 
-1. **Namespace naming and depth.** `tenants/<name>` under a parent namespace, or flat at the root?
-   A parent lets one policy grant the API everything below it and nothing above.
-2. **Re-delivering workload identity after a rebuild.** Should a workload be able to re-bootstrap
-   with no replace, for example through a fresh single-use token, or is a replace the answer?
-3. **Paths per workload or per tenant?** Per-workload policies are the least privilege, but a tenant
-   with many identical workloads may want a shared path.
-4. **The read client.** A small agent in the base image that renders secrets into the service's
-   environment, OpenBao Agent, or the application's own client? If the ADR-0017 agent exists, this
-   may be the same agent.
-5. **Should the tenant's age recipients (ADR-0012 §9) become an API concern** rather than a Makefile
-   target, now that the API issues everything else?
+All five are answered: namespace layout in §1, workload identity after a rebuild, paths per workload
+and the read client in §4, and the age recipients in §8.
 
 ## What would reopen this
 
@@ -315,24 +335,25 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 
 ## To confirm when building
 
-- That namespaces in OpenBao 2.6.2 isolate KV, AppRole and policies as described: a token from one
-  namespace is refused in another, and the API's policy scoped to a parent namespace reaches its
-  children and not the root's paths.
-- That the provider's write-only argument works as the plan relies on: nothing in plan or state, and
+*Confirmed 2026-11-14 on a local OpenBao 2.6.2 dev server ([CHG-0067](/docs/changes/2026/0067-tenant-secrets/#proven-before-building)).*
+
+- [x] Namespaces isolate KV, AppRole and policies as described: a token from one namespace is
+  refused in another, and the API's policy scoped to `tenants/` reaches its children and not the
+  root's paths.
+- [ ] The provider's write-only argument works as the plan relies on: nothing in plan or state, and
   a new version triggers a write. The site runs Terraform 1.14.3, and write-only arguments need
   1.11 or later.
-- That deleting a namespace removes everything under it, including AppRoles and their secret IDs,
-  in one call.
+- [x] Deleting a namespace removes everything under it, including AppRoles and their secret IDs, in
+  one call.
 
 ---
 
 ## Current state
 
-*Updated 2026-10-06.* **Parked.** Tenants keep their secrets as code (see the header). `lightd`'s
-broker credential is an API-issued account delivered in the `kit.env` eds pushes, not handled by hand.
+*Updated 2026-11-14.* **Proposed; being built by [CHG-0067](/docs/changes/2026/0067-tenant-secrets/).**
+Tenants keep their secrets as code until then. `lightd`'s broker credential is an API-issued account
+delivered in the `kit.env` eds pushes.
 
-- **Proposed. Nothing is built.**
-- OpenBao has no namespaces.
+- OpenBao has no namespaces. Its file audit device has run since CHG-0036.
 - The API has no secret resource.
-- Workloads receive no secrets.
-- `lightd`'s broker credential is still handled by hand.
+- Workloads receive no secrets from OpenBao.
