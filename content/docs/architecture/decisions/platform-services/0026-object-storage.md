@@ -139,7 +139,7 @@ readings of a documentation page:
 |---|---|
 | 1 | A second `PutObject` with `If-None-Match: *` returns **412, atomically, on a versioned bucket** |
 | 2 | A key confined to one tenant's prefix or buckets is **refused** everything else, and a read-only key is refused every write |
-| 3 | A bucket quota is **enforced**: an object larger than the quota is refused at once, and once the store has counted the bucket every write past it is refused, noncurrent versions included. Any write a quota lets through can fill only tenant buckets' disk, never state's |
+| 3 | A bucket quota is **enforced**: a single-part upload larger than the quota is refused at once, and once the store has counted the bucket every write past it is refused, noncurrent versions included. Any write a quota lets through can fill only tenant buckets' disk, never state's |
 | 4 | **Object versioning** on a bucket, switchable by its owner |
 | 5 | **Lifecycle rules** on a bucket: expiry of current objects and of noncurrent versions |
 | 6 | Served behind the site's TLS, **path-style** addressing |
@@ -158,8 +158,10 @@ site's build (CHG-0068), silo refused an object larger than the quota at once, b
 against a 1 MiB quota over 63 seconds before refusing. Its source shows why: it compares a write
 with the bucket's usage figure from its background scanner (`loadDataUsageFromBackend`, cached for
 ten seconds), which is about a minute behind, and is zero until the scanner has counted the bucket.
-MinIO has the same code. A tenant can therefore overrun its quota by whatever it can write in about
-a minute. That is acceptable for a tenant's own buckets, and never for Terraform state, so state
+MinIO has the same code. CHG-0069 found a second gap: a multipart upload is checked part by part,
+so a 1.2 GB object was accepted against a 1 GiB quota, and the next write was refused 15 seconds
+later. A tenant can therefore overrun its quota by one large object, plus whatever it can write
+in about a minute. That is acceptable for a tenant's own buckets, and never for Terraform state, so state
 gets a store and a disk of its own (§3).
 
 ### 2. The engine and the host
@@ -309,14 +311,14 @@ versioning, lifecycle and bucket policies.
 
 ## Current state
 
-*Updated 2026-11-14.* **Proposed. The state store is built; tenant buckets are not.**
+*Updated 2026-11-14.* **Proposed. Both stores are built and serve tenants.**
 
 - **Tenants' Terraform state is in silo on `dv02obj001v01`**, in the state store on its own 5 GB
   disk, served as `tfstate` on 443 and on 9000 through the service proxy
   ([CHG-0068](/docs/changes/2026/0068-object-store-vm/)). No MinIO runs on the site.
-- **The bucket store runs beside it, empty**, on the 100 GB disk, as `s3`. Tenants can't declare a
-  bucket until [CHG-0069](/docs/changes/2026/0069-tenant-buckets/).
-- **Silo passes contract checks 1, 2, 4, 5, 6, 8 and 9, and check 3 as revised (§1)**, both in
-  its smoke test and on the deployed stores.
+- **Tenants declare buckets** with `deevnet_bucket` and `deevnet_bucket_key`, held by the bucket
+  store on the 100 GB disk as `s3` ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/)).
+- **Silo passes contract checks 1, 2, 4, 5, 6, 8 and 9, and check 3 as revised (§1)**, in its
+  smoke test, on the deployed stores, and through the API as a tenant.
 - **The state is backed up** to a drive on the provisioning VM, read from the store by name over
-  TLS ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)).
+  TLS ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)). Tenant buckets are not.

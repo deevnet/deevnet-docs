@@ -7,17 +7,17 @@ weight: -69
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | In Progress. Deployed and verified from the Builder on 2026-11-14: API v0.23.0, provider v0.11.0. Open: a public read from a device on the IoT segment and a check from `DVNTM-TD`, and ADR-0026's acceptance, which waits on CHG-0068 |
 | **Window** | None needed: new resources only. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02obj001v01` (the store), the core router (one rule), `deevnet-tenant-tdemo` |
 | **Automation** | `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`; `deevnet.mgmt` `site.yml --tags deevnet-api,tenant-state,tenant-downloads`; `deevnet.net` for the zone rule. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Low. Most likely to go wrong: a policy that grants more than one bucket, caught by the verification's refusals before any tenant is told |
 | **Related changes** | [CHG-0068](/docs/changes/2026/0068-object-store-vm/) (the store, which this needs), [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/) (tenant removal, which gains buckets) |
-| **Related runbooks** | [State Store](/docs/runbook/tenant/services/state-store/); an Object Storage page is written in Step 4 |
+| **Related runbooks** | [Object Storage](/docs/runbook/tenant/services/object-storage/) |
 
 ---
 
@@ -67,8 +67,8 @@ Deevnet API and the provider:
 
 ## Prerequisites
 
-- [ ] [CHG-0068](/docs/changes/2026/0068-object-store-vm/) complete
-- [ ] The API's admin credential on the store holds bucket, quota, lifecycle and bucket-policy actions
+- [x] [CHG-0068](/docs/changes/2026/0068-object-store-vm/)'s store built (Steps 1 to 9; the record stays open for two tenants' plans)
+- [x] The API's admin credential on the store holds bucket, quota, lifecycle and bucket-policy actions
 
 ## Procedure
 
@@ -137,17 +137,54 @@ store until removed by hand.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the API's bucket and key routes, admission and removal, released
-- [ ] Step 2: `deevnet_bucket` and `deevnet_bucket_key`, released and staged
-- [ ] Step 3: deployed; the `iot` rule in place
-- [ ] Step 4: the Object Storage page, Coming Soon updated, the tdemo example
-- [ ] Verification passes from `DVNTM-TD` and the IoT segment
+- [x] Step 1: the API's bucket and key routes, admission and removal, released
+- [x] Step 2: `deevnet_bucket` and `deevnet_bucket_key`, released and staged
+- [x] Step 3: deployed; the `iot` rule in place
+- [x] Step 4: the Object Storage page, Coming Soon updated, the tdemo example
+- [x] Verification passes from the Builder
+- [ ] A check from `DVNTM-TD`, and a public read from a device on the IoT segment
 - [ ] ADR-0026 Accepted
 
 ## Outcome
 
-*To be written.*
+**Tenants declare buckets and keys in their Terraform, and the bucket store on `dv02obj001v01`
+holds them.** Deployed on 2026-11-14: Deevnet API v0.23.0 and provider v0.11.0.
+
+- **Step 1:** the API's routes, admission against the bucket store's capacity, reconcile and
+  removal, and a sealed copy of each key's secret. Unit tests cover the service, and integration
+  tests cover the store calls against MinIO and the registry against PostgreSQL.
+- **Step 2:** `deevnet_bucket` and `deevnet_bucket_key`. Tested with real Terraform against a fake
+  of the contract.
+- **Step 3:**
+  - The API's `deevnet-api` user on the bucket store, with the same credential as on the state
+    store, holds user, policy and bucket administration, and nothing that reads or writes an object.
+    Proven 14 of 14 as that user.
+  - The core router added `iot -> object store (https)`, one rule, nothing else changed.
+- **Step 4:** the Object Storage page, Coming Soon without it, and tdemo's `files` bucket with a
+  read-only key, applied and re-planned clean.
+- **Verification, from the Builder, as tdemo:**
+  - Read-write and read-only keys each did what their access says.
+  - Each key was refused the other bucket.
+  - A `public_read` bucket answered an anonymous GET, and refused anonymous listing and PUT; a
+    private bucket refused an anonymous GET.
+  - A bucket past the remaining capacity was refused with 409: *"the bucket store has 98 GB of 100
+    GB left to allocate; this needs 100 GB"*.
+  - The quota, versioning and lifecycle read back as declared.
+  - `force_destroy` emptied and removed a bucket holding 1.2 GB, with its key.
 
 ### Departures from the plan
 
+- **A multipart upload is counted after it completes.** On the store itself, a 1.2 GB object sent
+  multipart was accepted against a 1 GiB quota, and the next small write was refused 15 seconds
+  later. Only a single-part upload larger than the quota is refused at once. ADR-0026, the tenant
+  page, the provider's and the API's docs, and the smoke test say so.
+- **No 5 GB reserve in the admission.** CHG-0068 put Terraform state on a disk of its own, so the
+  API admits against the bucket store's whole 100 GB.
+- **The lifecycle block is `object_lifecycle`.** Terraform reserves `lifecycle` in every resource.
+- **The checks ran from the Builder**, on management, not from `DVNTM-TD`, and the IoT segment was
+  not reachable from it to test a device's read.
+- **Removing a tenant with buckets** is covered by the API's tests, not exercised on the site.
+
 ## Follow-ups
+
+- A check from `DVNTM-TD`, and a public read from a device on the IoT segment.
