@@ -10,7 +10,7 @@ weight: -69
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | In Progress. Deployed and verified from the Builder on 2026-11-14: API v0.23.0, provider v0.11.0. Open: a public read from a device on the IoT segment and a check from `DVNTM-TD`, and ADR-0026's acceptance, which waits on CHG-0068 |
+| **Status** | In Progress. Deployed and verified from the Builder on 2026-11-14: API v0.23.0, provider v0.11.0. Checked from `DVNTM-TD`, as EdS, the same day. Open: a public read from a device on the IoT segment, and ADR-0026's acceptance |
 | **Window** | None needed: new resources only. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02obj001v01` (the store), the core router (one rule), `deevnet-tenant-tdemo` |
@@ -142,7 +142,8 @@ store until removed by hand.
 - [x] Step 3: deployed; the `iot` rule in place
 - [x] Step 4: the Object Storage page, Coming Soon updated, the tdemo example
 - [x] Verification passes from the Builder
-- [ ] A check from `DVNTM-TD`, and a public read from a device on the IoT segment
+- [x] A check from `DVNTM-TD`
+- [ ] A public read from a device on the IoT segment
 - [ ] ADR-0026 Accepted
 
 ## Outcome
@@ -173,6 +174,17 @@ holds them.** Deployed on 2026-11-14: Deevnet API v0.23.0 and provider v0.11.0.
     GB left to allocate; this needs 100 GB"*.
   - The quota, versioning and lifecycle read back as declared.
   - `force_destroy` emptied and removed a bucket holding 1.2 GB, with its key.
+- **Verification, from `DVNTM-TD`, as EdS,** on a Mac, from a scratch configuration with its own
+  state and EdS's API token. 13 of 13 passed:
+  - `s3.mobile.deevnet.net` resolved to the store, which answered on 443 with a certificate that
+    chains to the Deevnet Root CA.
+  - Provider 0.11.0 installed from tenant downloads, and created a `public_read` bucket and a
+    read-only key.
+  - The write key put an object, which read back with no key. With no key, listing and a put were
+    refused.
+  - The read-only key read and was refused a put. EdS's key was refused tdemo's bucket.
+  - SSH to the store's VM and the retired address `prv:9000` did not answer.
+  - The bucket was destroyed afterward.
 
 ### Departures from the plan
 
@@ -183,10 +195,12 @@ holds them.** Deployed on 2026-11-14: Deevnet API v0.23.0 and provider v0.11.0.
 - **No 5 GB reserve in the admission.** CHG-0068 put Terraform state on a disk of its own, so the
   API admits against the bucket store's whole 100 GB.
 - **The lifecycle block is `object_lifecycle`.** Terraform reserves `lifecycle` in every resource.
-- **The checks ran from the Builder**, on management, not from `DVNTM-TD`, and the IoT segment was
-  not reachable from it to test a device's read.
+- **The full checks ran from the Builder**, on management. From `DVNTM-TD` they ran as EdS rather
+  than tdemo, and covered keys, public read and reachability, not quota, versioning or lifecycle,
+  which the network does not change. The IoT segment was not reachable from either to test a
+  device's read.
 - **Removing a tenant with buckets** is covered by the API's tests, not exercised on the site.
 
 ## Follow-ups
 
-- A check from `DVNTM-TD`, and a public read from a device on the IoT segment.
+- A public read from a device on the IoT segment.
