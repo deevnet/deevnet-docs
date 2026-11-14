@@ -91,7 +91,8 @@ the token it gets. The address's certificate chains to the Deevnet Root CA.
 - **Rotate:** a new value in your repository, a higher `data_wo_version`, an apply. A running agent
   picks it up on its next render, within five minutes in the example.
 - **Revoke one workload:** destroy its `deevnet_secret_reader`. Its login stops working, and so does
-  the token it already holds. Destroying the workload does the same.
+  the token it already holds. An app already running keeps the value it was started with, so stop
+  it too, or destroy the workload.
 - **After the platform loses OpenBao:** your next apply finds the secrets and readers gone, and
   writes them again. The readers come back with new IDs, so push your settings once more. No
   workload is rebuilt.

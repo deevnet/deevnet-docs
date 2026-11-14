@@ -97,7 +97,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   with a key the tenant adds. One zone-level rule lets `DVNTM-TD` reach the overlay on port 22; the key,
   not the network, keeps tenants out of each other's workloads. An OpenBao SSH CA stays the end state.
 - [ADR-0021: Tenant Secrets](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/) —
-  *Proposed.* Answers ADR-0016 §8, which left tenant namespaces for their own record. Each tenant
+  *Accepted* (2026-11-14). Answers ADR-0016 §8, which left tenant namespaces for their own record. Each tenant
   gets a namespace in the substrate's OpenBao, made by the API, and it holds a copy of the tenant's
   runtime secrets, never the only one. A secret is either one the tenant wrote, such as a third-party
   API key, or one the substrate issued. The tenant's repository or state keeps the authoritative copy

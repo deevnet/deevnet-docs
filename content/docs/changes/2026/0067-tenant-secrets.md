@@ -10,7 +10,7 @@ weight: -67
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** Built, deployed and proven live on a throwaway tenant (API v0.22.1, provider v0.10.0). One item left: OpenBao Agent on a live workload |
+| **Status** | **Complete.** API v0.22.4 and provider v0.10.1 deployed: a tenant's runtime secrets live in its own OpenBao namespace, proven on a throwaway tenant and, through OpenBao Agent, on the reference tenant's backend workload |
 | **Window** | OpenBao work sessions. The OpenBao configuration adds a namespace and a policy without a restart; the API deploys restart only the API |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao); `dv02prv001v01` (the Deevnet API) |
@@ -153,6 +153,7 @@ deployed on `dv02prv001v01`; provider v0.10.0 was released and served in the ten
 | Recovery | With the secret and the reader deleted through the API, the plan showed both to create; one apply and one push, and the workload read again |
 | Audit | Every read and write in `tenants/tsec/` in OpenBao's audit log, the workload's from the exit node and the API's from `10.20.25.20`, refusals included |
 | Removal | `make remove-tenant NAME=tsec` deleted `tenants/tsec` (in the audit log); the old reader then got `namespace not found` |
+| OpenBao Agent on a live workload | tdemo's backend, Fedora 44 with the `openbao` package: `scripts/run-with-secrets.sh` logged in, put the key in the app's environment and started it; a new value and `weather_api_key_version = 2` restarted the app with it at the next render, 2 minutes 20 seconds later, with no push. With the reader deleted, the agent's reads were refused |
 
 The namespace loss was checked through the API's deletes, not by deleting `tenants/tsec` itself:
 neither Ansible's nor the API's grants may delete a tenant's namespace outside a tenant delete, and
@@ -174,7 +175,29 @@ nothing was granted for the drill. The reconcile that makes a namespace is the o
 - With the login refused, the workload had no token, so the reads it tried that day prove
   nothing about isolation. They are run again once readers are rebound.
 
+**Bringing tdemo up to the reference configuration found four faults, fixed on the way.**
+- tdemo predates the log store and dashboards, so its state never held their credentials, and the
+  reference `kit_env` failed to plan. Provider v0.10.1 plans a restore when the site has a service
+  but state has no credential for it.
+- A name deleted once and admitted again refused every restore, the live tenant's own token
+  included (API v0.22.2).
+- A restore returned no log tokens (API v0.22.3), and rotated the stored log tokens and dashboard
+  password on every run (API v0.22.4).
+- That first restore put back the state secret held in tdemo's Terraform state, undoing its
+  CHG-0060 reissue: tdemo's state could not be saved until `.backend.env` was given the restored
+  secret and the state was pushed. Only tdemo has ever had a reissue, so no other tenant was
+  exposed.
+
 ## Follow-ups
+
+- **A restore must not undo a state-secret reissue.** A reissue changes the store and the
+  tenant's `.backend.env`, but not the copy in its Terraform state, which a restore sends back and
+  which wins. The runbook warns against restoring afterwards; provider v0.10.1 can now restore
+  without being asked, so the API should keep a reissued secret over a supplied one, and return it
+  so state takes it up.
+- **The agent keeps retrying a revoked reader.** Its reads are refused, but the app it runs keeps
+  the value it was started with until the agent gives up or is stopped. Deleting the workload, or
+  stopping the app, is what ends it.
 
 - **Per-workload binding:** exempt tenant traffic bound for the platform zone from the exit node's
   source NAT, so OpenBao sees each workload's own address, then unset the source CIDRs. It changes
@@ -190,6 +213,6 @@ nothing was granted for the drill. The reconcile that makes a namespace is the o
 - [x] Step 4: provider v0.10.0 released and mirrored in the tenant downloads (provider pull request 29)
 - [x] API v0.22.1 deployed with readers bound to the fabric exit node
 - [x] Step 5: the reference tenant's example merged (`deevnet-tenant-tdemo` pull request 17), its runner proven against OpenBao 2.6.2
-- [ ] OpenBao Agent reads a secret on a live workload, with `bao` installed there (`deevnet-tenant-tdemo` pull request 17)
+- [x] OpenBao Agent reads a secret on a live workload, with `bao` installed there: tdemo's backend, 2026-11-14
 - [x] Step 6: the docs: the tenant guide's Runtime Secrets page, the tenant contract, Shared Services, and the API's and provider's pages
 - [x] Verification: isolation, rotation, revocation, address binding, recovery, removal and audit, all proven live
