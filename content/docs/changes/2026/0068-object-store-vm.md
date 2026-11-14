@@ -7,10 +7,10 @@ weight: -68
 
 | | |
 |---|---|
-| **Date** | Started 2026-11-14 |
+| **Date** | 2026-11-14 |
 | **Change type** | Deployment · Migration |
 | **Classification** | Structural |
-| **Status** | In Progress. Steps 1 to 9 done on 2026-11-14: tenants' state is on silo on `dv02obj001v01`, and MinIO is retired. eds and mabell planned clean the same day. Open: the router rule to prv:9000 |
+| **Status** | **Complete.** Tenants' state is on silo on `dv02obj001v01`, every tenant plans clean against it, MinIO is retired from `dv02prv001v01`, and the router no longer has a rule to it |
 | **Window** | One evening. Tenants can't apply from Step 5 until Step 7's checks pass: about an hour |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (new), `dv02prv001v01` (MinIO leaves; the API and the backup job stay), `dv02hyp001p01` (the new VM and its data disk), the core router (rules), the tdemo, eds and mabell backends (unchanged, verified) |
@@ -195,7 +195,7 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
 - [x] Step 7: eds and mabell plan clean
 - [x] Step 8: the backup job takes state from obj
 - [x] Step 9: MinIO retired from prv
-- [ ] Step 9: the router's rule `tenant dev -> tfstate` (to prv:9000) deleted
+- [x] Step 9: the router's rule `tenant dev -> tfstate` (to prv:9000) deleted
 - [x] Risk R-02 closed; R-01 narrowed to the API's database
 - [x] The Software Catalog and the Substrate Service VMs map list silo on `dv02obj001v01`
 
@@ -258,11 +258,10 @@ stopping on prv to tdemo's clean plan through the new store, ran from 17:39 to a
   the moved store by re-ensuring tdemo, instead of creating, reissuing and removing a scratch
   tenant.
 - **MinIO was removed by hand (Step 9).** `podman_service` has no removal path.
-- **The router keeps the rule to prv:9000.** It is gone from inventory, but `opnsense_firewall`
-  deletes undeclared rules only when `firewall_delete_unmanaged=true`, which is left to the
-  operator. Nothing listens there.
+- **The rule to prv:9000 went in a later run.** `opnsense_firewall` deletes undeclared rules only
+  when `firewall_delete_unmanaged=true`. Its plan listed that rule as the only deletion, with
+  nothing to add or update. The apply deleted it, and all six required paths still answered.
 
 ## Follow-ups
 
-- **The router:** delete `tenant dev -> tfstate` (to prv:9000) with a firewall run that has
-  `firewall_delete_unmanaged=true`, after reading its plan.
+None.

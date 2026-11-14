@@ -219,7 +219,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   after its driver change *and* logging proves a noticeable share of its traffic. Supersedes ADR-0022
   in part.
 - [ADR-0026: Object Storage](/docs/architecture/decisions/platform-services/0026-object-storage/) —
-  *Proposed.* MinIO's community edition was archived on 2026-04-25. The state store is now defined
+  *Accepted* (2026-11-14). MinIO's community edition was archived on 2026-04-25. The state store is now defined
   by a contract any engine must pass on the site's own build. The contract requires:
   - a second `If-None-Match: *` write refused with 412, atomically, on a versioned bucket, which is
     what `use_lockfile` needs

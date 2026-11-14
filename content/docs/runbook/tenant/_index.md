@@ -44,10 +44,13 @@ read it to use this guide.
 | [DNS](services/dns/) | `<tenant>.mobile.deevnet.net` and its reverse zone, written by you | {{< status-badge "active" "Available" >}} |
 | [Wi-Fi keys](services/wifi-keys/) | A per-tenant key on the IoT SSID, landing your devices on the IoT network | {{< status-badge "active" "Available" >}} |
 | [Devices & MQTT](services/devices-and-mqtt/) | A device registry, TLS MQTT accounts confined to your own topics, and a fixed address for a device that needs one | {{< status-badge "active" "Available" >}} |
+| [Service certificates](services/certificates/) | TLS certificates for your workloads' services, issued by the site | {{< status-badge "active" "Available" >}} |
 | [Logs](services/logs/) | Your own log partitions: workload logs, and device logs arriving over MQTT | {{< status-badge "active" "Available" >}} |
 | [Dashboards](services/dashboards/) | A Grafana organization of your own with your logs wired in; dashboards as code | {{< status-badge "active" "Available" >}} |
 | [State store](services/state-store/) | An S3 backend for your Terraform state | {{< status-badge "active" "Available" >}} |
-| [Metrics, identity, object storage](services/coming-soon/) | Designed, not yet built | {{< status-badge "planned" "Coming soon" >}} |
+| [Runtime secrets](services/secrets/) | An OpenBao namespace of your own, read by each workload under its own login | {{< status-badge "active" "Available" >}} |
+| [Object storage](services/object-storage/) | S3 buckets with a quota you declare, keys that reach one bucket each, and optional keyless reads on the site | {{< status-badge "active" "Available" >}} |
+| [Metrics, identity](services/coming-soon/) | Designed, not yet built | {{< status-badge "planned" "Coming soon" >}} |
 
 ---
 

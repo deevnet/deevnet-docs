@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-11-14): built by [CHG-0068](/docs/changes/2026/0068-object-store-vm/) and [CHG-0069](/docs/changes/2026/0069-tenant-buckets/), and proven as a tenant from `DVNTM-TD` and from the IoT segment |
 | **Date** | 2026-09-21; revised 2026-11-14 (a dedicated VM; the bucket resource's full shape; open questions 1, 3 and 4 answered; two stores on separate disks, after contract check 3 failed on the site's build) |
 | **Scope** | What the substrate's S3 service must guarantee, which engine provides it, where it runs, and how it serves both Terraform state and tenants' own buckets. Covers isolation, quotas, locking, versioning, lifecycle, anonymous read and transport. |
 | **Extends** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/), which offered a state store and chose MinIO as a detail |
@@ -270,8 +270,8 @@ versioning, lifecycle and bucket policies.
 - [x] Open question 2 answered: where the replica lives, by [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (no replica).
 - [x] Open question 3 answered: lifecycle rules are tenant-declared (§3).
 - [x] Open question 4 answered: a tenant bucket can be read without a key, from the site only (§5).
-- [ ] CHG-0068 complete.
-- [ ] CHG-0069 complete.
+- [x] CHG-0068 complete.
+- [x] CHG-0069 complete.
 
 ## Open questions
 
@@ -311,7 +311,7 @@ versioning, lifecycle and bucket policies.
 
 ## Current state
 
-*Updated 2026-11-14.* **Proposed. Both stores are built and serve tenants.**
+*Updated 2026-11-14.* **Accepted. Both stores are built and serve tenants.**
 
 - **Tenants' Terraform state is in silo on `dv02obj001v01`**, in the state store on its own 5 GB
   disk, served as `tfstate` on 443 and on 9000 through the service proxy

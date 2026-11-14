@@ -13,7 +13,13 @@ waypoints:
   - title: "Services for tenants reachable on port 443, by name (CHG-0046)"
     status: done
     date: "2026-10-10"
-  - title: "More services for tenants: secrets, metrics, identity, object storage, quotas"
+  - title: "Tenants keep their runtime secrets in an OpenBao namespace of their own (CHG-0067)"
+    status: done
+    date: "2026-11-14"
+  - title: "Object storage for tenants: Terraform state on a VM of its own, and S3 buckets with quotas and keys (CHG-0068, CHG-0069)"
+    status: done
+    date: "2026-11-14"
+  - title: "More services for tenants: metrics, identity, quotas"
     status: active
   - title: "Tenants can work from Windows laptops (CHG-0058)"
     status: done
