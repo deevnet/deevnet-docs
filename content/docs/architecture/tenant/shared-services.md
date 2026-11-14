@@ -156,6 +156,7 @@ tenant's own act, through the service's interface.
 | **Provisioning: state** | Issue a credential scoped to the tenant's prefix | Plan and apply against it |
 | **Provisioning: platform API** | Issue one API credential | Register devices, issue their wireless keys and broker accounts |
 | **Tenant observability** | Create its log partitions and tokens, and its dashboards organization | Send and read logs, and build dashboards |
+| **Identity: runtime secrets** | Create the tenant's secrets namespace | Write its secrets from its own copy, and give each workload a reader for the paths it needs |
 
 ---
 

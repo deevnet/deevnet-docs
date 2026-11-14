@@ -6,6 +6,7 @@ weight: 5
 # Logs
 
 {{< status-badge "active" "Available" >}}
+
 ## What you get
 
 Three log **partitions** of your own in the platform log store, and two tokens

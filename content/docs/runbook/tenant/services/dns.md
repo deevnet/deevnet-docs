@@ -6,6 +6,7 @@ weight: 2
 # DNS
 
 {{< status-badge "active" "Available" >}}
+
 ## What you get
 
 Your own zone, `<name>.mobile.deevnet.net`, and its reverse zone, served authoritatively by the

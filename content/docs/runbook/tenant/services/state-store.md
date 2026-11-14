@@ -6,6 +6,7 @@ weight: 7
 # State Store
 
 {{< status-badge "active" "Available" >}}
+
 ## What you get
 
 An S3-compatible place for your Terraform state, with a key prefix only your credentials can reach

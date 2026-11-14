@@ -1,6 +1,6 @@
 ---
 title: "Coming Soon"
-weight: 9
+weight: 10
 ---
 
 # Coming Soon

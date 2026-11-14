@@ -2,9 +2,9 @@
 title: "Tenant Platform Services: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 15
+tasks_completed: 16
 tasks_in_progress: 0
-tasks_planned: 5
+tasks_planned: 4
 ---
 
 # Tenant Platform Services: Project Plan
@@ -38,7 +38,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
   Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
 - ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
   site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
-- ⏳ Secrets: an optional OpenBao namespace per tenant, written through the provider and read by
+- ✅ Secrets: an optional OpenBao namespace per tenant, written through the provider and read by
   each workload under its own AppRole ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/),
   [CHG-0067](/docs/changes/2026/0067-tenant-secrets/))
 - ⏳ Metrics and alerting, identity and object storage: designed, not built

@@ -13,6 +13,7 @@ waypoints:
 # CaribouLite SDR
 
 {{< status-badge "complete" "Complete" >}}
+
 Hardware adoption of the CaribouLite SDR HAT — a software-defined radio receiver on a Raspberry Pi,
 built as a baked image in `deevnet-image-factory`, proven on the [Pi Lab](/docs/runbook/tenant/pi-lab/)
 bank, and graduated to dedicated hardware.

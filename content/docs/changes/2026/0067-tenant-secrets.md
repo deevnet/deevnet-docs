@@ -10,7 +10,7 @@ weight: -67
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **In progress.** OpenBao's `tenants` namespace and the API's grants applied; API v0.22.0 deployed; provider v0.10.0 released and in the tenant downloads. Readers move to the fabric exit node in v0.22.1 |
+| **Status** | **In progress.** Built, deployed and proven live on a throwaway tenant (API v0.22.1, provider v0.10.0). One item left: OpenBao Agent on a live workload |
 | **Window** | OpenBao work sessions. The OpenBao configuration adds a namespace and a policy without a restart; the API deploys restart only the API |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao); `dv02prv001v01` (the Deevnet API) |
@@ -135,6 +135,30 @@ the workload back with no replace.
 
 **Audit:** the workload's reads are in the audit log.
 
+## Outcome
+
+**Tenants can keep runtime secrets in their own OpenBao namespace, and every property the change
+set out to prove held live, on a throwaway tenant, `tsec`, with a workload of its own.** The
+namespace and the API's grants were applied on `dv02idn001v01`; API v0.22.0, then v0.22.1, was
+deployed on `dv02prv001v01`; provider v0.10.0 was released and served in the tenant downloads.
+
+| Check | Result |
+|---|---|
+| Value in plan or state | Neither secret's value in `terraform.tfstate` or in `terraform show -json` of a plan; a second plan showed no changes |
+| Workload reads its secret | Login `200` from the workload, twice with the same secret ID; its assigned path read `200` |
+| Isolation | With that token: a path not given `403`, a write `403`, `tenants/tdemo` `403`, the root's `deevnet-api/` `403`; the credential could not log in to `tenants/tdemo` |
+| Address binding | A login from the Builder (`10.20.99.95`) refused by the CIDR binding |
+| Rotation | A new value and `data_wo_version = 2`: the token the workload already held read version 2, with no new login, push or replace |
+| Revocation | Deleting the reader: the held token's next read `403`, a new login refused |
+| Recovery | With the secret and the reader deleted through the API, the plan showed both to create; one apply and one push, and the workload read again |
+| Audit | Every read and write in `tenants/tsec/` in OpenBao's audit log, the workload's from the exit node and the API's from `10.20.25.20`, refusals included |
+| Removal | `make remove-tenant NAME=tsec` deleted `tenants/tsec` (in the audit log); the old reader then got `namespace not found` |
+
+The namespace loss was checked through the API's deletes, not by deleting `tenants/tsec` itself:
+neither Ansible's nor the API's grants may delete a tenant's namespace outside a tenant delete, and
+nothing was granted for the drill. The reconcile that makes a namespace is the one that made
+`tenants/tdemo`.
+
 ## Departures from the plan
 
 **The first live login from a workload was refused, because the tenant fabric source-NATs.**
@@ -164,7 +188,8 @@ the workload back with no replace.
 - [x] Step 2: the API's policy widened, its live text identical to the policy proven refused at the root (`deevnet.mgmt` pull request 120)
 - [x] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace (API pull request 64)
 - [x] Step 4: provider v0.10.0 released and mirrored in the tenant downloads (provider pull request 29)
-- [ ] API v0.22.1 deployed with readers bound to the fabric exit node
-- [ ] Step 5: the reference tenant reads its secret through OpenBao Agent (`deevnet-tenant-tdemo` pull request 17)
-- [ ] Step 6: the docs
-- [ ] Verification: isolation, rotation, revocation, address binding, loss of the namespace, removal and audit, all proven live
+- [x] API v0.22.1 deployed with readers bound to the fabric exit node
+- [x] Step 5: the reference tenant's example merged (`deevnet-tenant-tdemo` pull request 17), its runner proven against OpenBao 2.6.2
+- [ ] OpenBao Agent reads a secret on a live workload, with `bao` installed there (`deevnet-tenant-tdemo` pull request 17)
+- [x] Step 6: the docs: the tenant guide's Runtime Secrets page, the tenant contract, Shared Services, and the API's and provider's pages
+- [x] Verification: isolation, rotation, revocation, address binding, recovery, removal and audit, all proven live

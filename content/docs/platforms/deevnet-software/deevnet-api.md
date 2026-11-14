@@ -32,7 +32,7 @@ OpenAPI specification in the repository, which a test holds to the code.
 |---|---|
 | `/healthz`, `/readyz`, `/version` | Anyone; no token |
 | Admissions, the tenant list, reconcile, a state-secret reissue | The operator only |
-| A tenant, and its workloads, names, devices, addresses, Wi-Fi keys, broker accounts and service certificates | The tenant, with its own token, or the operator |
+| A tenant, and its workloads, names, devices, addresses, Wi-Fi keys, broker accounts, service certificates, runtime secrets and their readers | The tenant, with its own token, or the operator |
 | `GET /v1/fabric/egress` | The operator, or the [egress agent](/docs/platforms/deevnet-software/egress-agent/)'s own token |
 
 **A service certificate is signed in the secret store, not by the API.** A tenant sends a signing
@@ -57,6 +57,16 @@ through the Tenant Service CA's CEL role (`OPENBAO_TENANT_SERVICE_CEL`), a progr
 with its own copy of the list, and its policy allows no other path
 ([CHG-0059](/docs/changes/2026/0059-cel-signing-role/)). A label added to the API's list is added
 to that copy.
+
+**A tenant's runtime secrets go to its own OpenBao namespace, and the API never reads one back**
+([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/),
+[CHG-0067](/docs/changes/2026/0067-tenant-secrets/)). Each tenant gets `tenants/<name>`
+(`DEEVNET_TENANT_SECRETS_NAMESPACE`), with a key-value mount and an AppRole mount. A secret's value
+goes there and nowhere else; a `GET` reports only that it is there, and its version. A reader is an
+AppRole and a policy naming the paths it may read. It is bound to the tenant fabric's exit node
+(`DEEVNET_TENANT_SECRETS_SOURCE_CIDRS`), the only address OpenBao sees a workload come from while the
+fabric source-NATs, and deleting it deletes both, which cuts off a token already issued. The API's
+own policy reaches below `tenants/` and nothing above it.
 
 Log tokens and the dashboards login have no routes of their own. They are steps of creating,
 restoring and reconciling a tenant, and come back in those responses.
@@ -113,6 +123,10 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
 
 ## How it behaves on repair
 
+- **A lost secrets namespace costs each tenant one apply and one push.** The reconcile makes the
+  namespace again, empty. The tenant's next apply finds its secrets and readers gone and writes them
+  again from its own code; the readers come back with new IDs, which the tenant pushes to its
+  workloads. A tenant delete deletes the namespace first.
 - **A sealed or unreachable OpenBao is unavailable, never a lost secret.** Tenant work answers `503`
   before anything changes, a tenant token gets `503` rather than `401`, and `/readyz` names the
   state (`ok`, `sealed`, `uninitialized`, `unreachable`). The API starts while OpenBao is sealed and
@@ -122,7 +136,8 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
   *restore*: the same index, the same keys. A create that was interrupted resumes and issues a new
   API token.
 - **Reconcile** re-ensures every backend for a registered tenant, in order: DNS, resolver
-  forwarding, state store, the fabric network, then the log store and dashboards. It stops at the
+  forwarding, state store, the fabric network, the log store and dashboards, then the tenant's
+  secrets namespace. It stops at the
   first failure and records it; calling again resumes. It returns the tenant's log tokens and
   dashboard password, and nothing else: not its DNS or state secrets, and not its API token.
 - **A state-secret reissue** mints a new state-store secret for a tenant, records it, sets it on the
