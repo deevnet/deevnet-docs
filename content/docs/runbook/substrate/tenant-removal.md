@@ -100,8 +100,8 @@ make purge-tenant-state NAME=<name>
 It refuses while `<name>` is still a tenant, since that tenant would still be writing there. It
 removes every version under `tf-state/tenants/<name>/`, not just the current objects: the bucket is
 versioned, so a plain delete only adds delete markers. Every earlier state, credentials and all,
-would stay stored underneath them. It runs `mc` inside the state store's MinIO container, whose
-root credentials never leave it, and finishes only when no versions are left.
+would stay stored underneath them. It runs `mc` inside the state store's container (`minio`, running silo, on
+`dv02obj001v01`), whose root credentials never leave it, and finishes only when no versions are left.
 
 ---
 

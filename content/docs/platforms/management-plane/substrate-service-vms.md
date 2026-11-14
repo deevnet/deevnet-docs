@@ -25,10 +25,11 @@ From inventory: each host's group memberships, and the `deevnet.mgmt` roles `sit
 |---|---|---|---|---|
 | Network management | Management | `dv02nms001v01`, 10.20.99.40 | Management | Omada controller |
 | Substrate observability | Management | `dv02col001v01`, 10.20.99.41 | Management | None yet: built empty, for the collector [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) will place there |
-| Provisioning | Control | `dv02prv001v01`, 10.20.25.20 | Platform | [Deevnet API](/docs/platforms/deevnet-software/deevnet-api/) and its database; MinIO, the tenant state store; the service proxy |
+| Provisioning | Control | `dv02prv001v01`, 10.20.25.20 | Platform | [Deevnet API](/docs/platforms/deevnet-software/deevnet-api/) and its database; the backup job; the service proxy |
 | Identity | Control | `dv02idn001v01`, 10.20.25.21 | Platform | OpenBao; PowerDNS, the [tenant DNS](/docs/platforms/management-plane/tenant-dns/) |
 | Tenant observability | Control | `dv02obs001v01`, 10.20.25.22 | Platform | VictoriaLogs behind vmauth; Grafana; tenant downloads; the service proxy |
 | Device messaging | Control | `dv02msg001v01`, 10.20.35.20 | IoT Backend | VerneMQ and its account writer; the [log bridge](/docs/platforms/deevnet-software/log-bridge/) |
+| Object storage | Control | `dv02obj001v01`, 10.20.25.23 | Platform | Silo, twice: the tenant state store (`tfstate`), on a disk of its own, and the tenant bucket store (`s3`); the service proxy ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)) |
 
 Every service VM runs Fedora from the site template, with its services as Podman containers under
 systemd ([Software Catalog → Substrate Service VMs](/docs/platforms/software-catalog/#substrate-service-vms)).

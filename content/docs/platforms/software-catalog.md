@@ -151,7 +151,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 v0.5.1, the last builds staged, while the API they come from is at v0.15.0. The Pi's log bridge is an
 untagged build.
 
-**Unmaintained software still running:** MinIO (archived upstream; [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
+**Unmaintained software still running:** none. MinIO was replaced by silo in [CHG-0068](/docs/changes/2026/0068-object-store-vm/).
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
 
 **Other pages that disagree with this one** (facts, not versions):

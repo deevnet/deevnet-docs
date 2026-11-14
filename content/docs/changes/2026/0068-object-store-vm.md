@@ -10,7 +10,7 @@ weight: -68
 | **Date** | Started 2026-11-14 |
 | **Change type** | Deployment · Migration |
 | **Classification** | Structural |
-| **Status** | In Progress. Steps 1 to 3 done: silo built and staged, `dv02obj001v01` built with both disks. Waiting for the image push, which crosses the core router (INC-0005) |
+| **Status** | In Progress. Steps 1 to 9 done on 2026-11-14: tenants' state is on silo on `dv02obj001v01`, and MinIO is retired. Open: clean plans for eds and mabell, and the router rule to prv:9000 |
 | **Window** | One evening. Tenants can't apply from Step 5 until Step 7's checks pass: about an hour |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (new), `dv02prv001v01` (MinIO leaves; the API and the backup job stay), `dv02hyp001p01` (the new VM and its data disk), the core router (rules), the tdemo, eds and mabell backends (unchanged, verified) |
@@ -77,12 +77,12 @@ no tenant changes anything. Tenant buckets come after, in
 
 ## Prerequisites
 
-- [ ] Thin-pool headroom on `dv02hyp001p01` for a 32 GB OS disk and a 100 GB data disk
-- [ ] The control host can reach `dv02hyp001p01` (its host key in `known_hosts`)
-- [ ] The silo image built, its smoke test passed, and staged
-- [ ] Tenants told about the window
-- [ ] A current CHG-0039 backup
-- [ ] Vault decrypted, collections built
+- [x] Thin-pool headroom on `dv02hyp001p01` for a 32 GB OS disk and a 100 GB data disk
+- [x] The control host can reach `dv02hyp001p01` (its host key in `known_hosts`)
+- [x] The silo image built, its smoke test passed, and staged
+- [x] Tenants told about the window
+- [x] A current CHG-0039 backup
+- [x] Vault decrypted, collections built
 
 ## Procedure
 
@@ -188,18 +188,47 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
 - [x] Step 1: the silo image built from source, smoke test passed, staged
 - [x] Step 2: `dv02obj001v01` in inventory, with its identity and both disks
 - [x] Step 3: the VM built, both disks mounted, the proxy answering
-- [ ] Step 4: the image on obj; both stores up; contract checks 1 to 4 and 6 to 9 pass
-- [ ] Step 5: the data directory copied, silo started
-- [ ] Step 6: every tenant's state, user and policy read back
-- [ ] Step 7: `tfstate`, `tenant_state`, the API and the rules on obj; every tenant plans clean
-- [ ] Step 8: the backup job takes state from obj
-- [ ] Step 9: MinIO retired from prv
-- [ ] Risk R-02 closed; R-01 narrowed to the API's database
-- [ ] The Software Catalog and the Substrate Service VMs map list silo on `dv02obj001v01`
+- [x] Step 4: the image on obj; both stores up; contract checks 1 to 4 and 6 to 9 pass
+- [x] Step 5: the data directory copied, silo started
+- [x] Step 6: every tenant's state, user and policy read back
+- [x] Step 7: `tfstate`, `tenant_state`, the API and the rules on obj; tdemo plans clean
+- [ ] Step 7: eds and mabell plan clean (blocked in their own repositories; see Follow-ups)
+- [x] Step 8: the backup job takes state from obj
+- [x] Step 9: MinIO retired from prv
+- [ ] Step 9: the router's rule `tenant dev -> tfstate` (to prv:9000) deleted
+- [x] Risk R-02 closed; R-01 narrowed to the API's database
+- [x] The Software Catalog and the Substrate Service VMs map list silo on `dv02obj001v01`
 
 ## Outcome
 
-*In progress.*
+**Tenants' Terraform state is on silo, on a disk of its own on `dv02obj001v01`, under the same
+name, and no MinIO runs on the site.** Steps 1 to 9 ran on 2026-11-14. The window, from MinIO
+stopping on prv to tdemo's clean plan through the new store, ran from 17:39 to about 17:45 UTC.
+
+- **The image:** silo and mc `RELEASE.2026-11-12T00-00-00Z`, built from source (factory commit
+  `8df5e29`), 252 MB. The smoke test passed 26 of 26, including a rehearsal of the move: MinIO
+  wrote a versioned bucket, a confined user and its policy, and silo read them all back.
+- **The pushes across the core router:** to obj, then to prv for the backup's client. Each took
+  about 4 minutes at 1 MB/s, with 246 pings sent and none missed, and checksums matched.
+- **Step 4:** both stores passed contract checks 1 to 4, 6 and 9 as deployed. Check 8 holds by
+  design: the image is loaded from a local tarball, and silo has no licence check.
+- **Steps 5 and 6:** the data directory, 93 files and 1.9 MB, was copied prv to obj directly over
+  SSH, and the trees were identical. Read back through silo, it had the same 222 object versions
+  (eds 125, mabell 39, tdemo 58), 6 users and versioning. The policies differ only by six that silo
+  builds in (`consolereadonly`, `iamAdmin`, `infraAdmin`, `tablesAdmin`, `tablesReadOnly`,
+  `tablesReadWrite`), attached to no one.
+- **Step 7:**
+  - `tfstate` resolves to 10.20.25.23 from management and Platform, and answers on 443 and 9000.
+  - tdemo planned with no changes.
+  - The API reconciled tdemo through the new store, and tdemo planned clean again after it.
+  - eds and mabell read their state through it on the legacy `:9000` address, and mabell's plan
+    took its lock there.
+  - Their plans then stopped on problems in their own repositories (Follow-ups).
+- **Step 8:** the backup job on prv reads `tf-state` from `https://tfstate.mobile.deevnet.net`
+  with silo's mc and the store's administrative pair. Its first archive held the 3 current state
+  objects and verified.
+- **Step 9:** removed MinIO's service, container, env file, data directory and image from prv. The
+  tenant removal script's purge now runs on obj.
 
 ### Departures from the plan
 
@@ -213,5 +242,26 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
   controller, and the guest saw it only after a rescan of its SCSI hosts. A new VM gets its disks
   before first boot.
 - **The Builder's `/home` was full.** The image was built in a container store on `/srv` instead.
+- **The backup's client came to prv too (Step 8).** The job had borrowed MinIO's container, image
+  and env file on prv. It now names its image, silo's own, which was pushed to prv the same
+  throttled way. It writes its own env file and reaches the store by name over TLS, with the
+  administrative pair, because a restore writes.
+- **The API kept `tfstate` (Step 7).** The plan said to point it at `s3`. With two stores, `s3` is
+  the bucket store, so the API's state client stays on `tfstate`, which moved with the state.
+- **The scratch tenant was a reconcile (Verification).** The API's admin client was proven against
+  the moved store by re-ensuring tdemo, instead of creating, reissuing and removing a scratch
+  tenant.
+- **MinIO was removed by hand (Step 9).** `podman_service` has no removal path.
+- **The router keeps the rule to prv:9000.** It is gone from inventory, but `opnsense_firewall`
+  deletes undeclared rules only when `firewall_delete_unmanaged=true`, which is left to the
+  operator. Nothing listens there.
 
 ## Follow-ups
+
+- **eds:** its configuration requires the `deevnet` provider `~> 0.8`, and its lock file pins
+  0.5.0. `terraform init -upgrade`, then a plan.
+- **mabell:** Grafana refuses its dashboard password (401). Its stored outputs also still carry
+  the `:3000` and `:9000` addresses from before [CHG-0046](/docs/changes/2026/0046-service-proxy/),
+  which its next apply updates.
+- **The router:** delete `tenant dev -> tfstate` (to prv:9000) with a firewall run that has
+  `firewall_delete_unmanaged=true`, after reading its plan.

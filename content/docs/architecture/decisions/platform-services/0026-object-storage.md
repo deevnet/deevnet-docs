@@ -309,13 +309,14 @@ versioning, lifecycle and bucket policies.
 
 ## Current state
 
-*Updated 2026-11-14.* **Proposed. Being built by [CHG-0068](/docs/changes/2026/0068-object-store-vm/).**
+*Updated 2026-11-14.* **Proposed. The state store is built; tenant buckets are not.**
 
-- **Tenants' state is still in MinIO community `RELEASE.2025-09-07` on the provisioning VM's OS
-  disk.** It is served on 443 through the service proxy
-  ([CHG-0046](/docs/changes/2026/0046-service-proxy/)), and backed up to a drive on that VM
-  ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)).
-- **`dv02obj001v01` is built**, with its 5 GB state disk and 100 GB bucket disk, and answers as
-  `s3` through its service proxy. Silo is not running on it yet.
-- **Silo, built from source, passes contract checks 1, 2, 4, 5 and 9 and the revised check 3** in
-  its smoke test, and reads a MinIO data directory in place.
+- **Tenants' Terraform state is in silo on `dv02obj001v01`**, in the state store on its own 5 GB
+  disk, served as `tfstate` on 443 and on 9000 through the service proxy
+  ([CHG-0068](/docs/changes/2026/0068-object-store-vm/)). No MinIO runs on the site.
+- **The bucket store runs beside it, empty**, on the 100 GB disk, as `s3`. Tenants can't declare a
+  bucket until [CHG-0069](/docs/changes/2026/0069-tenant-buckets/).
+- **Silo passes contract checks 1, 2, 4, 5, 6, 8 and 9, and check 3 as revised (§1)**, both in
+  its smoke test and on the deployed stores.
+- **The state is backed up** to a drive on the provisioning VM, read from the store by name over
+  TLS ([CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/)).
