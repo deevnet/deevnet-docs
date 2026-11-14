@@ -139,10 +139,10 @@ the workload back with no replace.
 
 **What is left before this change closes, from its procedure and verification.**
 
-- [ ] Step 1: the `tenants` namespace applied
-- [ ] Step 2: the API's policy widened and proven refused at the root
-- [ ] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace
-- [ ] Step 4: provider v0.10.0 released and mirrored in the tenant downloads
-- [ ] Step 5: the reference tenant reads its secret through OpenBao Agent
+- [ ] Step 1: the `tenants` namespace applied (`deevnet.mgmt` pull request 120, then the inventory's pull request 108)
+- [ ] Step 2: the API's policy widened and proven refused at the root (`deevnet.mgmt` pull request 120)
+- [ ] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace (API pull request 64)
+- [ ] Step 4: provider v0.10.0 released and mirrored in the tenant downloads (provider pull request 29)
+- [ ] Step 5: the reference tenant reads its secret through OpenBao Agent (`deevnet-tenant-tdemo` pull request 17)
 - [ ] Step 6: the docs
 - [ ] Verification: isolation, rotation, revocation, address binding, loss of the namespace, removal and audit, all proven live
