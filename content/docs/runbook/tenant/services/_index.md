@@ -22,9 +22,9 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 | [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/); you push over SSH | {{< status-badge "active" "Available" >}} |
 | [Your own secrets](/docs/runbook/tenant/deploy-your-app/#your-own-secrets) | your repository, encrypted; pushed with your settings | {{< status-badge "active" "Available" >}} |
 | [Runtime secrets](secrets/) | [`deevnet_secret`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret/), [`deevnet_secret_reader`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret_reader/); optional | {{< status-badge "active" "Available" >}} |
+| [Object storage](object-storage/) | [`deevnet_bucket`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket/), [`deevnet_bucket_key`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket_key/) | {{< status-badge "active" "Available" >}} |
 | [Metrics & alerting](coming-soon/#metrics-and-alerting) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Identity](coming-soon/#identity) | — | {{< status-badge "planned" "Coming soon" >}} |
-| [Object storage](coming-soon/#object-storage) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [A tenant devbox](coming-soon/#a-tenant-devbox) | — | {{< status-badge "planned" "Coming soon" >}} |
 
 Every resource takes `tenant = deevnet_tenant.this.name`, and changing `tenant` or `name` on any of

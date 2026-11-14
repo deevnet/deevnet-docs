@@ -31,14 +31,6 @@ of your own in a platform identity directory, for your application's users and f
 workloads by short-lived certificate.
 [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
 
-## Object storage
-
-{{< status-badge "planned" "Coming soon" >}}
-
-**Today:** the [state store](/docs/runbook/tenant/services/state-store/) holds Terraform state only.
-**Planned:** S3-compatible buckets of your own for application data,
-declared like everything else. [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
-
 ## A tenant devbox
 
 {{< status-badge "planned" "Coming soon" >}}

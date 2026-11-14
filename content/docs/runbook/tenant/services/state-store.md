@@ -74,5 +74,5 @@ migrates. Every later `make` loads `.backend.env`. On another laptop, copy `.bac
 - **It has no second copy.** The store lives on one disk
   ([ADR-0014](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), Proposed). Keep a copy
   of anything you cannot re-issue
-- It is for state, not application data. Buckets for your workloads are
-  [coming](/docs/runbook/tenant/services/coming-soon/#object-storage)
+- It is for state, not application data. Your workloads' data goes in
+  [object storage](/docs/runbook/tenant/services/object-storage/)
