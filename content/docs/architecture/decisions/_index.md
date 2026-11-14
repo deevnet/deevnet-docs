@@ -225,19 +225,21 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
     what `use_lockfile` needs
   - keys confined by the server
   - hard quotas
-  - versioning and asynchronous replication
+  - versioning and lifecycle rules
   - TLS
   - an admin API
   - offline operation
+  - anonymous read of one bucket and nothing else
 
-  pgsty/silo, a maintained MinIO fork, meets it as an in-place swap, built from source by the
-  container image factory. SeaweedFS is next in line: its quotas are soft. Garage is ruled out,
-  because it rejects conditional writes and has no versioning. Ceph RGW waits for a second box. One
-  store holds two classes: Terraform state, as today, and tenant buckets through a new
-  `deevnet_bucket` resource, each with a key and a required hard quota. A reserve protects state
-  from being starved, and the substrate stores tenant buckets without backing them up unless the
-  tenant opts into replication. It also closes a gap: the store has served plain HTTP despite
-  ADR-0016. Extends ADR-0007 and ADR-0014.
+  pgsty/silo, a maintained MinIO fork, meets it, built from source by the container image factory.
+  It runs on a VM of its own, `dv02obj001v01`, which holds every bucket on the site; the state moves
+  there by copying MinIO's data directory, under the same `tfstate` name. SeaweedFS is next in line:
+  its quotas are soft. Garage is ruled out, because it rejects conditional writes and has no
+  versioning. Ceph RGW waits for a second box. One store holds two classes: Terraform state, as
+  today, and tenant buckets through new `deevnet_bucket` and `deevnet_bucket_key` resources, each
+  bucket with a required hard quota, optional versioning and lifecycle, and optional anonymous read
+  from the site only. A 5 GB reserve protects state from being starved, and the substrate stores
+  tenant buckets without backing them up. Extends ADR-0007.
 - [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) —
   *Proposed.* Keycloak on the identity VM, with a `deevnet` realm for the operator and substrate UIs
   and one realm per tenant for its people and its applications' end users. The tenant manages its
