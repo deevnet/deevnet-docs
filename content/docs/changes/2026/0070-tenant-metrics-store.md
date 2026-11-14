@@ -7,10 +7,10 @@ weight: -70
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **Planned.** Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **In progress.** Step 1 done: the vendor claims hold, with three findings that shape Steps 2 to 5. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | One restart of `dv02obs001v01` for its memory. The log store, Grafana and downloads are unavailable for that minute; tenant log clients that buffer lose nothing |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store, vmauth, Grafana), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
@@ -70,8 +70,8 @@ vmauth. This change builds it and opens it to tenants:
 
 ## Prerequisites
 
-- [ ] ADR-0023 revised (tenants only, step A defined)
-- [ ] The store's current release, flags and paths checked against the vendor documentation
+- [x] ADR-0023 revised (tenants only, step A defined)
+- [x] The store's current release, flags and paths checked against the vendor documentation (Step 1)
 
 ## Procedure
 
@@ -155,7 +155,7 @@ already stored stay on the data disk until removed by hand.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the vendor claims checked and recorded
+- [x] Step 1: the vendor claims checked and recorded
 - [ ] Step 2: proven off site, refusals included
 - [ ] Step 3: the inventory changes merged
 - [ ] Step 4: the store role merged
@@ -167,4 +167,53 @@ already stored stay on the data disk until removed by hand.
 
 ## Outcome
 
-*Not yet executed.*
+### Step 1: the vendor claims (2026-11-14)
+
+Checked against VictoriaMetrics' documentation at the `v1.156.0` tag, and Docker Hub.
+
+| Claim | Found | Holds |
+|---|---|---|
+| A current release of the cluster | `v1.156.0`, released 2026-11-09; images `victoriametrics/vminsert`, `vmselect` and `vmstorage` tagged `v1.156.0-cluster` | Yes. The store is pinned there. vmauth stays on the log store's pin, `v1.152.0` |
+| A minimal cluster on one host | *"A minimal cluster setup consists of"* one `vmstorage`, one `vminsert` and one `vmselect` | Yes |
+| Tenants need no setup | *"Tenants are automatically created when the first data point is written into the given tenant."* | Yes. The API creates nothing in the store |
+| Retention is one flag | `-retentionPeriod`, on `vmstorage`. Per-tenant retention (`-retentionFilter`) is Enterprise | Yes. The value's format is confirmed by `-help` in Step 2 |
+| A store-wide series cap | `-storage.maxHourlySeries` and `-storage.maxDailySeries` on `vmstorage`: *"limits on the number of unique time series across all the tenants"*, set per `vmstorage` node. `vminsert`'s `-maxLabelsPerTimeseries` defaults to 40 | Yes. No per-tenant cap exists in the open-source cluster, as ADR-0023 §6 assumed |
+| vmauth maps a plain Prometheus path to a tenant | The vendor's own example: `src_paths: ["/api/v1/write"]` to `url_prefix: "http://vminsert-backend:8480/insert/1/prometheus/"`. *"By default, `vmauth` doesn't strip the path prefix"*, so the request path is appended | Yes |
+| `src_paths` can't be escaped by a longer path | *"the whole requested path matches at least one `src_paths` entry"* | Yes |
+
+**Finding 1: the multitenant endpoints are always on, and only vmauth keeps tenants from them.**
+- `/insert/multitenant/` takes each sample's tenant from its `vm_account_id` label, and
+  `/select/multitenant/` reads any tenant. No flag turns them off. The vendor: *"It is recommended
+  restricting access to `multitenant` endpoints only to trusted sources"*.
+- **They are out of a tenant's reach by construction.** A tenant's metrics routes are fixed paths
+  whose `url_prefix` names its own `<index>:<project>`. A request to `/insert/...` or `/select/...`
+  matches the log routes, whose backend is VictoriaLogs, not the metrics store. The verification
+  tries both.
+
+**Finding 2: since `v1.150.0`, the store also takes the tenant from `AccountID` and `ProjectID`
+headers.**
+- The vendor: *"If tenant IDs are specified in URL, then headers are ignored."* A tenant's route
+  always names the tenant in the URL, and vmauth already overwrites both headers on every route for
+  the logs, so either way the tenant is the caller's own.
+- **The store runs with `-enableMultitenancyViaHeaders=false`** all the same, so no path without a
+  tenant exists. One mechanism, not two.
+
+**Finding 3, for step B: vmalert *"deliberately allows configuring only one `datasource.url`"*.**
+- The vendor recommends *"separate instances of vmalert for each datasource type"*.
+- vmalert queries `<datasource.url>/api/v1/query` for metrics rules and
+  `<datasource.url>/select/logsql/stats_query` for log rules. With vmauth as the one URL, a tenant's
+  read user routes both. Whether one instance holds both rule types is to prove in step B; if not,
+  step B runs two per tenant.
+- A rule group's `headers` can carry `X-Deevnet-Partition`, so a log rule can read the tenant's
+  device partition. vmauth still overwrites `AccountID` and `ProjectID`.
+
+**What this sets for Steps 2 to 5:**
+- **A tenant's metrics routes are an allowlist**, ahead of its log routes:
+  - ingest token: `/api/v1/write` to `/insert/<index>:0/prometheus/`
+  - read token: `/api/v1/query`, `query_range`, `series`, `labels`, `label/<name>/values`,
+    `metadata`, `query_exemplars` and `status/buildinfo` to `/select/<index>:<project>/prometheus/`,
+    with the partition chosen by `X-Deevnet-Partition` as for the logs, `(index, 0)` by default
+- **Deletion is not reachable.** The store deletes under `/delete/<accountID>/`, which no route
+  names.
+- **The vendor gives no memory figure for a small cluster.** `obs`'s size is set from Step 2's
+  measurement.
