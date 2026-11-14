@@ -213,6 +213,16 @@ After a substrate rebuild that loses the API's database, each tenant re-applies 
     is refused until the name is admitted again, which issues a new token.
   - A restore after a genuinely lost registry is unaffected: the revocations are lost with the
     registry.
+- **A reissued state secret outranks the tenant's copy** (added 2026-11-14,
+  [CHG-0067](/docs/changes/2026/0067-tenant-secrets/)).
+  - An operator's reissue changes the state store and the tenant's `.backend.env`, but not the copy
+    in its Terraform state, so a restore over a surviving registry would send the old secret back
+    and lock the tenant out of its state.
+  - While a reissue is newer than anything the tenant has supplied, such a restore keeps the
+    reissued secret and returns it, and the tenant's state takes it up. The caller is holding the
+    tenant's own API token, which already controls the tenant.
+  - Once the tenant supplies the reissued secret, supplied secrets win again. A restore after a lost
+    registry is unaffected: the tenant's copy is then the only one.
 
 ### 6. The credentials the API holds, and what each can do
 

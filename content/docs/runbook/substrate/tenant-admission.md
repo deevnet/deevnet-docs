@@ -146,9 +146,9 @@ old secret stops working for everyone who holds it, CI included. The new one goe
 `~/<tenant>-state-secret.txt` (mode 0600), as the two lines of the tenant's `.backend.env`, to hand
 over like an admission.
 
-**The tenant must not restore from its old state afterwards.** That state still holds the old
-secret, and a restore sends back the secrets in state, which win. A restore from it would put the
-old secret back and lock the tenant out again.
+**The tenant's state takes up the new secret on its next restore.** Its Terraform state still
+holds the old secret, but a restore over the registry keeps the reissued one and hands it back, so
+the old secret is never put back.
 
 ## What the substrate does on the first apply
 

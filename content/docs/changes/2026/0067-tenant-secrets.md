@@ -190,11 +190,12 @@ nothing was granted for the drill. The reconcile that makes a namespace is the o
 
 ## Follow-ups
 
-- **A restore must not undo a state-secret reissue.** A reissue changes the store and the
-  tenant's `.backend.env`, but not the copy in its Terraform state, which a restore sends back and
-  which wins. The runbook warns against restoring afterwards; provider v0.10.1 can now restore
-  without being asked, so the API should keep a reissued secret over a supplied one, and return it
-  so state takes it up.
+- **A restore must not undo a state-secret reissue: done 2026-11-14.** A reissue changed the store
+  and the tenant's `.backend.env`, but not the copy in its Terraform state, which a restore sent
+  back and which won. API v0.22.5 marks a reissue and keeps the reissued secret over the older copy,
+  returning it; provider v0.10.2 takes it into state. Proven live on tdemo: a restore sending the
+  old secret got the reissued one back, and the store kept refusing the old one
+  ([ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §5).
 - **The agent keeps retrying a revoked reader.** Its reads are refused, but the app it runs keeps
   the value it was started with until the agent gives up or is stopped. Deleting the workload, or
   stopping the app, is what ends it.
