@@ -35,10 +35,11 @@ service, the proxy, then the disk.
 |---|---|
 | `dv02nms001v01` | `omada-controller` |
 | `dv02col001v01` | none yet |
-| `dv02prv001v01` | `deevnet-api`, `deevnet-api-db`, `minio`, `service-proxy` |
+| `dv02prv001v01` | `deevnet-api`, `deevnet-api-db`, `service-proxy` |
 | `dv02idn001v01` | `openbao`, `pdns-auth` |
 | `dv02obs001v01` | `victorialogs`, `vmauth`, `grafana`, `tenant-downloads`, `service-proxy` |
 | `dv02msg001v01` | `vernemq`, `vernemq-db`, `deevnet-log-bridge` |
+| `dv02obj001v01` | `minio` (the state store, silo), `silo-buckets`, `service-proxy` |
 
 ---
 

@@ -84,7 +84,7 @@ edit and a role run:
 | Proxmox (tenant hypervisor) | Its own token, `deevnet-api@pve!tenants`, under the role `DeevnetTenantBuilder`, with `Sys.Audit` on `/nodes` through `DeevnetNodeAudit` |
 | OPNsense | The router's API key (shared with the `deevnet.net` collection). The API uses it for the resolver's tenant zone forwards and the DHCP server's reservations for tenants' devices |
 | PowerDNS | The HTTP API key, which the server accepts only from this host |
-| MinIO | An admin user, `deevnet-api` |
+| The state store (silo, on `dv02obj001v01`) | An admin user, `deevnet-api` |
 | Omada controller | Its own Open API client, separate from the one Ansible uses |
 | Broker accounts, log users | An SSH key each, to the `deevnet-broker-account` and `deevnet-log-user` forced commands |
 | Grafana | The server admin password |

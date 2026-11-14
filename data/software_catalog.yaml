@@ -210,12 +210,12 @@ tables:
       license: PostgreSQL License
       support: Community
       source: Pin
-    - component: '**MinIO**'
-      vm: '`dv02prv001v01` (Terraform state)'
-      version: '**RELEASE.2025-09-07T16-13-09Z**'
+    - component: '**Silo**'
+      vm: '`dv02obj001v01` (the state store and the tenant bucket store)'
+      version: '**RELEASE.2026-11-12T00-00-00Z**, built from source with mc'
       license: AGPL-3.0
-      support: '**Unmaintained.** The community edition was archived 2026-04-25, and the tag can no longer be pulled'
-      source: Pin. Replacement decided in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
+      support: Community, one maintainer; a release every one to two months
+      source: Pin, built by `deevnet-container-image-factory` ([ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/), [CHG-0068](/docs/changes/2026/0068-object-store-vm/))
     - component: '**Omada Software Controller**'
       vm: '`dv02nms001v01`'
       version: 6.3.0.45

@@ -86,7 +86,8 @@ The substrate service VMs, and one check each.
 |---|---|---|---|
 | Deevnet API | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA https://api.mobile.deevnet.net/readyz` | `200` (recorded: the `deevnet_api` role asserts it) |
 | | | `curl --cacert $CA https://api.mobile.deevnet.net/version` | the deployed tag |
-| Terraform state store | `dv02prv001v01`, 10.20.25.20 | `curl --cacert $CA -I https://tfstate.mobile.deevnet.net/minio/health/live` | `200` |
+| Terraform state store | `dv02obj001v01`, 10.20.25.23 | `curl --cacert $CA -I https://tfstate.mobile.deevnet.net/minio/health/live` | `200` |
+| Tenant bucket store | `dv02obj001v01`, 10.20.25.23 | `curl --cacert $CA -I https://s3.mobile.deevnet.net/minio/health/live` | `200` |
 | OpenBao | `dv02idn001v01`, 10.20.25.21 | `curl --cacert $CA https://dv02idn001v01.mobile.deevnet.net:8200/v1/sys/health` | `200`: initialized, unsealed, active |
 | Tenant DNS (PowerDNS) | `dv02idn001v01`, 10.20.25.21 | `dig @10.20.25.21 tdemo.mobile.deevnet.net SOA` | an answer for each admitted tenant's zone |
 | MQTT broker (VerneMQ) | `dv02msg001v01`, 10.20.35.20 | `openssl s_client -connect mqtt.mobile.deevnet.net:8883 -CAfile $CA </dev/null` | `Verify return code: 0` (recorded: [CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) |
