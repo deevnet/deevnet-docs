@@ -134,8 +134,15 @@ The `hypervisors` play runs two roles:
   - **New or replaced data disk:** the role refuses to create a volume group unless the run is
     given `-e proxmox_node_storage_allow_create=true`. Even then it creates one only on a device
     with no existing signature. The partition the device path names must already exist.
+- **`proxmox_node_isos`:** it stages the Fedora DVD ISO of each release the factory builds into
+  `local:iso`, from the artifact server, checked against the `.sha256` file published beside it.
+  Packer's template build boots from it, and a reinstall leaves `local:iso` empty. On its own:
+  `--tags isos`. The artifact server is on the management subnet, so this does not cross the core
+  router.
 
-**Verify:** `pvesm status` lists `local-lvm-big-thin` and `local-lvm-big` as active.
+**Verify:** `pvesm status` lists `local-lvm-big-thin` and `local-lvm-big` as active, and
+`pvesm list local --content iso` lists `Fedora-Server-dvd-x86_64-<release>-<build>.iso` for both
+releases.
 
 ## Step 7: Proxmox access (token manual)
 
@@ -195,7 +202,7 @@ Management stays untagged.
 ## Step 9: Template and VMs
 
 1. **Template.** In `deevnet-image-factory`, run `make proxmox-fedora-pve1`. It builds the Fedora
-   template directly onto the node, fetching its credentials per run
+   template directly onto the node, booting the ISO that Step 6 staged and fetching its credentials per run
    ([Build-Time Secrets](/docs/runbook/substrate/building-recovery/build-secrets/)) from the inventory
    vault, so it does not wait for OpenBao.
 2. **Orphaned volumes.** If the data disk survived, the old VMs' volumes are still in `vgbigdata`,
