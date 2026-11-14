@@ -114,7 +114,7 @@ The install is unattended and ends with the host fetching `keys/ssh/a_autoprov_r
 Builder's next network boot, either set its firmware to boot from disk first, or remove its
 `bootstrap_grub_mac_configs` entry, re-run the `grub-mac` tag and delete its leftover `grub.cfg-*`
 files on the temporary builder
-([Pin the boot order](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#pin-the-boot-order--do-not-skip-this)).
+([After the install](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#after-the-install)).
 
 The installed host comes up on its DHCP reservation, `10.20.99.95`, with the hostname
 `builder-node`. Confirm `ssh a_autoprov@10.20.99.95` works; a failed key fetch leaves a host that

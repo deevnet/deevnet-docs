@@ -10,7 +10,7 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 to 4 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, the automation tokens hold no Administrator (2026-11-12), and the old build user and role are gone (2026-11-13). Step 5 remains |
+| **Status** | In Progress. Steps 1 to 4 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, the automation tokens hold no Administrator (2026-11-12), the old build user and role are gone, and the ISO and the empty VM are automated (2026-11-13). The verification remains |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -196,7 +196,7 @@ Publish the ISO for every built release; make template builds fetch it. Add an e
 **Verify:** a template build on a hypervisor with an empty `local:iso` succeeds; an empty VM is
 created from inventory and network-boots.
 
-**State, 2026-11-13: the ISO done; the empty VM in review.**
+**State, 2026-11-13:** done
 
 **Ansible stages the ISO; Proxmox does not fetch it.** The template build could have had Proxmox
 download the ISO itself (`iso_download_pve`), but Proxmox's `download-url` needs
@@ -219,7 +219,21 @@ server now publishes the previous release's DVD ISO as well; Fedora 43's was cop
 
 **The empty VM** is `mgmt_vm.source: pxe` in `proxmox_vm`
 ([ansible-collection-deevnet.mgmt #119](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/119)).
-Its check, an empty VM created from inventory that network-boots, has not run yet.
+The role creates the VM through the API with everything a UEFI network install needs, and the disk
+first in the boot order, so the blank disk falls through to the network and the installed disk boots
+from then on. It was proven on a throwaway host, `dv02bld003v01` (VMID 208), declared on a branch
+([ansible-inventory-deevnet #107](https://github.com/deevnet/ansible-inventory-deevnet/pull/107),
+closed unmerged) and removed afterwards with its reservation, record and GRUB config.
+[Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/)
+now declares the VM instead of building it by hand.
+
+| Check | Result |
+|---|---|
+| `site.yml --tags vms` creates the VM as declared | Pass: OVMF, q35, Secure Boot off, `rng0`, `boot: order=scsi0;net0`, the declared MAC |
+| The blank disk network-boots | Pass: the reservation, `grubx64.efi`, the MAC-pinned GRUB config, the kickstart; `%post` ran after about 6 minutes |
+| After the install, it boots its disk | Pass: no second TFTP request; the play's SSH wait and reserved-address check passed |
+| After a power cycle, it boots its disk | Pass: `qm stop` and `qm start`, no network request |
+| A second run changes nothing | Pass: `changed=0` |
 
 ## Verification
 
@@ -244,5 +258,5 @@ Administrator again.
 - [x] Step 2: the build path removed from OpenBao, 2026-11-12
 - [x] Step 3: the automation tokens narrowed to custom Proxmox roles per node, 2026-11-12
 - [x] Step 4: `packer-prov@pve` and the `TerraformProv` role removed, 2026-11-13
-- [ ] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`
+- [x] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`, 2026-11-13
 - [ ] Verification: builds succeed with OpenBao stopped

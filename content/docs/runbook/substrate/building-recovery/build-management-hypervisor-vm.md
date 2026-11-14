@@ -15,7 +15,7 @@ its declaration.
 | | **Clone from template** | **PXE netboot** |
 |---|---|---|
 | Source of the OS | Packer-built Proxmox template | Install tree on the artifact server |
-| Driven by | `deevnet.mgmt` `roles/proxmox_vm` | anaconda + `builder-node-<release>.ks` |
+| Driven by | `deevnet.mgmt` `roles/proxmox_vm` | `roles/proxmox_vm` (`source: pxe`), then anaconda + `builder-node-<release>.ks` |
 | Firmware | SeaBIOS (the template's default) | **UEFI/OVMF** — the kickstart declares an ESP |
 | Typical time | 2–5 minutes | 20–40 minutes |
 | Use it for | Anything that just needs the current base image | Validating the netboot path, or a host whose disk layout the template cannot produce |
@@ -155,20 +155,46 @@ timeout. The role renders **six filename variants** per host because GRUB's
 `$net_default_mac` format varies by firmware; OVMF requests the **lowercase-with-colons**
 form, so the dashed variants alone are not enough.
 
-### Create the VM shell
+### Declare
 
-There is no role for "create an empty VM to PXE boot" — `proxmox_vm` only clones templates.
-Create it against the PVE API with:
+**`proxmox_vm` creates the empty VM when the host declares `source: pxe`.** In
+`host_vars/<host>/vars.yml`:
+
+```yaml
+mgmt_vm:
+  source: pxe
+  hypervisor: dv02hyp001p01
+  node: dv02hyp001p01
+  vmid: "{{ deevnet_assigned_vmid | default(0) }}"
+  storage: local-lvm-big-thin
+  cores: 2
+  memory: 4096
+  os_disk_size: 100        # required; the kickstart needs about 88 GiB
+```
+
+No `template_prefix`, `static_ip` or cloud-init settings: anaconda owns the install, on the host's
+DHCP reservation.
+
+### Build
+
+```bash
+cd ansible-collection-deevnet.mgmt && make rebuild
+ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:$HOME/.ansible/collections" \
+  ansible-playbook playbooks/site.yml --limit <host> --tags vms
+```
+
+The role creates the VM, starts it, and waits up to an hour for SSH on the reserved address, so the
+play ends when the installed host answers. The VM it creates:
 
 | Setting | Value | Why |
 |---|---|---|
 | `bios` | `ovmf` | the kickstart declares `part /boot/efi --fstype=efi` and has no `biosboot`, so a legacy install cannot complete |
-| `efidisk0` | `<storage>:1,efitype=4m,pre-enrolled-keys=0` | **Secure Boot must be off** — `grubx64.efi` is built locally by `grub2-mkimage` and is unsigned |
+| `efidisk0` | `<storage>:1,efitype=4m,pre-enrolled-keys=0` | **Secure Boot must be off**: `grubx64.efi` is built locally by `grub2-mkimage` and is unsigned |
 | `rng0` | `source=/dev/urandom` | mandatory; see above |
 | `machine` | `q35` | |
-| `net0` | `virtio=<mac>,bridge=vmbr0,firewall=0` | virtio is correct here; see the note below |
-| `scsi0` | `<storage>:100` | the kickstart's floor is ~88 GiB (1 G `/boot` + 512 M ESP + 50 G root + 20 G `/home` + 16 G swap) and gives no useful error below it |
-| `boot` | `order=net0;scsi0` | net first to install — **must be flipped afterwards** |
+| `net0` | `virtio=<mac>,bridge=vmbr0` | the declared MAC, which the reservation and the GRUB config key off |
+| `scsi0` | `<storage>:<os_disk_size>` | the kickstart's floor is about 88 GiB (1 G `/boot` + 512 M ESP + 50 G root + 20 G `/home` + 16 G swap) and gives no useful error below it |
+| `boot` | `order=scsi0;net0` | **disk first, from the start**: the blank disk falls through to the network, and once installed the disk boots, so it never reinstalls itself |
 | cloud-init drive | none | anaconda owns this install |
 
 ### The boot chain
@@ -193,40 +219,17 @@ GET /kickstart/builder-node-<release>.ks
 GET /fedora/<release>/mirror/...    anaconda switches to HTTP here
 ```
 
-### Pin the boot order — do not skip this
+### After the install
 
-`grub.cfg-mac.j2` renders `set timeout=0` with a single install entry, and the VM boots
-`net0` first. Until the boot order is flipped, **every subsequent reboot silently
-reinstalls the machine.**
+**The VM boots its disk from then on, with no boot order to change.** Proxmox's boot order is disk
+first, so after the install's reboot, a guest reboot or a power cycle, the installed system boots and
+the network is never asked. A request for `grubx64.efi` from the host after its install means its
+disk is not bootable.
 
-Set `boot: order=scsi0;net0`. Two things about *how*, both learned the hard way:
-
-**A guest reboot does not re-read PVE's boot order.** `bootindex` is fixed when QEMU
-starts, so changing `boot:` on a running VM has no effect until the VM is **power cycled**
-(stop then start — not `reboot` from inside, and not the PVE "Reboot" button).
-
-**There is a safe window for that stop, and it is about a minute wide.** A looping VM
-alternates between installing and rebooting. Stopping it mid-install, while anaconda is
-writing packages, leaves a half-written disk on top of the previous complete install. Stop
-it *after* one install finishes and *before* the next starts writing:
-
-```bash
-# an install completed when %post fetches the key:
-grep "<ip>.*keys/ssh" /var/log/nginx/artifacts.access.log | tail -1
-# the next round is writing once new .rpm GETs appear:
-grep "<ip>.*\.rpm" /var/log/nginx/artifacts.access.log | tail -1
-```
-
-Stop when the `keys/ssh` timestamp is newer than the last `.rpm` timestamp.
-
-**Diagnosing the loop.** Repeated installs look like repeated *failures* — same package
-count, same cadence, never finishing. The discriminator is whether `%post` ran: the
-kickstart fetches `keys/ssh/a_autoprov_rsa.pub` at the very end, so a hit on that URL means
-that round **succeeded** and the reboot is the problem, not the install.
-
-Then remove the host's entry from `bootstrap_grub_mac_configs`, re-run the `grub-mac` tag,
-and delete the leftover `grub.cfg-*` files by hand — that role renders configs but never
-prunes them.
+Then remove the host's entry from `bootstrap_grub_mac_configs`, re-run the `grub-mac` tag, and
+delete the host's `grub.cfg-*` files by hand: that role renders configs but never prunes them. Left
+in place, the entry reinstalls the host, unattended and wiping its disk, the next time its disk will
+not boot.
 
 ### Finish
 
@@ -281,7 +284,11 @@ matching variant on disk.
 
 ### It reinstalls itself on every reboot
 
-The boot order was never pinned to the disk after the install.
+The boot order has the network first. A VM created by `proxmox_vm` has the disk first; a VM made by
+hand needs `boot: order=scsi0;net0`, and a **power cycle** (stop, then start) to take it: the boot
+order is fixed when QEMU starts, so a guest reboot keeps the old one. Stop it between two installs,
+not while anaconda writes packages. A round finished when `%post` fetches
+`keys/ssh/a_autoprov_rsa.pub` from the artifact server.
 
 ### The guest is up but on the wrong address
 
