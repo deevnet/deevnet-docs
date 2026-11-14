@@ -11,7 +11,7 @@ weight: -67
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
 | **Status** | Planned |
-| **Window** | OpenBao work sessions. The OpenBao configuration adds an audit device and a namespace without a restart; the API deploys restart only the API |
+| **Window** | OpenBao work sessions. The OpenBao configuration adds a namespace and a policy without a restart; the API deploys restart only the API |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao); `dv02prv001v01` (the Deevnet API) |
 | **Automation** | `deevnet.mgmt` `openbao` role (`playbooks/openbao.yml`) and `site.yml --tags deevnet-api`, against `ansible-inventory-deevnet/mobile`; `deevnet-provisioning-api` v0.22.0; `terraform-provider-deevnet` v0.10.0; `deevnet-tenant-tdemo` |
@@ -48,7 +48,7 @@ running in the tenant's own code.
 
 ## Scope
 
-**In scope:** OpenBao's audit device and `tenants` namespace; the API's OpenBao policy; the API's
+**In scope:** OpenBao's `tenants` namespace; the API's OpenBao policy; the API's
 secrets step and endpoints; the provider's `deevnet_secret` and `deevnet_secret_reader` resources;
 an example in the reference tenant; the tenant guide.
 
@@ -65,19 +65,45 @@ an example in the reference tenant; the tenant guide.
 | One tenant reaches another's namespace | OpenBao | Each call carries the caller's own namespace, derived from its token, never sent. A test uses tenant A's reader against tenant B's namespace |
 | The API hands back a secret value | the API | The API's policy has no read on `secrets/data/`; a GET returns presence and version only |
 | A leaked reader credential is used elsewhere | OpenBao | The secret ID and its tokens are bound to the workload's address |
-| The audit device blocks OpenBao when its log cannot be written | OpenBao | The log goes to the VM's own disk with rotation; checked before the device is enabled |
+| A held token outlives its reader's delete | OpenBao | Deleting an AppRole stops new logins but not a token already issued. A reader delete removes the AppRole and its policy together, which cuts the token off at once |
 
 ## Prerequisites
 
 - [ ] OpenBao open (a work session) for every OpenBao change, API deploy and live test
 - [ ] Vault decrypted; collections built
-- [ ] OpenBao 2.6.2's namespace policy paths confirmed against its documentation
+- [x] OpenBao 2.6.2's namespace policy paths proven on a local dev server (see below)
+
+## Proven before building
+
+**The policy shape was proven on 2026-11-14, on a throwaway OpenBao 2.6.2 dev server on the
+Builder.** The server was local and was stopped afterwards; the site's OpenBao was not touched.
+
+- **Child paths from the root.** A root-namespace policy reaches a tenant's namespace by prefixing
+  its path: `tenants/sys/namespaces/*` to create and delete tenant namespaces, and
+  `tenants/+/sys/mounts/*`, `tenants/+/secrets/data/*` and the like inside each one.
+- **The API's grants stop at `tenants/`.** With that policy, the API created two tenant namespaces,
+  their mounts, a policy and an AppRole in each, and wrote a secret. It was refused (`403`) reading
+  a secret's value, reading the root's `deevnet-api/` mount, enabling a mount at the root and
+  deleting `tenants` itself.
+- **Tenants are isolated.** A workload token from `tenants/t1` was refused in `tenants/t2` both by
+  header and by path prefix, and `t1`'s credential could not log in to `t2`. It could not read a
+  path in its own namespace that its policy did not name, or write anything.
+- **The secret ID is reusable and bound.** Two logins with the same secret ID succeeded from the
+  bound address, and a login from another address was refused by the CIDR binding.
+- **Rotation needs no new login.** A new version written by the API was read with the token the
+  workload already held.
+- **Revocation needs the policy deleted too.** After its AppRole was deleted, the workload could not
+  log in, but its held token still read the secret. Deleting the reader's policy as well made the
+  same token's next read `403`.
+- **Deleting a namespace removes what is in it.** The delete returned `in-progress` and finished
+  within seconds. The deleted namespace's workload token was refused, and a namespace made again
+  under the same name held no mount or AppRole from before.
 
 ## Procedure
 
 | Step | What | Check |
 |---|---|---|
-| 1 | The `openbao` role enables a file audit device and creates the `tenants` namespace; `--limit dv02idn001v01` | `sys/audit` lists the device; `sys/namespaces` lists `tenants/` |
+| 1 | The `openbao` role creates the `tenants` namespace; `--limit dv02idn001v01` | `sys/namespaces` lists `tenants/` |
 | 2 | The `deevnet-api` policy gains namespace administration under `tenants/` | The policy as loaded; a read of `deevnet-api/` through the new grants is refused |
 | 3 | API v0.22.0: the secrets step, the secret and reader endpoints, the namespace removed on delete; `site.yml --tags deevnet-api` | Tests pass; live, a reconcile makes `tenants/tdemo` with its two mounts |
 | 4 | Provider v0.10.0: `deevnet_secret` and `deevnet_secret_reader` | Plan and state hold no value; a new version writes again |
@@ -113,7 +139,7 @@ the workload back with no replace.
 
 **What is left before this change closes, from its procedure and verification.**
 
-- [ ] Step 1: the audit device and the `tenants` namespace applied
+- [ ] Step 1: the `tenants` namespace applied
 - [ ] Step 2: the API's policy widened and proven refused at the root
 - [ ] Step 3: API v0.22.0 merged, released and deployed; a reconcile makes the namespace
 - [ ] Step 4: provider v0.10.0 released and mirrored in the tenant downloads

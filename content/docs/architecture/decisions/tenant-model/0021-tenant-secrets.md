@@ -228,7 +228,9 @@ reissued, the problem ADR-0015 closed for the operator token.
 
 - **Rotating a tenant-authored secret** is a new value in the repository and an apply. Workloads pick
   it up on their next read, with no replace.
-- **Revoking a workload** deletes its AppRole. It loses access at once, whatever it still has cached.
+- **Revoking a workload** deletes its AppRole and its policy. Deleting the AppRole alone stops new
+  logins but leaves a token already issued working until it expires; deleting the policy as well
+  cuts that token off at once.
 - **Destroying a workload** revokes its role as part of the destroy.
 
 ### 6. OpenBao is needed to *start*, not to keep running
@@ -298,7 +300,7 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 
 - [x] An acceptance test: stated in What would settle it.
 - [ ] Built by a change record: [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), planned.
-- [ ] An audit device on OpenBao (ADR-0016's open item), enabled by CHG-0067.
+- [x] An audit device on OpenBao (ADR-0016's open item): a file device, declared by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
 - [x] Open question 1 answered: namespace naming and depth (§1).
 - [x] Open question 2 answered: re-delivering workload identity after a rebuild (§4).
 - [x] Open question 3 answered: paths per workload or per tenant (§4).
@@ -333,14 +335,16 @@ and the read client in §4, and the age recipients in §8.
 
 ## To confirm when building
 
-- That namespaces in OpenBao 2.6.2 isolate KV, AppRole and policies as described: a token from one
-  namespace is refused in another, and the API's policy scoped to a parent namespace reaches its
-  children and not the root's paths.
-- That the provider's write-only argument works as the plan relies on: nothing in plan or state, and
+*Confirmed 2026-11-14 on a local OpenBao 2.6.2 dev server ([CHG-0067](/docs/changes/2026/0067-tenant-secrets/#proven-before-building)).*
+
+- [x] Namespaces isolate KV, AppRole and policies as described: a token from one namespace is
+  refused in another, and the API's policy scoped to `tenants/` reaches its children and not the
+  root's paths.
+- [ ] The provider's write-only argument works as the plan relies on: nothing in plan or state, and
   a new version triggers a write. The site runs Terraform 1.14.3, and write-only arguments need
   1.11 or later.
-- That deleting a namespace removes everything under it, including AppRoles and their secret IDs,
-  in one call.
+- [x] Deleting a namespace removes everything under it, including AppRoles and their secret IDs, in
+  one call.
 
 ---
 
@@ -350,6 +354,6 @@ and the read client in §4, and the age recipients in §8.
 Tenants keep their secrets as code until then. `lightd`'s broker credential is an API-issued account
 delivered in the `kit.env` eds pushes.
 
-- OpenBao has no namespaces and no audit device.
+- OpenBao has no namespaces. Its file audit device has run since CHG-0036.
 - The API has no secret resource.
 - Workloads receive no secrets from OpenBao.
