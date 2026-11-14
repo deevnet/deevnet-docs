@@ -3,8 +3,9 @@ title: "Network & Workloads"
 weight: 1
 ---
 
-# Network & Workloads {{< status-badge "active" "Available" >}}
+# Network & Workloads
 
+{{< status-badge "active" "Available" >}}
 ## What you get
 
 Creating the tenant gives you a network before you declare anything else:

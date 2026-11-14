@@ -3,8 +3,9 @@ title: "Discovery"
 weight: 2
 ---
 
-# Discovery {{< status-badge "planned" "Planned" >}}
+# Discovery
 
+{{< status-badge "planned" "Planned" >}}
 Stage 4 of [Lifecycle Management](/docs/policies/lifecycle-management/): knowing what is actually
 running, and learning what upstream has released for it. Discovery doesn't change anything. What it
 finds starts another stage: a patch, an evaluation, an upgrade or a retirement.
