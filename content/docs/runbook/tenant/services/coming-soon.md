@@ -16,10 +16,11 @@ here can be declared today. The shape described is the proposal's, and may chang
 
 **Today:** logs are the only telemetry the platform stores for you, though a numeric field in a
 device's JSON log line can already be [graphed](/docs/runbook/tenant/services/dashboards/#a-starter-dashboard).
-**Planned:** your workloads push metrics into a partition of your own (the platform never scrapes a
-tenant workload), you declare alert rules that run under your own token, and notifications go out
-through a platform push service. Your Grafana organization gains metrics data sources beside the
-log ones.
+**Planned:** your workloads push metrics, with the log tokens you already hold, into a
+Prometheus-compatible store of your own (the platform never scrapes a tenant workload), and your
+Grafana organization gains a metrics data source. You declare alert rules, over metrics or over logs, that run under your own token, and
+notifications reach your phone through a platform push service while you are at the site. Later,
+each workload's CPU, memory, disk and network appear beside your own metrics.
 [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
 
 ## Identity
