@@ -155,6 +155,8 @@ holds them.** Deployed on 2026-11-14: Deevnet API v0.23.0 and provider v0.11.0.
   tests cover the store calls against MinIO and the registry against PostgreSQL.
 - **Step 2:** `deevnet_bucket` and `deevnet_bucket_key`. Tested with real Terraform against a fake
   of the contract.
+  In tenant downloads on `dv02obs001v01` the same day, copied at 1 MB/s with the operator at the
+  router console.
 - **Step 3:**
   - The API's `deevnet-api` user on the bucket store, with the same credential as on the state
     store, holds user, policy and bucket administration, and nothing that reads or writes an object.
