@@ -10,11 +10,11 @@ weight: -70
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress.** Step 1 done: the vendor claims hold, with three findings that shape Steps 2 to 5. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
-| **Window** | One restart of `dv02obs001v01` for its memory. The log store, Grafana and downloads are unavailable for that minute; tenant log clients that buffer lose nothing |
+| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold, and the store, vmauth's routes and Grafana are proven on the Builder. `obs` keeps its 4 GB. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Window** | None needed: `obs` keeps its memory (Step 2), and vmauth reloads in place. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store, vmauth, Grafana), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
-| **Automation** | `deevnet.mgmt` `site.yml --tags vms,metrics-store,log-store,dashboards,deevnet-api --limit` the host; `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
+| **Automation** | `deevnet.mgmt` `site.yml --tags metrics-store,log-store,dashboards,deevnet-api --limit` the host; `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Low. Most likely to go wrong: a vmauth mapping that lets a token reach another tenant's partition, caught by the verification's refusals before any tenant is told |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (the tokens this reuses), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) (the Grafana organizations), [CHG-0046](/docs/changes/2026/0046-service-proxy/) (443 by name) |
 | **Related runbooks** | [Coming Soon](/docs/runbook/tenant/services/coming-soon/) |
@@ -46,11 +46,13 @@ vmauth. This change builds it and opens it to tenants:
 ## Scope
 
 **In scope:**
-- The store, on `obs`, and `obs`'s resize.
+- The store, on `obs`, with each component's memory capped.
 - vmauth's tenant users gaining the metrics paths.
 - The `metrics` name on the service proxy.
 - The API's metrics endpoint and Grafana data source, applied to existing tenants by reconcile.
 - The provider's `metrics_endpoint`.
+- Tenant removal deleting the tenant's metrics, as it does its logs
+  ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/)).
 - The tenant docs and a tdemo example.
 
 **Out of scope:**
@@ -65,7 +67,7 @@ vmauth. This change builds it and opens it to tenants:
 |---|---|---|
 | A token reaches another tenant's metrics, or the multitenant endpoint | vmauth | Verification refuses each, both ways, writing and reading |
 | A tenant names its own partition and writes another's | vmauth | Partitions are derived from the token, never read from the request; verification tries it |
-| The store crowds out the log store | `obs` | Memory measured before the size is set; the store-wide caps |
+| The store crowds out the log store | `obs` | Each component's caches capped with `-memory.allowedBytes`; the store-wide series caps |
 | A metrics change breaks the logs | vmauth | Verification reads and writes logs as each tenant after the change |
 
 ## Prerequisites
@@ -90,20 +92,23 @@ The cluster, vmauth and Grafana in containers on the Builder, with two tenants' 
 
 ### Step 3: The inventory
 
-- `obs`'s memory, from 4 GB to the measured figure.
 - The `metrics` alias, and a `metrics` entry in `service_proxy_vhosts` for vmauth.
-- The store's retention, 90 days, and caps.
+- The store's retention, 90 days, its series caps and each component's memory cap.
 
 ### Step 4: The store role
 
 A `deevnet.mgmt` role, tagged `metrics-store`: vminsert, vmselect and vmstorage as containers on
-`obs`, on the host network, bound to loopback, with data on the data disk.
+`obs`, on the host network, bound to loopback, with data on the data disk. vminsert and vmselect
+run with `-enableMultitenancyViaHeaders=false`, vmselect with a `-deleteAuthKey` only the writer
+holds, and each with `-memory.allowedBytes`. The images are mirrored on the artifact server like
+vmauth's.
 
 ### Step 5: The API
 
 - The vmauth users the writer renders gain the metrics paths: write on `(index, 0)` for the ingest
   token, and read on `(index, 0)` and `(index, 1)` for the read token. The log contract's wire format
   doesn't change: the partitions are still derived from the index.
+- The writer's purge also deletes the tenant's metrics.
 - The tenant's response gains a `metrics_endpoint`.
 - Grafana's data-source contract gains `deevnet-metrics-workloads`, the built-in Prometheus type,
   with the read token.
@@ -117,9 +122,9 @@ site, and stage it in tenant downloads.
 
 ### Step 7: Deploy
 
-1. Resize and restart `obs`.
-2. The store role, then the log store role (vmauth), then the dashboards role.
-3. The API.
+1. The store role.
+2. The log store role: the new writer first, then its base file and config naming the store.
+3. The dashboards role, then the API.
 4. Reconcile tdemo, eds and mabell.
 
 ### Step 8: Docs and the reference tenant
@@ -156,7 +161,7 @@ already stored stay on the data disk until removed by hand.
 **This change closes when every item below is done.**
 
 - [x] Step 1: the vendor claims checked and recorded
-- [ ] Step 2: proven off site, refusals included
+- [x] Step 2: proven off site, refusals included
 - [ ] Step 3: the inventory changes merged
 - [ ] Step 4: the store role merged
 - [ ] Step 5: the API released
@@ -217,3 +222,52 @@ headers.**
   names.
 - **The vendor gives no memory figure for a small cluster.** `obs`'s size is set from Step 2's
   measurement.
+
+### Step 2: proven on the Builder (2026-11-14)
+
+VictoriaMetrics `v1.156.0-cluster`, vmauth `v1.152.0`, VictoriaLogs `v1.52.0` and Grafana 13.2.2 in
+containers on the Builder. Two tenants, eds (index 2) and tdemo (index 1), with vmauth's
+configuration rendered by the writer's own code. The code is
+[deevnet-provisioning-api#74](https://github.com/deevnet/deevnet-provisioning-api/pull/74).
+
+**Routing and isolation: 28 of 28 checks pass.**
+- Each tenant writes and reads its own metrics, and reads none of the other's.
+- The ingest token is refused a read, and the read token a write.
+- None of these reaches another tenant's metrics:
+  - writing to `/insert/1:0/…` or `/insert/multitenant/…`, or by `..` in the path (400)
+  - reading `/select/multitenant/…` or `/select/1:0/…`, by `..` in the path, or naming tdemo's
+    partition in `X-Deevnet-Partition` (eds reads its own)
+  - an `AccountID` header, or a `vm_account_id` label on a sample, which stay in the writer's own
+    partition as an ordinary header or label
+- `delete_series` is unreachable, and the series survive.
+- The operator reads a tenant's metrics only by selecting it.
+- Logs are unaffected: each tenant still writes and reads its own, and not the other's.
+
+**A real remote-write client works.** vmagent, writing as eds with its ingest token, put 890 series
+in eds's partition, and tdemo saw none.
+
+**Grafana works.** Organizations built by the API's own Grafana code, with the new
+`deevnet-metrics-workloads` data source: each tenant's login queries its own metric and not the
+other's. The API's integration suite passes.
+
+**Tenant removal now deletes metrics too.** Removing eds deleted its series, through vmselect's
+delete API and a key only the writer holds, and left tdemo's 20,001 untouched. The scope gained
+this: without it, a removed tenant's metrics would outlive it, against CHG-0065.
+
+**Memory: `obs` keeps 4 GB.**
+- The cluster used about 120 MB holding 20,000 series (vmstorage 54 MB, vmselect 37 MB, vminsert
+  25 MB). Today's tenants would be far below that.
+- `obs` uses 817 MB of its 3.9 GB, with 3 GB available.
+- Each component sizes its caches from the whole VM's memory unless told otherwise
+  (`-memory.allowedPercent`, 60% by default), so each is capped with `-memory.allowedBytes`.
+- The operator chose no resize on 2026-11-14. A resize stays the remedy if measurement later says
+  so.
+
+**Found for the tenant docs:**
+- A sample is queryable about 30 seconds after it is written. vmselect leaves out the most recent
+  30 seconds by default (`-search.latencyOffset`).
+- An instant query looks back five minutes, so a series not written for longer reads as absent;
+  `last_over_time(...[1h])` finds it.
+- `/api/v1/import/prometheus` takes the Prometheus text format, so `curl` can push a metric with no
+  client library.
+
