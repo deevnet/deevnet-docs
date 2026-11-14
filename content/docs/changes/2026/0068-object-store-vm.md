@@ -10,7 +10,7 @@ weight: -68
 | **Date** | Started 2026-11-14 |
 | **Change type** | Deployment · Migration |
 | **Classification** | Structural |
-| **Status** | In Progress. Steps 1 to 9 done on 2026-11-14: tenants' state is on silo on `dv02obj001v01`, and MinIO is retired. Open: clean plans for eds and mabell, and the router rule to prv:9000 |
+| **Status** | In Progress. Steps 1 to 9 done on 2026-11-14: tenants' state is on silo on `dv02obj001v01`, and MinIO is retired. eds and mabell planned clean the same day. Open: the router rule to prv:9000 |
 | **Window** | One evening. Tenants can't apply from Step 5 until Step 7's checks pass: about an hour |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (new), `dv02prv001v01` (MinIO leaves; the API and the backup job stay), `dv02hyp001p01` (the new VM and its data disk), the core router (rules), the tdemo, eds and mabell backends (unchanged, verified) |
@@ -192,7 +192,7 @@ Destroy `dv02obj001v01` and remove its inventory and rules.
 - [x] Step 5: the data directory copied, silo started
 - [x] Step 6: every tenant's state, user and policy read back
 - [x] Step 7: `tfstate`, `tenant_state`, the API and the rules on obj; tdemo plans clean
-- [ ] Step 7: eds and mabell plan clean (blocked in their own repositories; see Follow-ups)
+- [x] Step 7: eds and mabell plan clean
 - [x] Step 8: the backup job takes state from obj
 - [x] Step 9: MinIO retired from prv
 - [ ] Step 9: the router's rule `tenant dev -> tfstate` (to prv:9000) deleted
@@ -223,7 +223,13 @@ stopping on prv to tdemo's clean plan through the new store, ran from 17:39 to a
   - The API reconciled tdemo through the new store, and tdemo planned clean again after it.
   - eds and mabell read their state through it on the legacy `:9000` address, and mabell's plan
     took its lock there.
-  - Their plans then stopped on problems in their own repositories (Follow-ups).
+  - Their plans then stopped on problems in their own repositories, fixed the same day:
+    - eds's lock file pinned provider 0.5.0 against a configuration that needs `~> 0.8`. A
+      `terraform init -upgrade` took 0.11.0, and eds planned with no changes.
+    - mabell's state held no dashboard password, so its Grafana provider logged in with none and
+      got 401. Provider 0.11.0's restore fetched the password the API holds, in an apply of
+      `deevnet_tenant.mabell` alone that also took the endpoints on 443. mabell then planned with
+      no changes, and its state secret still matched its `.backend.env`.
 - **Step 8:** the backup job on prv reads `tf-state` from `https://tfstate.mobile.deevnet.net`
   with silo's mc and the store's administrative pair. Its first archive held the 3 current state
   objects and verified.
@@ -258,10 +264,5 @@ stopping on prv to tdemo's clean plan through the new store, ran from 17:39 to a
 
 ## Follow-ups
 
-- **eds:** its configuration requires the `deevnet` provider `~> 0.8`, and its lock file pins
-  0.5.0. `terraform init -upgrade`, then a plan.
-- **mabell:** Grafana refuses its dashboard password (401). Its stored outputs also still carry
-  the `:3000` and `:9000` addresses from before [CHG-0046](/docs/changes/2026/0046-service-proxy/),
-  which its next apply updates.
 - **The router:** delete `tenant dev -> tfstate` (to prv:9000) with a firewall run that has
   `firewall_delete_unmanaged=true`, after reading its plan.
