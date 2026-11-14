@@ -7,10 +7,10 @@ weight: -37
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-08 to 2026-11-13 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 to 4 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, the automation tokens hold no Administrator (2026-11-12), the old build user and role are gone, and the ISO and the empty VM are automated (2026-11-13). The verification remains |
+| **Status** | **Complete.** Builds read the vault and succeed with OpenBao stopped; OpenBao holds no build credentials; the automation tokens hold custom roles, not Administrator; a hypervisor's ISO and an empty VM for a network install are automated |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -239,6 +239,31 @@ now declares the VM instead of building it by hand.
 
 Builds succeed with OpenBao stopped. That is the test of the change.
 
+**Run 2026-11-13, with OpenBao's container stopped on `dv02idn001v01`** (it was sealed before, and
+started again sealed after). Every check passed:
+
+| Check | Result |
+|---|---|
+| `pve1-env` and `pve2-env` give each node's token, and each answers | Pass: `/version` returns 200 on both |
+| `make fabric-plan` | Pass: no changes |
+| `site.yml --limit dv02prv001v01 --tags vms` | Pass: `failed=0` |
+| `make proxmox-fedora-pve1`, a template build on `dv02hyp001p01` | Pass: `fedora-server-44-1.7`, VMID 103, 13 min 23 s; the core router answered throughout |
+
+## Outcome
+
+**No build depends on OpenBao.** Template builds, the tenant fabric and `proxmox_vm` take their
+Proxmox credentials from the inventory vault, so they run with OpenBao sealed or stopped, as
+[ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/) leaves
+it outside work sessions. Each hypervisor's automation token holds `DeevnetAutomation`, a role with
+only the privileges those builds use, and nothing but `root@pam` holds Administrator. A rebuilt
+hypervisor gets its install ISOs from Ansible, and an empty VM for a network install is declared in
+the inventory like any other.
+
+## Follow-ups
+
+- [ ] Keep `dv02bld001v01` from fetching the DVD ISOs: it is in `artifact_servers`, its 2 GB `/tmp` cannot hold one, and the fetch would cross the core router
+- [ ] Remove the older duplicate templates: `dv02hyp001p01` has three `fedora-server-44-1.7` (101, 102, 103) and `dv02hyp002p02` three `fedora-tenant-44-1.7` (100, 101, 102); among same-named templates, `proxmox_vm` picks one arbitrarily
+
 ## Undo
 
 Each step reverses: restore the OpenBao source and AppRole from git, give the build users
@@ -259,4 +284,4 @@ Administrator again.
 - [x] Step 3: the automation tokens narrowed to custom Proxmox roles per node, 2026-11-12
 - [x] Step 4: `packer-prov@pve` and the `TerraformProv` role removed, 2026-11-13
 - [x] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`, 2026-11-13
-- [ ] Verification: builds succeed with OpenBao stopped
+- [x] Verification: builds succeed with OpenBao stopped, 2026-11-13
