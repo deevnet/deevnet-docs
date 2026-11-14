@@ -10,7 +10,7 @@ aliases:
 |  |  |
 |--|--|
 | **Status** | Proposed |
-| **Date** | 2026-09-21; revised 2026-11-14 (tenants only, as ADR-0027 made the logs; the store on `obs`; the log tokens reused; rules over logs as well as metrics; ntfy on site only; 90-day retention; built in three steps) |
+| **Date** | 2026-09-21; revised 2026-11-14 (tenants only, as ADR-0027 made the logs; the store on `obs`, which keeps its 4 GB; the log tokens reused; rules over logs as well as metrics; ntfy on site only; 90-day retention; built in three steps) |
 | **Scope** | How tenants' metrics are stored and read, how each tenant's alert rules are declared and evaluated, and where its notifications go. How the substrate publishes each workload's resource use to its tenant. Not the substrate's own metrics or alerts to the operator. |
 | **Extends** | [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/), as narrowed by [ADR-0027: Tenant Log Store](/docs/architecture/decisions/platform-services/0027-tenant-log-store/). Metrics use the log store's host, its authenticating proxy, its partition scheme and its tenant tokens. |
 | **Extended by** | [ADR-0024: Dashboards](/docs/architecture/decisions/platform-services/0024-dashboards/): saved dashboards in Grafana, one organization per tenant *(Accepted)* |
@@ -111,7 +111,10 @@ read token, and one Alertmanager delivers through ntfy on site.** It is built in
   vmauth is the only listener, and data goes on the same data disk as the logs.
 - **Tenants reach it by name on 443**, at `metrics`, through the host's service proxy (ADR-0036).
   The API hands each tenant this address as its metrics endpoint.
-- **`obs` is resized**, from 4 GB to about 8 GB. The figure is set by measurement while building.
+- **`obs` keeps its 4 GB**, with each component's memory capped. Measured on 2026-11-14, the
+  cluster held 20,000 series in about 120 MB, and `obs` had 3 GB available
+  ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/) Step 2). A resize is the remedy if
+  measurement later says so.
 - **One retention period, 90 days.** Per-tenant retention is an Enterprise feature.
 
 ### 2. Partitions and tokens are the logs'
@@ -282,8 +285,6 @@ change.
 
 ## To confirm when building
 
-- That a VictoriaMetrics cluster, VictoriaLogs and Grafana together fit a resized `obs`, and what
-  it needs.
 - That vmauth maps a tenant's plain Prometheus paths to its own `/insert/<index>:0/` and
   `/select/<index>:<project>/`, and refuses a tenant token on another tenant's paths and on
   `/select/multitenant/`.
