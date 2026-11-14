@@ -74,8 +74,9 @@ only**: the substrate's own logs are not centralized.
 
 ## Telemetry 🔄
 
-- 🔄 Evaluate metrics stack: VictoriaMetrics cluster beside the logs, fed by vmagent, proposed in
-  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
+- 🔄 Evaluate metrics stack: a VictoriaMetrics cluster beside the logs, proposed in
+  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) for tenants
+  only. Whether the substrate's metrics go there too is undecided
 - ⏳ Deploy metrics collection service
 - ⏳ Configure exporters on substrate hosts
 - ⏳ Deploy metrics dashboards. Grafana itself is up since
@@ -86,9 +87,10 @@ only**: the substrate's own logs are not centralized.
 
 ## Alerting 🔄
 
-- 🔄 Evaluate alerting solutions: vmalert per tenant, one Alertmanager, ntfy, proposed in
-  [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/). Grafana's own alerting is off
-  ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/))
+- 🔄 Evaluate alerting solutions: vmalert per tenant, one Alertmanager, ntfy, proposed for tenants
+  in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/). Alerting
+  the operator, and noticing when the observability VM itself is down, are undecided. Grafana's own
+  alerting is off ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/))
 - ⏳ Deploy alerting service
 - ⏳ Define alert rules for infrastructure
 - ⏳ Configure notification channels (email, webhook, etc.)
