@@ -26,8 +26,9 @@ new secret key.**
   place of the old ones on every computer that reads your state, and in CI if you use it: the old
   key stops working.
 
-**Don't restore your tenant from the state you had before.** It still holds the old key, and a
-restore would put that key back and lock you out again.
+**Your state catches up on its own.** It still holds the old key, but the next time your tenant is
+restored the platform keeps the new key and hands it back, so your state and `.backend.env` agree
+again.
 
 ## Keep it from happening
 

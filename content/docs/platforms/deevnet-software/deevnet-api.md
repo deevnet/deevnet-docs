@@ -143,7 +143,9 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
 - **A state-secret reissue** mints a new state-store secret for a tenant, records it, sets it on the
   store and returns it, for an operator to hand over. The old one stops working. The registry is
   written first, so a store that refused is put right by the next reconcile. It refuses a tenant
-  whose stored secrets the API can't read, which would otherwise be written back empty.
+  whose stored secrets the API can't read, which would otherwise be written back empty. The
+  registry marks the secret as reissued, and a restore that sends back the tenant's older copy
+  keeps the reissued one and returns it, until the tenant supplies it itself.
 - **Workloads are not part of a reconcile.** Applying a workload always ensures its VM, rebuilding a
   missing one with the same VMID, MAC and address. But a tenant's plain `terraform apply` does not
   re-apply a workload the registry already lists
