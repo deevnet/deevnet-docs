@@ -262,7 +262,7 @@ the inventory like any other.
 ## Follow-ups
 
 - [ ] Keep `dv02bld001v01` from fetching the DVD ISOs: it is in `artifact_servers`, its 2 GB `/tmp` cannot hold one, and the fetch would cross the core router
-- [ ] Remove the older duplicate templates: `dv02hyp001p01` has three `fedora-server-44-1.7` (101, 102, 103) and `dv02hyp002p02` three `fedora-tenant-44-1.7` (100, 101, 102); among same-named templates, `proxmox_vm` picks one arbitrarily
+- [x] Remove the older duplicate templates, 2026-11-13: 101 and 102 from `dv02hyp001p01`, 100 and 101 from `dv02hyp002p02`. Each node keeps its newest, 103 and 102. Nothing referred to them by VMID, and every clone is a full copy
 
 ## Undo
 
