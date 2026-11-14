@@ -9,8 +9,8 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
-| **Being built** | By [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), as an **optional** service. Tenants keep their secrets as code by default: encrypted in their own repositories, merged into the settings they push ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). This service is for a tenant that needs rotation without a push, per-workload revocation or a read audit. Its delivery through ADR-0017's channel becomes the tenant pushing each workload's AppRole credential ([2026-10 review, S1](/docs/architecture/reviews/2026-10-rebuild-and-access/#s1-tenant-secrets)). Parked 2026-10-06; resumed 2026-11-14 |
+| **Status** | Accepted (2026-11-14): built by [CHG-0067](/docs/changes/2026/0067-tenant-secrets/) and proven live, from the namespace to OpenBao Agent reading a secret on a tenant's workload |
+| **Built** | By [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), as an **optional** service. Tenants keep their secrets as code by default: encrypted in their own repositories, merged into the settings they push ([ADR-0034](/docs/architecture/decisions/tenant-model/0034-tenants-deliver-their-own-code/)). This service is for a tenant that needs rotation without a push, per-workload revocation or a read audit |
 | **Date** | 2026-09-21 |
 | **Scope** | Where a tenant's own runtime secrets live, such as a third-party API key its backend service calls with, how they reach the workload that needs them, and who holds the authoritative copy. Not device credentials, and not how the workload itself is filled with code. |
 | **Extends** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/), whose §8 left *"tenant namespaces"* out and said they need their own record. This is that record. |
@@ -307,7 +307,7 @@ OpenBao policy gains namespace administration. Its OpenBao client adds the names
 **This record is accepted when every item below is done.**
 
 - [x] An acceptance test: stated in What would settle it.
-- [ ] Built by a change record: [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), planned.
+- [x] Built by a change record: [CHG-0067](/docs/changes/2026/0067-tenant-secrets/), complete.
 - [x] An audit device on OpenBao (ADR-0016's open item): a file device, declared by [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/).
 - [x] Open question 1 answered: namespace naming and depth (§1).
 - [x] Open question 2 answered: re-delivering workload identity after a rebuild (§4).
