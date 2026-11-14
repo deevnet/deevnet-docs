@@ -10,7 +10,7 @@ weight: -37
 | **Date** | Unscheduled |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 to 3 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, and the automation tokens hold no Administrator (2026-11-12) |
+| **Status** | In Progress. Steps 1 to 4 are done: builds read the vault (2026-11-08), OpenBao holds no build credentials, the automation tokens hold no Administrator (2026-11-12), and the old build user and role are gone (2026-11-13). Step 5 remains |
 | **Window** | Started 2026-11-08. No service is interrupted; a template build proves it |
 | **Site** | mobile |
 | **Systems** | The Builder (`deevnet-image-factory`, `deevnet-tenant-fabric`), `dv02idn001v01` (OpenBao), both hypervisors (Proxmox users, roles and tokens) |
@@ -174,6 +174,20 @@ Remove `packer-prov@pve` and the `TerraformProv` role.
 
 **Verify:** `pveum user list` and `pveum role list` show neither.
 
+**State, 2026-11-13:** done
+([ansible-inventory-deevnet #105](https://github.com/deevnet/ansible-inventory-deevnet/pull/105)).
+Both are declared absent in the nodes' `proxmox_node_access` and removed by the `proxmox-access` run.
+Deleting `packer-prov@pve` took its Administrator entry on `/` with it, so no account on either node
+holds Administrator but `root@pam`.
+
+| Check | Result |
+|---|---|
+| `pveum user list` on `dv02hyp001p01` | Pass: `root@pam` and `terraform-prov@pve` only |
+| `pveum role list` on `dv02hyp002p02` | Pass: no `TerraformProv` |
+| No ACL entry grants Administrator, on either node | Pass |
+| A second `proxmox-access` run changes nothing | Pass: `changed=0` on both |
+| Each node's automation token still answers | Pass: `/version` returns 200 on both |
+
 ### Step 5: The ISO and the empty VM
 
 Publish the ISO for every built release; make template builds fetch it. Add an empty-shell mode to
@@ -204,6 +218,6 @@ Administrator again.
 - [x] Step 1: `pve-creds` reads the vault only, with the same output, and a template builds with it, 2026-11-08
 - [x] Step 2: the build path removed from OpenBao, 2026-11-12
 - [x] Step 3: the automation tokens narrowed to custom Proxmox roles per node, 2026-11-12
-- [ ] Step 4: `packer-prov@pve` and the `TerraformProv` role removed
+- [x] Step 4: `packer-prov@pve` and the `TerraformProv` role removed, 2026-11-13
 - [ ] Step 5: the ISO published for every built release, and an empty-shell mode in `proxmox_vm`
 - [ ] Verification: builds succeed with OpenBao stopped

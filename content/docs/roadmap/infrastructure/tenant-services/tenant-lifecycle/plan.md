@@ -2,9 +2,9 @@
 title: "Tenant Lifecycle: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 12
+tasks_completed: 13
 tasks_in_progress: 1
-tasks_planned: 3
+tasks_planned: 2
 ---
 
 # Tenant Lifecycle: Project Plan
@@ -51,8 +51,8 @@ A repeatable, code-defined tenant lifecycle.
 - ✅ Record the Deevnet API's Proxmox access: `DeevnetTenantBuilder`, `DeevnetNodeAudit`, the user
   and ACLs are declared in inventory and recreated by `deevnet.builder`'s `proxmox_node_access` role
   (2026-09-27)
-- ⏳ Remove the unused `TerraformProv` role on `dv02hyp002p02`, left from the retired tenant-module
-  flow; no ACL references it
+- ✅ Remove the unused `TerraformProv` role on `dv02hyp002p02`, left from the retired tenant-module
+  flow (2026-11-13, [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/) step 4)
 - ✅ Exercise tenant credential recovery end to end: a tenant that has lost its state-store keys gets
   back in with a new key the operator reissues
   ([Lost State or Credentials](/docs/runbook/tenant/recovery/lost-credentials/)), proven on `tdemo`
