@@ -6,6 +6,7 @@ weight: 4
 # Devices & MQTT
 
 {{< status-badge "active" "Available" >}}
+
 ## What you get
 
 - A **device registry** — your own inventory of what you have flashed

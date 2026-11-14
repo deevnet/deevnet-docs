@@ -32,7 +32,7 @@ have to guard.
 
 **The provider has its own documentation site, [Deevnet Terraform Provider](https://deevnet.github.io/terraform-provider-deevnet/).** Its
 [resource reference](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/) is generated from the provider's schemas, with every
-argument and attribute of the seven resources:
+argument and attribute of the nine resources:
 
 | Resource | Declares |
 |---|---|
@@ -44,6 +44,8 @@ argument and attribute of the seven resources:
 | [`deevnet_iot_address`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_address/) | A fixed address for a registered device |
 | [`deevnet_iot_broker_account`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/iot_broker_account/) | An MQTT account for a device or a workload |
 | [`deevnet_certificate`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/certificate/) | A server certificate for one of the tenant's own services: its site-less name, `<name>.<tenant>.deevnet.net`, then that name at each of `sites`; the tenant keeps the key |
+| [`deevnet_secret`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret/) | A runtime secret in the tenant's OpenBao namespace, from a write-only value that never reaches plan or state; a new `data_wo_version` writes again |
+| [`deevnet_secret_reader`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret_reader/) | A workload's login to that namespace, reading only the paths named |
 
 There are no data sources. The state store is used through Terraform's own `backend "s3"`.
 
@@ -56,6 +58,11 @@ it not present, so the next plan is an **update**, and the update sends the tena
 secrets back from state. That is how a tenant comes back, with the same keys, after the API's
 registry is lost. `-replace` issues new keys instead. The provider's
 [Restore Instead of Recreate](https://deevnet.github.io/terraform-provider-deevnet/docs/guides/restore/) guide covers each resource.
+
+**Runtime secrets are the exception, and are recreated.** A secret's value is in the tenant's own
+code, never in state, and a lost reader's IDs died with it. So when the API reports either gone, the
+provider drops it from state, and the next apply writes the secret again and issues the reader new
+IDs ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)).
 
 The same rule means a workload whose VM is gone, but which the registry still lists, shows no change
 ([Deevnet API → How it behaves on repair](/docs/platforms/deevnet-software/deevnet-api/#how-it-behaves-on-repair)).

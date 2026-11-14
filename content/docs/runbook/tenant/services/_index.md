@@ -21,6 +21,7 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 | [State store](state-store/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
 | [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/); you push over SSH | {{< status-badge "active" "Available" >}} |
 | [Your own secrets](/docs/runbook/tenant/deploy-your-app/#your-own-secrets) | your repository, encrypted; pushed with your settings | {{< status-badge "active" "Available" >}} |
+| [Runtime secrets](secrets/) | [`deevnet_secret`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret/), [`deevnet_secret_reader`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret_reader/); optional | {{< status-badge "active" "Available" >}} |
 | [Metrics & alerting](coming-soon/#metrics-and-alerting) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Identity](coming-soon/#identity) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Object storage](coming-soon/#object-storage) | — | {{< status-badge "planned" "Coming soon" >}} |

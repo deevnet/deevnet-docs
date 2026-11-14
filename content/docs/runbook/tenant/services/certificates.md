@@ -6,6 +6,7 @@ weight: 8
 # Service certificates
 
 {{< status-badge "active" "Available" >}}
+
 ## What you get
 
 A server certificate for a service you run, named for its whole life without a site, such as
