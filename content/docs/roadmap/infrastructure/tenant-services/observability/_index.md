@@ -10,6 +10,8 @@ waypoints:
   - title: "Tenants get alerts on their phones, on site, from their own rules over their metrics and logs (CHG-0071)"
     status: done
     date: "2026-11-15"
+  - title: "A tenant's metrics and alerts come along when its app moves to a take-home Pi (CHG-0072)"
+    status: active
   - title: "Tenants see each workload's CPU, memory, disk and network as the hypervisor measures it"
     status: planned
 ---
