@@ -17,13 +17,16 @@ project that outlives the site.
  ──────────                                     ──────────
  devices ──TLS 8883──▶ mqtt.mobile.deevnet.net   devices ──TLS 8883──▶ your Pi (Mosquitto)
  app     ──TLS 8427──▶ Deevnet log store         app     ──TLS 8427──▶ your Pi (VictoriaLogs)
+ app     ──TLS 443───▶ Deevnet metrics store     app     ──TLS 8427──▶ your Pi (metrics store)
  you     ──TLS 3000──▶ Deevnet Grafana           you     ──TLS 3000──▶ your Pi (Grafana)
+ phone   ──TLS 443───▶ Deevnet ntfy (on site)    phone   ──TLS 443───▶ your Pi (ntfy)
          <tenant>/…  <tenant>/log/<device>               <tenant>/…  <tenant>/log/<device>   ← unchanged
 ```
 
 The Pi keeps the **app contract**: the same ports, the same topic prefix, the same reserved `log`
-level, the same ingest and read tokens with the same partition header, and a Grafana organization
-with the same three data source UIDs. What changes is the host
+level, the same ingest and read tokens with the same partition header for logs and metrics, a
+Grafana organization with the same data source UIDs, and the same alert rules, sent to the same
+ntfy topics. What changes is the host
 name, the CA and the secrets. **Nothing on the Pi belongs to Deevnet.** It has no Deevnet account,
 key or route, and its CA and tokens are generated on the card the first time it boots.
 
@@ -49,10 +52,13 @@ the environment, under these names:
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the card's |
 | `LOG_SELECT_HEADER` | `X-Deevnet-Partition` | the same |
 | `LOG_DEVICE_PARTITION` | `<index>-2` | the same, if you keep the index |
+| `METRICS_ENDPOINT` | `metrics_endpoint` | `https://<hostname>.local:8427` |
 | `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
 | `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the card's |
 | `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the card's |
 | `GRAFANA_CA_CERT` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
+| `NOTIFY_URL` | `notify_endpoint` | `https://<hostname>.local` |
+| `NOTIFY_USERNAME`, `NOTIFY_PASSWORD` | `notify_username`, `notify_password` | your tenant's name, and the card's |
 
 The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
 `TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
@@ -76,11 +82,15 @@ output "kit_env" {
     LOG_READ_TOKEN=${deevnet_tenant.this.log_read_token}
     LOG_SELECT_HEADER=${deevnet_tenant.this.log_select_header}
     LOG_DEVICE_PARTITION=${deevnet_tenant.this.index}-2
+    METRICS_ENDPOINT=${deevnet_tenant.this.metrics_endpoint}
     GRAFANA_URL=${deevnet_tenant.this.dashboard_url}
     GRAFANA_AUTH=${deevnet_tenant.this.dashboard_username}:${deevnet_tenant.this.dashboard_password}
     GRAFANA_ORG_ID=${deevnet_tenant.this.dashboard_org_id}
     TF_VAR_grafana_org_id=${deevnet_tenant.this.dashboard_org_id}
     GRAFANA_CA_CERT=deevnet-root-ca.pem
+    NOTIFY_URL=${deevnet_tenant.this.notify_endpoint}
+    NOTIFY_USERNAME=${deevnet_tenant.this.notify_username}
+    NOTIFY_PASSWORD=${deevnet_tenant.this.notify_password}
   EOT
 }
 ```
@@ -315,6 +325,63 @@ by clicking on Deevnet does not come along; export it into your repository first
 In a browser: `https://<hostname>.local:3000`, with the user and password from `GRAFANA_AUTH`.
 Your organization opens with a **"Start here"** dashboard: a temperature graph from device log
 lines, your device logs and your app logs. It is yours to change; the card never overwrites it.
+Your metrics are there too, through `deevnet-metrics-workloads`, as on Deevnet.
+
+### Your alert rules
+
+**Your rule groups come from your own Terraform, exported as JSON**
+([Alerting](/docs/runbook/tenant/services/alerting/)). Add an output beside your
+`deevnet_alert_rule_group` resources, naming each group:
+
+```hcl
+output "alert_rules" {
+  value = {
+    groups = [for g in [deevnet_alert_rule_group.backend, deevnet_alert_rule_group.devices] : {
+      name      = g.name
+      type      = g.type
+      interval  = g.interval
+      topic     = g.topic
+      partition = g.partition
+      rules = [for r in g.rule : {
+        alert       = r.alert
+        expr        = r.expr
+        "for"       = r.for # quoted: bare, "for" starts a for expression
+        labels      = r.labels
+        annotations = r.annotations
+      }]
+    }]
+  }
+}
+```
+
+Then export them, copy the file to the Pi, and load it:
+
+```bash
+terraform output -json alert_rules > rules.json
+sudo deevnet-kit alerts import rules.json
+sudo deevnet-kit alerts list
+```
+
+**The Pi checks them as Deevnet does**, with the same code: a label that routes an alert
+(`tenant`, `deevnet_topic`), or a rule vmalert won't load, is refused with the reason, and nothing
+changes. Importing again replaces every group; `sudo deevnet-kit alerts clear` removes them. Each
+group's alerts go to `<tenant>-<topic>`, as on Deevnet.
+
+### Your phone
+
+**The ntfy app reads your alerts from the Pi, on the Pi's network.**
+
+```bash
+sudo deevnet-kit notify
+```
+
+prints the server, the login and the topics. On the phone, install `deevnet-kit-ca.pem` as a CA
+certificate (or `deevnet-root-ca.pem` on a Deevnet Pi), then subscribe to each topic in the ntfy app
+on that server, with that login, as on
+[Deevnet](/docs/runbook/tenant/services/alerting/#your-phone). If the phone can't find
+`<hostname>.local`, use the Pi's address: its certificate names that too. The login reads only
+your topics and publishes to none. Nothing is sent off the Pi, so the phone hears it only on a
+network that reaches the Pi.
 
 ## 7. Check it
 
@@ -349,7 +416,7 @@ Terraform apply, so it is done while you have the tenant at the Mobile Factory.
    the certificate it will replace.
 2. **Have it signed, in your tenant's Terraform.** A
    [`deevnet_certificate`](/docs/runbook/tenant/services/certificates/) with that request, `name =
-   "mqtt"`, `names = ["logs", "grafana"]` plus any of your app's own, and `sites` listing where the Pi
+   "mqtt"`, `names = ["logs", "grafana", "metrics", "ntfy"]` plus any of your app's own, and `sites` listing where the Pi
    runs or is headed, such as `["mobile", "home"]`. Apply, and copy `fullchain_pem` and
    `deevnet-root-ca.pem` to the Pi.
 3. **Install it:**
@@ -359,12 +426,10 @@ Terraform apply, so it is done while you have the tenant at the Mobile Factory.
    ```
 
    It checks the certificate is for the waiting key, chains to the root given, and names `mqtt`,
-   `logs` and `grafana` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
+   `logs`, `grafana`, `metrics` and `ntfy` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
    makes the root what every service on the Pi trusts, keeps the card's own CA as
    `/etc/deevnet-kit/tls/card-ca.pem`, and restarts the broker, the log store, Grafana and the
-   bridge. Then it writes Grafana's log data sources again, for `logs.<tenant>.deevnet.net`.
-   `deevnet-kit` v0.15.0 leaves them on `localhost`, which the new certificate does not name, so
-   Grafana's log queries fail: there, run `sudo systemctl restart deevnet-kit-dashboards` after it.
+   bridge and ntfy. Then it writes Grafana's data sources again, for the new names.
 
 **The Pi then answers to `mqtt.<tenant>.deevnet.net`, `logs.<tenant>.deevnet.net` and
 `grafana.<tenant>.deevnet.net`.** Its own services dial those names, which it maps to itself in
@@ -379,8 +444,7 @@ expires, a plan of your tenant shows the certificate renewing for the same key. 
 `fullchain_pem` to the Pi, and run `sudo deevnet-kit cert install fullchain.pem
 deevnet-root-ca.pem` with the root the Pi already trusts: it replaces the certificate and keeps the
 key. For a new key, run `cert request` first and replace the certificate's request with the new
-one, then apply and install. `deevnet-kit` v0.15.0 takes only the second: it refuses a certificate
-for the key it already serves.
+one, then apply and install.
 
 ## 9. A PKI of your own
 
@@ -445,6 +509,10 @@ the same root.
 | Wi-Fi keys on `DVNTM-IOT` | Your own Wi-Fi |
 | The device registry | Device names are checked for shape only |
 | Terraform state and the API token | Nothing to apply: `deevnet-kit` is the whole control plane. Only your dashboards are still Terraform, against the Pi's Grafana |
+| Your metrics and logs so far | The Pi starts empty; Deevnet keeps yours until the tenant is removed |
+| Alert rules from the API | Exported from your Terraform and imported (step 6) |
+| Alerts away from the site | Alerts on the Pi's network only, for now |
+| Runtime secrets | Not on the Pi: put what your app needs in its own environment, beside `kit.env` |
 
 Your Deevnet tenant is untouched by any of this. Destroy it with `terraform destroy` when you are done, or keep
 prototyping there. The two do not share a secret.
@@ -457,8 +525,10 @@ prototyping there. The two do not share a secret.
 - **Revocation** is immediate on the Pi and takes effect on the next connect on Deevnet.
 - **You are Grafana's admin on the Pi** (`grafana_admin_password` in `/etc/deevnet-kit/kit.json`).
   Your tenant login is still an Editor, so the same Terraform runs on both.
-- **Memory.** Grafana wants about 512 MB. On a 512 MB Zero 2 W, turn it off:
-  `sudo systemctl disable --now grafana deevnet-kit-dashboards`.
+- **Metrics are kept 30 days**, not 90: a card is not a data disk.
+- **Memory.** Grafana wants about 512 MB, and metrics and alerting a few hundred more: a Pi with
+  2 GB or more runs everything. On a 512 MB Zero 2 W, run MQTT and logs only:
+  `sudo systemctl disable --now grafana deevnet-kit-dashboards vmstorage vminsert vmselect alertmanager ntfy deevnet-kit-alerting`.
 
 {{< hint warning >}}
 **First real Pi, 2026-09-25.** A Pi 4 flashed with this image, set up with `userconf.txt` and
