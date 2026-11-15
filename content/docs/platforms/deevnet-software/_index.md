@@ -28,5 +28,6 @@ collections that configure the substrate, and the reference tenant, `deevnet-ten
 
 Two helper binaries are built from the API's repository and share its tag:
 `deevnet-broker-account` on the messaging VM and `deevnet-log-user` on the log store, which writes
-each tenant's routes to both its logs and its metrics. The API reaches
+each tenant's routes to both its logs and its metrics, and its alerting: its vmalert's rules,
+Alertmanager's routes and ntfy's users. The API reaches
 each over SSH through a forced command, so it never holds a login to either host.

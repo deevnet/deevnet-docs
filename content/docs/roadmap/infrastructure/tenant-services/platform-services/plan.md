@@ -2,8 +2,8 @@
 title: "Tenant Platform Services: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 19
-tasks_in_progress: 1
+tasks_completed: 20
+tasks_in_progress: 0
 tasks_planned: 5
 ---
 
@@ -52,7 +52,7 @@ What a tenant can declare today beyond networks, workloads and names, each throu
   tenant's log tokens, with a metrics data source in each Grafana organization
   ([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/),
   [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
-- 🔄 Alerting, step B: alert rules over metrics or logs, each tenant's in its own vmalert, delivered
+- ✅ Alerting, step B: alert rules over metrics or logs, each tenant's in its own vmalert, delivered
   through ntfy to Android phones on site ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
 - ⏳ Workload resource use, step C: each workload's CPU, memory, disk and network as the hypervisor
   sees it, published to the tenant

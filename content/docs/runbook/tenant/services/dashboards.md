@@ -179,6 +179,6 @@ above.
 
 - **Add or change a data source.** An Editor can't. A data source is a URL Grafana's server
   requests on your behalf, so only the platform sets them.
-- **Grafana alerting.** It is off. Alerting is a
-  [coming](/docs/runbook/tenant/services/coming-soon/#alerting) platform service.
+- **Grafana alerting.** It is off. Alerts are a platform service of their own:
+  [Alerting](/docs/runbook/tenant/services/alerting/).
 - **Share a dashboard with another tenant.** Organizations don't share. Copy it through code.

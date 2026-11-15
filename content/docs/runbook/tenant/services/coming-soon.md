@@ -10,17 +10,6 @@ here can be declared today. The shape described is the proposal's, and may chang
 
 ---
 
-## Alerting
-
-{{< status-badge "planned" "Coming soon" >}}
-
-**Today:** you can graph and query your [metrics](/docs/runbook/tenant/services/metrics/) and
-[logs](/docs/runbook/tenant/services/logs/), but nothing notifies you.
-**Planned:** you declare alert rules, over metrics or over logs, that run under your own token, and
-notifications reach your phone through a platform push service while you are at the site. Later,
-each workload's CPU, memory, disk and network appear beside your own metrics.
-[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)
-
 ## Identity
 
 {{< status-badge "planned" "Coming soon" >}}

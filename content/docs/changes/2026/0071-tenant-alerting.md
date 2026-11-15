@@ -10,14 +10,14 @@ weight: -71
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold but one, and the whole path, rule to ntfy, is proven on the Builder with the refusals. Step B of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **Complete** (2026-11-15). Tenants' alert rules run on `obs`, and the verification passes on site, as two tenants, with an Android phone (27 of 27). Step B of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | None needed: the new services start beside the running ones, vmauth is unchanged, and the API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (vmalert per tenant, Alertmanager, ntfy), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
 | **Automation** | `deevnet.mgmt` `site.yml --tags alerting,log-store,service-proxy,deevnet-api --limit` the host; `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Low. Most likely to go wrong: a rule that labels its way into another tenant's topic, caught by the API and the writer refusing the label, and tried by the verification |
 | **Related changes** | [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/) (the store the rules read), [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (the read token each tenant's vmalert holds), [CHG-0046](/docs/changes/2026/0046-service-proxy/) (443 by name) |
-| **Related runbooks** | [Coming Soon](/docs/runbook/tenant/services/coming-soon/#alerting) |
+| **Related runbooks** | [Alerting](/docs/runbook/tenant/services/alerting/) |
 
 ---
 
@@ -45,11 +45,11 @@ alerting. This change builds it:
 ## Scope
 
 **In scope:**
-- On `obs`, each in a container on loopback, behind the service proxy where a phone needs it:
+- On `obs`, each on loopback, behind the service proxy where a phone needs it:
   - **vmalert**, one instance per tenant with rules, started and stopped as the tenant's rules
-    come and go;
-  - **Alertmanager**, one, with a route per tenant and topic;
-  - **ntfy**, at `ntfy` on 443, with `auth-default-access: deny-all`.
+    come and go; the binary from its image, run by systemd;
+  - **Alertmanager**, one, in a container, with a route per tenant and topic;
+  - **ntfy**, in a container, at `ntfy` on 443, with `auth-default-access: deny-all`.
 - **The writer** (`deevnet-log-user`) gains each tenant's rule files, its vmalert settings, its ntfy
   login and its Alertmanager routes. It stays unprivileged: a root systemd path unit on `obs`
   starts and stops each tenant's vmalert when its files change, and restarts ntfy when its users
@@ -75,7 +75,7 @@ alerting. This change builds it:
 | A rule reads another tenant's data | vmalert | It queries with the tenant's own read token, through vmauth; verification tries naming another partition and the multitenant paths |
 | A tenant's phone reads another tenant's alerts | ntfy | Its login may read `<tenant>-*` only; verification subscribes to another tenant's topic and is refused |
 | Many tenants' vmalerts crowd out the stores | `obs` | Each capped in memory; measured in Step 2 |
-| A wrong Alertmanager configuration stops every tenant's alerts | Alertmanager | The writer checks it with `amtool check-config` before it reloads, and keeps the last good one |
+| A wrong Alertmanager configuration stops every tenant's alerts | Alertmanager | The writer renders it from validated groups only, and Alertmanager refuses a reload it can't load, keeping the configuration it runs |
 
 ## Prerequisites
 
@@ -165,13 +165,13 @@ tenants' rule groups stay in the API's registry for the next attempt.
 
 - [x] Step 1: the vendor claims checked and recorded
 - [x] Step 2: proven off site, refusals included
-- [ ] Step 3: the inventory changes merged
-- [ ] Step 4: the alerting role merged
-- [ ] Step 5: the API released
-- [ ] Step 6: the provider released and staged
-- [ ] Step 7: deployed; tdemo, eds and mabell reconciled
-- [ ] Step 8: the Alerting page, Coming Soon updated, the tdemo example
-- [ ] Verification passes on site with an Android phone
+- [x] Step 3: the inventory changes merged
+- [x] Step 4: the alerting role merged
+- [x] Step 5: the API released
+- [x] Step 6: the provider released and staged
+- [x] Step 7: deployed; tdemo, eds and mabell reconciled
+- [x] Step 8: the Alerting page, Coming Soon updated, the tdemo example
+- [x] Verification passes on site with an Android phone
 
 ## Outcome
 
@@ -264,3 +264,64 @@ because tenant names have no hyphen (`^[a-z][a-z0-9]{0,7}$`).
 
 **Memory:** each tenant's vmalert used 5 to 8 MB, Alertmanager 15 MB and ntfy 15 MB. `obs` has about
 3 GB available.
+
+### Steps 3 to 7: released and deployed (2026-11-15)
+
+- **Merged and released:**
+  - the inventory ([ansible-inventory-deevnet#116](https://github.com/deevnet/ansible-inventory-deevnet/pull/116));
+  - the alerting role and the writer's settings ([ansible-collection-deevnet.mgmt#134](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/134));
+  - the API and writer `v0.25.0` ([deevnet-provisioning-api#76](https://github.com/deevnet/deevnet-provisioning-api/pull/76), [#77](https://github.com/deevnet/deevnet-provisioning-api/pull/77));
+  - the provider `v0.13.0` ([terraform-provider-deevnet#38](https://github.com/deevnet/terraform-provider-deevnet/pull/38), [#39](https://github.com/deevnet/terraform-provider-deevnet/pull/39)).
+- **What changed from the plan:**
+  - **vmalert runs as a binary, not a container.** The binary is copied out of the pinned image
+    and run by systemd as `vmalert@<tenant>`, as its own user.
+  - **No `amtool`.** The writer reloads Alertmanager over loopback; Alertmanager refuses a reload it
+    can't load, and keeps running the configuration it has.
+  - **`-dryRun` checks expressions, not annotation templates.** A template error shows only when
+    the alert is sent.
+- **DNS:** `ntfy.mobile.deevnet.net` resolves to `obs`, and the router's configuration was backed up
+  after.
+- **`obs` and `prv`:** the alerting role, the writer, the service proxy and the API ran with no
+  failure. Alertmanager and ntfy answer their health checks, and the API runs `v0.25.0` with its
+  migration applied. Reconciling tdemo, eds and mabell gave each its ntfy login, reading only its
+  own prefix. `obs` uses 965 MB of its 3.9 GB.
+- **Three faults, found by the verification run and fixed:**
+  - **The tenant downloads lacked provider 0.12.0 and 0.13.0.** The provider's `make stage` writes
+    the Builder's copy only, and the tenant downloads on `obs` are synced from it by their own
+    play, which had not run since 0.11.0. It has now.
+  - **The path unit never fired.** It watched the writer's stamp file, which the writer replaces by
+    rename, and a rename onto a watched file is not a change to it. It now watches the directory
+    ([ansible-collection-deevnet.mgmt#135](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/135)).
+  - **No tenant's vmalert started:** *"Failed to load environment files: Permission denied"*.
+    systemd reads `EnvironmentFile=` itself, and SELinux denies it the writer's files under `/srv`.
+    The unit's own shell, as the service user, now reads the port from the file (the same pull
+    request).
+- **Step 8:** the tenant Alerting page, Coming Soon, the Metrics and Dashboards pages, the platform
+  pages and the Software Catalog
+  ([deevnet-docs#442](https://github.com/deevnet/deevnet-docs/pull/442)), and the tdemo example,
+  `alerts.tf` and the `notify` output
+  ([deevnet-tenant-tdemo#21](https://github.com/deevnet/deevnet-tenant-tdemo/pull/21)).
+
+### Verification on site (2026-11-15)
+
+**27 of 27 checks pass**, run from a Mac on `DVNTM-TD` as eds (index 2) and mabell (index 3), with
+each tenant's tokens and ntfy login read from its own state, and an Android phone subscribed to
+`eds-chg0071` in ntfy:
+- `ntfy.mobile.deevnet.net` resolves to `obs`.
+- These are refused by ntfy: a read with no login, a wrong password, eds reading mabell's topic and
+  mabell reading eds's, and eds publishing, even to its own topic.
+- These are refused by the API (400): a rule labeled `tenant` with the other tenant's name, a rule
+  vmalert won't load, with its reason, and a recording rule. mabell is told eds's rule groups do
+  not exist (404).
+- eds's metrics group and its logs group fired, each reached `eds-chg0071` and the phone, and the
+  metrics alert sent a resolved notification, which the phone showed, when its value dropped.
+- mabell's rule querying eds's series found nothing, and mabell's topic stayed empty.
+- When the run deleted its groups, each tenant's vmalert stopped and its directory was removed.
+
+The logs group read eds's workloads partition. The device partition's header was proven on the
+Builder in Step 2, with tdemo trying eds's. Removing a tenant, which takes its alerting with its log
+users, was not exercised on site; the writer's tests cover it.
+
+The first run passed every check before the alerts, and then got only the metrics alert. vmalert had
+not been running when the run wrote its log line, and a logs rule searches only its last interval.
+That is now on the tenant Alerting page.

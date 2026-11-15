@@ -9,7 +9,7 @@ aliases:
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-11-15): steps A and B built by [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/) and [CHG-0071](/docs/changes/2026/0071-tenant-alerting/) and proven on site, from a tenant's pushed metric to an alert on its phone. Step C and the open questions remain |
 | **Date** | 2026-09-21; revised 2026-11-14 (tenants only, as ADR-0027 made the logs; the store on `obs`, which keeps its 4 GB; the log tokens reused; rules over logs as well as metrics; ntfy on site only; 90-day retention; built in three steps) |
 | **Scope** | How tenants' metrics are stored and read, how each tenant's alert rules are declared and evaluated, and where its notifications go. How the substrate publishes each workload's resource use to its tenant. Not the substrate's own metrics or alerts to the operator. |
 | **Extends** | [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/), as narrowed by [ADR-0027: Tenant Log Store](/docs/architecture/decisions/platform-services/0027-tenant-log-store/). Metrics use the log store's host, its authenticating proxy, its partition scheme and its tenant tokens. |
@@ -266,7 +266,7 @@ resource, an ntfy user per tenant, the VMID map for §4, and more that it writes
 - [x] Step A built and proven by [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/): a tenant
   workload pushes metrics and graphs them in its own Grafana organization, and each of two tenants
   is refused the other's metrics, on writes and on reads, through Grafana and directly
-- [ ] Step B built and proven by [CHG-0071](/docs/changes/2026/0071-tenant-alerting/): a tenant's rule over metrics and a rule over
+- [x] Step B built and proven by [CHG-0071](/docs/changes/2026/0071-tenant-alerting/): a tenant's rule over metrics and a rule over
   logs each fire and reach a phone on site, a rule cannot read or label its way into another
   tenant's data, and a tenant's ntfy user is refused another tenant's topic
 

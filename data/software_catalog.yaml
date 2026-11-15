@@ -200,10 +200,10 @@ tables:
       source: Pin
     - component: '**Deevnet API**'
       vm: '`dv02prv001v01`'
-      version: '**v0.24.0**'
+      version: '**v0.25.0**'
       license: Apache-2.0
       support: In-house
-      source: Pin; deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
+      source: Pin; deployed 2026-11-15 ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
     - component: '**PostgreSQL**'
       vm: '`dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth)'
       version: '**17.11**'
@@ -250,6 +250,24 @@ tables:
       license: Apache-2.0
       support: Community, commercial available (VictoriaMetrics)
       source: Pin; deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
+    - component: '**vmalert**, one per tenant with rules'
+      vm: '`dv02obs001v01`'
+      version: '**v1.156.0**, the binary from the vmutils image'
+      license: Apache-2.0
+      support: Community, commercial available (VictoriaMetrics)
+      source: Pin; deployed 2026-11-15 ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
+    - component: '**Alertmanager**'
+      vm: '`dv02obs001v01`'
+      version: '**v0.35.0**'
+      license: Apache-2.0
+      support: Community
+      source: Pin; deployed 2026-11-15 ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
+    - component: '**ntfy**'
+      vm: '`dv02obs001v01`'
+      version: '**v2.38.0**'
+      license: Apache-2.0, GPL-2.0 (dual)
+      support: Community
+      source: Pin; deployed 2026-11-15 ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
     - component: '**Grafana OSS**'
       vm: '`dv02obs001v01`'
       version: '**13.2.2**'
@@ -270,10 +288,10 @@ tables:
       source: Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
     - component: '`deevnet-log-user`'
       vm: '`dv02obs001v01`'
-      version: '**v0.24.0**, staged from the API repository'
+      version: '**v0.25.0**, staged from the API repository'
       license: Apache-2.0
       support: In-house
-      source: Pin (`victorialogs_writer_binary`); deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
+      source: Pin (`victorialogs_writer_binary`); deployed 2026-11-15 ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
     - component: '`deevnet-broker-account`'
       vm: '`dv02msg001v01`'
       version: '**v0.5.1**, staged from the API repository (behind its v0.15.0 tag)'
@@ -602,11 +620,11 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.24.0**, deployed **v0.24.0**
+      version: tag **v0.25.0**, deployed **v0.25.0**
       license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'
-      version: tag **v0.12.0**
+      version: tag **v0.13.0**
       license: Apache-2.0
       what_it_builds: The provider, `install-provider.sh`, `tenant-check.sh`
     - repository: '`deevnet-log-bridge`'
