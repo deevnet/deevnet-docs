@@ -10,7 +10,7 @@ weight: -71
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **Planned.** Step 1's vendor claims are checked and recorded below. Step B of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold but one, and the whole path, rule to ntfy, is proven on the Builder with the refusals. Step B of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | None needed: the new services start beside the running ones, vmauth is unchanged, and the API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (vmalert per tenant, Alertmanager, ntfy), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
@@ -164,7 +164,7 @@ tenants' rule groups stay in the API's registry for the next attempt.
 **This change closes when every item below is done.**
 
 - [x] Step 1: the vendor claims checked and recorded
-- [ ] Step 2: proven off site, refusals included
+- [x] Step 2: proven off site, refusals included
 - [ ] Step 3: the inventory changes merged
 - [ ] Step 4: the alerting role merged
 - [ ] Step 5: the API released
@@ -213,3 +213,54 @@ Android only**, on site, with nothing sent off site; iOS stays with ADR-0023's O
 delete them from the database"*, and users made by hand become declared ones. **The writer is the
 only thing that manages ntfy's users**, through `auth-users` and `auth-access`, and nothing adds one
 by hand.
+
+### Step 2: proven on the Builder (2026-11-15)
+
+vmalert `v1.156.0` for two tenants, Alertmanager `v0.35.0` and ntfy `v2.38.0` in containers on the
+Builder, beside the step A store, VictoriaLogs and vmauth with step A's two tenants, tdemo (index 1)
+and eds (index 2). The rule files, routes and ntfy users were written by hand in the shape the
+writer will write them, with ntfy's own client API standing in for the phone.
+
+**The whole path works.**
+- eds's metrics rule fired and reached `eds-backend`. When the value dropped, *"✅ Resolved"*
+  followed.
+- eds's rule over its device logs, a `vlogs` group with the partition header `2-2`, fired and
+  reached `eds-devices`.
+- **One vmalert runs both rule types** through vmauth, against the vendor's recommendation: one
+  instance per tenant is enough.
+
+**A rule can't read another tenant's data.** tdemo ran three rules aimed at eds:
+- a query for eds's metric;
+- the same query with eds's partition header and `AccountID: 2`;
+- a log rule with eds's device partition header and `AccountID`/`ProjectID`.
+
+None saw eds's data. Each did fire once tdemo wrote the same data into its own partitions, with
+tdemo's own values (`app="mine"`, 7), and reached `tdemo-backend`. The queries work; they read only
+tdemo's partitions.
+
+**The `tenant` label is the hole Finding 1 said.** tdemo's rule labeled `tenant: eds` reached
+`eds-backend`, and vmalert logged it: *"label "tenant"="tdemo" for rule "spoof"."SpoofTenant"
+overwritten with external label "tenant"="eds"*. Nothing on `obs` stops it, so the API's refusal and
+the writer's are what does.
+
+**ntfy refuses what it should:**
+- tdemo reading `eds-backend`, eds reading `tdemo-backend`, and anyone without a login (403);
+- a tenant publishing, even to its own topic, and the publisher reading (403);
+- a wrong password (401);
+- eds reading the bare topic `eds`, outside its `eds-*` (403).
+
+A tenant's own topics under its prefix are open to it. `eds-*` cannot match another tenant's topics
+because tenant names have no hyphen (`^[a-z][a-z0-9]{0,7}$`).
+
+**The writer's mechanics hold:**
+- ntfy, restarted with tdemo's user removed and mabell's added, kept every message (`cache-file`).
+  tdemo's login then failed (401), and mabell's read only `mabell-*`.
+- `amtool check-config` passes the generated routes and refuses a configuration naming a receiver
+  that doesn't exist. Alertmanager reloads on `POST /-/reload`.
+- vmalert refuses to start on a recording rule without `-remoteWrite.url`: *"config contains
+  recording rules but `-remoteWrite.url` isn't set"*. `-dryRun` refuses a rule that doesn't parse.
+- A running vmalert picks up a changed rule file on `SIGHUP`, keeping its other groups running.
+  Each tenant's vmalert is reloaded, not restarted, when its rules change.
+
+**Memory:** each tenant's vmalert used 5 to 8 MB, Alertmanager 15 MB and ntfy 15 MB. `obs` has about
+3 GB available.
