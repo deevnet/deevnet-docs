@@ -59,6 +59,9 @@ the environment, under these names:
 | `GRAFANA_CA_CERT` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
 | `NOTIFY_URL` | `notify_endpoint` | `https://<hostname>.local` |
 | `NOTIFY_USERNAME`, `NOTIFY_PASSWORD` | `notify_username`, `notify_password` | your tenant's name, and the card's |
+| `S3_ENDPOINT` | a bucket's `endpoint` | `https://<hostname>.local:9000` |
+| `S3_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the card's) |
+| `BUCKET_<NAME>`, `_ACCESS_KEY`, `_SECRET_KEY` | a bucket's `bucket`, and a key's `access_key` and `secret_key` | the same, if you bring the key |
 
 The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
 `TF_VAR_grafana_org_id` feeds the `org_id` every resource must carry
@@ -91,6 +94,11 @@ output "kit_env" {
     NOTIFY_URL=${deevnet_tenant.this.notify_endpoint}
     NOTIFY_USERNAME=${deevnet_tenant.this.notify_username}
     NOTIFY_PASSWORD=${deevnet_tenant.this.notify_password}
+    S3_ENDPOINT=${deevnet_bucket.files.endpoint}
+    S3_CA_FILE=deevnet-root-ca.pem
+    BUCKET_FILES=${deevnet_bucket.files.bucket}
+    BUCKET_FILES_ACCESS_KEY=${deevnet_bucket.files.access_key}
+    BUCKET_FILES_SECRET_KEY=${deevnet_bucket.files.secret_key}
   EOT
 }
 ```
@@ -383,6 +391,24 @@ on that server, with that login, as on
 your topics and publishes to none. Nothing is sent off the Pi, so the phone hears it only on a
 network that reaches the Pi.
 
+### Your buckets
+
+**The Pi runs the bucket store Deevnet runs, once you add a bucket**
+([Object Storage](/docs/runbook/tenant/services/object-storage/)). Make each bucket your app uses,
+with the same name and settings, and bring its key so the app's settings carry over:
+
+```bash
+terraform output -json files_bucket | jq .writer > writer.json   # on your computer
+sudo deevnet-kit bucket add files --quota-gb 5 --versioning --key-file writer.json
+sudo deevnet-kit bucket key add files reader --access read      # a new key, or --key-file
+sudo deevnet-kit export ~/deevnet-kit --bucket files:default
+```
+
+The bucket is `<tenant>-files` at `https://<hostname>.local:9000`, path-style, and each key reaches
+only its own bucket, as on Deevnet. The quotas must fit the card. **The objects don't come with
+it:** copy them across while you can reach both, for example with `rclone sync` from
+`s3.mobile.deevnet.net` to the Pi.
+
 ## 7. Check it
 
 ```bash
@@ -416,7 +442,7 @@ Terraform apply, so it is done while you have the tenant at the Mobile Factory.
    the certificate it will replace.
 2. **Have it signed, in your tenant's Terraform.** A
    [`deevnet_certificate`](/docs/runbook/tenant/services/certificates/) with that request, `name =
-   "mqtt"`, `names = ["logs", "grafana", "metrics", "ntfy"]` plus any of your app's own, and `sites` listing where the Pi
+   "mqtt"`, `names = ["logs", "grafana", "metrics", "ntfy", "s3"]` plus any of your app's own, and `sites` listing where the Pi
    runs or is headed, such as `["mobile", "home"]`. Apply, and copy `fullchain_pem` and
    `deevnet-root-ca.pem` to the Pi.
 3. **Install it:**
@@ -426,7 +452,7 @@ Terraform apply, so it is done while you have the tenant at the Mobile Factory.
    ```
 
    It checks the certificate is for the waiting key, chains to the root given, and names `mqtt`,
-   `logs`, `grafana`, `metrics` and `ntfy` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
+   `logs`, `grafana`, `metrics`, `ntfy` and `s3` under `<tenant>.deevnet.net`, before changing anything. Then it installs it,
    makes the root what every service on the Pi trusts, keeps the card's own CA as
    `/etc/deevnet-kit/tls/card-ca.pem`, and restarts the broker, the log store, Grafana and the
    bridge and ntfy. Then it writes Grafana's data sources again, for the new names.
@@ -512,6 +538,7 @@ the same root.
 | Your metrics and logs so far | The Pi starts empty; Deevnet keeps yours until the tenant is removed |
 | Alert rules from the API | Exported from your Terraform and imported (step 6) |
 | Alerts away from the site | Alerts on the Pi's network only, for now |
+| Your buckets' objects | You copy them (step 6) |
 | Runtime secrets | Not on the Pi: put what your app needs in its own environment, beside `kit.env` |
 
 Your Deevnet tenant is untouched by any of this. Destroy it with `terraform destroy` when you are done, or keep
@@ -527,7 +554,7 @@ prototyping there. The two do not share a secret.
   Your tenant login is still an Editor, so the same Terraform runs on both.
 - **Metrics are kept 30 days**, not 90: a card is not a data disk.
 - **Memory.** Grafana wants about 512 MB, and metrics and alerting a few hundred more: a Pi with
-  2 GB or more runs everything. On a 512 MB Zero 2 W, run MQTT and logs only:
+  2 GB or more runs everything, and the bucket store runs only once you add a bucket. On a 512 MB Zero 2 W, run MQTT and logs only:
   `sudo systemctl disable --now grafana deevnet-kit-dashboards vmstorage vminsert vmselect alertmanager ntfy deevnet-kit-alerting`.
 
 {{< hint warning >}}
