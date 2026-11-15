@@ -252,7 +252,7 @@ resource, an ntfy user per tenant, the VMID map for §4, and more that it writes
 
 **This record is accepted when every item below is done.**
 
-- [ ] Step A built and proven by [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/): a tenant
+- [x] Step A built and proven by [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/): a tenant
   workload pushes metrics and graphs them in its own Grafana organization, and each of two tenants
   is refused the other's metrics, on writes and on reads, through Grafana and directly
 - [ ] Step B built and proven by its change record: a tenant's rule over metrics and a rule over

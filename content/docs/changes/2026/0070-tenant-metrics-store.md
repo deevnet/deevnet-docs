@@ -10,7 +10,7 @@ weight: -70
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress.** Steps 1 to 7 done: the store is live on `obs`, behind the tenants' log tokens, and tdemo, eds and mabell are reconciled. The verification passes from `DVNTM-TD`, 34 of 34. Left: the same from a tdemo workload. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **Complete** (2026-11-14). The store is live on `obs`, written and read with the tenants' log tokens, and the verification passes from `DVNTM-TD` (34 of 34) and from an eds workload (11 of 11). Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | None needed: `obs` keeps its memory (Step 2), and vmauth reloads in place. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store, vmauth, Grafana), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
@@ -168,7 +168,7 @@ already stored stay on the data disk until removed by hand.
 - [x] Step 6: the provider released and staged
 - [x] Step 7: deployed; tdemo, eds and mabell reconciled
 - [x] Step 8: the Metrics page, Coming Soon updated, the tdemo example
-- [ ] Verification passes from `DVNTM-TD` and a tdemo workload
+- [x] Verification passes from `DVNTM-TD` and a tenant workload (eds's; tdemo's state is not on the computer that ran it)
 
 ## Outcome
 
@@ -305,7 +305,7 @@ this: without it, a removed tenant's metrics would outlive it, against CHG-0065.
   `METRICS_ENDPOINT` in `kit.env` and `scripts/metrics-check.sh`
   ([deevnet-tenant-tdemo#20](https://github.com/deevnet/deevnet-tenant-tdemo/pull/20)).
 
-### Verification from `DVNTM-TD` (2026-11-15)
+### Verification from `DVNTM-TD` (2026-11-14)
 
 **34 of 34 checks pass**, run from a Mac on `DVNTM-TD` as eds (index 2) and mabell (index 3), with
 each tenant's tokens and Grafana login read from its own state:
@@ -326,5 +326,16 @@ each tenant's tokens and Grafana login read from its own state:
 
 **Retention** reads back as 90 days on `vmstorage` (Steps 3 to 7).
 
-**Left: the run from a tdemo workload**, `scripts/metrics-check.sh kit.env` on the workload. It
-checks the path a workload pushes on, from the tenant fabric to `obs`.
+### Verification from a workload (2026-11-14)
+
+**11 of 11 checks pass on eds's workload, `eds-services`**, over the tenant fabric's path to `obs`.
+The tokens came from eds's state on the Mac, through the SSH session's input, and were never written
+to the workload. eds stood in for tdemo, whose state is not on that Mac; the path is the same for
+every tenant.
+- `metrics.mobile.deevnet.net` resolves on the workload, and the store answers with a certificate it
+  trusts. A request with no token is refused.
+- The workload pushes with the ingest token and reads its sample back with the read token.
+- These are refused: the read token writing, the ingest token querying, mabell's `/insert/3:0/`,
+  and `/select/multitenant/`.
+- Naming mabell's partition reads only eds's own.
+- The workload still writes and reads back its logs.
