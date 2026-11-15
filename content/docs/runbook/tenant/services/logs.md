@@ -79,6 +79,7 @@ curl -sS --cacert deevnet-root-ca.pem -H "Authorization: Bearer $LOG_READ_TOKEN"
 **Or read them in Grafana:** your organization has all three partitions wired in as data sources
 ([Dashboards](/docs/runbook/tenant/services/dashboards/)).
 
-## What it does not do yet
+## When your tenant is removed
 
-- **Destroying the tenant does not delete logs** already written; they age out with retention
+**Removing your tenant deletes its logs**, in all three partitions, before its index is given to
+another tenant.

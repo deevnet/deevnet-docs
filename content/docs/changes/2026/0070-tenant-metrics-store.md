@@ -10,14 +10,14 @@ weight: -70
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold, and the store, vmauth's routes and Grafana are proven on the Builder. `obs` keeps its 4 GB. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **In progress.** Steps 1 to 7 done: the store is live on `obs`, behind the tenants' log tokens, and tdemo, eds and mabell are reconciled. Left: the tdemo example and the verification from `DVNTM-TD`. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | None needed: `obs` keeps its memory (Step 2), and vmauth reloads in place. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store, vmauth, Grafana), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
 | **Automation** | `deevnet.mgmt` `site.yml --tags metrics-store,log-store,dashboards,deevnet-api --limit` the host; `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Low. Most likely to go wrong: a vmauth mapping that lets a token reach another tenant's partition, caught by the verification's refusals before any tenant is told |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (the tokens this reuses), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) (the Grafana organizations), [CHG-0046](/docs/changes/2026/0046-service-proxy/) (443 by name) |
-| **Related runbooks** | [Coming Soon](/docs/runbook/tenant/services/coming-soon/) |
+| **Related runbooks** | [Metrics](/docs/runbook/tenant/services/metrics/), [Coming Soon](/docs/runbook/tenant/services/coming-soon/) |
 
 ---
 
@@ -162,11 +162,11 @@ already stored stay on the data disk until removed by hand.
 
 - [x] Step 1: the vendor claims checked and recorded
 - [x] Step 2: proven off site, refusals included
-- [ ] Step 3: the inventory changes merged
-- [ ] Step 4: the store role merged
-- [ ] Step 5: the API released
-- [ ] Step 6: the provider released and staged
-- [ ] Step 7: deployed; tdemo, eds and mabell reconciled
+- [x] Step 3: the inventory changes merged
+- [x] Step 4: the store role merged
+- [x] Step 5: the API released
+- [x] Step 6: the provider released and staged
+- [x] Step 7: deployed; tdemo, eds and mabell reconciled
 - [ ] Step 8: the Metrics page, Coming Soon updated, the tdemo example
 - [ ] Verification passes from `DVNTM-TD` and a tdemo workload
 
@@ -271,3 +271,32 @@ this: without it, a removed tenant's metrics would outlive it, against CHG-0065.
 - `/api/v1/import/prometheus` takes the Prometheus text format, so `curl` can push a metric with no
   client library.
 
+### Steps 3 to 7: released and deployed (2026-11-14)
+
+- **Merged and released:** the inventory
+  ([ansible-inventory-deevnet#113](https://github.com/deevnet/ansible-inventory-deevnet/pull/113)),
+  the store role ([ansible-collection-deevnet.mgmt#132](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/132)),
+  the API and writer `v0.24.0`
+  ([deevnet-provisioning-api#75](https://github.com/deevnet/deevnet-provisioning-api/pull/75)) and
+  the provider `v0.12.0`
+  ([terraform-provider-deevnet#37](https://github.com/deevnet/terraform-provider-deevnet/pull/37)),
+  staged to the tenant downloads.
+- **The store's three images were staged by hand.** The Builder's container image run pulls every
+  listed image each time, and stops at the retired MinIO image, which its registry now refuses. The
+  tarballs carry the same names and `-latest` links that run makes.
+- **DNS:** `metrics.mobile.deevnet.net` resolves to `obs`, and the router's configuration was backed
+  up after.
+- **`obs`:** the first run failed before the store started: the store role's default for the delete
+  key named a variable of the log store role, which its own play does not load. The writer, its
+  configuration and the key were already in place. Fixed in
+  [ansible-collection-deevnet.mgmt#133](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/133),
+  and the second run finished with no failure: the three containers run, vmauth carries the new
+  routes, and the proxy's certificate names `metrics`.
+- **Checked on `obs`:**
+  - each component answers its health check;
+  - `vmstorage` runs with `-retentionPeriod=90d` and both series caps;
+  - vmauth gives each tenant one write route, to its own `(index, 0)`, and read routes to its own
+    `(index, 0)` and `(index, 1)` only, with none to `multitenant` or `/delete/`;
+  - an unauthenticated query through `metrics.mobile.deevnet.net` is refused (401);
+  - `obs` uses 892 MB of its 3.9 GB.
+- **`prv`:** the API runs `v0.24.0`. Reconciling tdemo, eds and mabell succeeded for all three.

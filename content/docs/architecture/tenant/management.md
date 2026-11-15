@@ -69,8 +69,11 @@ Each tenant has a Grafana organization of its own, with its logs already wired i
 
 ### Metrics and alerting
 
-Tenants have no metrics store or alerting yet. The design is
-[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), and building it is part of the
+Each tenant has partitions of its own in a Prometheus-compatible metrics store on the same host as
+the log store, written and read with the tenant's log tokens. The tenant's workloads push to it; the
+platform never scrapes a tenant workload. The tenant's Grafana organization reads it as a data
+source. Tenants have no alerting yet. The design is
+[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), and building the rest is part of the
 [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
 roadmap project.
 

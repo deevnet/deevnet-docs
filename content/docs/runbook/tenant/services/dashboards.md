@@ -9,7 +9,7 @@ weight: 6
 
 ## What you get
 
-A **Grafana organization of your own**, with your logs already wired in
+A **Grafana organization of your own**, with your logs and metrics already wired in
 ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)). Your login is an **Editor** there, and
 a member of no other organization. You build folders and dashboards. The platform owns the data
 sources.
@@ -19,13 +19,15 @@ sources.
 | `deevnet-logs-workloads` | `(index, 0)`, your workloads' logs | |
 | `deevnet-logs-platform` | `(index, 1)`, what the platform says about your tenant | |
 | `deevnet-logs-devices` | `(index, 2)`, your devices' logs from MQTT | the default |
+| `deevnet-metrics-workloads` | `(index, 0)` of the metrics store, your workloads' metrics | Prometheus |
 
 Each one reads with your tenant's own log read token, so it sees exactly what your token sees and
-nothing more ([Logs](/docs/runbook/tenant/services/logs/)).
+nothing more ([Logs](/docs/runbook/tenant/services/logs/), [Metrics](/docs/runbook/tenant/services/metrics/)).
 
 **The UIDs are the same in every tenant's organization, on every site, and on the
 [tenant Pi image](/docs/runbook/tenant/tenant-to-pi-image/).** A dashboard that names them moves between
 those places unchanged. Name data sources by these UIDs, never by the numeric id Grafana shows.
+The Pi image has no metrics store, so `deevnet-metrics-workloads` is on the site only.
 
 The login comes back as attributes of your tenant:
 
@@ -178,6 +180,5 @@ above.
 - **Add or change a data source.** An Editor can't. A data source is a URL Grafana's server
   requests on your behalf, so only the platform sets them.
 - **Grafana alerting.** It is off. Alerting is a
-  [coming](/docs/runbook/tenant/services/coming-soon/#metrics-and-alerting) platform service.
-- **Metrics.** There is no metrics store yet. Graph numbers from your logs, as above.
+  [coming](/docs/runbook/tenant/services/coming-soon/#alerting) platform service.
 - **Share a dashboard with another tenant.** Organizations don't share. Copy it through code.

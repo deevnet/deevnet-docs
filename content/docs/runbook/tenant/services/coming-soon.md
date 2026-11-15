@@ -10,15 +10,13 @@ here can be declared today. The shape described is the proposal's, and may chang
 
 ---
 
-## Metrics and alerting
+## Alerting
 
 {{< status-badge "planned" "Coming soon" >}}
 
-**Today:** logs are the only telemetry the platform stores for you, though a numeric field in a
-device's JSON log line can already be [graphed](/docs/runbook/tenant/services/dashboards/#a-starter-dashboard).
-**Planned:** your workloads push metrics, with the log tokens you already hold, into a
-Prometheus-compatible store of your own (the platform never scrapes a tenant workload), and your
-Grafana organization gains a metrics data source. You declare alert rules, over metrics or over logs, that run under your own token, and
+**Today:** you can graph and query your [metrics](/docs/runbook/tenant/services/metrics/) and
+[logs](/docs/runbook/tenant/services/logs/), but nothing notifies you.
+**Planned:** you declare alert rules, over metrics or over logs, that run under your own token, and
 notifications reach your phone through a platform push service while you are at the site. Later,
 each workload's CPU, memory, disk and network appear beside your own metrics.
 [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)

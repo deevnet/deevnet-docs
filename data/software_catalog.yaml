@@ -200,10 +200,10 @@ tables:
       source: Pin
     - component: '**Deevnet API**'
       vm: '`dv02prv001v01`'
-      version: '**v0.21.0**'
+      version: '**v0.24.0**'
       license: Apache-2.0
       support: In-house
-      source: Pin; deployed 2026-11-12 ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/))
+      source: Pin; deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
     - component: '**PostgreSQL**'
       vm: '`dv02prv001v01` (the API), `dv02msg001v01` (VerneMQ auth)'
       version: '**17.11**'
@@ -244,6 +244,12 @@ tables:
       license: Apache-2.0
       support: Community, commercial available (VictoriaMetrics)
       source: Pin; observed 2026-09-21
+    - component: '**VictoriaMetrics cluster** (vmstorage, vminsert, vmselect)'
+      vm: '`dv02obs001v01`'
+      version: '**v1.156.0-cluster**'
+      license: Apache-2.0
+      support: Community, commercial available (VictoriaMetrics)
+      source: Pin; deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
     - component: '**Grafana OSS**'
       vm: '`dv02obs001v01`'
       version: '**13.2.2**'
@@ -264,10 +270,10 @@ tables:
       source: Pin; deployed 2026-09-24 ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
     - component: '`deevnet-log-user`'
       vm: '`dv02obs001v01`'
-      version: '**v0.21.0**, staged from the API repository'
+      version: '**v0.24.0**, staged from the API repository'
       license: Apache-2.0
       support: In-house
-      source: Pin (`victorialogs_writer_binary`); deployed 2026-11-12 ([CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/))
+      source: Pin (`victorialogs_writer_binary`); deployed 2026-11-14 ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
     - component: '`deevnet-broker-account`'
       vm: '`dv02msg001v01`'
       version: '**v0.5.1**, staged from the API repository (behind its v0.15.0 tag)'
@@ -596,11 +602,11 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.21.0**, deployed **v0.21.0**
+      version: tag **v0.24.0**, deployed **v0.24.0**
       license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'
-      version: tag **v0.8.0**
+      version: tag **v0.12.0**
       license: Apache-2.0
       what_it_builds: The provider, `install-provider.sh`, `tenant-check.sh`
     - repository: '`deevnet-log-bridge`'
