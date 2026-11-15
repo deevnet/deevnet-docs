@@ -10,7 +10,7 @@ weight: -70
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress.** Steps 1 to 7 done: the store is live on `obs`, behind the tenants' log tokens, and tdemo, eds and mabell are reconciled. Left: the tdemo example and the verification from `DVNTM-TD`. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
+| **Status** | **In progress.** Steps 1 to 7 done: the store is live on `obs`, behind the tenants' log tokens, and tdemo, eds and mabell are reconciled. The verification passes from `DVNTM-TD`, 34 of 34. Left: the same from a tdemo workload. Step A of [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) |
 | **Window** | None needed: `obs` keeps its memory (Step 2), and vmauth reloads in place. The API redeploy is a restart of a few seconds |
 | **Site** | mobile |
 | **Systems** | `dv02obs001v01` (the store, vmauth, Grafana), `dv02prv001v01` (the Deevnet API), `deevnet-tenant-tdemo` |
@@ -167,7 +167,7 @@ already stored stay on the data disk until removed by hand.
 - [x] Step 5: the API released
 - [x] Step 6: the provider released and staged
 - [x] Step 7: deployed; tdemo, eds and mabell reconciled
-- [ ] Step 8: the Metrics page, Coming Soon updated, the tdemo example
+- [x] Step 8: the Metrics page, Coming Soon updated, the tdemo example
 - [ ] Verification passes from `DVNTM-TD` and a tdemo workload
 
 ## Outcome
@@ -300,3 +300,31 @@ this: without it, a removed tenant's metrics would outlive it, against CHG-0065.
   - an unauthenticated query through `metrics.mobile.deevnet.net` is refused (401);
   - `obs` uses 892 MB of its 3.9 GB.
 - **`prv`:** the API runs `v0.24.0`. Reconciling tdemo, eds and mabell succeeded for all three.
+- **Step 8:** the tenant Metrics page and Coming Soon
+  ([deevnet-docs#437](https://github.com/deevnet/deevnet-docs/pull/437)), and the tdemo example,
+  `METRICS_ENDPOINT` in `kit.env` and `scripts/metrics-check.sh`
+  ([deevnet-tenant-tdemo#20](https://github.com/deevnet/deevnet-tenant-tdemo/pull/20)).
+
+### Verification from `DVNTM-TD` (2026-11-15)
+
+**34 of 34 checks pass**, run from a Mac on `DVNTM-TD` as eds (index 2) and mabell (index 3), with
+each tenant's tokens and Grafana login read from its own state:
+- `metrics.mobile.deevnet.net` resolves to `obs`, and its certificate chains to the Deevnet Root CA.
+  A request with no token is refused.
+- The API names the store as each tenant's `metrics_endpoint`.
+- Each tenant pushes with its ingest token and reads its sample back with its read token. It also
+  reads its platform partition, `(index, 1)`.
+- These are refused (400) for each tenant:
+  - the read token writing, and the ingest token querying;
+  - the other tenant's `/insert/<index>:0/` and `/select/<index>:0/`;
+  - `/select/multitenant/`.
+- Each tenant's read token sees none of the other's samples. Naming the other's partition in
+  `X-Deevnet-Partition` reads only its own.
+- Each tenant still writes and reads back its logs.
+- Each tenant's Grafana organization has `deevnet-metrics-workloads` and shows its own sample
+  through it, and none of the other's.
+
+**Retention** reads back as 90 days on `vmstorage` (Steps 3 to 7).
+
+**Left: the run from a tdemo workload**, `scripts/metrics-check.sh kit.env` on the workload. It
+checks the path a workload pushes on, from the tenant fabric to `obs`.
