@@ -19,13 +19,7 @@ waypoints:
   - title: "Object storage for tenants: Terraform state on a VM of its own, and S3 buckets with quotas and keys (CHG-0068, CHG-0069)"
     status: done
     date: "2026-11-14"
-  - title: "Tenants push metrics from their workloads and query them, in Grafana too, with their log tokens (CHG-0070)"
-    status: done
-    date: "2026-11-14"
-  - title: "Tenants get alerts on their phones, on site, from their own rules over their metrics and logs (CHG-0071)"
-    status: done
-    date: "2026-11-15"
-  - title: "More services for tenants: workload resource use, identity, quotas"
+  - title: "More services for tenants: identity, quotas"
     status: active
   - title: "Tenants can work from Windows laptops (CHG-0058)"
     status: done
@@ -34,8 +28,10 @@ waypoints:
 
 # Tenant Platform Services
 
-What the site offers each tenant once it exists: Wi-Fi keys, a device registry, MQTT, logs, metrics, alerts,
-dashboards, downloads, fixed addresses and services by name, and what is still to come.
+What the site offers each tenant once it exists: Wi-Fi keys, a device registry, MQTT, logs,
+dashboards, downloads, fixed addresses and services by name, and what is still to come. Metrics,
+alerts and each workload's resource use are
+[Tenant Observability](/docs/roadmap/infrastructure/tenant-services/observability/).
 
 {{< overall-progress >}}
 
