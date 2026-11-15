@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0073 | 2026-11-15 | [Buckets on the Take-Home Pi](2026/0073-pi-buckets/) | Deployment | mobile | Planned |
+| CHG-0073 | 2026-11-15 | [Buckets on the Take-Home Pi](2026/0073-pi-buckets/) | Deployment | mobile | In progress |
 | CHG-0072 | 2026-11-15 | [Metrics and Alerting on the Take-Home Pi](2026/0072-pi-metrics-and-alerting/) | Deployment | mobile | In progress |
 | CHG-0071 | 2026-11-14 | [Tenant Alerting](2026/0071-tenant-alerting/) | Deployment | mobile | Complete |
 | CHG-0070 | 2026-11-14 | [Tenant Metrics Store](2026/0070-tenant-metrics-store/) | Deployment | mobile | Complete |

@@ -10,7 +10,7 @@ weight: -73
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Planned.** |
+| **Status** | **In progress.** Steps 1 and 2 done but the arm64 build: the kit's buckets are proven against the silo Deevnet runs; building silo for arm64 waits for an operator at the core router |
 | **Window** | Unscheduled. A silo build for arm64, a `deevnet-kit` release and an image build, possibly shared with [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/) |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; silo, built for arm64; the take-home image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -112,7 +112,7 @@ Flash the previous image. Buckets made on the Pi are lost with its card; copy th
 **This change closes when every item below is done.**
 
 - [ ] Step 1: the vendor claims checked and recorded
-- [ ] Step 2: proven off site
+- [x] Step 2: proven off site
 - [ ] Step 3: silo for arm64 built and staged; `deevnet-kit` released
 - [ ] Step 4: the image built and staged
 - [ ] Step 5: tdemo and the guide updated
@@ -120,4 +120,33 @@ Flash the previous image. Buckets made on the Pi are lost with its card; copy th
 
 ## Outcome
 
-Not started.
+### Step 1: the vendor claims (2026-11-15)
+
+| Claim | Found | Holds |
+|---|---|---|
+| silo builds for arm64 from the tag Deevnet runs | The build stage is `CGO_ENABLED=0` Go; a `GOARCH` build argument cross-compiles the server alone, with `make binary IMAGE=silo ARCH=arm64` | Not yet run: it downloads silo's source and modules through the core router, unthrottled, and waits for an operator at its console |
+| On one drive: versioning, quota, lifecycle | Against `RELEASE.2026-11-12T00-00-00Z` (amd64), the API's own client made a versioned bucket with a quota and an old-version expiry, and another with anonymous read | Yes |
+| TLS from a certificate directory | `--certs-dir` with `public.crt` and `private.key` linked to the card's certificate: served on 9000, trusted with the card's CA | Yes |
+| A renewed certificate picked up | The kit restarts silo on a certificate change (`try-restart`) rather than rely on a reload | — |
+| Idle memory | Measured on a real Pi in the verification | Open |
+
+### Step 2: proven on the Builder (2026-11-15)
+
+`deevnet-kit` with the new bucket commands, against silo `RELEASE.2026-11-12T00-00-00Z`, the build
+Deevnet runs, in a `debian:bookworm` container:
+- **`bucket add`** made `tdemo-files`, versioned with a 30-day old-version expiry, and its default
+  write key, and started the store with a root login of its own. `tdemo-other` was made with
+  anonymous read.
+- **`bucket key add --key-file`** kept a read key given to it, as one from Terraform would be.
+- **A quota larger than the card** was refused, naming what is left.
+- **Each key did only its own job:** the write key wrote and the read key read back; the read key
+  was refused a write; `tdemo-files`' key was refused `tdemo-other`, for a list and for a write.
+- **Anonymous read:** an object in `tdemo-other` was served with no key, but its listing was not,
+  and `tdemo-files` refused a request with no key (403).
+- **`bucket rm`** refused a bucket with objects in it, and `--force` removed the bucket and its keys:
+  the read key stopped working.
+
+**Written:** the kit ([deevnet-provisioning-api#79](https://github.com/deevnet/deevnet-provisioning-api/pull/79)),
+the arm64 build ([deevnet-container-image-factory#5](https://github.com/deevnet/deevnet-container-image-factory/pull/5)),
+the image ([deevnet-image-factory#44](https://github.com/deevnet/deevnet-image-factory/pull/44)), and
+tdemo's `kit_env` lines ([deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22)).
