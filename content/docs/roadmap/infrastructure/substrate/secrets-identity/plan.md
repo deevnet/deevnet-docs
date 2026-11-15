@@ -53,7 +53,7 @@ OpenBao on `dv02idn001v01`, unsealed by a key ansible-vault delivers, which stay
 
 ## Identity Management 🔄
 
-- 🔄 Evaluate identity solutions: Keycloak, with a realm per tenant, proposed in
+- 🔄 Evaluate identity solutions: Keycloak, for the operator, proposed in
   [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
 - ⏳ Deploy identity provider
 - ⏳ Configure SSO for infrastructure services

@@ -13,7 +13,7 @@ weight: -33
 | **Scope** | Where the authoritative copy of everything the site runs lives, and how the site and its tenants recover with no backup on the path. Covers tenant state, device secrets, the Deevnet API's database and audit log, and tenant buckets. |
 | **Supersedes** | [ADR-0014: Tenant State Durability](/docs/architecture/decisions/tenant-model/0014-tenant-state-durability/), whole |
 | **Amends** | [ADR-0012: IoT Platform API](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §4 (the authoritative copy of a device secret), §5 (the restore source) and its audit-log paragraph; [ADR-0015: Tenant Onboarding Through the API](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) (the API's database is a working copy of the registry); [ADR-0026: Object Storage](/docs/architecture/decisions/platform-services/0026-object-storage/) §3 and §4 (no replica) |
-| **In conflict with** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) (OpenBao's data is kept data) and [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/) §7 (Keycloak's is); both to be revisited, see [Consequences](#consequences) |
+| **In conflict with** | [ADR-0016: Substrate Secrets in OpenBao](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) (OpenBao's data is kept data); to be revisited, see [Consequences](#consequences) |
 | **Related** | [ADR-0007: Terraform State Custody](/docs/architecture/decisions/tenant-model/0007-terraform-state-custody/) §5, [ADR-0010: Tenants Consume Platform Services](/docs/architecture/decisions/tenant-model/0010-tenants-consume-platform-services/) §4, [ADR-0021: Tenant Secrets](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/), [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) §7, [ADR-0031: Deevnet PKI](/docs/architecture/decisions/substrate/0031-deevnet-pki/) §6 |
 
 ---
@@ -124,13 +124,13 @@ argument, and the restore path reads it from configuration. Today's device secre
 keys replace passwords. A tenant that loses its age keys loses its device secrets; that is the cost
 ADR-0014 recorded for option E, and it falls on the tenant.
 
-**Two records conflict with this one, and are revisited separately:**
+**One record conflicts with this one, and is revisited separately:**
 - **ADR-0016** makes OpenBao's data kept data, with a snapshot copied off the VM. Most of what
   OpenBao holds is delivered from the vault or re-issued. The exception is the Tenant Device CA,
   whose key ADR-0031 has generated inside OpenBao: losing it means a new device CA, and every
   device enrolling again (open question 2).
-- **ADR-0025 §7** makes Keycloak's database kept data, because users' credentials exist nowhere
-  else. It must be revisited before Keycloak is built.
+- **ADR-0025**, which made Keycloak's database kept data, was revised on 2026-11-15 to the operator
+  only, who enrolls again after a loss; it no longer conflicts.
 
 ---
 

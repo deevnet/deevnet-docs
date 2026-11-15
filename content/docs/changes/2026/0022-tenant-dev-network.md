@@ -250,7 +250,7 @@ only a timeout as a pass.
 
 - [x] Tenant-facing pages: [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/),
       [Tenant Admission §3](/docs/runbook/substrate/tenant-admission/),
-      [Coming Soon](/docs/runbook/tenant/services/coming-soon/), troubleshooting and the
+      [Coming Soon](/docs/runbook/tenant/services/), troubleshooting and the
       [network reference](/docs/runbook/substrate/network/network-reference/) - updated with this record.
 - [ ] Run `terraform plan` and an MQTT login from `DVNTM-TD` the first time a tenant uses it.
 - [x] **The internet rule is `!10.20.0.0/16`, not "not RFC 1918"** — fixed by [CHG-0023](/docs/changes/2026/0023-internet-means-internet/); `192.168.8.1` now times out from `DVNTM-TD`. Guest, and now tenant_dev, can reach

@@ -17,7 +17,7 @@ weight: -70
 | **Automation** | `deevnet.mgmt` `site.yml --tags metrics-store,log-store,dashboards,deevnet-api --limit` the host; `deevnet-provisioning-api` and `terraform-provider-deevnet` releases and `make stage`. Inventory `ansible-inventory-deevnet/mobile` |
 | **Risk** | Low. Most likely to go wrong: a vmauth mapping that lets a token reach another tenant's partition, caught by the verification's refusals before any tenant is told |
 | **Related changes** | [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/) (the tokens this reuses), [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/) (the Grafana organizations), [CHG-0046](/docs/changes/2026/0046-service-proxy/) (443 by name) |
-| **Related runbooks** | [Metrics](/docs/runbook/tenant/services/metrics/), [Coming Soon](/docs/runbook/tenant/services/coming-soon/) |
+| **Related runbooks** | [Metrics](/docs/runbook/tenant/services/metrics/), [Alerting](/docs/runbook/tenant/services/alerting/) |
 
 ---
 

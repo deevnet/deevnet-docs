@@ -4,7 +4,7 @@ linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 18
 tasks_in_progress: 0
-tasks_planned: 4
+tasks_planned: 3
 ---
 
 # Tenant Platform Services: Project Plan
@@ -48,8 +48,6 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Object storage, step two: tenant buckets, with quotas, keys, versioning, lifecycle and
   site-only anonymous read, through `deevnet_bucket` and `deevnet_bucket_key`
   ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/))
-- ⏳ Identity: designed, not built
-  ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 - ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
   the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the
   restore path reads them from configuration, and `eds` and `mabell` move theirs from state into

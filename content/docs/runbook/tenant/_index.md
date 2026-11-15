@@ -46,11 +46,12 @@ read it to use this guide.
 | [Devices & MQTT](services/devices-and-mqtt/) | A device registry, TLS MQTT accounts confined to your own topics, and a fixed address for a device that needs one | {{< status-badge "active" "Available" >}} |
 | [Service certificates](services/certificates/) | TLS certificates for your workloads' services, issued by the site | {{< status-badge "active" "Available" >}} |
 | [Logs](services/logs/) | Your own log partitions: workload logs, and device logs arriving over MQTT | {{< status-badge "active" "Available" >}} |
+| [Metrics](services/metrics/) | A Prometheus-compatible store of your own, pushed and read with your log tokens | {{< status-badge "active" "Available" >}} |
+| [Alerting](services/alerting/) | Your own rules over your metrics and logs, sent to your phone on site | {{< status-badge "active" "Available" >}} |
 | [Dashboards](services/dashboards/) | A Grafana organization of your own with your logs wired in; dashboards as code | {{< status-badge "active" "Available" >}} |
 | [State store](services/state-store/) | An S3 backend for your Terraform state | {{< status-badge "active" "Available" >}} |
 | [Runtime secrets](services/secrets/) | An OpenBao namespace of your own, read by each workload under its own login | {{< status-badge "active" "Available" >}} |
 | [Object storage](services/object-storage/) | S3 buckets with a quota you declare, keys that reach one bucket each, and optional keyless reads on the site | {{< status-badge "active" "Available" >}} |
-| [Metrics, identity](services/coming-soon/) | Designed, not yet built | {{< status-badge "planned" "Coming soon" >}} |
 
 ---
 
