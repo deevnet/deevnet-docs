@@ -22,7 +22,10 @@ waypoints:
   - title: "Tenants push metrics from their workloads and query them, in Grafana too, with their log tokens (CHG-0070)"
     status: done
     date: "2026-11-14"
-  - title: "More services for tenants: alerting, identity, quotas"
+  - title: "Tenants get alerts on their phones, on site, from their own rules over their metrics and logs (CHG-0071)"
+    status: done
+    date: "2026-11-15"
+  - title: "More services for tenants: workload resource use, identity, quotas"
     status: active
   - title: "Tenants can work from Windows laptops (CHG-0058)"
     status: done
@@ -31,7 +34,7 @@ waypoints:
 
 # Tenant Platform Services
 
-What the site offers each tenant once it exists: Wi-Fi keys, a device registry, MQTT, logs,
+What the site offers each tenant once it exists: Wi-Fi keys, a device registry, MQTT, logs, metrics, alerts,
 dashboards, downloads, fixed addresses and services by name, and what is still to come.
 
 {{< overall-progress >}}

@@ -270,7 +270,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   around.
   Extends ADR-0023.
 - [ADR-0023: Metrics and Alerting](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) —
-  *Proposed*, revised 2026-11-14 to tenants only, as ADR-0027 made the logs. Tenants push metrics into
+  *Accepted* (2026-11-15), revised 2026-11-14 to tenants only, as ADR-0027 made the logs. Tenants push metrics into
   a Prometheus-compatible store, a VictoriaMetrics cluster, on the observability VM behind the log
   store's vmauth, because tenancy exists only in its cluster version. The partitions and the two
   tenant tokens are the logs', and Grafana gains metrics data sources. The substrate never scrapes a
@@ -278,7 +278,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   Tenants declare alert rules over metrics or logs through the Deevnet API. Each tenant's rules run in
   its own vmalert under its own read token, so the partition boundary is enforced by vmauth, not by
   the rule's text. One Alertmanager delivers through ntfy on site, where each tenant reads only its
-  own topics. Built in three steps: the store (CHG-0070), alerting, then resource use. Open: how the
+  own topics. Built in three steps: the store (CHG-0070), alerting (CHG-0071), then resource use. Open: how the
   VMID map reaches the collector, and how an off-site phone is reached. Extends ADR-0022.
 - [ADR-0022: Central Logging](/docs/architecture/decisions/platform-services/0022-central-logging/) —
   *Accepted* (2026-09-26), as narrowed by ADR-0027. One log store for the substrate and every tenant, on Platform, because every zone

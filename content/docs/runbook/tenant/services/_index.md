@@ -18,13 +18,13 @@ declares it, how a device or a workload uses it, and what it does not do yet.
 | [Service certificates](certificates/) | [`deevnet_certificate`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/certificate/) | {{< status-badge "active" "Available" >}} |
 | [Logs](logs/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
 | [Metrics](metrics/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
+| [Alerting](alerting/) | [`deevnet_alert_rule_group`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/alert_rule_group/); the phone's login on [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
 | [Dashboards](dashboards/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/); dashboards with the `grafana` provider | {{< status-badge "active" "Available" >}} |
 | [State store](state-store/) | attributes of [`deevnet_tenant`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/tenant/) | {{< status-badge "active" "Available" >}} |
 | [Code delivery to workloads](/docs/runbook/tenant/deploy-your-app/) | `ssh_keys` on [`deevnet_workload`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/workload/); you push over SSH | {{< status-badge "active" "Available" >}} |
 | [Your own secrets](/docs/runbook/tenant/deploy-your-app/#your-own-secrets) | your repository, encrypted; pushed with your settings | {{< status-badge "active" "Available" >}} |
 | [Runtime secrets](secrets/) | [`deevnet_secret`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret/), [`deevnet_secret_reader`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret_reader/); optional | {{< status-badge "active" "Available" >}} |
 | [Object storage](object-storage/) | [`deevnet_bucket`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket/), [`deevnet_bucket_key`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket_key/) | {{< status-badge "active" "Available" >}} |
-| [Alerting](coming-soon/#alerting) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [Identity](coming-soon/#identity) | — | {{< status-badge "planned" "Coming soon" >}} |
 | [A tenant devbox](coming-soon/#a-tenant-devbox) | — | {{< status-badge "planned" "Coming soon" >}} |
 

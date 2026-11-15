@@ -118,7 +118,9 @@ Get-Content .backend.env | ForEach-Object {
 
 Put the token line (and the `.backend.env` sourcing, once you have it) in whatever you use to set
 up a shell for this project. If a later command says `No API token`, this is the line that is
-missing.
+missing. If a bare `terraform` command says *"The Access Key Id you provided does not exist in our
+records"*, the `.backend.env` sourcing is missing: without it, Terraform tries the state store with
+whatever AWS keys your shell already holds.
 
 {{< hint warning >}}
 **Your Terraform state now holds every credential the tenant was issued**, and for most of them it

@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0071 | 2026-11-14 | [Tenant Alerting](0071-tenant-alerting/) | Deployment | mobile | Planned |
+| CHG-0071 | 2026-11-14 | [Tenant Alerting](0071-tenant-alerting/) | Deployment | mobile | Complete |
 | CHG-0070 | 2026-11-14 | [Tenant Metrics Store](0070-tenant-metrics-store/) | Deployment | mobile | Complete |
 | CHG-0069 | 2026-11-14 | [Tenant Buckets](0069-tenant-buckets/) | Deployment | mobile | Complete |
 | CHG-0068 | 2026-11-14 | [The Object Store Moves to a VM of Its Own, on Silo](0068-object-store-vm/) | Deployment · Migration | mobile | Complete |

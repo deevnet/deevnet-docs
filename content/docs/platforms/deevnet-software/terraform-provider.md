@@ -32,7 +32,7 @@ have to guard.
 
 **The provider has its own documentation site, [Deevnet Terraform Provider](https://deevnet.github.io/terraform-provider-deevnet/).** Its
 [resource reference](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/) is generated from the provider's schemas, with every
-argument and attribute of the nine resources:
+argument and attribute of the thirteen resources:
 
 | Resource | Declares |
 |---|---|
@@ -46,6 +46,9 @@ argument and attribute of the nine resources:
 | [`deevnet_certificate`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/certificate/) | A server certificate for one of the tenant's own services: its site-less name, `<name>.<tenant>.deevnet.net`, then that name at each of `sites`; the tenant keeps the key |
 | [`deevnet_secret`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret/) | A runtime secret in the tenant's OpenBao namespace, from a write-only value that never reaches plan or state; a new `data_wo_version` writes again |
 | [`deevnet_secret_reader`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/secret_reader/) | A workload's login to that namespace, reading only the paths named |
+| [`deevnet_bucket`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket/) | An S3 bucket in the site's bucket store, with a quota |
+| [`deevnet_bucket_key`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/bucket_key/) | A key to one bucket, read-only or read-write |
+| [`deevnet_alert_rule_group`](https://deevnet.github.io/terraform-provider-deevnet/docs/resources/alert_rule_group/) | Alert rules over the tenant's metrics or logs, sent to its ntfy topic `<tenant>-<topic>` |
 
 There are no data sources. The state store is used through Terraform's own `backend "s3"`.
 
@@ -63,6 +66,10 @@ registry is lost. `-replace` issues new keys instead. The provider's
 code, never in state, and a lost reader's IDs died with it. So when the API reports either gone, the
 provider drops it from state, and the next apply writes the secret again and issues the reader new
 IDs ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)).
+
+**Alert rule groups are recreated too.** A group holds no secret, and its rules are the tenant's
+code, so a group the site lost is written again by the next apply
+([CHG-0071](/docs/changes/2026/0071-tenant-alerting/)).
 
 The same rule means a workload whose VM is gone, but which the registry still lists, shows no change
 ([Deevnet API → How it behaves on repair](/docs/platforms/deevnet-software/deevnet-api/#how-it-behaves-on-repair)).

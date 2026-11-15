@@ -136,14 +136,21 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
   *restore*: the same index, the same keys. A create that was interrupted resumes and issues a new
   API token.
 - **Reconcile** re-ensures every backend for a registered tenant, in order: DNS, resolver
-  forwarding, state store, the fabric network, the log store and dashboards, then the tenant's
-  secrets namespace. It stops at the
-  first failure and records it; calling again resumes. It returns the tenant's log tokens and
-  dashboard password, and nothing else: not its DNS or state secrets, and not its API token.
+  forwarding, state store, the fabric network, the log store, dashboards and alerting, then the
+  tenant's secrets namespace. It stops at the
+  first failure and records it; calling again resumes. It returns the tenant's log tokens, its
+  dashboard password and its ntfy password, and nothing else: not its DNS or state secrets, and not
+  its API token.
 - **A tenant's log tokens are its metrics tokens too.** The log users the API writes carry routes
   to the metrics store beside the log routes, and the tenant's answer names the store as
   `metrics_endpoint`. A site with no metrics store leaves both out, and its Grafana organizations
   get no metrics data source ([CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/)).
+- **A tenant's alert rule groups are written before they are recorded.** The API sends the tenant's
+  whole alerting state to the log store's writer, which has vmalert dry-run the rules; a rule
+  vmalert won't load is refused with its parse error, and nothing is recorded. The API and the
+  writer each refuse the labels that route an alert (`tenant`, `deevnet_topic`), because a rule's
+  labels beat vmalert's own. A reconcile writes every group again, into a rebuilt store
+  ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/)).
 - **A state-secret reissue** mints a new state-store secret for a tenant, records it, sets it on the
   store and returns it, for an operator to hand over. The old one stops working. The registry is
   written first, so a store that refused is put right by the next reconcile. It refuses a tenant
@@ -158,7 +165,7 @@ registry is rebuilt from it ([ADR-0033](/docs/architecture/decisions/tenant-mode
   tenant's state.
 - **Delete** refuses while a tenant has workloads. It then removes, in order:
   - dashboards, emptying the organization first;
-  - log tokens, then the tenant's logs and metrics;
+  - log tokens, with the tenant's alert rules and phone login, then its logs and metrics;
   - Wi-Fi keys and the network;
   - resolver forwarding and DNS;
   - state access, then every version of the tenant's state.

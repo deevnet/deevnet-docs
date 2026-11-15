@@ -72,10 +72,13 @@ Each tenant has a Grafana organization of its own, with its logs already wired i
 Each tenant has partitions of its own in a Prometheus-compatible metrics store on the same host as
 the log store, written and read with the tenant's log tokens. The tenant's workloads push to it; the
 platform never scrapes a tenant workload. The tenant's Grafana organization reads it as a data
-source. Tenants have no alerting yet. The design is
-[ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/), and building the rest is part of the
-[Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
-roadmap project.
+source.
+
+Each tenant's alert rules, over its metrics or its logs, run in an evaluator of the tenant's own,
+which reads with the tenant's read token and so sees only what the tenant can. One alert router
+sends each alert to a push topic named for the tenant, which only the tenant's login can read and
+only the router can publish to. The phone subscribes on site
+([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/)).
 
 ---
 

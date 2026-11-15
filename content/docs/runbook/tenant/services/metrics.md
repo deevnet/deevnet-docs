@@ -96,9 +96,12 @@ in a day, and every distinct set of label values is a series. A label holding a 
 or a timestamp makes a new series each time and uses up that limit for every tenant. Labels such as
 `app`, `host` or `status` are the right size.
 
+## Alerts
+
+**Rules over your metrics can send alerts to your phone:** see
+[Alerting](/docs/runbook/tenant/services/alerting/).
+
 ## What it does not do yet
 
-- **No alerting:** you can graph and query your metrics, but nothing notifies you yet
-  ([Coming Soon](/docs/runbook/tenant/services/coming-soon/#alerting)).
 - **The platform's partition is empty:** your workloads' CPU, memory, disk and network will appear
   in `(index, 1)` later.
