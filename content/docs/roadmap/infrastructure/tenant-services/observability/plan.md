@@ -34,5 +34,6 @@ plans for the tenant platform, with
   through ntfy to Android phones on site ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
 - ⏳ Workload resource use, step C: each workload's CPU, memory, disk and network as the hypervisor
   sees it, published to the tenant
-- ⏳ Alerts off site and on iOS: how a phone away from the site is reached, ADR-0023's open
-  question 2
+- ⏳ Alerts that reach a phone away from the site, and on iOS (ADR-0023's open question 2): an
+  ADR of its own, for where a tenant runs for real, on a take-home Pi or at the home site. The
+  mobile site is for development, where alerts on site prove the rules
