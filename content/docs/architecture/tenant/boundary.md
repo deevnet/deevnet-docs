@@ -96,7 +96,9 @@ workloads still conforms and still has all of it.
 | A delegated DNS zone, and a key scoped to it | Publishes its own records | Enforced |
 | A state store prefix and a credential scoped to it | Uses it, or keeps custody elsewhere | Enforced and measured |
 | Log partitions, with an ingest and a read token of its own | Sends and reads its logs | Enforced and measured |
+| Metrics partitions, written and read with its log tokens | Pushes and reads its metrics | Enforced and measured |
 | A dashboards organization, with its logs wired in | Builds its own dashboards | Enforced and measured |
+| A phone login that reads only its own alert topics, and publishes to none | Subscribes on site | Enforced and measured |
 | A runtime secrets namespace of its own | Writes its secrets there, if it wants them | Enforced and measured |
 
 ---
@@ -115,13 +117,17 @@ services](/docs/runbook/tenant/services/).
 | Broker accounts | An account confined to its own topics | Enforced and measured |
 | Device addresses | A fixed address on the device network, and a name in its zone | Enforced |
 | Service certificates | A certificate for its own key, under its own names | Enforced |
+| Alert rule groups | Its own evaluator, reading with its read token, sending to its own topics | Enforced and measured |
+| Buckets and their keys | A bucket with a quota, and keys to that bucket only | Enforced |
 | Runtime secrets and their readers | A copy of each secret in its namespace, and for each workload a login that reads only the paths named, from inside the tenant fabric | Enforced and measured |
 | Names | Records in its own zone, published by the tenant | Enforced |
 
-**Tenant-facing services still to come are not part of this contract.** Metrics and alerting,
-identity, object storage, a development workload and resource quotas are on the
+**Tenant-facing services still to come are not part of this contract.** Identity, a development
+workload and resource quotas are on the
 [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/) roadmap,
-and a tenant cannot rely on them yet.
+and each workload's resource use on
+[Tenant Observability](/docs/roadmap/infrastructure/tenant-services/observability/). A tenant cannot
+rely on them yet.
 
 ---
 

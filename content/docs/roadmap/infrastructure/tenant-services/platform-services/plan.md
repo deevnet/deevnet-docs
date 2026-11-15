@@ -2,14 +2,14 @@
 title: "Tenant Platform Services: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 20
+tasks_completed: 18
 tasks_in_progress: 0
-tasks_planned: 5
+tasks_planned: 4
 ---
 
 # Tenant Platform Services: Project Plan
 
-The services a tenant can use beyond networks, workloads and names, one of three plans for the tenant platform with [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/plan/) and [Tenant Lifecycle](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/plan/).
+The services a tenant can use beyond networks, workloads and names, one of four plans for the tenant platform with [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/plan/), [Tenant Lifecycle](/docs/roadmap/infrastructure/tenant-services/tenant-lifecycle/plan/) and [Tenant Observability](/docs/roadmap/infrastructure/tenant-services/observability/plan/).
 
 **Roadmap item:** [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/)
 
@@ -48,14 +48,6 @@ What a tenant can declare today beyond networks, workloads and names, each throu
 - ✅ Object storage, step two: tenant buckets, with quotas, keys, versioning, lifecycle and
   site-only anonymous read, through `deevnet_bucket` and `deevnet_bucket_key`
   ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/))
-- ✅ Metrics, step A: a Prometheus-compatible store beside the logs, written and read with the
-  tenant's log tokens, with a metrics data source in each Grafana organization
-  ([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/),
-  [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
-- ✅ Alerting, step B: alert rules over metrics or logs, each tenant's in its own vmalert, delivered
-  through ntfy to Android phones on site ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
-- ⏳ Workload resource use, step C: each workload's CPU, memory, disk and network as the hypervisor
-  sees it, published to the tenant
 - ⏳ Identity: designed, not built
   ([Coming Soon](/docs/runbook/tenant/services/coming-soon/))
 - ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
