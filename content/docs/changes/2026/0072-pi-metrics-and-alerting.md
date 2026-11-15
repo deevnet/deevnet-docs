@@ -10,7 +10,7 @@ weight: -72
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Planned.** |
+| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold, and the whole Pi stack, rules imported from Terraform to an alert on the tenant's ntfy topic, is proven on the Builder with the Pi's own binaries |
 | **Window** | Unscheduled. One `deevnet-kit` release, one image build, the image staged to the tenant downloads |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit` and `deevnet-log-user`; the take-home image `raspios-bookworm-mobile-pi-backend.img.xz`; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -85,7 +85,7 @@ This change brings both to the Pi, built from Deevnet's own pieces:
 ## Prerequisites
 
 - [x] Metrics and alerting built and proven on Deevnet (CHG-0070, CHG-0071)
-- [ ] The vendor claims checked (Step 1)
+- [x] The vendor claims checked (Step 1)
 
 ## Procedure
 
@@ -144,8 +144,8 @@ Flash the previous image (CHG-0056's). Nothing on Deevnet changes.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the vendor claims checked and recorded
-- [ ] Step 2: proven off site
+- [x] Step 1: the vendor claims checked and recorded
+- [x] Step 2: proven off site
 - [ ] Step 3: `deevnet-kit` released and staged
 - [ ] Step 4: the image built and staged
 - [ ] Step 5: tdemo and the guide updated
@@ -153,4 +153,47 @@ Flash the previous image (CHG-0056's). Nothing on Deevnet changes.
 
 ## Outcome
 
-Not started.
+### Step 1: the vendor claims (2026-11-15)
+
+Checked against the release files and by running the arm64 binaries themselves, under qemu on the
+Builder.
+
+| Claim | Found | Holds |
+|---|---|---|
+| The arm64 releases | `vmutils-linux-arm64-v1.156.0` carries `vmauth-prod` and `vmalert-prod`; `victoria-metrics-linux-arm64-v1.156.0-cluster` carries `vmstorage-prod`, `vminsert-prod` and `vmselect-prod`; Alertmanager `0.35.0` and ntfy `2.38.0` publish `linux-arm64` builds. Each matches its release's checksum | Yes |
+| vmauth takes a third listener | `-httpListenAddr=0.0.0.0:8427,127.0.0.1:8428,` with `-tls=true,false,false` and `-httpInternalListenAddr=,,127.0.0.1:8426`: 8428 serves the same users in plain HTTP; `/-/reload` answers 401 there and on 8427, and 200 only on 8426 | Yes |
+| Alertmanager with gossip off | `--cluster.listen-address=` empty: it starts, is ready, and delivers with `basic_auth.password_file` naming a host path | Yes |
+| ntfy on 443 and loopback at once | `NTFY_LISTEN_HTTPS=:443` with the card's certificate and `NTFY_LISTEN_HTTP=127.0.0.1:2586` in one process: both answer `/v1/health` | Yes |
+| The Terraform export | The same `for` expressions as tdemo's `alert_rules` output, applied, print JSON (`"for": null` and `"labels": null` where unset) that the kit's strict decoder reads | Yes |
+| Retention on an SD card | Decided: **30 days**, as the Pi's logs, not Deevnet's 90 | — |
+| Android resolves `<hostname>.local` | Left to the verification, on a real phone | Open |
+
+### Step 2: proven on the Builder (2026-11-15)
+
+The Pi's stack in a `debian:bookworm` container, with the Pi's arm64 binaries under qemu: the
+metrics cluster, VictoriaLogs, vmauth with the three listeners, Alertmanager, ntfy on 443, and the
+new `deevnet-kit` and `deevnet-log-user`, with the image's writer configuration. Only the steps
+systemd takes on a Pi were done by hand: starting the services, and the sync script's work.
+
+- **`deevnet-kit init`** made the phone's login and the publisher's password, and the writer
+  rendered Deevnet's metrics routes from the kit's base file, unchanged.
+- **Metrics:** the ingest token pushed, the read token was refused a write, and a write to another
+  tenant's partition was refused.
+- **The import:** the rules, as Terraform exports them, loaded. A rule labeled `tenant` was refused
+  by the kit before the writer was asked, and a rule vmalert won't load was refused with vmalert's
+  reason.
+- **ntfy:** the tenant's login read its topic, and was refused a publish (403); anonymous was
+  refused.
+- **Both alerts**, over a metric and over a log line, **reached `tdemo-chg0072`**, and vmalert
+  reported no rule error.
+- **`deevnet-kit selftest`:** every new check passed: TLS on 443, metrics in and out, another
+  partition refused, Alertmanager ready, the login's two rights. The checks of services that need
+  systemd, Mosquitto or Grafana could not pass in the container.
+- **Memory** under qemu, which overstates a real Pi: ntfy 101 MB, Alertmanager 84, vmstorage 54,
+  vmselect 47, vmalert 46, vminsert 35. Measured again on a real Pi.
+
+**The kit and the image are written:**
+[deevnet-provisioning-api#78](https://github.com/deevnet/deevnet-provisioning-api/pull/78) (the
+kit), [deevnet-image-factory#43](https://github.com/deevnet/deevnet-image-factory/pull/43) (the
+image) and [deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22) (the
+export).
