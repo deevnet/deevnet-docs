@@ -122,8 +122,8 @@ services](/docs/runbook/tenant/services/).
 | Runtime secrets and their readers | A copy of each secret in its namespace, and for each workload a login that reads only the paths named, from inside the tenant fabric | Enforced and measured |
 | Names | Records in its own zone, published by the tenant | Enforced |
 
-**Tenant-facing services still to come are not part of this contract.** Identity, a development
-workload and resource quotas are on the
+**Tenant-facing services still to come are not part of this contract.** Identity and resource
+quotas are on the
 [Tenant Platform Services](/docs/roadmap/infrastructure/tenant-services/platform-services/) roadmap,
 and each workload's resource use on
 [Tenant Observability](/docs/roadmap/infrastructure/tenant-services/observability/). A tenant cannot

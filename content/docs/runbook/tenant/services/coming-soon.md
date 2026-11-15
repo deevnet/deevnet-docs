@@ -18,13 +18,3 @@ here can be declared today. The shape described is the proposal's, and may chang
 of your own in a platform identity directory, for your application's users and for SSH to your
 workloads by short-lived certificate.
 [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
-
-## A tenant devbox
-
-{{< status-badge "planned" "Coming soon" >}}
-
-**Today:** you install the [tools](/docs/runbook/tenant/getting-started/before-you-start/#tools) on
-your own computer, with the provider and the large downloads served by the site. **Planned:** a
-development workload, built from an image with the tools already on it, that you launch in your own
-tenant network, so the Terraform and CLI half needs nothing on your computer. Flashing a device or
-an SD card still needs your computer's USB.
