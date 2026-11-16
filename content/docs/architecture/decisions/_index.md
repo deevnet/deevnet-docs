@@ -243,17 +243,13 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
   from the site only. The substrate stores
   tenant buckets without backing them up. Extends ADR-0007.
 - [ADR-0025: Identity Directory](/docs/architecture/decisions/platform-services/0025-identity-directory/) —
-  *Proposed.* Keycloak on the identity VM, with a `deevnet` realm for the operator and substrate UIs
-  and one realm per tenant for its people and its applications' end users. The tenant manages its
-  realm with the `keycloak/keycloak` provider, through a management client the API creates. The
-  Omada controller's admin SSO accepts only SAML, which rules out the lighter providers, and only
-  Keycloak and Zitadel draw a real boundary between tenants. Tenant people reach substrate UIs by
-  brokering through `deevnet`, which stamps the tenant claim itself, so a tenant realm can't claim
-  another tenant. Grafana OSS maps that claim to the tenant's organization. Host login uses
-  short-lived SSH certificates from OpenBao, never a directory lookup, and the core router keeps
-  local accounts. The rebuild path never waits on the directory, and every consumer keeps a
-  break-glass account. Users' credentials exist nowhere else, an accepted exception to ADR-0010 §4
-  that makes Keycloak's database kept data. Extends ADR-0013 and ADR-0024.
+  *Proposed*, revised 2026-11-15 to the substrate only. Keycloak on the identity VM, with one realm,
+  `deevnet`, for the operator and the substrate's UIs. The Omada controller's admin SSO accepts only
+  SAML, which rules out the lighter providers. Host login uses short-lived SSH certificates from
+  OpenBao, never a directory lookup, and the core router keeps local accounts. The rebuild path never
+  waits on the directory, and every consumer keeps a break-glass account. Its database is not kept
+  data: the operator enrolls again after a loss. Tenants keep their own logins; identity for tenants
+  is set aside. Extends ADR-0013.
 - [ADR-0024: Dashboards](/docs/architecture/decisions/platform-services/0024-dashboards/) —
   *Accepted* (2026-10-05). Grafana OSS on the tenant observability VM, with one organization per tenant, because
   free Grafana has no data-source permissions inside an organization. The API creates each tenant's
