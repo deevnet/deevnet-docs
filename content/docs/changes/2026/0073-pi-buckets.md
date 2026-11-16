@@ -10,7 +10,7 @@ weight: -73
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1 to 4 done: silo is built for arm64, `deevnet-kit` v0.26.0 carries the bucket commands, and the image with silo is served by the tenant downloads. Buckets on a real Pi are still to be verified |
+| **Status** | **Complete** (2026-11-16). On a real Pi a bucket key writes and reads its bucket and is refused another |
 | **Window** | Unscheduled. A silo build for arm64, a `deevnet-kit` release and an image build, possibly shared with [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/) |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; silo, built for arm64; the take-home image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -115,8 +115,8 @@ Flash the previous image. Buckets made on the Pi are lost with its card; copy th
 - [x] Step 2: proven off site
 - [x] Step 3: silo for arm64 built and staged; `deevnet-kit` released
 - [x] Step 4: the image built and staged
-- [ ] Step 5: tdemo and the guide updated
-- [ ] Verification passes on a Pi of the Pi lab
+- [x] Step 5: tdemo and the guide updated
+- [x] Verification passes on a Pi of the Pi lab
 
 ## Outcome
 
@@ -173,8 +173,20 @@ The bucket commands are in `deevnet-kit` v0.26.0, released with CHG-0072's kit
 the first `deevnet-kit bucket add`. CHG-0072's Step 4 has the build and the push to the tenant
 downloads.
 
-### Verification so far (2026-11-16)
+### Step 5: tdemo and the guide (2026-11-16)
 
-**The Pi passes its self-test with the store off, as an owner without buckets runs it.** Buckets
-on the Pi (`bucket add`, the keys' confinement, a key adopted from Terraform, public read and
-memory) are still to verify.
+**tdemo's `kit_env` carries the bucket lines, and the guide has a buckets step.** Both are merged:
+[deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22) and
+[deevnet-docs#446](https://github.com/deevnet/deevnet-docs/pull/446).
+
+### Verification (2026-11-16)
+
+**On `dv02rpi004p01`, a bucket key writes and reads its own bucket and is refused another.**
+- **The Pi passes its self-test with the store off,** as an owner without buckets runs it.
+- **`bucket add` started the store.** Two buckets of 1 GB, `files` and `other`, and a write key `app`
+  on `files`, exported with `export --bucket files:app`.
+- **With that key, path-style over TLS on 9000,** an object was written (200) and read back (200),
+  and a write to `tdemo-other` was refused (403 `AccessDenied`).
+- **Memory:** with everything running, the store included, the Pi uses about 815 MB of 8 GB.
+- **Not tried on hardware:** a key adopted from Terraform (`--key-file`) and public read. Both
+  passed in the Step 2 proof.

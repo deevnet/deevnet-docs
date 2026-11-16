@@ -10,7 +10,7 @@ weight: -72
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1 to 4 done: `deevnet-kit` v0.26.0 is released, and the image is built and served by the tenant downloads. On the first real Pi every self-test check passes once a boot-order fix is applied by hand; the alert to a phone is still to be verified |
+| **Status** | **Complete** (2026-11-16). A real Pi passes every self-test check, and an alert exported from Terraform fires and resolves on it. Delivery to a phone is left unverified, by the owner's choice |
 | **Window** | Unscheduled. One `deevnet-kit` release, one image build, the image staged to the tenant downloads |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit` and `deevnet-log-user`; the take-home image `raspios-bookworm-mobile-pi-backend.img.xz`; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -148,9 +148,9 @@ Flash the previous image (CHG-0056's). Nothing on Deevnet changes.
 - [x] Step 2: proven off site
 - [x] Step 3: `deevnet-kit` released and staged
 - [x] Step 4: the image built and staged
-- [ ] The image rebuilt with the alerting unit's boot-order fix ([deevnet-image-factory#45](https://github.com/deevnet/deevnet-image-factory/pull/45))
-- [ ] Step 5: tdemo and the guide updated
-- [ ] Verification passes on a Pi of the Pi lab with an Android phone
+- [x] The image rebuilt with the alerting unit's boot-order fix ([deevnet-image-factory#45](https://github.com/deevnet/deevnet-image-factory/pull/45))
+- [x] Step 5: tdemo and the guide updated
+- [x] Verification passes on a Pi of the Pi lab (the phone left unverified, by the owner's choice)
 
 ## Outcome
 
@@ -220,7 +220,15 @@ alerting units enabled, silo installed but off, and no `a_autoprov`.
 rsync sent 568 MB of the 1.06 GB image as a delta against the previous one, in about 9 minutes; the
 router answered all 555 pings. The checksum on `dv02obs001v01` matches the Builder's.
 
-### Verification so far (2026-11-16)
+### Step 5: tdemo and the guide (2026-11-16)
+
+**tdemo exports its alert rules, and the guide tells a tenant how to bring them.** tdemo's
+`alert_rules` output and `kit_env` lines ([deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22))
+and the guide's new steps ([deevnet-docs#446](https://github.com/deevnet/deevnet-docs/pull/446)) are merged.
+The guide now states what the real Pi showed: memory, the self-test's checks, and what is not yet tried
+on hardware.
+
+### Verification (2026-11-16)
 
 **On `dv02rpi004p01` in the Pi lab, the image boots as tdemo and every self-test check passes
 after one fix by hand.** The card was flashed on the Builder and read back to the image's checksum;
@@ -235,7 +243,15 @@ the owner's login, host name and tenant were set on its boot partition, as a ten
   makes the unit retry for up to two minutes; the image is rebuilt with it.
 - **tdemo's rules export from Terraform** after an apply that created its two rule groups and its
   ntfy login on Deevnet. A refresh-only apply cannot do it: the state predates alerting.
-- **Still to verify:** the import on the Pi, an alert and its resolution on a phone, Android's
-  `.local` resolution, `cert install`, and memory. The phone needs the Pi's network: the lab's Pi
-  is on the IoT VLAN, which the tenant Wi-Fi cannot reach by design, so the phone test moves to a
-  flat network, as a take-home Pi is used.
+- **The rules import on the Pi**, and `alerts list` shows both groups. `backend_queue_depth` held
+  at 150 for seven minutes fired `QueueBacklog` at 17:53 UTC, and it resolved at 17:59, a minute
+  after the pushes stopped. Both messages were read back from the Pi's ntfy with the phone's login:
+  rule, vmalert, Alertmanager and ntfy, end to end.
+- **Memory:** with everything running, the bucket store included, the Pi uses about 815 MB.
+- **The image is rebuilt with #45 and staged again** (sha256 `caff440adecb8c395c5b72fae056f84de5601b84777f8b87f6a0a20c8587479a`), served by the tenant downloads.
+- **Left unverified, by the owner's choice:** an alert arriving on a phone, Android's `.local`
+  resolution, and `cert install` on a Deevnet Pi. The lab's Pi is on the IoT VLAN, which the tenant
+  Wi-Fi cannot reach by design, so the phone needs the Pi moved to a flat network. The alert path up
+  to ntfy is proven; what remains is the phone's own subscription.
+- **An alert's "Source" link** points at vmalert on an internal port the phone can't open. The
+  message carries the alert's name, status and summary; the guide says so.
