@@ -10,7 +10,7 @@ weight: -72
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1 and 2 done: the vendor claims hold, and the whole Pi stack, rules imported from Terraform to an alert on the tenant's ntfy topic, is proven on the Builder with the Pi's own binaries |
+| **Status** | **In progress.** Steps 1 to 4 done: `deevnet-kit` v0.26.0 is released, and the image is built and served by the tenant downloads. On the first real Pi every self-test check passes once a boot-order fix is applied by hand; the alert to a phone is still to be verified |
 | **Window** | Unscheduled. One `deevnet-kit` release, one image build, the image staged to the tenant downloads |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit` and `deevnet-log-user`; the take-home image `raspios-bookworm-mobile-pi-backend.img.xz`; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -146,8 +146,9 @@ Flash the previous image (CHG-0056's). Nothing on Deevnet changes.
 
 - [x] Step 1: the vendor claims checked and recorded
 - [x] Step 2: proven off site
-- [ ] Step 3: `deevnet-kit` released and staged
-- [ ] Step 4: the image built and staged
+- [x] Step 3: `deevnet-kit` released and staged
+- [x] Step 4: the image built and staged
+- [ ] The image rebuilt with the alerting unit's boot-order fix ([deevnet-image-factory#45](https://github.com/deevnet/deevnet-image-factory/pull/45))
 - [ ] Step 5: tdemo and the guide updated
 - [ ] Verification passes on a Pi of the Pi lab with an Android phone
 
@@ -197,3 +198,44 @@ systemd takes on a Pi were done by hand: starting the services, and the sync scr
 kit), [deevnet-image-factory#43](https://github.com/deevnet/deevnet-image-factory/pull/43) (the
 image) and [deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22) (the
 export).
+
+### Step 3: the kit released (2026-11-16)
+
+**`deevnet-provisioning-api` v0.26.0 carries the kit and the writer the image installs.** The
+kit's metrics and alerting
+([deevnet-provisioning-api#78](https://github.com/deevnet/deevnet-provisioning-api/pull/78)) and
+its buckets ([#79](https://github.com/deevnet/deevnet-provisioning-api/pull/79)) were released
+together, and `make stage-pi` put both arm64 binaries on the Builder's artifact server. Deevnet's
+own API and writer stay at v0.25.0: nothing in this release changes them.
+
+### Step 4: the image built and staged (2026-11-16)
+
+**The new image is what the tenant downloads serve.** The upstream arm64 releases were staged from
+the copies checked in Step 1, against the checksums the image factory pins, rather than downloaded
+again. `make pi-backend` built the image with the config play's 46 tasks and no failure. Mounted
+read-only, it holds every new binary and unit, with the metrics cluster, Alertmanager, ntfy and the
+alerting units enabled, silo installed but off, and no `a_autoprov`.
+
+**The push to the tenant downloads crossed the core router at 1 MB/s, with the router watched.**
+rsync sent 568 MB of the 1.06 GB image as a delta against the previous one, in about 9 minutes; the
+router answered all 555 pings. The checksum on `dv02obs001v01` matches the Builder's.
+
+### Verification so far (2026-11-16)
+
+**On `dv02rpi004p01` in the Pi lab, the image boots as tdemo and every self-test check passes
+after one fix by hand.** The card was flashed on the Builder and read back to the image's checksum;
+the owner's login, host name and tenant were set on its boot partition, as a tenant would set them.
+
+- **On the first boot, 24 of 27 checks passed.** `deevnet-kit-alerting` ran when vmauth's process
+  had started but before vmauth listened, so the writer's closing reload of vmauth was refused. The
+  phone's ntfy login was therefore never made, and ntfy answered the self-test 401 rather than 403.
+  Restarting the unit by hand made it, and **27 of 27 passed**: TLS on all four ports, logs and
+  metrics in and out, another tenant's partition refused, Grafana, Alertmanager, and the ntfy
+  login's two rights. [deevnet-image-factory#45](https://github.com/deevnet/deevnet-image-factory/pull/45)
+  makes the unit retry for up to two minutes; the image is rebuilt with it.
+- **tdemo's rules export from Terraform** after an apply that created its two rule groups and its
+  ntfy login on Deevnet. A refresh-only apply cannot do it: the state predates alerting.
+- **Still to verify:** the import on the Pi, an alert and its resolution on a phone, Android's
+  `.local` resolution, `cert install`, and memory. The phone needs the Pi's network: the lab's Pi
+  is on the IoT VLAN, which the tenant Wi-Fi cannot reach by design, so the phone test moves to a
+  flat network, as a take-home Pi is used.

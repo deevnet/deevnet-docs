@@ -433,10 +433,26 @@ tables:
       version: v1.52.0
       license: Apache-2.0
       source: Pin
-    - component: vmauth (vmutils)
-      version: v1.152.0
+    - component: vmauth and vmalert (vmutils)
+      version: v1.156.0
       license: Apache-2.0
-      source: Pin
+      source: Pin (sha256)
+    - component: VictoriaMetrics cluster (vmstorage, vminsert, vmselect)
+      version: v1.156.0-cluster
+      license: Apache-2.0
+      source: Pin (sha256)
+    - component: Alertmanager
+      version: 0.35.0
+      license: Apache-2.0
+      source: Pin (sha256)
+    - component: ntfy
+      version: 2.38.0
+      license: Apache-2.0, GPL-2.0 (dual)
+      source: Pin (sha256)
+    - component: silo
+      version: RELEASE.2026-11-12T00-00-00Z, built for arm64 by the container image factory; off until the first bucket
+      license: AGPL-3.0
+      source: Pin (image factory)
     - component: Grafana OSS
       version: 13.2.2
       license: AGPL-3.0
@@ -446,7 +462,11 @@ tables:
       license: not checked
       source: Pin
     - component: '`deevnet-kit`'
-      version: v0.18.0, in the `pi-backend` image the tenant downloads serve since 2026-11-08 ([CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) step 3)
+      version: v0.26.0, in the `pi-backend` image the tenant downloads serve since 2026-11-16 ([CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/), [CHG-0073](/docs/changes/2026/0073-pi-buckets/))
+      license: Apache-2.0
+      source: Pin (image factory)
+    - component: '`deevnet-log-user`'
+      version: v0.26.0, the same tag as `deevnet-kit`
       license: Apache-2.0
       source: Pin (image factory)
     - component: '`deevnet-log-bridge`'
@@ -620,7 +640,7 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.25.0**, deployed **v0.25.0**
+      version: tag **v0.26.0**, deployed **v0.25.0** (v0.26.0 changes only `deevnet-kit`)
       license: Apache-2.0
       what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
     - repository: '`terraform-provider-deevnet`'

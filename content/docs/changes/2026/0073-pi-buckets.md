@@ -10,7 +10,7 @@ weight: -73
 | **Date** | 2026-11-15 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress.** Steps 1 and 2 done but the arm64 build: the kit's buckets are proven against the silo Deevnet runs; building silo for arm64 waits for an operator at the core router |
+| **Status** | **In progress.** Steps 1 to 4 done: silo is built for arm64, `deevnet-kit` v0.26.0 carries the bucket commands, and the image with silo is served by the tenant downloads. Buckets on a real Pi are still to be verified |
 | **Window** | Unscheduled. A silo build for arm64, a `deevnet-kit` release and an image build, possibly shared with [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/) |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; silo, built for arm64; the take-home image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo`; one Pi of the Pi lab for the test |
@@ -111,10 +111,10 @@ Flash the previous image. Buckets made on the Pi are lost with its card; copy th
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the vendor claims checked and recorded
+- [x] Step 1: the vendor claims checked and recorded
 - [x] Step 2: proven off site
-- [ ] Step 3: silo for arm64 built and staged; `deevnet-kit` released
-- [ ] Step 4: the image built and staged
+- [x] Step 3: silo for arm64 built and staged; `deevnet-kit` released
+- [x] Step 4: the image built and staged
 - [ ] Step 5: tdemo and the guide updated
 - [ ] Verification passes on a Pi of the Pi lab
 
@@ -124,7 +124,7 @@ Flash the previous image. Buckets made on the Pi are lost with its card; copy th
 
 | Claim | Found | Holds |
 |---|---|---|
-| silo builds for arm64 from the tag Deevnet runs | The build stage is `CGO_ENABLED=0` Go; a `GOARCH` build argument cross-compiles the server alone, with `make binary IMAGE=silo ARCH=arm64` | Not yet run: it downloads silo's source and modules through the core router, unthrottled, and waits for an operator at its console |
+| silo builds for arm64 from the tag Deevnet runs | The build stage is `CGO_ENABLED=0` Go; a `GOARCH` build argument cross-compiles the server alone, with `make binary IMAGE=silo ARCH=arm64` | Yes, on 2026-11-16 (Step 3) |
 | On one drive: versioning, quota, lifecycle | Against `RELEASE.2026-11-12T00-00-00Z` (amd64), the API's own client made a versioned bucket with a quota and an old-version expiry, and another with anonymous read | Yes |
 | TLS from a certificate directory | `--certs-dir` with `public.crt` and `private.key` linked to the card's certificate: served on 9000, trusted with the card's CA | Yes |
 | A renewed certificate picked up | The kit restarts silo on a certificate change (`try-restart`) rather than rely on a reload | — |
@@ -150,3 +150,31 @@ Deevnet runs, in a `debian:bookworm` container:
 the arm64 build ([deevnet-container-image-factory#5](https://github.com/deevnet/deevnet-container-image-factory/pull/5)),
 the image ([deevnet-image-factory#44](https://github.com/deevnet/deevnet-image-factory/pull/44)), and
 tdemo's `kit_env` lines ([deevnet-tenant-tdemo#22](https://github.com/deevnet/deevnet-tenant-tdemo/pull/22)).
+
+### Step 3: silo for arm64, and the kit (2026-11-16)
+
+**silo `RELEASE.2026-11-12T00-00-00Z` is built for arm64 from the recipe Deevnet's image uses.**
+`make binary IMAGE=silo ARCH=arm64` ran from a clean tree at the merge of
+[deevnet-container-image-factory#5](https://github.com/deevnet/deevnet-container-image-factory/pull/5),
+and staged the binary beside its sha256. The binary reports its release and commit, built with Go
+1.27.4 for `linux/arm64`.
+
+**Its downloads were throttled to 1.5 MB/s, with the router watched.** The build's source and
+module downloads cannot be throttled from inside a container build, so they went through a local
+proxy that holds one rate for every connection, with the operator at the router's console. The
+router answered all 426 pings over the build.
+
+The bucket commands are in `deevnet-kit` v0.26.0, released with CHG-0072's kit
+([deevnet-provisioning-api#79](https://github.com/deevnet/deevnet-provisioning-api/pull/79)).
+
+### Step 4: the image (2026-11-16)
+
+**The image CHG-0072 built carries silo and its unit, installed and off.** The store starts with
+the first `deevnet-kit bucket add`. CHG-0072's Step 4 has the build and the push to the tenant
+downloads.
+
+### Verification so far (2026-11-16)
+
+**The Pi passes its self-test with the store off, as an owner without buckets runs it.** Buckets
+on the Pi (`bucket add`, the keys' confinement, a key adopted from Terraform, public read and
+memory) are still to verify.
