@@ -223,10 +223,13 @@ sudo deevnet-kit export ~/deevnet-kit     # kit.env + deevnet-kit-ca.pem, the Pi
 
 **The self-test** runs by itself after every boot, and `status` shows the last result. It checks:
 - every service;
-- TLS on 8883, 8427 and 3000;
+- TLS on 8883, 8427, 3000 and 443, and on 9000 once you have a bucket;
 - a device log line sent over MQTT (through a throwaway account) and read back;
 - an app log line sent and read back;
-- your Grafana login, data sources and dashboard, including the device line read back through Grafana.
+- a metric pushed with the ingest token and read back, and another tenant's partition refused;
+- your Grafana login, data sources and dashboard, including the device line read back through Grafana;
+- alerting: Alertmanager's configuration loaded, every rule group evaluating, and the phone's login
+  reading its own topics and publishing to none.
 
 If a check fails, it names it. Each run leaves two log lines marked `deevnet-kit selftest`.
 
@@ -553,18 +556,19 @@ prototyping there. The two do not share a secret.
 - **You are Grafana's admin on the Pi** (`grafana_admin_password` in `/etc/deevnet-kit/kit.json`).
   Your tenant login is still an Editor, so the same Terraform runs on both.
 - **Metrics are kept 30 days**, not 90: a card is not a data disk.
-- **Memory.** Grafana wants about 512 MB, and metrics and alerting a few hundred more: a Pi with
+- **Memory.** Grafana wants about 512 MB, and metrics and alerting a few hundred more. With
+  everything running, the bucket store included, a Pi uses about 815 MB: a Pi with
   2 GB or more runs everything, and the bucket store runs only once you add a bucket. On a 512 MB Zero 2 W, run MQTT and logs only:
   `sudo systemctl disable --now grafana deevnet-kit-dashboards vmstorage vminsert vmselect alertmanager ntfy deevnet-kit-alerting`.
+- **An alert's "Source" link** points at the Pi's vmalert on an internal port, which the phone
+  can't open. The message itself carries the alert's name, status and summary.
 
-{{< hint warning >}}
-**First real Pi, 2026-09-25.** A Pi 4 flashed with this image, set up with `userconf.txt` and
-`ssh` as above, booted cleanly. The broker, log store and Grafana all came up on the card's own
-certificate, and the self-test passed **14 of 15**. The failure is Grafana's "device log readable
-through Grafana" check: on real hardware Grafana reports the VictoriaLogs plugin as **not
-registered**, although it loads under emulation. The cause is being investigated; until it's
-fixed, read device logs with the `curl` in step 7. Earlier, under emulation, every check on this
-page passed.
+{{< hint info >}}
+**On a real Pi, 2026-11-16.** An 8 GB Pi flashed with this image, set up with `userconf.txt` and
+`ssh` as above, passed every self-test check. An alert rule exported from Terraform fired and
+resolved, read back from ntfy with the phone's login; a bucket key wrote and read its bucket and was
+refused another. Not yet tried on hardware: alerts arriving on a phone, Android resolving
+`<hostname>.local` (use the Pi's address if it doesn't), and `cert install` on a Deevnet Pi.
 {{< /hint >}}
 
 The image is built by `make pi-backend` in `deevnet-image-factory` (`docs/pi-backend.md`), and
