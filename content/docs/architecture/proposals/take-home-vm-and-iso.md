@@ -6,7 +6,7 @@ title: "Take-Home VM and ISO"
 
 | | |
 |---|---|
-| **Status** | Proposal, not decided and not built |
+| **Status** | Accepted 2026-11-17, not built: [Take-Home Media](/docs/roadmap/infrastructure/tenant-services/take-home-media/) |
 | **Date** | 2026-11-17 |
 | **Where** | deevnet-image-factory builds it; tenant downloads on the observability store publish it |
 | **Would extend** | [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/), [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/), CHG-0025 tenant downloads |
@@ -77,8 +77,8 @@ On the first day, the owner imports it into a hypervisor, answers the console pr
   at the console.
 - **Build method:** debootstrap into a raw disk and then the offline play, or Packer with qemu.
   Found out in v1. It needs an ADR if it changes how the factory builds images.
-- **Base release:** bookworm to match the Pi, or trixie for all three media together. Either way,
-  all media share one release.
+- **Base release:** settled on acceptance: bookworm, to match the Pi. All media move to trixie
+  together, later.
 - **Where it is proven:** on the Builder under qemu, never on a hypervisor.
 - **ADR:** whether a new ADR records the VM and ISO as take-home media beside the Pi, or ADR-0041
   is extended.
