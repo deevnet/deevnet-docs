@@ -62,7 +62,7 @@ asks on the console for the user, the sign-in and the host name, through a new
 ## Prerequisites
 
 - [x] The take-home Pi image with metrics, alerting and buckets (CHG-0072, CHG-0073)
-- [ ] The vendor claims checked (Step 1)
+- [x] The vendor claims checked (Step 1)
 
 ## Procedure
 
@@ -71,6 +71,25 @@ asks on the console for the user, the sign-in and the host name, through a new
 - Debian 12's `nocloud` image has no cloud-init, and its root file system can be grown in place.
 - The upstream amd64 releases at the Pi's versions, and their published checksums.
 - The silo binary in Deevnet's image is static.
+
+**Done 2026-11-17.** Checked against the build itself, Debian `20261117-2665`, with its published
+SHA512:
+
+- **It has no cloud-init**, as its manifest's package list shows. It also has no `openssh-server`,
+  `cloud-guest-utils` or `avahi-daemon`; the image installs them.
+- **Root signs in with no password** (an empty field in `/etc/shadow`). The image locks root, and
+  its build fails if root is not locked.
+- **It configures no network.** `systemd-networkd` is enabled, but no `.network` file matches an
+  Ethernet adapter. The image adds DHCP on any Ethernet adapter, with the MAC as the client ID.
+- **The root is partition 1, ext4, on a 3 GiB GPT disk**, beside BIOS boot and EFI partitions,
+  so it boots on either firmware. It grows with `growpart` and `resize2fs`.
+- **Its machine ID is empty**, so each VM makes its own.
+- The kernel console is `tty0` and `ttyS0`; the console prompt runs on `tty1`.
+- **The amd64 releases exist at every version the Pi pins**, each with a published checksum:
+  VictoriaLogs v1.52.0, vmutils and the cluster v1.156.0, Alertmanager 0.35.0, ntfy 2.38.0 and
+  Grafana 13.2.2.
+- **The silo binary in Deevnet's amd64 image is static** (`file`: statically linked), made by the
+  same build stage as the arm64 one, so it is staged from that image and needs no build.
 
 ### Step 2: The amd64 inputs
 
@@ -111,7 +130,7 @@ Remove the image from the tenant downloads. The staged amd64 inputs are additive
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the vendor claims checked and recorded
+- [x] Step 1: the vendor claims checked and recorded
 - [ ] Step 2: the amd64 inputs built and staged
 - [ ] Step 3: `deevnet-kit setup` released
 - [ ] Step 4: the image builds
