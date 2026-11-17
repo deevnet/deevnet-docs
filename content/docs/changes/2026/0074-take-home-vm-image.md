@@ -1,0 +1,119 @@
+---
+title: "CHG-0074: A Take-Home Virtual Machine Image"
+weight: -74
+---
+
+# CHG-0074: A Take-Home Virtual Machine Image
+
+| | |
+|---|---|
+| **Date** | 2026-11-17 |
+| **Change type** | Deployment |
+| **Classification** | Structural |
+| **Status** | **In progress** |
+| **Window** | Unscheduled. Downloads across the core router are throttled; the image build and its proof run on the Builder |
+| **Site** | mobile |
+| **Systems** | `deevnet-kit`; the log bridge; the artifact server on the Builder; the take-home virtual machine image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo` |
+| **Automation** | `deevnet-provisioning-api` (`cmd/deevnet-kit`), `deevnet-log-bridge`, `deevnet-image-factory` |
+| **Risk** | Low. Nothing runs on Deevnet's hosts but the artifact server and the tenant downloads. Most likely to go wrong: a download across the core router, which is throttled |
+| **Related changes** | [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/), [CHG-0073](/docs/changes/2026/0073-pi-buckets/) (the Pi image it mirrors), [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (tenant downloads) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+
+---
+
+## Summary
+
+A tenant takes its backend home on a Raspberry Pi. This change builds the same backend as an
+**amd64 virtual machine image** (qcow2) for Proxmox and KVM, the first version of
+[Take-Home Media](/docs/roadmap/infrastructure/tenant-services/take-home-media/). It starts from
+Debian 12's official `nocloud` image, as the Pi image starts from Raspberry Pi OS, and the same
+configuration play makes it the backend. A VM has no boot partition to edit, so its first boot
+asks on the console for the user, the sign-in and the host name, through a new
+`deevnet-kit setup`.
+
+## Goal
+
+- One `make` target on the Builder builds the image from the Pi image's configuration play.
+- The image's self-test passes every check, and `tdemo` moves across with its `kit.env`.
+- The image is in the tenant downloads, with a section in the tenant guide.
+
+## Scope
+
+**In scope:**
+- **amd64 inputs:** `deevnet-kit`, `deevnet-log-user` and the log bridge built for amd64; the
+  upstream amd64 releases at the Pi's versions; silo from the amd64 image Deevnet runs, which is
+  built from the same release.
+- **`deevnet-kit setup`:** the console prompt, writing the settings the Pi reads from its boot
+  partition.
+- **The image:** Debian 12 bookworm, as on the Pi, built and published to `tenant/vm`.
+
+**Out of scope:**
+- The ISO, OVA, VHDX and the arm64 image for UTM: later versions of Take-Home Media.
+- A run on the lab's hypervisors. The image is proven on the Builder under qemu.
+
+## Risk and impact
+
+| Risk | Where | Guard |
+|---|---|---|
+| A download hangs the core router | Network | Each download is throttled, and each file is fetched once and staged |
+| The amd64 build differs from the Pi's | Supply | The same versions, pinned by sha256; the same play and self-test |
+| The image carries the build's accounts or keys | The image | The play's existing removal of the automation user and the SSH host keys |
+
+## Prerequisites
+
+- [x] The take-home Pi image with metrics, alerting and buckets (CHG-0072, CHG-0073)
+- [ ] The vendor claims checked (Step 1)
+
+## Procedure
+
+### Step 1: Check the vendor claims
+
+- Debian 12's `nocloud` image has no cloud-init, and its root file system can be grown in place.
+- The upstream amd64 releases at the Pi's versions, and their published checksums.
+- The silo binary in Deevnet's image is static.
+
+### Step 2: The amd64 inputs
+
+Build and stage `deevnet-kit`, `deevnet-log-user` and the log bridge for amd64. Stage the
+upstream releases and the Debian image, throttled.
+
+### Step 3: `deevnet-kit setup`
+
+The console prompt, in a `deevnet-kit` release.
+
+### Step 4: The image
+
+A `make` target in `deevnet-image-factory` that builds the qcow2.
+
+### Step 5: Prove it on the Builder
+
+Under qemu: answer the prompt, run the self-test, and move `tdemo` across with its `kit.env`.
+
+### Step 6: Publish
+
+The image under `tenant/vm` in the tenant downloads, with its sha256, and a section in the
+tenant guide.
+
+## Verification
+
+On the Builder, under qemu:
+- The first boot asks for the user, the sign-in and the host name, and then makes the CA and the
+  secrets.
+- `deevnet-kit selftest` passes every check.
+- With `tdemo`'s `kit.env`, a test client publishes, and its log shows in Grafana.
+- The published image's sha256 matches the one built.
+
+## Undo
+
+Remove the image from the tenant downloads. The staged amd64 inputs are additive.
+
+## To close
+
+**This change closes when every item below is done.**
+
+- [ ] Step 1: the vendor claims checked and recorded
+- [ ] Step 2: the amd64 inputs built and staged
+- [ ] Step 3: `deevnet-kit setup` released
+- [ ] Step 4: the image builds
+- [ ] Step 5: proven on the Builder
+- [ ] Step 6: published, with the guide section

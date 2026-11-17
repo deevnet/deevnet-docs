@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 13
+tasks_completed: 1
+tasks_in_progress: 1
+tasks_planned: 11
 ---
 
 # Take-Home Media: Project Plan
@@ -82,23 +82,23 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 ## Records ⏳
 
 - ⏳ An ADR that records the virtual machine and the ISO as take-home media beside the Pi, or extends ADR-0041
-- ⏳ A change record for building and publishing the virtual machine image
+- 🔄 [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/): building and publishing the virtual machine image
 
 ## amd64 inputs ⏳
 
 - ⏳ deevnet-kit and the log bridge built for amd64 and staged at their pinned versions
-- ⏳ silo built for amd64 through the throttled path, with the owner at the console
+- ⏳ silo for amd64 taken from the amd64 image Deevnet runs, built from the same release, so no build crosses the core router
 - ⏳ The upstream amd64 releases (VictoriaLogs, vmutils, Grafana and its plugin, the alerting and notification services) staged with pinned sha256
 
 ## The image ⏳
 
-- ⏳ Choose the build method: debootstrap into a raw disk and then the configuration play, or Packer with qemu
+- ✅ Build method chosen, 2026-11-17: Debian 12's official `nocloud` image, mounted, then the configuration play, as the Pi image starts from Raspberry Pi OS
 - ⏳ The configuration play takes the architecture and the medium as variables, with the Pi-only steps (boot partition files) kept to the Pi
 - ⏳ A `make` target builds a bookworm amd64 qcow2
 
 ## First boot ⏳
 
-- ⏳ A console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot
+- ⏳ `deevnet-kit setup`, a console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot
 
 ## Proof ⏳
 
