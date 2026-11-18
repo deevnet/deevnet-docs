@@ -1,8 +1,10 @@
 # November 2026, in progress. Written from the month's waypoints; each bullet names the roadmap items it rolls up.
-through: "2026-11-16"
-reached: 24
+through: "2026-11-18"
+reached: 32
 headline: "The site's secrets got harder to reach, and tenants got more ways to stand on their own, with the services an app expects."
 bullets:
+  - text: "**The tenant backend now goes home three ways: on a Pi, as a virtual machine, or installed on an owner's own computer.** The take-home Pi gained metrics, alerts and buckets, verified on a real Pi (CHG-0072, CHG-0073, Nov 16). The same backend, built by the same configuration, became an amd64 virtual machine image for Proxmox and KVM (v1, CHG-0074) and an installer ISO for BIOS and UEFI machines (v2, CHG-0075), both in the tenant downloads on Nov 17."
+    items: [infrastructure/tenant-services/take-home-media, infrastructure/tenant-services/observability]
   - text: "**EdS moved to names not tied to a site.** Its certificates were reissued (CHG-0055), its console answers at `console.eds.deevnet.net`, and its home Pi was rebuilt with all of its back end (Nov 1)."
     items: [infrastructure/tenant-services/tenant-pki, eds/eds/screens-console, eds/eds/platform]
   - text: "**OpenBao is sealed between work sessions.** It now opens only with two of three split-key shares (CHG-0053, Nov 8). Every long-lived credential is listed with what it unlocks, under a written policy for an exposed one (Nov 3). Builds no longer read OpenBao at all, and their tokens no longer hold Administrator (CHG-0037, Nov 13)."
@@ -17,5 +19,5 @@ bullets:
     items: [infrastructure/substrate/management-plane, infrastructure/tenant-services/tenant-fabric]
   - text: "**The site's own software is easier to account for.** The Software Catalog became a data file reports can compare against, Deevnet's own software is pinned and licensed, and the automation repositories are checked on every pull request (Nov 3)."
     items: [infrastructure/substrate/software-discovery, infrastructure/substrate/network-automation]
-next: "The take-home Pi with metrics, alerts and buckets, verified on a real Pi (CHG-0072, CHG-0073); devices' own certificates through the Deevnet API; OpenBao rebuilt from the site's vault alone in a drill; and a tenant rebuilt from its own code in a drill."
+next: "The take-home virtual machine for VirtualBox and Hyper-V (v3, CHG-0076); devices' own certificates through the Deevnet API; OpenBao rebuilt from the site's vault alone in a drill; and a tenant rebuilt from its own code in a drill."
 watch: "The core router's hangs remain open (INC-0004, INC-0005). Backups still run to one flash drive; the second drive is outstanding (CHG-0039)."
