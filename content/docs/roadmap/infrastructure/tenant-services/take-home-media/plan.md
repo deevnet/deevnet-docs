@@ -4,7 +4,7 @@ linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 13
 tasks_in_progress: 0
-tasks_planned: 0
+tasks_planned: 12
 ---
 
 # Take-Home Media: Project Plan
@@ -60,10 +60,25 @@ real hypervisor comes with v3, or the first time someone imports it.
 
 **Not in v1:** the ISO (v2); OVA, VHDX and arm64 for UTM (v3); trixie (all media move together, later).
 
-### v2 (next)
+### v2, the installer ISO (current)
 
-An ISO that installs the same amd64 system on an owner's own hardware. Its shape, an unattended
-wipe-and-install or a live system with an optional install, is decided before v2 starts.
+An ISO that installs the same amd64 system as v1 on an owner's own hardware, wired.
+
+**Done when:**
+
+- [ ] One `make` target builds a hybrid ISO, bootable on UEFI and BIOS, that carries the v1 system image from the same build
+- [ ] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from
+- [ ] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
+- [ ] The installed system passes the self-test, every check
+- [ ] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired
+
+**Secure Boot is a goal, not a point.** Most machines ship with it on, and the system's disk already
+carries Debian's signed shim and GRUB, so the ISO aims to boot with it on and is tried that way in
+qemu. v2 is done when BIOS and plain UEFI pass; until Secure Boot is proven, the guide says to turn
+it off.
+
+**Not in v2:** Wi-Fi on the installed system, a keyboard layout other than US, and the live mode
+(Later); a run on real hardware (the first owner's, or Later); OVA, VHDX and UTM (v3).
 
 ### v3
 
@@ -75,6 +90,10 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 - A tenant guide section for each hypervisor
 - A NAT fallback, if bridging proves too hard on some Wi-Fi adapters
 - A live, run-from-USB mode for the ISO
+- Wi-Fi on the installed system: setup asks for the network when no cable is found
+- A keyboard layout chosen at setup, for every medium
+- Secure Boot proven, if v2 doesn't get there
+- The ISO installed on a real machine
 - Every medium moved to trixie together
 
 ---
@@ -109,3 +128,29 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 
 - ✅ A publish target puts the image under `tenant/vm` with its sha256, pushed throttled to the observability store
 - ✅ A section in the tenant guide: import, bridged networking, the first-boot prompt
+
+---
+
+## v2 records ⏳
+
+- ⏳ A change record for building and publishing the installer ISO
+- ⏳ An ADR only if the installer changes ADR-0044, such as a second way of making the system
+
+## v2 installer ⏳
+
+- ⏳ Choose how the ISO boots its installer, carrying the v1 system image compressed, so the ISO adds no second build of the backend
+- ⏳ The installer lists the disks, refuses the one it booted from, asks the owner to type the chosen disk's name, writes the system and checks what it wrote, then asks to remove the stick and reboots
+- ⏳ A hybrid ISO, bootable on UEFI and BIOS, through Debian's signed shim and GRUB
+- ⏳ One `make` target builds the ISO from the v1 build's disk
+
+## v2 proof ⏳
+
+- ⏳ BIOS: the ISO installs to a blank virtual disk in qemu, and the installed system boots alone
+- ⏳ UEFI: the same with OVMF
+- ⏳ The installed system's first boot asks on the console, grows its root, and passes the self-test
+- ⏳ Secure Boot tried with OVMF's Secure Boot firmware, and the result recorded
+
+## v2 publish ⏳
+
+- ⏳ A publish target puts the ISO under `tenant/iso` with its sha256, pushed throttled and detached to the observability store
+- ⏳ A section in the tenant guide: write the stick, boot, choose the disk, then setup as on the VM
