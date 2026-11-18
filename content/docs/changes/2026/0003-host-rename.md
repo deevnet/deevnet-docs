@@ -151,5 +151,5 @@ on 2026-09-08.
 | OPNsense, the AP and the travel router still carry pre-ADR-0008 hostnames | net #12 | Open |
 | Kea hands clients the root domain as their search domain. Fix this first, let leases renew, then apply PR #15 with `dns.yml --tags registration`. | net #14 | Open |
 | Stale `dvnt` / `dvntm` and `pve` / `pve2` tokens in the other repos | docs #19 | Open |
-| Tenant offboarding does not exist | mgmt #10 | Open |
+| Tenant offboarding does not exist | mgmt #10 | Done 2026-11-12 in [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/) |
 | Two hazards were worked around rather than fixed, and wait for the next rename | [Renaming Hosts](/docs/runbook/substrate/lifecycle/host-rename/) | Open |

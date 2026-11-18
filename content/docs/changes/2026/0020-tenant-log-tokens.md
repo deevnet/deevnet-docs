@@ -216,5 +216,7 @@ Build and stage the API and the writer, deploy the store and the API, then:
 
 - [x] **The bridge user and its routing** are built and **proven** (see Verification). The bridge
   itself is [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/), whose service is written and merged.
-- [ ] **Tenant repos** pick the tokens up: `eds` ships its workloads' logs with `log_ingest_token`.
-- [ ] **ADR-0027 becomes Accepted** when a tenant actually ships to the store.
+- [x] **Tenant repos** pick the tokens up: `eds` ships its workloads' logs with `log_ingest_token`.
+      Done 2026-10-12: eds's now-playing service ships with it.
+- [x] **ADR-0027 becomes Accepted** when a tenant actually ships to the store. Accepted
+      2026-11-08, after EdS's agent Pi shipped its events.

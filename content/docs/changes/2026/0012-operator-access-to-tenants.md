@@ -221,7 +221,8 @@ name in both directions.
       ran:** the `deevnet.net` collection gained an `opnsense_routes` role, and the gateway and
       route are declared in inventory. This was going to be accepted as a follow-up; the operator's
       rule that substrate changes come from Ansible is why it was not.
-- [ ] **Every tenant workload trusts the substrate's automation key.** The kickstart bakes
+- [x] **Every tenant workload trusts the substrate's automation key.** Done 2026-09-27 in
+      [CHG-0028](/docs/changes/2026/0028-tenant-workload-login/): tenant workloads carry no `a_autoprov`. The kickstart bakes
       `a_autoprov_rsa.pub` into the base image with passwordless sudo, so one key reaches root on
       every tenant workload. It was unreachable before this change and is not now. The end state is
       a per-tenant or per-operator key; deferred deliberately, and recorded so the deferral is

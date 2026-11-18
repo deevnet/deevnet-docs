@@ -206,16 +206,16 @@ plan run alongside it reported 0 adds, 0 updates and 0 deletes over 56 rules.
 - **CHG-0016: the API writes broker accounts**, and with it the narrow
   `platform -> iot_backend` rule. The database credential it needs already exists —
   `vault_vernemq_db_writer_password`, created by this change and proven able to provision an account
-  that the broker then authenticated.
+  that the broker then authenticated. Done 2026-09-20.
 - **The role was tested against a hand-written config, not against inventory**, which is why both
   deploy failures were inventory wiring. A role that reads settings from inventory has not been
   tested until inventory has supplied them. That rule is **not declared** today, and adding it means
-  `firewall_apply` against a live enforcing router.
+  `firewall_apply` against a live enforcing router. Declared 2026-09-20 in CHG-0016.
 - **Where the auth database is exposed.** The API must reach it from Platform, but `iot -> iot_backend`
   is a zone-level pass, so publishing the database port on this host's address would also reach
   every device on VLAN 30. How that port is confined is CHG-0016's to settle, and it should not be
-  settled by opening it.
-- **CHG-0017: retire the inventory ACLs** into tenant Terraform.
+  settled by opening it. Settled 2026-09-20 in CHG-0016.
+- **CHG-0017: retire the inventory ACLs** into tenant Terraform. Done 2026-09-20.
 - **The Builder's container storage is on the wrong volume.** Rootless podman's graphroot is under
   `/home`, a 20G filesystem, and building this image filled it. `/srv` has 791G free and
   `vg_builder` has no free extents, so the fix is a `graphroot` in `storage.conf` declared in

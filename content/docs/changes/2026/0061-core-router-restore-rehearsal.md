@@ -197,4 +197,6 @@ History**. If it does not, follow
 ## Follow-ups
 
 - [ ] The checks that already failed in the baseline, a ping to `10.20.30.11` and the
-      `tdemo-1.tdemo` lookup, are unexplained and outside this change
+      `tdemo-1.tdemo` lookup, are unexplained and outside this change. The lookup is explained:
+      tdemo's workload is now `backend`, which answers (checked 2026-11-18). `10.20.30.11` is
+      `dv02rpi001p01`, whose port has had no link since CHG-0027; still to confirm on the switch

@@ -204,7 +204,8 @@ here will report the mismatch if someone declares it `ppsk` without converting i
 
 **The empty-profile ordering defect** above is the one piece of this change that is known-broken and
 unfixed. It does not affect the running site — `DVNTM-IOT` works now — but it will bite the next
-fresh profile.
+fresh profile. Fixed 2026-09-27 in
+[CHG-0029](/docs/changes/2026/0029-tenant-developer-network-keys/): profiles are created with a key, never empty.
 
 **Two `deevnet_iot_wifi_key` guards are covered by unit test only**, because this site serves one
 trust class: that a key cannot change trust class, and that an unserved class is refused with the

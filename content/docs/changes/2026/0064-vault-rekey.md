@@ -10,7 +10,7 @@ weight: -0064
 | **Date** | 2026-11-12 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | In progress |
+| **Status** | **Complete, 2026-11-14.** Every vault file is under the new password, and a device backup was sealed with it |
 | **Window** | 2026-11-12 |
 | **Site** | mobile |
 | **Systems** | `ansible-inventory-deevnet`: every `vault.yml` and every device backup under `backups/` |
@@ -85,8 +85,8 @@ point of the change; only for a password that turns out to be lost.
 **This change closes when every item below is done.** One line each: the steps and the check.
 
 - [x] Step 1: all 14 files rekeyed
-- [ ] Step 2: rekey merged (inventory pull request #100)
-- [ ] Verification: a device backup sealed with the new password
+- [x] Step 2: rekey merged (inventory pull request #100)
+- [x] Verification: a device backup sealed with the new password
 
 ## Outcome
 
@@ -96,6 +96,8 @@ point of the change; only for a password that turns out to be lost.
 |---|---|---|
 | 2026-11-12 | Prerequisites | A stray local commit from 2026-11-11, which held only re-encrypted vault files and a backup `main` already supersedes, was left unpushed on its branch. The rekey branch starts from `main`. |
 | 2026-11-12 | 1 | The owner ran the rekey. All 14 files changed and kept the vault header; both backups decrypted with the new password. |
+| 2026-11-12 | 2 | Inventory pull request #100 merged. |
+| 2026-11-14 | Verification | The core router's backup after CHG-0070 was sealed with the new password (inventory pull request #115). |
 
 ### Departures from the plan
 
@@ -104,4 +106,4 @@ point of the change; only for a password that turns out to be lost.
 
 ## Follow-ups
 
-- [ ] None
+None.

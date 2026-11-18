@@ -94,6 +94,9 @@ Remove the rule and the CNAME from inventory and apply both. The GitHub release 
 - [x] From a Mac on `DVNTM-TD`: `tenant-check.sh`, `install-provider.sh` and
       `segment-check.sh DVNTM-TD`, all passing
 - [x] From IoT: `segment-check.sh DVNTM-IOT` 15/15, with `obs` `:8427`, `:3000` and `:8443` blocked
-- [ ] MinIO's image can no longer be pulled from quay.io. Keep the mirrored tarball, and weigh this
-      in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)
-- [ ] Before each meetup: restage anything that changed, then run `--tags tenant-downloads`
+- [x] MinIO's image can no longer be pulled from quay.io. Keep the mirrored tarball, and weigh this
+      in [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/). Done
+      2026-11-14: ADR-0026 chose silo, and [CHG-0068](/docs/changes/2026/0068-object-store-vm/)
+      retired MinIO
+- [x] Before each meetup: restage anything that changed, then run `--tags tenant-downloads`. Now
+      in [Tenant Admission](/docs/runbook/substrate/tenant-admission/)

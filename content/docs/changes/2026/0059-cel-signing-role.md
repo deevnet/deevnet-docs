@@ -110,6 +110,6 @@ October 2031. This matters only after October 2030, long after the CA should hav
 ## Follow-ups
 
 - Merge `ansible-collection-deevnet.mgmt` pull request 102, which steps 3 and 4 ran from, so `main`
-  is what is deployed.
+  is what is deployed. Done 2026-11-08.
 - The reserved list now has two copies: the API's (`internal/tenant/site.go`) and the openbao role's
   (`openbao_tenant_reserved_labels`). A label added to one is added to the other.

@@ -517,22 +517,27 @@ The change is complete; these are carried separately.
 - [x] `omada_controller`, in both `deevnet.mgmt` and `deevnet.builder`: align the firewalld port lists with Omada's port reference for the running version (found in Step 8). Done in mgmt #15 and builder #16, applied to `dv02nms001v01` at 22:05Z; 8044 left closed.
 - [x] After mgmt #16 merges, re-run Step 8 on `dv02nms001v01` and confirm the data-directory task reports no change (found in Step 8; done 22:22Z, `changed=0`)
 - [ ] The vault holds one controller's credentials - Owner, automation account and Open API client. The Builder fallback controller's own credentials are now only in the vault file's git history. Decide whether that is acceptable for a fallback whose database is derived state (found in Step 9).
-- [ ] `proxmox_vm`: decide on first-boot upgrades. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
+- [ ] `proxmox_vm`: decide on first-boot upgrades. A host can turn them off since 2026-10-07
+  (`mgmt_vm.ciupgrade`, CHG-0039); the default is still open, in CHG-0028's follow-ups. Either set `ciupgrade` off and keep the template current through image-factory rebuilds, or keep it on and reboot the guest when `dnf needs-restarting -r` asks (found in Step 7)
 - [ ] `opnsense_dhcp`: compare IP, hostname and description before updating a reservation, so a run with no drift reports no change (found in Step 2)
-- [ ] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
-      `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/))
-- [ ] Observability tooling for `dv02sob001v01` and `dv02tob001v01`
-- [ ] API functionality, and the `platform -> management` rule to the controller's Open API port
-      ([ADR-0013 §10](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/))
+- [x] The VerneMQ broker and its auth database in `dv02msg001v01`, with the `mqtt` name and
+      `mqtt_brokers` membership ([ADR-0012 §8](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/)).
+      Done 2026-09-20 in [CHG-0015](/docs/changes/2026/0015-vernemq-broker/).
+- [x] Observability tooling for `dv02sob001v01` and `dv02tob001v01`. Superseded 2026-09-21 by
+      [CHG-0018](/docs/changes/2026/0018-central-log-store/): replaced by `dv02obs001v01` and `dv02col001v01`.
+- [x] API functionality, and the `platform -> management` rule to the controller's Open API port
+      ([ADR-0013 §10](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/)).
+      The API was deployed on 2026-09-17 in CHG-0010; the rule was declared in CHG-0013.
 - [x] Review `powerdns_dnsupdate_from`, which still admits only the management subnet, now that
       the server sits on Platform. Done: mgmt #19 admits management, trusted and tenant_transit,
       applied to `dv02idn001v01` on 2026-09-17 (`--tags tenant-dns`, `changed=3`). The eds zones read
       back `ALLOW-DNSUPDATE-FROM = 10.20.99.0/24, 10.20.10.0/24, 10.20.50.0/24`, and an update signed
       with eds's key from the Builder added and removed a TXT record.
-- [ ] `deevnet-tenant-tdemo` still names `tfstate.mobile.deevnet.net` and 10.20.99.30. The tenant
+- [x] `deevnet-tenant-tdemo` still names `tfstate.mobile.deevnet.net` and 10.20.99.30. The tenant
       is destroyed; update or archive the repository. **Not archived:** a do-not-apply banner went in
       (tdemo #3), and [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) makes
-      tdemo the reference tenant, rewritten to create itself through the API.
+      tdemo the reference tenant, rewritten to create itself through the API. Done 2026-09-17:
+      tdemo was rewritten as the reference tenant.
 - [x] `deevnet-tenant-factory` `TENANTS.md` shows index 1 as free, but the inventory gives it to
       eds. Done in factory #13; ADR-0015 retires the file at cutover.
 - [ ] Update the pages that describe current state: tenant DNS platform page, management

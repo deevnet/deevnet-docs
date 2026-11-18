@@ -49,4 +49,4 @@ follow-up.
 
 ## Follow-ups
 
-- [ ] The first card from it, with `names=`, on `dv02rpi003p01` (EdS CHG-0028).
+- [x] The first card from it, with `names=`, on `dv02rpi003p01` (EdS CHG-0028). Done 2026-10-18.

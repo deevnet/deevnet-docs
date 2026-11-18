@@ -74,7 +74,7 @@ client-certificate listener and its three checks, one device moved.
 
 ## Prerequisites
 
-- [ ] CHG-0036 and CHG-0054 complete
+- [x] CHG-0036 and CHG-0054 complete (2026-10-25 and 2026-11-07)
 - [ ] A device whose firmware can present a client certificate, and its tenant's agreement
 
 ## Procedure

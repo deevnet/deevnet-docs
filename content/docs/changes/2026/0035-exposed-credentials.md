@@ -138,8 +138,9 @@ Rotation is not undone; the previous values are the exposed ones. The scan workf
 
 ## Follow-ups
 
-- [ ] Take Omada snapshots routinely. There is one, taken by hand
-      ([roadmap](/docs/roadmap/infrastructure/substrate/management-plane/))
+- [x] Take Omada snapshots routinely. There is one, taken by hand
+      ([roadmap](/docs/roadmap/infrastructure/substrate/management-plane/)). Done 2026-11-11 in
+      [CHG-0062](/docs/changes/2026/0062-device-backups-after-change/): a backup after every change
 - [ ] The Builder's firewall opens `1025-65535/tcp`, far wider than its services need. Found during
       this change, not changed by it
 

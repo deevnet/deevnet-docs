@@ -202,13 +202,14 @@ attributed to the new firmware:
   That can only be seen when the switch is reset, which the eventual adoption change will do.
 - [ ] Move the switch firmware procedure into Lifecycle. It sits in the console-recovery page
   today.
-- [ ] Merge net #21 and inventory #33, which declare LLDP.
+- [x] Merge net #21 and inventory #33, which declare LLDP. Merged 2026-09-16.
 - [ ] Pin the builder's route metrics (for example `enp4s0` 100, `enp1s0` 200), so the switch path
   wins again after an outage.
 - [ ] Find the cause of the intermittent `switch-vlans.yml` command timeouts seen shortly after boot.
 - [ ] Decide on `telnet enable`. If it goes, declare it.
 - [ ] Set the switch's NTP servers and time zone from inventory.
-- [ ] Identify what is on `gi1/0/5`, and declare the port or unplug it.
+- [x] Identify what is on `gi1/0/5`, and declare the port or unplug it. Done 2026-09-25 in
+  [CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/): `dv02rpi004p01`'s IoT port.
 - [ ] Make VLAN 1 membership consistent across declared ports, and declare it.
 - [ ] Before the next switch change, take the CLI captures. This change had to verify against
   inventory, because there was no capture to compare with.

@@ -315,4 +315,5 @@ it is today.
   target. Probably it follows the CNAME through ordinary resolution, which reaches the public
   `deevnet.net` and not its own host overrides; not confirmed. Decide whether tenants may publish
   such a CNAME at all, and say so in [DNS](/docs/runbook/tenant/services/dns/)
-- [ ] The same service names for the log store and the state store, if wanted
+- [x] The same service names for the log store and the state store, if wanted. Done 2026-10-10 in
+  [CHG-0046](/docs/changes/2026/0046-service-proxy/)

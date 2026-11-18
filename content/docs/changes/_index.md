@@ -37,7 +37,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0067 | 2026-11-14 | [Tenant Secrets in Their Own OpenBao Namespace](2026/0067-tenant-secrets/) | Deployment · Configuration | mobile | Complete |
 | CHG-0066 | Unscheduled | [The Management Hypervisor Moves to Proxmox VE 9](2026/0066-hyp001-proxmox-9/) | Upgrade | mobile | Planned |
 | CHG-0065 | 2026-11-12 | [Removing a Tenant Leaves Nothing Behind](2026/0065-tenant-removal-leftovers/) | Deployment | mobile | Complete |
-| CHG-0064 | 2026-11-12 | [The Inventory Vault Under a New Password](2026/0064-vault-rekey/) | Configuration | mobile | In progress |
+| CHG-0064 | 2026-11-12 | [The Inventory Vault Under a New Password](2026/0064-vault-rekey/) | Configuration | mobile | Complete |
 | CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](2026/0063-retire-flat-lan-address/) | Decommission | mobile | Complete |
 | CHG-0062 | 2026-11-11 | [Router and Wi-Fi Controller Backed Up After Every Change](2026/0062-device-backups-after-change/) | Deployment · Configuration | mobile | Complete |
 | CHG-0061 | 2026-11-11 | [The Core Router Restored From Its Vaulted Backup](2026/0061-core-router-restore-rehearsal/) | Configuration | mobile | Complete |

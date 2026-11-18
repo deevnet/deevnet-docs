@@ -132,7 +132,8 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 
 - **The signing role was widened, not given a guard.** It allows `*.*.deevnet.net`; the API's
   reserved list is what keeps tenant names from site names. The owner accepted that the role alone
-  no longer tells the two apart. A role per tenant is a follow-up.
+  no longer tells the two apart. A role per tenant is a follow-up (done another way, by a CEL role,
+  in [CHG-0059](/docs/changes/2026/0059-cel-signing-role/)).
 - **A certificate's sites come from the request**, `sites` on `deevnet_certificate`, among the
   site's `DEEVNET_CERTIFICATE_SITES`, not from a site list on the tenant's record (ADR-0040 §3).
 - **Step 2 was dropped** by ADR-0040's production-only rule, after the release.
@@ -153,4 +154,5 @@ Deployed 2026-10-25 with `openbao.yml`, then `site.yml --tags deevnet-api --limi
 ## To discover
 
 - How the signing role enforces the reserved list: a role per tenant written at creation, or a
-  constraint OpenBao's roles can express (ADR-0040's open question).
+  constraint OpenBao's roles can express (ADR-0040's open question). **Found 2026-11-07:** a CEL
+  role ([CHG-0059](/docs/changes/2026/0059-cel-signing-role/)); a role per tenant was rejected.

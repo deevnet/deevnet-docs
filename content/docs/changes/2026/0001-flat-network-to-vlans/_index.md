@@ -181,9 +181,10 @@ handed out `10.20.40.50` (VLAN 40).
 
 ## Follow-ups
 
-**Cleanup not done.** Post-migration step 4 — remove the old `192.168.10.0` LAN interface from
-OPNsense — did not happen. On 2026-09-10 the untagged `lan` (`re0`) still carried
-`192.168.10.1/23`, with Kea listening on it and no subnet for it.
+**Cleanup done later.** Post-migration step 4 — remove the old `192.168.10.0` LAN interface from
+OPNsense — did not happen in this change. On 2026-09-10 the untagged `lan` (`re0`) still carried
+`192.168.10.1/23`, with Kea listening on it and no subnet for it. The address was removed on
+2026-11-12 in [CHG-0063](/docs/changes/2026/0063-retire-flat-lan-address/).
 
 **Knock-on effect.** The change left the authority transition playbooks non-functional on the new
 network. `bootstrap-auth` no longer enabled DHCP and would have handed out the wrong gateway.
@@ -192,6 +193,7 @@ fixed the same morning: [CHG-0002: Authority Transition Rework](/docs/changes/20
 
 The AP was forgotten from the controller on 2026-03-24 with a configuration reset, and has been
 pending since. The switch was never adopted. Both still run their 2023–2024 firmware. The AP's
-upgrade and adoption are planned as [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/), and the switch's firmware as
-[CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/). The rest
+upgrade and adoption were done in [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) (2026-09-15), and the switch's firmware in
+[CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/) (2026-09-16); the switch's adoption is
+[CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold. The rest
 of the automation backlog is in [Issues & Follow-ups](troubleshooting/).

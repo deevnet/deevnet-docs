@@ -60,7 +60,8 @@ registry ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-
 
 - [ ] The offline ceremony machine, with its bootloader reset
 - [ ] The home inventory's hardware recorded (by model, never by serial)
-- [ ] A Deevnet Pi provisioned at the factory for a tenant, its devices' registrations written
+- [x] A Deevnet Pi provisioned at the factory for a tenant, its devices' registrations written:
+      eds's, 2026-10-26 (EdS CHG-0042)
 
 ## Procedure
 

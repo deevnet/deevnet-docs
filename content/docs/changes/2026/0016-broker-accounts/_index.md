@@ -584,7 +584,8 @@ existing sessions alone. Nothing a tenant holds is lost that a re-apply cannot r
 
 ## Follow-ups
 
-- **CHG-0017: retire mosquitto.** Wider than the inventory ACLs alone, because the pivot to VerneMQ
+- **CHG-0017: retire mosquitto.** Done 2026-09-20 in
+  [CHG-0017](/docs/changes/2026/0017-retire-mosquitto/). Wider than the inventory ACLs alone, because the pivot to VerneMQ
   left litter in three places and they are one job:
   - `mqtt_acls` and `vault_mqtt_users` in inventory. **Orphaned, not merely debt** — the only thing
     that read them was the `mosquitto` role, and no play has run it since CHG-0015 replaced it.

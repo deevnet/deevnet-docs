@@ -243,6 +243,8 @@ RESULT: DVNTM-TD - 29 passed, 0 failed
 
 ## Follow-ups
 
-- [ ] The console on `:9001`: decide whether it should be reachable at all.
-- [ ] `segment-check.sh` expects `DVNTM-TD` → tenant workload `:22` to be **blocked**; CHG-0028 opens
-      it, and must flip that check in the same change.
+- [x] The console on `:9001`: decide whether it should be reachable at all. Decided 2026-10-10 in
+      [CHG-0046](/docs/changes/2026/0046-service-proxy/): loopback only. MinIO was retired on
+      2026-11-14 (CHG-0068).
+- [x] `segment-check.sh` expects `DVNTM-TD` → tenant workload `:22` to be **blocked**; CHG-0028 opens
+      it, and must flip that check in the same change. Flipped 2026-09-27 in CHG-0028.

@@ -252,8 +252,11 @@ only a timeout as a pass.
       [Tenant Admission §3](/docs/runbook/substrate/tenant-admission/),
       [Coming Soon](/docs/runbook/tenant/services/), troubleshooting and the
       [network reference](/docs/runbook/substrate/network/network-reference/) - updated with this record.
-- [ ] Run `terraform plan` and an MQTT login from `DVNTM-TD` the first time a tenant uses it.
+- [ ] Run `terraform plan` and an MQTT login from `DVNTM-TD` the first time a tenant uses it. The
+      plan ran from it on 2026-11-07 in [CHG-0058](/docs/changes/2026/0058-windows-tenant-laptops/);
+      the MQTT login has not.
 - [x] **The internet rule is `!10.20.0.0/16`, not "not RFC 1918"** — fixed by [CHG-0023](/docs/changes/2026/0023-internet-means-internet/); `192.168.8.1` now times out from `DVNTM-TD`. Guest, and now tenant_dev, can reach
       `192.168.0.0/16` and `172.16.0.0/12`, including the edge router's admin at `192.168.8.1`. This
       predates this change.
-- [ ] Client isolation on `DVNTM-TD`, if the segment is ever offered beyond an operator-run session.
+- [x] Client isolation on `DVNTM-TD`, if the segment is ever offered beyond an operator-run session.
+      Done 2026-09-27 in [CHG-0029](/docs/changes/2026/0029-tenant-developer-network-keys/).
