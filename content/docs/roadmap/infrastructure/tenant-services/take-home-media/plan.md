@@ -3,8 +3,8 @@ title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 1
-tasks_in_progress: 1
-tasks_planned: 11
+tasks_in_progress: 2
+tasks_planned: 10
 ---
 
 # Take-Home Media: Project Plan
@@ -81,7 +81,7 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 
 ## Records ⏳
 
-- ⏳ An ADR that records the virtual machine and the ISO as take-home media beside the Pi, or extends ADR-0041
+- 🔄 [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/) (Proposed): one backend on several media, each from its vendor's image by the same play
 - 🔄 [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/): building and publishing the virtual machine image
 
 ## amd64 inputs ⏳
