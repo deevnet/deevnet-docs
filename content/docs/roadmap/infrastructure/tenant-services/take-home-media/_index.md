@@ -22,7 +22,8 @@ waypoints:
     status: done
     date: "2026-11-17"
   - title: "An installer ISO writes the take-home tenant backend to a disk its owner chooses, on UEFI and BIOS machines"
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "Take-home media v2 done: an installer ISO for an owner's own hardware, in the tenant downloads"
     milestone: true
     status: planned
