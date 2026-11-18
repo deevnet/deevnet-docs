@@ -14,4 +14,4 @@ bullets:
   - text: "**EdS moved to names not tied to a site.** Its certificates were reissued, its console answers at `console.eds.deevnet.net`, and its home Pi was rebuilt with all of its back end (Nov 1)."
     items: [infrastructure/tenant-services/tenant-pki, eds/eds/screens-console, eds/eds/platform]
 next: "The take-home virtual machine for VirtualBox and Hyper-V (v3, CHG-0076); devices' own certificates through the Deevnet API; OpenBao rebuilt from the site's vault alone in a drill; and a tenant rebuilt from its own code in a drill."
-watch: "The core router's hangs remain open (INC-0004, INC-0005). Backups still run to one flash drive; the second drive is outstanding (CHG-0039)."
+watch: "The core router's hangs remain open (INC-0004, INC-0005)."
