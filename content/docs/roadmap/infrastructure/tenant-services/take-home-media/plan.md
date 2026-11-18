@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 22
-tasks_in_progress: 1
-tasks_planned: 2
+tasks_completed: 25
+tasks_in_progress: 0
+tasks_planned: 0
 ---
 
 # Take-Home Media: Project Plan
@@ -60,7 +60,7 @@ real hypervisor comes with v3, or the first time someone imports it.
 
 **Not in v1:** the ISO (v2); OVA, VHDX and arm64 for UTM (v3); trixie (all media move together, later).
 
-### v2, the installer ISO (current)
+### v2, the installer ISO (done 2026-11-17)
 
 An ISO that installs the same amd64 system as v1 on an owner's own hardware, wired.
 
@@ -70,12 +70,13 @@ An ISO that installs the same amd64 system as v1 on an owner's own hardware, wir
 - [x] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from
 - [x] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
 - [x] The installed system passes the self-test, every check
-- [ ] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired
+- [x] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired
 
-**Secure Boot is a goal, not a point.** Most machines ship with it on, and the system's disk already
-carries Debian's signed shim and GRUB, so the ISO aims to boot with it on and is tried that way in
-qemu. v2 is done when BIOS and plain UEFI pass; until Secure Boot is proven, the guide says to turn
-it off.
+**Secure Boot was a goal, not a point, and v2 reached it in qemu.** Most machines ship with it on,
+and the system's disk already carries Debian's signed shim and GRUB. The ISO and the installed
+system both boot with it on under OVMF's Secure Boot firmware, and the self-test passes. So the
+guide says it can stay on, and to turn it off only if the computer refuses the stick. Real hardware
+is still to prove it (Later).
 
 **Not in v2:** Wi-Fi on the installed system, a keyboard layout other than US, and the live mode
 (Later); a run on real hardware (the first owner's, or Later); OVA, VHDX and UTM (v3).
@@ -92,7 +93,7 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 - A live, run-from-USB mode for the ISO
 - Wi-Fi on the installed system: setup asks for the network when no cable is found
 - A keyboard layout chosen at setup, for every medium
-- Secure Boot proven, if v2 doesn't get there
+- Secure Boot proven on real hardware (v2 proved it in qemu)
 - The ISO installed on a real machine
 - Every medium moved to trixie together
 
@@ -131,9 +132,9 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 
 ---
 
-## v2 records 🔄
+## v2 records ✅
 
-- 🔄 [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/): building and publishing the installer ISO
+- ✅ [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/), Complete 2026-11-17: building and publishing the installer ISO
 - ✅ No ADR: the ISO writes the virtual machine's disk unchanged, so ADR-0044's one way of making the system holds
 
 ## v2 installer ✅
@@ -150,7 +151,7 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 - ✅ The installed system's first boot asks on the console, grows its root, and passes the self-test
 - ✅ Secure Boot tried with OVMF's Secure Boot firmware: the ISO and the installed system boot with it on, and the self-test passes
 
-## v2 publish ⏳
+## v2 publish ✅
 
-- ⏳ A publish target puts the ISO under `tenant/iso` with its sha256, pushed throttled and detached to the observability store
-- ⏳ A section in the tenant guide: write the stick, boot, choose the disk, then setup as on the VM
+- ✅ A publish target puts the ISO under `tenant/iso` with its sha256, pushed throttled and detached to the observability store
+- ✅ A section in the tenant guide: write the stick, boot, choose the disk, then setup as on the VM

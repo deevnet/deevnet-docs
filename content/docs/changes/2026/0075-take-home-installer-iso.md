@@ -10,7 +10,7 @@ weight: -75
 | **Date** | 2026-11-17 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress** |
+| **Status** | **Complete** |
 | **Window** | Unscheduled. The ISO is built and proven on the Builder; only its publish crosses the core router, throttled |
 | **Site** | mobile |
 | **Systems** | The artifact server on the Builder; the take-home installer ISO; the tenant downloads on `dv02obs001v01` |
@@ -109,10 +109,19 @@ run the self-test. Try Secure Boot with OVMF's Secure Boot firmware.
 **Secure Boot works in qemu**, through Debian's signed shim, GRUB and kernel, on the ISO and on the
 installed system. It is not yet proven on real hardware.
 
-### Step 4: Publish
+### Step 4: Publish ✅
 
 The ISO under `tenant/iso` in the tenant downloads, with its sha256, and a section in the tenant
 guide.
+
+**Done 2026-11-17.** `make iso-backend-publish` put it on the Builder. It went to
+`dv02obs001v01` by rsync at 1 MB/s, detached, in 20 minutes, with a ping watchdog on the core
+router: 1,176 pings, none missed. rsync checked the file's checksum on arrival. The site serves the
+ISO at its full size, and its sha256 `9de58e58…`, the one the build made and the proof used.
+The tenant guide's section is
+[Or a computer of your own](/docs/runbook/tenant/tenant-to-pi-image/#or-a-computer-of-your-own).
+**Secure Boot can stay on**, it says, and it says to turn Secure Boot off if the computer refuses
+the stick.
 
 ## Verification
 
@@ -134,4 +143,4 @@ Remove the ISO from the tenant downloads. The build target is additive.
 - [x] Step 1: the boot design chosen and recorded
 - [x] Step 2: the ISO builds
 - [x] Step 3: proven on the Builder under BIOS and UEFI, and Secure Boot's result recorded
-- [ ] Step 4: published, with the guide section
+- [x] Step 4: published, with the guide section

@@ -26,7 +26,8 @@ waypoints:
     date: "2026-11-17"
   - title: "Take-home media v2 done: an installer ISO for an owner's own hardware, in the tenant downloads"
     milestone: true
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "The take-home virtual machine for VirtualBox, Hyper-V and UTM on Apple Silicon"
     status: planned
 ---

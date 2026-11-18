@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0075 | 2026-11-17 | [A Take-Home Installer ISO](0075-take-home-installer-iso/) | Deployment | mobile | In progress |
+| CHG-0075 | 2026-11-17 | [A Take-Home Installer ISO](0075-take-home-installer-iso/) | Deployment | mobile | Complete |
 | CHG-0074 | 2026-11-17 | [A Take-Home Virtual Machine Image](0074-take-home-vm-image/) | Deployment | mobile | Complete |
 | CHG-0073 | 2026-11-15 | [Buckets on the Take-Home Pi](0073-pi-buckets/) | Deployment | mobile | Complete |
 | CHG-0072 | 2026-11-15 | [Metrics and Alerting on the Take-Home Pi](0072-pi-metrics-and-alerting/) | Deployment | mobile | Complete |
