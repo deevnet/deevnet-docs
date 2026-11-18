@@ -10,7 +10,7 @@ weight: -74
 | **Date** | 2026-11-17 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress** |
+| **Status** | **Complete** (2026-11-17). The image is in the tenant downloads, and its self-test passed every check under qemu on the Builder |
 | **Window** | Unscheduled. Downloads across the core router are throttled; the image build and its proof run on the Builder |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; the log bridge; the artifact server on the Builder; the take-home virtual machine image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo` |
@@ -96,22 +96,65 @@ SHA512:
 Build and stage `deevnet-kit`, `deevnet-log-user` and the log bridge for amd64. Stage the
 upstream releases and the Debian image, throttled.
 
+**Done 2026-11-17.** On the artifact server, beside the arm64 builds:
+- `deevnet-kit` and `deevnet-log-user` v0.27.0, by `make stage-vm`;
+- the log bridge `v0.1.1-1-g20abb75`, built from the commit the Pi pins;
+- silo `RELEASE.2026-11-12T00-00-00Z`, taken from the amd64 image Deevnet runs, with its sha256;
+- the upstream releases and Debian's image, 1.15 GB fetched once at 1.5 MB/s, with 0 of 374 pings
+  to the core router missed. Each was checked against its published checksum.
+
+`make vm-backend-stage-upstream` then found every file already staged with its checksum, and
+fetched nothing.
+
 ### Step 3: `deevnet-kit setup`
 
 The console prompt, in a `deevnet-kit` release.
+
+**Done 2026-11-17:** `deevnet-kit` v0.27.0 (API #81, release #82). The first boot under qemu found
+that SSH started before setup wrote its key-only drop-in, so passwords stayed on until the next
+boot. Setup now reloads SSH; that fix is in the release.
 
 ### Step 4: The image
 
 A `make` target in `deevnet-image-factory` that builds the qcow2.
 
+**Done 2026-11-17:** `make vm-backend` (image factory #46). The Pi's play takes `medium=vm`, and the
+Makefile's inputs and staging steps take the architecture, so both media fetch through one recipe.
+The Pi's inputs step was re-run after that change, and passed every check. The image is 1.46 GB,
+built from scratch with kit v0.27.0.
+
 ### Step 5: Prove it on the Builder
 
 Under qemu: answer the prompt, run the self-test, and move `tdemo` across with its `kit.env`.
+
+**Done 2026-11-17**, under qemu/KVM on the Builder, on a 24 GB overlay with its ports forwarded to
+localhost:
+- **The console prompt works.** It asks once, with the password hidden, and the screen starts
+  clear of the boot messages.
+- **Root grew** to fill the 24 GB disk, the VM made its own machine ID, and the login is in `sudo`.
+- **SSH** takes keys only when a key was given (`sshd -T`: `passwordauthentication no`), and
+  passwords otherwise.
+- **The self-test passed all 27 checks** on first boot, in three boots: two with test builds of the
+  kit and one with the released image, which took every default (tenant `pi`, host `pi-kit`).
+- **`tdemo` moved across.** `backend` and `pico-1` were recreated with their Deevnet passwords. The
+  app received `pico-1`'s telemetry with only the exported `kit.env`, and `pico-1`'s log line read
+  back through Grafana with the tenant login. TLS verified for `tdemo-vm.local` on 8883, 8427, 3000
+  and 443 from outside the VM.
 
 ### Step 6: Publish
 
 The image under `tenant/vm` in the tenant downloads, with its sha256, and a section in the
 tenant guide.
+
+**Done 2026-11-17.** `make vm-backend-publish` on the Builder, then the image pushed to the
+observability store with `rsync --bwlimit=1000` and a watchdog on the core router, as CHG-0072's
+was: 1.46 GB in 23 minutes, with none of 1,414 pings missed. On the store the image matches the
+sha256 the build wrote, `31b9317b0a5509d4…`, and `downloads.mobile.deevnet.net` serves both at their
+full size. The tenant guide's
+[Or a virtual machine](/docs/runbook/tenant/tenant-to-pi-image/#or-a-virtual-machine) section
+covers importing it, bridged networking and the console prompt.
+
+Only `tenant/vm/` was pushed. The tenant downloads role, which syncs the whole tree, was not run.
 
 ## Verification
 
@@ -131,8 +174,8 @@ Remove the image from the tenant downloads. The staged amd64 inputs are additive
 **This change closes when every item below is done.**
 
 - [x] Step 1: the vendor claims checked and recorded
-- [ ] Step 2: the amd64 inputs built and staged
-- [ ] Step 3: `deevnet-kit setup` released
-- [ ] Step 4: the image builds
-- [ ] Step 5: proven on the Builder
-- [ ] Step 6: published, with the guide section
+- [x] Step 2: the amd64 inputs built and staged
+- [x] Step 3: `deevnet-kit setup` released
+- [x] Step 4: the image builds
+- [x] Step 5: proven on the Builder
+- [x] Step 6: published, with the guide section

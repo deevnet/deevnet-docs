@@ -63,6 +63,11 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0044: Take-Home Media](/docs/architecture/decisions/tenant-model/0044-take-home-media/) —
+  *Accepted (2026-11-17); built by CHG-0074.* The take-home backend is one backend on several media, built by one play with the
+  medium as a parameter, each from its vendor's dated image with what that image leaves open closed.
+  A medium with no boot partition asks on its console (`deevnet-kit setup`); a VM is bridged only;
+  every medium uses the same Debian release.
 - [ADR-0043: The Terms of the Tenant Contract](/docs/architecture/decisions/tenant-model/0043-tenant-contract-terms/) —
   *Accepted* (2026-11-01). Every service is best effort, with no uptime figure and no promise of
   notice before an outage. What the first apply creates is every tenant's; the rest exists only if

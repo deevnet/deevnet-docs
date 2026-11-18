@@ -30,6 +30,9 @@ ntfy topics. What changes is the host
 name, the CA and the secrets. **Nothing on the Pi belongs to Deevnet.** It has no Deevnet account,
 key or route, and its CA and tokens are generated on the card the first time it boots.
 
+**The same backend also runs as an amd64 virtual machine** on a hypervisor of your own, for when
+there is no Pi: [Or a virtual machine](#or-a-virtual-machine) replaces steps 1 and 2.
+
 **A Pi can instead take a certificate from Deevnet**, and answer to your tenant's own names under
 the Deevnet Root. That is a [Deevnet Pi](#8-make-it-a-deevnet-pi), and it is how a Pi runs at a
 Deevnet production site.
@@ -243,6 +246,56 @@ land on a pool address if an older OS on the same Pi holds the reserved lease. I
 lease expires.
 
 Copy `~/deevnet-kit/` to your computer. That is everything your app needs.
+
+## Or a virtual machine
+
+**The same backend also comes as an amd64 virtual machine image, which replaces steps 1 and 2.**
+It runs the same services, `deevnet-kit` and self-test as the Pi, so from step 3 on, everything on
+this page applies unchanged. Use it on a hypervisor at home, Proxmox or plain KVM, when you have
+no Pi or would rather not use one.
+
+1. **Get the image.** At the site it is in the
+   [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads)
+   `vm/`: `debian-bookworm-mobile-vm-backend.qcow2`, with its `.sha256`. Check it before you
+   import it.
+2. **Import it as the VM's disk**, with 2 CPUs and 2 GB of memory, and **a bridged network
+   adapter**. Your devices connect to the VM, so it needs its own address on your network; behind
+   the hypervisor's NAT they cannot reach it. On Proxmox, with VM ID 900, storage `local-lvm` and
+   bridge `vmbr0`:
+
+   ```bash
+   qm create 900 --name bench1 --memory 2048 --cores 2 \
+     --net0 virtio,bridge=vmbr0 --scsihw virtio-scsi-single \
+     --agent enabled=1 --ostype l26
+   qm importdisk 900 debian-bookworm-mobile-vm-backend.qcow2 local-lvm
+   qm set 900 --scsi0 local-lvm:vm-900-disk-0 --boot order=scsi0
+   ```
+
+   The disk is 16 GB. Make it bigger whenever you like: the file system grows to fill it on each
+   boot.
+3. **Start it and open its console.** A VM has no boot partition to edit, so its first boot asks
+   on the console, once, for what a Pi's owner writes on the card:
+
+   | Asked | Answer | Left empty |
+   |---|---|---|
+   | Tenant, tenant index | your Deevnet tenant's name and index (`terraform output`) | `pi`, 1 |
+   | Host name | the VM becomes `<hostname>.local`, and its certificate names it | `<tenant>-kit` |
+   | Your login name | yours to choose; the image has no user of its own | |
+   | Password | for the console, `sudo` and, without a key, SSH | |
+   | SSH public key | one line, such as your `~/.ssh/id_ed25519.pub`. With a key, SSH takes keys only | password sign-in |
+
+   The console's keyboard is a US layout. Then first boot runs as on a Pi (step 2): `deevnet-kit`
+   makes the VM's CA, certificate and secrets, starts everything and runs the self-test.
+4. **Sign in and check it,** as in step 2: `ssh you@<hostname>.local`, then `sudo deevnet-kit
+   selftest`. A fixed address for the VM on your router keeps its certificate right; if the
+   address changes, `sudo deevnet-kit regen-certs` reissues it.
+
+From here, continue with [step 3](#3-recreate-your-broker-accounts). Where a step says the Pi, it
+means the VM, with two differences:
+- **Build your app's container for amd64** in [step 5](#5-run-your-app-on-the-pi):
+  `podman build --platform linux/amd64`.
+- **The VM keeps the hypervisor's clock**, and it has no Wi-Fi of its own: the bridged adapter is
+  its network.
 
 ## 3. Recreate your broker accounts
 

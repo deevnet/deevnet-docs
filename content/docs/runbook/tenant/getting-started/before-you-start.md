@@ -143,6 +143,7 @@ at **`https://downloads.mobile.deevnet.net/`**. It is read-only and verified wit
 | `terraform/<version>/` | Terraform itself |
 | `tools/` | Raspberry Pi Imager (macOS, Linux, Windows) and MicroPython for the Pico W |
 | `pi/` | the [tenant Pi](/docs/runbook/tenant/tenant-to-pi-image/) image and its sha256 |
+| `vm/` | the same backend as an amd64 [virtual machine](/docs/runbook/tenant/tenant-to-pi-image/#or-a-virtual-machine) image (qcow2) and its sha256 |
 
 ---
 
