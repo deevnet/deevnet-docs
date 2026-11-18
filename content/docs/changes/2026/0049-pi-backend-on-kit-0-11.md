@@ -55,5 +55,7 @@ the versions the September image had.
 
 ## Follow-ups
 
-- [ ] The image on a real Pi: the first EdS card is built on it and booted on `dv02rpi003p01`
+- [x] The image on a real Pi: the first EdS card is built on it and booted on `dv02rpi003p01`
       (EdS CHG-0028), which will show whether Grafana's VictoriaLogs plugin registers this time.
+      Done 2026-10-18 on the 0.12.0 image instead ([CHG-0051](/docs/changes/2026/0051-pi-backend-on-kit-0-12/)).
+      The plugin's failure was the clock, fixed in [CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/).

@@ -218,6 +218,6 @@ Not yet run.
 
 - [ ] Resume after the Deevnet API and the first tenant are working.
 - [ ] Amend ADR-0009 §6, and its Evidence table (per-port VLANs on 6.3; what adoption keeps).
-- [ ] Resolve `gi1/0/5`.
+- [x] Resolve `gi1/0/5`. Done 2026-09-25 in [CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/).
 - [ ] Write `playbooks/omada-switch.yml`.
 - [ ] Record the Device Account credentials for break-glass.

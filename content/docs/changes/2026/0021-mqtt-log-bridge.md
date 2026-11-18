@@ -270,10 +270,12 @@ pinned client id and the only one with no publish grant.
   inconsistency, and worth knowing that **fixing it needs more than changing the call**: the role's
   idempotence guard verifies with `crypt(pw, stored)`, which succeeds whatever cost the stored hash
   used, so a cost change alone never rewrites an existing row.
-- [ ] **The firmware.** Nothing publishes under `log/` by itself yet: mabell's gateway holds the
+- [x] **The firmware.** Nothing publishes under `log/` by itself yet: mabell's gateway holds the
   grant and logs to serial only, and its MQTT client is unused. Until a device does this on its own,
-  ADR-0027 stays Proposed.
-- [ ] **eds has no `log/` grant yet.** mabell's gateway has one; adding eds's stand is a change in
-  that tenant's own Terraform, not here.
+  ADR-0027 stays Proposed. Done 2026-10-11: EdS's agent Pi publishes on `eds/log/np-relay` (EdS
+  CHG-0005), and ADR-0027 was Accepted on 2026-11-08.
+- [x] **eds has no `log/` grant yet.** mabell's gateway has one; adding eds's stand is a change in
+  that tenant's own Terraform, not here. Done 2026-10-10 in eds's own Terraform.
 - [ ] Per-device rate limiting, if a device proves chatty (ADR-0027 open question 3).
-- [ ] The device firmware that publishes these logs, in each device's own repository.
+- [x] The device firmware that publishes these logs, in each device's own repository. First done
+  2026-10-11 by EdS's agent Pi.

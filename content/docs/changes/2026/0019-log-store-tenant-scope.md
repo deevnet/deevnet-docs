@@ -185,5 +185,7 @@ Steps back out in reverse order. Only Step 5's clearing cannot be undone.
 ## Follow-ups
 
 - [x] **Branch `journal-upload-wip`** kept by the operator's decision, not deleted.
-- [ ] **Tenant tokens and the API**: the store's first real writer.
-- [ ] **The MQTT bridge** (ADR-0027 §4), after ADR-0027 is accepted.
+- [x] **Tenant tokens and the API**: the store's first real writer. Done 2026-09-22 in
+  [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/).
+- [x] **The MQTT bridge** (ADR-0027 §4), after ADR-0027 is accepted. Done 2026-09-22 in
+  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/); ADR-0027 was Accepted on 2026-11-08.

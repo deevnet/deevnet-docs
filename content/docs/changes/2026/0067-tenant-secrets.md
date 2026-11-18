@@ -10,7 +10,7 @@ weight: -67
 | **Date** | 2026-11-14 |
 | **Change type** | Deployment · Configuration |
 | **Classification** | Structural |
-| **Status** | **Complete.** API v0.22.4 and provider v0.10.1 deployed: a tenant's runtime secrets live in its own OpenBao namespace, proven on a throwaway tenant and, through OpenBao Agent, on the reference tenant's backend workload |
+| **Status** | **Complete.** API v0.22.5 and provider v0.10.2 deployed: a tenant's runtime secrets live in its own OpenBao namespace, proven on a throwaway tenant and, through OpenBao Agent, on the reference tenant's backend workload |
 | **Window** | OpenBao work sessions. The OpenBao configuration adds a namespace and a policy without a restart; the API deploys restart only the API |
 | **Site** | mobile |
 | **Systems** | `dv02idn001v01` (OpenBao); `dv02prv001v01` (the Deevnet API) |

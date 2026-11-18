@@ -266,18 +266,20 @@ at a browser.
 - [x] **Commit the Tenant Service CA's request and certificate to the inventory**, with
   `site_tenant_service_ca_file`, once its vaults are re-encrypted. Done 2026-10-11, about an hour
   after the change: inventory pull request 83, with the vaults re-encrypted.
-- [ ] How a tenant service certificate is revoked (ADR-0037 open question 1).
+- [x] How a tenant service certificate is revoked (ADR-0037 open question 1). Accepted as a risk:
+  R-14 in the [risk register](/docs/policies/risk-management/risk-register/).
 - [ ] Nothing tells a tenant a certificate is close to expiring (ADR-0037 open question 2). The
   first one expires 2027-10-11.
-- [ ] Where OpenBao's CA keys are kept now covers two CAs
-  ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)).
+- [x] Where OpenBao's CA keys are kept now covers two CAs
+  ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)). Done 2026-10-25.
 - [ ] The Builder's `/home` is 20 GB and holds every container build. Move the container store to
-  `/srv`, or prune on a schedule. The API's image build also copies `bin/`, 369 MB of old tarballs,
-  into its build context.
+  `/srv`, or prune on a schedule. The API's build context no longer copies `bin/`
+  (`deevnet-provisioning-api` a4ed6a1, 2026-10-25); `/home` was still 95% full on 2026-11-18.
 - [ ] The `pi-pki` image's menu and banner name two issuing CAs. The collection's script is
   corrected; the next image built for another reason carries it.
-- [ ] The signing role admits any name two or more labels below the site's zone, so
+- [x] The signing role admits any name two or more labels below the site's zone, so
   `a.b.<tenant>.<site>.deevnet.net` would be signed if asked. Only the API asks, and it sends one
-  label. A role per tenant would close it (ADR-0037, alternatives).
+  label. A role per tenant would close it (ADR-0037, alternatives). Closed 2026-11-07 in
+  [CHG-0059](/docs/changes/2026/0059-cel-signing-role/) by a CEL role, not a role per tenant.
 - [ ] The provider's `TestAccCertificate` has not been run. It needs a throwaway tenant.
 - [ ] A check that the offline machine's clock is within reason of the request's own date.

@@ -292,6 +292,7 @@ RESULT: DVNTM-TD - 29 passed, 0 failed
 
 ## Follow-ups
 
-- [ ] TLS on the state store: ADR-0029 §4 depends on it.
+- [x] TLS on the state store: ADR-0029 §4 depends on it. Done 2026-09-27 in
+      [CHG-0030](/docs/changes/2026/0030-state-store-tls/).
 - [x] CHG-0013's defect is fixed by creating profiles non-empty: proven by step 5's first join.
 - [ ] A per-session key expiry for meetups (ADR-0029 open question 1).

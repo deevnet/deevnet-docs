@@ -271,7 +271,7 @@ The analysis recorded three decisions that the fixes depended on. Where each sta
 
 ## Follow-ups
 
-- [ ] **Remove `mgmt.deevnet.net` from the architecture docs** — the "separate pass" the
+- [x] **Remove `mgmt.deevnet.net` from the architecture docs** (done 2026-09-16 and 2026-09-27) — the "separate pass" the
   analysis deferred. It is still used in `architecture/builder.md`,
   `architecture/substrate/management-plane/core-services.md` and
   `platforms/management-plane/core-services.md`.

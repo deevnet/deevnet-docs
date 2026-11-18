@@ -275,12 +275,14 @@ on the role`.
 
 ## Follow-ups
 
-- **Run the rebuild drill** ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)).
+- **Run the rebuild drill** ([OpenBao Drills](/docs/runbook/substrate/recovery/substrate-secrets-drills/)),
+  a planned waypoint on [Secrets and Identity](/docs/roadmap/infrastructure/substrate/secrets-identity/).
   It also removes the old Transit key, `tenant-secrets`, and the old tenant CAs' issuers, which stay in
   OpenBao unused until then.
 - **The image-factory AppRole's credentials are issued only when the vault has none**, so after a
   rebuild they must be emptied by hand first. The role should notice OpenBao does not know them, as
-  the `deevnet_api` role now does for the API's.
+  the `deevnet_api` role now does for the API's. Moot since 2026-11-13: CHG-0037 removed the
+  AppRole.
 
 ## To discover
 

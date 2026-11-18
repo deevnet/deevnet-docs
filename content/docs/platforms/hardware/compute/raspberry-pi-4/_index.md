@@ -37,7 +37,7 @@ hardware projects.
 |---|---|---|
 | `dv02rpi001p01` | `gi1/0/14`, access, VLAN 30 | Also the `sdr` host: [CaribouLite SDR](/docs/completed/cariboulite-sdr/) |
 | `dv02rpi002p01` | `gi1/0/3`, access, VLAN 30 | |
-| `dv02rpi003p01` | none declared | |
+| `dv02rpi003p01` | `gi1/0/11`, access, VLAN 30 | |
 | `dv02rpi004p01` | `gi1/0/5`, access, VLAN 30 | |
 
 How the bank is used is the [Raspberry Pi](/docs/platforms/tenant-compute/raspberry-pi/) page and

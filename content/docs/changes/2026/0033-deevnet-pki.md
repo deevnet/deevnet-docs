@@ -404,4 +404,4 @@ site services with the Deevnet Root CA alone.
   §6).
 - Untested until step 2: `tenant-device-ca.yml` against the live listener (the Tenant Device CA
   steps were tested against an OpenBao 2.6.2 dev server). Untested until step 8: the router's
-  `trust/ca/del` result value.
+  `trust/ca/del` result value. Both were tested on 2026-10-05, in steps 2 and 8.

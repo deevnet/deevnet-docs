@@ -472,14 +472,16 @@ reservation and records. Up to Step 4, going forward is always cheaper than goin
 
 ## Follow-ups
 
-- [ ] **Tenant log tokens.** A new CHG:
+- [x] **Tenant log tokens.** Done 2026-09-22 in [CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/). A new CHG:
   - the API issues each tenant an ingest and a read token at creation and on resupply
   - a forced-SSH writer on `obs` maintains vmauth's config (the CHG-0016 pattern:
     `roles/vernemq/tasks/writer.yml`, `internal/backend/brokerwriter/`)
   - provider fields for the two tokens
   - `max_concurrent_requests` on each tenant ingest user (ADR-0022 §6)
 - [ ] **API tenant events.** The API writes each tenant event to `(0, 0)` and to `(index, 1)`.
-- [ ] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin.
+  ADR-0027 dropped `(0, 0)`; `(index, 1)` is still open.
+- [x] **Grafana**, under ADR-0024, with the `victoriametrics-logs-datasource` plugin. Done 2026-09-24
+  in [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/).
 - [x] **Remove the two stale A records** (`dv02tob001v01`, `dv02sob001v01`). Done by the operator on
   2026-09-22 and verified; see *Outcome*.
 - [x] **Declined 2026-09-22** ([ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/): the store is for tenants only). *Was:* **Journal shipping from the domain VMs**, a new change, from branch `journal-upload-wip`:

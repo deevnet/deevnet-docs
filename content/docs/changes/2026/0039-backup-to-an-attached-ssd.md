@@ -10,7 +10,7 @@ weight: -39
 | **Date** | Started 2026-10-07 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | In Progress. Steps 1 to 4 are done on one USB flash drive: backups reach the drive, and one was restored into a rebuilt provisioning VM on the second attempt (the first was abandoned, INC-0005). The job has taken backups on its own since 2026-10-08. Outstanding: the other tenants' plans and the second drive |
+| **Status** | In Progress. Steps 1 to 4 are done on one USB flash drive: backups reach the drive, and one was restored into a rebuilt provisioning VM on the second attempt (the first was abandoned, INC-0005). The job has taken backups on its own since 2026-10-08. Outstanding: cdeever's plan (eds and mabell planned clean on 2026-11-14, in CHG-0068) and the second drive |
 | **Window** | Started 2026-10-07 on one USB flash drive. A restore is readable in full only after [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/) |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01` (the drives), `dv02prv001v01` (what is backed up) |
@@ -85,7 +85,7 @@ bucket contents (tenants' own); Keycloak (not built).
 ## Prerequisites
 
 - [ ] Two USB drives. One USB flash drive is in place; the second is not yet
-- [ ] CHG-0036 complete (the Transit key in the vault). Not a blocker for writing backups: until then a
+- [x] CHG-0036 complete (the Transit key in the vault), 2026-10-25. Not a blocker for writing backups: until then a
       restored database's sealed tenant secrets are readable only while the same OpenBao survives
 - [x] Vault decrypted; collections built
 
@@ -240,5 +240,6 @@ Remove the role and the timer; the drives keep what they hold until wiped.
 - [x] Step 3: a restore rehearsed into a rebuilt provisioning VM: the registry, the state bucket and one tenant, 2026-10-07
 - [x] Step 4: the docs
 - [x] The job takes backups unattended: 29 by the timer alone, 2026-10-08 to 2026-11-08
-- [ ] The other three tenants' plans, run from where their credentials are
+- [ ] The other three tenants' plans, run from where their credentials are. eds and mabell planned
+      clean on 2026-11-14 in [CHG-0068](/docs/changes/2026/0068-object-store-vm/); cdeever's is not yet run
 - [ ] The second drive, a USB flash drive

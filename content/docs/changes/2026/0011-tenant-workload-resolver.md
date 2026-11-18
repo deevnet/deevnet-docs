@@ -228,10 +228,10 @@ against the re-migrated MinIO backend.
       but that is a design goal, not a guarantee, and a configuration change that needs a boot
       should not require destroying the machine. Consider a restart action on
       `deevnet_workload`.
-- [ ] CHG-0007 must keep the tenant→core-router DNS path open when the zone policy is enforced,
-      or every tenant workload loses name resolution.
-- [ ] **Deleting a tenant does not purge its Terraform state, so the next tenant of that name
-      inherits it.** `minio.Remove` (`internal/backend/minio/minio.go:97`) removes the MinIO
+- [x] CHG-0007 must keep the tenant→core-router DNS path open when the zone policy is enforced,
+      or every tenant workload loses name resolution. Done 2026-09-19 in CHG-0007.
+- [x] **Deleting a tenant does not purge its Terraform state, so the next tenant of that name
+      inherits it.** Done 2026-11-12 in [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/), which purges every version. `minio.Remove` (`internal/backend/minio/minio.go:97`) removes the MinIO
       *user* and *policy* and nothing under the prefix. Observed during Step 3: after tdemo was
       deleted and re-admitted, the **new** tenant's credential could list the **old** tenant's
       `tenants/tdemo/terraform.tfstate`, written before the deletion. That state holds the prior
@@ -243,8 +243,8 @@ against the re-migrated MinIO backend.
       another key; state should be purged the same way, or deletion should say plainly that it is
       not. Positive finding alongside it: the tenant credential **is** correctly scoped — listing
       the broader `tenants/` prefix is refused with 403.
-- [ ] **A tenant's MinIO state credentials are only recoverable from inside the state they
-      unlock.** `terraform output` reads through the configured backend, so reading
+- [x] **A tenant's MinIO state credentials are only recoverable from inside the state they
+      unlock.** Done 2026-11-09 in [CHG-0060](/docs/changes/2026/0060-state-secret-reissue/): the operator reissues them. `terraform output` reads through the configured backend, so reading
       `state_backend` needs the keys it contains. Today the only way back in is the
       pre-migration `terraform.tfstate.backup` left in the tenant directory — which `.gitignore`
       treats as disposable. Losing it makes the tenant unreachable through its own Terraform,

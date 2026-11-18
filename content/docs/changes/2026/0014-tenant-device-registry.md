@@ -197,16 +197,20 @@ is unaffected.
   and ADR-0020 §1 keeps MQTT preferred wherever pub/sub fits. The broker needs **no new ADR**:
   ADR-0012 §8 decided the broker, §10 its topic confinement and §3 the `deevnet_iot_broker_account`
   resource. This registry is a prerequisite for that resource, which takes an optional device and
-  checks its trust class.
+  checks its trust class. The broker was done on 2026-09-20 in CHG-0015 and CHG-0016.
 - **ADR-0021 — the device credential — is deferred, not canceled.** It is still what ADR-0020 §5's
-  invariant needs for a non-MQTT device-facing service, and stage 3 cannot start without it.
+  invariant needs for a non-MQTT device-facing service, and stage 3 cannot start without it. Since
+  then the number ADR-0021 went to tenant secrets; the device credential is now
+  [CHG-0034](/docs/changes/2026/0034-device-certificates/), device certificates under ADR-0031.
 - **The rendezvous service** (ADR-0020 §5) stays unstarted until a real consumer decides its
   protocol surface, which ADR-0020's implementation notes require.
 - **A missing rule, for whoever builds the broker.** ADR-0012 §7 says the API writes the broker's
   auth database over a narrow `platform -> iot_backend` rule. **That rule is not declared** — the
   three `platform`-source rules in `firewall.yml` are two `platform -> management` and one
   `platform -> platform`. It is not this change's to add, but it will fail as a *timeout inside a
-  tenant's own `terraform apply`*, which is the failure mode that file already warns about.
+  tenant's own `terraform apply`*, which is the failure mode that file already warns about. Declared
+  2026-09-20 in CHG-0016.
 - **`make docs` in the provider cannot run** on the current toolchain: `tfplugindocs@latest` needs
   Go ≥ 1.25.8 and the pinned local toolchain is 1.25.5. `docs/` was already empty, so nothing
-  regressed, but the new resource's reference page cannot be generated until that is resolved.
+  regressed, but the new resource's reference page cannot be generated until that is resolved. Fixed
+  2026-10-08: the provider pins `tfplugindocs`, and its docs are generated and checked in CI.

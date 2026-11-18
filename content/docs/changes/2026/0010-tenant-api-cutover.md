@@ -377,18 +377,22 @@ substrate is where CHG-0008 left it.
 ## Follow-ups
 
 - **ADR-0014:** the API's database now holds tenant secrets and the registry, and OpenBao's storage
-  is secrets too. Both sit on VMs with no off-host copy.
-- **CHG-0007:** applying the zone policy, with step 7's two rules in it.
+  is secrets too. Both sit on VMs with no off-host copy. Now ADR-0033, which supersedes ADR-0014,
+  and the backups of [CHG-0039](/docs/changes/2026/0039-backup-to-an-attached-ssd/).
+- **CHG-0007:** applying the zone policy, with step 7's two rules in it. Done 2026-09-19.
 - **Step 11**, the one step of this change left: retiring the per-tenant loops from the `powerdns`,
   `minio` and `opnsense_dns` roles, which is what finally empties `deevnet_tenants`. Until then those
-  plays and the API disagree about eds's index.
+  plays and the API disagree about eds's index. Done 2026-09-17 (mgmt #25, inventory #38).
 - **The provider mirror** (ADR-0012 §7), so a tenant's `terraform init` works offline instead of
   needing a locally built provider. Until it exists the tenants' lock files cannot be committed,
-  because the only source is a locally built binary whose checksum is nobody else's.
+  because the only source is a locally built binary whose checksum is nobody else's. Done 2026-09-24
+  in [CHG-0025](/docs/changes/2026/0025-tenant-downloads/).
 - **`dv02bld001v01` as an artifact server**, or removed from the group: `--tags container-images`
   fails there for want of nginx's user.
 - **The duplicate tenant SNAT rule** on hv02.
 - **A Raft snapshot restored onto a fresh VM**, which ADR-0016 still lists as unconfirmed.
-- **age-encrypted credential delivery** (ADR-0012 §9) for the enrollment token.
-- **The broker** (ADR-0012 §8), and then the IoT resources.
-- **Accept ADR-0010, ADR-0012, ADR-0014, ADR-0015 and ADR-0016** once this has run.
+- **age-encrypted credential delivery** (ADR-0012 §9) for the enrollment token. Moved to
+  [Security Hardening](/docs/roadmap/infrastructure/substrate/security-hardening/).
+- **The broker** (ADR-0012 §8), and then the IoT resources. Done 2026-09-20 in CHG-0015 and CHG-0016.
+- **Accept ADR-0010, ADR-0012, ADR-0014, ADR-0015 and ADR-0016** once this has run. Done 2026-09-18
+  and 2026-09-19, except ADR-0014, which ADR-0033 superseded.

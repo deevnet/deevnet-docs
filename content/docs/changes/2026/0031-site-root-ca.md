@@ -313,6 +313,9 @@ runbook rename merged (docs #239). A full `certs.yml` run: `changed=0` on all 11
 
 ## Follow-ups
 
+All but the last were closed by [CHG-0033](/docs/changes/2026/0033-deevnet-pki/) on 2026-10-05,
+under a new root. Grafana's `deleted-*` organizations are still open.
+
 - CHG-0032: Proxmox, the core router and the Omada controller on site certificates, signed by the
   bootstrap intermediate (Proxmox, the router) and OpenBao (Omada); clients stop skipping verification.
 - Rebuild the Fedora template so new clones carry the root (the template change is merged; the build

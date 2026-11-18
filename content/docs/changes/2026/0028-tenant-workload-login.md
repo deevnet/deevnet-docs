@@ -302,9 +302,11 @@ sudo-ok
 - [ ] The template cleanup truncates `/var/log/wtmp` and `/var/log/lastlog`, so a clone starts with
       its own history.
 - [ ] Substrate VMs clone `fedora-server-*` with Proxmox's default `ciupgrade` too; the `proxmox_vm`
-      role should set it off as the API now does.
+      role should set it off as the API now does. Since 2026-10-07 a host can turn it off
+      (`mgmt_vm.ciupgrade`, CHG-0039), and prv and obj do; the default is still Proxmox's.
 
 - [ ] Whether a key change reaches a running workload on reboot (ADR-0028 open question 2).
-- [ ] Per-tenant `DVNTM-TD` keys and client isolation.
+- [x] Per-tenant `DVNTM-TD` keys and client isolation. Done 2026-09-27 in
+      [CHG-0029](/docs/changes/2026/0029-tenant-developer-network-keys/).
 - [ ] Substrate VMs still clone `fedora-server-*` with the shared key; that is by design, but the key
       has no rotation procedure (credential-rotation roadmap).

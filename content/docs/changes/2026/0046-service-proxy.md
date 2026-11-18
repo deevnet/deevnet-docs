@@ -422,6 +422,8 @@ All five services answer on 443 at their names, and every old address answers th
   working
 - [x] Reconcile `cdeever`, `eds` and `mabell`, so their data sources hold the log store's service
   name. Done 2026-10-10: every tenant's three data sources hold `https://logs.mobile.deevnet.net`
-- [ ] Find why `tdemo`'s plan fails in its outputs
+- [x] Find why `tdemo`'s plan fails in its outputs. Gone by 2026-11-14, when tdemo planned clean in
+  [CHG-0068](/docs/changes/2026/0068-object-store-vm/); the cause was not recorded
 - [ ] Make the DHCP role report no change when the router's reservations match
-- [ ] Make MinIO's bucket and policy tasks report no change when nothing changed
+- [x] Make MinIO's bucket and policy tasks report no change when nothing changed. Moot: MinIO was
+  retired on 2026-11-14 (CHG-0068)

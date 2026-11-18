@@ -118,10 +118,11 @@ A rerun imports nothing. The GUI still serves its own certificate, `Web GUI TLS 
 
 ## Follow-ups
 
-- **The router's GUI selection**, then `site_verify_opnsense: true`, the API redeploy, and
+- **Done 2026-10-05 in [CHG-0033](/docs/changes/2026/0033-deevnet-pki/):** **the router's GUI selection**, then `site_verify_opnsense: true`, the API redeploy, and
   `opnsense.yml` with verification. Then mark this record Complete in both indexes.
 - **The first router renewal** confirms the Trust API replaces a certificate in place
   (`trust/cert/set`); the role's read-back proves it either way.
-- **Release the API** with `*_INSECURE_TLS` defaulting to off (API #24, merged).
+- **Release the API** with `*_INSECURE_TLS` defaulting to off (API #24, merged). Done: API v0.10.0,
+  2026-10-06.
 - **Make `omada-wireless.yml` check-mode safe.**
 - **Watch the first AP firmware upgrade** through the controller.

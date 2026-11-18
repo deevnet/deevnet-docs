@@ -69,14 +69,17 @@ Switch and inventory state on 2026-09-25:
 | `dv02rpi003p01` | `dc:a6:32:c5:a1:4d` | `10.20.30.13` | **none declared** | — | not seen on any port |
 | `dv02rpi004p01` | `dc:a6:32:c5:a1:a6` | `10.20.30.14` | `Gi1/0/5` | up | **Ubuntu 23.10, EOL, no automation access** |
 
-- [ ] **dv02rpi003p01 has no switch port.** Pick one (`Gi1/0/6` to `Gi1/0/12` are free) and declare
-      it before cabling, or it too lands in VLAN 1.
+- [x] **dv02rpi003p01 has no switch port.** Pick one (`Gi1/0/6` to `Gi1/0/12` are free) and declare
+      it before cabling, or it too lands in VLAN 1. Done 2026-10-18 in
+      [CHG-0048](/docs/changes/2026/0048-rpi003-switch-port/): `Gi1/0/11`.
 - [ ] **dv02rpi001p01 and dv02rpi002p01:** check whether they're powered and cabled to `Gi1/0/14`
       and `Gi1/0/3`. Both ports have no link today.
-- [ ] **dv02rpi004p01:** decide its purpose. It's the natural first **real-hardware test of the
+- [x] **dv02rpi004p01:** decide its purpose. It's the natural first **real-hardware test of the
       take-home `pi-backend` image** (flash from the tenant downloads' `pi/` and run the first-boot
       self-test). Otherwise, reimage it from the image factory so it has automation access and a
-      supported OS.
+      supported OS. Decided: it is the take-home image's test Pi, 27 of 27 on 2026-11-16 in
+      [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/).
 - [ ] **Undeclared ports are a trap.** An undeclared port is live in VLAN 1, so a device plugged in
       there looks dead rather than refused. The standard wants unused ports in a blackhole VLAN
-      (999). Declaring every unused port that way is a separate change.
+      (999). Declaring every unused port that way is a separate change, tracked on the
+      [access network plan](/docs/roadmap/infrastructure/substrate/access-network/plan/).

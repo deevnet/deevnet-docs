@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/access-network/
   - /projects/access-network/
 weight: 6
-tasks_completed: 0
+tasks_completed: 1
 tasks_in_progress: 0
-tasks_planned: 5
+tasks_planned: 4
 ---
 
 # Access Network: Project Plan
@@ -111,4 +111,5 @@ plugged in, rather than refusing it.
   visibly refused. A change of its own. The
   [Network Segmentation](/docs/standards/network-segmentation/) standard requires 999 only as the
   trunk native VLAN, so this also means amending the standard
-- ⏳ Declare `dv02rpi003p01`'s port before it is cabled; it has none
+- ✅ Declare `dv02rpi003p01`'s port before it is cabled: `Gi1/0/11`, IoT access, 2026-10-18
+  ([CHG-0048](/docs/changes/2026/0048-rpi003-switch-port/))

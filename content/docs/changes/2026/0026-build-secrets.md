@@ -91,6 +91,7 @@ template build would change the hypervisor.
 - [x] The operator vaulted `vault_openbao_image_factory_role_id` / `_secret_id`
       (`group_vars/all/vault.yml`); committed and **pushed**, with ciphertext checked on origin
       (inventory #56); then `.openbao/image-factory-approle.json` was deleted
-- [ ] Later: narrow the Proxmox token itself. `terraform-prov@pve` has `Administrator` at `/`
+- [x] Later: narrow the Proxmox token itself. Done 2026-11-13 in
+      [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/): custom roles, no Administrator. `terraform-prov@pve` has `Administrator` at `/`
       ([Build a Management Plane](/docs/runbook/substrate/building-recovery/build-hypervisor/),
       Step 7)

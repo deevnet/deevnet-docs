@@ -58,7 +58,10 @@ not answer at `10.20.30.13`, and `a_autoprov` timed out. The switch told the sto
 
 ## Follow-ups
 
-- [ ] **dv02rpi003p01:** decide its purpose, and reimage it from the image factory so it has
+- [x] **dv02rpi003p01:** decide its purpose, and reimage it from the image factory so it has
       automation access and a supported OS. EdS's one-Pi back end (`pi-backend`) is a candidate.
+      Decided: it is EdS's home back end, from the `pi-backend` image (EdS CHG-0028, 2026-10-18; a
+      Deevnet Pi since EdS CHG-0042, 2026-10-26). It is a tenant's card, so it has no automation
+      user, by design.
 - [ ] **Undeclared ports are still a trap:** `Gi1/0/6` to `Gi1/0/10` and `Gi1/0/12` are live in
       VLAN 1. CHG-0027's follow-up stands.
