@@ -29,7 +29,7 @@ waypoints:
     status: done
     date: "2026-11-17"
   - title: "The take-home virtual machine imports into VirtualBox and Hyper-V, converted unchanged from the same build"
-    status: planned
+    status: active
   - title: "Take-home media v3 done: the virtual machine for VirtualBox and Hyper-V, in the tenant downloads"
     milestone: true
     status: planned

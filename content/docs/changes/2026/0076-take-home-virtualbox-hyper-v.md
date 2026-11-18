@@ -10,7 +10,7 @@ weight: -76
 | **Date** | 2026-11-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | In progress |
+| **Status** | In progress. Steps 1 to 3 are done: both formats convert, compare equal, and pass the self-test under qemu. Outstanding: the publish |
 | **Window** | Unscheduled. The images are converted and proven on the Builder; only their publish crosses the core router, throttled |
 | **Site** | mobile |
 | **Systems** | The artifact server on the Builder; the take-home OVA and VHDX; the tenant downloads on `dv02obs001v01` |
@@ -69,21 +69,53 @@ virtual machine's disk unchanged, converted from the same build. Nothing is rebu
 
 ## Procedure
 
-### Step 1: The formats
+### Step 1: The formats ✅
 
 The OVF descriptor (operating system type, firmware, disk controller, network adapter), and the
 conversions, from the virtual machine build's raw disk.
 
-### Step 2: Convert and check
+**Done 2026-11-18.**
+
+| | OVA, for VirtualBox | VHDX, for Hyper-V |
+|---|---|---|
+| Disk | stream-optimized VMDK, 1.39 GB | dynamic VHDX, 4.5 GB, zipped to 1.34 GB |
+| Machine | OVF 1.0 descriptor: 64-bit Debian, 2 CPUs, 2 GB of memory | the owner makes it: Generation 2, 2 CPUs, 2 GB |
+| Firmware | none named, so VirtualBox's default, BIOS | UEFI, Secure Boot with the "Microsoft UEFI Certificate Authority" template |
+| Disk controller | SATA (AHCI) | SCSI, Hyper-V's for Generation 2 |
+| Network | Intel PRO/1000, attached `Bridged` | the owner's external switch |
+
+**The VHDX is shipped zipped.** Windows opens a zip itself, and the zip is a third of the VHDX's
+size. Debian's generic kernel and an initramfs with `MODULES=most` carry the AHCI, `e1000` and
+Hyper-V drivers, and the network configuration matches any Ethernet device. So the disk needs no
+change for either hypervisor, and no ADR: ADR-0044's one way of making the system holds.
+
+### Step 2: Convert and check ✅
 
 A `make` target in `deevnet-image-factory` that writes the OVA and the VHDX, then compares each
 disk with the virtual machine's and checks the OVA's manifest.
 
-### Step 3: Prove it on the Builder
+**Done 2026-11-18.** `make vm-formats` converts the raw disk the qcow2 was made from, in about four
+minutes. `qemu-img compare` found both disks identical to it. The OVA check passed: its files in
+the order OVF 1.0 asks (descriptor, manifest, disk), the manifest's sha256s matching each file, and
+the descriptor naming the disk it carries at its size. The OVA's sha256 is `7ab2e240…`, the zipped
+VHDX's `8b6961a1…`.
+
+### Step 3: Prove it on the Builder ✅
 
 Under qemu: the OVA's disk under SeaBIOS, as VirtualBox boots it; the VHDX under OVMF with Secure
 Boot, as a Generation 2 machine boots it. Each: setup on the console, the root grown, the
 self-test.
+
+**Done 2026-11-18.** Each disk was taken out of the built file itself, the OVA unpacked and the zip
+extracted, and booted through a throwaway 24 GB overlay.
+
+| | Firmware and devices | First boot | Self-test |
+|---|---|---|---|
+| OVA | SeaBIOS; the disk on AHCI, an e1000 adapter, as VirtualBox gives them | setup asked on the console; the root grew to 24 GB | 27 of 27 at first boot, and again by hand |
+| VHDX | OVMF with Secure Boot on and Microsoft's keys; the disk on SCSI | the same; `SecureBoot enabled` | 27 of 27 at first boot, and again by hand |
+
+The devices are qemu's. VirtualBox's and Hyper-V's own, and a bridged run on a real computer, are
+still to prove (Later).
 
 ### Step 4: Publish
 
@@ -107,7 +139,7 @@ Remove the OVA and the VHDX from the tenant downloads. The build target is addit
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the formats chosen and recorded
-- [ ] Step 2: both convert, and their disks compare equal
-- [ ] Step 3: proven on the Builder in each hypervisor's firmware
+- [x] Step 1: the formats chosen and recorded
+- [x] Step 2: both convert, and their disks compare equal
+- [x] Step 3: proven on the Builder in each hypervisor's firmware
 - [ ] Step 4: published, with the guide sections
