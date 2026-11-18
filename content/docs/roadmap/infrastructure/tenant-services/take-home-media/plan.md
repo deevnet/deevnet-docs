@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 1
-tasks_in_progress: 2
-tasks_planned: 10
+tasks_completed: 13
+tasks_in_progress: 0
+tasks_planned: 0
 ---
 
 # Take-Home Media: Project Plan
@@ -42,18 +42,18 @@ image's, built by the same configuration play. Only the medium differs.
 
 ## Versions
 
-### v1, the MVP (current)
+### v1, the MVP (done 2026-11-17)
 
 An amd64 qcow2 of the tenant backend for Proxmox and KVM, on Debian bookworm like the Pi image.
 
 **Done when:**
 
-- [ ] deevnet-kit, the log bridge and silo are built for amd64 and staged on the artifact server, each with its sha256
-- [ ] One `make` target on the Builder builds the qcow2 from the same configuration play as the Pi image
-- [ ] Its first boot asks on the console for the user, the sign-in (password or SSH key) and the host name, then deevnet-kit makes the CA and the secrets
-- [ ] The self-test passes every check under qemu on the Builder
-- [ ] `tdemo` moves across with its `kit.env`: a test client publishes, and its log shows in Grafana
-- [ ] The image is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for it
+- [x] deevnet-kit, the log bridge and silo are built for amd64 and staged on the artifact server, each with its sha256
+- [x] One `make` target on the Builder builds the qcow2 from the same configuration play as the Pi image
+- [x] Its first boot asks on the console for the user, the sign-in (password or SSH key) and the host name, then deevnet-kit makes the CA and the secrets
+- [x] The self-test passes every check under qemu on the Builder
+- [x] `tdemo` moves across with its `kit.env`: a test client publishes, and its log shows in Grafana
+- [x] The image is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for it
 
 It is proven on the Builder under qemu only, never on the lab's hypervisors. A bridged run on a
 real hypervisor comes with v3, or the first time someone imports it.
@@ -79,33 +79,33 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 
 ---
 
-## Records ⏳
+## Records ✅
 
-- 🔄 [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/) (Proposed): one backend on several media, each from its vendor's image by the same play
-- 🔄 [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/): building and publishing the virtual machine image
+- ✅ [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/), Accepted 2026-11-17: one backend on several media, each from its vendor's image by the same play
+- ✅ [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/), Complete 2026-11-17: building and publishing the virtual machine image
 
-## amd64 inputs ⏳
+## amd64 inputs ✅
 
-- ⏳ deevnet-kit and the log bridge built for amd64 and staged at their pinned versions
-- ⏳ silo for amd64 taken from the amd64 image Deevnet runs, built from the same release, so no build crosses the core router
-- ⏳ The upstream amd64 releases (VictoriaLogs, vmutils, Grafana and its plugin, the alerting and notification services) staged with pinned sha256
+- ✅ deevnet-kit and the log bridge built for amd64 and staged at their pinned versions
+- ✅ silo for amd64 taken from the amd64 image Deevnet runs, built from the same release, so no build crosses the core router
+- ✅ The upstream amd64 releases (VictoriaLogs, vmutils, Grafana and its plugin, the alerting and notification services) staged with pinned sha256
 
-## The image ⏳
+## The image ✅
 
 - ✅ Build method chosen, 2026-11-17: Debian 12's official `nocloud` image, mounted, then the configuration play, as the Pi image starts from Raspberry Pi OS
-- ⏳ The configuration play takes the architecture and the medium as variables, with the Pi-only steps (boot partition files) kept to the Pi
-- ⏳ A `make` target builds a bookworm amd64 qcow2
+- ✅ The configuration play takes the architecture and the medium as variables, with the Pi-only steps (boot partition files) kept to the Pi
+- ✅ A `make` target builds a bookworm amd64 qcow2
 
-## First boot ⏳
+## First boot ✅
 
-- ⏳ `deevnet-kit setup`, a console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot
+- ✅ `deevnet-kit setup`, a console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot
 
-## Proof ⏳
+## Proof ✅
 
-- ⏳ The self-test passes every check under qemu on the Builder
-- ⏳ `tdemo` across with its `kit.env`: a test client publishes and its log shows in Grafana
+- ✅ The self-test passes every check under qemu on the Builder
+- ✅ `tdemo` across with its `kit.env`: a test client publishes and its log shows in Grafana
 
-## Publish ⏳
+## Publish ✅
 
-- ⏳ A publish target puts the image under `tenant/vm` with its sha256, pushed throttled to the observability store
-- ⏳ A section in the tenant guide: import, bridged networking, the first-boot prompt
+- ✅ A publish target puts the image under `tenant/vm` with its sha256, pushed throttled to the observability store
+- ✅ A section in the tenant guide: import, bridged networking, the first-boot prompt

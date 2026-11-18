@@ -10,7 +10,7 @@ weight: -74
 | **Date** | 2026-11-17 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress** |
+| **Status** | **Complete** (2026-11-17). The image is in the tenant downloads, and its self-test passed every check under qemu on the Builder |
 | **Window** | Unscheduled. Downloads across the core router are throttled; the image build and its proof run on the Builder |
 | **Site** | mobile |
 | **Systems** | `deevnet-kit`; the log bridge; the artifact server on the Builder; the take-home virtual machine image; the tenant downloads on `dv02obs001v01`; `deevnet-tenant-tdemo` |
@@ -146,6 +146,16 @@ localhost:
 The image under `tenant/vm` in the tenant downloads, with its sha256, and a section in the
 tenant guide.
 
+**Done 2026-11-17.** `make vm-backend-publish` on the Builder, then the image pushed to the
+observability store with `rsync --bwlimit=1000` and a watchdog on the core router, as CHG-0072's
+was: 1.46 GB in 23 minutes, with none of 1,414 pings missed. On the store the image matches the
+sha256 the build wrote, `31b9317b0a5509d4…`, and `downloads.mobile.deevnet.net` serves both at their
+full size. The tenant guide's
+[Or a virtual machine](/docs/runbook/tenant/tenant-to-pi-image/#or-a-virtual-machine) section
+covers importing it, bridged networking and the console prompt.
+
+Only `tenant/vm/` was pushed. The tenant downloads role, which syncs the whole tree, was not run.
+
 ## Verification
 
 On the Builder, under qemu:
@@ -168,4 +178,4 @@ Remove the image from the tenant downloads. The staged amd64 inputs are additive
 - [x] Step 3: `deevnet-kit setup` released
 - [x] Step 4: the image builds
 - [x] Step 5: proven on the Builder
-- [ ] Step 6: published, with the guide section
+- [x] Step 6: published, with the guide section

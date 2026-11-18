@@ -5,17 +5,22 @@ weight: 6
 value: [works-anywhere]
 waypoints:
   - title: "Deevnet's take-home tools built for amd64 computers: deevnet-kit, the log bridge and the silo bucket store"
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "A take-home virtual machine image of the tenant backend, built from the same configuration as the Pi image"
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "The take-home virtual machine asks its owner for a user, a sign-in and a host name on its first boot"
     value: [works-anywhere, secure-by-default]
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "The take-home virtual machine passes its full self-test and takes a tenant across with one file"
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "Take-home media v1 done: a virtual machine image of the tenant backend for Proxmox and KVM, in the tenant downloads"
     milestone: true
-    status: planned
+    status: done
+    date: "2026-11-17"
   - title: "An ISO that installs the take-home tenant backend on an owner's own hardware"
     status: planned
   - title: "The take-home virtual machine for VirtualBox, Hyper-V and UTM on Apple Silicon"

@@ -64,7 +64,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Tenant Model](tenant-model/)
 
 - [ADR-0044: Take-Home Media](/docs/architecture/decisions/tenant-model/0044-take-home-media/) —
-  *Proposed.* The take-home backend is one backend on several media, built by one play with the
+  *Accepted (2026-11-17); built by CHG-0074.* The take-home backend is one backend on several media, built by one play with the
   medium as a parameter, each from its vendor's dated image with what that image leaves open closed.
   A medium with no boot partition asks on its console (`deevnet-kit setup`); a VM is bridged only;
   every medium uses the same Debian release.

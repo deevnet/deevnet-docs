@@ -7,7 +7,7 @@ weight: -44
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-11-17): built by [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/), the virtual machine image, proven on the Builder and in the tenant downloads |
 | **Date** | 2026-11-17 |
 | **Scope** | How the take-home backend reaches a medium other than a Raspberry Pi card: what every medium shares, what each may differ in, what each starts from, and how an owner sets one up with no boot partition to edit. Not what the backend runs (the [take-home Pi image](/docs/runbook/tenant/tenant-to-pi-image/)), not its certificates ([ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/)) |
 | **Related** | [Take-Home Media](/docs/roadmap/infrastructure/tenant-services/take-home-media/) and its [proposal](/docs/architecture/proposals/take-home-vm-and-iso/), [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/), [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/) |
@@ -100,4 +100,4 @@ release together.
 
 - [x] Built by change records: [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/) (the virtual machine).
 - [x] Proven on the Builder under qemu: the console prompt, a self-test passing every check, and a tenant moved across with its `kit.env` (CHG-0074, Step 5).
-- [ ] The virtual machine image in the tenant downloads (CHG-0074, Step 6).
+- [x] The virtual machine image in the tenant downloads (CHG-0074, Step 6).
