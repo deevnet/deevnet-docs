@@ -3,8 +3,8 @@ title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 25
-tasks_in_progress: 0
-tasks_planned: 7
+tasks_in_progress: 1
+tasks_planned: 6
 ---
 
 # Take-Home Media: Project Plan
@@ -179,9 +179,9 @@ settings made. The owner picks the bridged interface, which differs from Mac to 
 
 ---
 
-## v3 records ⏳
+## v3 records 🔄
 
-- ⏳ CHG-0076: converting and publishing the VirtualBox and Hyper-V images
+- 🔄 [CHG-0076](/docs/changes/2026/0076-take-home-virtualbox-hyper-v/), In progress 2026-11-18: converting and publishing the VirtualBox and Hyper-V images
 
 No ADR is expected: the formats carry the v1 disk unchanged, so ADR-0044 holds. One is written only
 if a format needs the system itself changed.
