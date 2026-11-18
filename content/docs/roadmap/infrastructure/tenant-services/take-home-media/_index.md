@@ -28,15 +28,19 @@ waypoints:
     milestone: true
     status: done
     date: "2026-11-17"
-  - title: "The take-home virtual machine for VirtualBox, Hyper-V and UTM on Apple Silicon"
+  - title: "The take-home virtual machine imports into VirtualBox and Hyper-V, converted unchanged from the same build"
+    status: planned
+  - title: "Take-home media v3 done: the virtual machine for VirtualBox and Hyper-V, in the tenant downloads"
+    milestone: true
     status: planned
 ---
 
 # Take-Home Media
 
 A tenant takes its backend home on a Raspberry Pi today, flashed from the `pi-backend` image in the
-tenant downloads. This item adds the same backend on two more media: a virtual machine image, then
-an ISO that installs it on an owner's own hardware. The app contract, deevnet-kit and the self-test
+tenant downloads. This item adds the same backend on more media: a virtual machine image, an ISO
+that installs it on an owner's own hardware, and the virtual machine in the formats an owner's
+computer runs. The app contract, deevnet-kit and the self-test
 stay the Pi's on every medium
 ([proposal](/docs/architecture/proposals/take-home-vm-and-iso/)).
 
