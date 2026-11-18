@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 13
-tasks_in_progress: 0
-tasks_planned: 12
+tasks_completed: 22
+tasks_in_progress: 1
+tasks_planned: 2
 ---
 
 # Take-Home Media: Project Plan
@@ -66,10 +66,10 @@ An ISO that installs the same amd64 system as v1 on an owner's own hardware, wir
 
 **Done when:**
 
-- [ ] One `make` target builds a hybrid ISO, bootable on UEFI and BIOS, that carries the v1 system image from the same build
-- [ ] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from
-- [ ] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [ ] The installed system passes the self-test, every check
+- [x] One `make` target builds a hybrid ISO, bootable on UEFI and BIOS, that carries the v1 system image from the same build
+- [x] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from
+- [x] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
+- [x] The installed system passes the self-test, every check
 - [ ] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired
 
 **Secure Boot is a goal, not a point.** Most machines ship with it on, and the system's disk already
@@ -131,24 +131,24 @@ v1 disk, and an arm64 image for UTM on Apple Silicon from the Pi's arm64 inputs.
 
 ---
 
-## v2 records ⏳
+## v2 records 🔄
 
-- ⏳ A change record for building and publishing the installer ISO
-- ⏳ An ADR only if the installer changes ADR-0044, such as a second way of making the system
+- 🔄 [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/): building and publishing the installer ISO
+- ✅ No ADR: the ISO writes the virtual machine's disk unchanged, so ADR-0044's one way of making the system holds
 
-## v2 installer ⏳
+## v2 installer ✅
 
-- ⏳ Choose how the ISO boots its installer, carrying the v1 system image compressed, so the ISO adds no second build of the backend
-- ⏳ The installer lists the disks, refuses the one it booted from, asks the owner to type the chosen disk's name, writes the system and checks what it wrote, then asks to remove the stick and reboots
-- ⏳ A hybrid ISO, bootable on UEFI and BIOS, through Debian's signed shim and GRUB
-- ⏳ One `make` target builds the ISO from the v1 build's disk
+- ✅ Boot design chosen, 2026-11-17: everything from the v1 disk, its kernel with an installer initramfs made by its `initramfs-tools`, its GRUB for BIOS, and Debian's signed shim and CD GRUB for UEFI; the v1 disk carried compressed, and nothing downloaded
+- ✅ The installer lists the disks, refuses the one it booted from, asks the owner to type the chosen disk's name, writes the system and checks what it wrote, then asks to remove the stick and reboots
+- ✅ A hybrid ISO, bootable on UEFI and BIOS, through Debian's signed shim and GRUB
+- ✅ One `make` target builds the ISO from the v1 build's disk
 
-## v2 proof ⏳
+## v2 proof ✅
 
-- ⏳ BIOS: the ISO installs to a blank virtual disk in qemu, and the installed system boots alone
-- ⏳ UEFI: the same with OVMF
-- ⏳ The installed system's first boot asks on the console, grows its root, and passes the self-test
-- ⏳ Secure Boot tried with OVMF's Secure Boot firmware, and the result recorded
+- ✅ BIOS: the ISO installs to a blank virtual disk in qemu, and the installed system boots alone
+- ✅ UEFI: the same with OVMF
+- ✅ The installed system's first boot asks on the console, grows its root, and passes the self-test
+- ✅ Secure Boot tried with OVMF's Secure Boot firmware: the ISO and the installed system boot with it on, and the self-test passes
 
 ## v2 publish ⏳
 
