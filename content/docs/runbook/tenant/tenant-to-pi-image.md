@@ -33,6 +33,9 @@ key or route, and its CA and tokens are generated on the card the first time it 
 **The same backend also runs as an amd64 virtual machine** on a hypervisor of your own, for when
 there is no Pi: [Or a virtual machine](#or-a-virtual-machine) replaces steps 1 and 2.
 
+**It also installs on a spare amd64 computer from a USB stick**, wired:
+[Or a computer of your own](#or-a-computer-of-your-own) replaces steps 1 and 2 the same way.
+
 **A Pi can instead take a certificate from Deevnet**, and answer to your tenant's own names under
 the Deevnet Root. That is a [Deevnet Pi](#8-make-it-a-deevnet-pi), and it is how a Pi runs at a
 Deevnet production site.
@@ -296,6 +299,38 @@ means the VM, with two differences:
   `podman build --platform linux/amd64`.
 - **The VM keeps the hypervisor's clock**, and it has no Wi-Fi of its own: the bridged adapter is
   its network.
+
+## Or a computer of your own
+
+**The same backend also installs on a spare amd64 computer, from a USB stick, which replaces
+steps 1 and 2.** The stick writes the virtual machine's system to the computer's disk, so the
+computer then runs exactly what the VM runs. It erases the disk you choose. The installed system
+has no Wi-Fi: connect the computer by cable.
+
+1. **Get the installer.** At the site it is in the
+   [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads)
+   `iso/`: `debian-bookworm-mobile-backend-installer.iso`, with its `.sha256`. Check it.
+2. **Write it to a USB stick** of 2 GB or more, as a raw image, which erases the stick:
+   balenaEtcher or Raspberry Pi Imager ("Use custom"), or on Linux or macOS
+   `sudo dd if=debian-bookworm-mobile-backend-installer.iso of=/dev/<stick> bs=4M`. If Rufus asks
+   on Windows, choose **DD image** mode: the installer finds its stick by the stick's name, which
+   Rufus's ISO mode shortens.
+3. **Start the computer from the stick,** with its network cable plugged in. Most computers show a
+   boot menu on a key at power-on, often F12, F11 or Esc. **Secure Boot can stay on**: the stick
+   and the installed system start through Debian's signed boot loader and kernel. If the computer
+   refuses to start the stick, turn Secure Boot off in its firmware settings.
+4. **Choose the disk.** The installer lists the computer's disks of 16 GB or more, never the stick
+   itself. Type the name of the one to install to, such as `sda` or `nvme0n1`, then type it again
+   to confirm. **Everything on that disk is erased.** The installer writes the system, reads it
+   back to check it, and asks you to remove the stick and press Enter.
+5. **Answer the first-boot questions** on the computer's screen: the same ones as the VM's, in
+   [its step 3](#or-a-virtual-machine). The root file system grows to fill the disk.
+6. **Sign in and check it,** as for the VM: `ssh you@<hostname>.local`, then
+   `sudo deevnet-kit selftest`.
+
+From here, continue with [step 3](#3-recreate-your-broker-accounts). Where a step says the Pi, it
+means this computer, with the VM's first difference: **build your app's container for amd64**. The
+computer keeps its own clock.
 
 ## 3. Recreate your broker accounts
 
