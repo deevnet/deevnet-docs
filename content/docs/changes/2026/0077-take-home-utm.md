@@ -10,8 +10,8 @@ weight: -77
 | **Date** | 2026-11-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress** |
-| **Window** | 2026-11-18 onward. Built and proven on the Builder; the publish crosses the core router throttled |
+| **Status** | **Complete, 2026-11-18.** The arm64 qcow2 builds by the same play, passes the self-test emulated as UTM boots it, and is in the tenant downloads with its sha256 matching |
+| **Window** | 2026-11-18. Built and proven on the Builder; the publish crossed the core router throttled, 22:49 to 23:12 EST |
 | **Site** | mobile |
 | **Systems** | The Builder (an arm64 emulator and firmware added); the artifact server on the Builder; the take-home arm64 qcow2; the tenant downloads on `dv02obs001v01` |
 | **Automation** | `ansible-collection-deevnet.builder`, `deevnet-image-factory` |
@@ -113,10 +113,17 @@ menu, then goes dark when Linux starts: Linux has no driver for it. UTM's QEMU b
 with it the prompt shows. The VM signs in by key only once a key is given. A run in UTM on a real
 Mac stays Later.
 
-### Step 4: Publish
+### Step 4: Publish ✅
 
 Under `tenant/vm` in the tenant downloads, with its sha256, pushed throttled and detached, and the
 tenant guide's UTM section.
+
+**Done 2026-11-18.** `make vm-backend-arm64-publish` staged it on the Builder's artifact server. A
+detached `rsync` at 1 MB/s carried it to `dv02obs001v01` in 23 minutes, with a watchdog pinging the
+core router every second: 1,347 pings, none missed. The amd64 qcow2, the OVA and the VHDX beside
+it were unchanged and were skipped. `sha256sum -c` passed on the observability store, and
+`downloads.mobile.deevnet.net/vm/` serves the image's sha256 and its full size. The tenant guide's
+[UTM section](/docs/runbook/tenant/tenant-to-pi-image/) went in with this record.
 
 ## Verification
 
@@ -137,4 +144,4 @@ packages can stay on the Builder or be removed from `deevnet.builder`.
 - [x] Step 1: the Builder's emulator installed
 - [x] Step 2: the arm64 qcow2 builds with its sha256
 - [x] Step 3: proven on the Builder, emulated as UTM boots it
-- [ ] Step 4: published, with the guide section
+- [x] Step 4: published, with the guide section
