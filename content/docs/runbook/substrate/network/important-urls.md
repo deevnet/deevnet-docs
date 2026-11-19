@@ -49,7 +49,7 @@ where the Notes say otherwise.
 | **Artifact server** | `http://artifacts.mobile.deevnet.net` | `http://10.20.99.95` | On the builder; also `pxe.`. Firmware is under `/firmware/`, container images under `/container-images/`. |
 | **Terraform state store (silo)**: S3 API | `https://tfstate.mobile.deevnet.net` | `https://10.20.25.23` | On `dv02obj001v01`, through its service proxy; also on port 9000. Root login `vault_minio_root_*`. The console is on the host's loopback only. |
 | **Tenant bucket store (silo)**: S3 API | `https://s3.mobile.deevnet.net` | `https://10.20.25.23` | On `dv02obj001v01`, through its service proxy. |
-| **Tenant DNS (PowerDNS)** | `tdns.mobile.deevnet.net` port 53 | `10.20.99.30` port 53 | DNS only; no HTTP API is enabled. Tenants write over RFC 2136 ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)). |
+| **Tenant DNS (PowerDNS)** | `tdns.mobile.deevnet.net` port 53 | `10.20.25.21` port 53 | DNS only; no HTTP API is enabled. Tenants write over RFC 2136 ([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)). |
 | **MQTT broker** | *not in DNS* | `mqtt://10.20.35.20:1883` (TLS on `8883`) | On `dv02mqt001v01`, IoT Backend. **2026-09-11:** inventory declares `dv02mqt001v01` and `mqtt.`, but neither resolves, and 1883 did not answer from the builder. Users are in `vault_mqtt_users`. |
 
 ## Hosts without a web UI
