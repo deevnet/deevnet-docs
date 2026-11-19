@@ -54,7 +54,9 @@ command on these pages is the same under that name.
 
 3. **[Check the backend](check-the-backend/)**: the self-test, and the files your app needs.
 4. **[Move your tenant](move-your-tenant/)**: your broker accounts, your devices, your app, your
-   dashboards, alert rules and buckets.
+   dashboards, alert rules and buckets. **Your code is not baked into an image.** Every medium's
+   image is the same for every tenant; your app runs on it as a container you build on your
+   computer and copy over SSH, and you redeploy the same way.
 5. **[Choose its certificates](certificates/)**, if you want more than the backend's own CA: one
    from Deevnet for your tenant's names, or a PKI of your own when you leave.
 

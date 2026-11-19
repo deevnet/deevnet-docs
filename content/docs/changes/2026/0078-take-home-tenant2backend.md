@@ -80,10 +80,31 @@ staged on the artifact server.
 The configuration play installs `tenant2backend`, its units, paths and group, and the alias; every
 image target pins the new release. EdS's backend build accepts the new names.
 
+**Built 2026-11-19, from a test build of the tool** (`v0.27.0-1-g06d5e2c`), before its release: the
+virtual machine for amd64 and arm64, the ISO, the OVA, the VHDX and the Pi image, by
+`deevnet-image-factory` #50, with no ping to the core router missed during the builds. EdS's build
+takes either name (EdS #123): it finds which the base carries, and its scripts on the card choose
+at run time.
+
 ### Step 3: Prove them
 
 Every image rebuilt: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi
 of the Pi lab. Setup, the self-test every check, and the alias.
+
+**Five of six proven on 2026-11-19**, each booted as its hypervisor boots it, through a throwaway
+24 GB overlay:
+
+| Image | Firmware | First boot | Self-test | `deevnet-kit status` |
+|---|---|---|---|---|
+| Virtual machine, amd64 | SeaBIOS | setup on the console; root grown to 24 GB | 27 of 27, and again by hand | works, and says the new name |
+| ISO, installed to a 24 GB disk | OVMF with Secure Boot on | the same | 27 of 27, and again by hand | the same |
+| OVA | SeaBIOS, AHCI, e1000 | the same | 27 of 27, and again by hand | the same |
+| VHDX | OVMF with Secure Boot, SCSI | the same | 27 of 27, and again by hand | the same |
+| Virtual machine, arm64 | edk2, emulated | the same | 27 of 27, and again by hand | the same |
+
+On each, every `backend-*` unit is present, `/etc/backend` and the `backend` group exist, and
+`/etc/deevnet-kit` does not. **The Pi image is proven on the new production EdS Pi**, the owner's
+choice, and is published then.
 
 ### Step 4: Publish
 
