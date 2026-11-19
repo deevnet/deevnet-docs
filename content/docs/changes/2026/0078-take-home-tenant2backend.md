@@ -81,8 +81,9 @@ The configuration play installs `tenant2backend`, its units, paths and group, an
 image target pins the new release. EdS's backend build accepts the new names.
 
 **Built 2026-11-19, from a test build of the tool** (`v0.27.0-1-g06d5e2c`), before its release: the
-virtual machine for amd64 and arm64, the ISO, the OVA, the VHDX and the Pi image, by
-`deevnet-image-factory` #50, with no ping to the core router missed during the builds. EdS's build
+virtual machine for amd64 and arm64, the ISO, the OVA and the VHDX, by
+`deevnet-image-factory` #50, with no ping to the core router missed during the builds. The Pi image
+is building. EdS's build
 takes either name (EdS #123): it finds which the base carries, and its scripts on the card choose
 at run time.
 
