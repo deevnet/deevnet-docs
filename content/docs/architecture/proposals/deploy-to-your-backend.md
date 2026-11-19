@@ -9,7 +9,7 @@ title: "Deploy to Your Backend"
 | **Status** | Proposal, not decided and not built |
 | **Date** | 2026-11-19 |
 | **Where** | `tenant2backend`, in `deevnet-provisioning-api`: on the take-home backend, and on the owner's computer |
-| **Would extend** | [Take Your Tenant Home](/docs/runbook/tenant/take-it-home/), [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/), ADR-0045 (Proposed, the tool's name); in EdS, its ADR-0015 and ADR-0033 |
+| **Would extend** | [Take Your Tenant Home](/docs/runbook/tenant/take-it-home/), [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/), [ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/); in EdS, its ADR-0015 and ADR-0033 |
 
 A tenant with several services of its own, such as EdS, deploys every new build to its take-home
 backend the same way a tenant with one app does, on every medium. Each service carries a short

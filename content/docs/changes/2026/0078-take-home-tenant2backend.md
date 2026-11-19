@@ -70,10 +70,14 @@ published again. This is the fifth version of
 
 ## Procedure
 
-### Step 1: The tool
+### Step 1: The tool ✅
 
 `tenant2backend` in `deevnet-provisioning-api`: the command, its files and the alias, released and
 staged on the artifact server.
+
+**Done 2026-11-19.** `deevnet-provisioning-api` #83 renamed the command and its files, kept
+`deevnet-kit` working for one release, and reads a card's `deevnet-kit.txt` when `backend.txt` holds
+no setting. Released as **v0.28.0** (#84), and staged for arm64 and amd64.
 
 ### Step 2: The images and EdS
 
@@ -104,7 +108,11 @@ of the Pi lab. Setup, the self-test every check, and the alias.
 | Virtual machine, arm64 | edk2, emulated | the same | 27 of 27, and again by hand | the same |
 
 On each, every `backend-*` unit is present, `/etc/backend` and the `backend` group exist, and
-`/etc/deevnet-kit` does not. **The Pi image is proven on the new production EdS Pi**, the owner's
+`/etc/deevnet-kit` does not.
+
+**The same five, rebuilt from v0.28.0** by `deevnet-image-factory` #50 as merged, passed again the
+same way: the ISO installed and checked what it wrote, and every image's self-test passed 27 of 27
+at first boot and by hand, with `deevnet-kit` a link that says the new name. **The Pi image is proven on the new production EdS Pi**, the owner's
 choice, and is published then.
 
 ### Step 4: Publish
@@ -130,7 +138,7 @@ The tool's release is additive.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: `tenant2backend` released, with its alias
+- [x] Step 1: `tenant2backend` released, with its alias
 - [ ] Step 2: the images and EdS take the new names
 - [ ] Step 3: every image proven
 - [ ] Step 4: published, and the docs name `tenant2backend`

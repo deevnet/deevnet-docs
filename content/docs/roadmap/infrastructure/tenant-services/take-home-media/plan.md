@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 38
-tasks_in_progress: 2
-tasks_planned: 7
+tasks_completed: 41
+tasks_in_progress: 4
+tasks_planned: 2
 ---
 
 # Take-Home Media: Project Plan
@@ -128,7 +128,7 @@ becomes `tenant2backend`, and its files take the plain noun `backend`, on every 
 
 **Done when:**
 
-- [ ] The kit is `tenant2backend`, with `/etc/backend`, `/opt/backend`, the `backend-*` units, the `backend` group, `backend.txt` on the card and `backend-ca.pem`; `deevnet-kit` still works for one release, and says it is now `tenant2backend`
+- [x] The kit is `tenant2backend`, with `/etc/backend`, `/opt/backend`, the `backend-*` units, the `backend` group, `backend.txt` on the card and `backend-ca.pem`; `deevnet-kit` still works for one release, and says it is now `tenant2backend`
 - [ ] Every image, the Pi's, the virtual machine for amd64 and arm64, the OVA, the VHDX and the ISO, is rebuilt with it and passes the self-test, every check
 - [ ] EdS's backend image builds on the new Pi image
 - [ ] Every image is in the tenant downloads with its sha256, and the tenant guide and Deevnet Software name `tenant2backend`
@@ -276,19 +276,19 @@ every medium. One is written only if arm64 needs the system itself changed.
 - 🔄 [ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/), Proposed 2026-11-19: the take-home tool carries the owner's name, and the app contract keeps Deevnet's
 - 🔄 [CHG-0078](/docs/changes/2026/0078-take-home-tenant2backend/), In progress: the rename, the rebuilt images and their publish
 
-## v5 kit ⏳
+## v5 kit ✅
 
-- ⏳ `tenant2backend` in `deevnet-provisioning-api`, with its `backend` files, reading an old card's `deevnet-kit.txt`, released and staged
-- ⏳ `deevnet-kit` kept as an alias that works and says the new name
+- ✅ `tenant2backend` in `deevnet-provisioning-api`, with its `backend` files, reading an old card's `deevnet-kit.txt`, released and staged (v0.28.0)
+- ✅ `deevnet-kit` kept as an alias that works and says the new name
 
-## v5 images ⏳
+## v5 images 🔄
 
-- ⏳ The configuration play installs `tenant2backend`, its units, paths and group, and the alias; every image target pins the new release
-- ⏳ EdS's backend build accepts the new names
+- ✅ The configuration play installs `tenant2backend`, its units, paths and group, and the alias; every image target pins the new release
+- 🔄 EdS's backend build accepts the new names (EdS #123, a draft until the new Pi image has run)
 
-## v5 proof ⏳
+## v5 proof 🔄
 
-- ⏳ Every image rebuilt passes the self-test: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi of the Pi lab
+- 🔄 Every image rebuilt passes the self-test: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi of the Pi lab
 
 ## v5 publish ⏳
 
