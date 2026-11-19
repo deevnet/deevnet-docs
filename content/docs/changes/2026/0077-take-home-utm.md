@@ -71,10 +71,15 @@ virtual machine, with the arm64 inputs the Pi image already uses.
 
 ## Procedure
 
-### Step 1: The Builder's emulator
+### Step 1: The Builder's emulator ✅
 
 `qemu-system-aarch64` and `edk2-aarch64` added to the Builder's virtualization packages in
 `deevnet.builder`, then applied to the Builder.
+
+**Done 2026-11-18.** `qemu-system-aarch64-core` and `edk2-aarch64` went into the role's default
+list and into the workstations' list in the inventory, which replaces it. Only the role's package
+step was applied to the Builder: dnf installed both and lifted the installed qemu packages from
+10.1.3 to 10.1.5. `libvirtd` was left as it was, enabled and not running.
 
 ### Step 2: Build the arm64 qcow2
 
@@ -107,7 +112,7 @@ packages can stay on the Builder or be removed from `deevnet.builder`.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the Builder's emulator installed
+- [x] Step 1: the Builder's emulator installed
 - [ ] Step 2: the arm64 qcow2 builds with its sha256
 - [ ] Step 3: proven on the Builder, emulated as UTM boots it
 - [ ] Step 4: published, with the guide section

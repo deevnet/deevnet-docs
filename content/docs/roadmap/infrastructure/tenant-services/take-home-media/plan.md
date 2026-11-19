@@ -2,8 +2,8 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 32
-tasks_in_progress: 2
+tasks_completed: 33
+tasks_in_progress: 1
 tasks_planned: 4
 ---
 
@@ -225,9 +225,9 @@ if a format needs the system itself changed.
 No ADR is expected: the arm64 build is the same system by the same play, as ADR-0044 decided for
 every medium. One is written only if arm64 needs the system itself changed.
 
-## v4 builder 🔄
+## v4 builder ✅
 
-- 🔄 `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
+- ✅ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
 
 ## v4 build ⏳
 
