@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 32
+tasks_completed: 38
 tasks_in_progress: 0
-tasks_planned: 6
+tasks_planned: 0
 ---
 
 # Take-Home Media: Project Plan
@@ -100,17 +100,17 @@ Hyper-V themselves, and the bridged run on a real computer that v1 put off to v3
 **Not in v3:** arm64 for UTM on Apple Silicon (v4); VMware; a run on a real VirtualBox or Hyper-V
 host, bridged on Wi-Fi (Later).
 
-### v4, UTM on Apple Silicon (current)
+### v4, UTM on Apple Silicon (done 2026-11-18)
 
 The virtual machine on a Mac with Apple Silicon: an arm64 qcow2 of the same backend, built by the
 same play, for UTM's QEMU backend.
 
 **Done when:**
 
-- [ ] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256
-- [ ] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [ ] It passes the self-test, every check
-- [ ] It is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for UTM: a new virtual machine (Virtualize, Linux, QEMU), the disk imported, and the Bridged network on the interface the owner picks
+- [x] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256
+- [x] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
+- [x] It passes the self-test, every check
+- [x] It is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for UTM: a new virtual machine (Virtualize, Linux, QEMU), the disk imported, and the Bridged network on the interface the owner picks
 
 **The choices, the owner's, 2026-11-18.** A qcow2 and the guide, not a prebuilt `.utm` bundle:
 UTM's documentation does not describe the bundle's settings file, but it does describe making a
@@ -218,26 +218,26 @@ if a format needs the system itself changed.
 - ✅ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store
 - ✅ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template
 
-## v4 records ⏳
+## v4 records ✅
 
-- ⏳ A change record for the arm64 build, its proof and its publish
+- ✅ [CHG-0077](/docs/changes/2026/0077-take-home-utm/), Complete 2026-11-18: the arm64 build for UTM, its proof and its publish
 
 No ADR is expected: the arm64 build is the same system by the same play, as ADR-0044 decided for
 every medium. One is written only if arm64 needs the system itself changed.
 
-## v4 builder ⏳
+## v4 builder ✅
 
-- ⏳ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
+- ✅ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
 
-## v4 build ⏳
+## v4 build ✅
 
-- ⏳ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256
+- ✅ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256
 
-## v4 proof ⏳
+## v4 proof ✅
 
-- ⏳ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check
+- ✅ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check
 
-## v4 publish ⏳
+## v4 publish ✅
 
-- ⏳ Under `tenant/vm` with its sha256, pushed throttled and detached to the observability store
-- ⏳ A tenant guide section for UTM: the wizard, the disk imported, and the Bridged network
+- ✅ Under `tenant/vm` with its sha256, pushed throttled and detached to the observability store
+- ✅ A tenant guide section for UTM: the wizard, the disk imported, and the Bridged network

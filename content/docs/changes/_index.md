@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0077 | 2026-11-18 | [A Take-Home Image for UTM on Apple Silicon](2026/0077-take-home-utm/) | Deployment | mobile | Complete |
 | CHG-0076 | 2026-11-18 | [Take-Home Images for VirtualBox and Hyper-V](2026/0076-take-home-virtualbox-hyper-v/) | Deployment | mobile | Complete |
 | CHG-0075 | 2026-11-17 | [A Take-Home Installer ISO](2026/0075-take-home-installer-iso/) | Deployment | mobile | Complete |
 | CHG-0074 | 2026-11-17 | [A Take-Home Virtual Machine Image](2026/0074-take-home-vm-image/) | Deployment | mobile | Complete |

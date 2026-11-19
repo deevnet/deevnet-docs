@@ -332,12 +332,35 @@ Generation 2 machine.** It replaces steps 1 and 2 above; steps 3 and 4 are the s
 
 Then connect to its console and answer, as in step 3.
 
+### On UTM
+
+**On a Mac with Apple Silicon, the same VM comes as an arm64 image for UTM's QEMU backend.** It
+replaces steps 1 and 2 above; steps 3 and 4 are the same.
+
+1. **Get** `debian-bookworm-mobile-vm-backend-arm64.qcow2` from the same `vm/`, with its `.sha256`,
+   and check it: `shasum -a 256 -c debian-bookworm-mobile-vm-backend-arm64.qcow2.sha256`.
+2. **Make the VM** with the "+" button: **Virtualize**, then **Linux**, 2 GB of memory and 2 CPU
+   cores. **Leave "Use Apple Virtualization" off**: the image is made for the QEMU backend. Give it
+   no installer ISO; the disk you import boots by itself.
+3. **Before you start it, open its settings.** Under Drives, choose **New…** and import the qcow2;
+   UTM copies it into the VM. Delete the empty drive the wizard made (right-click it, Delete), so
+   the imported disk is the only one.
+4. **Set the network to Bridged**, and under Bridged Interface choose the interface your Mac is
+   on, Wi-Fi or Ethernet. UTM's default, Shared Network, puts the VM behind your Mac, where your
+   devices cannot reach it. UTM calls bridging "for advanced users" and notes that "bridging with
+   an Wifi interface may require additional configuration".
+
+It starts by UEFI. Then start it and answer the console, as in step 3. If the window goes dark
+after the boot menu, give it a virtio display (Display, Emulated Display Card): the console needs
+Linux's virtio-gpu driver.
+
 ### The VM from here
 
 From here, continue with [step 3](#3-recreate-your-broker-accounts). Where a step says the Pi, it
 means the VM, with two differences:
-- **Build your app's container for amd64** in [step 5](#5-run-your-app-on-the-pi):
-  `podman build --platform linux/amd64`.
+- **Build your app's container for the VM's architecture** in
+  [step 5](#5-run-your-app-on-the-pi): `podman build --platform linux/amd64`, or on UTM
+  `--platform linux/arm64`, as for a Pi.
 - **The VM keeps the hypervisor's clock**, and it has no Wi-Fi of its own: the bridged adapter is
   its network.
 
