@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 41
-tasks_in_progress: 4
-tasks_planned: 2
+tasks_completed: 42
+tasks_in_progress: 5
+tasks_planned: 0
 ---
 
 # Take-Home Media: Project Plan
@@ -163,6 +163,7 @@ which come from other repositories (Later); dropping the `deevnet-kit` alias (th
 - The log bridge and the PKI tools renamed like the kit, if the owner wants them to be
 - The `deevnet-kit` alias dropped, one release after v5
 - A DHCP server's host name no longer replaces the one set at setup (seen in qemu, whose DHCP sends one)
+- One `make` target that builds every take-home image, and one that boots each and runs its self-test unattended, with the test harness kept in `deevnet-image-factory`: a change to the backend is then one build, one proof and one push
 
 ---
 
@@ -290,7 +291,7 @@ every medium. One is written only if arm64 needs the system itself changed.
 
 - 🔄 Every image rebuilt passes the self-test: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi of the Pi lab
 
-## v5 publish ⏳
+## v5 publish 🔄
 
-- ⏳ Every image under `tenant/` with its sha256, pushed throttled and detached to the observability store
-- ⏳ The tenant guide and Deevnet Software name `tenant2backend`, with a note for older images
+- 🔄 Every image under `tenant/` with its sha256, pushed throttled and detached to the observability store: five of six on 2026-11-19, the Pi image after the EdS Pi
+- ✅ The tenant guide and Deevnet Software name `tenant2backend`, with a note for older images

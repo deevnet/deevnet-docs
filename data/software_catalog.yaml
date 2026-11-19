@@ -461,12 +461,12 @@ tables:
       version: 0.32.0
       license: not checked
       source: Pin
-    - component: '`deevnet-kit`'
-      version: v0.26.0, in the `pi-backend` image the tenant downloads serve since 2026-11-16 ([CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/), [CHG-0073](/docs/changes/2026/0073-pi-buckets/))
+    - component: '`tenant2backend`'
+      version: v0.28.0, in the virtual machine, OVA, VHDX and installer images the tenant downloads serve since 2026-11-19 ([CHG-0078](/docs/changes/2026/0078-take-home-tenant2backend/)). The `pi-backend` image they serve still carries it as `deevnet-kit` v0.26.0 (CHG-0072, CHG-0073), until the new EdS Pi has run the rebuilt one
       license: Apache-2.0
       source: Pin (image factory)
     - component: '`deevnet-log-user`'
-      version: v0.26.0, the same tag as `deevnet-kit`
+      version: v0.28.0, the same tag as `tenant2backend`; v0.26.0 in the `pi-backend` image
       license: Apache-2.0
       source: Pin (image factory)
     - component: '`deevnet-log-bridge`'
@@ -640,9 +640,9 @@ tables:
       title: What it builds
     rows:
     - repository: '`deevnet-provisioning-api`'
-      version: tag **v0.26.0**, deployed **v0.25.0** (v0.26.0 changes only `deevnet-kit`)
+      version: tag **v0.28.0**, deployed **v0.25.0** (v0.26.0 to v0.28.0 change the take-home tool, and give it the API's bucket rules without changing them)
       license: Apache-2.0
-      what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `deevnet-kit` (all share its tag)
+      what_it_builds: The API, `deevnet-broker-account`, `deevnet-log-user`, `tenant2backend` (all share its tag)
     - repository: '`terraform-provider-deevnet`'
       version: tag **v0.13.0**
       license: Apache-2.0

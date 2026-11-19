@@ -120,6 +120,17 @@ choice, and is published then.
 Every image under `tenant/` with its sha256, pushed throttled and detached; the tenant guide,
 Deevnet Software and the Software Catalog name `tenant2backend`.
 
+**Five of six published 2026-11-19.** The previous images were kept on the Builder first, outside
+the web root. `make vm-backend-publish`, `vm-backend-arm64-publish`, `vm-formats-publish` and
+`iso-backend-publish` staged the five on the artifact server, and a detached `rsync` at 1 MB/s
+carried `tenant/vm` and `tenant/iso` to `dv02obs001v01`, 09:04 to 09:48 EST, over one SSH
+connection, with a watchdog pinging the core router every second: 2,599 pings, none missed. Only
+2.7 GB of the 6.7 GB crossed, since much of each image matched the one it replaced. `sha256sum -c`
+passed on the observability store for all five, and `downloads.mobile.deevnet.net` serves each at
+its full size with the sha256 built. The tenant guide and Deevnet Software went in with docs #467,
+and the Software Catalog with this step. **The Pi image is published once the new production EdS
+Pi has run it.**
+
 ## Verification
 
 - On every rebuilt image, first boot runs `tenant2backend`, every `backend-*` unit is active, and
