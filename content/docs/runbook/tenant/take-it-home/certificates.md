@@ -9,7 +9,7 @@ weight: 7
 While your tenant is at the Mobile Factory, it can take a certificate from Deevnet for your
 tenant's own names, and become a **Deevnet backend** (a "Deevnet Pi" in
 [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/)). When you
-leave Deevnet, it can move to a PKI of your own. Both are the same `deevnet-kit` commands on every
+leave Deevnet, it can move to a PKI of your own. Both are the same `tenant2backend` commands on every
 medium.
 
 ## Take a certificate from Deevnet
@@ -22,10 +22,10 @@ it is a Terraform apply, so it is done while you have the tenant at the Mobile F
 1. **On the backend, make the key and the request:**
 
    ```bash
-   sudo deevnet-kit cert request
+   sudo tenant2backend cert request
    ```
 
-   It prints the request and keeps it in `/etc/deevnet-kit/tls/server.csr`; the new key waits beside
+   It prints the request and keeps it in `/etc/backend/tls/server.csr`; the new key waits beside
    the certificate it will replace.
 2. **Have it signed, in your tenant's Terraform.** A
    [`deevnet_certificate`](/docs/runbook/tenant/services/certificates/) with that request,
@@ -35,13 +35,13 @@ it is a Terraform apply, so it is done while you have the tenant at the Mobile F
 3. **Install it:**
 
    ```bash
-   sudo deevnet-kit cert install fullchain.pem deevnet-root-ca.pem
+   sudo tenant2backend cert install fullchain.pem deevnet-root-ca.pem
    ```
 
    It checks the certificate is for the waiting key, chains to the root given, and names `mqtt`,
    `logs`, `grafana`, `metrics`, `ntfy` and `s3` under `<tenant>.deevnet.net`, before changing
    anything. Then it installs it, makes the root what every service on the backend trusts, keeps
-   the backend's own CA as `/etc/deevnet-kit/tls/card-ca.pem`, and restarts the broker, the log
+   the backend's own CA as `/etc/backend/tls/card-ca.pem`, and restarts the broker, the log
    store, Grafana, the bridge and ntfy. Then it writes Grafana's data sources again, for the new
    names.
 
@@ -50,12 +50,12 @@ it is a Terraform apply, so it is done while you have the tenant at the Mobile F
 `/etc/hosts`. Devices and computers dial them too, so the network the backend runs on has to
 answer them with its address: at a Deevnet production site, its DNS does
 ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/) §1).
-Run `sudo deevnet-kit export ~/deevnet-kit` again: `kit.env` names those hosts, and the CA is
+Run `sudo tenant2backend export ~/backend` again: `kit.env` names those hosts, and the CA is
 `deevnet-root-ca.pem`. Devices then trust the Deevnet Root, as they do on Deevnet.
 
 **It is renewed within the year, with the same key or a new one.** From sixty days before it
 expires, a plan of your tenant shows the certificate renewing for the same key. Apply, copy the new
-`fullchain_pem` to the backend, and run `sudo deevnet-kit cert install fullchain.pem
+`fullchain_pem` to the backend, and run `sudo tenant2backend cert install fullchain.pem
 deevnet-root-ca.pem` with the root the backend already trusts: it replaces the certificate and
 keeps the key. For a new key, run `cert request` first and replace the certificate's request with
 the new one, then apply and install.
@@ -75,20 +75,20 @@ are the only way into your root.
 1. **Make your root and the backend's issuing CA.** With the stick unplugged:
 
    ```bash
-   sudo deevnet-kit pki init --org "Your Name Home"
+   sudo tenant2backend pki init --org "Your Name Home"
    ```
 
    It asks for the stick, offers to erase and encrypt it, makes your root on it and the issuing CA
    on the backend, and closes the stick. Nothing the backend serves changes. `--domain
    example.com` lets your CA sign names in a domain of yours as well; `.local` names, `localhost`
    and private addresses it always may.
-2. **Give every device and computer both roots.** `sudo deevnet-kit export ~/deevnet-kit` now writes
+2. **Give every device and computer both roots.** `sudo tenant2backend export ~/backend` now writes
    `trust-bundle.pem`, the root they trust now and yours, and `kit.env` names it. Put it on each
    device in place of the CA file it has.
 3. **Switch the backend.**
 
    ```bash
-   sudo deevnet-kit pki switch
+   sudo tenant2backend pki switch
    ```
 
    The backend then serves a certificate from your CA, and everything on it trusts your root.
@@ -98,16 +98,16 @@ are the only way into your root.
 4. **Once every device holds the bundle, take the Deevnet Root off them.** `export` now writes
    `owner-root-ca.pem` alone: put it on each device in place of the bundle.
 
-**A device's own certificate comes from the backend.** `sudo deevnet-kit pki enroll DEVICE --out
+**A device's own certificate comes from the backend.** `sudo tenant2backend pki enroll DEVICE --out
 DIR` makes its key and certificate in `DIR`; with `--csr FILE`, it signs the request a device made
-itself. The backend renews its own certificate with `sudo deevnet-kit regen-certs`, with no stick.
+itself. The backend renews its own certificate with `sudo tenant2backend regen-certs`, with no stick.
 
 **A lost or broken backend costs the issuing CA, never your root.** Bring up a new one, a fresh
 card or VM, then with the stick:
 
 ```bash
-sudo deevnet-kit pki issuing --org "Your Name Home" --domain <tenant>.deevnet.net
-sudo deevnet-kit pki switch
+sudo tenant2backend pki issuing --org "Your Name Home" --domain <tenant>.deevnet.net
+sudo tenant2backend pki switch
 ```
 
 `--domain <tenant>.deevnet.net` only for a backend that was a Deevnet backend. Recreate your broker

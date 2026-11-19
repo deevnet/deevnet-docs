@@ -6,7 +6,7 @@ weight: 3
 # On a Virtual Machine
 
 **The backend comes as a virtual machine for the hypervisor you already run, and its first boot
-asks for your settings on the console.** It runs the same services, `deevnet-kit` and self-test as
+asks for your settings on the console.** It runs the same services, `tenant2backend` and self-test as
 every other medium. All the images are in the
 [tenant downloads](/docs/runbook/tenant/getting-started/before-you-start/#tenant-downloads) `vm/`,
 each with its `.sha256`: check the one you take before you import it.
@@ -108,7 +108,7 @@ owner writes on the card:**
 | Password | for the console, `sudo` and, without a key, SSH | |
 | SSH public key | one line, such as your `~/.ssh/id_ed25519.pub`. With a key, SSH takes keys only | password sign-in |
 
-The console's keyboard is a US layout. Then `deevnet-kit` makes the backend, as on every medium,
+The console's keyboard is a US layout. Then `tenant2backend` makes the backend, as on every medium,
 and you sign in with `ssh you@<hostname>.local`. A fixed address for the VM on your router keeps
 its certificate right.
 

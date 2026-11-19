@@ -139,6 +139,11 @@ meets change. The app contract keeps Deevnet's names (`DEEVNET_TENANT`, `X-Deevn
 data source UIDs), so an app still moves with one `kit.env`. Images already flashed keep
 `deevnet-kit`: there is no upgrade in place.
 
+**2026-11-19, the owner: the Pi image is proven on the new production EdS Pi.** Its run on real
+hardware, and with it the Pi image's publish, waits for that Pi, which the owner builds next; v5
+closes when it has run. The other images are proven and published without waiting. No point above
+changed.
+
 **Not in v5:** the log bridge's and the PKI tools' names (`deevnet-log-bridge`, `deevnet-pki-*`),
 which come from other repositories (Later); dropping the `deevnet-kit` alias (the release after).
 
@@ -157,6 +162,7 @@ which come from other repositories (Later); dropping the `deevnet-kit` alias (th
 - Every medium moved to trixie together
 - The log bridge and the PKI tools renamed like the kit, if the owner wants them to be
 - The `deevnet-kit` alias dropped, one release after v5
+- A DHCP server's host name no longer replaces the one set at setup (seen in qemu, whose DHCP sends one)
 
 ---
 

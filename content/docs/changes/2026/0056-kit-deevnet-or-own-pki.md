@@ -169,7 +169,7 @@ Found on the test Pi, 2026-11-08:
       its record when the card is wiped; it cannot be revoked. Deleted 2026-11-08 with the card
       pulled for wiping: `mabell` holds no certificate.
 - [x] Step 3: release `deevnet-kit` with `pki`, build the image on it, and push it to the tenant
-      downloads; then the [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) page and
+      downloads; then the [deevnet-kit](/docs/platforms/deevnet-software/tenant2backend/) page and
       the [take-home image](/docs/runbook/tenant/take-it-home/) runbook describe `pki`. Done
       2026-11-08.
 
