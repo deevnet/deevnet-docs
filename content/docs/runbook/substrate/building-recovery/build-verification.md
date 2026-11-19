@@ -49,7 +49,7 @@ curl -sk -o /dev/null -w '%{http_code}\n' https://10.20.99.1/   # 200
 # DNS: the router answers for site names, and forwards tenant zones
 dig +short @10.20.99.1 dv02hyp001p01.mobile.deevnet.net      # 10.20.99.21
 dig +short @10.20.99.1 api.mobile.deevnet.net                # 10.20.25.20
-dig +short @10.20.99.1 tdemo-1.tdemo.mobile.deevnet.net      # 10.20.129.10, if tdemo is applied
+dig +short @10.20.99.1 backend.tdemo.mobile.deevnet.net     # 10.20.129.10, if tdemo is applied
 ```
 
 - **DHCP** is checked from a client: a lease in the right subnet is the first thing
