@@ -67,9 +67,9 @@ read it to use this guide.
 5. **[Recovery](recovery/)** — when your tenant, or the site under it, loses something
 6. **[Connect device to Wi-Fi](connect-a-device/)** — your tenant's Wi-Fi key onto a Pico W, an
    ESP32 or a borrowed kit
-7. **[Convert a tenant to a Pi image](tenant-to-pi-image/)** — your app and the services it uses
-   move onto a Pi of your own, and your devices keep talking to it with the same topics and tokens,
-   with no Deevnet behind it
+7. **[Take your tenant home](take-it-home/)** — your app and the services it uses move onto a
+   Raspberry Pi, a virtual machine or a computer of your own, and your devices keep talking to it
+   with the same topics and tokens, with no Deevnet behind it
 8. **[Pi Lab](pi-lab/)** — the site's own bank of Pis, when your project needs a Pi at the site
    rather than a VM. Not a Pi of your own
 9. **[Troubleshooting](troubleshooting/)** — when something doesn't work

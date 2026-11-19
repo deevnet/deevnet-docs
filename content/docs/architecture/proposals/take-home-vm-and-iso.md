@@ -9,7 +9,7 @@ title: "Take-Home VM and ISO"
 | **Status** | Accepted 2026-11-17, not built: [Take-Home Media](/docs/roadmap/infrastructure/tenant-services/take-home-media/) |
 | **Date** | 2026-11-17 |
 | **Where** | deevnet-image-factory builds it; tenant downloads on the observability store publish it |
-| **Would extend** | [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/), [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/), CHG-0025 tenant downloads |
+| **Would extend** | [ADR-0041](/docs/architecture/decisions/tenant-model/0041-take-home-pi-pki-lifecycle/), [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/), CHG-0025 tenant downloads |
 
 A tenant takes its backend home today on a Raspberry Pi, flashed from the `pi-backend` image. This
 proposal adds the same backend on two more media: a **virtual machine image** for a hypervisor at

@@ -9,7 +9,7 @@ You develop your app on your computer. This page moves it onto a
 [workload](/docs/runbook/tenant/services/network-and-workloads/) in your tenant and keeps it running
 there: you build a container image, copy it over SSH, and run it under systemd with one settings
 file, `kit.env`. No registry and no operator are involved. The same image and the same `kit.env`
-names later carry your app onto [a Pi of your own](/docs/runbook/tenant/tenant-to-pi-image/).
+names later carry your app onto [a backend of your own](/docs/runbook/tenant/take-it-home/).
 
 ---
 
@@ -77,7 +77,7 @@ ssh tenant@backend.bench1.mobile.deevnet.net 'id; sudo -n true && echo sudo-ok'
 ## 3. Build your app as a container
 
 Your app reads every setting from its environment, under the names in `kit.env`
-([the table](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment)),
+([the table](/docs/runbook/tenant/take-it-home/prepare/#the-one-rule-configure-from-the-environment)),
 so the same image runs anywhere. Write `kit.env` from your Terraform outputs, and build the image
 for the workload, which is x86-64:
 
@@ -88,7 +88,7 @@ podman build --platform linux/amd64 -t my-app .
 
 `kit_env` is an output of the [reference tenant](https://github.com/deevnet/deevnet-tenant-tdemo),
 so a tenant started from it already has one; it names every setting in
-[the table](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment),
+[the table](/docs/runbook/tenant/take-it-home/prepare/#the-one-rule-configure-from-the-environment),
 including the backend's own broker login. Run the app once on your computer with the same file
 before moving it:
 `podman run --rm --env-file kit.env -v ./deevnet-root-ca.pem:/kit/deevnet-root-ca.pem:ro -e MQTT_CA_FILE=/kit/deevnet-root-ca.pem my-app`.

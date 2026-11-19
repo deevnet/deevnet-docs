@@ -17,7 +17,7 @@ weight: -73
 | **Automation** | `deevnet-container-image-factory` (silo), `deevnet-provisioning-api` (`cmd/deevnet-kit`), `deevnet-image-factory` `make pi-backend` |
 | **Risk** | Medium. Most likely to go wrong: silo's memory on a small Pi. It stays off until the first bucket, and is capped |
 | **Related changes** | [CHG-0069](/docs/changes/2026/0069-tenant-buckets/) (buckets on Deevnet), [CHG-0068](/docs/changes/2026/0068-object-store-vm/) (silo), [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/), [Object Storage](/docs/runbook/tenant/services/object-storage/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/), [Object Storage](/docs/runbook/tenant/services/object-storage/) |
 
 ---
 

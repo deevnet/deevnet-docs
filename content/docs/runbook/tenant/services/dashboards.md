@@ -24,10 +24,9 @@ sources.
 Each one reads with your tenant's own log read token, so it sees exactly what your token sees and
 nothing more ([Logs](/docs/runbook/tenant/services/logs/), [Metrics](/docs/runbook/tenant/services/metrics/)).
 
-**The UIDs are the same in every tenant's organization, on every site, and on the
-[tenant Pi image](/docs/runbook/tenant/tenant-to-pi-image/).** A dashboard that names them moves between
+**The UIDs are the same in every tenant's organization, on every site, and on a
+[take-home backend](/docs/runbook/tenant/take-it-home/).** A dashboard that names them moves between
 those places unchanged. Name data sources by these UIDs, never by the numeric id Grafana shows.
-The Pi image has no metrics store, so `deevnet-metrics-workloads` is on the site only.
 
 The login comes back as attributes of your tenant:
 
@@ -65,7 +64,7 @@ export GRAFANA_CA_CERT=deevnet-root-ca.pem
 export TF_VAR_grafana_org_id=<dashboard_org_id>
 ```
 
-The [`kit_env` output](/docs/runbook/tenant/tenant-to-pi-image/#the-one-rule-configure-from-the-environment)
+The [`kit_env` output](/docs/runbook/tenant/take-it-home/prepare/#the-one-rule-configure-from-the-environment)
 writes all four for you.
 
 ```hcl

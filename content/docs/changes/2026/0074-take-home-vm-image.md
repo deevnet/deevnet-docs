@@ -17,7 +17,7 @@ weight: -74
 | **Automation** | `deevnet-provisioning-api` (`cmd/deevnet-kit`), `deevnet-log-bridge`, `deevnet-image-factory` |
 | **Risk** | Low. Nothing runs on Deevnet's hosts but the artifact server and the tenant downloads. Most likely to go wrong: a download across the core router, which is throttled |
 | **Related changes** | [CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/), [CHG-0073](/docs/changes/2026/0073-pi-buckets/) (the Pi image it mirrors), [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (tenant downloads) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/) |
 
 ---
 
@@ -151,7 +151,7 @@ observability store with `rsync --bwlimit=1000` and a watchdog on the core route
 was: 1.46 GB in 23 minutes, with none of 1,414 pings missed. On the store the image matches the
 sha256 the build wrote, `31b9317b0a5509d4…`, and `downloads.mobile.deevnet.net` serves both at their
 full size. The tenant guide's
-[Or a virtual machine](/docs/runbook/tenant/tenant-to-pi-image/#or-a-virtual-machine) section
+[Or a virtual machine](/docs/runbook/tenant/take-it-home/virtual-machine/) section
 covers importing it, bridged networking and the console prompt.
 
 Only `tenant/vm/` was pushed. The tenant downloads role, which syncs the whole tree, was not run.

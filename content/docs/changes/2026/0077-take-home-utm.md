@@ -17,7 +17,7 @@ weight: -77
 | **Automation** | `ansible-collection-deevnet.builder`, `deevnet-image-factory` |
 | **Risk** | Low. Nothing changes on Deevnet's hosts but the Builder's packages, the artifact server and the tenant downloads. Most likely to go wrong: the push to the tenant downloads, which is throttled |
 | **Related changes** | [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/) (the amd64 virtual machine image), [CHG-0076](/docs/changes/2026/0076-take-home-virtualbox-hyper-v/) (VirtualBox and Hyper-V), [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (tenant downloads) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/) |
 
 ---
 
@@ -123,7 +123,7 @@ detached `rsync` at 1 MB/s carried it to `dv02obs001v01` in 23 minutes, with a w
 core router every second: 1,347 pings, none missed. The amd64 qcow2, the OVA and the VHDX beside
 it were unchanged and were skipped. `sha256sum -c` passed on the observability store, and
 `downloads.mobile.deevnet.net/vm/` serves the image's sha256 and its full size. The tenant guide's
-[UTM section](/docs/runbook/tenant/tenant-to-pi-image/) went in with this record.
+[UTM section](/docs/runbook/tenant/take-it-home/) went in with this record.
 
 ## Verification
 

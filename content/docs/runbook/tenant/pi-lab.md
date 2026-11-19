@@ -14,8 +14,9 @@ The idea is **the SD card is the product**. You develop on a bank Pi; when the p
 card moves to dedicated hardware and the bank Pi returns to the pool.
 
 **Moving your tenant onto a Pi of your own is a different thing:**
-[Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) flashes the `pi-backend` card,
-which runs your broker, log store and dashboards itself. This page is about the site's bank.
+[Take Your Tenant Home](/docs/runbook/tenant/take-it-home/) puts your backend on a
+[Pi of your own](/docs/runbook/tenant/take-it-home/raspberry-pi/), which runs your broker, log store
+and dashboards itself. This page is about the site's bank.
 
 ---
 

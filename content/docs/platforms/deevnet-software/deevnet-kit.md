@@ -65,4 +65,4 @@ renews from the owner's CA. There is no first-boot switch between Deevnet and an
 running `pki init` is the choice.
 
 It is not part of the deployed API. How a tenant uses the image is
-[Tenant to Pi Image](/docs/runbook/tenant/tenant-to-pi-image/).
+[Take Your Tenant Home](/docs/runbook/tenant/take-it-home/).
