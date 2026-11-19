@@ -3,8 +3,8 @@ title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
 tasks_completed: 32
-tasks_in_progress: 0
-tasks_planned: 6
+tasks_in_progress: 2
+tasks_planned: 4
 ---
 
 # Take-Home Media: Project Plan
@@ -218,16 +218,16 @@ if a format needs the system itself changed.
 - ✅ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store
 - ✅ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template
 
-## v4 records ⏳
+## v4 records 🔄
 
-- ⏳ A change record for the arm64 build, its proof and its publish
+- 🔄 [CHG-0077](/docs/changes/2026/0077-take-home-utm/), In progress: the arm64 build for UTM, its proof and its publish
 
 No ADR is expected: the arm64 build is the same system by the same play, as ADR-0044 decided for
 every medium. One is written only if arm64 needs the system itself changed.
 
-## v4 builder ⏳
+## v4 builder 🔄
 
-- ⏳ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
+- 🔄 `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
 
 ## v4 build ⏳
 
