@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 33
+tasks_completed: 35
 tasks_in_progress: 1
-tasks_planned: 4
+tasks_planned: 2
 ---
 
 # Take-Home Media: Project Plan
@@ -107,9 +107,9 @@ same play, for UTM's QEMU backend.
 
 **Done when:**
 
-- [ ] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256
-- [ ] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [ ] It passes the self-test, every check
+- [x] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256
+- [x] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
+- [x] It passes the self-test, every check
 - [ ] It is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for UTM: a new virtual machine (Virtualize, Linux, QEMU), the disk imported, and the Bridged network on the interface the owner picks
 
 **The choices, the owner's, 2026-11-18.** A qcow2 and the guide, not a prebuilt `.utm` bundle:
@@ -229,13 +229,13 @@ every medium. One is written only if arm64 needs the system itself changed.
 
 - ✅ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
 
-## v4 build ⏳
+## v4 build ✅
 
-- ⏳ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256
+- ✅ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256
 
-## v4 proof ⏳
+## v4 proof ✅
 
-- ⏳ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check
+- ✅ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check
 
 ## v4 publish ⏳
 

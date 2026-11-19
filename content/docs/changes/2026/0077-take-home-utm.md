@@ -81,15 +81,37 @@ list and into the workstations' list in the inventory, which replaces it. Only t
 step was applied to the Builder: dnf installed both and lifted the installed qemu packages from
 10.1.3 to 10.1.5. `libvirtd` was left as it was, enabled and not running.
 
-### Step 2: Build the arm64 qcow2
+### Step 2: Build the arm64 qcow2 ✅
 
 A `make` target in `deevnet-image-factory` beside the amd64 one: Debian's bookworm arm64 image, the
 configuration play with the arm64 inputs, the qcow2 and its sha256.
 
-### Step 3: Prove it on the Builder
+**Done 2026-11-18.** The virtual machine's build takes the architecture as a variable, and
+`make vm-backend-arm64` builds it for arm64; the amd64 build and its file names are unchanged.
+Debian's bookworm arm64 `nocloud` image, of the same dated build as the amd64 one and pinned by its
+SHA512, was staged on the artifact server at 1.5 MB/s, with no ping to the core router missed. The
+arm64 releases were already there, for the Pi image. The play ran unchanged, in the arm64 root
+through `qemu-aarch64-static`: 52 tasks, none failed. The qcow2 is 1.3 GB, sha256 `d3334123…`.
+
+### Step 3: Prove it on the Builder ✅
 
 Under `qemu-system-aarch64`: the `virt` machine, the arm64 UEFI firmware, the disk and the network
 on virtio, as UTM's QEMU backend gives them. Setup on the console, the root grown, the self-test.
+
+**Done 2026-11-18.** The built qcow2 was booted twice, emulated, through a throwaway 24 GB
+overlay: the `virt` machine with two emulated cores and 2 GB, edk2's arm64 UEFI, the disk on
+virtio-blk and the network on virtio-net.
+
+| | Display | First boot | Self-test |
+|---|---|---|---|
+| Run 1 | `ramfb` | setup answered on the console; the root grew to 24 GB; first boot took 3 min 29 s, emulated | 27 of 27 at first boot, and again by hand |
+| Run 2 | `virtio-gpu-pci` | the same, with the setup prompt on the screen; 3 min 23 s | 27 of 27 at first boot, and again by hand |
+
+**The console needs a virtio display.** A `ramfb` display alone shows the firmware and the boot
+menu, then goes dark when Linux starts: Linux has no driver for it. UTM's QEMU backend offers
+`virtio-ramfb`, which pairs it with virtio-gpu; `virtio-gpu-pci` is upstream qemu's nearest, and
+with it the prompt shows. The VM signs in by key only once a key is given. A run in UTM on a real
+Mac stays Later.
 
 ### Step 4: Publish
 
@@ -113,6 +135,6 @@ packages can stay on the Builder or be removed from `deevnet.builder`.
 **This change closes when every item below is done.**
 
 - [x] Step 1: the Builder's emulator installed
-- [ ] Step 2: the arm64 qcow2 builds with its sha256
-- [ ] Step 3: proven on the Builder, emulated as UTM boots it
+- [x] Step 2: the arm64 qcow2 builds with its sha256
+- [x] Step 3: proven on the Builder, emulated as UTM boots it
 - [ ] Step 4: published, with the guide section
