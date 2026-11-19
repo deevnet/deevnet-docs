@@ -35,6 +35,11 @@ waypoints:
     milestone: true
     status: done
     date: "2026-11-18"
+  - title: "The take-home virtual machine builds for arm64 by the same play, and boots and passes its self-test as UTM's QEMU backend runs it"
+    status: planned
+  - title: "Take-home media v4 done: the virtual machine for UTM on Apple Silicon, in the tenant downloads"
+    milestone: true
+    status: planned
 ---
 
 # Take-Home Media
