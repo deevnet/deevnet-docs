@@ -15,7 +15,7 @@ Packer and Ansible builds of:
 | Image | Target |
 |---|---|
 | Fedora VM templates | Built straight onto each hypervisor: `make proxmox-fedora-pve1`, `make proxmox-fedora-pve2` |
-| Raspberry Pi images | `make pi-sdr`, `make pi-pidp11`, and `make pi-backend` (the take-home tenant backend, with [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/)) |
+| Raspberry Pi images | `make pi-sdr`, `make pi-pidp11`, and `make pi-backend` (the take-home tenant backend, with [tenant2backend](/docs/platforms/deevnet-software/tenant2backend/)) |
 | Proxmox VE install ISO and PXE artifacts | `make proxmox-pve-iso-ext4` and related targets. **Unfinished**: neither hypervisor has been installed from it ([Builder roadmap](/docs/roadmap/infrastructure/substrate/builder/)) |
 
 Its `scripts/pve-creds` fetches a hypervisor's Proxmox token per run, from the inventory

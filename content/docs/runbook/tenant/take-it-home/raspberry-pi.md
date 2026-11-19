@@ -21,7 +21,7 @@ and `tools/`; check the image against its `.sha256` before flashing.
 2. Write the card, and leave it in the reader. The boot partition (`bootfs`) opens on your computer.
    **`README.txt`** there is this guide's short version, and stays on the card.
 3. **On the boot partition:**
-   - **Name your tenant** in `deevnet-kit.txt`:
+   - **Name your tenant** in `backend.txt`:
 
      ```
      tenant=bench1
@@ -42,7 +42,7 @@ and `tools/`; check the image against its `.sha256` before flashing.
      The card becomes `bench1.local`, and its certificate names it. Set a name at a meetup: two
      cards left unnamed both answer to `raspberrypi.local`. Wi-Fi needs all three lines; the Pi
      keeps its radio off until it has a country. The Wi-Fi password is removed from
-     `deevnet-kit.txt` once it has been applied, because anyone holding the card can read that
+     `backend.txt` once it has been applied, because anyone holding the card can read that
      partition.
    - **Create your login, and turn on SSH:**
 
@@ -89,7 +89,7 @@ If your version of Imager does offer OS customization for the image, you can use
 
 **Boot the Pi where it will live, on a cable or with the Wi-Fi lines above.** This is your own Pi on
 your own network; Deevnet's tenant networks themselves are Wi-Fi only. First boot creates your
-user, grows the file system and reboots once. Then `deevnet-kit` sets the host name, joins the
+user, grows the file system and reboots once. Then `tenant2backend` sets the host name, joins the
 Wi-Fi, and makes the backend, as on every medium ([Check the backend](/docs/runbook/tenant/take-it-home/check-the-backend/)).
 
 The card is `<hostname>.local` from a computer on the same network (`raspberrypi.local` if you left
@@ -107,7 +107,7 @@ the same Pi holds the reserved lease. It moves once that lease expires.
   everything running, the bucket store included, a Pi uses about 815 MB: a Pi with 2 GB or more
   runs everything, and the bucket store runs only once you add a bucket. On a 512 MB Zero 2 W, run
   MQTT and logs only:
-  `sudo systemctl disable --now grafana deevnet-kit-dashboards vmstorage vminsert vmselect alertmanager ntfy deevnet-kit-alerting`.
+  `sudo systemctl disable --now grafana backend-dashboards vmstorage vminsert vmselect alertmanager ntfy backend-alerting`.
 
 {{< hint info >}}
 **On a real Pi, 2026-11-16.** An 8 GB Pi flashed with this image, set up with `userconf.txt` and

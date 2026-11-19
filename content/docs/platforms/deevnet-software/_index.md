@@ -18,7 +18,7 @@ too, under [Deevnet's Own Software](/docs/platforms/software-catalog/#deevnets-o
 | [Terraform provider](terraform-provider/) | `deevnet/deevnet`: how a tenant declares itself to the API | Tenant laptops |
 | [Log bridge](log-bridge/) | Carries device log lines from the MQTT broker into each tenant's log partition | `dv02msg001v01`, and the Pi backend image |
 | [Tenant egress agent](egress-agent/) | Keeps a default route in every tenant VRF on the fabric exit node | `dv02hyp002p02` |
-| [deevnet-kit](deevnet-kit/) | The API's stand-in on a Raspberry Pi, for the take-home backend image | The Pi backend image |
+| [tenant2backend](tenant2backend/) | The API's stand-in on a take-home backend (`deevnet-kit` until v0.28.0) | Every take-home image |
 | [Image factories](image-factories/) | Build the OS images, the VM templates, and the service images whose binaries can't be redistributed | The Builder |
 
 Three more pieces are in-house but described with what they build: the tenant fabric's Terraform

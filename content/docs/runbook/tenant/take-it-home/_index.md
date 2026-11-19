@@ -31,8 +31,13 @@ the same ntfy topics. What changes is the host name, the CA and the secrets. **N
 backend belongs to Deevnet.** It has no Deevnet account, key or route, and its CA and tokens are
 made on it the first time it boots.
 
-**Every medium carries the same backend.** The same services, the same `deevnet-kit`, which
+**Every medium carries the same backend.** The same services, the same `tenant2backend`, which
 manages them, and the same self-test, built from one definition. Only how it starts differs.
+
+**A backend from an earlier image calls its tool `deevnet-kit`**, with its files under
+`/etc/deevnet-kit`, `deevnet-kit.txt` on a Pi card and `deevnet-kit-ca.pem` for devices
+([ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/)). Every
+command on these pages is the same under that name.
 
 ## The way home
 
@@ -49,7 +54,9 @@ manages them, and the same self-test, built from one definition. Only how it sta
 
 3. **[Check the backend](check-the-backend/)**: the self-test, and the files your app needs.
 4. **[Move your tenant](move-your-tenant/)**: your broker accounts, your devices, your app, your
-   dashboards, alert rules and buckets.
+   dashboards, alert rules and buckets. **Your code is not baked into an image.** Every medium's
+   image is the same for every tenant; your app runs on it as a container you build on your
+   computer and copy over SSH, and you redeploy the same way.
 5. **[Choose its certificates](certificates/)**, if you want more than the backend's own CA: one
    from Deevnet for your tenant's names, or a PKI of your own when you leave.
 
@@ -64,7 +71,7 @@ done, or keep prototyping there. The two do not share a secret.
 | `<tenant>.mobile.deevnet.net` DNS | `<hostname>.local`, and the backend's address for devices |
 | Wi-Fi keys on `DVNTM-IOT` | Your own Wi-Fi |
 | The device registry | Device names are checked for shape only |
-| Terraform state and the API token | Nothing to apply: `deevnet-kit` is the whole control plane. Only your dashboards are still Terraform, against the backend's Grafana |
+| Terraform state and the API token | Nothing to apply: `tenant2backend` is the whole control plane. Only your dashboards are still Terraform, against the backend's Grafana |
 | Your metrics and logs so far | The backend starts empty; Deevnet keeps yours until the tenant is removed |
 | Alert rules from the API | Exported from your Terraform and imported ([Move your tenant](move-your-tenant/#your-alert-rules)) |
 | Alerts away from the site | Alerts on the backend's network only, for now |
@@ -78,7 +85,7 @@ done, or keep prototyping there. The two do not share a secret.
   accepted and nothing is delivered. Either way no message crosses.
 - **Revocation** is immediate on the backend and takes effect on the next connect on Deevnet.
 - **You are Grafana's admin on the backend** (`grafana_admin_password` in
-  `/etc/deevnet-kit/kit.json`). Your tenant login is still an Editor, so the same Terraform runs on
+  `/etc/backend/kit.json`). Your tenant login is still an Editor, so the same Terraform runs on
   both.
 - **Metrics are kept 30 days**, not 90: a backend is not a data disk.
 - **An alert's "Source" link** points at the backend's vmalert on an internal port, which the phone
@@ -87,4 +94,4 @@ done, or keep prototyping there. The two do not share a secret.
 The images are built in `deevnet-image-factory`: `make pi-backend` for the Pi
 (`docs/pi-backend.md`), `make vm-backend` and `vm-backend-arm64` for the virtual machine,
 `make vm-formats` for VirtualBox and Hyper-V, and `make iso-backend` for the installer.
-`deevnet-kit` lives in `deevnet-provisioning-api` beside the rules it applies.
+`tenant2backend` lives in `deevnet-provisioning-api` beside the rules it applies.

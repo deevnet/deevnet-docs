@@ -1,22 +1,30 @@
 ---
-title: "deevnet-kit"
+title: "tenant2backend"
 weight: 5
+aliases: ["/docs/platforms/deevnet-software/deevnet-kit/"]
 ---
 
-# deevnet-kit
+# tenant2backend
 
-The Deevnet API's stand-in on a Raspberry Pi. On the take-home Pi backend image it does, for one
-tenant and on the Pi itself, what the API does for a tenant on the site: broker accounts, log users,
-the server certificate, and a Grafana organization. It is built from the API's own packages, so the
-same rules apply in both places.
+The Deevnet API's stand-in on a take-home backend. On every take-home image, the Pi's, the virtual
+machine's and the installer's, it does for one tenant, on the backend itself, what the API does for
+a tenant on the site: broker accounts, log users, the server certificate, a Grafana organization,
+alert rules and buckets. It is built from the API's own packages, so the same rules apply in both
+places.
+
+**It was `deevnet-kit` until v0.28.0** ([ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/)):
+the backend is its owner's, so its tool and files carry no brand. Its files are under `/etc/backend`,
+its units are `backend-*`, its group is `backend`, and its CA is exported as `backend-ca.pem`. A
+backend flashed from an earlier image keeps the old names; on the first images with the new ones,
+`deevnet-kit` is still a link to it, for one release.
 
 | | |
 |---|---|
-| **Source** | `deevnet-provisioning-api`, `cmd/deevnet-kit`; it shares the API's tag |
-| **Built by** | `make build-pi` and `make stage-pi` in the API repository (linux/arm64), baked into the image by `make pi-backend` in `deevnet-image-factory` |
-| **Runs as** | A CLI and three systemd units on the Pi: first boot, dashboards, and a self-test on every boot |
-| **Commands** | `init`, `status`, `env`, `export`, `account add\|list\|rm`, `names`, `regen-certs`, `cert request`, `cert install`, `render`, `dashboards`, `selftest` |
-| **State** | `/etc/deevnet-kit/` (the tenant and its tokens, accounts, TLS, Grafana settings, and which PKI the card is on); input from `/boot/firmware/deevnet-kit.txt` |
+| **Source** | `deevnet-provisioning-api`, `cmd/tenant2backend`; it shares the API's tag |
+| **Built by** | `make stage-pi` (linux/arm64) and `make stage-vm` (linux/amd64) in the API repository, baked into each image by `deevnet-image-factory` |
+| **Runs as** | A CLI and its `backend-*` systemd units: first boot, the console setup on a virtual machine, dashboards, alerting, and a self-test on every boot |
+| **Commands** | `setup`, `init`, `status`, `env`, `export`, `account add\|list\|rm`, `names`, `regen-certs`, `cert request`, `cert install`, `pki`, `render`, `dashboards`, `alerts`, `notify`, `bucket`, `selftest` |
+| **State** | `/etc/backend/` (the tenant and its tokens, accounts, TLS, Grafana settings, buckets, and which PKI the backend is on); input from `/boot/firmware/backend.txt` on a Pi, or from `setup` on the console |
 
 ---
 
@@ -50,7 +58,7 @@ it with a new key. `status` and `selftest` warn on a Deevnet Pi when the certifi
 of those names, never about addresses, which it does not hold. `deevnet-kit` v0.15.0 renews only
 with a new key, leaves the data sources on `localhost`, and warns about every address.
 
-**`deevnet-kit pki` moves a Pi to a PKI of its owner's own** (ADR-0041 §3, §4). It runs the
+**`tenant2backend pki` moves a Pi to a PKI of its owner's own** (ADR-0041 §3, §4). It runs the
 ceremony tools the image carries (`deevnet-pki-owner.sh`, from `deevnet.mgmt`): `pki init` makes the
 owner's root on an encrypted USB stick and an issuing CA on the Pi, and changes nothing served;
 `export` then hands out `trust-bundle.pem`, the root trusted now and the owner's. `pki switch`

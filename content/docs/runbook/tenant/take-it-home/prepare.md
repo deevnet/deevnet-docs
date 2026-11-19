@@ -16,7 +16,7 @@ while your tenant is still on Deevnet. The backend writes the same file with its
 | `DEEVNET_TENANT` | your tenant | the same |
 | `MQTT_HOST` | `mqtt.mobile.deevnet.net` | `<hostname>.local` |
 | `MQTT_PORT` | `8883` | `8883` |
-| `MQTT_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the backend's) |
+| `MQTT_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `backend-ca.pem` (the backend's) |
 | `MQTT_USERNAME`, `MQTT_PASSWORD` | your app's broker account | the same: you re-create it with the same password |
 | `LOG_ENDPOINT` | `log_endpoint` | `https://<hostname>.local:8427` |
 | `LOG_INGEST_TOKEN`, `LOG_READ_TOKEN` | `log_ingest_token`, `log_read_token` | the backend's |
@@ -26,11 +26,11 @@ while your tenant is still on Deevnet. The backend writes the same file with its
 | `GRAFANA_URL` | `dashboard_url` | `https://<hostname>.local:3000` |
 | `GRAFANA_AUTH` | `dashboard_username:dashboard_password` | the backend's |
 | `GRAFANA_ORG_ID`, `TF_VAR_grafana_org_id` | `dashboard_org_id` | the backend's |
-| `GRAFANA_CA_CERT` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the backend's) |
+| `GRAFANA_CA_CERT` | `deevnet-root-ca.pem` (Deevnet's root) | `backend-ca.pem` (the backend's) |
 | `NOTIFY_URL` | `notify_endpoint` | `https://<hostname>.local` |
 | `NOTIFY_USERNAME`, `NOTIFY_PASSWORD` | `notify_username`, `notify_password` | your tenant's name, and the backend's |
 | `S3_ENDPOINT` | a bucket's `endpoint` | `https://<hostname>.local:9000` |
-| `S3_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `deevnet-kit-ca.pem` (the backend's) |
+| `S3_CA_FILE` | `deevnet-root-ca.pem` (Deevnet's root) | `backend-ca.pem` (the backend's) |
 | `BUCKET_<NAME>`, `_ACCESS_KEY`, `_SECRET_KEY` | a bucket's `bucket`, and a key's `access_key` and `secret_key` | the same, if you bring the key |
 
 The `GRAFANA_*` names are the ones the Terraform `grafana` provider reads by itself, and
