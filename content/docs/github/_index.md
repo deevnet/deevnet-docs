@@ -47,6 +47,22 @@ The tenants that live in Deevnet for good have repositories of their own: see [T
     <h3>tenant-tdemo</h3>
     <p>The <code>tdemo</code> tenant as Terraform — the demonstration tenant built from the tenant factory's reference implementation.</p>
   </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-container-image-factory">
+    <h3>container-image-factory</h3>
+    <p>Container images built from source for software the substrate runs but does not write.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-log-bridge">
+    <h3>log-bridge</h3>
+    <p>Carries edge devices' log messages from the MQTT broker into each tenant's log store.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/deevnet-filesync">
+    <h3>filesync</h3>
+    <p>Local-first file sync under its owner's control. A prototype, with docs of its own.</p>
+  </a>
+  <a class="section-card" href="https://github.com/deevnet/.github">
+    <h3>.github</h3>
+    <p>The organization's profile and the secret scan every repository runs.</p>
+  </a>
   <a class="section-card" href="https://github.com/deevnet/deevnet-docs">
     <h3>deevnet-docs</h3>
     <p>This documentation site.</p>
@@ -64,11 +80,14 @@ dvnt/
 ├── ansible-collection-deevnet.net/
 ├── ansible-inventory-deevnet/
 ├── deevnet-image-factory/
+├── deevnet-container-image-factory/
 ├── deevnet-provisioning-api/
 ├── terraform-provider-deevnet/
+├── deevnet-log-bridge/
 ├── deevnet-tenant-fabric/
 ├── deevnet-tenant-tdemo/           the demo tenant
 ├── deevnet-tenant-<name>/          one per tenant
+├── deevnet-filesync/
 └── deevnet-docs/
 ```
 
@@ -101,6 +120,10 @@ git clone git@github.com:deevnet/ansible-collection-deevnet.mgmt.git
 git clone git@github.com:deevnet/ansible-collection-deevnet.net.git
 git clone git@github.com:deevnet/ansible-inventory-deevnet.git
 git clone git@github.com:deevnet/deevnet-image-factory.git
+git clone git@github.com:deevnet/deevnet-container-image-factory.git
+git clone git@github.com:deevnet/deevnet-provisioning-api.git
+git clone git@github.com:deevnet/terraform-provider-deevnet.git
+git clone git@github.com:deevnet/deevnet-log-bridge.git
 git clone git@github.com:deevnet/deevnet-tenant-fabric.git
 git clone git@github.com:deevnet/deevnet-tenant-tdemo.git
 git clone git@github.com:deevnet/deevnet-docs.git
