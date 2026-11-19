@@ -2,9 +2,9 @@
 title: "Take-Home Media: Project Plan"
 linkTitle: "Project Plan"
 weight: 1
-tasks_completed: 25
+tasks_completed: 32
 tasks_in_progress: 0
-tasks_planned: 7
+tasks_planned: 0
 ---
 
 # Take-Home Media: Project Plan
@@ -81,18 +81,18 @@ is still to prove it (Later).
 **Not in v2:** Wi-Fi on the installed system, a keyboard layout other than US, and the live mode
 (Later); a run on real hardware (the first owner's, or Later); OVA, VHDX and UTM (v3).
 
-### v3, VirtualBox and Hyper-V (current)
+### v3, VirtualBox and Hyper-V (done 2026-11-18)
 
 The v1 virtual machine, unchanged, in the formats a Windows computer runs: an OVA for VirtualBox and
 a VHDX for Hyper-V.
 
 **Done when:**
 
-- [ ] One `make` target converts the v1 build's disk, unchanged, into an OVA for VirtualBox and a VHDX for a Hyper-V Generation 2 machine, each with its sha256; nothing is rebuilt
-- [ ] Each format's disk compares equal to the v1 disk (`qemu-img compare`), and the OVA's manifest and descriptor check
-- [ ] In qemu on the Builder, each boots in the firmware its hypervisor gives it, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [ ] Each passes the self-test, every check
-- [ ] Both are in the tenant downloads under `tenant/vm` with their sha256s, and the tenant guide has a section for each: import, bridged networking (VirtualBox's bridged adapter, Hyper-V's external switch), and the Secure Boot template Hyper-V needs
+- [x] One `make` target converts the v1 build's disk, unchanged, into an OVA for VirtualBox and a VHDX for a Hyper-V Generation 2 machine, each with its sha256; nothing is rebuilt
+- [x] Each format's disk compares equal to the v1 disk (`qemu-img compare`), and the OVA's manifest and descriptor check
+- [x] In qemu on the Builder, each boots in the firmware its hypervisor gives it, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
+- [x] Each passes the self-test, every check
+- [x] Both are in the tenant downloads under `tenant/vm` with their sha256s, and the tenant guide has a section for each: import, bridged networking (VirtualBox's bridged adapter, Hyper-V's external switch), and the Secure Boot template Hyper-V needs
 
 **v3 is proven under qemu on the Builder only** (the owner's choice, 2026-11-18). VirtualBox and
 Hyper-V themselves, and the bridged run on a real computer that v1 put off to v3, move to Later.
@@ -179,24 +179,24 @@ settings made. The owner picks the bridged interface, which differs from Mac to 
 
 ---
 
-## v3 records ⏳
+## v3 records ✅
 
-- ⏳ CHG-0076: converting and publishing the VirtualBox and Hyper-V images
+- ✅ [CHG-0076](/docs/changes/2026/0076-take-home-virtualbox-hyper-v/), Complete 2026-11-18: the VirtualBox and Hyper-V images converted, proven and published
 
 No ADR is expected: the formats carry the v1 disk unchanged, so ADR-0044 holds. One is written only
 if a format needs the system itself changed.
 
-## v3 formats ⏳
+## v3 formats ✅
 
-- ⏳ One `make` target converts the v1 build's disk: an OVA (a stream-optimized VMDK, an OVF descriptor with a bridged adapter, and a manifest of sha256s) and a VHDX for a Hyper-V Generation 2 machine
-- ⏳ Each disk compared with the v1 disk, and the OVA's descriptor and manifest checked
+- ✅ One `make` target converts the v1 build's disk: an OVA (a stream-optimized VMDK, an OVF descriptor with a bridged adapter, and a manifest of sha256s) and a VHDX for a Hyper-V Generation 2 machine, shipped zipped
+- ✅ Each disk compared with the v1 disk, and the OVA's descriptor and manifest checked
 
-## v3 proof ⏳
+## v3 proof ✅
 
-- ⏳ The OVA's disk boots in qemu in VirtualBox's firmware for it: setup, root grown, self-test every check
-- ⏳ The VHDX boots in qemu under OVMF with Secure Boot, as a Generation 2 machine does: setup, root grown, self-test every check
+- ✅ The OVA's disk boots in qemu in VirtualBox's firmware for it: setup, root grown, self-test every check
+- ✅ The VHDX boots in qemu under OVMF with Secure Boot, as a Generation 2 machine does: setup, root grown, self-test every check
 
-## v3 publish ⏳
+## v3 publish ✅
 
-- ⏳ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store
-- ⏳ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template
+- ✅ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store
+- ✅ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template

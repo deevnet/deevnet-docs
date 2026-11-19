@@ -293,6 +293,47 @@ no Pi or would rather not use one.
    selftest`. A fixed address for the VM on your router keeps its certificate right; if the
    address changes, `sudo deevnet-kit regen-certs` reissues it.
 
+### On VirtualBox
+
+**For VirtualBox, the same VM comes as an OVA, with its settings made.** It replaces steps 1 and 2
+above; steps 3 and 4 are the same.
+
+1. **Get** `debian-bookworm-mobile-vm-backend.ova` from the same `vm/`, with its `.sha256`, and
+   check it.
+2. **Import it**: File, Import Appliance, then choose the file. It brings 2 CPUs, 2 GB of memory,
+   the disk, and a network adapter set to **Bridged Adapter**. After the import, open the VM's
+   Settings, Network, and under Name choose the network interface your computer is on, Wi-Fi or
+   Ethernet. From a terminal, `VBoxManage import debian-bookworm-mobile-vm-backend.ova`.
+
+It starts by BIOS, VirtualBox's default. Then start it and answer the console, as in step 3.
+
+### On Hyper-V
+
+**For Hyper-V, on Windows 10 or 11 Pro and Windows Server, the same VM comes as a VHDX for a
+Generation 2 machine.** It replaces steps 1 and 2 above; steps 3 and 4 are the same.
+
+1. **Get** `debian-bookworm-mobile-vm-backend.vhdx.zip` from the same `vm/`, with its `.sha256`,
+   check it, and extract the `.vhdx` where the VM's disk will live.
+2. **Make an external switch**, once, so the VM has its own address on your network: in Hyper-V
+   Manager, Virtual Switch Manager, an **External** switch on the network interface your computer
+   is on. The default switch is NAT, and your devices cannot reach the VM behind it.
+3. **Make the VM**, Generation 2, with the VHDX as its disk and the external switch as its network.
+   **Secure Boot can stay on, with the "Microsoft UEFI Certificate Authority" template.** The
+   default template, "Microsoft Windows", refuses Debian's signed boot loader. In PowerShell as
+   administrator, with a switch named `External`:
+
+   ```powershell
+   New-VM -Name bench1 -Generation 2 -MemoryStartupBytes 2GB `
+     -VHDPath C:\VMs\debian-bookworm-mobile-vm-backend.vhdx -SwitchName External
+   Set-VMProcessor bench1 -Count 2
+   Set-VMFirmware bench1 -EnableSecureBoot On -SecureBootTemplate MicrosoftUEFICertificateAuthority
+   Start-VM bench1
+   ```
+
+Then connect to its console and answer, as in step 3.
+
+### The VM from here
+
 From here, continue with [step 3](#3-recreate-your-broker-accounts). Where a step says the Pi, it
 means the VM, with two differences:
 - **Build your app's container for amd64** in [step 5](#5-run-your-app-on-the-pi):
