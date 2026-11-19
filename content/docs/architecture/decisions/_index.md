@@ -63,6 +63,10 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 
 ### [Tenant Model](tenant-model/)
 
+- [ADR-0045: The Take-Home Tool's Name](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/) —
+  *Proposed (2026-11-19).* The take-home backend's management tool is `tenant2backend`, and its
+  files, units and group take the noun `backend`; the app contract keeps Deevnet's names, and
+  `deevnet-kit` stays as an alias for one release.
 - [ADR-0044: Take-Home Media](/docs/architecture/decisions/tenant-model/0044-take-home-media/) —
   *Accepted (2026-11-17); built by CHG-0074.* The take-home backend is one backend on several media, built by one play with the
   medium as a parameter, each from its vendor's dated image with what that image leaves open closed.

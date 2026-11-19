@@ -42,6 +42,11 @@ waypoints:
     milestone: true
     status: done
     date: "2026-11-18"
+  - title: "The take-home backend's own tool is renamed tenant2backend, a name that is the owner's rather than Deevnet's, on every medium"
+    status: planned
+  - title: "Take-home media v5 done: every take-home image rebuilt with tenant2backend, in the tenant downloads"
+    milestone: true
+    status: planned
 ---
 
 # Take-Home Media
