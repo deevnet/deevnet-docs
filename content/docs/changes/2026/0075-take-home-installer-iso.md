@@ -17,7 +17,7 @@ weight: -75
 | **Automation** | `deevnet-image-factory` |
 | **Risk** | Low. Nothing runs on Deevnet's hosts but the artifact server and the tenant downloads. Most likely to go wrong: the push to the tenant downloads, which is throttled |
 | **Related changes** | [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/) (the virtual machine image it carries), [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (tenant downloads) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/) |
 
 ---
 
@@ -119,7 +119,7 @@ guide.
 router: 1,176 pings, none missed. rsync checked the file's checksum on arrival. The site serves the
 ISO at its full size, and its sha256 `9de58e58…`, the one the build made and the proof used.
 The tenant guide's section is
-[Or a computer of your own](/docs/runbook/tenant/tenant-to-pi-image/#or-a-computer-of-your-own).
+[Or a computer of your own](/docs/runbook/tenant/take-it-home/your-own-computer/).
 **Secure Boot can stay on**, it says, and it says to turn Secure Boot off if the computer refuses
 the stick.
 

@@ -49,8 +49,8 @@ running:
   what they do, not on standing up a broker.
 - **No public cloud.** Your devices talk to services in the room. There's no cloud account to sign
   up for, and nothing leaves the site.
-- **Bring a microSD card**, and you can take your backend home with you, to run on a Pi of your own
-  ([Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/)).
+- **Take your backend home with you**, to run on a Raspberry Pi, a virtual machine or a computer of
+  your own ([Take Your Tenant Home](/docs/runbook/tenant/take-it-home/)).
 
 **If you're not local**, [the code](/docs/github/) and these docs are open. Use them and adapt them
 for your own lab, or, these days, have your favorite AI agents adapt them for you.

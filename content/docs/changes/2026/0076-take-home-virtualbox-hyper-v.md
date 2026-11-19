@@ -17,7 +17,7 @@ weight: -76
 | **Automation** | `deevnet-image-factory` |
 | **Risk** | Low. Nothing runs on Deevnet's hosts but the artifact server and the tenant downloads. Most likely to go wrong: the push to the tenant downloads, which is throttled |
 | **Related changes** | [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/) (the virtual machine image they carry), [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/) (the installer ISO), [CHG-0025](/docs/changes/2026/0025-tenant-downloads/) (tenant downloads) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/) |
 
 ---
 
@@ -127,7 +127,7 @@ detached `rsync` at 1 MB/s carried them to `dv02obs001v01` in 45 minutes, with a
 the core router every second: 2,640 pings, none missed. The v1 qcow2 beside them was unchanged and
 was skipped. `sha256sum -c` passed on the observability store, and
 `downloads.mobile.deevnet.net/vm/` serves each file's sha256 and its full size. The tenant guide's
-[VirtualBox and Hyper-V sections](/docs/runbook/tenant/tenant-to-pi-image/) went in with this
+[VirtualBox and Hyper-V sections](/docs/runbook/tenant/take-it-home/) went in with this
 record.
 
 ## Verification

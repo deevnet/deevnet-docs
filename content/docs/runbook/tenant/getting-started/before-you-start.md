@@ -45,7 +45,7 @@ Terraform, Pi Imager, MicroPython and the Pi image are also served on the site's
 | Thonny *or* the Arduino IDE with PubSubClient | editing firmware (Pico / ESP32) | thonny.org / arduino.cc | the same | the same | the same |
 | `dig`, `python3` | name checks, scripting | `brew install bind`; `python3` built in | `sudo dnf install bind-utils python3` | `sudo apt install dnsutils python3` | `Resolve-DnsName` built in; `winget install Python.Python.3.12` |
 
-**To [convert your tenant to a Pi image](/docs/runbook/tenant/tenant-to-pi-image/):**
+**To [take your tenant home on a Raspberry Pi](/docs/runbook/tenant/take-it-home/raspberry-pi/):**
 
 | Tool | Why | macOS | Fedora | Debian / Ubuntu | Windows |
 |---|---|---|---|---|---|
@@ -87,7 +87,7 @@ At [admission](/docs/runbook/tenant/getting-started/admission/):
 | An enrollment token | one-time, bound to your tenant name, valid 72 hours |
 | The API endpoint | `https://api.mobile.deevnet.net` |
 | The `DVNTM-TD` Wi-Fi key | the network you work from ([below](#connecting-wi-fi-only)) |
-| The Deevnet Root CA | the certificate authority everything this site serves over TLS chains to: one for every Deevnet site, the same for every tenant (`O=Deevnet, OU=Deevnet PKI, CN=Deevnet Root CA`). You download it, and keep it, as **`deevnet-root-ca.pem`**. Your tools and apps name it through a variable (`DEEVNET_API_CACERT`, `MQTT_CA_FILE`, `GRAFANA_CA_CERT`), so on a [take-home Pi](/docs/runbook/tenant/tenant-to-pi-image/) the same variables name the Pi's own CA instead. Check its SHA-256 fingerprint: `F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52` |
+| The Deevnet Root CA | the certificate authority everything this site serves over TLS chains to: one for every Deevnet site, the same for every tenant (`O=Deevnet, OU=Deevnet PKI, CN=Deevnet Root CA`). You download it, and keep it, as **`deevnet-root-ca.pem`**. Your tools and apps name it through a variable (`DEEVNET_API_CACERT`, `MQTT_CA_FILE`, `GRAFANA_CA_CERT`), so on a [take-home backend](/docs/runbook/tenant/take-it-home/) the same variables name the backend's own CA instead. Check its SHA-256 fingerprint: `F6:8A:BD:B3:1E:A5:6D:0A:88:1F:31:28:56:8A:4C:14:B0:3A:3F:5C:3F:38:CC:F1:7C:C4:F0:09:8B:EB:94:52` |
 
 ---
 
@@ -142,9 +142,9 @@ at **`https://downloads.mobile.deevnet.net/`**. It is read-only and verified wit
 | `providers/grafana/<version>/` | the Terraform `grafana` provider, for [dashboards](/docs/runbook/tenant/services/dashboards/) |
 | `terraform/<version>/` | Terraform itself |
 | `tools/` | Raspberry Pi Imager (macOS, Linux, Windows) and MicroPython for the Pico W |
-| `pi/` | the [tenant Pi](/docs/runbook/tenant/tenant-to-pi-image/) image and its sha256 |
-| `vm/` | the same backend as an amd64 [virtual machine](/docs/runbook/tenant/tenant-to-pi-image/#or-a-virtual-machine) image (qcow2) and its sha256 |
-| `iso/` | an [installer](/docs/runbook/tenant/tenant-to-pi-image/#or-a-computer-of-your-own) that puts the same backend on an amd64 computer of your own, from a USB stick, and its sha256 |
+| `pi/` | the [take-home backend](/docs/runbook/tenant/take-it-home/) for a [Raspberry Pi](/docs/runbook/tenant/take-it-home/raspberry-pi/), and its sha256 |
+| `vm/` | the same backend as a [virtual machine](/docs/runbook/tenant/take-it-home/virtual-machine/): a qcow2 for Proxmox or KVM, an OVA for VirtualBox, a zipped VHDX for Hyper-V and an arm64 qcow2 for UTM, each with its sha256 |
+| `iso/` | an [installer](/docs/runbook/tenant/take-it-home/your-own-computer/) that puts the same backend on an amd64 computer of your own, from a USB stick, and its sha256 |
 
 ---
 

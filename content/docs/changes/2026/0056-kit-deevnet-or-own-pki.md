@@ -170,7 +170,7 @@ Found on the test Pi, 2026-11-08:
       pulled for wiping: `mabell` holds no certificate.
 - [x] Step 3: release `deevnet-kit` with `pki`, build the image on it, and push it to the tenant
       downloads; then the [deevnet-kit](/docs/platforms/deevnet-software/deevnet-kit/) page and
-      the [take-home image](/docs/runbook/tenant/tenant-to-pi-image/) runbook describe `pki`. Done
+      the [take-home image](/docs/runbook/tenant/take-it-home/) runbook describe `pki`. Done
       2026-11-08.
 
 Found on the first Deevnet Pi (EdS CHG-0042):

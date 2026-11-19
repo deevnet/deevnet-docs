@@ -17,7 +17,7 @@ weight: -72
 | **Automation** | `deevnet-provisioning-api` (`cmd/deevnet-kit`), `deevnet-image-factory` `make pi-backend` |
 | **Risk** | Medium. Most likely to go wrong: the Pi runs out of memory. Each new component is capped, and the guide states what each Pi model can run |
 | **Related changes** | [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/) and [CHG-0071](/docs/changes/2026/0071-tenant-alerting/) (the services this brings to the Pi), [CHG-0056](/docs/changes/2026/0056-kit-deevnet-or-own-pki/) (the image this replaces), [CHG-0073](/docs/changes/2026/0073-pi-buckets/) (buckets on the Pi) |
-| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/tenant-to-pi-image/) |
+| **Related runbooks** | [Convert a Tenant to a Pi Image](/docs/runbook/tenant/take-it-home/) |
 
 ---
 
