@@ -10,8 +10,8 @@ weight: -76
 | **Date** | 2026-11-18 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | In progress. Steps 1 to 3 are done: both formats convert, compare equal, and pass the self-test under qemu. Outstanding: the publish |
-| **Window** | Unscheduled. The images are converted and proven on the Builder; only their publish crosses the core router, throttled |
+| **Status** | **Complete, 2026-11-18.** Both formats convert, compare equal and pass the self-test under qemu, and both are in the tenant downloads with their sha256s matching |
+| **Window** | 2026-11-18. Converted and proven on the Builder; the publish crossed the core router throttled, 19:35 to 20:20 EST |
 | **Site** | mobile |
 | **Systems** | The artifact server on the Builder; the take-home OVA and VHDX; the tenant downloads on `dv02obs001v01` |
 | **Automation** | `deevnet-image-factory` |
@@ -117,10 +117,18 @@ extracted, and booted through a throwaway 24 GB overlay.
 The devices are qemu's. VirtualBox's and Hyper-V's own, and a bridged run on a real computer, are
 still to prove (Later).
 
-### Step 4: Publish
+### Step 4: Publish ✅
 
 Both under `tenant/vm` in the tenant downloads, with their sha256s, and the tenant guide's
 sections.
+
+**Done 2026-11-18.** `make vm-formats-publish` staged both on the Builder's artifact server. A
+detached `rsync` at 1 MB/s carried them to `dv02obs001v01` in 45 minutes, with a watchdog pinging
+the core router every second: 2,640 pings, none missed. The v1 qcow2 beside them was unchanged and
+was skipped. `sha256sum -c` passed on the observability store, and
+`downloads.mobile.deevnet.net/vm/` serves each file's sha256 and its full size. The tenant guide's
+[VirtualBox and Hyper-V sections](/docs/runbook/tenant/tenant-to-pi-image/) went in with this
+record.
 
 ## Verification
 
@@ -142,4 +150,4 @@ Remove the OVA and the VHDX from the tenant downloads. The build target is addit
 - [x] Step 1: the formats chosen and recorded
 - [x] Step 2: both convert, and their disks compare equal
 - [x] Step 3: proven on the Builder in each hypervisor's firmware
-- [ ] Step 4: published, with the guide sections
+- [x] Step 4: published, with the guide sections

@@ -28,11 +28,13 @@ waypoints:
     milestone: true
     status: done
     date: "2026-11-17"
-  - title: "The take-home virtual machine imports into VirtualBox and Hyper-V, converted unchanged from the same build"
-    status: active
+  - title: "The take-home virtual machine converts unchanged into VirtualBox's and Hyper-V's formats, and boots and passes its self-test in each one's firmware"
+    status: done
+    date: "2026-11-18"
   - title: "Take-home media v3 done: the virtual machine for VirtualBox and Hyper-V, in the tenant downloads"
     milestone: true
-    status: planned
+    status: done
+    date: "2026-11-18"
 ---
 
 # Take-Home Media
