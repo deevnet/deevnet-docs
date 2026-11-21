@@ -85,6 +85,7 @@ Boot the USB stick and run the graphical installer with these settings. They rep
 | `hdsize`, `maxroot`, `maxvz` | Installer defaults |
 | Hostname (FQDN) | The inventory name, e.g. `dv02hyp001p01.mobile.deevnet.net`. **A Proxmox node is not safely renamable afterwards** |
 | Network | Whatever the installer detects. Step 4 replaces it from inventory |
+| Email | Any. The node's notifications go to the address in inventory, set in Step 6 |
 
 The node reboots into Proxmox.
 
@@ -123,7 +124,7 @@ In `ansible-collection-deevnet.builder`:
 ansible-playbook playbooks/site.yml --limit dv02hyp001p01
 ```
 
-The `hypervisors` play runs two roles:
+The `hypervisors` play runs these roles:
 - **`proxmox_node_base`:** it asserts the node name, then sets the loopback/FQDN mapping, the
   resolver and the automation account.
 - **`proxmox_node_storage`:** it reads `proxmox_node_storage` from host_vars.
@@ -137,10 +138,15 @@ The `hypervisors` play runs two roles:
   Packer's template build boots from it, and a reinstall leaves `local:iso` empty. On its own:
   `--tags isos`. The artifact server is on the management subnet, so this does not cross the core
   router.
+- **`proxmox_node_notify`:** it sends the node's notifications (backup results, failed jobs, package
+  updates) to the operator's address in the vault, `vault_proxmox_notify_email`, through an email
+  target `deevnet-operator` and a rule `deevnet-all`. It disables Proxmox's built-in rule, which
+  mails whatever address was typed into the installer. On its own: `--tags notifications`.
 
 **Verify:** `pvesm status` lists `local-lvm-big-thin` and `local-lvm-big` as active, and
 `pvesm list local --content iso` lists `Fedora-Server-dvd-x86_64-<release>-<build>.iso` for both
-releases.
+releases. **Datacenter → Notifications** lists `deevnet-operator` and `deevnet-all`, with
+`default-matcher` disabled, and **Test** on `deevnet-operator` delivers a mail.
 
 ## Step 7: Proxmox access (token manual)
 
