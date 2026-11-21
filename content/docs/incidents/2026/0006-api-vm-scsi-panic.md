@@ -106,7 +106,7 @@ it": the state it was in before the crash.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 2 | Move the service VMs to `virtio-scsi-single`, through `proxmox_vm` and a change record. The guest's disk device changes, so each VM is checked to boot from it | `deevnet.mgmt` `proxmox_vm`; every service VM | {{< action-status "Open" >}} |
+| 2 | Give every VM one declared hardware profile, `virtio-scsi-single` with IO Thread among it, applied by every builder: [ADR-0046](/docs/architecture/decisions/substrate/0046-vm-hardware-profile/), then a change record to move the existing VMs | the template, `proxmox_vm`, the Deevnet API; every VM | {{< action-status "Open" >}} |
 | 3 | Run large backups and restores on a hypervisor at a rate its service VMs can absorb, well under 100 MiB/s, or with the service VMs on another disk | the operator's procedure; *Build a Hypervisor* | {{< action-status "Open" >}} |
 | 4 | Alert when the API stops answering, as INC-0002's action 3 asks for the controller | observability | {{< action-status "Open" >}} |
 
