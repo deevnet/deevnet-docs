@@ -77,7 +77,7 @@ and how a running VM is checked against it (§4).
 | Disk controller | `virtio-scsi-single` | Proxmox's recommendation; one controller per disk, so IO Thread applies per disk |
 | Disk options | `iothread=1`, `discard=on`, `cache=none` | IO Thread keeps disk I/O off the vCPU threads; Discard returns freed blocks to the thin pools; no host cache, as today |
 | Network | `virtio` | Already on every VM. Proxmox: *"the VirtIO paravirtualized NIC should be used if you aim for maximum performance"* |
-| CPU type | `host` | Already on every VM. No VM live-migrates: each hypervisor is its own cluster |
+| CPU type | `host` | On every VM but `dv02bld002v01`, which has Proxmox's default. No VM live-migrates: each hypervisor is its own cluster |
 | Firmware and machine | SeaBIOS, Proxmox's default machine type | A deliberate choice, below |
 | Guest agent | `enabled=1` | Already set by every builder |
 
