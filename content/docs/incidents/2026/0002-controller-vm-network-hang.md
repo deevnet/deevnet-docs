@@ -146,6 +146,12 @@ of `omada-wireless.yml`. CHG-0005 then proceeded on the recovered controller.
 - [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) — built `dv02nms001v01` and moved the
   controller onto it.
 
+## Related incidents
+
+- [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/): the same symptoms on
+  `dv02prv001v01`, with the console captured: a panic in the guest's driver for the emulated LSI
+  controller, which this VM also uses.
+
 ## Related runbooks
 
 - [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/) — for the

@@ -10,7 +10,7 @@ weight: -79
 | **Date** | 2026-11-21 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress** |
+| **Status** | **Complete, 2026-11-21** |
 | **Window** | Any time. Nothing restarts; only where the nodes' mail goes changes |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01`, `dv02hyp002p02` |
@@ -46,8 +46,8 @@ own email address, which nothing routes to once the built-in rule is off.
 
 ## Prerequisites
 
-- [ ] `deevnet.builder`: the `proxmox_node_notify` role
-- [ ] `ansible-inventory-deevnet`: `proxmox_node_notify_email` for the hypervisors, and
+- [x] `deevnet.builder`: the `proxmox_node_notify` role (#37)
+- [x] `ansible-inventory-deevnet` (#119): `proxmox_node_notify_email` for the hypervisors, and
   `vault_proxmox_notify_email` in the site's vault
 
 ## Procedure
@@ -66,10 +66,19 @@ ansible-playbook playbooks/site.yml --limit hypervisors --tags notifications
 
 A second run changes nothing.
 
+**Done 2026-11-21** on both nodes: each run created the target and the rule and disabled
+`default-matcher` (3 changed each), and a second run changed nothing.
+
 ### Step 3: Test
 
 On each node: **Datacenter → Notifications**, select `deevnet-operator`, **Test**. Or
 `pvesh create /cluster/notifications/targets/deevnet-operator/test`.
+
+**Done 2026-11-21.** Each node's Postfix handed its test mail to the operator's mail provider
+(`status=sent`, `250 Ok`), and both arrived.
+
+While reading `dv02hyp002p02`'s mail log, a failure of the egress agent's showed the API VM had
+been down overnight: [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/).
 
 ## Verification
 
@@ -88,6 +97,6 @@ pvesh delete /cluster/notifications/endpoints/sendmail/deevnet-operator
 
 ## To close
 
-- [ ] Step 2: applied to both nodes, and a second run changes nothing
-- [ ] Step 3: a test mail from each node arrives
-- [ ] Verification passes
+- [x] Step 2: applied to both nodes, and a second run changes nothing
+- [x] Step 3: a test mail from each node arrives
+- [x] Verification passes
