@@ -62,7 +62,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0045 | 2026-10-10 | [A Service Name for Grafana](2026/0045-grafana-service-name/) | Configuration | mobile | Complete |
 | CHG-0044 | 2026-10-06 | [Fixed Addresses for Tenants' Devices](2026/0044-tenant-device-addresses/) | Deployment · Configuration · Migration | mobile | Complete |
 | CHG-0043 | Unscheduled | [A Local Package Mirror](2026/0043-local-package-mirror/) | Deployment · Configuration | mobile | Planned |
-| CHG-0042 | Unscheduled | [Two Undeclared VMs Moved Off the Management Hypervisor](2026/0042-rehome-stray-vms/) | Migration | mobile | Planned |
+| CHG-0042 | 2026-11-20 | [Two Undeclared VMs Moved Off the Management Hypervisor](2026/0042-rehome-stray-vms/) | Migration | mobile | Complete |
 | CHG-0041 | Unscheduled | [The Artifact Server Over HTTPS](2026/0041-artifact-server-https/) | Configuration | mobile | Planned |
 | CHG-0040 | Unscheduled | [Device Secrets in Tenant Code](2026/0040-device-secrets-in-tenant-code/) | Deployment · Migration | mobile | Planned |
 | CHG-0039 | 2026-10-07 | [Backup to an Attached USB Drive](2026/0039-backup-to-an-attached-ssd/) | Deployment | mobile | In Progress |

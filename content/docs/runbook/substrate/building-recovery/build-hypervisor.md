@@ -45,15 +45,13 @@ A node's disks have different owners, and a rebuild treats them differently.
 | Disk (`dv02hyp001p01`) | Holds | On an OS reinstall |
 |---|---|---|
 | OS disk, 476.9G | Proxmox, `/etc/pve` (storage entries, guest definitions, API tokens), `local-lvm` | Wiped |
-| Data disk, 1.8T, volume group `vgbigdata` | Thin pool `bigthin` (`local-lvm-big-thin`): the template and the management VMs' disks. Thick volumes (`local-lvm-big`): VM 104 | Untouched, if the installer is pinned to the OS disk |
+| Data disk, 1.8T, volume group `vgbigdata` | Thin pool `bigthin` (`local-lvm-big-thin`): the template and the management VMs' disks | Untouched, if the installer is pinned to the OS disk |
 
 - **If only the OS disk is lost,** the VM disks survive, but their definitions in `/etc/pve` do
   not. Management VMs are rebuilt from code (Step 9). Their old volumes remain on the data disk
   as orphans until they're removed.
 - **If the data disk is lost,** Step 6 recreates its volume group and pool empty, and everything
   on it is rebuilt from code.
-- **`vdvntm-admin-01` (VM 100) and `vdvntm-winox` (VM 104) are not in inventory.** No step here
-  recreates them.
 
 {{< hint danger >}}
 **Install onto the OS disk.** On a node with a data disk, the installer may offer the data disk
