@@ -13,11 +13,11 @@ weight: -66
 | **Status** | Planned |
 | **Window** | One evening, operator at the node's console and the core router's. Every service VM on the node is down from Step 4 until it boots again after Step 5: about an hour |
 | **Site** | mobile |
-| **Systems** | `dv02hyp001p01` and every guest on it: `dv02idn001v01`, `dv02prv001v01`, `dv02bld001v01`, `dv02bld002v01`, `dv02nms001v01`, `dv02msg001v01`, `dv02col001v01`, `dv02obs001v01`, and VMs 100 (`vdvntm-admin-01`) and 104 (`vdvntm-winox`) |
+| **Systems** | `dv02hyp001p01` and every guest on it: `dv02idn001v01`, `dv02prv001v01`, `dv02bld001v01`, `dv02bld002v01`, `dv02nms001v01`, `dv02msg001v01`, `dv02col001v01`, and `dv02obs001v01` |
 | **Automation** | None for the upgrade itself: Proxmox's upgrade is run by hand at the node, as its guide asks. `deevnet.builder` `site.yml --limit hypervisors --tags proxmox-access` after it, against `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. Most likely to go wrong: the node does not come back on the network after the reboot (a renamed NIC, or the boot loader), found and fixed at its console |
-| **Related changes** | [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/), whose narrowed role on this node holds `VM.Monitor` until this change |
-| **Related incidents** | [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/) (bulk transfers across the core router) |
+| **Related changes** | [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/), whose narrowed role on this node holds `VM.Monitor` until this change; [CHG-0042](/docs/changes/2026/0042-rehome-stray-vms/), which removed the node's two VMs outside the inventory |
+| **Related incidents** | [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/) (bulk transfers across the core router); [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/) (bulk disk I/O on the node and prv's disk driver) |
 | **Related runbooks** | [Patching](/docs/runbook/substrate/lifecycle/patching/), [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/) |
 
 ---
@@ -52,8 +52,7 @@ this node trades `VM.Monitor`, which also allows commands inside a guest, for th
 **In scope:** Proxmox VE and Debian on `dv02hyp001p01`; the two boot-loader findings `pve8to9`
 reports; the automation token's role on the node.
 **Out of scope:** `dv02hyp002p02`, already on 9.2; the CPU microcode package `pve8to9` suggests,
-which needs the `non-free-firmware` component (a follow-up); VMs 100 and 104 themselves, which
-are backed up and restarted but not otherwise touched.
+which needs the `non-free-firmware` component (a follow-up).
 
 ## Risk and impact
 
@@ -61,7 +60,7 @@ are backed up and restarted but not otherwise touched.
 |---|---|---|
 | The node does not come back on the network: a NIC renamed by the new kernel, or the boot loader | `dv02hyp001p01` | The operator at the node's console. The guide: *"some NICs may change their name, in which case the network configuration needs to be adapted."* The one uplink is `enp0s31f6`, under `vmbr0` |
 | The download hangs the core router | `dv02cor002p01` | Packages are fetched in Step 3, before the outage, at 1,000 KB/s (`Acquire::http::Dl-Limit`), with the operator at the router's console and a ping watchdog on `10.20.99.1`. Throttled transfers at that rate have passed with the router answering every ping (2026-11-04, 2026-11-07) |
-| A guest does not start, or loses its disk | the service VMs | Every service VM is rebuilt from code (ADR-0033); prv's and obs's state has CHG-0039's backup. VMs 100 and 104 are not in the inventory, so they are backed up in Step 2 |
+| A guest does not start, or loses its disk | the service VMs | Every guest on the node is in the inventory and rebuilt from code (ADR-0033); prv's and obs's state has CHG-0039's backup |
 | Substrate services are down during the window | tenants on `dv02hyp002p02` | Tenant workloads keep running. Tenant DNS, OpenBao, the Deevnet API, the Omada controller, the MQTT broker and the observability VMs are unavailable until the node is back. Announce the window to tenants |
 | The automation token fails on 9 | Packer, `proxmox_vm` | Proxmox: *"Custom roles referencing the `VM.Monitor` privilege will need to be adapted after the upgrade."* Step 6 does that from the inventory, then proves it with a build |
 | No undo after Step 4 | the node | Steps 1–3 change nothing that cannot be put back. After `apt dist-upgrade` the way back is forward, at the console, or [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/) |
@@ -71,7 +70,6 @@ are backed up and restarted but not otherwise touched.
 - [ ] No template build or `proxmox_vm` run in progress on the node
 - [ ] Operator at the consoles of `dv02hyp001p01` and the core router for Steps 3 to 6
 - [ ] Tenants told about the window
-- [ ] Free space for the Step 2 backups on a storage with `backup` content (`local`: 45 GB free on 2026-11-12)
 - [ ] A current CHG-0039 backup of prv's and obs's state
 - [ ] Vault decrypted, collections built
 
@@ -79,7 +77,8 @@ are backed up and restarted but not otherwise touched.
 
 ### Step 1: Latest 8.4, boot loader fixed
 
-No outage. `pve8to9 --full` on 2026-11-12 reported two failures and four warnings:
+No outage. Run `pve8to9 --full` first and compare with the table: on 2026-11-12 it reported two
+failures and four warnings. Record any new finding under Outcome.
 
 | Finding | Action |
 |---|---|
@@ -105,22 +104,19 @@ the running-guests and microcode warnings.
 
 **Undo:** [Undo Step 1](#undo-step-1)
 
-### Step 2: Back up what code cannot rebuild
+### Step 2: Back up the node's configuration
 
-No outage. VMs 100 and 104 are not in the inventory. The node's own configuration is copied to the
-Builder.
+No outage. Every guest is rebuilt from code; the node's own configuration is copied to the Builder.
 
 **Run:**
 
 ```bash
-vzdump 100 104 --storage local --mode snapshot --compress zstd
 tar czf /root/hyp001-etc-$(date +%F).tgz /etc/pve /etc/network/interfaces /etc/apt
 ```
 
 Then copy the tarball (a few MB) to the Builder.
 
-**Verify:** both archives are listed by `pvesm list local --content backup`; the tarball is on the
-Builder.
+**Verify:** the tarball is on the Builder.
 
 **Undo:** none needed.
 
@@ -218,7 +214,7 @@ apt clean && apt update
 **This change closes when every item below is done.**
 
 - [ ] Step 1: latest 8.4, `systemd-boot` meta-package removed, `grub-efi-amd64` installed
-- [ ] Step 2: VMs 100 and 104 backed up; the node's configuration on the Builder
+- [ ] Step 2: the node's configuration on the Builder
 - [ ] Step 3: Trixie repositories; packages downloaded, the router up throughout
 - [ ] Step 4: guests stopped; `apt dist-upgrade` done
 - [ ] Step 5: rebooted onto 9; the network and the guests back
