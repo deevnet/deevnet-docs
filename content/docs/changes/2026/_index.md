@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0079 | 2026-11-21 | [The Hypervisors' Notifications From Inventory](0079-proxmox-notifications/) | Configuration | mobile | In progress |
 | CHG-0078 | 2026-11-19 | [The Take-Home Tool Renamed tenant2backend](0078-take-home-tenant2backend/) | Deployment | mobile | In progress |
 | CHG-0077 | 2026-11-18 | [A Take-Home Image for UTM on Apple Silicon](0077-take-home-utm/) | Deployment | mobile | Complete |
 | CHG-0076 | 2026-11-18 | [Take-Home Images for VirtualBox and Hyper-V](0076-take-home-virtualbox-hyper-v/) | Deployment | mobile | Complete |
