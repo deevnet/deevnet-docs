@@ -140,20 +140,20 @@ tables:
       title: Version source
     rows:
     - component: '**Proxmox VE**'
-      version: '**8.4.1** (see [Gaps](#gaps))'
+      version: '**9.2.32**'
       license: AGPL-3.0
-      support: Community, commercial available. The nodes use the **no-subscription** repository
-      source: Observed, undated (platform page, roadmap)
+      support: Community, commercial available. No-subscription repository
+      source: Observed 2026-11-21 ([CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/))
     - component: Debian
-      version: 12 (Bookworm)
+      version: 13 (Trixie)
       license: Free software, per package
       support: Community
-      source: Bundled with Proxmox VE 8
+      source: Bundled with Proxmox VE 9
     - component: Linux kernel
-      version: 6.8.12
+      version: 7.0.14
       license: GPL-2.0
       support: Bundled
-      source: Observed 2026-09-15 ([CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/))
+      source: Observed 2026-11-21 ([CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/))
     - component: Dell BIOS ([OptiPlex 7050 Micro](/docs/platforms/hardware/compute/dell-optiplex-7050-mff/))
       version: 1.27.0 (2023-09-18)
       license: Proprietary

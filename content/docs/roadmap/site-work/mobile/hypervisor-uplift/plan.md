@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/hypervisor-uplift/
   - /projects/hypervisor-uplift/
 weight: 1
-tasks_completed: 7
+tasks_completed: 8
 tasks_in_progress: 0
-tasks_planned: 2
+tasks_planned: 1
 ---
 
 # Hypervisor Platform Uplift: Project Plan
@@ -83,7 +83,7 @@ and it is the node the fabric work is waiting on.
 - Verify the node returns healthy, guests start, and storage is intact
 - Confirm `GET /cluster/sdn/fabrics` is now served
 
-## Uplift dv02hyp001p01 — management hypervisor ⏳
+## Uplift dv02hyp001p01 — management hypervisor ✅
 
 The management plane runs here, so this node carries real workloads and needs a maintenance window.
 
@@ -126,10 +126,9 @@ The tenant fabric is no longer blocked, and its underlay is defined as code rath
 hand-maintained node state — which was the whole reason for the gate. Implementation is tracked in
 [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/).
 
-**dv02hyp001p01 remains on PVE 8.4** ([current version](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01)). It carries the management plane, so it needs its own maintenance
-window; nothing in the tenant fabric waits on it. Nor does tenant DNS
-([ADR-0004](/docs/architecture/decisions/naming-and-dns/0004-tenant-dns-publication/)) — cloning a template and
-running a container work fine on 8.4.1, and the PVE 9 features that matter (SDN, EVPN) live on dv02hyp002p02.
+**dv02hyp001p01 runs PVE 9 too** ([current version](/docs/platforms/software-catalog/#management-hypervisor-dv02hyp001p01)),
+upgraded in its own maintenance window by [CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/)
+on 2026-11-21. Both hypervisors now run the same major version.
 
 The **PVE 9.2-1 installer ISO is published to the artifact server** (`isos/proxmox`), so the uplift
 — or a full reinstall — can be done with no internet access. Its checksum is verified against

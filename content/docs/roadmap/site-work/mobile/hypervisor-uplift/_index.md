@@ -18,7 +18,8 @@ waypoints:
     status: done
     date: "2026-08-31"
   - title: "Management hypervisor upgraded to Proxmox 9, in its own maintenance window"
-    status: planned
+    status: done
+    date: "2026-11-21"
   - title: "The provisioning toolchain aligned to Proxmox 9"
     status: planned
 ---
