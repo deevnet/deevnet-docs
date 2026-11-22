@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0080 | 2026-11-22 | [The Tenant Hypervisor Brought Up to Proxmox VE 9.2.32](0080-hyp002-proxmox-9-2-32/) | Upgrade | mobile | Planned |
 | CHG-0079 | 2026-11-21 | [The Hypervisors' Notifications From Inventory](0079-proxmox-notifications/) | Configuration | mobile | Complete |
 | CHG-0078 | 2026-11-19 | [The Take-Home Tool Renamed tenant2backend](0078-take-home-tenant2backend/) | Deployment | mobile | In progress |
 | CHG-0077 | 2026-11-18 | [A Take-Home Image for UTM on Apple Silicon](0077-take-home-utm/) | Deployment | mobile | Complete |
