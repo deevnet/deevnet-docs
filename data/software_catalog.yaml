@@ -358,20 +358,20 @@ tables:
       title: Version source
     rows:
     - component: '**Proxmox VE**'
-      version: '**9.2.11**'
+      version: '**9.2.32**'
       license: AGPL-3.0
       support: Community, commercial available. No-subscription repository
-      source: Observed 2026-08-30 ([Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/plan/))
+      source: Observed 2026-11-22 ([CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
     - component: Debian
       version: 13 (Trixie)
       license: Free software, per package
       support: Community
       source: Bundled with Proxmox VE 9
     - component: Proxmox SDN (`libpve-network-perl`)
-      version: 1.6.7
+      version: 1.6.10
       license: AGPL-3.0
       support: Bundled
-      source: Observed 2026-08-30
+      source: Observed 2026-11-22 ([CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
     - component: Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/))
       version: 1.32.0 (2024-09-03)
       license: Proprietary
