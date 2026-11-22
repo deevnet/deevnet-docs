@@ -7,13 +7,13 @@ weight: -66
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-21 to 2026-11-22 |
 | **Change type** | Upgrade |
 | **Classification** | Disruptive |
-| **Status** | Planned |
+| **Status** | **Complete, 2026-11-22** |
 | **Window** | One evening, operator at the node's console and the core router's. Every service VM on the node is down from Step 4 until it boots again after Step 5: about an hour |
 | **Site** | mobile |
-| **Systems** | `dv02hyp001p01` and every guest on it: `dv02idn001v01`, `dv02prv001v01`, `dv02bld001v01`, `dv02bld002v01`, `dv02nms001v01`, `dv02msg001v01`, `dv02col001v01`, and `dv02obs001v01` |
+| **Systems** | `dv02hyp001p01` and every guest on it: `dv02idn001v01`, `dv02prv001v01`, `dv02bld001v01`, `dv02bld002v01`, `dv02nms001v01`, `dv02msg001v01`, `dv02col001v01`, `dv02obs001v01` and `dv02obj001v01` |
 | **Automation** | None for the upgrade itself: Proxmox's upgrade is run by hand at the node, as its guide asks. `deevnet.builder` `site.yml --limit hypervisors --tags proxmox-access` after it, against `ansible-inventory-deevnet/mobile` |
 | **Risk** | Medium. Most likely to go wrong: the node does not come back on the network after the reboot (a renamed NIC, or the boot loader), found and fixed at its console |
 | **Related changes** | [CHG-0037](/docs/changes/2026/0037-builds-off-openbao/), whose narrowed role on this node holds `VM.Monitor` until this change; [CHG-0042](/docs/changes/2026/0042-rehome-stray-vms/), which removed the node's two VMs outside the inventory |
@@ -60,18 +60,18 @@ which needs the `non-free-firmware` component (a follow-up).
 |---|---|---|
 | The node does not come back on the network: a NIC renamed by the new kernel, or the boot loader | `dv02hyp001p01` | The operator at the node's console. The guide: *"some NICs may change their name, in which case the network configuration needs to be adapted."* The one uplink is `enp0s31f6`, under `vmbr0` |
 | The download hangs the core router | `dv02cor002p01` | Packages are fetched in Step 3, before the outage, at 1,000 KB/s (`Acquire::http::Dl-Limit`), with the operator at the router's console and a ping watchdog on `10.20.99.1`. Throttled transfers at that rate have passed with the router answering every ping (2026-11-04, 2026-11-07) |
-| A guest does not start, or loses its disk | the service VMs | Every guest on the node is in the inventory and rebuilt from code (ADR-0033); prv's and obs's state has CHG-0039's backup |
+| A guest does not start, or loses its disk | the service VMs | Every guest on the node is in the inventory and rebuilt from code (ADR-0033); prv's state has CHG-0039's backup. obs's and obj's do not: the `backup` group holds only prv |
 | Substrate services are down during the window | tenants on `dv02hyp002p02` | Tenant workloads keep running. Tenant DNS, OpenBao, the Deevnet API, the Omada controller, the MQTT broker and the observability VMs are unavailable until the node is back. Announce the window to tenants |
 | The automation token fails on 9 | Packer, `proxmox_vm` | Proxmox: *"Custom roles referencing the `VM.Monitor` privilege will need to be adapted after the upgrade."* Step 6 does that from the inventory, then proves it with a build |
 | No undo after Step 4 | the node | Steps 1–3 change nothing that cannot be put back. After `apt dist-upgrade` the way back is forward, at the console, or [Rebuild a Hypervisor](/docs/runbook/substrate/recovery/rebuild-hypervisor/) |
 
 ## Prerequisites
 
-- [ ] No template build or `proxmox_vm` run in progress on the node
-- [ ] Operator at the consoles of `dv02hyp001p01` and the core router for Steps 3 to 6
-- [ ] Tenants told about the window
-- [ ] A current CHG-0039 backup of prv's and obs's state
-- [ ] Vault decrypted, collections built
+- [x] No template build or `proxmox_vm` run in progress on the node
+- [x] Operator at the consoles of `dv02hyp001p01` and the core router for Steps 3 to 6
+- [x] Tenants told about the window
+- [x] A current CHG-0039 backup of prv's state
+- [x] Vault decrypted, collections built
 
 ## Procedure
 
@@ -213,29 +213,64 @@ apt clean && apt update
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: latest 8.4, `systemd-boot` meta-package removed, `grub-efi-amd64` installed
-- [ ] Step 2: the node's configuration on the Builder
-- [ ] Step 3: Trixie repositories; packages downloaded, the router up throughout
-- [ ] Step 4: guests stopped; `apt dist-upgrade` done
-- [ ] Step 5: rebooted onto 9; the network and the guests back
-- [ ] Step 6: `DeevnetAutomation` holds `VM.GuestAgent.Audit`, not `VM.Monitor`
-- [ ] Step 7: sources modernized
-- [ ] Verification: a template build and a `proxmox_vm` run pass
-- [ ] The Software Catalog lists Proxmox VE 9 on Debian 13 for the node
+- [x] Step 1: latest 8.4, `systemd-boot` meta-package removed, `grub-efi-amd64` installed
+- [x] Step 2: the node's configuration on the Builder
+- [x] Step 3: Trixie repositories; packages downloaded, the router up throughout
+- [x] Step 4: guests stopped; `apt dist-upgrade` done
+- [x] Step 5: rebooted onto 9; the network and the guests back
+- [x] Step 6: `DeevnetAutomation` holds `VM.GuestAgent.Audit`, not `VM.Monitor`
+- [x] Step 7: sources modernized
+- [x] Verification: a template build and a `proxmox_vm` run pass
+- [x] The Software Catalog lists Proxmox VE 9 on Debian 13 for the node
 
 ## Outcome
 
-*Completed after the change has run.*
+**The management hypervisor runs Proxmox VE 9.2.32 on Debian 13, kernel 7.0.14-30, and every
+service VM came back on it.** The substrate's services were down from 17:47 to 18:06 on 2026-11-21,
+about 19 minutes. Steps 1 to 5 ran that evening and Steps 6 and 7 and the verification the next
+morning. Every command ran over SSH as `a_autoprov`, with the operator on site.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-11-21 17:19 | Step 1 | `pve8to9 --full` before: the same two failures and four warnings as on 2026-11-12. 33 Debian 12 updates applied; no Proxmox package among them, so the node stayed on 8.4.21. `systemd-boot` removed, `grub-efi-amd64` installed. After: only the `VM.Monitor` failure and the running-guests and microcode warnings |
+| 17:21 | Step 2 | The `/etc` tarball (84 kB) copied to the Builder's `/srv/pve1-vm-backups`, checksum matched |
+| 17:21–17:34 | Step 3 | Sources moved to Trixie; `ceph.list` pointed at `ceph-squid` on Trixie. 592 packages to upgrade and 160 new: 891 MB fetched in 11 min 51 s at 1,253 kB/s. The router watchdog missed no ping |
+| 17:47 | Step 4 | A fresh CHG-0039 backup of prv (`make backup-now`), then `stopall`: nine guests stopped in 41 s, `dv02idn001v01` last |
+| 17:50–17:57 | Step 4 | `apt dist-upgrade` exited 0; `dpkg --audit` clean. The EFI system partition was found unmounted and mounted before GRUB was configured (see below). `/etc/issue` and `/etc/default/grub` kept; the maintainer's `/etc/lvm/lvm.conf` taken; `chrony.conf` did not prompt |
+| 18:01–18:06 | Step 5 | Rebooted onto 7.0.14-30-pve; SSH back after 62 s. `enp0s31f6` kept its name; `vmbr0` up. The nine guests started in `startup` order, all by 18:05:53. OpenBao started sealed and was unsealed by the operator later |
+| 2026-11-22 | Step 6 | [ansible-inventory-deevnet#121](https://github.com/deevnet/ansible-inventory-deevnet/pull/121) set `proxmox_ve_major: 9`; `proxmox-access` changed one role. `DeevnetAutomation` holds `VM.GuestAgent.Audit` and not `VM.Monitor` |
+| 2026-11-22 08:40 | Step 7 | `apt modernize-sources` wrote `debian.sources`, `proxmox.sources` and `ceph.sources`; `apt update` clean once the enterprise repository was disabled (see below); the `.bak` files removed |
+| 2026-11-22 | Verification | `site.yml --limit dv02prv001v01 --tags vms`: `failed=0`. The API's `readyz`: database and OpenBao ok. `make proxmox-fedora-pve1`: template `fedora-server-44-1.7` built in 11 min as VMID 100, the router watchdog silent throughout and no disk errors on prv. The older template of the same name (VMID 103) was destroyed |
 
 ### Departures from the plan
 
--
+- **The router watchdog pinged `1.1.1.1` from the node, not `10.20.99.1`.** The core router does not
+  answer ICMP on `10.20.99.1`, so that watchdog reported a miss from its first probe while the
+  router was forwarding normally. A ping from the node to `1.1.1.1` crosses the router and answered
+  throughout the download and the template build.
+- **The upgrade ran over SSH as transient systemd units (`systemd-run`), not at the console.** A
+  dropped session could not interrupt it. It ran non-interactively, keeping the local copy of every
+  changed configuration file; the maintainer's `lvm.conf` was installed afterwards. The only
+  difference was the `global_filter` for ZFS and Ceph devices, which the node has neither of.
+- **The EFI system partition (`sdb2`) was neither mounted nor in `/etc/fstab`.** GRUB updates had not
+  been reaching the partition the firmware boots. It was mounted at `/boot/efi` before
+  `grub-efi-amd64` 2.12 was configured, and added to `/etc/fstab` with `nofail`. The removable
+  fallback loader (`EFI/BOOT/BOOTX64.efi`) is now kept up to date too, as the guide describes
+  (`grub2/force_efi_extra_removable`), which cleared a new `pve8to9` warning.
+- **`pve-manager` 9 installs `pve-enterprise.sources` enabled.** Without a subscription it fails
+  `apt update` with a 401. It carries `Enabled: no`. `dv02hyp002p02` instead renamed the file to
+  `.disabled`.
+- **chrony did not start on the old systemd** after its upgrade (*"Could not send notification to
+  $NOTIFY_SOCKET"*); it has run since the reboot.
+- **`pve8to9 --full` ends with one failure, not none:** *"unable to determine installed
+  intel-microcode version"*, new in the 9 checklist. Microcode is out of scope; the follow-up covers
+  it.
+- **The kernel is 7.0, not 6.14:** the newest that Proxmox VE 9.2 ships.
+- **The plan named obs's state as backed up by CHG-0039.** It is not; only prv's is. The Systems
+  row also missed `dv02obj001v01`. Both are corrected above.
 
 ## Follow-ups
 
 - [ ] Enable `non-free-firmware` and install `intel-microcode`, as `pve8to9` suggests
-- [ ] Mark the Hypervisor Platform Uplift's management-hypervisor task done
+- [x] Mark the Hypervisor Platform Uplift's management-hypervisor task done
+- [ ] Use a watchdog that crosses the core router (a ping to `1.1.1.1` from a host behind it) wherever a procedure names a ping to `10.20.99.1`

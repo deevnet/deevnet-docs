@@ -136,8 +136,6 @@ What each piece does, where it runs and what it holds is in [Deevnet Software](/
 What this catalog could not settle, and what it found out of step. Each is a small follow-up.
 
 **Versions that conflict or are missing:**
-- **`dv02hyp001p01`'s Proxmox VE:** "8.4.1" on the platform page and roadmap, but "8.4.21" in
-  [CHG-0008](/docs/changes/2026/0008-domain-vms-build-out/) (2026-09-15). One is a typo.
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
 - **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
   and `pkg info`, which `opnsense-diag.sh` already collects); whether `os-wol` is installed; the
@@ -155,5 +153,5 @@ untagged build.
 and Ubuntu 23.10 on `dv02rpi004p01` ([CHG-0027](/docs/changes/2026/0027-rpi004-switch-port/) follow-ups).
 
 **Other pages that disagree with this one** (facts, not versions):
-- The Proxmox ISO build still defaults to `PVE_ISO_VERSION=8.4-1`, while the tenant hypervisor runs 9.
-- CHG-0018 says the hypervisors run Debian 12. `dv02hyp002p02` runs Debian 13.
+- The Proxmox ISO build still defaults to `PVE_ISO_VERSION=8.4-1`, while both hypervisors run 9.
+- CHG-0018 says the hypervisors run Debian 12. Both run Debian 13.

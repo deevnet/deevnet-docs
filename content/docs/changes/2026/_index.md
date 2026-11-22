@@ -21,7 +21,7 @@ bookCollapseSection: true
 | CHG-0069 | 2026-11-14 | [Tenant Buckets](0069-tenant-buckets/) | Deployment | mobile | Complete |
 | CHG-0068 | 2026-11-14 | [The Object Store Moves to a VM of Its Own, on Silo](0068-object-store-vm/) | Deployment · Migration | mobile | Complete |
 | CHG-0067 | 2026-11-14 | [Tenant Secrets in Their Own OpenBao Namespace](0067-tenant-secrets/) | Deployment · Configuration | mobile | Complete |
-| CHG-0066 | Unscheduled | [The Management Hypervisor Moves to Proxmox VE 9](0066-hyp001-proxmox-9/) | Upgrade | mobile | Planned |
+| CHG-0066 | 2026-11-22 | [The Management Hypervisor Moves to Proxmox VE 9](0066-hyp001-proxmox-9/) | Upgrade | mobile | Complete |
 | CHG-0065 | 2026-11-12 | [Removing a Tenant Leaves Nothing Behind](0065-tenant-removal-leftovers/) | Deployment | mobile | Complete |
 | CHG-0064 | 2026-11-12 | [The Inventory Vault Under a New Password](0064-vault-rekey/) | Configuration | mobile | Complete |
 | CHG-0063 | 2026-11-12 | [The Core Router's Untagged LAN Loses Its Flat-Network Address](0063-retire-flat-lan-address/) | Decommission | mobile | Complete |
