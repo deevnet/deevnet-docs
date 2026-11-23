@@ -74,13 +74,17 @@ tables:
       title: Notes
     rows:
     - plugin: '`os-wol`'
-      state: Required, but whether it is installed is not recorded
+      state: Required; installed (discovery, 2026-11-23)
       license: BSD-2-Clause
       notes: Wake-on-LAN for the Builder and both hypervisors (`opnsense_wol`)
     - plugin: '`os-realtek-re`'
       state: Proposed, not installed
       license: BSD-2-Clause
       notes: 'Vendor NIC driver: an open corrective action on [INC-0004](/docs/incidents/2026/0004-core-router-lost/)'
+    - plugin: '`os-isc-dhcp`'
+      state: Installed, not used (discovery, 2026-11-23)
+      license: BSD-2-Clause
+      notes: ISC dhcpd, which the site used before Kea. Enabled on no interface; kept installed, like the other services OPNsense ships and the site does not use
   network-edge:
     columns:
     - key: component

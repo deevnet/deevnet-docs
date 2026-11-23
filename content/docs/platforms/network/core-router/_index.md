@@ -91,7 +91,8 @@ apex records — see
 
 **Kea serves DHCP because it is configured through an API.** The site started with ISC dhcpd and
 moved to Kea, whose `/api/kea/…` endpoints the `opnsense_dhcp` role and the Deevnet API both write
-reservations through. ISC dhcpd is not used.
+reservations through. ISC dhcpd is not used; its plugin, `os-isc-dhcp`, stays installed and enabled
+on no interface.
 
 Reservations are generated from inventory and keyed on each host's declared hardware address, which
 makes the MAC load-bearing: a guest whose NIC does not carry its declared address does not match its
