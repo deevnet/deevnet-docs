@@ -7,7 +7,7 @@ aliases:
 weight: 3
 tasks_completed: 7
 tasks_in_progress: 4
-tasks_planned: 4
+tasks_planned: 5
 ---
 
 # Extended Management Plane: Project Plan
@@ -91,6 +91,9 @@ Automated verification that the site was built according to inventory and is ful
 - ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API)
 - ⏳ Hardware validation (MAC addresses, IP assignments match inventory)
 - ⏳ Build report generation (consolidated pass/fail with evidence)
+- ⏳ Include the discovery report (`make discover`,
+  [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) v1): what runs, against
+  the Software Catalog and the pins
 
 ---
 
