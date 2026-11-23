@@ -9,9 +9,9 @@ aliases:
   - /docs/roadmap/infrastructure/substrate/software-discovery/plan/
   - /docs/roadmap/infrastructure/substrate/patch-awareness/plan/
 weight: 9
-tasks_completed: 3
+tasks_completed: 4
 tasks_in_progress: 0
-tasks_planned: 28
+tasks_planned: 27
 ---
 
 # Patch Management: Project Plan
@@ -174,8 +174,10 @@ with a way back.
   host. A snapshot is taken before each, and kept until the next cycle.
 - ⏳ A runbook procedure patches each hypervisor within its Proxmox VE line, one at a time, with
   its VMs shut down or moved first and verified after.
-- ⏳ A runbook procedure patches the core router within its OPNsense line: `make backup-router`
-  before and after, and the previous release as the way back.
+- ✅ A runbook procedure patches the core router within its OPNsense line: `make backup-router`
+  before and after, and the previous release as the way back
+  ([Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/), written after
+  [CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/)).
 - ⏳ A monthly cycle is one change record, of a pre-approved standard type defined in
   [Change Management](/docs/policies/change-management/), rather than a bespoke record per host.
 - ⏳ Each cycle ends with the v1 report run and the catalog updated from it.

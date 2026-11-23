@@ -39,7 +39,10 @@ types, the validation checklist and the record template — is
 ## Change Records
 
 Every **disruptive** change gets a change record, opened before it runs. Structural and routine
-changes may have one; otherwise their commit history is their record. Records are kept under
+changes may have one; otherwise their commit history is their record. **A change made by hand
+leaves no commit, so it gets a record whatever its class**: an update clicked through a vendor's
+web interface is one. A change found without a record is recorded after the fact, as soon as it is
+noticed, and its record says so. Records are kept under
 [Change Records](/docs/changes/), numbered `CHG-NNNN`, and are **retained**: written once, and
 changed after the fact only to close their follow-ups.
 
