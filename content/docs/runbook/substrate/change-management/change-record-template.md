@@ -126,6 +126,7 @@ Steps are backed out in reverse order. Name the point where undo stops being pra
 
 - [ ] Step 1: <name>
 - [ ] Verification: <the check>
+- [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
 
