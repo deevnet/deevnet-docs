@@ -18,7 +18,7 @@ instead of stating its version. They keep a version only where the context needs
 
 When a change upgrades something, it updates this page: its rows are kept in
 `data/software_catalog.yaml`, where a report can compare them. Versions are gathered by hand today:
-[Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) is the roadmap item for
+[Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) is the roadmap item for
 scanning the site instead.
 
 *As of 2026-09-26.*
@@ -137,7 +137,7 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 
 **Versions that conflict or are missing:**
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
-- **Not recorded** (each is a collector on the [Software Discovery](/docs/roadmap/infrastructure/substrate/software-discovery/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
+- **Not recorded** (each is a collector on the [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) roadmap): the FreeBSD base, Kea and Unbound versions (all readable with `opnsense-version -v`
   and `pkg info`, which `opnsense-diag.sh` already collects); whether `os-wol` is installed; the
   GL.iNet firmware; the [ZimaBoard](/docs/platforms/hardware/network/zimaboard-832/)'s BIOS; the Pi bootloader EEPROMs; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
   Fedora release; the OS on `dv02rpi001p01` to `…003p01`.

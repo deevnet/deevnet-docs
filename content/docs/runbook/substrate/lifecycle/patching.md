@@ -36,6 +36,9 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 cannot patch its hosts. The options (accept internet access, a full local mirror at roughly 200 GB
 per Fedora release, or security updates only) are recorded in the
 [Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/)
-candidate. Maintenance windows, patch testing and rollback criteria are routine operations, not
-roadmap items; knowing when a patch is needed is the
-[Patch Awareness](/docs/roadmap/infrastructure/substrate/patch-awareness/) roadmap project.
+candidate.
+
+**There is no patch cycle yet.** A monthly cycle in a fixed order, a procedure and a way back for
+each kind of host, unattended security updates where that is safe, and knowing when a patch is
+needed are the [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/)
+roadmap project.

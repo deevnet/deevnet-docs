@@ -10,7 +10,7 @@ bullets:
   - text: "**The site's secrets got harder to reach.** OpenBao is sealed between work sessions and opens only with split-key shares (CHG-0053, Nov 8). Builds no longer read it (Nov 13), it refuses certificates for the site's own names (Nov 7), and every long-lived credential is listed under a written policy (Nov 3)."
     items: [infrastructure/substrate/secrets-identity, infrastructure/substrate/credential-rotation, infrastructure/tenant-services/tenant-pki]
   - text: "**The site is easier to restore and to account for.** The core router was restored from its backup in a rehearsal, and the network devices back themselves up after every change (Nov 11). The router now meets the tenant overlay through one transit network (Nov 12), and the site's own software is cataloged, pinned and checked on every pull request (Nov 3)."
-    items: [infrastructure/substrate/management-plane, infrastructure/tenant-services/tenant-fabric, infrastructure/substrate/software-discovery, infrastructure/substrate/network-automation]
+    items: [infrastructure/substrate/management-plane, infrastructure/tenant-services/tenant-fabric, infrastructure/substrate/patch-management, infrastructure/substrate/network-automation]
   - text: "**EdS moved to names not tied to a site.** Its certificates were reissued, its console answers at `console.eds.deevnet.net`, and its home Pi was rebuilt with all of its back end (Nov 1)."
     items: [infrastructure/tenant-services/tenant-pki, eds/eds/screens-console, eds/eds/platform]
 next: "The take-home virtual machine for VirtualBox and Hyper-V (v3, CHG-0076); devices' own certificates through the Deevnet API; OpenBao rebuilt from the site's vault alone in a drill; and a tenant rebuilt from its own code in a drill."

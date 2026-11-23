@@ -14,7 +14,7 @@ waypoints:
 
 # Full Site Rebuild
 
-End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Automation, and Extended Management Plane projects.
+End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Management, and Extended Management Plane projects.
 
 {{< overall-progress >}}
 

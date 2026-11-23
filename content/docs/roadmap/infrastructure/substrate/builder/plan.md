@@ -37,7 +37,7 @@ Achieve fully automated, repeatable provisioning of the mobile (mobile) site fro
 
 **Out of Scope**
 - Extended management plane (logging, telemetry, secrets, identity — separate project)
-- Patch automation and firmware upgrades — see [Patch Automation](/docs/roadmap/infrastructure/substrate/patch-awareness/)
+- Patch automation and firmware upgrades — see [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/)
 - Full site rebuild event — see [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/)
 - Application/tenant workload automation (separate per-tenant)
 - Cloud infrastructure (this is on-prem only)
@@ -100,6 +100,6 @@ Automated configuration of network infrastructure. Migration from flat 192.168.1
 - ✅ Implement Network Segmentation (12 VLANs, zone-based firewall policy)
 - ✅ Migrate to RFC1918 10 space (10.20.x.0/24 subnets live)
 - ✅ Wireless AP SSID-to-VLAN configuration (manual via standalone UI — automation gap documented)
-- ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Automation project)
+- ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Management project)
 - ✅ Authority transition automation (bootstrap-auth/core-auth playbooks, DNS/DHCP host records from inventory, IP swap)
 - ✅ Unify build sequence documentation (authority transitions and network segmentation inline)
