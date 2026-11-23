@@ -9,9 +9,9 @@ aliases:
   - /docs/roadmap/infrastructure/substrate/software-discovery/plan/
   - /docs/roadmap/infrastructure/substrate/patch-awareness/plan/
 weight: 9
-tasks_completed: 4
+tasks_completed: 10
 tasks_in_progress: 0
-tasks_planned: 27
+tasks_planned: 21
 ---
 
 # Patch Management: Project Plan
@@ -72,7 +72,7 @@ That leaves these gaps, each closed by a version after the first:
 
 ## Versions
 
-### v1, know what runs (current)
+### v1, know what runs (done 2026-11-23)
 
 A dated report of what is actually running, compared with the catalog.
 
@@ -90,20 +90,20 @@ A dated report of what is actually running, compared with the catalog.
   `terraform-provider-deevnet`, `deevnet-log-bridge`, `deevnet-container-image-factory` and the
   tenant repositories, and `galaxy.yml` agreeing with `LICENSE` in the `deevnet.mgmt` and
   `deevnet.net` collections. Every Deevnet repository is Apache-2.0
-- ⏳ **Core router collector:** `opnsense-version -v` for the release and base, and `pkg info` for
+- ✅ **Core router collector:** `opnsense-version -v` for the release and base, and `pkg info` for
   the bundled packages in use (Kea, Unbound) and every installed `os-*` plugin. `opnsense-diag.sh`
   already gathers the first.
-- ⏳ **Hypervisor collector:** `pveversion -v`, which covers Proxmox VE, the kernel, FRR and the
+- ✅ **Hypervisor collector:** `pveversion -v`, which covers Proxmox VE, the kernel, FRR and the
   SDN packages.
-- ⏳ **Substrate service VM and Builder collector:** `/etc/os-release`, the kernel, the Podman
+- ✅ **Substrate service VM and Builder collector:** `/etc/os-release`, the kernel, the Podman
   version, and the image of every running container, read from the container and not from the
   unit file.
-- ⏳ **Network device collector:** the switch's `show system-info`, and the controller and AP
+- ✅ **Network device collector:** the switch's `show system-info`, and the controller and AP
   versions from the Omada Open API.
-- ⏳ One dated report per run, kept on the Builder, listing for each item the observed version and
+- ✅ One dated report per run, kept on the Builder, listing for each item the observed version and
   the catalog's version, and for each running container the image its role pins, with every
   mismatch called out.
-- ⏳ The report runs from one `make` target, and after any change record that upgrades something,
+- ✅ The report runs from one `make` target, and after any change record that upgrades something,
   so the catalog is updated in the same change.
 
 **The choices, the owner's, 2026-11-23.** The report has its own `make discover` target; [Build
@@ -113,10 +113,18 @@ expected OS. Pins are compared for containers only: an OS or firmware has no pin
 its catalog row. Reports stay on the Builder, since the docs are public and a report lists the exact
 version of everything the site runs.
 
-**Not in v1:** release and advisory sources (v2); applying anything. Discovery reports; changes go
-through change management.
+**What the first runs found, 2026-11-23.** The core router had been updated by hand without a
+record ([CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/), which brought the
+[Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/) procedure), and an unused
+plugin the catalog didn't list. Automation could not log in to the switch at all: paramiko offered a
+key file before the password, now turned off in each collection's `ansible.cfg`. The clean run read
+15 systems with no mismatch and no pin drift. Podman still differs from VM to VM (5.8.4 to 5.8.9),
+which v4's cycle evens out.
 
-### v2, told when an update is waiting
+**Not in v1:** waiting updates (v2); release and advisory sources (v3); applying anything. Discovery
+reports; changes go through change management.
+
+### v2, told when an update is waiting (current)
 
 Most of the substrate can say for itself that an update is waiting, so the operator is told by
 email rather than finding out. Comparing against upstream is v3; this asks each system.

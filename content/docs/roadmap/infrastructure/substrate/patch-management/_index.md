@@ -17,7 +17,8 @@ waypoints:
     date: "2026-11-03"
   - title: "Patch management v1 done: installed versions collected from routers, hypervisors, VMs and network devices, in a dated report against the catalog"
     milestone: true
-    status: planned
+    status: done
+    date: "2026-11-23"
   - title: "Patch management v2 done: the operator is emailed when any substrate system has an update waiting, such as a new OPNsense patch"
     milestone: true
     status: planned

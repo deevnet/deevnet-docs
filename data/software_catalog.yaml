@@ -371,6 +371,11 @@ tables:
       license: Free software, per package
       support: Community
       source: Bundled with Proxmox VE 9
+    - component: Linux kernel
+      version: 7.0.14
+      license: GPL-2.0
+      support: Bundled
+      source: Discovery, 2026-11-23 (7.0.14-30-pve, since [CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
     - component: Proxmox SDN (`libpve-network-perl`)
       version: 1.6.10
       license: AGPL-3.0
@@ -382,10 +387,10 @@ tables:
       support: Vendor, no contract
       source: Observed 2026-09-26 (`dmidecode`)
     - component: '**FRR** (EVPN, OpenFabric underlay)'
-      version: not recorded. `frr-pythontools` is 10.6.1-1+pve3
+      version: 10.6.1-1+pve3
       license: GPL-2.0-or-later
       support: Community
-      source: Observed 2026-08-30 (pythontools only)
+      source: Discovery, 2026-11-23
     - component: Tenant egress agent
       version: follows `deevnet.net` 1.0.0
       license: Apache-2.0 (collection `LICENSE`)
