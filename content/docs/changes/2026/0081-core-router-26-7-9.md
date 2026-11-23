@@ -31,7 +31,7 @@ within the 26.7 line, through the web interface's firmware updates. The first di
 operator confirmed the update.
 
 The steps a patch takes around the update itself were missed: no record, no release notes read
-into one, no configuration backup before or after. They are now the
+into one, no configuration backup taken around it. They are now the
 [Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/) procedure, so the next
 patch follows them.
 
@@ -67,8 +67,9 @@ From the discovery report of 2026-11-23 (`make discover`, kept on the Builder):
 ## Undo
 
 A point update is undone forward. The way back to 26.7.3_11 would be a reinstall and a restored
-configuration, and no backup was taken from before the update; the latest in the inventory predates
-it.
+configuration. The inventory's backup of 2026-11-15 serves: `make backup-router` on 2026-11-23 found
+the configuration unchanged from it, so it holds the configuration from both before and after the
+update.
 
 ## To close
 
@@ -91,4 +92,4 @@ There was no plan: the change was made before a record existed.
 
 ## Follow-ups
 
-- [ ] Run `make backup-router` and commit the backup through a pull request, so the inventory holds 26.7.9's configuration
+- [x] Run `make backup-router`, so the inventory holds 26.7.9's configuration: run 2026-11-23, unchanged from the backup of 2026-11-15, so nothing to commit
