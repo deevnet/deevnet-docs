@@ -30,6 +30,33 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 
 ---
 
+## Updates waiting
+
+**The update watcher on the Builder asks every substrate host once a day what updates it has
+waiting, and says so at login.** It runs as `deevnet-watch`, whose key each host pins to one
+read-only check ([CHG-0082](/docs/changes/2026/0082-update-watcher/)).
+
+| What | Where |
+|---|---|
+| Everything waiting now | `/srv/updates/latest.txt`, rewritten each run |
+| What was new on a day | `/srv/updates/YYYY-MM-DD.txt` |
+| The banner | Printed in every interactive login shell on the Builder while something new is unacknowledged |
+
+What counts as new: a security update, a host that had nothing waiting and now has, a new OPNsense
+point release or line (from OPNsense's published releases, against the newest discovery report), new
+firmware for a device the Omada controller manages, a system that stopped answering, and anything
+still waiting after 30 days. The hypervisors are listed but are not news: Proxmox VE notifies its own.
+
+In `ansible-collection-deevnet.builder`:
+
+```bash
+make update-watch-ack       # the report is read: clear the banner until something is new
+make update-watch-now       # run it now, instead of waiting for the timer
+make update-watch-dry-run   # print what it would write, writing nothing
+```
+
+---
+
 ## What is not covered
 
 **Post-install updates need the internet.** There is no local package mirror, so an air-gapped site

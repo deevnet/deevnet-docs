@@ -7,10 +7,10 @@ weight: -82
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-23 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **Planned** |
+| **Status** | **In progress**: deployed 2026-11-23; closes with the timer's first run on its own |
 | **Window** | No outage. An hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the watcher); every substrate service VM, both Builder VMs and both hypervisors (the read-only account); the Omada controller (a view-only client) |
@@ -154,20 +154,53 @@ controller: delete the view-only client. Then remove the roles from both `site.y
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the watcher, its timer and Postfix on the Builder
-- [ ] Step 2: the check on the Builder VMs and hypervisors
-- [ ] Step 3: the check on every service VM
-- [ ] Step 4: a dry run with every host answering
-- [ ] Step 5: the key refused for anything but the check, from anywhere but the Builder
-- [ ] Step 6: the first mail received; a second run sends nothing
-- [ ] Verification: the timer's first run on its own, with nothing mailed again
-- [ ] The runbook's Patching page says what the watcher mails and how to run it now
+- [x] Step 1: the watcher and its timer on the Builder (Postfix installed, then removed: see Departures)
+- [x] Step 2: the check on the Builder VMs and hypervisors
+- [x] Step 3: the check on every service VM
+- [x] Step 4: a dry run with every host answering
+- [x] Step 5: the key refused for anything but the check, with no terminal, no forwarding and no sudo
+- [x] Step 6: the first report and banner written; a second run finds nothing new
+- [ ] Verification: the timer's first run on its own, finding nothing new
+- [x] The runbook's Patching page says what the watcher reports and how to run it now
 - [ ] Patch Management v2 marked done
 
 ## Outcome
 
-To be written when the change has run.
+**The watcher runs on the Builder and every substrate host answers it; it reports in `/srv/updates`
+and at login, not by mail.** All commands ran from the Builder, the operator's session supplying the
+automation key. Times are to the minute from the session, not a log, except Step 6's, which are
+the watcher's journal.
+
+| When | Steps | What happened |
+|---|---|---|
+| 18:17 | Step 1, 2 | `make update-watch`: the watcher, its key, the timer and Postfix on the Builder; the check and account on both Builder VMs and both hypervisors. No failure |
+| 18:20 | Step 1 | `main.cf` held `mydestination` twice: the role's `lineinfile` had replaced a commented line, not the active one. The role now uses `postconf -X` then `-e`; two more deploys changed nothing |
+| 18:22 | Step 3 | `site.yml --tags update_check`: the check and account on all seven service VMs |
+| 18:23 | Step 4 | Every host answered. `dv02bld002v01` answered but could not check: its dnf5 (5.4.1, older than the other VMs' 5.4.4 to 5.4.7) cannot take its lock as an unprivileged user. The watcher listed it as up to date with an error beside it; it now counts as not answering |
+| 18:25 | Step 5 | On `dv02bld001v01`: asked for `id`, the key ran the check; a terminal was refused; a port forward was refused (`administratively prohibited`). On all eleven hosts: `deevnet-watch` may not run sudo, and holds one key line, with `command=`, `restrict` and `from=` the Builder |
+| 18:28 | Step 6 | The first run queued its mail; Postfix could not connect to the operator's provider on port 25 |
+| 18:30 | | Outbound port 25 is blocked on the site's current network, to every provider tried, from the Builder and from a hypervisor alike; 587, 465 and 443 pass |
+| 18:37 | Step 6 | The report replaced mail (below). The queued mail deleted, Postfix removed from the Builder, the watcher's state reset. The run wrote `latest.txt`, the dated report and the banner: 19 new. A second run: 0 new |
+
+What it found on its first run: 1,700 updates waiting across the substrate, about 700 for security,
+from 17 on `dv02obj001v01` to 578 on the Builder itself; five security updates on each hypervisor; the
+core router on the newest OPNsense point release.
+
+### Departures from the plan
+
+- **A report and a login banner replace mail.** Mail could not leave the site's current network on
+  port 25, and a mobile site's network changes under it. The operator chose a report on the Builder:
+  `/srv/updates/latest.txt` each run, a dated file of what was new, and a notice that
+  `/etc/profile.d/deevnet-updates.sh` prints in every interactive login shell until
+  `make update-watch-ack`. Postfix and the mail settings left the role and the inventory.
+- **`from=` was checked, not exercised.** Using the key from another host would have meant copying
+  the watcher's private key off the Builder, the exposure the restriction exists for. Every host's key
+  line carries `from=` the Builder's address instead.
+- **No Omada client yet.** The view-only client is not made, so the report says the devices were not
+  checked.
 
 ## Follow-ups
 
-None yet.
+- [ ] Make the view-only Omada Open API client and put its id and secret in the vault, so the AP's firmware is checked
+- [ ] Update dnf5 on `dv02bld002v01` (it is among its waiting security updates), so the watcher can check it
+- [ ] The hypervisors' Proxmox notifications also leave by direct mail on port 25 (CHG-0079), which the site's current network blocks: decide how they reach the operator
