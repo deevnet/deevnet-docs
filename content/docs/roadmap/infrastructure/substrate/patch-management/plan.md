@@ -11,7 +11,7 @@ aliases:
 weight: 9
 tasks_completed: 3
 tasks_in_progress: 0
-tasks_planned: 30
+tasks_planned: 28
 ---
 
 # Patch Management: Project Plan
@@ -39,8 +39,8 @@ updates, so each patch is a one-off change record.
 That leaves these gaps, each closed by a version after the first:
 - **A pin is intent, not fact.** It says what the automation deploys, not what is running after a
   manual upgrade, a failed play or a host rebuilt by hand. Much is never written down at all:
-  OPNsense's bundled packages, the FRR on the tenant hypervisor, Podman on the VMs, the OS on three
-  of the four Pis and the Builder's own Fedora release are "not recorded" in the catalog today.
+  OPNsense's bundled packages, the FRR on the tenant hypervisor, Podman on the VMs and the
+  Builder's own Fedora release are "not recorded" in the catalog today.
 - **Nothing says when an update is waiting.** A new OPNsense patch is found only by looking.
   Release and advisory sources are not recorded, and end of life is noticed late.
 - **Applying a patch has no rhythm.** No cycle, no order, no standing procedure per kind of host.
@@ -52,7 +52,7 @@ That leaves these gaps, each closed by a version after the first:
   automation already holds, compared against the catalog and the inventory pins
 - An email to the operator when an update is waiting, first from what each system reports, then
   from release and advisory sources for every catalog item, with end-of-life dates
-- A monthly patch cycle for substrate hosts and the Pi lab, with a procedure and a way back for each
+- A monthly patch cycle for substrate hosts, with a procedure and a way back for each
   kind of host
 - Unattended security updates where a failure cannot take the site down
 - The take-home images Deevnet publishes in the tenant downloads
@@ -60,6 +60,8 @@ That leaves these gaps, each closed by a version after the first:
 **Out of Scope**
 - Tenant workloads. What a tenant runs is the tenant's to track and patch.
 - The travel router, which automation doesn't manage. It stays a manual entry.
+- The Pi lab. Its Pis take whatever microSD card an experiment needs that day, so there is no
+  expected OS to check or patch. The take-home Pi image Deevnet publishes is in scope (v6).
 - A local package mirror. It stays an evaluation candidate
   ([Substrate package mirror](/docs/platforms/evaluations/software/management-plane/package-mirror/));
   the cycle assumes internet access, as patching does today.
@@ -98,19 +100,18 @@ A dated report of what is actually running, compared with the catalog.
   unit file.
 - ⏳ **Network device collector:** the switch's `show system-info`, and the controller and AP
   versions from the Omada Open API.
-- ⏳ **Raspberry Pi collector:** `/etc/os-release` and the kernel, for every Pi that answers. A Pi
-  that doesn't answer is reported as unreachable, not skipped silently.
 - ⏳ One dated report per run, kept on the Builder, listing for each item the observed version and
   the catalog's version, and for each running container the image its role pins, with every
   mismatch called out.
 - ⏳ The report runs from one `make` target, and after any change record that upgrades something,
   so the catalog is updated in the same change.
 
-**The choices, the owner's, 2026-11-23.** The report has its own `make discover` target;
-[Build Verification](/docs/roadmap/infrastructure/substrate/management-plane/) includes it when that
-report is built, not before. Pins are compared for containers only: an OS or firmware has no pin to
-compare, only its catalog row. Reports stay on the Builder, since the docs are public and a report
-lists the exact version of everything the site runs.
+**The choices, the owner's, 2026-11-23.** The report has its own `make discover` target; [Build
+Verification](/docs/roadmap/infrastructure/substrate/management-plane/) includes it when that report
+is built, not before. The Pi lab is left out: its cards change with each experiment, so it has no
+expected OS. Pins are compared for containers only: an OS or firmware has no pin to compare, only
+its catalog row. Reports stay on the Builder, since the docs are public and a report lists the exact
+version of everything the site runs.
 
 **Not in v1:** release and advisory sources (v2); applying anything. Discovery reports; changes go
 through change management.
@@ -124,7 +125,7 @@ email rather than finding out. Comparing against upstream is v3; this asks each 
 
 - ⏳ Each v1 collector also reports the updates waiting, and which of them are security updates:
   the core router through OPNsense's firmware update check, the Fedora substrate service VMs and the
-  Builder through `dnf`, the Pis through `apt`, and the switch and AP through the firmware upgrades
+  Builder through `dnf`, and the switch and AP through the firmware upgrades
   the Omada controller offers. The hypervisors already email their own waiting package updates
   through Proxmox's notifications (CHG-0079); they are counted in the report, not mailed twice.
 - ⏳ A daily timer on the Builder runs the collectors.
@@ -166,8 +167,8 @@ with a way back.
 
 - ⏳ The cycle is written in the runbook's [Patching](/docs/runbook/substrate/lifecycle/patching/)
   page: monthly, in the order substrate service VMs and the Builder, then the hypervisors one at a
-  time, then the core router, then the Pi lab. A waiting security update the operator judges
-  urgent starts an out-of-cycle run.
+  time, then the core router. A waiting security update the operator judges urgent starts an
+  out-of-cycle run.
 - ⏳ A playbook patches the Fedora substrate service VMs and the Builder one host at a time:
   update, reboot when the kernel or a library in use changed, and a health check before the next
   host. A snapshot is taken before each, and kept until the next cycle.
@@ -175,7 +176,6 @@ with a way back.
   its VMs shut down or moved first and verified after.
 - ⏳ A runbook procedure patches the core router within its OPNsense line: `make backup-router`
   before and after, and the previous release as the way back.
-- ⏳ A playbook patches the Pis in the Pi lab, and reports any that didn't answer.
 - ⏳ A monthly cycle is one change record, of a pre-approved standard type defined in
   [Change Management](/docs/policies/change-management/), rather than a bespoke record per host.
 - ⏳ Each cycle ends with the v1 report run and the catalog updated from it.
