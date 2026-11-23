@@ -100,11 +100,17 @@ A dated report of what is actually running, compared with the catalog.
   versions from the Omada Open API.
 - ⏳ **Raspberry Pi collector:** `/etc/os-release` and the kernel, for every Pi that answers. A Pi
   that doesn't answer is reported as unreachable, not skipped silently.
-- ⏳ One dated report per run, listing for each item the observed version, the catalog's version
-  and the inventory pin, with every mismatch called out.
-- ⏳ The report runs as part of
-  [Build Verification](/docs/roadmap/infrastructure/substrate/management-plane/), and after any
-  change record that upgrades something, so the catalog is updated in the same change.
+- ⏳ One dated report per run, kept on the Builder, listing for each item the observed version and
+  the catalog's version, and for each running container the image its role pins, with every
+  mismatch called out.
+- ⏳ The report runs from one `make` target, and after any change record that upgrades something,
+  so the catalog is updated in the same change.
+
+**The choices, the owner's, 2026-11-23.** The report has its own `make discover` target;
+[Build Verification](/docs/roadmap/infrastructure/substrate/management-plane/) includes it when that
+report is built, not before. Pins are compared for containers only: an OS or firmware has no pin to
+compare, only its catalog row. Reports stay on the Builder, since the docs are public and a report
+lists the exact version of everything the site runs.
 
 **Not in v1:** release and advisory sources (v2); applying anything. Discovery reports; changes go
 through change management.
