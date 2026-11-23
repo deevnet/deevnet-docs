@@ -139,8 +139,8 @@ What this catalog could not settle, and what it found out of step. Each is a sma
 - **OPNsense 25.7.10 to 26.7.3:** no change record covers the upgrade.
 - **OPNsense 26.7.3 to 26.7.9:** applied by hand without a record, then recorded after the fact as
   [CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/).
-- **`os-isc-dhcp` is installed on the core router** (discovery, 2026-11-23), though ISC dhcpd is not
-  used: keep it with a row here, or remove it through a change.
+- **`os-isc-dhcp` is installed on the core router** (discovery, 2026-11-23), though ISC dhcpd has not
+  been used since the move to Kea: its removal is [CHG-0082](/docs/changes/2026/0082-remove-os-isc-dhcp/).
 - **Not recorded** (each is a collector on the [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) roadmap): the Kea and Unbound versions, which
   `make discover` reads but this catalog's services table has no column for; the
   GL.iNet firmware; the [ZimaBoard](/docs/platforms/hardware/network/zimaboard-832/)'s BIOS; the Pi bootloader EEPROMs; the `frr` package on `dv02hyp002p02`; Podman on the VMs and Builder; the Builder's
