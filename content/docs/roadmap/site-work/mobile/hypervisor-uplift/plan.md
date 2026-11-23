@@ -39,8 +39,8 @@ major-version distribution upgrade on each node, not a package update.
   [Tenant Fabric](/docs/roadmap/infrastructure/tenant-services/tenant-fabric/)
 - Clustering either hypervisor — both remain standalone per
   [ADR-0001](/docs/architecture/decisions/tenant-networking/0001-tenant-network-fabric/)
-- Applying patches — routine operations; knowing when one is needed is
-  [Patch Awareness](/docs/roadmap/infrastructure/substrate/patch-awareness/)
+- Routine patching within a line — tracked in
+  [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/)
 
 ---
 

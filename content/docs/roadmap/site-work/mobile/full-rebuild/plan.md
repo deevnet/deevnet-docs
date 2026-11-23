@@ -12,7 +12,7 @@ tasks_planned: 8
 
 # Full Site Rebuild: Project Plan
 
-End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Automation, and Extended Management Plane projects.
+End-to-end rebuild of the mobile site from scratch. Validates air-gap recovery capability and exercises all automation built across the Builder, Patch Management, and Extended Management Plane projects.
 
 **Roadmap item:** [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/)
 
@@ -34,7 +34,7 @@ Perform a complete tear-down and rebuild of the mobile (mobile) site to validate
 
 **Prerequisites**
 - [Builder & Core Services](/docs/roadmap/infrastructure/substrate/builder/) — ✅ Complete
-- [Patch Automation](/docs/roadmap/infrastructure/substrate/patch-awareness/) — firmware and automation improvements applied
+- [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) — firmware and automation improvements applied
 - [Extended Management Plane](/docs/roadmap/infrastructure/substrate/management-plane/) — management services deployable
 
 ---
