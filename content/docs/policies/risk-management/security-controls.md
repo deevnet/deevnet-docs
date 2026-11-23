@@ -60,7 +60,9 @@ caller's zone, and the secret store's signing role refuses a name outside tenant
 ## Credentials
 
 - **Automation uses one account, by key.** `a_autoprov`, SSH key only, passwordless sudo, provisioned
-  by the image factory. No password is written in a playbook; the passwords some devices and services
+  by the image factory. One more account only reads: `deevnet-watch`, the update watcher's, whose key
+  is pinned on each host to one program that reports waiting updates (`command=`, `restrict`,
+  `from=` the Builder), with no sudo ([CHG-0082](/docs/changes/2026/0082-update-watcher/)). No password is written in a playbook; the passwords some devices and services
 need (Omada, the switch, the AP, Grafana, MinIO) are in the inventory's vault, encrypted
 - **Secrets are encrypted before they are committed**, and a pre-commit hook refuses a plaintext
   vault

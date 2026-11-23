@@ -11,7 +11,7 @@ aliases:
 weight: 9
 tasks_completed: 10
 tasks_in_progress: 0
-tasks_planned: 21
+tasks_planned: 22
 ---
 
 # Patch Management: Project Plan
@@ -127,30 +127,46 @@ reports; changes go through change management.
 ### v2, told when an update is waiting (current)
 
 Most of the substrate can say for itself that an update is waiting, so the operator is told by
-email rather than finding out. Comparing against upstream is v3; this asks each system.
+email rather than finding out. A watcher on the Builder asks every host once a day, with
+credentials that can read and nothing else.
 
 **Done when:**
 
-- ⏳ Each v1 collector also reports the updates waiting, and which of them are security updates:
-  the core router through OPNsense's firmware update check, the Fedora substrate service VMs and the
-  Builder through `dnf`, and the switch and AP through the firmware upgrades
-  the Omada controller offers. The hypervisors already email their own waiting package updates
-  through Proxmox's notifications (CHG-0079); they are counted in the report, not mailed twice.
-- ⏳ A daily timer on the Builder runs the collectors.
-- ⏳ The Builder sends mail to the operator's address, the one the hypervisors' notifications use.
-- ⏳ An update is mailed once, the day it is first seen, not every day it waits. Security updates
-  are marked as such in the subject.
-- ⏳ An update still waiting after 30 days is mailed again, and a system that didn't answer is
-  mailed as unreachable.
+- ⏳ Every substrate service VM, Builder VM and hypervisor carries the read-only `deevnet-watch`
+  account: no sudo, its key pinned to one program, `deevnet-update-check`, with `command=`,
+  `restrict` and `from=` the Builder. The check reads the package manager's cache only (`dnf` on
+  Fedora, `apt` on Proxmox VE), which each host's own timer keeps fresh, so it downloads nothing.
+- ⏳ The watcher runs daily on the Builder as its own account. It asks every host; it asks the
+  Omada controller, with a view-only client, for the AP's latest firmware; and it compares
+  OPNsense's published releases with the version the newest discovery report saw on the core
+  router.
+- ⏳ The Builder sends mail to the operator's address, the one the hypervisors' notifications use,
+  through its own send-only Postfix.
+- ⏳ What is new is mailed once: a security update, a host newly behind, a new OPNsense release or
+  device firmware. The subject counts the security updates. Ordinary package churn on a host
+  already behind sends nothing by itself.
+- ⏳ Anything still waiting after 30 days is mailed again, and a system that didn't answer is
+  mailed once per outage. The hypervisors are asked but not mailed about, since Proxmox VE mails
+  its own (CHG-0079).
+- ⏳ It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), which closes with a
+  mail received and a second run that sends nothing.
 
-**Not in v2:** software that can't report its own updates (v3); a phone or ntfy alert, which waits
+**The choices, the owner's, 2026-11-23.** The daily check runs unattended with credentials of its
+own that can only read: the automation key, the vault and OpenBao stay with the operator's
+sessions. The core router is watched upstream, not asked: OPNsense's only firmware privilege,
+"System: Firmware", also allows installing updates and rebooting, so no key the watcher holds
+reaches the router. Upstream watching sees point releases, not the package-only hotfixes between
+them.
+
+**Not in v2:** the access switch, which the Omada controller does not manage and whose CLI cannot
+say what is newer, and the Omada controller itself (both v3); a phone or ntfy alert, which waits
 for operator alerting on the Observability item.
 
 ### v3, told when upstream moves on
 
 What can't report its own updates is watched at the source: the container images (OpenBao,
 VerneMQ, silo, Grafana, the VictoriaMetrics services, Alertmanager, ntfy), the Omada controller,
-and Deevnet's own pinned releases. The same mail carries it.
+the access switch's firmware, and Deevnet's own pinned releases. The same mail carries it.
 
 **Done when:**
 
