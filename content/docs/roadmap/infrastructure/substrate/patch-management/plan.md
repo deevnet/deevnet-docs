@@ -9,9 +9,9 @@ aliases:
   - /docs/roadmap/infrastructure/substrate/software-discovery/plan/
   - /docs/roadmap/infrastructure/substrate/patch-awareness/plan/
 weight: 9
-tasks_completed: 10
-tasks_in_progress: 0
-tasks_planned: 22
+tasks_completed: 14
+tasks_in_progress: 2
+tasks_planned: 16
 ---
 
 # Patch Management: Project Plan
@@ -50,8 +50,9 @@ That leaves these gaps, each closed by a version after the first:
 **In Scope**
 - Read-only collection from every substrate system the Builder can reach, with the credentials
   automation already holds, compared against the catalog and the inventory pins
-- An email to the operator when an update is waiting, first from what each system reports, then
-  from release and advisory sources for every catalog item, with end-of-life dates
+- A report and a login banner for the operator when an update is waiting, first from what each
+  system reports, then from release and advisory sources for every catalog item, with end-of-life
+  dates
 - A monthly patch cycle for substrate hosts, with a procedure and a way back for each
   kind of host
 - Unattended security updates where a failure cannot take the site down
@@ -126,37 +127,40 @@ reports; changes go through change management.
 
 ### v2, told when an update is waiting (current)
 
-Most of the substrate can say for itself that an update is waiting, so the operator is told by
-email rather than finding out. A watcher on the Builder asks every host once a day, with
-credentials that can read and nothing else.
+Most of the substrate can say for itself that an update is waiting, so the operator is told at
+login on the Builder rather than finding out. A watcher on the Builder asks every host once a day,
+with credentials that can read and nothing else.
 
 **Done when:**
 
-- ⏳ Every substrate service VM, Builder VM and hypervisor carries the read-only `deevnet-watch`
+- ✅ Every substrate service VM, Builder VM and hypervisor carries the read-only `deevnet-watch`
   account: no sudo, its key pinned to one program, `deevnet-update-check`, with `command=`,
   `restrict` and `from=` the Builder. The check reads the package manager's cache only (`dnf` on
   Fedora, `apt` on Proxmox VE), which each host's own timer keeps fresh, so it downloads nothing.
-- ⏳ The watcher runs daily on the Builder as its own account. It asks every host; it asks the
+- 🔄 The watcher runs daily on the Builder as its own account. It asks every host; it asks the
   Omada controller, with a view-only client, for the AP's latest firmware; and it compares
   OPNsense's published releases with the version the newest discovery report saw on the core
   router.
-- ⏳ The Builder sends mail to the operator's address, the one the hypervisors' notifications use,
-  through its own send-only Postfix.
-- ⏳ What is new is mailed once: a security update, a host newly behind, a new OPNsense release or
-  device firmware. The subject counts the security updates. Ordinary package churn on a host
-  already behind sends nothing by itself.
-- ⏳ Anything still waiting after 30 days is mailed again, and a system that didn't answer is
-  mailed once per outage. The hypervisors are asked but not mailed about, since Proxmox VE mails
-  its own (CHG-0079).
-- ⏳ It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), which closes with a
-  mail received and a second run that sends nothing.
+- ✅ It writes its report on the Builder, in `/srv/updates`: everything waiting now, and a dated
+  file of what was new. A banner in every interactive login shell shows what is new until the
+  operator acknowledges it (`make update-watch-ack`).
+- ✅ What is new is reported once: a security update, a host newly behind, a new OPNsense release
+  or device firmware. The banner counts the security updates. Ordinary package churn on a host
+  already behind is listed but is not news.
+- ✅ Anything still waiting after 30 days is news again, and so is a system that didn't answer or
+  couldn't check, once per outage. The hypervisors are listed but are not news, since Proxmox VE
+  notifies its own (CHG-0079).
+- 🔄 It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), which closes with the
+  timer's first run on its own.
 
 **The choices, the owner's, 2026-11-23.** The daily check runs unattended with credentials of its
 own that can only read: the automation key, the vault and OpenBao stay with the operator's
 sessions. The core router is watched upstream, not asked: OPNsense's only firmware privilege,
 "System: Firmware", also allows installing updates and rebooting, so no key the watcher holds
 reaches the router. Upstream watching sees point releases, not the package-only hotfixes between
-them.
+them. **The report replaced mail the same day:** deploying CHG-0082 found the site's network
+blocking outbound mail, and a mobile site's network changes under it, so the operator chose a
+report on the Builder that needs no network at all.
 
 **Not in v2:** the access switch, which the Omada controller does not manage and whose CLI cannot
 say what is newer, and the Omada controller itself (both v3); a phone or ntfy alert, which waits
@@ -166,7 +170,7 @@ for operator alerting on the Observability item.
 
 What can't report its own updates is watched at the source: the container images (OpenBao,
 VerneMQ, silo, Grafana, the VictoriaMetrics services, Alertmanager, ntfy), the Omada controller,
-the access switch's firmware, and Deevnet's own pinned releases. The same mail carries it.
+the access switch's firmware, and Deevnet's own pinned releases. The same report carries it.
 
 **Done when:**
 
@@ -174,11 +178,11 @@ the access switch's firmware, and Deevnet's own pinned releases. The same mail c
   catalog columns. For OPNsense, one entry covers its bundled services too.
 - ⏳ The daily run checks every source (feeds where they exist, a checked list where they don't),
   with each source's last-seen release.
-- ⏳ A release newer than the running version is mailed once, as in v2.
+- ⏳ A release newer than the running version is reported once, as in v2.
 - ⏳ Each new release is triaged as [Discovery](/docs/policies/lifecycle-management/discovery/)
   defines it (patch, new line, end of life, archived, advisory, or nothing relevant), and the outcome
   recorded, so nothing is triaged twice.
-- ⏳ End-of-life dates are recorded for the lines in use, and any within six months mailed.
+- ⏳ End-of-life dates are recorded for the lines in use, and any within six months reported.
 
 **Not in v3:** response times by severity (v4 sets the cycle they are measured against).
 
@@ -216,7 +220,7 @@ Security updates go in without the operator where a failure cannot take the site
 
 - ⏳ Security-only automatic updates on the Fedora substrate service VMs, staggered so no two run
   at once, outside the hours the site is in use.
-- ⏳ Every unattended run is reported in the daily mail; a failure or a pending reboot is told, not
+- ⏳ Every unattended run is in the daily report; a failure or a pending reboot is told, not
   found.
 - ⏳ What is **never** patched unattended is written down, each with its reason: the hypervisors,
   the core router, switch and AP firmware, and OpenBao.
@@ -236,7 +240,7 @@ The take-home images in the tenant downloads are rebuilt so they don't age.
 
 ### Later
 
-- Operator alerts by phone (ntfy) instead of mail, once operator alerting is decided on the
+- Operator alerts by phone (ntfy) beside the report, once operator alerting is decided on the
   [Observability](/docs/roadmap/infrastructure/substrate/observability/) item
 - Dependency and container image vulnerability scans before a release is staged
   ([Vulnerability Management](/docs/policies/risk-management/vulnerability-management/))

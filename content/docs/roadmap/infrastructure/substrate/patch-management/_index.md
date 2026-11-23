@@ -19,10 +19,10 @@ waypoints:
     milestone: true
     status: done
     date: "2026-11-23"
-  - title: "Patch management v2 done: the operator is emailed when any substrate system has an update waiting, such as a new OPNsense patch"
+  - title: "Patch management v2 done: the operator is told at login on the Builder when any substrate system has an update waiting, such as a new OPNsense patch"
     milestone: true
     status: planned
-  - title: "Patch management v3 done: new releases, advisories and end of life for software that can't report its own updates are emailed too"
+  - title: "Patch management v3 done: new releases, advisories and end of life for software that can't report its own updates are reported too"
     milestone: true
     status: planned
   - title: "Patch management v4 done: substrate hosts patched on a monthly cycle, in a fixed order, each with a way back"
@@ -39,8 +39,9 @@ waypoints:
 # Patch Management
 
 Keeping what the substrate runs up to date, systematically. Discovery knows what is running and
-compares it with the [Software Catalog](/docs/platforms/software-catalog/); the operator is emailed
-when an update is waiting, as each system reports it and as release and advisory sources show it; patches go in on a monthly cycle, unattended where
+compares it with the [Software Catalog](/docs/platforms/software-catalog/); a daily report on the
+Builder, and a banner at login, tell the operator when an update is waiting, as each system reports
+it and as release and advisory sources show it; patches go in on a monthly cycle, unattended where
 that is safe; and the take-home images tenants carry away are rebuilt so they don't go stale. This
 is the [Discovery](/docs/policies/lifecycle-management/discovery/) and Patch stages of Lifecycle
 Management, built. What a tenant runs is the tenant's to keep current.
