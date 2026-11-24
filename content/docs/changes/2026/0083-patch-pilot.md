@@ -17,7 +17,7 @@ weight: -83
 | **Automation** | None for the updates: `dnf` and `apt` on each host, by hand. Checked by the update watcher and `make discover` |
 | **Risk** | Low. Most likely to go wrong: a VM's disk controller stalls under the install's writes ([INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/)), found by the VM not answering, and undone from its snapshot |
 | **Related changes** | [CHG-0082](/docs/changes/2026/0082-update-watcher/), whose report lists what is waiting; [CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/), whose throttled download this follows |
-| **Related incidents** | [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/) (bulk transfers across the core router), [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/) (an LSI controller's panic under disk load) |
+| **Related incidents** | [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/) (bulk transfers across the core router), [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/) (an LSI controller's panic under disk load), [INC-0007](/docs/incidents/2026/0007-api-sealed-after-power-on/) (found during this change) |
 | **Related runbooks** | [Patching](/docs/runbook/substrate/lifecycle/patching/) |
 
 ---
