@@ -7,10 +7,10 @@ weight: -83
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-23 |
 | **Change type** | Upgrade |
 | **Classification** | Routine |
-| **Status** | **Planned** |
+| **Status** | **In progress**: applied 2026-11-23; closes when the snapshot is dropped, 2026-11-26 |
 | **Window** | An evening, operator at the Builder. `dv02obj001v01` is down for its reboot, if it needs one: the tenant bucket store and Terraform state store do not answer for about a minute. `dv02bld002v01` serves no one. The hypervisors do not reboot |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (VMID 208), `dv02bld002v01` (VMID 203), `dv02hyp001p01`, `dv02hyp002p02` |
@@ -137,18 +137,44 @@ is undone forward: a point update to a Debian security release is not reversed.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: discovery report taken
-- [ ] Step 2: `dv02obj001v01` updated, its services answering, no ping missed
-- [ ] Step 3: `dv02bld002v01` updated (or dropped, if it is being removed)
-- [ ] Step 4: both hypervisors' Kerberos libraries updated
-- [ ] Step 5: the watcher shows nothing waiting on the four hosts; the catalog updated
-- [ ] Step 6: the snapshots dropped
-- [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
+- [x] Step 1: discovery report taken
+- [x] Step 2: `dv02obj001v01` updated, its services answering, no ping missed
+- [x] Step 3: dropped: `dv02bld002v01` is to be removed
+- [x] Step 4: both hypervisors' Kerberos libraries updated
+- [x] Step 5: the watcher shows nothing waiting on the three hosts; no catalog version changed
+- [ ] Step 6: `dv02obj001v01`'s snapshot dropped, 2026-11-26 or later
+- [x] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
 
-To be written when the change has run.
+**`dv02obj001v01` and both hypervisors have nothing waiting, and every service came back as it was.**
+Every command ran from the Builder as `a_autoprov`, the operator nearby.
+
+| When | Steps | What happened |
+|---|---|---|
+| 19:38 | Step 1 | `make discover`: every system answered |
+| 19:39 | Step 2 | Before: no failed unit, three containers up, 17 updates waiting, now including kernel 7.3.4. The snapshot `pre-chg-0083` taken of all three disks, the guest's filesystems frozen for it |
+| 19:39–19:42 | Step 2 | 165 MB downloaded in 163 s at the 1 MB/s throttle. The watchdog: 86 pings sent across the router, 86 answered |
+| 19:42–19:45 | Step 2 | `dnf upgrade` in 143 s, exit 0, nothing left waiting. `dnf needs-restarting -r`: reboot needed, for the kernel |
+| 19:45 | Step 2 | Rebooted: back in 24 s on kernel 7.3.4, no failed unit, the three containers up. Through the service proxy, `s3` and `tfstate` (and `tfstate` on 9000) each answered their health check, 200 |
+| 19:46 | Step 4 | `dv02hyp001p01`: the five Kerberos packages, `1.21.3-5+deb13u1` to `deb13u2`, and nothing else. Nothing left waiting; `pveversion` unchanged; the web interface 200; no failed unit; every VM still running |
+| 19:46 | Step 4 | `dv02hyp002p02`: the same five. `frr` active and the four tenant zones `available`. One failed unit: `deevnet-egress-agent` (below) |
+| 19:47 | Step 5 | The update watcher: the three hosts up to date. `make discover`: 48 rows matching, no pin drift, every system answering; no catalog version changed |
+
+### Departures from the plan
+
+- **Step 3 was dropped.** `dv02bld002v01` is to be removed, so it was not patched.
+- **The install refreshed its metadata unthrottled.** `dnf upgrade` fetched the repositories' metadata
+  again, about 85 MB at full speed, because only the download step carried `--setopt=throttle=1M`.
+  The router passed it. A patch procedure throttles every `dnf` step, or installs from the cache
+  (`-C`).
+- **A failing service found, not caused.** On `dv02hyp002p02` the tenant egress agent fails every
+  five minutes: the Deevnet API answers its request with 503. Its last success was 2026-11-22 10:50,
+  before this change; it keeps the tenant routes it has, so egress still works, but no route change
+  reaches the node.
 
 ## Follow-ups
 
-None yet.
+- [ ] Drop the snapshot: `qm delsnapshot 208 pre-chg-0083` on `dv02hyp001p01`, 2026-11-26 or later
+- [ ] Find why the Deevnet API answers the egress agent with 503 since 2026-11-22
+- [ ] In the patch procedure (Patch Management v4): throttle every `dnf` step, not only the download
