@@ -5,45 +5,53 @@ weight: 5
 
 # Shutdown and Power-On
 
-How the Mobile Factory is powered down and brought back. **One playbook shuts the substrate down
-in dependency order. Bringing it back needs no playbook: once each machine is powered on, its
-services and service VMs start on their own.** After power-on the site runs, and tenants have their services and egress, but
-the Deevnet API serves no tenant work until a work session opens OpenBao.
+How the Mobile Factory is powered down and brought back. **A playbook shuts down every VM, both
+hypervisors and the Pis in dependency order; the operator then shuts the Builder down and halts the
+core router by hand, and cuts the power to the rest.** Bringing it back needs no playbook: once each
+machine is powered on, its services and service VMs start on their own. After power-on the site
+runs, and tenants have their services and egress, but the Deevnet API serves no tenant work until a
+work session opens OpenBao.
 
 A routine shutdown and power-on needs no change record. If either goes wrong, open an
 [incident record](/docs/runbook/substrate/incident-management/incident-record-template/).
 
 ## Shutting down
 
-**`shutdown.yml` stops everything in order, verifying each stage is down before the next begins.**
-From `ansible-collection-deevnet.mgmt` on the Builder:
+**Shut down from the inside out: the VMs, then the hypervisors, the Builder and the core router,
+then cut the power.** Each step waits for the one before to be down.
 
-```bash
-ansible-playbook playbooks/shutdown.yml -e confirm_shutdown=yes
-```
+1. **The playbook**, from `ansible-collection-deevnet.mgmt` on the Builder:
 
-Without `confirm_shutdown=yes` it stops at its first task and changes nothing.
+   ```bash
+   ansible-playbook playbooks/shutdown.yml -e confirm_shutdown=yes
+   ```
 
-| Stage | What | How |
-|---|---|---|
-| 1 | Every running VM on both hypervisors | Through the Proxmox API, in reverse of each VM's start order, each given its own shutdown timeout (`mgmt_vm.startup` in inventory) and stopped if it does not finish in time |
-| 2 | Both hypervisors | Powered off, and waited for until they stop answering |
-| 3 | The Pi lab | The same |
-| 4 | The core router, `dv02cor002p01` | Halted through its API. After this nothing is reachable over the network |
-| 5 | The Builder, `dv00bld001p01` | Powered off locally |
+   Without `confirm_shutdown=yes` it stops at its first task and changes nothing. It ends by
+   printing what is left to do by hand.
 
-**The access switch, the AP and the edge router stay on.** The switch carries the traffic the earlier
-stages need, the AP has its own PoE injector, and the edge router is the way back in.
+   | Stage | What | How |
+   |---|---|---|
+   | 1 | Every running VM on both hypervisors | Through the Proxmox API, in reverse of each VM's start order, each given its own shutdown timeout (`mgmt_vm.startup` in inventory) and stopped if it does not finish in time |
+   | 2 | Both hypervisors | Powered off, and waited for until they stop answering |
+   | 3 | The Pi lab | The same |
+
+2. **The Builder**, once the playbook has finished: `sudo shutdown -h now` on the Builder.
+3. **The core router**, `dv02cor002p01`: halted from its web interface.
+4. **The access switch, the AP and the edge router** are not shut down: cut their power.
 
 Shutting down ends any work session: OpenBao comes back sealed.
 
 ## Powering on
 
-**Power on the core router first, then the hypervisors and the Builder.** The hypervisors start
-their service VMs themselves, in each VM's start order. Tenant DNS on `dv02idn001v01` is first, and
-OpenBao starts beside it, sealed. The Deevnet API on `dv02prv001v01` starts, finds OpenBao sealed, and
-waits for it ([ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/)
-§2).
+**Power the network on first, and wait a few minutes for the access switch to finish booting before
+powering on the Builder and the hypervisors.** Until the switch is up, nothing behind it can reach
+DHCP or the core router. Then power on the Builder and both hypervisors, by their power buttons or by
+Wake-on-LAN from the core router's web interface, for each machine whose firmware has it enabled.
+
+The hypervisors start their service VMs themselves, in each VM's start order. Tenant DNS on
+`dv02idn001v01` is first, and OpenBao starts beside it, sealed. The Deevnet API on `dv02prv001v01`
+starts, finds OpenBao sealed, and waits for it
+([ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/) §2).
 
 **After power-on, with OpenBao sealed:**
 
