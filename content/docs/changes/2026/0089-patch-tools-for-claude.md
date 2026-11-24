@@ -10,7 +10,7 @@ weight: -89
 | **Date** | 2026-11-24 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **Planned** |
+| **Status** | **In Progress**: Steps 1–3 done; Step 4 waits for a new session |
 | **Window** | No outage. A quarter of an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the update watcher, and the new MCP server) |
@@ -60,7 +60,7 @@ schedule puts at 2026-12-09. The Builder's upgrade to Fedora 44 is the next chan
 
 ## Prerequisites
 
-- [ ] `deevnet.builder` #47 and this record merged
+- [x] `deevnet.builder` #47 and this record merged
 
 ## Procedure
 
@@ -105,11 +105,24 @@ the server runs, `ss -ltnp` shows it listening on nothing, and `/srv/updates` is
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: `latest.json` written, no false majors
-- [ ] Step 2: every tool answers, read-only
-- [ ] Step 3: registered, skill linked
+- [x] Step 1: `latest.json` written, no false majors
+- [x] Step 2: every tool answers, read-only
+- [x] Step 3: registered, skill linked
 - [ ] Step 4: `patch-status` ranks the Builder's Fedora 43 end of life first
-- [ ] The Patching runbook says how to ask Claude
+- [x] The runbook says how to ask Claude: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/), linked from Patching
+
+## Outcome
+
+**The server is deployed, registered and answers from the live reports; the skill is linked.** All
+commands ran from the Builder.
+
+| When | Steps | What happened |
+|---|---|---|
+| 13:56 | | `python3-mcp` 1.26.0 and its dependencies installed by hand to build and test the server before the merge; Step 2's role installs the same |
+| 14:05–14:07 | Step 1 | `make update-watch`, `make update-watch-now`: `latest.json` written (312 KB, ten systems). The scoreboard shows no major update on the service VMs; the Builder 14 |
+| 14:07 | Step 2 | `make patch-mcp`, `make patch-mcp-test`: six tools, all read-only; every call answered. `os_releases` puts `dv00bld001p01`'s Fedora 43 first, ending 2026-12-09, 15 days; 4 Critical advisories waiting there, on 9 packages; an unknown host refused |
+| 14:07 | Step 3 | `make patch-mcp-register`: `deevnet-patch` added at user scope, `claude mcp list` shows it connected; `patch-status` linked into `~/.claude/skills` |
+| 14:08 | | Running, the server listens on nothing (`ss -ltnpu`); the report files' modification times unchanged by every tool call |
 
 ## Follow-ups
 
