@@ -40,7 +40,31 @@ read-only check ([CHG-0082](/docs/changes/2026/0082-update-watcher/)).
 |---|---|
 | Everything waiting now | `/srv/updates/latest.txt`, rewritten each run |
 | What was new on a day | `/srv/updates/YYYY-MM-DD.txt` |
-| The banner | Printed in every interactive login shell on the Builder while something new is unacknowledged |
+| The banner | Printed in every interactive login shell on the Builder while something new is unacknowledged: the scoreboard below |
+
+**The scoreboard counts what waits on each system**, grouped as service VMs, Builder, hypervisors and
+network, and marks `new` the systems with news not yet acknowledged. `latest.txt` and each day's report
+open with it too.
+
+```text
+                Major  Minor  Security
+Service VMs
+  dv02idn001v01     1    139        56  new
+  dv02obj001v01     -      -         -
+Builder
+  dv00bld001p01    17    561       239  new
+Network
+  dv02cor002p01     -      1         -  new  OPNsense 26.7.10
+Total              ...
+```
+
+| Column | Counts |
+|---|---|
+| Major | updates that change the epoch or the first version field: kernel 6.17 to 7.3. A first field that is a date (linux-firmware, tzdata) does not count; an OPNsense release line does |
+| Minor | every other update. Major and Minor together are every update waiting |
+| Security | the updates, of either kind, that fix a security advisory |
+
+A system that does not answer, or answers without saying what is waiting, shows as `no answer`.
 
 What counts as new: a security update, a host that had nothing waiting and now has, a new OPNsense
 point release or line (from OPNsense's published releases, against the newest discovery report), new

@@ -10,7 +10,7 @@ weight: -87
 | **Date** | 2026-11-24 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **Planned** |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. A quarter of an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the update watcher); every substrate service VM, both Builder VMs and both hypervisors (`deevnet-watch-check`) |
@@ -82,11 +82,27 @@ Revert #45 and run Steps 1 and 2 again.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the watcher and the check on the Builder VMs and hypervisors
-- [ ] Step 2: the check on every service VM
-- [ ] Step 3: the scoreboard complete, both watchers answered everywhere
-- [ ] The Patching runbook describes the scoreboard
+- [x] Step 1: the watcher and the check on the Builder VMs and hypervisors
+- [x] Step 2: the check on every service VM
+- [x] Step 3: the scoreboard complete, both watchers answered everywhere
+- [x] The Patching runbook describes the scoreboard
+
+## Outcome
+
+**The update watcher's banner and reports show the scoreboard, every update on every answering host
+sorted into major or minor.** All commands ran from the Builder, the operator's session supplying the
+automation key.
+
+| When | Steps | What happened |
+|---|---|---|
+| 07:31–07:32 | Step 1 | `make publish`, `make update-watch`: the watcher's script and config on the Builder; the check on both Builder VMs and both hypervisors. No failure |
+| 07:32 | Step 2 | `site.yml --tags update_check`: the check on all seven service VMs. No failure |
+| 07:33 | Step 3 | The update watcher's dry run: every host under its kind, nothing unsorted (27 major, 1,661 minor, 702 security). The health watcher's: all fifteen checks pass |
+| 07:33 | | `make update-watch-now`: the banner shows the scoreboard |
+
+`dv02bld002v01` answered the check but could not report its updates, as before this change: dnf on
+that VM cannot open its lock file as the watcher's account. The scoreboard shows it as not answering.
 
 ## Follow-ups
 
-None.
+- [ ] `dv02bld002v01`: dnf cannot open `/usr/lib/sysimage/libdnf5/system-repo.lock` as `deevnet-watch`, so the update watcher gets no answer from it
