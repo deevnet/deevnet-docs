@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0087 | 2026-11-24 | [The Update Scoreboard](2026/0087-update-scoreboard/) | Configuration | mobile | Planned |
 | CHG-0086 | 2026-11-24 | [The Health Watcher](2026/0086-health-watcher/) | Deployment | mobile | Complete |
 | CHG-0085 | 2026-11-24 | [The Egress Agent Says What the API Answered](2026/0085-egress-agent-says-what-api-answered/) | Configuration | mobile | Complete |
 | CHG-0084 | 2026-11-23 | [The API's Egress List Without OpenBao](2026/0084-api-egress-without-openbao/) | Upgrade | mobile | Complete |
