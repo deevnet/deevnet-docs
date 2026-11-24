@@ -40,7 +40,7 @@ read-only check ([CHG-0082](/docs/changes/2026/0082-update-watcher/)).
 |---|---|
 | Everything waiting now | `/srv/updates/latest.txt`, rewritten each run |
 | What was new on a day | `/srv/updates/YYYY-MM-DD.txt` |
-| The banner | Printed in every interactive login shell on the Builder while something new is unacknowledged: the scoreboard below |
+| The banner | Printed in every interactive login shell on the Builder: the scoreboard below, headed by what is new since the last acknowledgement, or "nothing new" |
 
 **The scoreboard counts what waits on each system**, grouped as service VMs, Builder, hypervisors and
 network, and marks `new` the systems with news not yet acknowledged. `latest.txt` and each day's report
@@ -77,7 +77,8 @@ urgent first: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-t
 In `ansible-collection-deevnet.builder`:
 
 ```bash
-make update-watch-ack       # the report is read: clear the banner until something is new
+make update-watch-show      # print the scoreboard from the last run
+make update-watch-ack       # the news is read: the banner stays, saying nothing new
 make update-watch-now       # run it now, instead of waiting for the timer
 make update-watch-dry-run   # print what it would write, writing nothing
 ```
