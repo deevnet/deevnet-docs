@@ -11,7 +11,7 @@ weight: -7
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (OpenBao), `dv02hyp002p02` (the exit node and its `deevnet-egress-agent`) |
 | **Severity** | Low in effect. From the site's power-on at 20:25 on 2026-11-22, every `/v1` request to the API answered 503, and the exit node's egress agent failed every five minutes. No tenant lost its egress: the agent left its routes as they were, and the exit node's own reboot restored them from disk. No tenant work was asked for |
-| **Status** | Open · {{< inc-status "Mitigated" >}}. Tenant egress verified on 2026-11-23. The API serves again at the next work session; the fault behind it is open |
+| **Status** | Open · {{< inc-status "Remediated" >}}. The cause is fixed: since API v0.28.1 ([CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), 2026-11-23) the egress list answers while OpenBao is sealed. The preventive actions are open |
 | **Times** | EST (UTC−5) |
 
 ---
@@ -96,8 +96,9 @@ does.
 
 ## Recovery
 
-None needed for tenants. The API serves `/v1` at the next work session (`make bao-open`), and the
-agent recovers on its own the next time it runs.
+None needed for tenants. The agent recovered at the next work session (`make bao-open`, 20:31 on
+2026-11-23). Since [CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/) it does not depend
+on one: with OpenBao sealed and the API restarted, its 22:26 run read its list, 200.
 
 ## Contributing factors
 
@@ -114,7 +115,7 @@ agent recovers on its own the next time it runs.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 1 | Serve `GET /v1/fabric/egress` without waiting for OpenBao: read the registry directly and admit the agent's token, outside the secrets gate. A release, then a change to deploy it | `deevnet-provisioning-api` | {{< action-status "Open" >}} |
+| 1 | Serve `GET /v1/fabric/egress` without waiting for OpenBao: read the registry directly and admit the agent's token, outside the secrets gate. A release, then a change to deploy it | `deevnet-provisioning-api` | {{< action-status "Done" >}} v0.28.1 ([#85](https://github.com/deevnet/deevnet-provisioning-api/pull/85)), deployed by [CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), 2026-11-23 |
 
 ## Preventive actions
 
@@ -141,6 +142,7 @@ agent recovers on its own the next time it runs.
 ## Related changes
 
 - [CHG-0083](/docs/changes/2026/0083-patch-pilot/), during whose verification this was found
+- [CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), which deployed corrective action 1
 - [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/), which made OpenBao sealed outside work sessions
 
 ## Related incidents

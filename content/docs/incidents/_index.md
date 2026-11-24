@@ -28,7 +28,7 @@ in the runbook under [Incident Management](/docs/runbook/substrate/incident-mana
 
 | ID | Date | Incident | Site | Root cause | Status | Substatus |
 |----|------|----------|------|-----------|--------|-----------|
-| INC-0007 | 2026-11-22 | [The API Answered 503 for a Day After the Site Powered On](2026/0007-api-sealed-after-power-on/) | mobile | The API waits for a sealed OpenBao after every power-on, and gates the egress agent's route on it though that route needs no secret | Open | {{< inc-status "Mitigated" >}} |
+| INC-0007 | 2026-11-22 | [The API Answered 503 for a Day After the Site Powered On](2026/0007-api-sealed-after-power-on/) | mobile | The API waits for a sealed OpenBao after every power-on, and gates the egress agent's route on it though that route needs no secret | Open | {{< inc-status "Remediated" >}} |
 | INC-0006 | 2026-11-20 | [The API VM's Kernel Panicked Under Backup Load](2026/0006-api-vm-scsi-panic/) | mobile | The emulated LSI controller's guest driver panicked under backup and restore load on the shared data disk | Open | {{< inc-status "Mitigated" >}} |
 | INC-0005 | 2026-10-07 | [Core Router Hard Hang During a Provisioning VM Rebuild](2026/0005-core-router-hang-during-rebuild/) | mobile | Not established: a second hard hang during a bulk image push across the router, recurring INC-0004 | Open | {{< inc-status "Mitigated" >}} |
 | INC-0004 | 2026-09-21 | [Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts](2026/0004-core-router-lost/) | mobile | `re0` (Realtek) watchdog timeouts, recurring; the first event's hard hang is not yet explained | Open | {{< inc-status "Investigating" >}} |

@@ -10,7 +10,7 @@ weight: -84
 | **Date** | 2026-11-23 |
 | **Change type** | Upgrade |
 | **Classification** | Routine |
-| **Status** | **In progress**: deployed 2026-11-23; closes with the egress agent reading its list from a sealed API |
+| **Status** | **Complete, 2026-11-23** |
 | **Window** | A few seconds of provisioning while the API restarts, in a work session |
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API); read by `dv02hyp002p02`'s egress agent |
@@ -72,17 +72,22 @@ Set `deevnet_api_version` back to v0.25.0 and run Step 2 again, in a work sessio
 
 - [x] Step 1: v0.28.1 released and staged
 - [x] Step 2: deployed; v0.28.1 ready; the agent's run read 200
-- [ ] Step 3: with OpenBao sealed and the API restarted, the agent's run read 200
+- [x] Step 3: with OpenBao sealed and the API restarted, the agent's run read 200
 - [x] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
+
+**The API runs v0.28.1, and with OpenBao sealed the egress agent reads its list and succeeds.**
+All commands ran from the Builder as `a_autoprov`.
 
 | When | Steps | What happened |
 |---|---|---|
 | 20:26 | | Before: v0.25.0. OpenBao was opened for a work session; the agent's 20:31 run succeeded, as INC-0007 said it would |
 | 20:34 | Step 2 | Deployed in 36 s: the image pushed and loaded, a new secret ID for the API's AppRole and the one it replaced destroyed, the container recreated. `/version`: v0.28.1, commit `6f4a149`; `/readyz`: ready, OpenBao ok |
 | 20:36 | Step 2 | The agent's run: `GET /v1/fabric/egress` 200, the unit succeeded |
+| 22:24 | Step 3 | The work session closed. `/readyz` before the restart: OpenBao sealed. `systemctl restart deevnet-api`; after it, v0.28.1, `/readyz` `{"database":"ok","openbao":"sealed","status":"unavailable"}` |
+| 22:26 | Step 3 | The agent's run: `GET /v1/fabric/egress` 200 in the API's log, the unit succeeded (exit 0, not failed). Before v0.28.1 this run answered 503 |
 
 ## Follow-ups
 
-None yet.
+None. The rest of INC-0007's work is tracked there: the agent's message for a sealed API (action 2), ADR-0042's wording (3), alerting (4) and the power-on runbook page (5).
