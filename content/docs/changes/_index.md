@@ -26,11 +26,11 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0086 | 2026-11-24 | [The Health Watcher](2026/0086-health-watcher/) | Deployment | mobile | Planned |
+| CHG-0086 | 2026-11-24 | [The Health Watcher](2026/0086-health-watcher/) | Deployment | mobile | Complete |
 | CHG-0085 | 2026-11-24 | [The Egress Agent Says What the API Answered](2026/0085-egress-agent-says-what-api-answered/) | Configuration | mobile | Complete |
 | CHG-0084 | 2026-11-23 | [The API's Egress List Without OpenBao](2026/0084-api-egress-without-openbao/) | Upgrade | mobile | Complete |
 | CHG-0083 | 2026-11-23 | [A First Patch Pass, Small and Careful](2026/0083-patch-pilot/) | Upgrade | mobile | In progress |
-| CHG-0082 | 2026-11-23 | [The Update Watcher](2026/0082-update-watcher/) | Deployment | mobile | In progress |
+| CHG-0082 | 2026-11-23 | [The Update Watcher](2026/0082-update-watcher/) | Deployment | mobile | Complete |
 | CHG-0081 | 2026-11-22 | [The Core Router Updated to OPNsense 26.7.9_3](2026/0081-core-router-26-7-9/) | Upgrade | mobile | Complete |
 | CHG-0080 | 2026-11-22 | [The Tenant Hypervisor Brought Up to Proxmox VE 9.2.32](2026/0080-hyp002-proxmox-9-2-32/) | Upgrade | mobile | Complete |
 | CHG-0079 | 2026-11-21 | [The Hypervisors' Notifications From Inventory](2026/0079-proxmox-notifications/) | Configuration | mobile | Complete |
