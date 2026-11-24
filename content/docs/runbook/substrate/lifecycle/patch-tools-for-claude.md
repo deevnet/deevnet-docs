@@ -5,18 +5,21 @@ weight: 6
 
 # Patch Tools for Claude
 
-**Claude answers what needs patching from read-only tools on the Builder: `deevnet-patch-mcp`, a
-Model Context Protocol (MCP) server, and the `patch-status` skill built on it.** Asked "what needs
+**Claude answers what needs patching from tools on the Builder: `deevnet-patch-mcp`, a Model
+Context Protocol (MCP) server, and the `patch-status` skill built on it.** Asked "what needs
 patching?" in a Claude Code session on the Builder, Claude reads the update and health watchers'
-reports through the server, ranks what it finds, and names the change to open for each. Nothing it
-does changes a system: applying a patch stays a change record the operator approves. Built by
-[CHG-0089](/docs/changes/2026/0089-patch-tools-for-claude/).
+reports through the server, running a fresh scan first when the report is old or asked to, ranks
+what it finds, and names the change to open for each. Nothing it does changes a system: applying a
+patch stays a change record the operator approves. Built by
+[CHG-0089](/docs/changes/2026/0089-patch-tools-for-claude/); the fresh scan by
+[CHG-0090](/docs/changes/2026/0090-patch-refresh-on-demand/).
 
 ## How it works
 
-**The server runs only while Claude Code runs, on the Builder, as the operator, and only reads.**
-Claude Code starts it and talks to it over stdio. It listens on no port, opens no connection, holds no
-credential, and every tool declares itself read-only. What it reads:
+**The server runs only while Claude Code runs, on the Builder, as the operator.** Claude Code starts
+it and talks to it over stdio. It listens on no port and holds no credential. Six of its tools only
+read; the seventh, `refresh_updates`, starts the update watcher, which asks every host with its own
+key and rewrites its reports. What it reads:
 
 | File | Written by | How often |
 |---|---|---|
@@ -26,6 +29,14 @@ credential, and every tool declares itself read-only. What it reads:
 
 Every answer carries `checked_at`, the time of the update watcher's last run: the tools are as fresh
 as it is.
+
+**A fresh scan.** `refresh_updates` runs `systemctl start deevnet-update-watch.service`, the
+watcher's own unit, exactly as its daily timer does, and waits for it: about half a minute. The
+operator may start that unit without a password through a polkit rule,
+`/etc/polkit-1/rules.d/50-deevnet-patch-refresh.rules`, which allows the `wheel` group to start it
+and nothing else: stopping or restarting it, or starting any other unit, still needs authentication.
+The tool is declared not read-only, since the watcher writes its reports and the banner, and safe to
+repeat.
 
 ## The tools
 
@@ -37,6 +48,7 @@ as it is.
 | `os_releases` | each host's release and end-of-life date, flagged within 90 days or past it |
 | `health_status` | the health watcher's last run and what it has raised |
 | `discovery_report` | the newest discovery report: versions on every system, including the core router, switch and AP |
+| `refresh_updates` | runs the update watcher now, then answers as `patch_status` does from the new report, with the previous `checked_at` |
 
 **Major** is a change in the first part of the version (kernel 6.17 to 7.3); a version that is a date
 or one number alone (linux-firmware, `less`) counts as minor.
@@ -57,17 +69,19 @@ For each it names the change to open: a release upgrade, a patch change one host
 snapshot first, a hypervisor change, or the
 [Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/) runbook.
 
-**After patching, refresh before asking again:** `make update-watch-now` in
-`ansible-collection-deevnet.builder`, or the answer is still the morning's.
+**For the latest, ask for a fresh look:** "what needs patching? take a fresh look". The skill
+refreshes by itself after patching or when the report is more than a day old; otherwise it answers
+from the morning's run, without the half-minute wait.
 
 ## Setting it up
 
 In `ansible-collection-deevnet.builder`, on the Builder:
 
 ```bash
-make patch-mcp            # install the server and the MCP Python SDK (python3-mcp, from Fedora)
-make patch-mcp-test       # start it, call every tool through the SDK's client, report each
-make patch-mcp-register   # add it to Claude Code (user scope) and link the skills
+make patch-mcp                # install the server, its polkit rule and the MCP Python SDK (python3-mcp, from Fedora)
+make patch-mcp-test           # start it, call every read-only tool through the SDK's client, report each
+make patch-mcp-test-refresh   # the same, then a fresh scan through refresh_updates
+make patch-mcp-register       # add it to Claude Code (user scope) and link the skills
 ```
 
 `make patch-mcp-register` is once per operator account. It registers at user scope because
@@ -81,7 +95,8 @@ session starts: after registering, start a new session.
 |---|---|
 | Claude has no `deevnet-patch` tools | `claude mcp list` shows `deevnet-patch` connected; if absent, `make patch-mcp-register` and a new session |
 | "no update report" | `/srv/updates/latest.json` is missing: `make update-watch-now` |
-| An answer looks old | its `checked_at`; `make update-watch-now` |
+| An answer looks old | its `checked_at`; ask for a fresh look, or `make update-watch-now` |
+| `refresh_updates` fails with "interactive authentication" | the polkit rule is missing, or the operator is not in `wheel`: `make patch-mcp` |
 | A release shows "no end-of-life date recorded" | add it to `update_watch_eol` in the `update_watch` role's defaults, from the vendor's published schedule, then `make update-watch` and `make update-watch-now` |
 | A host "did not answer" | the update watcher could not ask it: [Troubleshoot a Service VM](/docs/runbook/substrate/recovery/service-vm-troubleshooting/), and `health_status` |
 
