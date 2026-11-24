@@ -48,8 +48,8 @@ the hypervisors.** The core router, the access switch, the edge router and the A
 when their power is restored. The core router is ready before the rest; the access switch takes a
 couple of minutes, and is ready when its port lights show activity. Until then nothing behind it can
 reach DHCP or the core router. Then power on the Builder and both hypervisors, by their power buttons
-or by Wake-on-LAN from the core router's web interface, for each machine whose firmware has it
-enabled.
+or by Wake-on-LAN from the core router's web interface. The tenant hypervisor, `dv02hyp002p02`, is
+powered on by its button until its BIOS is updated.
 
 The hypervisors start their service VMs themselves, in each VM's start order. Tenant DNS on
 `dv02idn001v01` is first, and OpenBao starts beside it, sealed. The Deevnet API on `dv02prv001v01`

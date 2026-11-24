@@ -39,7 +39,8 @@ repurposed enterprise desktop, 32GB for many VMs, compact, low-power, and Intel 
 | `eno2` | Switch `gi1/0/13`, trunk, native VLAN 99, VLANs 50 and 51 tagged (the tenant fabric) |
 
 - **Single NIC:** as on the 7050.
-- **Wake-on-LAN:** enabled.
+- **Wake-on-LAN:** not yet working on this unit, a replacement, until its BIOS is updated; it is
+  powered on by its button. It is declared for Wake-on-LAN in inventory.
 - **Console:** as on the 7050; see
   [Hypervisor console recovery](/docs/runbook/substrate/recovery/console-recovery/hypervisor/).
 
