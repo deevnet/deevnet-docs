@@ -43,10 +43,13 @@ Shutting down ends any work session: OpenBao comes back sealed.
 
 ## Powering on
 
-**Power the network on first, and wait a few minutes for the access switch to finish booting before
-powering on the Builder and the hypervisors.** Until the switch is up, nothing behind it can reach
-DHCP or the core router. Then power on the Builder and both hypervisors, by their power buttons or by
-Wake-on-LAN from the core router's web interface, for each machine whose firmware has it enabled.
+**Power the network on first, then wait for the access switch before powering on the Builder and
+the hypervisors.** The core router, the access switch, the edge router and the AP come on together
+when their power is restored. The core router is ready before the rest; the access switch takes a
+couple of minutes, and is ready when its port lights show activity. Until then nothing behind it can
+reach DHCP or the core router. Then power on the Builder and both hypervisors, by their power buttons
+or by Wake-on-LAN from the core router's web interface, for each machine whose firmware has it
+enabled.
 
 The hypervisors start their service VMs themselves, in each VM's start order. Tenant DNS on
 `dv02idn001v01` is first, and OpenBao starts beside it, sealed. The Deevnet API on `dv02prv001v01`
