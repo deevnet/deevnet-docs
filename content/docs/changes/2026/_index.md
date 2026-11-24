@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0084 | 2026-11-23 | [The API's Egress List Without OpenBao](0084-api-egress-without-openbao/) | Upgrade | mobile | In progress |
+| CHG-0084 | 2026-11-23 | [The API's Egress List Without OpenBao](0084-api-egress-without-openbao/) | Upgrade | mobile | Complete |
 | CHG-0083 | 2026-11-23 | [A First Patch Pass, Small and Careful](0083-patch-pilot/) | Upgrade | mobile | In progress |
 | CHG-0082 | 2026-11-23 | [The Update Watcher](0082-update-watcher/) | Deployment | mobile | In progress |
 | CHG-0081 | 2026-11-22 | [The Core Router Updated to OPNsense 26.7.9_3](0081-core-router-26-7-9/) | Upgrade | mobile | Complete |
