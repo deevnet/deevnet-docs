@@ -126,7 +126,7 @@ of `omada-wireless.yml`. CHG-0005 then proceeded on the recovered controller.
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 3 | Monitor the controller's health (`/api/info` reachable and `configured: true`) on a schedule, so a silent controller raises an alert instead of waiting for the next change window | management plane | {{< action-status "Open" >}} |
+| 3 | Monitor the controller's health (`/api/info` reachable and `configured: true`) on a schedule, so a silent controller raises an alert instead of waiting for the next change window | management plane | {{< action-status "In Progress" >}} the health watcher on the Builder, [CHG-0086](/docs/changes/2026/0086-health-watcher/) |
 | 4 | Establish whether a Terraform re-create of the domain VMs preserves the Omada data disk, and if not, protect the controller's state (out-of-band backup, or a lifecycle guard) so a rebuild cannot wipe it | tenant/mgmt Terraform; [ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) | {{< action-status "Open" >}} |
 
 ## Lessons learned

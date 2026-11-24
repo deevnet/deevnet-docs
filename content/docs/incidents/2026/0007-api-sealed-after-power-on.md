@@ -123,7 +123,7 @@ on one: with OpenBao sealed and the API restarted, its 22:26 run read its list, 
 |---|--------|-------|--------|
 | 2 | The egress agent says what the API answered: a 503 is "the API is up and waiting for OpenBao", not "cannot reach", and is not a failed unit; an unreachable API still is | `deevnet.net` `tenant_egress_agent` | {{< action-status "Done" >}} [#55](https://github.com/deevnet/ansible-collection-deevnet.net/pull/55), deployed by [CHG-0085](/docs/changes/2026/0085-egress-agent-says-what-api-answered/), 2026-11-24 |
 | 3 | ADR-0042's consequences name what runs that reads the API (the egress agent), and say that after action 1 none of it waits for OpenBao | ADR-0042 | {{< action-status "Done" >}} ADR-0042's Consequences, 2026-11-24 |
-| 4 | Alert when the API stops answering, or the agent stops succeeding: INC-0006's action 4 | observability | {{< action-status "Open" >}} |
+| 4 | Alert when the API stops answering, or the agent stops succeeding: INC-0006's action 4 | observability | {{< action-status "In Progress" >}} the health watcher on the Builder, [CHG-0086](/docs/changes/2026/0086-health-watcher/) |
 
 ## Follow-ups
 
