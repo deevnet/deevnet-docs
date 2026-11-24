@@ -9,9 +9,9 @@ aliases:
   - /docs/roadmap/infrastructure/substrate/software-discovery/plan/
   - /docs/roadmap/infrastructure/substrate/patch-awareness/plan/
 weight: 9
-tasks_completed: 16
+tasks_completed: 17
 tasks_in_progress: 1
-tasks_planned: 18
+tasks_planned: 17
 ---
 
 # Patch Management: Project Plan
@@ -210,7 +210,7 @@ with a way back.
 - ⏳ A monthly cycle is one change record, of a pre-approved standard type defined in
   [Change Management](/docs/policies/change-management/), rather than a bespoke record per host.
 - ⏳ Each cycle ends with the v1 report run and the catalog updated from it.
-- ⏳ Claude reads what needs patching through read-only MCP tools on the Builder, over the update
+- ✅ Claude reads what needs patching through read-only MCP tools on the Builder, over the update
   and health watchers' reports, and a `patch-status` skill ranks it
   ([CHG-0089](/docs/changes/2026/0089-patch-tools-for-claude/)).
 - ⏳ Skills on those tools carry each kind of patch change: the monthly cycle over the playbook

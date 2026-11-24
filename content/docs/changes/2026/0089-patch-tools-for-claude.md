@@ -10,7 +10,7 @@ weight: -89
 | **Date** | 2026-11-24 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In Progress**: Steps 1–3 done; Step 4 waits for a new session |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. A quarter of an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the update watcher, and the new MCP server) |
@@ -108,7 +108,7 @@ the server runs, `ss -ltnp` shows it listening on nothing, and `/srv/updates` is
 - [x] Step 1: `latest.json` written, no false majors
 - [x] Step 2: every tool answers, read-only
 - [x] Step 3: registered, skill linked
-- [ ] Step 4: `patch-status` ranks the Builder's Fedora 43 end of life first
+- [x] Step 4: `patch-status` ranks the Builder's Fedora 43 end of life first
 - [x] The runbook says how to ask Claude: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/), linked from Patching
 
 ## Outcome
@@ -123,6 +123,11 @@ commands ran from the Builder.
 | 14:07 | Step 2 | `make patch-mcp`, `make patch-mcp-test`: six tools, all read-only; every call answered. `os_releases` puts `dv00bld001p01`'s Fedora 43 first, ending 2026-12-09, 15 days; 4 Critical advisories waiting there, on 9 packages; an unknown host refused |
 | 14:07 | Step 3 | `make patch-mcp-register`: `deevnet-patch` added at user scope, `claude mcp list` shows it connected; `patch-status` linked into `~/.claude/skills` |
 | 14:08 | | Running, the server listens on nothing (`ss -ltnpu`); the report files' modification times unchanged by every tool call |
+| later | Step 4 | A new Claude Code session, asked "what needs patching?": `patch-status` called the server's tools and put the Builder's Fedora 43 end of life (2026-12-09, 15 days) first, recommending its upgrade to Fedora 44. Then the four Critical advisories (`ca-certificates` on six service VMs and the Builder; Firefox and the Samba client libraries on the Builder), the Important ones with a reboot for the service VMs' kernel, OPNsense 26.7.10, and the backlog; it put `dv02prv001v01` last, after INC-0006 |
+
+Step 4 also showed two news lines the banner still carries for the Builder VMs that
+[CHG-0088](/docs/changes/2026/0088-builder-vms-inactive/) destroyed: old news, cleared with
+`make update-watch-ack`.
 
 ## Follow-ups
 
