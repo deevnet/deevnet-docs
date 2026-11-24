@@ -13,6 +13,7 @@ Keeping what is in service current, and taking it out of service when its time c
 - [Patching](patching/) — day-2 maintenance and system updates
 - [Inventory Lifecycle](inventory-lifecycle/) — asset tracking and decommissioning
 - [Omada Controller Upgrade](omada-controller-upgrade/) — upgrading the network controller in place, keeping its data
+- [Shutdown and Power-On](shutdown-and-power-on/) — powering the site down in order, and what runs, and what waits, once it is back on
 - [Renaming Hosts](host-rename/) — what any rename has to reckon with, and renaming a Proxmox node
 
 Each upgrade is a change of type **Upgrade**, and gets a

@@ -11,7 +11,7 @@ aliases:
 |--|--|
 | **Status** | Proposed. Built, as of 2026-11-08: §1 and §2, the Shamir seal and work sessions ([CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/)), §3 ([CHG-0052](/docs/changes/2026/0052-sealed-openbao-is-unavailable/)) and §4 ([CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)); V13 and V14 passed. Accepted once V12, the rebuild from the vault, has run; see [What would settle it](#what-would-settle-it) and the [decision register](/docs/architecture/reviews/2026-10-tenant-pki/#decision-register) |
 | **Date** | 2026-10-21 |
-| **Revised** | 2026-10-25, in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The draft of 2026-10-21 split OpenBao in two, a platform store that unseals itself and a PKI store on a VM of its own, and recovered the PKI store from snapshots. Both are withdrawn: one OpenBao, sealed, rebuilt from the vault |
+| **Revised** | 2026-10-25, in the [Tenant PKI review](/docs/architecture/reviews/2026-10-tenant-pki/). The draft of 2026-10-21 split OpenBao in two, a platform store that unseals itself and a PKI store on a VM of its own, and recovered the PKI store from snapshots. Both are withdrawn: one OpenBao, sealed, rebuilt from the vault. 2026-11-24, after [INC-0007](/docs/incidents/2026/0007-api-sealed-after-power-on/): the consequences name the egress agent, the one thing that runs and reads the API |
 | **Scope** | How the Mobile Factory's OpenBao is sealed and opened, what the Deevnet API does while it is sealed, where the keys it uses are authoritatively held, and how it is rebuilt. Not the CA hierarchy ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/)) |
 | **Amends** | [ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) §2 (the static seal becomes Shamir; the seal key leaves the vault) and §6 (the rebuild order); the [Certificates standard](/docs/standards/certificates/) §5 (where the tenant CA keys are held), once accepted. Extends [CHG-0036](/docs/changes/2026/0036-openbao-keys-from-the-vault/)'s rule (keys held in the vault, imported) to the Tenant Service CA |
 | **Resolves** | The conflict between ADR-0016 and [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) for OpenBao: once this is built, nothing in OpenBao is kept data |
@@ -104,6 +104,15 @@ running kit, but anyone with the vault password can sign. That is already so for
 ## Consequences
 
 **Tenant work needs the operator.** Each session starts with an unseal. Nothing that runs needs it.
+
+**One thing that runs reads the Deevnet API, and it does not wait for OpenBao.** The exit node's
+egress agent reads the list of tenant VRFs every five minutes to keep each one's default route
+(ADR-0015 §7). That list comes from the API's database and needs no secret, so since API v0.28.1
+([CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/)) it is served while OpenBao is
+sealed. Every other `/v1` route waits for a work session. Before then the list waited with them, and
+after every power-on the agent could not refresh its routes until OpenBao was opened
+([INC-0007](/docs/incidents/2026/0007-api-sealed-after-power-on/)). Anything else that comes to read
+the API while it runs must be served the same way, or it has to wait for the operator.
 
 **The seal key leaves the vault, and the kit holds no unseal material.** Whether OpenBao migrates a
 static seal to Shamir in place is to be confirmed when building. If it does not, the store is set
