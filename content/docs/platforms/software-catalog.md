@@ -87,7 +87,7 @@ Image tags are pinned in the role defaults and mirrored on the Builder as tarbal
 
 {{< software-table "service-vms" >}}
 
-### Builder (`dv00bld001p01`) and the provisioner VMs
+### Builder (`dv00bld001p01`)
 
 {{< software-table "builder" >}}
 

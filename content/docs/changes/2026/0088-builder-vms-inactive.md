@@ -10,7 +10,7 @@ weight: -88
 | **Date** | 2026-11-24 |
 | **Change type** | Decommission |
 | **Classification** | Routine |
-| **Status** | **Planned** |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. Half an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv02bld001v01` (VMID 202) and `dv02bld002v01` (VMID 203) on `dv02hyp001p01`; the core router's DNS and DHCP; the update and health watchers on `dv00bld001p01` |
@@ -54,7 +54,7 @@ the temporary builder is next needed.
 
 ## Prerequisites
 
-- [ ] `deevnet.net` #56, `deevnet.builder` #46, the inventory's #124 and this record merged
+- [x] `deevnet.net` #56, `deevnet.builder` #46, the inventory's #124 and this record merged
 
 ## Procedure
 
@@ -118,13 +118,26 @@ The VMs are not restored: each is rebuilt by making it active again
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: neither host in either watcher's configuration
-- [ ] Step 2: VMIDs 202 and 203 destroyed, no volume left
-- [ ] Step 3: no DNS record or DHCP reservation for either
-- [ ] Step 4: both removed from the Builder's known hosts
-- [ ] Step 5: the identity audit and both watchers pass
-- [ ] The runbook says what an inactive host is and how one is made active; pages that describe either
+- [x] Step 1: neither host in either watcher's configuration
+- [x] Step 2: VMIDs 202 and 203 destroyed, no volume left
+- [x] Step 3: no DNS record or DHCP reservation for either
+- [x] Step 4: both removed from the Builder's known hosts
+- [x] Step 5: the identity audit and both watchers pass
+- [x] The runbook says what an inactive host is and how one is made active; pages that describe either
   VM as running say it is inactive
+
+## Outcome
+
+**Both VMs are destroyed with their disks, and both stay in inventory as inactive, their identities
+reserved.** All commands ran from the Builder, the operator's session supplying the automation key.
+
+| When | Steps | What happened |
+|---|---|---|
+| 08:08–08:10 | Step 1 | `make publish`, `make update-watch`, `make health-watch`: both watchers' configurations list neither host. No failure |
+| 08:10 | Step 2 | VMID 202 named `dv02bld001v01`, 203 `dv02bld002v01`, checked before each was touched. Each shut down cleanly (203 has no guest agent, and stopped on ACPI) and was destroyed with `--purge`: `vm-202-cloudinit`, `vm-202-disk-0` (64G), `vm-202-disk-1` (250G), `vm-203-disk-0` (EFI) and `vm-203-disk-1` (100G) removed. `qm list` and `lvs` show neither |
+| 08:12 | Step 3 | After `--check` runs naming only these two hosts: `dns.yml` deleted their two host overrides, `dhcp.yml` their two reservations. Nothing else changed. Neither name resolves through the core router, forward or reverse |
+| 08:12 | Step 4 | Both names and addresses removed from the operator's and `deevnet-watch`'s `known_hosts` |
+| 08:13 | Step 5 | The VM identity audit passes, declaring VMIDs 202 and 203 with neither in use. The health watcher: all well. The update watcher's scoreboard lists neither host |
 
 ## Follow-ups
 

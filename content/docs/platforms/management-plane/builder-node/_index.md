@@ -25,7 +25,7 @@ The Builder runs Fedora Workstation, configured via the `deevnet.builder` Ansibl
 | Attribute | Value |
 |-----------|-------|
 | **OS** | Fedora Workstation |
-| **Version** | [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms) |
+| **Version** | [Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01) |
 | **Collection** | `deevnet.builder` applied |
 
 The Builder is installed over PXE by another builder: a temporary builder VM on the management hypervisor network-boots it with the builder kickstart, then applies the full builder configuration. See [Repave the Builder](/docs/runbook/substrate/building-recovery/repave-builder/).

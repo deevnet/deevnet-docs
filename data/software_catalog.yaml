@@ -323,11 +323,6 @@ tables:
       license: Free software, per package
       support: Community
       source: Not recorded
-    - component: Fedora Server (`dv02bld001v01`, `dv02bld002v01`)
-      version: '44'
-      license: Free software, per package
-      support: Community
-      source: Pin
     - component: nginx (artifact server)
       version: Fedora package
       license: BSD-2-Clause

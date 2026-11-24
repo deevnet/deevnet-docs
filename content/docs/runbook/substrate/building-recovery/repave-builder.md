@@ -17,7 +17,7 @@ hypervisor or its template is, start from a bare machine instead:
 
 | | |
 |---|---|
-| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, with a 250G data disk at `/srv` |
+| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, with a 250G data disk at `/srv`. [Inactive](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts) between repaves: declared, not built |
 | Target | `dv00bld001p01`: the AOOSTAR N1 PRO, 10.20.99.95, management NIC `enp4s0` (inventory `eth0`) |
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
@@ -53,7 +53,12 @@ from it, and you reach it from a machine on the trusted segment.
 
 ## Step 1: Stand up the temporary builder
 
-`dv02bld001v01` is declared in inventory, with its identity allocated (VMID 202). Build it as a
+`dv02bld001v01` is declared in inventory, with its identity allocated (VMID 202), and inactive
+between repaves. First make it active
+([Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts)):
+move it back into the groups its comment in `hosts.yml` lists, and put `10.20.99.97/32` back in
+`openbao_ansible_cidrs`. Apply its DNS record and DHCP reservation with `make dns` and `make dhcp` in
+`deevnet.net`, so it takes its address at first boot. Then build it as a
 management-hypervisor VM by template clone
 ([Build a Management-Hypervisor VM → Approach A](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-a--clone-from-template)),
 then clone the repositories into `/srv/dvnt` on it and apply the builder roles to it alone:
@@ -145,7 +150,8 @@ in `network_controllers` unless it has been put back there for a recovery.
 2. Apply them with `make dns` and `make dhcp` in `deevnet.net`.
 3. Set the subnet's `next_server` back to `10.20.99.95` by hand.
 4. Clone the repositories into `/srv/dvnt` on the Builder, and put back anything carried off.
-5. Shut down `dv02bld001v01`. It stays declared, for the next repave.
+5. Destroy `dv02bld001v01` and make it inactive again, for the next repave
+   ([Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts)).
 
 ---
 
