@@ -55,7 +55,8 @@ VMID and MAC, reserved, and so its address. Making it active brings it back exac
 host's own record, not aliases pointing at it. Then:
 
 1. Run the watchers' roles on the Builder (`make update-watch`, `make health-watch` in
-   `deevnet.builder`), so they stop asking it.
+   `deevnet.builder`), so they stop asking it. The update watcher's next run drops any news about it
+   not yet acknowledged.
 2. Shut it down and destroy it, with its disks (`qm destroy <vmid> --purge` on its hypervisor).
 3. Run `make dns` and `make dhcp` in `deevnet.net`: its record and reservation are deleted.
 4. Remove it from the Builder's `known_hosts` (`ssh-keygen -R`), the operator's and `deevnet-watch`'s.
