@@ -36,7 +36,8 @@ operator may start that unit without a password through a polkit rule,
 `/etc/polkit-1/rules.d/50-deevnet-patch-refresh.rules`, which allows the `wheel` group to start it
 and nothing else: stopping or restarting it, or starting any other unit, still needs authentication.
 The tool is declared not read-only, since the watcher writes its reports and the banner, and safe to
-repeat.
+repeat. Each host answers from its own package metadata, which it refreshes on its own schedule:
+an update published within the last hours may not show until then.
 
 ## The tools
 

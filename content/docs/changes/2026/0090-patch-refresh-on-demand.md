@@ -10,7 +10,7 @@ weight: -90
 | **Date** | 2026-11-24 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **In progress** |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. A quarter of an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the patch MCP server and a polkit rule) |
@@ -101,12 +101,12 @@ Revert #50 and run `make patch-mcp`, then remove
 - [x] Step 1: deployed, seven tools
 - [x] Step 2: the rule allows starting the update watcher and nothing else
 - [x] Step 3: `refresh_updates` answers from a fresh report
-- [ ] Step 4: `patch-status` refreshes when asked for a fresh look
+- [x] Step 4: `patch-status` refreshes when asked for a fresh look
 - [x] The runbook says the server can refresh: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/)
 
 ## Outcome
 
-**Deployed; `refresh_updates` runs the update watcher and answers from the new report.** All commands
+**Deployed and used; `refresh_updates` runs the update watcher and answers from the new report.** All commands
 ran from the Builder.
 
 | When | Steps | What happened |
@@ -114,3 +114,13 @@ ran from the Builder.
 | 16:52 | Step 1 | `make patch-mcp`: two changes, the server and the polkit rule. No failure |
 | 16:53 | Step 2 | As the operator, sudo's cached credential cleared first: starting `deevnet-update-watch.service` succeeded; restarting or stopping it, and starting `deevnet-health-watch.service`, were refused ("requires interactive authentication") |
 | 16:53 | Step 3 | `make patch-mcp-test-refresh`: seven tools, six read-only, `refresh_updates` not; every call answered; `refresh_updates` moved `checked_at` from 21:53:13Z to 21:53:40Z, 25 seconds in all |
+| 17:05 | Step 4 | A new Claude Code session, asked "what needs patching? take a fresh look": `patch-status` called `refresh_updates` first, which moved `checked_at` from 21:53:40Z to 22:05:12Z, and answered from it, the Builder's Fedora 43 end of life first. Asked the same without "fresh", it answered from the existing report without refreshing |
+
+A fresh scan asks every host again, but each answers from its own package metadata, 0.5 to 1.1
+days old at the time: an update published within the last hours shows at the hosts' next metadata
+refresh, not sooner. Making hosts refresh their metadata on each scan would download package
+metadata across the core router on every call, so the scan leaves it to them.
+
+## Follow-ups
+
+None.
