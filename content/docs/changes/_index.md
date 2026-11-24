@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0083 | Unscheduled | [A First Patch Pass, Small and Careful](2026/0083-patch-pilot/) | Upgrade | mobile | Planned |
+| CHG-0083 | 2026-11-23 | [A First Patch Pass, Small and Careful](2026/0083-patch-pilot/) | Upgrade | mobile | In progress |
 | CHG-0082 | 2026-11-23 | [The Update Watcher](2026/0082-update-watcher/) | Deployment | mobile | In progress |
 | CHG-0081 | 2026-11-22 | [The Core Router Updated to OPNsense 26.7.9_3](2026/0081-core-router-26-7-9/) | Upgrade | mobile | Complete |
 | CHG-0080 | 2026-11-22 | [The Tenant Hypervisor Brought Up to Proxmox VE 9.2.32](2026/0080-hyp002-proxmox-9-2-32/) | Upgrade | mobile | Complete |
