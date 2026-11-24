@@ -11,7 +11,7 @@ weight: -7
 | **Site** | mobile |
 | **Systems** | `dv02prv001v01` (the Deevnet API), `dv02idn001v01` (OpenBao), `dv02hyp002p02` (the exit node and its `deevnet-egress-agent`) |
 | **Severity** | Low in effect. From the site's power-on at 20:25 on 2026-11-22, every `/v1` request to the API answered 503, and the exit node's egress agent failed every five minutes. No tenant lost its egress: the agent left its routes as they were, and the exit node's own reboot restored them from disk. No tenant work was asked for |
-| **Status** | Open · {{< inc-status "Remediated" >}}. The cause is fixed: since API v0.28.1 ([CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), 2026-11-23) the egress list answers while OpenBao is sealed. The preventive actions are open |
+| **Status** | Open · {{< inc-status "Hardening" >}}. The cause is fixed: since API v0.28.1 ([CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), 2026-11-23) the egress list answers while OpenBao is sealed. Actions 2, 3 and 5 are done; action 4, alerting, is open |
 | **Times** | EST (UTC−5) |
 
 ---
@@ -122,14 +122,14 @@ on one: with OpenBao sealed and the API restarted, its 22:26 run read its list, 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
 | 2 | The egress agent says what the API answered: a 503 is "the API is up and waiting for OpenBao", not "cannot reach", and is not a failed unit; an unreachable API still is | `deevnet.net` `tenant_egress_agent` | {{< action-status "Done" >}} [#55](https://github.com/deevnet/ansible-collection-deevnet.net/pull/55), deployed by [CHG-0085](/docs/changes/2026/0085-egress-agent-says-what-api-answered/), 2026-11-24 |
-| 3 | ADR-0042's consequences name what runs that reads the API (the egress agent), and say that after action 1 none of it waits for OpenBao | ADR-0042 | {{< action-status "Open" >}} |
+| 3 | ADR-0042's consequences name what runs that reads the API (the egress agent), and say that after action 1 none of it waits for OpenBao | ADR-0042 | {{< action-status "Done" >}} ADR-0042's Consequences, 2026-11-24 |
 | 4 | Alert when the API stops answering, or the agent stops succeeding: INC-0006's action 4 | observability | {{< action-status "Open" >}} |
 
 ## Follow-ups
 
 | # | Follow-up | Where | Status |
 |---|-----------|-------|--------|
-| 5 | A runbook page for shutting the site down (`deevnet.mgmt`'s `shutdown.yml`) and powering it on, saying that after power-on the API serves no `/v1` until a work session opens OpenBao | the runbook | {{< action-status "Open" >}} |
+| 5 | A runbook page for shutting the site down (`deevnet.mgmt`'s `shutdown.yml`) and powering it on, saying that after power-on the API serves no `/v1` until a work session opens OpenBao | the runbook | {{< action-status "Done" >}} [Shutdown and Power-On](/docs/runbook/substrate/lifecycle/shutdown-and-power-on/), 2026-11-24 |
 
 ## Lessons learned
 
