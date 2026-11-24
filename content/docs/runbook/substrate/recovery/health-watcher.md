@@ -13,7 +13,7 @@ only alerting today: nothing reaches the operator away from the Builder.
 ```text
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Deevnet health: 1 problem
-  dv02bld001v01 unit deevnet-health-test.service: failed (since 2026-11-24 05:20 EST)
+  dv02col001v01 unit deevnet-health-test.service: failed (since 2026-11-24 05:20 EST)
 Details: /srv/health/latest.txt. This clears itself when the check passes.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ```

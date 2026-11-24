@@ -53,7 +53,7 @@ it the upstream and site connections the bootstrap role needs.
 ## Firmware
 
 The BIOS version is in the
-[Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01-and-the-provisioner-vms).
+[Software Catalog](/docs/platforms/software-catalog/#builder-dv00bld001p01).
 
 ## Evaluation
 

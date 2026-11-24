@@ -196,7 +196,7 @@ routine, not an emergency procedure.
   [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/).
 
 **Today:** rebuilds happen when something needs one. The Builder in service was built over PXE
-from the builder VM, and the builder VMs by template clone and by PXE. No scheduled round has been
+from the builder VM, and the builder VMs, now inactive, by template clone and by PXE. No scheduled round has been
 run yet; the first is on the [Full Site Rebuild](/docs/roadmap/site-work/mobile/full-rebuild/)
 roadmap.
 
