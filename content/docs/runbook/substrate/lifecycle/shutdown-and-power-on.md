@@ -5,9 +5,9 @@ weight: 5
 
 # Shutdown and Power-On
 
-How the Mobile Factory is powered down and brought back. **A playbook shuts down every VM, both
-hypervisors and the Pis in dependency order; the operator then shuts the Builder down and halts the
-core router by hand, and cuts the power to the rest.** Bringing it back needs no playbook: once each
+How the Mobile Factory is powered down and brought back. **A playbook shuts down every VM and both
+hypervisors in dependency order, and a second powers off the Pi lab; the operator then shuts the
+Builder down and halts the core router by hand, and cuts the power to the rest.** Bringing it back needs no playbook: once each
 machine is powered on, its services and service VMs start on their own. After power-on the site
 runs, and tenants have their services and egress, but the Deevnet API serves no tenant work until a
 work session opens OpenBao.
@@ -17,8 +17,8 @@ A routine shutdown and power-on needs no change record. If either goes wrong, op
 
 ## Shutting down
 
-**Shut down from the inside out: the VMs, then the hypervisors, the Builder and the core router,
-then cut the power.** Each step waits for the one before to be down.
+**Shut down from the inside out: the VMs, then the hypervisors and the Pi lab, the Builder and the
+core router, then cut the power.** Each step waits for the one before to be down.
 
 1. **The playbook**, from `ansible-collection-deevnet.mgmt` on the Builder:
 
@@ -33,11 +33,20 @@ then cut the power.** Each step waits for the one before to be down.
    |---|---|---|
    | 1 | Every running VM on both hypervisors | Through the Proxmox API, in reverse of each VM's start order, each given its own shutdown timeout (`mgmt_vm.startup` in inventory) and stopped if it does not finish in time |
    | 2 | Both hypervisors | Powered off, and waited for until they stop answering |
-   | 3 | The Pi lab | The same |
 
-2. **The Builder**, once the playbook has finished: `sudo shutdown -h now` on the Builder.
-3. **The core router**, `dv02cor002p01`: halted from its web interface.
-4. **The access switch, the AP and the edge router** are not shut down: cut their power.
+2. **The Pi lab**, if it is on, by its own playbook:
+
+   ```bash
+   ansible-playbook playbooks/shutdown-pis.yml -e confirm_shutdown=yes
+   ```
+
+   Each Pi in the `pis` group is powered off and waited for until it stops answering; one already
+   off is skipped. The Pis depend on nothing the hypervisors run, so this can run before the first
+   playbook as well as after, but not after the Builder or the core router is down. With
+   `--limit <pi>` it shuts down one Pi, at any time.
+3. **The Builder**, once both playbooks have finished: `sudo shutdown -h now` on the Builder.
+4. **The core router**, `dv02cor002p01`: halted from its web interface.
+5. **The access switch, the AP and the edge router** are not shut down: cut their power.
 
 Shutting down ends any work session: OpenBao comes back sealed.
 
