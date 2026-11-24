@@ -105,4 +105,18 @@ that VM cannot open its lock file as the watcher's account. The scoreboard shows
 
 ## Follow-ups
 
-- [ ] `dv02bld002v01`: dnf cannot open `/usr/lib/sysimage/libdnf5/system-repo.lock` as `deevnet-watch`, so the update watcher gets no answer from it
+- [x] `dv02bld002v01`: dnf cannot open `/usr/lib/sysimage/libdnf5/system-repo.lock` as `deevnet-watch`, so the update watcher gets no answer from it. Moot: the VM was destroyed and made inactive by [CHG-0088](/docs/changes/2026/0088-builder-vms-inactive/)
+
+## Revisions
+
+Later the same day, after the owner used the scoreboard (`deevnet.builder`
+[#48](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/48),
+[#49](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/49)), each deployed with
+`make update-watch`:
+
+- **The banner shows the scoreboard at every login**, the owner's call. Its first line says what is
+  new since the last acknowledgement, or that nothing is; `make update-watch-ack` acknowledges the news
+  and leaves the scoreboard.
+- **A host no longer asked takes its unacknowledged news with it**, after the two Builder VMs
+  destroyed by CHG-0088 stayed in the banner's news.
+- **`make update-watch-show`** prints the scoreboard from the last run at any time.
