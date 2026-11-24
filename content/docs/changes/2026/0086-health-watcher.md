@@ -10,7 +10,7 @@ weight: -86
 | **Date** | 2026-11-24 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | **Planned** |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. Half an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the watcher); every substrate service VM, both Builder VMs and both hypervisors (the read-only account's check, which gains a mode) |
@@ -149,15 +149,33 @@ which puts `deevnet-update-check` back on every host.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the watcher and its timer on the Builder; the check on the Builder VMs and hypervisors
-- [ ] Step 2: the check on every service VM
-- [ ] Step 3: a dry run with every host answering, any failed unit dealt with
-- [ ] Step 4: the update watcher answering on every host
-- [ ] Step 5: the key answers `updates` and `health`, and refuses anything else
-- [ ] Step 6: a failed unit raised the banner and its clearing cleared it
-- [ ] The runbook says what the banner means and where to look
-- [ ] INC-0007 action 4, INC-0006 action 4 and INC-0002 action 3 marked Done
+- [x] Step 1: the watcher and its timer on the Builder; the check on the Builder VMs and hypervisors
+- [x] Step 2: the check on every service VM
+- [x] Step 3: a dry run with every host answering, any failed unit dealt with
+- [x] Step 4: the update watcher answering on every host
+- [x] Step 5: the key answers `updates` and `health`, and refuses anything else
+- [x] Step 6: a failed unit raised the banner and its clearing cleared it
+- [x] The runbook says what the banner means and where to look
+- [x] INC-0007 action 4, INC-0006 action 4 and INC-0002 action 3 marked Done
 
 ## Outcome
 
-Not yet run.
+**The health watcher runs on the Builder every five minutes, every substrate host answers it, and a
+failed unit raised the banner and cleared itself.** All commands ran from the Builder, the operator's
+session supplying the automation key.
+
+| When | Steps | What happened |
+|---|---|---|
+| 05:12–05:13 | Step 1 | `make publish`, `make health-watch`: the watcher, its timer and banner on the Builder; `deevnet-watch-check` in place of `deevnet-update-check` on both Builder VMs and both hypervisors, each `authorized_keys` one line pinned to it. No failure |
+| 05:13–05:14 | Step 2 | `site.yml --tags update_check`: the same on all seven service VMs, a minute after Step 1, before the watcher's first run |
+| 05:14 | Step 3 | Dry run: all fifteen checks pass, every host answering; no failed unit anywhere. Nothing to accept |
+| 05:14 | Step 4 | The update watcher's dry run: nothing new, so no host stopped answering it |
+| 05:15 | Step 5 | On `dv02bld001v01`: `health` printed the failed units; `updates` and an empty request the waiting updates; `id`, `health; id` and `health $(id)` each `### error`, nothing run |
+| 05:15 | Step 6 | `systemd-run --unit=deevnet-health-test /bin/false` on `dv02bld001v01`: a failed unit |
+| 05:20, 05:25 | Step 6 | Seen at 05:20, raised at 05:25. A login on the Builder showed the banner naming it |
+| 05:30 | Step 6 | `reset-failed`; the 05:30 run cleared it, the banner empty, `events.log` with the RAISED and CLEARED lines |
+
+## Follow-ups
+
+- [ ] How a problem reaches the operator away from the Builder (ntfy, or mail on port 587): the
+  [Observability](/docs/roadmap/infrastructure/substrate/observability/) item's operator-alerting waypoint

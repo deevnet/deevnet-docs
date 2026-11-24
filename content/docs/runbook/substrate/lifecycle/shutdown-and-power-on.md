@@ -77,6 +77,8 @@ succeeded; a refused token, any other answer, or no answer fails it. A failed ag
 routes it last wrote, so tenants keep their egress while it is put right.
 
 The update watcher's daily run, missed while the Builder was off, runs once soon after it starts.
+The [health watcher](/docs/runbook/substrate/recovery/health-watcher/) starts checking ten minutes
+after the Builder boots; a host or unit still down after that shows in its banner at login.
 
 ### Opening a work session
 

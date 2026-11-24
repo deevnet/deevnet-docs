@@ -10,7 +10,7 @@ weight: -82
 | **Date** | 2026-11-23 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress**: deployed 2026-11-23; closes with the timer's first run on its own |
+| **Status** | **Complete, 2026-11-24** |
 | **Window** | No outage. An hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the watcher); every substrate service VM, both Builder VMs and both hypervisors (the read-only account); the Omada controller (a view-only client) |
@@ -160,9 +160,9 @@ controller: delete the view-only client. Then remove the roles from both `site.y
 - [x] Step 4: a dry run with every host answering
 - [x] Step 5: the key refused for anything but the check, with no terminal, no forwarding and no sudo
 - [x] Step 6: the first report and banner written; a second run finds nothing new
-- [ ] Verification: the timer's first run on its own, finding nothing new
+- [x] Verification: the timer's first run on its own, finding nothing new
 - [x] The runbook's Patching page says what the watcher reports and how to run it now
-- [ ] Patch Management v2 marked done
+- [x] Patch Management v2's watcher tasks marked done (v2 itself waits for the Omada client: see Follow-ups)
 
 ## Outcome
 
@@ -181,6 +181,7 @@ the watcher's journal.
 | 18:28 | Step 6 | The first run queued its mail; Postfix could not connect to the operator's provider on port 25 |
 | 18:30 | | Outbound port 25 is blocked on the site's current network, to every provider tried, from the Builder and from a hypervisor alike; 587, 465 and 443 pass |
 | 18:37 | Step 6 | The report replaced mail (below). The queued mail deleted, Postfix removed from the Builder, the watcher's state reset. The run wrote `latest.txt`, the dated report and the banner: 19 new. A second run: 0 new |
+| 2026-11-24 00:24 | Verification | The timer's first run on its own: every host answered, `0 new; 19 pending in the notice` |
 
 What it found on its first run: 1,700 updates waiting across the substrate, about 700 for security,
 from 17 on `dv02obj001v01` to 578 on the Builder itself; five security updates on each hypervisor; the
@@ -193,14 +194,17 @@ core router on the newest OPNsense point release.
   `/srv/updates/latest.txt` each run, a dated file of what was new, and a notice that
   `/etc/profile.d/deevnet-updates.sh` prints in every interactive login shell until
   `make update-watch-ack`. Postfix and the mail settings left the role and the inventory.
+- **The check was renamed after this change.** [CHG-0086](/docs/changes/2026/0086-health-watcher/) replaced
+  `deevnet-update-check` with `deevnet-watch-check`, whose `updates` check is this one.
 - **`from=` was checked, not exercised.** Using the key from another host would have meant copying
   the watcher's private key off the Builder, the exposure the restriction exists for. Every host's key
   line carries `from=` the Builder's address instead.
 - **No Omada client yet.** The view-only client is not made, so the report says the devices were not
-  checked.
+  checked, and Patch Management v2, whose definition of done includes the AP's firmware, is not
+  marked done with this change.
 
 ## Follow-ups
 
-- [ ] Make the view-only Omada Open API client and put its id and secret in the vault, so the AP's firmware is checked
-- [ ] Update dnf5 on `dv02bld002v01` (it is among its waiting security updates), so the watcher can check it
+- [ ] Make the view-only Omada Open API client and put its id and secret in the vault, so the AP's firmware is checked; then mark Patch Management v2 done
+- [x] ~~Update dnf5 on `dv02bld002v01`~~: declined, the VM is to be removed ([CHG-0083](/docs/changes/2026/0083-patch-pilot/))
 - [ ] The hypervisors' Proxmox notifications also leave by direct mail on port 25 (CHG-0079), which the site's current network blocks: decide how they reach the operator

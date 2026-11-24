@@ -9,8 +9,8 @@ aliases:
   - /docs/roadmap/infrastructure/substrate/software-discovery/plan/
   - /docs/roadmap/infrastructure/substrate/patch-awareness/plan/
 weight: 9
-tasks_completed: 14
-tasks_in_progress: 2
+tasks_completed: 16
+tasks_in_progress: 1
 tasks_planned: 16
 ---
 
@@ -134,13 +134,14 @@ with credentials that can read and nothing else.
 **Done when:**
 
 - ✅ Every substrate service VM, Builder VM and hypervisor carries the read-only `deevnet-watch`
-  account: no sudo, its key pinned to one program, `deevnet-update-check`, with `command=`,
-  `restrict` and `from=` the Builder. The check reads the package manager's cache only (`dnf` on
+  account: no sudo, its key pinned to one program, `deevnet-watch-check` (its `updates` check),
+  with `command=`, `restrict` and `from=` the Builder. The check reads the package manager's cache only (`dnf` on
   Fedora, `apt` on Proxmox VE), which each host's own timer keeps fresh, so it downloads nothing.
-- 🔄 The watcher runs daily on the Builder as its own account. It asks every host; it asks the
-  Omada controller, with a view-only client, for the AP's latest firmware; and it compares
+- ✅ The watcher runs daily on the Builder as its own account. It asks every host, and compares
   OPNsense's published releases with the version the newest discovery report saw on the core
   router.
+- 🔄 It asks the Omada controller, with a view-only client, for the AP's latest firmware. Waits for
+  the owner to make the client.
 - ✅ It writes its report on the Builder, in `/srv/updates`: everything waiting now, and a dated
   file of what was new. A banner in every interactive login shell shows what is new until the
   operator acknowledges it (`make update-watch-ack`).
@@ -150,8 +151,8 @@ with credentials that can read and nothing else.
 - ✅ Anything still waiting after 30 days is news again, and so is a system that didn't answer or
   couldn't check, once per outage. The hypervisors are listed but are not news, since Proxmox VE
   notifies its own (CHG-0079).
-- 🔄 It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), which closes with the
-  timer's first run on its own.
+- ✅ It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), complete 2026-11-24
+  after the timer's first run on its own.
 
 **The choices, the owner's, 2026-11-23.** The daily check runs unattended with credentials of its
 own that can only read: the automation key, the vault and OpenBao stay with the operator's

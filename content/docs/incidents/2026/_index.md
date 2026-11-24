@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Incident | Site | Status | Substatus |
 |----|------|----------|------|--------|-----------|
-| INC-0007 | 2026-11-22 | [The API Answered 503 for a Day After the Site Powered On](0007-api-sealed-after-power-on/) | mobile | Open | {{< inc-status "Hardening" >}} |
+| INC-0007 | 2026-11-22 | [The API Answered 503 for a Day After the Site Powered On](0007-api-sealed-after-power-on/) | mobile | Closed | {{< inc-status "Completed" >}} 2026-11-24 |
 | INC-0006 | 2026-11-20 | [The API VM's Kernel Panicked Under Backup Load](0006-api-vm-scsi-panic/) | mobile | Open | {{< inc-status "Mitigated" >}} |
 | INC-0005 | 2026-10-07 | [Core Router Hard Hang During a Provisioning VM Rebuild](0005-core-router-hang-during-rebuild/) | mobile | Open | {{< inc-status "Mitigated" >}} |
 | INC-0004 | 2026-09-21 | [Core Router Lost: a Hard Hang, Then Recurring re0 Watchdog Timeouts](0004-core-router-lost/) | mobile | Open | {{< inc-status "Investigating" >}} |
