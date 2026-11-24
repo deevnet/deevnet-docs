@@ -10,7 +10,7 @@ weight: -90
 | **Date** | 2026-11-24 |
 | **Change type** | Deployment |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | **In progress** |
 | **Window** | No outage. A quarter of an hour, operator at the Builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the patch MCP server and a polkit rule) |
@@ -53,7 +53,7 @@ data is over a day old.
 
 ## Prerequisites
 
-- [ ] `deevnet.builder` #50 and this record merged
+- [x] `deevnet.builder` #50 and this record merged
 
 ## Procedure
 
@@ -98,8 +98,19 @@ Revert #50 and run `make patch-mcp`, then remove
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: deployed, seven tools
-- [ ] Step 2: the rule allows starting the update watcher and nothing else
-- [ ] Step 3: `refresh_updates` answers from a fresh report
+- [x] Step 1: deployed, seven tools
+- [x] Step 2: the rule allows starting the update watcher and nothing else
+- [x] Step 3: `refresh_updates` answers from a fresh report
 - [ ] Step 4: `patch-status` refreshes when asked for a fresh look
-- [ ] The runbook says the server can refresh: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/)
+- [x] The runbook says the server can refresh: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/)
+
+## Outcome
+
+**Deployed; `refresh_updates` runs the update watcher and answers from the new report.** All commands
+ran from the Builder.
+
+| When | Steps | What happened |
+|---|---|---|
+| 16:52 | Step 1 | `make patch-mcp`: two changes, the server and the polkit rule. No failure |
+| 16:53 | Step 2 | As the operator, sudo's cached credential cleared first: starting `deevnet-update-watch.service` succeeded; restarting or stopping it, and starting `deevnet-health-watch.service`, were refused ("requires interactive authentication") |
+| 16:53 | Step 3 | `make patch-mcp-test-refresh`: seven tools, six read-only, `refresh_updates` not; every call answered; `refresh_updates` moved `checked_at` from 21:53:13Z to 21:53:40Z, 25 seconds in all |

@@ -8,7 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0090 | 2026-11-24 | [A Fresh Patch Scan on Demand](0090-patch-refresh-on-demand/) | Deployment | mobile | Planned |
+| CHG-0090 | 2026-11-24 | [A Fresh Patch Scan on Demand](0090-patch-refresh-on-demand/) | Deployment | mobile | In progress |
 | CHG-0089 | 2026-11-24 | [Patch Tools for Claude](0089-patch-tools-for-claude/) | Deployment | mobile | Complete |
 | CHG-0088 | 2026-11-24 | [The Builder VMs Made Inactive](0088-builder-vms-inactive/) | Decommission | mobile | Complete |
 | CHG-0087 | 2026-11-24 | [The Update Scoreboard](0087-update-scoreboard/) | Configuration | mobile | Complete |
