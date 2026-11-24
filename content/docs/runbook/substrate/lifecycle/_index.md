@@ -11,6 +11,7 @@ aliases:
 Keeping what is in service current, and taking it out of service when its time comes.
 
 - [Patching](patching/) — day-2 maintenance and system updates
+- [Patch Tools for Claude](patch-tools-for-claude/) — asking Claude what needs patching, through read-only MCP tools on the Builder
 - [Inventory Lifecycle](inventory-lifecycle/) — asset tracking and decommissioning
 - [Omada Controller Upgrade](omada-controller-upgrade/) — upgrading the network controller in place, keeping its data
 - [Shutdown and Power-On](shutdown-and-power-on/) — powering the site down in order, and what runs, and what waits, once it is back on

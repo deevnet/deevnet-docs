@@ -71,6 +71,9 @@ point release or line (from OPNsense's published releases, against the newest di
 firmware for a device the Omada controller manages, a system that stopped answering, and anything
 still waiting after 30 days. The hypervisors are listed but are not news: Proxmox VE notifies its own.
 
+**Claude reads the same report through read-only tools**, and answers "what needs patching?" most
+urgent first: [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/).
+
 In `ansible-collection-deevnet.builder`:
 
 ```bash
