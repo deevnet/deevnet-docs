@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0089 | 2026-11-24 | [Patch Tools for Claude](0089-patch-tools-for-claude/) | Deployment | mobile | Planned |
 | CHG-0088 | 2026-11-24 | [The Builder VMs Made Inactive](0088-builder-vms-inactive/) | Decommission | mobile | Complete |
 | CHG-0087 | 2026-11-24 | [The Update Scoreboard](0087-update-scoreboard/) | Configuration | mobile | Complete |
 | CHG-0086 | 2026-11-24 | [The Health Watcher](0086-health-watcher/) | Deployment | mobile | Complete |
