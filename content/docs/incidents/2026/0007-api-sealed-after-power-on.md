@@ -121,7 +121,7 @@ on one: with OpenBao sealed and the API restarted, its 22:26 run read its list, 
 
 | # | Action | Where | Status |
 |---|--------|-------|--------|
-| 2 | The egress agent says what the API answered: a 503 is "the API is up and waiting for OpenBao", not "cannot reach", and is not a failed unit; an unreachable API still is | `deevnet.net` `tenant_egress_agent` | {{< action-status "Open" >}} |
+| 2 | The egress agent says what the API answered: a 503 is "the API is up and waiting for OpenBao", not "cannot reach", and is not a failed unit; an unreachable API still is | `deevnet.net` `tenant_egress_agent` | {{< action-status "Done" >}} [#55](https://github.com/deevnet/ansible-collection-deevnet.net/pull/55), deployed by [CHG-0085](/docs/changes/2026/0085-egress-agent-says-what-api-answered/), 2026-11-24 |
 | 3 | ADR-0042's consequences name what runs that reads the API (the egress agent), and say that after action 1 none of it waits for OpenBao | ADR-0042 | {{< action-status "Open" >}} |
 | 4 | Alert when the API stops answering, or the agent stops succeeding: INC-0006's action 4 | observability | {{< action-status "Open" >}} |
 
@@ -143,6 +143,7 @@ on one: with OpenBao sealed and the API restarted, its 22:26 run read its list, 
 
 - [CHG-0083](/docs/changes/2026/0083-patch-pilot/), during whose verification this was found
 - [CHG-0084](/docs/changes/2026/0084-api-egress-without-openbao/), which deployed corrective action 1
+- [CHG-0085](/docs/changes/2026/0085-egress-agent-says-what-api-answered/), which deployed preventive action 2
 - [CHG-0053](/docs/changes/2026/0053-openbao-shamir-seal/), which made OpenBao sealed outside work sessions
 
 ## Related incidents
