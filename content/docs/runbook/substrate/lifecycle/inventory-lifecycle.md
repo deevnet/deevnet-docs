@@ -46,7 +46,6 @@ VMID and MAC, reserved, and so its address. Making it active brings it back exac
 
 | Host | What it is | Active in | Inactive since |
 |---|---|---|---|
-| `dv02bld001v01` | The temporary builder, cloned from the template, that [repaves the Builder](/docs/runbook/substrate/building-recovery/repave-builder/) | `control_plane`, `management_plane`, `builder`, `workstations`, `artifact_servers`, `bootstrap_nodes` | [CHG-0088](/docs/changes/2026/0088-builder-vms-inactive/) |
 | `dv02bld002v01` | The UEFI PXE install test target. Its per-MAC GRUB config stays on the Builder | `control_plane`, `management_plane`, `builder` | [CHG-0088](/docs/changes/2026/0088-builder-vms-inactive/) |
 
 **Making a host inactive is a change record.** In inventory, move the host out of every group into
