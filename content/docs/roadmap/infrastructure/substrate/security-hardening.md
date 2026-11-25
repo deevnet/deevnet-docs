@@ -12,6 +12,8 @@ waypoints:
     status: planned
   - title: "Tenant enrollment tokens are delivered encrypted to the tenant's own key"
     status: planned
+  - title: "Ansible verifies every substrate host's SSH identity, through host certificates signed by a Deevnet CA"
+    status: planned
 ---
 
 # Security Hardening
@@ -44,3 +46,11 @@ when work on one of them starts.
 - **Encrypted enrollment token delivery:**
   [R-08](/docs/policies/risk-management/risk-register/#register). Tokens are handed over by hand
   ([ADR-0012](/docs/architecture/decisions/tenant-model/0012-iot-platform-api/) §9).
+- **Ansible verifying host identity:**
+  [R-17](/docs/policies/risk-management/risk-register/#register). All three collections set
+  `host_key_checking = False`, so a play trusts whatever answers at a host's address. Hosts whose
+  key is held in a `known_hosts` are checked only by name or address as first recorded. Host
+  certificates signed by a Deevnet CA, trusted through one `@cert-authority` line, would let every
+  play check every host, rebuilt ones included, without re-learning keys
+  ([ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/) §4 covers
+  the other direction: hosts trusting the operator's certificate).
