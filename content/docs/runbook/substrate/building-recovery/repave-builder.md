@@ -17,7 +17,7 @@ hypervisor or its template is, start from a bare machine instead:
 
 | | |
 |---|---|
-| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, with a 250G data disk at `/srv`. [Inactive](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts) between repaves: declared, not built |
+| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, one 320G disk, installed over the network from the Builder. [Inactive](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts) between repaves: declared, not built |
 | Target | `dv00bld001p01`: the AOOSTAR N1 PRO, 10.20.99.95, management NIC `enp4s0` (inventory `eth0`) |
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
@@ -58,18 +58,41 @@ between repaves. First make it active
 ([Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts)):
 move it back into the groups its comment in `hosts.yml` lists, and put `10.20.99.97/32` back in
 `openbao_ansible_cidrs`. Apply its DNS record and DHCP reservation with `make dns` and `make dhcp` in
-`deevnet.net`, so it takes its address at first boot. Then build it as a
-management-hypervisor VM by template clone
-([Build a Management-Hypervisor VM → Approach A](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-a--clone-from-template)),
-then clone the repositories into `/srv/dvnt` on it and apply the builder roles to it alone:
+`deevnet.net`, so it takes its address at first boot, and its MAC-pinned GRUB config on the Builder
+with the `grub-mac` tag.
+
+Then build it by network boot from the Builder, with the same kickstart the Builder will be repaved
+with: `proxmox_vm` creates the empty VM (`source: pxe`) and waits while anaconda installs it
+([Build a Management-Hypervisor VM → Approach B](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/#approach-b--pxe-netboot)).
+Building it this way rehearses the repave on a VM before the Builder goes through it.
+
+```bash
+cd ansible-collection-deevnet.mgmt
+ansible-playbook playbooks/site.yml --limit dv02bld001v01 --tags vms
+```
+
+**Throttle it before it downloads.** The install comes from the Builder on the management segment,
+but everything after it (the package update and the artifacts) comes from the internet through the
+core router, which bulk transfers have hung
+([INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/)). Before going on, limit the
+VM's NIC on its hypervisor, with the operator at the router's console:
+
+```bash
+qm set 202 --net0 virtio=<mac>,bridge=vmbr0,rate=5
+```
+
+Bring its packages up to date (`dnf upgrade --refresh`, then reboot): the install tree is the
+release's original media. Then clone the repositories into `/srv/dvnt` on it and apply the builder
+roles to it alone:
 
 ```bash
 cd ansible-collection-deevnet.builder
 ansible-playbook playbooks/site.yml --limit dv02bld001v01
 ```
 
-That stages the artifacts (install tree, kickstarts, the `a_autoprov` public key) under `/srv` and
-starts its TFTP server. Always pass `--limit`: every builder group also contains the Builder.
+That stages the artifacts (install tree, kickstarts, the `a_autoprov` public key) under `/srv` from
+upstream, about 30G, and starts its TFTP server. Always pass `--limit`: every builder group also
+contains the Builder. Then lift the throttle: the same `qm set` without `rate=5`.
 
 ---
 

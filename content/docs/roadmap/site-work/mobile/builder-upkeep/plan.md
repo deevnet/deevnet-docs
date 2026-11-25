@@ -6,8 +6,8 @@ aliases:
   - /projects/builder-upkeep/
 weight: 20
 tasks_completed: 0
-tasks_in_progress: 0
-tasks_planned: 4
+tasks_in_progress: 1
+tasks_planned: 3
 ---
 
 # Builder Upkeep: Project Plan
@@ -23,12 +23,14 @@ home network when the factory is parked there.
 
 ---
 
-## Space ⏳
+## Space 🔄
 
 `/home` is a 20 GB volume and was 96% full on 2026-11-01, mostly Podman's image store, the Go
 module cache and build caches, while `/srv` had 774 GB free.
 
-- ⏳ Rebuild or reconfigure the Builder with more space for `/home`
+- 🔄 Rebuild or reconfigure the Builder with more space for `/home`: the builder kickstart gives it
+  60 GB ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)), which the Builder takes when
+  it is repaved
 - ⏳ Keep Podman's storage and `GOPATH` under `/srv`, so build caches stop filling `/home`
 
 ---
