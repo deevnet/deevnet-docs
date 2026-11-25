@@ -20,12 +20,13 @@ The `workstation` role configures a host as a **developer/admin workstation** wi
 - Creates dev users with configurable primary/extra groups
 - Fetches SSH public keys from GitHub
 - Sets up home directories and shell preferences
+- Runs an SSH agent for each login (systemd's `ssh-agent.socket`), with keys added on first use, so git asks for a key's passphrase once per session
 
 ### Development Tools
 
 | Category | Packages |
 |----------|----------|
-| **Core** | git, vim, tmux, golang |
+| **Core** | git, GitHub CLI (`gh`), vim, tmux, golang, jq, yq |
 | **ISO/Image** | Tools for working with disk images |
 | **X11** | Display support for GUI tools |
 
