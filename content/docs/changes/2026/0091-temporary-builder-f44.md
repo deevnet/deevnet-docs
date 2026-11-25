@@ -293,6 +293,9 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
   A login with no terminal fails until it is set. Repave the Builder now says so.
 - **The operator's SSH agent has to be forwarded to the temporary builder by name**, not only to
   the Builder, for plays run from it to reach other hosts. Repave the Builder now says so.
+- **A fresh builder needs the collections installed at the user level.** `make discover` stopped
+  at the switch, whose connection plugin is `deevnet.net`'s, until `make publish` had run in
+  `deevnet.net` and `deevnet.builder`. Repave the Builder now says so.
 - **Setup the Builder had by hand is now in the `workstation` role** (#54): `proxmoxer`, which
   `proxmox_vm` needs and Fedora does not package; the SSH agent kept across tmux reconnects; and
   GitHub remotes over HTTPS.

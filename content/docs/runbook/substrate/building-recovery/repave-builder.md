@@ -105,6 +105,11 @@ the temporary builder by name, not only to the Builder: `ForwardAgent yes` for `
 `~/.ssh/config` (on Windows, `C:\Users\<you>\.ssh\config`, with the OpenSSH Authentication
 Agent service running). On the temporary builder, `ssh-add -l` lists the key when it works.
 
+**Install the collections at the user level.** Plays in one collection use roles and plugins from
+the others (the switch's connection plugin is `deevnet.net`'s), which each collection's
+`make publish` installs under `~/.ansible/collections`. Run it in `ansible-collection-deevnet.net`
+and `ansible-collection-deevnet.builder` on the temporary builder.
+
 Then carry off what the [table above](#before-you-start-what-the-install-destroys) lists, from
 the Builder to the temporary builder over the management segment, and check that a play run from
 the temporary builder reaches the Builder:
