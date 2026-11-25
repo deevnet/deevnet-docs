@@ -169,7 +169,7 @@ mgmt_vm:
   storage: local-lvm-big-thin
   cores: 2
   memory: 4096
-  os_disk_size: 100        # required; the kickstart needs about 88 GiB
+  os_disk_size: 160        # required; the kickstart needs about 128 GiB
 ```
 
 No `template_prefix`, `static_ip` or cloud-init settings: anaconda owns the install, on the host's
@@ -193,7 +193,7 @@ play ends when the installed host answers. The VM it creates:
 | `rng0` | `source=/dev/urandom` | mandatory; see above |
 | `machine` | `q35` | |
 | `net0` | `virtio=<mac>,bridge=vmbr0` | the declared MAC, which the reservation and the GRUB config key off |
-| `scsi0` | `<storage>:<os_disk_size>` | the kickstart's floor is about 88 GiB (1 G `/boot` + 512 M ESP + 50 G root + 20 G `/home` + 16 G swap) and gives no useful error below it |
+| `scsi0` | `<storage>:<os_disk_size>` | the kickstart's floor is about 128 GiB (1 G `/boot` + 512 M ESP + 50 G root + 60 G `/home` + 16 G swap) and gives no useful error below it |
 | `boot` | `order=scsi0;net0` | **disk first, from the start**: the blank disk falls through to the network, and once installed the disk boots, so it never reinstalls itself |
 | cloud-init drive | none | anaconda owns this install |
 
