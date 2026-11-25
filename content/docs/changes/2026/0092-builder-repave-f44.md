@@ -298,7 +298,7 @@ Revert the Step 1 pull request, run `make dns`, `make dhcp` and the `grub-mac` t
 - [ ] Step 11: the temporary builder inactive again
 - [ ] Verification: Goal and Verify Site
 - [ ] `make discover` from the Builder, and the Software Catalog's Builder row updated from its report
-- [ ] Builder Upkeep plan: the `/home` task done
+- [ ] Builder Upkeep: the `/home` task done, and its waypoint split, `/home` done and the build caches under `/srv` still planned
 - [ ] Repave the Builder updated from this change's Outcome: the artifact store copied in, the limit on the Builder, `update_check` after, `/srv/discovery` made by hand on a temporary builder
 - [ ] Inventory Lifecycle → Inactive hosts: `dv02bld001v01`'s row back in the table
 
