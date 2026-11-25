@@ -7,14 +7,14 @@ weight: -91
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-25 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | Planned |
-| **Window** | About half a day, operator at the core router's console while the VM downloads |
+| **Status** | **In progress** |
+| **Window** | 2026-11-25 from 06:00, operator near the core router from Step 4 |
 | **Site** | mobile |
-| **Systems** | `dv02bld001v01` (new, VMID 202 on `dv02hyp001p01`); `dv00bld001p01` (serves the network boot); the core router (DNS record, DHCP reservation); OpenBao (AppRole CIDRs) |
-| **Automation** | `deevnet.builder` `site.yml` (tags `kickstart`, `grub-mac`, then the whole play on the VM); `deevnet.mgmt` `site.yml --tags vms` (`proxmox_vm`, `source: pxe`) and the `openbao` role; `deevnet.net` `make dns`, `make dhcp` |
+| **Systems** | `dv02bld001v01` (new, VMID 202 on `dv02hyp001p01`); `dv00bld001p01` (serves the network boot); the core router (DNS record, DHCP reservation) |
+| **Automation** | `deevnet.builder` `site.yml` (tags `kickstart`, `grub-mac`, then the whole play on the VM); `deevnet.mgmt` `site.yml --tags vms` (`proxmox_vm`, `source: pxe`); `deevnet.net` `make dns`, `make dhcp` |
 | **Risk** | Medium. Most likely to go wrong: the VM's downloads through the core router hang it (INC-0004, INC-0005), guarded by a NIC limit and a ping watchdog |
 | **Related changes** | [CHG-0088](/docs/changes/2026/0088-builder-vms-inactive/), which made this VM inactive; the Builder's own repave follows as its own change |
 | **Related incidents** | [INC-0004](/docs/incidents/2026/0004-core-router-lost/), [INC-0005](/docs/incidents/2026/0005-core-router-hang-during-rebuild/) |
@@ -82,7 +82,6 @@ is at 19G of 20G. The VM gets the larger volume now, and the Builder gets it at 
 ## Prerequisites
 
 - [ ] `deevnet.builder` #51, inventory #125 and `deevnet.mgmt` #144 merged, and pulled on the Builder
-- [ ] OpenBao open for the work session
 - [ ] Operator at the core router's console for Steps 5 and 6
 
 ## Procedure
@@ -106,8 +105,6 @@ cd ansible-collection-deevnet.net
 make dns
 make dhcp
 ```
-
-Then the `openbao` role, for `10.20.99.97` in `openbao_ansible_cidrs`.
 
 **Verify:**
 
@@ -206,18 +203,18 @@ off the Builder.
 
 ### Undo Step 2
 
-Revert inventory #125 (the VM back in `inactive`, its CIDR out). Then run `make dns`, `make dhcp`,
-`grub-mac` and the `openbao` role.
+Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dhcp` and
+`grub-mac`.
 
 ## To close
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: hypervisor room
-- [ ] Step 2: kickstart, GRUB entry, address, CIDR
-- [ ] Step 3: VM created and installed
-- [ ] Step 4: NIC limited
-- [ ] Step 5: packages current
+- [x] Step 1: hypervisor room
+- [x] Step 2: kickstart, GRUB entry, address
+- [x] Step 3: VM created and installed
+- [x] Step 4: NIC limited
+- [x] Step 5: packages current
 - [ ] Step 6: builder configuration
 - [ ] Step 7: limit lifted
 - [ ] Step 8: set up for work
@@ -231,6 +228,36 @@ Revert inventory #125 (the VM back in `inactive`, its CIDR out). Then run `make 
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-11-25 06:00 | 1 | `dv02hyp001p01`: 17 GiB of memory available, `local-lvm-big-thin` 1.09 TiB free (5.7% used). The operator's SSH to it by name had failed host-key verification; see below |
+| 06:03–06:21 | 2 | DNS record added (`dv02bld001v01` → `10.20.99.97`); DHCP reservation added by the operator; kickstart republished with `/home` 61440 MB; MAC-pinned GRUB entries written |
+| 06:22–06:29 | 3 | `proxmox_vm` created VM 202 empty (UEFI, Secure Boot off, 4 cores, 6G, 320G); it network-booted from the Builder and installed in about 6 minutes. Fedora 44, `/` 50G, `/home` 60G, `/srv` 193G |
+| 06:32 | 4 | `net0` limited to 5 MB/s (`tc`: 41943 kbit/s). Watchdog started: 1 s pings to `10.20.25.1` through the router, three misses set the VM's link down from the hypervisor |
+| 06:32–06:37 | 5 | `dnf upgrade --refresh`: 221 packages upgraded, 18 installed, 587 MiB. Rebooted onto kernel 7.3.4-200.fc44. No router misses |
+| 06:38–06:43 | 6 (1st run) | Failed at the Claude Code installer: "this CPU is missing SSE4.2 support". The VM had Proxmox's default CPU model, `kvm64`. Set `cpu: host` by hand and power-cycled it |
+| 06:49–07:08 | 6 (2nd run) | Workstation play passed. Failed at the Fedora DVD ISO (3.9G): no space left in `/tmp`, a 2.9G `tmpfs` on a 6G VM |
+| 07:54– | 6 (3rd run) | After both fixes merged: running |
 
 ### Departures from the plan
+
+- **OpenBao's AppRole CIDR is not applied in this change.** Only the `openbao` and `deevnet_api`
+  roles log in to OpenBao, and this change runs neither: the substrate's own work uses
+  ansible-vault. Inventory keeps `10.20.99.97/32` in `openbao_ansible_cidrs` for the Builder's
+  repave, when the temporary builder may run those plays.
+- **Kickstart publishing got its own tag** (`deevnet.builder`
+  [#52](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/52)), so Step 2 did not
+  have to run the whole artifacts role against the Builder.
+- **Network-boot VMs are created with `cpu: host`** (`deevnet.mgmt`
+  [#145](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/145)), as template clones
+  already are. VM 202 was set by hand and power-cycled, since the role creates a VM only once.
+- **The artifacts role stages downloads on disk** (`deevnet.builder`
+  [#53](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/53)), in
+  `/srv/deevnet-artifacts-stage`, not in `/tmp`. The Builder's larger memory had hidden this.
+
+### Found along the way
+
+- **The operator's `known_hosts` held most hosts by address only**, so SSH by name failed. Names
+  were added where each host's key matched the one already held for its address. Ansible checks no
+  host keys at all; that is risk R-17, with a waypoint in
+  [Security Hardening](/docs/roadmap/infrastructure/substrate/security-hardening/).
+- **The network-boot VM runs no QEMU guest agent**, so Proxmox shuts it down by ACPI. To be
+  followed up.

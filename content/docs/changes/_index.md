@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0091 | Unscheduled | [Temporary Builder Rebuilt on Fedora 44](2026/0091-temporary-builder-f44/) | Deployment | mobile | Planned |
+| CHG-0091 | 2026-11-25 | [Temporary Builder Rebuilt on Fedora 44](2026/0091-temporary-builder-f44/) | Deployment | mobile | In progress |
 | CHG-0090 | 2026-11-24 | [A Fresh Patch Scan on Demand](2026/0090-patch-refresh-on-demand/) | Deployment | mobile | Complete |
 | CHG-0089 | 2026-11-24 | [Patch Tools for Claude](2026/0089-patch-tools-for-claude/) | Deployment | mobile | Complete |
 | CHG-0088 | 2026-11-24 | [The Builder VMs Made Inactive](2026/0088-builder-vms-inactive/) | Decommission | mobile | Complete |
