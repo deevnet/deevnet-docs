@@ -110,6 +110,10 @@ the others (the switch's connection plugin is `deevnet.net`'s), which each colle
 `make publish` installs under `~/.ansible/collections`. Run it in `ansible-collection-deevnet.net`
 and `ansible-collection-deevnet.builder` on the temporary builder.
 
+**Make `/srv/discovery` by hand.** `make discover` writes its report there, and only the update
+watcher's role creates it, which runs on the Builder alone. On the temporary builder:
+`sudo install -d -o <you> -g <you> -m 2750 /srv/discovery`.
+
 Then carry off what the [table above](#before-you-start-what-the-install-destroys) lists, from
 the Builder to the temporary builder over the management segment, and check that a play run from
 the temporary builder reaches the Builder:

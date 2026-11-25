@@ -90,6 +90,10 @@ Restore at the destination and confirm each boots and works.
 **Done 2026-11-21, as a kept archive.** The destination is the Builder's `/srv/pve1-vm-backups`,
 to restore later, which the Goal allows. Step 2's restore checks are what prove it.
 
+The archive was released on 2026-11-25: `dv02hyp001p01` had run well on Proxmox VE 9 since, so it
+was not carried off the Builder before its repave
+([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/)), and the install deleted it.
+
 ### Step 4: Remove them from the hypervisor
 
 Delete both VMs and their disks from `dv02hyp001p01`, and update *Build a Hypervisor*.
