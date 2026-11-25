@@ -10,7 +10,7 @@ weight: -91
 | **Date** | 2026-11-25 |
 | **Change type** | Deployment |
 | **Classification** | Structural |
-| **Status** | **In progress** |
+| **Status** | **Complete** |
 | **Window** | 2026-11-25 from 06:00, operator near the core router from Step 4 |
 | **Site** | mobile |
 | **Systems** | `dv02bld001v01` (new, VMID 202 on `dv02hyp001p01`); `dv00bld001p01` (serves the network boot); the core router (DNS record, DHCP reservation) |
@@ -227,7 +227,7 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
 - [x] Step 8: set up for work
 - [x] Verification: Goal and Verify Site
 - [x] [Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts): the VM's row comes out of the table
-- [ ] `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
+- [x] `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
 
@@ -250,6 +250,7 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
 | 17:53 | 7 | `net0` limit removed; watchdog stopped. It missed no ping in the whole change |
 | 17:54 | Verify | Verify Site's artifact checks returned 404: nginx had not loaded the artifacts site (see below). After a reload, the 43 and 44 trees, the kickstart (`/home` 61440 MB), container images, ISOs and netboot all `200`, by address and by name. PXE: `tftp.socket` active, `dnsmasq` off, GRUB entries for both builder VMs' MACs |
 | 18:10 | Verify | From the VM, with the operator's forwarded key: `site.yml --check --limit dv00bld001p01 --tags operator-env` passed, `failed=0`. The full play reached the Builder and ran 73 tasks before stopping on a check-mode bug (#56) |
+| 18:18 | Close | `make discover`, run from the VM: all 14 systems answered, no pin drift. The Software Catalog gains the temporary builder's Fedora 44 and the builders' Podman |
 
 ### Departures from the plan
 
@@ -293,6 +294,9 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
   A login with no terminal fails until it is set. Repave the Builder now says so.
 - **The operator's SSH agent has to be forwarded to the temporary builder by name**, not only to
   the Builder, for plays run from it to reach other hosts. Repave the Builder now says so.
+- **Discovery writes its report to `/srv/discovery`, which only the Builder has.** The update
+  watcher's role creates it, and that role runs on the Builder alone, so on the temporary builder it
+  was made by hand (owner `cdeever`, mode 2750).
 - **A fresh builder needs the collections installed at the user level.** `make discover` stopped
   at the switch, whose connection plugin is `deevnet.net`'s, until `make publish` had run in
   `deevnet.net` and `deevnet.builder`. Repave the Builder now says so.

@@ -26,7 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
-| CHG-0091 | 2026-11-25 | [Temporary Builder Rebuilt on Fedora 44](2026/0091-temporary-builder-f44/) | Deployment | mobile | In progress |
+| CHG-0091 | 2026-11-25 | [Temporary Builder Rebuilt on Fedora 44](2026/0091-temporary-builder-f44/) | Deployment | mobile | Complete |
 | CHG-0090 | 2026-11-24 | [A Fresh Patch Scan on Demand](2026/0090-patch-refresh-on-demand/) | Deployment | mobile | Complete |
 | CHG-0089 | 2026-11-24 | [Patch Tools for Claude](2026/0089-patch-tools-for-claude/) | Deployment | mobile | Complete |
 | CHG-0088 | 2026-11-24 | [The Builder VMs Made Inactive](2026/0088-builder-vms-inactive/) | Decommission | mobile | Complete |
@@ -39,7 +39,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 | CHG-0081 | 2026-11-22 | [The Core Router Updated to OPNsense 26.7.9_3](2026/0081-core-router-26-7-9/) | Upgrade | mobile | Complete |
 | CHG-0080 | 2026-11-22 | [The Tenant Hypervisor Brought Up to Proxmox VE 9.2.32](2026/0080-hyp002-proxmox-9-2-32/) | Upgrade | mobile | Complete |
 | CHG-0079 | 2026-11-21 | [The Hypervisors' Notifications From Inventory](2026/0079-proxmox-notifications/) | Configuration | mobile | Complete |
-| CHG-0078 | 2026-11-19 | [The Take-Home Tool Renamed tenant2backend](2026/0078-take-home-tenant2backend/) | Deployment | mobile | In progress |
+| CHG-0078 | 2026-11-19 | [The Take-Home Tool Renamed tenant2backend](2026/0078-take-home-tenant2backend/) | Deployment | mobile | Complete |
 | CHG-0077 | 2026-11-18 | [A Take-Home Image for UTM on Apple Silicon](2026/0077-take-home-utm/) | Deployment | mobile | Complete |
 | CHG-0076 | 2026-11-18 | [Take-Home Images for VirtualBox and Hyper-V](2026/0076-take-home-virtualbox-hyper-v/) | Deployment | mobile | Complete |
 | CHG-0075 | 2026-11-17 | [A Take-Home Installer ISO](2026/0075-take-home-installer-iso/) | Deployment | mobile | Complete |
