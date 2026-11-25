@@ -94,6 +94,28 @@ That stages the artifacts (install tree, kickstarts, the `a_autoprov` public key
 upstream, about 30G, and starts its TFTP server. Always pass `--limit`: every builder group also
 contains the Builder. Then lift the throttle: the same `qm set` without `rate=5`.
 
+**Log in once from a terminal before anything else uses the account.** The `workstation` role
+creates each dev user with a starting password equal to its user name, already expired, so the
+console works when the network does not. The first login, even with a key, must set a new
+password, and a login with no terminal (a script, `rsync`) fails until it has.
+
+**Forward your SSH agent to it.** Plays run from the temporary builder reach other hosts with the
+operator's key, which stays on the operator's own machine. The client must forward its agent to
+the temporary builder by name, not only to the Builder: `ForwardAgent yes` for `dv02bld001v01` in
+`~/.ssh/config` (on Windows, `C:\Users\<you>\.ssh\config`, with the OpenSSH Authentication
+Agent service running). On the temporary builder, `ssh-add -l` lists the key when it works.
+
+Then carry off what the [table above](#before-you-start-what-the-install-destroys) lists, from
+the Builder to the temporary builder over the management segment, and check that a play run from
+the temporary builder reaches the Builder:
+
+```bash
+ansible-playbook playbooks/site.yml --check --limit dv00bld001p01 --tags operator-env
+```
+
+A whole `site.yml --check` does not finish yet: several roles read the output of commands that
+check mode skips.
+
 ---
 
 ## Step 2: Point network boot at the temporary builder

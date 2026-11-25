@@ -95,7 +95,7 @@ The substrate service VMs, and one check each.
 | Grafana | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA https://grafana.mobile.deevnet.net/api/health` | `200`, `"database": "ok"` (recorded: the `grafana` role checks it, [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) |
 | Tenant downloads | `dv02obs001v01`, 10.20.25.22 | `curl --cacert $CA -I https://downloads.mobile.deevnet.net/` | `200` |
 | Omada controller | `dv02nms001v01`, 10.20.99.40 | `curl --cacert $CA -I https://omada.mobile.deevnet.net:8043/` | an answer (the login page, or a redirect to it) |
-| Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/43/mirror/` | `200` |
+| Artifact server | Builder, 10.20.99.95 | `curl -I http://artifacts.mobile.deevnet.net/fedora/44/mirror/` | `200` |
 
 Then **reconcile one tenant**. It exercises the backends a reconcile re-ensures (DNS and its
 forwarding, the state store, the tenant network, the log store and Grafana) in one call, and a

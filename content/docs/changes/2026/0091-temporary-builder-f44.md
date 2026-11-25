@@ -45,6 +45,13 @@ is at 19G of 20G. The VM gets the larger volume now, and the Builder gets it at 
 | `deevnet.builder` [#51](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/51) | Builder kickstart: `/home` 60G |
 | inventory [#125](https://github.com/deevnet/ansible-inventory-deevnet/pull/125) | `dv02bld001v01` active again, `source: pxe`, 4 cores, 6G, one 320G disk; its GRUB entry; its OpenBao CIDR |
 | `deevnet.mgmt` [#144](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/144) | `proxmox_vm`: the kickstart's disk floor is about 128 GiB |
+| `deevnet.builder` [#52](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/52) | Kickstart publishing has its own tag, `kickstart` |
+| `deevnet.mgmt` [#145](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/145) | `proxmox_vm`: network-boot VMs get `cpu: host` |
+| `deevnet.builder` [#53](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/53) | `artifacts`: downloads staged on disk, not in `/tmp` |
+| `deevnet.builder` [#54](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/54) | `workstation`: the operator's environment (`proxmoxer`, the SSH agent under tmux, git over HTTPS), tag `operator-env` |
+| inventory [#127](https://github.com/deevnet/ansible-inventory-deevnet/pull/127) | `CLAUDE.md`: the rules for working in the inventory |
+| `deevnet.builder` [#55](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/55) | `artifacts`: nginx reloaded as soon as its site config changes |
+| `deevnet.builder` [#56](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/56) | `workstation`: the Hugo tasks survive `--check` |
 
 ## Goal
 
@@ -81,8 +88,8 @@ is at 19G of 20G. The VM gets the larger volume now, and the Builder gets it at 
 
 ## Prerequisites
 
-- [ ] `deevnet.builder` #51, inventory #125 and `deevnet.mgmt` #144 merged, and pulled on the Builder
-- [ ] Operator at the core router's console for Steps 5 and 6
+- [x] `deevnet.builder` #51, inventory #125 and `deevnet.mgmt` #144 merged, and pulled on the Builder
+- [x] Operator at the core router's console for Steps 5 and 6
 
 ## Procedure
 
@@ -215,11 +222,11 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
 - [x] Step 3: VM created and installed
 - [x] Step 4: NIC limited
 - [x] Step 5: packages current
-- [ ] Step 6: builder configuration
-- [ ] Step 7: limit lifted
-- [ ] Step 8: set up for work
-- [ ] Verification: Goal and Verify Site
-- [ ] [Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts): the VM's row comes out of the table
+- [x] Step 6: builder configuration
+- [x] Step 7: limit lifted
+- [x] Step 8: set up for work
+- [x] Verification: Goal and Verify Site
+- [x] [Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts): the VM's row comes out of the table
 - [ ] `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
@@ -235,7 +242,14 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
 | 06:32–06:37 | 5 | `dnf upgrade --refresh`: 221 packages upgraded, 18 installed, 587 MiB. Rebooted onto kernel 7.3.4-200.fc44. No router misses |
 | 06:38–06:43 | 6 (1st run) | Failed at the Claude Code installer: "this CPU is missing SSE4.2 support". The VM had Proxmox's default CPU model, `kvm64`. Set `cpu: host` by hand and power-cycled it |
 | 06:49–07:08 | 6 (2nd run) | Workstation play passed. Failed at the Fedora DVD ISO (3.9G): no space left in `/tmp`, a 2.9G `tmpfs` on a 6G VM |
-| 07:54– | 6 (3rd run) | After both fixes merged: running |
+| 07:54–09:34 | 6 (3rd run) | After both fixes merged: `failed=0` (458 ok, 139 changed). `/srv/deevnet-http` 29G, all fetched from upstream; the staging directory left empty |
+| 09:35–09:39 | 6 (2nd pass) | `changed=7`, all from tasks that report a change without making one (see below). `df -h`: `/home` 60G, `/srv` 193G |
+| 13:08 | 8 | The Deevnet repositories cloned into `/srv/dvnt` on the VM, through the limit. The operator set the dev user's password at first login (see below) |
+| 17:18 | 8 | The operator's environment applied to the VM (`operator-env`, #54): 4 changed, then 0 on a second run |
+| 17:35–17:52 | 8 | The operator's notes and other work carried across from the Builder on the management segment, about 16 GB, with the NIC raised to 20 MB/s for it (the disk rate [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/) allows): other projects under `/srv`, the non-repository work under `/srv/dvnt`, an archive of the Builder's checkouts and home directory, and the Omada snapshot (checksums match). Build outputs, caches and the artifact store were left to be rebuilt. Local-only branches pushed |
+| 17:53 | 7 | `net0` limit removed; watchdog stopped. It missed no ping in the whole change |
+| 17:54 | Verify | Verify Site's artifact checks returned 404: nginx had not loaded the artifacts site (see below). After a reload, the 43 and 44 trees, the kickstart (`/home` 61440 MB), container images, ISOs and netboot all `200`, by address and by name. PXE: `tftp.socket` active, `dnsmasq` off, GRUB entries for both builder VMs' MACs |
+| 18:10 | Verify | From the VM, with the operator's forwarded key: `site.yml --check --limit dv00bld001p01 --tags operator-env` passed, `failed=0`. The full play reached the Builder and ran 73 tasks before stopping on a check-mode bug (#56) |
 
 ### Departures from the plan
 
@@ -249,6 +263,9 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
 - **Network-boot VMs are created with `cpu: host`** (`deevnet.mgmt`
   [#145](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/145)), as template clones
   already are. VM 202 was set by hand and power-cycled, since the role creates a VM only once.
+- **The limit was lifted after Step 8, not before.** The repository clones in Step 8 also came
+  through the router, so the limit stayed on for them, and was raised to 20 MB/s, not removed, for
+  the copy from the Builder, which wrote into the hypervisor's shared disk.
 - **The artifacts role stages downloads on disk** (`deevnet.builder`
   [#53](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/53)), in
   `/srv/deevnet-artifacts-stage`, not in `/tmp`. The Builder's larger memory had hidden this.
@@ -261,3 +278,21 @@ Revert inventory #125 (the VM back in `inactive`). Then run `make dns`, `make dh
   [Security Hardening](/docs/roadmap/infrastructure/substrate/security-hardening/).
 - **The network-boot VM runs no QEMU guest agent**, so Proxmox shuts it down by ACPI. To be
   followed up.
+- **nginx kept serving its stock page after the first run failed.** The template that writes the
+  artifacts site notifies a reload, which runs at the end of the play; the first run failed before
+  then, and later runs found the file unchanged and never notified it. The role now reloads as
+  soon as the file changes (#55).
+- **A whole `site.yml --check` does not finish.** Several roles read the output of `command` tasks,
+  which check mode skips. The Hugo tasks are fixed (#56); the rest is a follow-up, and Repave the
+  Builder checks with the `operator-env` tag meanwhile.
+- **A second run reports changes it does not make.** The `base` role's `nmcli` commands and their
+  reload (three each) have no `changed_when`, and the `workstation` role's npm uninstall reports a
+  change whenever it succeeds. A follow-up.
+- **A new dev user's first SSH login asks for a new password**, even with a key: the `workstation`
+  role gives the account an expired starting password, so the console works without the network.
+  A login with no terminal fails until it is set. Repave the Builder now says so.
+- **The operator's SSH agent has to be forwarded to the temporary builder by name**, not only to
+  the Builder, for plays run from it to reach other hosts. Repave the Builder now says so.
+- **Setup the Builder had by hand is now in the `workstation` role** (#54): `proxmoxer`, which
+  `proxmox_vm` needs and Fedora does not package; the SSH agent kept across tmux reconnects; and
+  GitHub remotes over HTTPS.
