@@ -339,6 +339,13 @@ from the repositories and the [runbook](/docs/runbook/). The
 pattern. Claude reads the watchers' reports and recommends, but any patch is applied by a change
 record and the playbooks, and the reports can be read without Claude.
 
+**Experiments are the exception: while exploring, AI may provision or change systems directly, but
+the finished result MUST be built with standard IaC and CaC tools.** Letting an AI try things
+against a live system is a quick way to learn what works. What it learns becomes code: playbooks,
+Terraform, templates. The experiment is then torn down or rebuilt from that code. Like any manual
+change under §7.1, a direct change is temporary, and an experiment is not finished until the code
+alone can reproduce it.
+
 This keeps the site reproducible, auditable, recoverable and independent of any AI vendor, while it
 still gains from what AI can do. AI becomes a tool the site benefits from, never a runtime
 dependency it cannot rebuild without.
