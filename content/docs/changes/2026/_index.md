@@ -8,6 +8,8 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0094 | Unscheduled | [The Builder and Six Service VMs Patched Within Fedora 44](0094-patch-builder-service-vms/) | Upgrade | mobile | Planned |
+| CHG-0093 | Unscheduled | [Service VMs Moved Off the LSI Disk Controller](0093-service-vms-virtio-scsi/) | Configuration | mobile | Planned |
 | CHG-0092 | 2026-11-25 | [The Builder Repaved on Fedora 44](0092-builder-repave-f44/) | Deployment | mobile | Planned |
 | CHG-0091 | 2026-11-25 | [Temporary Builder Rebuilt on Fedora 44](0091-temporary-builder-f44/) | Deployment | mobile | Complete |
 | CHG-0090 | 2026-11-24 | [A Fresh Patch Scan on Demand](0090-patch-refresh-on-demand/) | Deployment | mobile | Complete |
