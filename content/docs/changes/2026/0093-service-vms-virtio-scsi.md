@@ -10,7 +10,7 @@ weight: -93
 | **Date** | 2026-11-26 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress**: all seven VMs moved 2026-11-26; closes after the 17:00 backup, `make discover`, and the saved configurations removed |
+| **Status** | **In progress**: all seven VMs moved 2026-11-26; closes after the 17:00 backup and the saved configurations removed |
 | **Window** | One work session, operator at the Builder, one VM at a time. Each VM is shut down, reconfigured and started: down about two minutes. In turn: the log and metrics collector, the Omada controller (the APs and switch keep forwarding), the MQTT broker, the observability store, the bucket and state store, OpenBao and tenant DNS, then the Deevnet API, its database and the service proxy |
 | **Site** | mobile |
 | **Systems** | On `dv02hyp001p01`: `dv02col001v01` (VMID 206), `dv02nms001v01` (204), `dv02msg001v01` (205), `dv02obs001v01` (207), `dv02obj001v01` (208), `dv02idn001v01` (200), `dv02prv001v01` (201) |
@@ -209,6 +209,7 @@ change closes.
 | 16:19:54–16:20:20 | Step 3 | `dv02idn001v01`: 26 s down. State identical. Tenant DNS answers SOA for `tdemo`, `mabell`, `cdeever` and `129.20.10.in-addr.arpa` with the serials it had; OpenBao sealed and initialized, as before |
 | 16:20:42–16:21:11 | Step 3 | `dv02prv001v01`: 29 s down, the backup inactive with the next run at 17:00. State identical; the backup drive found by label. `make health-watch-now` 16:21: "Deevnet API alive" and "Deevnet API database" ok. The egress agent's 16:23:32 run on `dv02hyp002p02`: success |
 | 16:27 | Step 4 | `qm config`: all seven on `virtio-scsi-single`, every disk (11) with `iothread=1`, `discard=on`, `cache=none`. The update watcher reached all 11 hosts. `make discover` stopped at the core router for the vault password: left to the operator |
+| 16:37 | Step 4 | `make discover`, by the operator, after `make publish` in `deevnet.net` and `deevnet.builder` (below): every system answered, pin drift 0. The switch's firmware read on its CLI, the AP's through the Omada controller's API, both matching the catalog. Three mismatches, all catalog text already out of date before this change (the Builder's Fedora release, Podman versions), left to CHG-0094's catalog update |
 
 ### Departures from the plan
 
@@ -219,7 +220,10 @@ change closes.
   ports and mounts before the move against after, on top of each VM's own checks. It found nothing
   that stayed different.
 - **No check that the Omada controller shows the switch and AP connected:** that needs the
-  controller's credentials. `make discover` covers it, with the vault.
+  controller's credentials. `make discover` covered it: it read the AP through the controller.
+- **`make discover` first failed at the switch:** the rebuilt Builder had no `deevnet.net` or
+  `deevnet.builder` at user level, so the switch's connection plugin was missing. `make publish` in
+  both fixed it. The repave runbook installs them only on the temporary builder.
 - **A kernel message, not new:** `virt/tdx: TDX not supported by the host platform` at boot. It is in
   `dv02nms001v01`'s boot log too, still on LSI: the kernel probing the host CPU, not this change.
 
@@ -227,3 +231,4 @@ change closes.
 
 - [ ] ADR-0046: rebuild the template on the profile, so a VM rebuilt from code does not come back on LSI
 - [ ] ADR-0046: the tenant workloads on `dv02hyp002p02`, in windows their tenants agree to
+- [ ] Repave runbook: `make publish` in `deevnet.net` and `deevnet.builder` on the new Builder, not only on the temporary builder
