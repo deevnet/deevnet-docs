@@ -231,4 +231,4 @@ change closes.
 
 - [ ] ADR-0046: rebuild the template on the profile, so a VM rebuilt from code does not come back on LSI
 - [ ] ADR-0046: the tenant workloads on `dv02hyp002p02`, in windows their tenants agree to
-- [ ] Repave runbook: `make publish` in `deevnet.net` and `deevnet.builder` on the new Builder, not only on the temporary builder
+- [x] Repave runbook: `make publish` in `deevnet.net` and `deevnet.builder` on the new Builder, not only on the temporary builder (done in this change's record update)
