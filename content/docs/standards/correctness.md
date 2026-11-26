@@ -322,6 +322,29 @@ answer where one is available, so a write that failed validation does not count 
 
 ---
 
+### 7.5 AI Assists, but Is Never Required
+**AI may design, write, check and drive the automation, but building, configuring, running and
+recovering the infrastructure MUST NOT need an AI to reason about it.** Every piece of automation is
+a version-controlled artifact that runs on its own and can be tested, written with established tools
+and standards: Ansible, Terraform, Packer, shell, and the like. An AI that provisions a system by
+calling APIs directly, or through an MCP server that is the only way to make the change, is a
+shortcut outside Infrastructure as Code, and is incorrect.
+
+The rule is **"must not require"**, not "must not use". AI-driven operations, MCP servers,
+diagnostics and even autonomous remediation are welcome, so long as each one drives the same
+automation an operator would run, or has an independent path that does the same job without it.
+The test: with every AI tool switched off, the operator can still build, change and recover the site
+from the repositories and the [runbook](/docs/runbook/). The
+[patch tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/) are the
+pattern. Claude reads the watchers' reports and recommends, but any patch is applied by a change
+record and the playbooks, and the reports can be read without Claude.
+
+This keeps the site reproducible, auditable, recoverable and independent of any AI vendor, while it
+still gains from what AI can do. AI becomes a tool the site benefits from, never a runtime
+dependency it cannot rebuild without.
+
+---
+
 ## 8. Failure Semantics
 
 ### 8.1 Fail Loud, Fail Early
@@ -382,6 +405,7 @@ Deevnet infrastructure is **correct** when:
 - Sites, substrates, and tenants are cleanly separated
 - DNS expresses intent, not accidents
 - Automation can validate readiness before irreversible actions
+- Building, changing and recovering the site needs no AI
 - Rebuilding a lab is boring
 
 If rebuilding is boring, the infrastructure is correct.
