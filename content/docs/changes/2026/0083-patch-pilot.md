@@ -10,7 +10,7 @@ weight: -83
 | **Date** | 2026-11-23 |
 | **Change type** | Upgrade |
 | **Classification** | Routine |
-| **Status** | **In progress**: applied 2026-11-23; closes when the snapshot is dropped, 2026-11-26 |
+| **Status** | **Complete**: applied 2026-11-23; the snapshot dropped 2026-11-26, under CHG-0093 |
 | **Window** | An evening, operator at the Builder. `dv02obj001v01` is down for its reboot, if it needs one: the tenant bucket store and Terraform state store do not answer for about a minute. `dv02bld002v01` serves no one. The hypervisors do not reboot |
 | **Site** | mobile |
 | **Systems** | `dv02obj001v01` (VMID 208), `dv02bld002v01` (VMID 203), `dv02hyp001p01`, `dv02hyp002p02` |
@@ -142,7 +142,7 @@ is undone forward: a point update to a Debian security release is not reversed.
 - [x] Step 3: dropped: `dv02bld002v01` is to be removed
 - [x] Step 4: both hypervisors' Kerberos libraries updated
 - [x] Step 5: the watcher shows nothing waiting on the three hosts; no catalog version changed
-- [ ] Step 6: `dv02obj001v01`'s snapshot dropped, 2026-11-26 or later
+- [x] Step 6: `dv02obj001v01`'s snapshot dropped, 2026-11-26 or later
 - [x] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
@@ -160,6 +160,7 @@ Every command ran from the Builder as `a_autoprov`, the operator nearby.
 | 19:46 | Step 4 | `dv02hyp001p01`: the five Kerberos packages, `1.21.3-5+deb13u1` to `deb13u2`, and nothing else. Nothing left waiting; `pveversion` unchanged; the web interface 200; no failed unit; every VM still running |
 | 19:46 | Step 4 | `dv02hyp002p02`: the same five. `frr` active and the four tenant zones `available`. One failed unit: `deevnet-egress-agent` (below) |
 | 19:47 | Step 5 | The update watcher: the three hosts up to date. `make discover`: 48 rows matching, no pin drift, every system answering; no catalog version changed |
+| 2026-11-26 15:57 | Step 6 | `qm delsnapshot 208 pre-chg-0083`, as Step 1 of [CHG-0093](/docs/changes/2026/0093-service-vms-virtio-scsi/): the snapshot's three volumes removed, `qm listsnapshot 208` shows only `current`. Nothing had gone wrong in the three days |
 
 ### Departures from the plan
 
@@ -175,6 +176,6 @@ Every command ran from the Builder as `a_autoprov`, the operator nearby.
 
 ## Follow-ups
 
-- [ ] Drop the snapshot: `qm delsnapshot 208 pre-chg-0083` on `dv02hyp001p01`, 2026-11-26 or later
+- [x] Drop the snapshot: `qm delsnapshot 208 pre-chg-0083` on `dv02hyp001p01`, 2026-11-26 or later
 - [ ] Find why the Deevnet API answers the egress agent with 503 since 2026-11-22
 - [ ] In the patch procedure (Patch Management v4): throttle every `dnf` step, not only the download

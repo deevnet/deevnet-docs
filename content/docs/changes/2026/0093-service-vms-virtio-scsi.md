@@ -7,10 +7,10 @@ weight: -93
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-26 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | **In progress**: Steps 1 and 2 done 2026-11-26; the other six VMs next |
 | **Window** | One work session, operator at the Builder, one VM at a time. Each VM is shut down, reconfigured and started: down about two minutes. In turn: the log and metrics collector, the Omada controller (the APs and switch keep forwarding), the MQTT broker, the observability store, the bucket and state store, OpenBao and tenant DNS, then the Deevnet API, its database and the service proxy |
 | **Site** | mobile |
 | **Systems** | On `dv02hyp001p01`: `dv02col001v01` (VMID 206), `dv02nms001v01` (204), `dv02msg001v01` (205), `dv02obs001v01` (207), `dv02obj001v01` (208), `dv02idn001v01` (200), `dv02prv001v01` (201) |
@@ -185,8 +185,8 @@ change closes.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: `pre-chg-0083` dropped, and CHG-0083 closed
-- [ ] Step 2: `dv02col001v01` moved, booted, its logs and metrics arriving
+- [x] Step 1: `pre-chg-0083` dropped, and CHG-0083 closed
+- [x] Step 2: `dv02col001v01` moved, booted, its services as before
 - [ ] Step 3: the other six moved, each one's disks mounted and service answering
 - [ ] Step 4: health and update watchers show no new problem; all seven on the profile
 - [ ] The saved configurations removed from `dv02hyp001p01`
@@ -197,11 +197,19 @@ change closes.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 15:57 | Prerequisites | `make health-watch-now`: all well. Nothing loading `dv02hyp001p01`'s disk (load 0.66). The API VM's hourly backup due at 16:00, so Step 2 waited for it |
+| 15:57 | Step 1 | `qm delsnapshot 208 pre-chg-0083`: its three volumes removed in a second, `qm listsnapshot 208` shows only `current`. CHG-0083 closed |
+| 16:00 | Prerequisites | The 16:00 backup finished, `Result=success` |
+| 16:00:14–16:00:20 | Step 2 | `dv02col001v01`: configuration saved to `/root/chg-0093-206.conf`, shut down in 3 s, `scsihw: virtio-scsi-single` and `scsi0` with `discard=on,iothread=1` set, started |
+| 16:00:41 | Step 2 | SSH up 21 s after start, booted 16:00:32 on kernel 7.2.5. `virtio_scsi` loaded, `sym53c8xx` not; `sda` with `/` and `/boot` mounted as before; discard on the disk; `systemctl is-system-running`: running, no failed unit; the same services as before. `make health-watch-now`: all well |
 
 ### Departures from the plan
 
--
+- **`dv02col001v01` runs no collector.** Before the move it had only the base system's services,
+  no containers, and nothing listening but SSH, so Step 2's check that logs and metrics arrive had
+  nothing to check. It was checked by its services matching the ones before.
+- **A kernel message, not new:** `virt/tdx: TDX not supported by the host platform` at boot. It is in
+  `dv02nms001v01`'s boot log too, still on LSI: the kernel probing the host CPU, not this change.
 
 ## Follow-ups
 
