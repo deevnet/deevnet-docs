@@ -207,6 +207,28 @@ in `network_controllers` unless it has been put back there for a recovery.
 5. Destroy `dv02bld001v01` and make it inactive again, for the next repave
    ([Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts)).
 
+### The watchers and Claude's patch tools
+
+**Step 4 brought them back on the Builder, with the same key.** The update and health watchers'
+SSH key comes from the vault (`vault_update_watch_private_key`), so every host's pin still holds
+and nothing is pushed out again. `site.yml` also registered `deevnet-patch` and the `patch-status`
+skill in each operator's Claude Code. On the Builder:
+
+```bash
+cd /srv/dvnt/ansible-collection-deevnet.builder
+make update-watch-now    # every host answers
+make update-watch-ack    # clear any "did not answer" news from before
+```
+
+Then start a Claude Code session and ask "what needs patching?" (`make patch-mcp-test` checks the
+server alone). [Patch Tools for Claude](/docs/runbook/substrate/lifecycle/patch-tools-for-claude/)
+has the rest.
+
+**Without the key in the vault,** the Builder makes a new one and every host still trusts the old
+one, so all of them show as not answering. Pin the new key with `make update-watch` here and
+`ansible-playbook playbooks/site.yml --tags update_check` in `deevnet.mgmt` (after `make publish`
+here, so `deevnet.mgmt` finds the role).
+
 ---
 
 ## Verify

@@ -79,22 +79,26 @@ from the morning's run, without the half-minute wait.
 In `ansible-collection-deevnet.builder`, on the Builder:
 
 ```bash
-make patch-mcp                # install the server, its polkit rule and the MCP Python SDK (python3-mcp, from Fedora)
+make patch-mcp                # the server, its polkit rule, the MCP Python SDK, and every operator registered
 make patch-mcp-test           # start it, call every read-only tool through the SDK's client, report each
 make patch-mcp-test-refresh   # the same, then a fresh scan through refresh_updates
-make patch-mcp-register       # add it to Claude Code (user scope) and link the skills
 ```
 
-`make patch-mcp-register` is once per operator account. It registers at user scope because
-`/srv/dvnt`, where Claude Code runs, is the organization's `.github` checkout. The skills are linked
-from the collection's checkout, so they follow its branch. Claude Code loads MCP servers when a
-session starts: after registering, start a new session.
+**`site.yml` sets it up whole, with no per-account step.** The `patch_mcp` role registers the
+server at user scope in the Claude Code of every operator in `dev_users`, and links the skills into
+their `~/.claude/skills` from an installed copy in `/usr/local/share/deevnet/claude-skills`. User
+scope, because `/srv/dvnt`, where Claude Code runs, is the organization's `.github` checkout. An
+account without Claude Code is skipped. Claude Code loads MCP servers when a session starts: after
+the first run, start a new session.
+
+`make patch-mcp-register` is for working on the skills: it links them to the collection's checkout
+instead, so they follow its branch. The role leaves a link that is already there alone.
 
 ## When it goes wrong
 
 | Symptom | Check |
 |---|---|
-| Claude has no `deevnet-patch` tools | `claude mcp list` shows `deevnet-patch` connected; if absent, `make patch-mcp-register` and a new session |
+| Claude has no `deevnet-patch` tools | `claude mcp list` shows `deevnet-patch` connected; if absent, `make patch-mcp` and a new session |
 | "no update report" | `/srv/updates/latest.json` is missing: `make update-watch-now` |
 | An answer looks old | its `checked_at`; ask for a fresh look, or `make update-watch-now` |
 | `refresh_updates` fails with "interactive authentication" | the polkit rule is missing, or the operator is not in `wheel`: `make patch-mcp` |
