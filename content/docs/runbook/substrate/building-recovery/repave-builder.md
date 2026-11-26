@@ -209,13 +209,18 @@ in `network_controllers` unless it has been put back there for a recovery.
 
 ### The watchers and Claude's patch tools
 
+**Install the collections at the user level on the Builder too.** The temporary builder had them
+for this repave; the new Builder needs them for every play that uses another collection's roles or
+plugins, `make discover` among them.
+
 **Step 4 brought them back on the Builder, with the same key.** The update and health watchers'
 SSH key comes from the vault (`vault_update_watch_private_key`), so every host's pin still holds
 and nothing is pushed out again. `site.yml` also registered `deevnet-patch` and the `patch-status`
 skill in each operator's Claude Code. On the Builder:
 
 ```bash
-cd /srv/dvnt/ansible-collection-deevnet.builder
+cd /srv/dvnt/ansible-collection-deevnet.net && make publish       # the switch's connection plugin, for make discover
+cd /srv/dvnt/ansible-collection-deevnet.builder && make publish   # the roles deevnet.mgmt's plays use
 make update-watch-now    # every host answers
 make update-watch-ack    # clear any "did not answer" news from before
 ```

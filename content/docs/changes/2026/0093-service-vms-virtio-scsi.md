@@ -7,10 +7,10 @@ weight: -93
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-26 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | **Complete**: 2026-11-26, 15:57–16:45 |
 | **Window** | One work session, operator at the Builder, one VM at a time. Each VM is shut down, reconfigured and started: down about two minutes. In turn: the log and metrics collector, the Omada controller (the APs and switch keep forwarding), the MQTT broker, the observability store, the bucket and state store, OpenBao and tenant DNS, then the Deevnet API, its database and the service proxy |
 | **Site** | mobile |
 | **Systems** | On `dv02hyp001p01`: `dv02col001v01` (VMID 206), `dv02nms001v01` (204), `dv02msg001v01` (205), `dv02obs001v01` (207), `dv02obj001v01` (208), `dv02idn001v01` (200), `dv02prv001v01` (201) |
@@ -79,9 +79,9 @@ template, the builders and the compliance check.
 
 ## Prerequisites
 
-- [ ] Nothing loading `dv02hyp001p01`'s data disk: no backup, no restore, no copy
-- [ ] The operator at the Builder, able to reach `dv02hyp001p01`'s console
-- [ ] `make health-watch-now` (in `deevnet.builder`): the starting state written down
+- [x] Nothing loading `dv02hyp001p01`'s data disk: no backup, no restore, no copy
+- [x] The operator at the Builder, able to reach `dv02hyp001p01`'s console
+- [x] `make health-watch-now` (in `deevnet.builder`): the starting state written down
 
 ## Procedure
 
@@ -185,11 +185,11 @@ change closes.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: `pre-chg-0083` dropped, and CHG-0083 closed
-- [ ] Step 2: `dv02col001v01` moved, booted, its logs and metrics arriving
-- [ ] Step 3: the other six moved, each one's disks mounted and service answering
-- [ ] Step 4: health and update watchers show no new problem; all seven on the profile
-- [ ] The saved configurations removed from `dv02hyp001p01`
+- [x] Step 1: `pre-chg-0083` dropped, and CHG-0083 closed
+- [x] Step 2: `dv02col001v01` moved, booted, its services as before
+- [x] Step 3: the other six moved, each one's disks mounted and service answering
+- [x] Step 4: health and update watchers show no new problem; all seven on the profile
+- [x] The saved configurations removed from `dv02hyp001p01`
 
 ## Outcome
 
@@ -197,13 +197,45 @@ change closes.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 15:57 | Prerequisites | `make health-watch-now`: all well. Nothing loading `dv02hyp001p01`'s disk (load 0.66). The API VM's hourly backup due at 16:00, so Step 2 waited for it |
+| 15:57 | Step 1 | `qm delsnapshot 208 pre-chg-0083`: its three volumes removed in a second, `qm listsnapshot 208` shows only `current`. CHG-0083 closed |
+| 16:00 | Prerequisites | The 16:00 backup finished, `Result=success` |
+| 16:00:14–16:00:20 | Step 2 | `dv02col001v01`: configuration saved to `/root/chg-0093-206.conf`, shut down in 3 s, `scsihw: virtio-scsi-single` and `scsi0` with `discard=on,iothread=1` set, started |
+| 16:00:41 | Step 2 | SSH up 21 s after start, booted 16:00:32 on kernel 7.2.5. `virtio_scsi` loaded, `sym53c8xx` not; `sda` with `/` and `/boot` mounted as before; discard on the disk; `systemctl is-system-running`: running, no failed unit; the same services as before. `make health-watch-now`: all well |
+| 16:13:16–16:13:57 | Step 3 | `dv02nms001v01`: 41 s down, SSH 22 s after start. The controller's web interface 200 from the Builder at 16:14:39; every port it listened on before back by 16:16. One failed unit at boot, podman's first health check run while the controller started, which clears with the next check and appears on the two boots before this one too: not this change. `make health-watch-now` 16:16: all well |
+| 16:16:38–16:17:07 | Step 3 | `dv02msg001v01`: 29 s down. Services, containers (`vernemq`, `vernemq-db`, `deevnet-log-bridge`), ports and mounts identical to before. A TLS handshake to 8883 from the Builder verifies the broker's certificate |
+| 16:17:33–16:18:03 | Step 3 | `dv02obs001v01`: 30 s down. `/srv` on `deevnet-data` (`sdb`). Ten containers up; Grafana's port came up seconds after the first comparison, then every port as before. Through the proxy, with TLS verified: `grafana` `/api/health` 200, `logs` and `metrics` 401 (need a token), `ntfy` and `downloads` 200. `make health-watch-now` 16:18: all well |
+| 16:18:47–16:19:15 | Step 3 | `dv02obj001v01`: 28 s down, all three disks moved. `/srv` on `deevnet-data`, `/srv/state` on `deevnet-state`. State identical; `s3`, `tfstate` and `tfstate:9000` health 200, as before |
+| 16:19:54–16:20:20 | Step 3 | `dv02idn001v01`: 26 s down. State identical. Tenant DNS answers SOA for `tdemo`, `mabell`, `cdeever` and `129.20.10.in-addr.arpa` with the serials it had; OpenBao sealed and initialized, as before |
+| 16:20:42–16:21:11 | Step 3 | `dv02prv001v01`: 29 s down, the backup inactive with the next run at 17:00. State identical; the backup drive found by label. `make health-watch-now` 16:21: "Deevnet API alive" and "Deevnet API database" ok. The egress agent's 16:23:32 run on `dv02hyp002p02`: success |
+| 16:27 | Step 4 | `qm config`: all seven on `virtio-scsi-single`, every disk (11) with `iothread=1`, `discard=on`, `cache=none`. The update watcher reached all 11 hosts. `make discover` stopped at the core router for the vault password: left to the operator |
+| 16:37 | Step 4 | `make discover`, by the operator, after `make publish` in `deevnet.net` and `deevnet.builder` (below): every system answered, pin drift 0. The switch's firmware read on its CLI, the AP's through the Omada controller's API, both matching the catalog. Three mismatches, all catalog text already out of date before this change (the Builder's Fedora release, Podman versions), left to CHG-0094's catalog update |
+| 16:44:35–16:44:38 | Step 3 | `dv02prv001v01`: one backup run by hand (`/usr/local/sbin/deevnet-backup`): wrote `deevnet-backup-dv02prv001v01-20261126T214436Z.tar.age`, 225528 bytes and 3 state objects as the night before, 30 archives on the drive; exit 0, the drive unmounted after |
+| 16:45 | Close | The seven `/root/chg-0093-*.conf` removed from `dv02hyp001p01` |
 
 ### Departures from the plan
 
--
+- **`dv02col001v01` runs no collector.** Before the move it had only the base system's services,
+  no containers, and nothing listening but SSH, so Step 2's check that logs and metrics arrive had
+  nothing to check. It was checked by its services matching the ones before.
+- **Step 3's per-VM state was compared by a script:** running services, containers, listening
+  ports and mounts before the move against after, on top of each VM's own checks. It found nothing
+  that stayed different.
+- **No check that the Omada controller shows the switch and AP connected:** that needs the
+  controller's credentials. `make discover` covered it: it read the AP through the controller.
+- **`make discover` first failed at the switch:** the rebuilt Builder had no `deevnet.net` or
+  `deevnet.builder` at user level, so the switch's connection plugin was missing. `make publish` in
+  both fixed it. The repave runbook installs them only on the temporary builder.
+- **"The next hourly backup succeeds" did not test the drive.** The timer runs hourly, but a run
+  only writes once 24 hours have passed since the last good one, and it decides that from the VM's
+  own record, without the drive. The runs at 16:31 (ten minutes after boot) and before only said
+  "not due". So one backup was run by hand, which mounted the drive on the new controller, wrote
+  an archive and unmounted it.
+- **A kernel message, not new:** `virt/tdx: TDX not supported by the host platform` at boot. It is in
+  `dv02nms001v01`'s boot log too, still on LSI: the kernel probing the host CPU, not this change.
 
 ## Follow-ups
 
 - [ ] ADR-0046: rebuild the template on the profile, so a VM rebuilt from code does not come back on LSI
 - [ ] ADR-0046: the tenant workloads on `dv02hyp002p02`, in windows their tenants agree to
+- [x] Repave runbook: `make publish` in `deevnet.net` and `deevnet.builder` on the new Builder, not only on the temporary builder (done in this change's record update)
