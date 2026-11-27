@@ -27,6 +27,8 @@ Details: /srv/health/latest.txt. This clears itself when the check passes.
 | `Deevnet API alive` | the API's `/healthz` does not answer 200 | the API's container on `dv02prv001v01` |
 | `Deevnet API database` | the API's `/readyz` says its database is not `ok` | PostgreSQL on `dv02prv001v01` |
 | `Omada controller configured` | the controller's `/api/info` does not answer, or says it is not configured | [Omada Controller Recovery](/docs/runbook/substrate/recovery/omada-controller-recovery/) |
+| `<hypervisor> VM hardware report` | the hypervisor's report of its VMs' hardware is missing, unreadable or over 30 minutes old | `systemctl status deevnet-vm-hardware.timer deevnet-vm-hardware.service` on the hypervisor |
+| `<hypervisor> VM <vmid> <name> on the hardware profile` | the VM differs from the [VM hardware profile](/docs/architecture/decisions/substrate/0046-vm-hardware-profile/) where inventory declares no exception; the detail names each difference | `make vm-profile` in `deevnet.mgmt`; moving a VM is a change record, as in [CHG-0100](/docs/changes/2026/0100-tenant-vms-vm-profile/) |
 
 **OpenBao sealed is not a problem.** Outside a work session the API's `/readyz` answers 503 with
 OpenBao sealed, as [ADR-0042](/docs/architecture/decisions/substrate/0042-openbao-sealed-outside-work-sessions/)
