@@ -10,7 +10,7 @@ weight: -99
 | **Date** | 2026-11-27 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress**: started 2026-11-27 |
+| **Status** | **Complete, 2026-11-27** |
 | **Window** | No outage. One file is written on each builder |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01`, `dv02bld001v01`; the inventory's new `ssh/mobile/known_hosts` |
@@ -95,7 +95,9 @@ Most were also checked against two earlier records:
 ssh -o UserKnownHostsFile=/dev/null -o BatchMode=yes a_autoprov@<host> true
 ```
 
-**Verify:** every host connects, its key checked against the system file alone. Then the line added
+**Verify:** every host's key is checked against the system file alone. With no authentication
+offered (`-o PreferredAuthentications=none`), reaching "Permission denied" proves the key was
+accepted, so hosts `a_autoprov` cannot log in to, the switch and the routers, are checked too. Then the line added
 to the operator's `known_hosts` by hand for `dv02prv001v01` in CHG-0098 is removed, and
 `make reconcile NAME=tdemo` still works.
 
@@ -107,18 +109,24 @@ Remove `/etc/ssh/ssh_known_hosts` from both builders and revert the pull request
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the three pull requests merged
-- [ ] Step 2: the record installed on both builders
-- [ ] Step 3: every host checked by the system file alone; the hand-added line gone
+- [x] Step 1: the three pull requests merged
+- [x] Step 2: the record installed on both builders
+- [x] Step 3: every host checked by the system file alone; the hand-added line gone
 
 ## Outcome
 
-*Completed after the change has run.*
+**Both builders check every substrate host's SSH key against the record in git.** A repave
+installs it with the rest of the builder configuration.
 
-| When | Steps | What happened |
+| When (UTC) | Steps | What happened |
 |---|---|---|
 | Before Step 1 | Tests | `make host-keys` against a copy of the seed: every host `unchanged`, the three with no key reported and kept, the file identical. One key altered: `CHANGED`, with its old and new fingerprints, and put right. The role in check mode: would install on both builders |
+| Before 20:10 | 1 | The three pull requests merged; `make publish` in `deevnet.builder` |
+| 20:10 | 2 | `make host-keys-install`: `/etc/ssh/ssh_known_hosts` written on `dv00bld001p01` and `dv02bld001v01` |
+| 20:12 | 3 | On each builder, every name in the record (16 hosts, 48 names), with `UserKnownHostsFile=/dev/null` and no authentication offered: 48 reached authentication, 0 failed host key verification. The switch and the routers included |
+| 20:16 | 3 | The hand-added `dv02prv001v01.mobile.deevnet.net` line removed from the operator's `known_hosts`; SSH to it by name with no user `known_hosts` logs in; `make reconcile NAME=tdemo`: `reconciled tdemo` |
 
 ### Departures from the plan
 
-None yet.
+- **Step 3 checked the key without logging in,** rather than running `true` on each host: the
+  switch and the routers do not take `a_autoprov`'s login.
