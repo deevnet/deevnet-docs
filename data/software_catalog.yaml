@@ -323,7 +323,7 @@ tables:
       license: Free software, per package
       support: Community
       source: Observed 2026-11-27
-    - component: Fedora Server (temporary builder, `dv02bld001v01`)
+    - component: Fedora Server (standby builder, `dv02bld001v01`)
       version: 44, network-installed from `builder-node-44.ks` ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)). Kernel 7.3.6, systemd 259
       license: Free software, per package
       support: Community

@@ -295,12 +295,12 @@ Revert the Step 1 pull request, run `make dns`, `make dhcp` and the `grub-mac` t
 - [ ] Step 8: limit lifted
 - [ ] Step 9: network boot handed back
 - [ ] Step 10: the Builder the control node again
-- [ ] Step 11: the temporary builder inactive again
+- [x] Step 11: replaced on 2026-11-27: the temporary builder is kept, running, as the standby builder (see Departures)
 - [ ] Verification: Goal and Verify Site
 - [ ] `make discover` from the Builder, and the Software Catalog's Builder row updated from its report
 - [ ] Builder Upkeep: the `/home` task done, and its waypoint split, `/home` done and the build caches under `/srv` still planned
 - [ ] Repave the Builder updated from this change's Outcome: the artifact store copied in, the limit on the Builder, `update_check` after, `/srv/discovery` made by hand on a temporary builder
-- [ ] Inventory Lifecycle → Inactive hosts: `dv02bld001v01`'s row back in the table
+- [x] Inventory Lifecycle → Inactive hosts: not needed, `dv02bld001v01` stays active as the standby builder
 
 ## Outcome
 
@@ -312,4 +312,16 @@ Revert the Step 1 pull request, run `make dns`, `make dhcp` and the `grub-mac` t
 
 ### Departures from the plan
 
+- **The temporary builder stays, as the standby builder.** On 2026-11-27 the operator decided to
+  keep `dv02bld001v01` running instead of destroying it and making it inactive (Step 11). It is a
+  second control node if the Builder fails, and the next repave's network-boot server without a
+  rebuild first. It is patched with the service VMs (it was in CHG-0094), watched by the update and
+  health watchers, and refreshed before use (its checkouts pulled and its collections published).
+  Its disk is on `virtio-scsi-pci` without ADR-0046's `iothread`, `discard` and `cache` settings,
+  acceptable for a VM that was to be destroyed, but now a follow-up.
+
 ### Found along the way
+
+## Follow-ups
+
+- [ ] `dv02bld001v01` on ADR-0046's VM hardware profile (`virtio-scsi-single`, `iothread=1`, `discard=on`, `cache=none`), now that it stays as the standby builder

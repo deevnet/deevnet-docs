@@ -17,7 +17,7 @@ hypervisor or its template is, start from a bare machine instead:
 
 | | |
 |---|---|
-| Temporary builder | `dv02bld001v01`: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, one 320G disk, installed over the network from the Builder. [Inactive](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts) between repaves: declared, not built |
+| Temporary builder | `dv02bld001v01`, the standby builder: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, one 320G disk, installed over the network from the Builder. Kept running between repaves since 2026-11-27 ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/)), patched with the service VMs. If it is gone, it is built again first, as in [CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/) |
 | Target | `dv00bld001p01`: the AOOSTAR N1 PRO, 10.20.99.95, management NIC `enp4s0` (inventory `eth0`) |
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
@@ -204,8 +204,9 @@ in `network_controllers` unless it has been put back there for a recovery.
 2. Apply them with `make dns` and `make dhcp` in `deevnet.net`.
 3. Set the subnet's `next_server` back to `10.20.99.95` by hand.
 4. Clone the repositories into `/srv/dvnt` on the Builder, and put back anything carried off.
-5. Destroy `dv02bld001v01` and make it inactive again, for the next repave
-   ([Inventory Lifecycle → Inactive hosts](/docs/runbook/substrate/lifecycle/inventory-lifecycle/#inactive-hosts)).
+5. Leave `dv02bld001v01` running as the standby builder. Before it serves again, as a control node
+   or for the next repave, bring it current: its packages updated, its checkouts in `/srv/dvnt`
+   pulled, and `make publish` run in each collection.
 
 ### The watchers and Claude's patch tools
 
