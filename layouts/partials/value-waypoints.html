@@ -1,17 +1,21 @@
 {{- /* Every waypoint serving one value objective, from the roadmap, the
        archived plans and Completed Projects: {done, active, planned}, each a
-       list of dicts with the waypoint and its page. */ -}}
+       list of dicts with the waypoint and its page. A deferred item's open
+       waypoints are left out; what it reached still counts. */ -}}
 {{- $id := . -}}
 {{- $done := slice -}}{{- $active := slice -}}{{- $planned := slice -}}
 {{- range site.Pages -}}
   {{- $page := . -}}
   {{- if and .Params.waypoints (or (hasPrefix .Path "/docs/roadmap/") (hasPrefix .Path "/projects/archive/") (hasPrefix .Path "/docs/completed/")) -}}
+    {{- $deferred := partial "deferred.html" $page -}}
     {{- range .Params.waypoints -}}
+      {{- if or (eq .status "done") (not $deferred) -}}
       {{- if in (partial "waypoint-values.html" (dict "page" $page "waypoint" .)) $id -}}
         {{- $row := dict "title" .title "status" .status "date" .date "approx" .approx "page" $page -}}
         {{- if eq .status "done" -}}{{- $done = $done | append $row -}}
         {{- else if eq .status "active" -}}{{- $active = $active | append $row -}}
         {{- else -}}{{- $planned = $planned | append $row -}}{{- end -}}
+      {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

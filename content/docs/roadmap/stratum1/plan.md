@@ -4,6 +4,7 @@ linkTitle: "Project Plan"
 aliases:
   - /docs/projects/stratum1/
   - /projects/stratum1/
+  - /docs/roadmap/site-work/mobile/stratum1/plan/
 weight: 16
 tasks_completed: 0
 tasks_in_progress: 0
@@ -16,7 +17,7 @@ Raspberry Pi Zero-based Stratum 1 NTP server with GPS time source.
 
 Part of `deevnet-image-factory`.
 
-**Roadmap item:** [Stratum 1 NTP](/docs/roadmap/site-work/mobile/stratum1/)
+**Roadmap item:** [Stratum 1 NTP](/docs/roadmap/stratum1/)
 
 {{< overall-progress >}}
 

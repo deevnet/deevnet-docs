@@ -3,6 +3,7 @@ title: "Stratum 1 NTP"
 bookCollapseSection: true
 aliases:
   - /docs/roadmap/raspberry-pi/stratum1/
+  - /docs/roadmap/site-work/mobile/stratum1/
 weight: 6
 value: [works-anywhere]
 waypoints:
@@ -20,6 +21,9 @@ waypoints:
 
 Raspberry Pi Zero-based Stratum 1 NTP server with GPS time source.
 
+**A project for fun.** It may give a site its time for a while, but it is not part of the mobile
+kit or the home site, and nothing on either depends on it.
+
 Part of `deevnet-image-factory`.
 
 {{< overall-progress >}}
@@ -30,4 +34,4 @@ Part of `deevnet-image-factory`.
 
 {{< waypoints >}}
 
-**Project plan:** [Stratum 1 NTP](/docs/roadmap/site-work/mobile/stratum1/plan/)
+**Project plan:** [Stratum 1 NTP](/docs/roadmap/stratum1/plan/)

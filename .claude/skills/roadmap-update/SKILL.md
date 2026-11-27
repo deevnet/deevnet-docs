@@ -28,6 +28,7 @@ python3 $S/waypoints.py list --status done --from 2026-11-01
 python3 $S/waypoints.py done   <page> "<title or unique fragment>" YYYY-MM-DD
 python3 $S/waypoints.py status <page> "<title>" active|planned
 python3 $S/recount_plans.py [write]                  # plans' tasks_* from their bullets
+python3 $S/waypoints.py list | grep ⏸                 # open waypoints of deferred items
 ```
 
 `<page>` is the path under `content/docs/roadmap/` without `.md`, such as
@@ -75,6 +76,26 @@ heading as a title. Say what an in-house name is rather than using it: "the buil
 "the Builder"; "EdS's voice service", not "voiced"; "the site's infrastructure", not "the
 substrate". **Workload** stays too: never call a tenant's workload a "server", which reads as hardware. Products and industry terms (OpenBao, VLAN, MQTT) stay. `waypoints.py check` warns on
 titles under three words.
+
+## When an item is deferred
+
+The owner sets a big item aside until a later year; it is never deferred on Claude's judgment.
+The item stays where it is, with its waypoints and plan unchanged. Add to its front matter, before
+`waypoints:`:
+
+```yaml
+deferred:
+  since: "2026-11-27"   # the day the owner deferred it
+  until: "2027"         # the year (or day) it waits for
+  reason: "…"           # optional, the owner's words
+```
+
+It then shows ⏸ on its page and in its area's list, and is left out of its area's progress, the
+roadmap's, and the value objectives' open waypoints. A waypoint reached while it is deferred is
+still marked done. **Taking it up again** removes the block. **Deferring it again** moves `until:`
+and keeps `since:`, so how long it has waited stays visible. A plan's single task or a version
+that slips is not deferred this way: it moves to the next version or **Later** (the
+`version-planning` skill).
 
 ## When something is done
 

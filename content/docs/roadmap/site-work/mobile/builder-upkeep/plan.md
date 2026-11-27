@@ -5,8 +5,8 @@ aliases:
   - /docs/projects/builder-upkeep/
   - /projects/builder-upkeep/
 weight: 20
-tasks_completed: 0
-tasks_in_progress: 1
+tasks_completed: 1
+tasks_in_progress: 0
 tasks_planned: 3
 ---
 

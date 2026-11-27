@@ -1,1 +1,5 @@
+{{- $deferred := partial "deferred.html" .Page -}}
+{{- with $deferred }}
+<p class="deferred-note">⏸ <strong>Deferred to {{ .until }}</strong>{{ with .since }}, since {{ . }}{{ end }}{{ with .reason }}: {{ $.Page.RenderString . }}{{ else }}.{{ end }} It is left out of its area's progress and the value objectives until it is taken up again.</p>
+{{- end }}
 {{- partial "overall-progress.html" .Page -}}
