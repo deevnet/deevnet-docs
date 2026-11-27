@@ -22,7 +22,7 @@ update applied to the host, and verification afterwards. How a patch is chosen i
 | What | Where it comes from | Procedure |
 |------|---------------------|-----------|
 | OS packages, at install | The staged install tree on the artifact server — no internet needed | [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/) |
-| OS packages, after install | Public Fedora mirrors — the host needs internet access | Per change record |
+| OS packages, after install | Public Fedora mirrors — the host needs internet access | Per change record. The two builders one at a time, the [standby builder](/docs/runbook/substrate/lifecycle/standby-builder/#one-builder-at-a-time) first |
 | Proxmox VE (both hypervisors) | Proxmox's Debian repositories, in place. A major version is only reached through the one before it, following Proxmox's upgrade path (`pve8to9` before 8 → 9) | Per change record; the 8 → 9 move was the [Hypervisor Uplift](/docs/roadmap/site-work/mobile/hypervisor-uplift/plan/) |
 | OPNsense (core router) | OPNsense's firmware updates, in place, one major release after another in order | [Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/), a change record each time |
 | Omada controller | A staged image on the artifact server | [Omada Controller Upgrade](/docs/runbook/substrate/lifecycle/omada-controller-upgrade/) |

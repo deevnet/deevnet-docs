@@ -6,18 +6,20 @@ weight: 20
 # Repave the Builder
 
 Reinstall the hardware Builder, `dv00bld001p01`, from scratch. It is the one host that cannot
-network-boot itself, so a second builder does it: a temporary builder VM on the management hypervisor
-stands in for the Builder, network-boots it with the builder kickstart, and then applies the full
-builder configuration to it.
+network-boot itself, so a second builder does it: the
+[standby builder](/docs/runbook/substrate/lifecycle/standby-builder/), a VM on the management
+hypervisor, stands in for the Builder, network-boots it with the builder kickstart, and then applies
+the full builder configuration to it. This page calls it the temporary builder, its role here.
 
-**This is the planned path, for a Builder that is still there to help.** The temporary builder is
-cloned from a template on the management hypervisor. If the Builder is already gone, or that
-hypervisor or its template is, start from a bare machine instead:
+**This is the planned path, for a Builder that is still there to help.** The standby builder is kept
+running between repaves and brought current before this starts; if it is gone, it is built again
+first, from the Builder. If the Builder is already gone, or the management hypervisor is, start from
+a bare machine instead:
 [Build the Builder](/docs/runbook/substrate/building-recovery/build-the-builder/).
 
 | | |
 |---|---|
-| Temporary builder | `dv02bld001v01`, the standby builder: a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, one 320G disk, installed over the network from the Builder. Kept running between repaves since 2026-11-27 ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/)), patched with the service VMs. If it is gone, it is built again first, as in [CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/) |
+| Temporary builder | `dv02bld001v01`, the [standby builder](/docs/runbook/substrate/lifecycle/standby-builder/): a management-hypervisor VM on `dv02hyp001p01`, 10.20.99.97, one 320G disk, installed over the network from the Builder. Kept running between repaves since 2026-11-27 ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/)), patched with the service VMs. If it is gone, it is built again first, as in [CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/) |
 | Target | `dv00bld001p01`: the AOOSTAR N1 PRO, 10.20.99.95, management NIC `enp4s0` (inventory `eth0`) |
 | Install | Fedora, from the builder kickstart (`builder-node-<release>.ks`), over UEFI PXE |
 | Configuration | `deevnet.builder` `site.yml`: `base`, `workstation`, `artifacts`, `bootstrap` |
@@ -204,9 +206,10 @@ in `network_controllers` unless it has been put back there for a recovery.
 2. Apply them with `make dns` and `make dhcp` in `deevnet.net`.
 3. Set the subnet's `next_server` back to `10.20.99.95` by hand.
 4. Clone the repositories into `/srv/dvnt` on the Builder, and put back anything carried off.
-5. Leave `dv02bld001v01` running as the standby builder. Before it serves again, as a control node
-   or for the next repave, bring it current: its packages updated, its checkouts in `/srv/dvnt`
-   pulled, and `make publish` run in each collection.
+5. Leave `dv02bld001v01` running as the standby builder
+   ([Keeping it ready](/docs/runbook/substrate/lifecycle/standby-builder/#keeping-it-ready)).
+   Clean up what the repave left on it: carried-off copies of the Builder's work, and any change it
+   took for this repave alone.
 
 ### The watchers and Claude's patch tools
 
