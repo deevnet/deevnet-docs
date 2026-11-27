@@ -1,6 +1,6 @@
 ---
 name: roadmap-update
-description: Keep the Deevnet roadmap and project plans true as work happens. Use when a change record or incident closes, when a plan's task or phase is done, when work starts on a roadmap item (write its plan), when a project graduates (archive its plan, add its Completed entry), when a roadmap item needs splitting, or when asked to check or recount the roadmap. Marks waypoints done with their dates, keeps plans' task counts right, and keeps old URLs working.
+description: Keep the Deevnet roadmap and project plans true as work happens. Use when a change record or incident closes, when a plan's task or phase is done, when work starts on a roadmap item (write its plan), when a project is done (add its Completed entry; the item stays), when a roadmap item needs splitting, or when asked to check or recount the roadmap. Marks waypoints done with their dates, keeps plans' task counts right, and keeps old URLs working.
 argument-hint: "[what happened, e.g. 'CHG-0034 complete' or 'start Stratum 1']"
 ---
 
@@ -16,8 +16,8 @@ list is the rule; read it first):
   of that kind takes the flag too, or `waypoints.py check` fails on it.
 - A **project plan** (`<item>/plan.md`, beneath its item in the menu) holds the detail: phases,
   tasks as ✅ 🔄 ⏳ bullets, and hand-kept `tasks_*` counts. It is written once work starts.
-- When a project is done, the plan moves to `content/projects/archive/`, a short entry goes in
-  Completed Projects, and the roadmap item is removed.
+- When a project is done, its item **stays on the roadmap at 100%**, its plan beneath it, and a
+  short entry goes in Completed Projects. Neither moves unless the owner asks.
 
 Scripts (run from the repository root):
 
@@ -109,15 +109,20 @@ Move any detail on the roadmap page into the plan, and leave the roadmap page as
 progress bar, `{{< waypoints >}}` and `**Project plan:** [Title](/docs/roadmap/<item>/plan/)`. Use
 `git mv` when a page becomes a plan, so `git log --follow` keeps its history.
 
-## When a project graduates
+## When a project is done
 
-1. Every task is done or explicitly dropped.
-2. `git mv` the plan to `content/projects/archive/<slug>.md`, with `title` back to the project's name and `linkTitle` dropped. Remove its roadmap link, and add the
-   roadmap item's `waypoints:` list and `area:` (the roadmap area it left) to its front matter, so
-   Roadmap Progress keeps listing them.
-3. Add a short entry in Completed Projects (`content/docs/completed/`) linking to the archived
-   plan, or to the project's own site.
-4. Remove the roadmap item. Put its URLs in the archived plan's `aliases:`.
+1. Every task is done or explicitly dropped, and every waypoint is done.
+2. **Keep the roadmap item and its plan where they are.** The item shows 100%, and seeing it
+   finished gives the rest of its area context. Do not archive the plan or remove the item.
+3. Add a short entry in Completed Projects (`content/docs/completed/`) linking to the plan, or to
+   the project's own site, and a row in its index.
+
+**Archiving, only when the owner asks** (when the roadmap grows crowded):
+`git mv` the plan to `content/projects/archive/<slug>.md`, with `title` back to the project's name
+and `linkTitle` dropped. Remove its roadmap link, and add the roadmap item's `waypoints:` list and
+`area:` (the roadmap area it left) to its front matter, so Roadmap Progress keeps listing them.
+Point the Completed entry at the archived plan, remove the roadmap item, and put its URLs in the
+archived plan's `aliases:`. Repoint `items:` in `data/accomplishments/` to the archived path.
 
 ## Rules
 

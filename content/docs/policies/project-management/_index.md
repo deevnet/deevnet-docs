@@ -7,7 +7,7 @@ bookCollapseSection: true
 # Project Management
 
 How a project goes from an idea to done: a proposal first, a plan once the proposal is accepted,
-progress shown on the roadmap as work lands, and the project graduated when it is finished. The
+progress shown on the roadmap as work lands, and the project marked complete when it is finished. The
 owner decides at each step; the skills named below draft, and the owner accepts or changes what
 they draft.
 
@@ -38,7 +38,7 @@ they draft.
 | **3. Plan** | Versions, each with a definition of done (v1 the MVP); the roadmap item with its waypoints, and its project plan beneath it | [Roadmap](/docs/roadmap/), `roadmap/<area>/<item>` and its `plan.md` | `/cd:version-planning` |
 | **4. Building** | Waypoints marked done with their dates; a milestone when a version's definition of done is met; ADRs, change and incident records as the work calls for them | The roadmap item; the records' own sections | `roadmap-update` |
 | **5. Progress** | A written account of each month, quarter and year | [Roadmap Progress](/docs/roadmap/progress/), `data/accomplishments/` | `/cd:progress-reporting` |
-| **6. Done** | The project graduates: its plan is archived and an entry written | [Completed Projects](/docs/completed/) | `roadmap-update` |
+| **6. Done** | The project is complete: its item stays on the roadmap at 100%, and an entry is written | [Completed Projects](/docs/completed/) | `roadmap-update` |
 
 ### 1. Proposal
 
@@ -98,6 +98,8 @@ Either run that finds nothing new changes nothing and opens no pull request. Bot
 
 ### 6. Done
 
-When every version planned is done, the project graduates: its plan moves to the
-[archive](/projects/archive/) with its waypoints, so Roadmap Progress keeps them; its roadmap item
-is removed; and an entry is added to [Completed Projects](/docs/completed/).
+When every version planned is done, the project is complete. Its roadmap item stays on the
+roadmap at 100%, with its plan beneath it, because a finished item shows what the rest of its area
+is measured against. An entry is added to [Completed Projects](/docs/completed/), linking to the
+plan. Moving a finished plan to the [archive](/projects/archive/) and removing its item is the
+owner's call, made when the roadmap grows crowded, not a step of finishing.

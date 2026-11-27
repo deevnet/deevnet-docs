@@ -33,6 +33,6 @@ The records these procedures produce live in their own sections:
   </a>
   <a class="section-card" href="project-management/">
     <h3>Project Management</h3>
-    <p>From an idea to done: a proposal, a plan with versions, progress on the roadmap, and graduation.</p>
+    <p>From an idea to done: a proposal, a plan with versions, progress on the roadmap, and completion.</p>
   </a>
 </div>

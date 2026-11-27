@@ -8,10 +8,10 @@ aliases:
 
 # Completed Projects
 
-Projects that have left the [Roadmap](/docs/roadmap/) because they are **done**: built from code, in
-service, and documented well enough to rebuild. Each entry records what the project is,
-how it is built and checked, and links to the plan it was delivered against, kept in the
-[archive](/projects/archive/), or to the project's own site.
+Projects that are **done**: built from code, in service, and documented well enough to rebuild.
+Each entry records what the project is, how it is built and checked, and links to the plan it was
+delivered against, or to the project's own site. A finished project's roadmap item stays on the
+[Roadmap](/docs/roadmap/) at 100%, with its plan beneath it.
 
 The Deevnet side of each project is here; write-ups of these and other projects are on
 [my projects page](https://cdeever.github.io/projects/).

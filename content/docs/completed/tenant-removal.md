@@ -16,7 +16,7 @@ works again until the name is admitted again. Only the audit log, and the emptie
 organization, which Grafana cannot delete, remain.
 
 It was delivered by [CHG-0065](/docs/changes/2026/0065-tenant-removal-leftovers/) against its
-[plan](/projects/archive/tenant-removal/).
+[plan](/docs/roadmap/infrastructure/tenant-services/tenant-removal/plan/), beneath its roadmap item.
 
 ## How it is built
 
