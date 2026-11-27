@@ -101,17 +101,22 @@ The Goal: compliant with its exception, and its state the same as before.
 **This change closes when every item below is done.**
 
 - [ ] Step 1: the exception merged
-- [ ] Step 2: the disk on the profile, the VM running as before
-- [ ] Step 3: `make vm-profile` reports it compliant with its exception
+- [x] Step 2: the disk on the profile, the VM running as before
+- [x] Step 3: `make vm-profile` reports it compliant with its exception
 
 ## Outcome
 
-*Completed after the change has run.*
+**The standby builder's disk is on the profile, and its firmware is a declared exception.** It was down
+34 seconds and came back as it was.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| Before Step 2 | 3, before | `make vm-profile`: 15 VMs, 7 compliant, 8 drift; `202 dv02bld001v01`: `virtio-scsi-pci`, OVMF, q35, no IO Thread, Discard ignored |
+| Before Step 2 | 1 | Pull request [ansible-inventory-deevnet #136](https://github.com/deevnet/ansible-inventory-deevnet/pull/136): `vm_profile_exceptions` (`bios: ovmf`, `machine: q35`) |
+| 09:13:30–09:14:04 | 2 | Configuration saved (`/root/chg-0097-202.conf` on the hypervisor); clean shutdown in 5 s; `qm set` as planned; SSH back 24 s after start, 34 s down in all. `running`, no failed unit, `virtio_scsi` loaded, kernel 7.3.6; the disk now advertises discard (1 GiB). The guest agent answers. Services, listening ports and mounts identical to before |
+| After Step 2 | 3 | `make vm-profile` (against #136's branch): `202 dv02bld001v01: EXCEPTION - UEFI network install from the builder kickstart`; 15 VMs, 7 compliant, 1 declared exception, 7 drift. The seven are the two templates and the five tenant VMs, still on LSI and out of scope |
 
 ### Departures from the plan
 
-None yet.
+- **Step 3 ran before Step 1's pull request was merged**, against its branch checked out on the
+  Builder. The change closes when it is merged.
