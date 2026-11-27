@@ -48,7 +48,7 @@ the record is checked and connects.
 |---|---|---|
 | `ansible-inventory-deevnet` | [#138](https://github.com/deevnet/ansible-inventory-deevnet/pull/138) | The record, seeded as below; `site_ssh_known_hosts_file` |
 | `deevnet.builder` | [#63](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/63) | The `ssh_known_hosts` role, in `site.yml` for `builder`; `playbooks/host-keys.yml` and `scripts/host-keys-merge`; `make host-keys`, `make host-keys-install` |
-| `deevnet-docs` | | This record; the [SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/) runbook, linked from the repave, VM build, restore and retirement runbooks |
+| `deevnet-docs` | [#527](https://github.com/deevnet/deevnet-docs/pull/527) | This record; the [SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/) runbook, linked from the repave, VM build, restore and retirement runbooks |
 
 **Out of scope:** Ansible's `host_key_checking`; the update watcher's own `known_hosts` (it pins its
 own keys).
