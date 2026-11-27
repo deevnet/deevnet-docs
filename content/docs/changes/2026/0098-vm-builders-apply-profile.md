@@ -156,4 +156,5 @@ fixed for good, the other worked around (below).
 ## Follow-ups
 
 - **The Builder's knowledge of substrate host keys** survives a repave: by name and by address,
-  from a record in git rather than learned again.
+  from a record in git rather than learned again. Taken up by
+  [CHG-0099](/docs/changes/2026/0099-host-keys-in-git/).

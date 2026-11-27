@@ -236,7 +236,8 @@ ansible-playbook playbooks/site.yml --limit dv02prv001v01 --tags vms
 ```
 
 A rebuilt VM has a new host key. The reconcile in step 5 reads its token over SSH by name and stops on
-the old one.
+the old one, so before it, record the new keys
+([SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/#a-host-is-built-or-rebuilt)).
 
 ### 3. Load the images from the ISO
 

@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0099 | 2026-11-27 | [The Site's SSH Host Keys Recorded in Git](2026/0099-host-keys-in-git/) | Configuration | mobile | In progress |
 | CHG-0098 | 2026-11-27 | [Every VM Builder Applies the VM Hardware Profile](2026/0098-vm-builders-apply-profile/) | Configuration | mobile | Complete |
 | CHG-0097 | 2026-11-27 | [The Standby Builder on the VM Hardware Profile](2026/0097-standby-builder-vm-profile/) | Configuration | mobile | Complete |
 | CHG-0096 | 2026-11-27 | [The Core Router Updated to OPNsense 26.7.10](2026/0096-core-router-26-7-10/) | Upgrade | mobile | Complete |

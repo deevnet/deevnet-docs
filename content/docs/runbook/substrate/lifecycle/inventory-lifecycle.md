@@ -58,7 +58,9 @@ host's own record, not aliases pointing at it. Then:
    not yet acknowledged.
 2. Shut it down and destroy it, with its disks (`qm destroy <vmid> --purge` on its hypervisor).
 3. Run `make dns` and `make dhcp` in `deevnet.net`: its record and reservation are deleted.
-4. Remove it from the Builder's `known_hosts` (`ssh-keygen -R`), the operator's and `deevnet-watch`'s.
+4. Remove it from the Builder's `known_hosts` (`ssh-keygen -R`), the operator's and `deevnet-watch`'s,
+   and delete its lines from the inventory's `ssh/mobile/known_hosts`
+   ([SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/#a-host-is-retired)).
 
 **Making a host active is the reverse.** Move it back into the groups its comment lists and out of
 `inactive`, put its address back in any allow list it left, and run `make dns` and `make dhcp` so its
