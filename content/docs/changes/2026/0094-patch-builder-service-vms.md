@@ -221,6 +221,8 @@ snapshot is dropped in Step 5.
 | 2026-11-26 22:03–22:08 | 3, `dv02prv001v01` | Backup idle (next run 23:00). 550 MiB in 60 s, installed in 206 s, rebooted onto 7.3.5 (from 7.2.8); state identical. `make health-watch-now`: all well, "Deevnet API alive" and "Deevnet API database" ok. The egress agent's 22:13 run succeeded |
 | 2026-11-26 | 3 | The watchdog across the core router missed no ping during any of the six downloads. Round-trip times rose from about 12 ms to a peak of 125–280 ms while each download ran |
 | 2026-11-27 | 2, the Builder | 18 packages, 449 MiB, downloaded in 241 s (about 1.9 MiB/s, still not the 1 MiB/s asked for) with no ping missed (peak 74 ms); installed from the cache in 50 s, among them kernel 7.3.6 and `firefox` 161. `dnf check-upgrade` lists nothing; a reboot is needed for the kernel, and the operator reboots it |
+| 2026-11-27 | 2, the Builder | Rebooted by the operator onto kernel 7.3.6; `make update-watch-now` run and the Builder checked by the operator |
+| 2026-11-27 04:53–05:01 | Added, `dv02bld001v01` (202) | Snapshot `pre-chg-0094`, 13 packages (291 MiB) downloaded in 294 s with no ping missed (peak 63 ms), installed from the cache in 72 s, rebooted onto 7.3.6, SSH back 10 s after; nothing failed. The only state difference was three libvirt daemons (`virtqemud`, `virtlxcd`, `virtvboxd`) running: socket-activated, they start at boot and exit when idle, and had exited before the change |
 
 ### Departures from the plan
 
@@ -228,6 +230,9 @@ snapshot is dropped in Step 5.
   Builder, and its reboot would end the session. The six VMs are patched from it first, and the
   operator reboots the Builder at the end. `dv02bld001v01` stays until then, so the fallback
   control node the plan wanted is still there.
+- **The temporary builder was patched too.** `dv02bld001v01` was out of scope, to be destroyed
+  under CHG-0092, but stays until then as the fallback control node, so the operator asked for it
+  to be patched the same way. It was never on the LSI controller (`virtio-scsi-pci`).
 - **The downloads were not throttled.** `--setopt=throttle=1M` did not limit them: each VM
   fetched about 565 MiB in 60–85 s, around 7–8 MiB/s. Adding `max_parallel_downloads=1` (from
   `dv02col001v01` on) and a per-repository `*.throttle=1M` (from `dv02obs001v01` on) changed
