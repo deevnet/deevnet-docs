@@ -10,7 +10,7 @@ weight: -92
 | **Date** | 2026-11-25 |
 | **Change type** | Deployment |
 | **Classification** | Disruptive |
-| **Status** | **Planned** |
+| **Status** | **Complete, 2026-11-26** |
 | **Window** | 2026-11-25 from 18:30, operator at the Builder's console and near the core router |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (wiped and reinstalled); `dv02bld001v01` (control node and network-boot server for the change); the core router (DNS, DHCP, `next_server`); every host that pins the update watcher's key |
@@ -85,8 +85,8 @@ since, so they were not carried off, and the install deletes them.
 ## Prerequisites
 
 - [x] CHG-0091 complete: the temporary builder built, and the Builder's work carried to it
-- [ ] Inventory pull request for Step 1 merged, and pulled on the temporary builder
-- [ ] Operator at the Builder's console, and near the core router's, from Step 2
+- [x] Inventory pull request for Step 1 merged, and pulled on the temporary builder
+- [x] Operator at the Builder's console, and near the core router's, from Step 2
 
 ## Procedure
 
@@ -285,33 +285,44 @@ Revert the Step 1 pull request, run `make dns`, `make dhcp` and the `grub-mac` t
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: inventory pull request
-- [ ] Step 2: network boot on the temporary builder
-- [ ] Step 3: watchdog
-- [ ] Step 4: the Builder installed
-- [ ] Step 5: artifact store copied in
-- [ ] Step 6: limit set, packages current
-- [ ] Step 7: builder configuration
-- [ ] Step 8: limit lifted
-- [ ] Step 9: network boot handed back
-- [ ] Step 10: the Builder the control node again
+- [x] Step 1: inventory pull request
+- [x] Step 2: network boot on the temporary builder
+- [x] Step 3: watchdog
+- [x] Step 4: the Builder installed
+- [x] Step 5: artifact store copied in
+- [x] Step 6: limit set, packages current
+- [x] Step 7: builder configuration
+- [x] Step 8: limit lifted
+- [x] Step 9: network boot handed back
+- [x] Step 10: the Builder the control node again
 - [x] Step 11: replaced on 2026-11-27: the temporary builder is kept, running, as the standby builder (see Departures)
-- [ ] Verification: Goal and Verify Site
-- [ ] `make discover` from the Builder, and the Software Catalog's Builder row updated from its report
-- [ ] Builder Upkeep: the `/home` task done, and its waypoint split, `/home` done and the build caches under `/srv` still planned
-- [ ] Repave the Builder updated from this change's Outcome: the artifact store copied in, the limit on the Builder, `update_check` after, `/srv/discovery` made by hand on a temporary builder
+- [x] Verification: Goal and Verify Site
+- [x] `make discover` from the Builder (2026-11-26), and the Software Catalog's Builder row updated from its report (in CHG-0094, 2026-11-27)
+- [x] Builder Upkeep: the `/home` task done, and its waypoint split, `/home` done and the build caches under `/srv` still planned
+- [x] Repave the Builder updated from this change's Outcome: the artifact store copied in, the limit on the Builder, `update_check` after, `/srv/discovery` made by hand on a temporary builder
 - [x] Inventory Lifecycle → Inactive hosts: not needed, `dv02bld001v01` stays active as the standby builder
 
 ## Outcome
 
-*Completed after the change has run.*
+**The Builder runs Fedora 44, repaved from the temporary builder,** with `/home` on its own 60 GB
+volume (it was 20 GB and 96% full) and `/srv` at 804 GB. This record was closed on 2026-11-27 from
+the Builder's state, not filled step by step as it ran: the repave was driven from the temporary
+builder's session, and the times below are those the Builder and later records show.
 
-| When | Steps | What happened |
+| When (UTC) | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-11-25 to 2026-11-26 | 1–9 | The Builder installed over the network from the temporary builder on Fedora 44, its artifact store in place (`/srv/deevnet-http`, 29 GB), its configuration applied (the watcher's key made about 02:43 on 2026-11-26), and network boot handed back. `/home` 60 GB, `/srv` 804 GB, both XFS on `vg_builder` |
+| 2026-11-26 16:18 | 10 | Every repository cloned on the Builder. `gh`, `yq` and `sshpass` were missing: the site's `workstations` package list replaced the role's ([deevnet.builder #61](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/61), [ansible-inventory-deevnet #133](https://github.com/deevnet/ansible-inventory-deevnet/pull/133)) |
+| 2026-11-26 20:08–20:14 | 10 | The watcher's first scan reached no host: its new key was not yet pinned. `make update-watch` and `deevnet.mgmt`'s `update_check` play; every host answered. The runbook now says so ([deevnet-docs #516](https://github.com/deevnet/deevnet-docs/pull/516)) |
+| 2026-11-26 21:36 | 10 | Both collections published at user level after `make discover` failed for want of `deevnet.net`'s; the runbook now says so ([deevnet-docs #518](https://github.com/deevnet/deevnet-docs/pull/518)) |
+| 2026-11-26 21:47 | Close | `make discover` from the Builder (`/srv/discovery/2026-11-26.json`). The Builder row in the Software Catalog was updated from the next one, in [CHG-0094](/docs/changes/2026/0094-patch-builder-service-vms/) |
+| 2026-11-27 | 11 | Replaced: the temporary builder kept as the standby builder (Departures) |
 
 ### Departures from the plan
 
+- **Its `known_hosts` was not carried over** (Step 10): the Builder knew substrate hosts by address
+  only, and SSH by name failed. Replaced by the site's host keys in git,
+  [CHG-0099](/docs/changes/2026/0099-host-keys-in-git/).
 - **The temporary builder stays, as the standby builder.** On 2026-11-27 the operator decided to
   keep `dv02bld001v01` running instead of destroying it and making it inactive (Step 11). It is a
   second control node if the Builder fails, and the next repave's network-boot server without a
@@ -324,4 +335,4 @@ Revert the Step 1 pull request, run `make dns`, `make dhcp` and the `grub-mac` t
 
 ## Follow-ups
 
-- [ ] `dv02bld001v01` on ADR-0046's VM hardware profile (`virtio-scsi-single`, `iothread=1`, `discard=on`, `cache=none`), now that it stays as the standby builder
+- [x] `dv02bld001v01` on ADR-0046's VM hardware profile (`virtio-scsi-single`, `iothread=1`, `discard=on`, `cache=none`), now that it stays as the standby builder: [CHG-0097](/docs/changes/2026/0097-standby-builder-vm-profile/)
