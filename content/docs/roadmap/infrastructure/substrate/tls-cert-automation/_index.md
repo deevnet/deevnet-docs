@@ -8,23 +8,30 @@ weight: 9
 value: [secure-by-default]
 waypoints:
   - title: "Deevnet's own root and site certificate authorities created and kept offline (CHG-0033)"
+    added: "2026-10-05"
     value: [secure-by-default, works-anywhere]
     status: done
     date: "2026-10-05"
   - title: "Tenant certificate authorities' keys generated outside the OpenBao secrets manager (CHG-0036)"
+    added: "2026-10-25"
     status: done
     date: "2026-10-25"
   - title: "Every machine the site builds trusts the Deevnet root certificate"
+    added: "2026-10-05"
     status: done
     date: "2026-10-05"
   - title: "Tenant VMs that trust only the retired root certificate replaced"
+    added: "2026-11-01"
     status: active
   - title: "Every infrastructure service and appliance on the site serves a Deevnet certificate, and its clients verify it"
+    added: "2026-10-05"
     status: done
     date: "2026-10-05"
   - title: "IoT devices get their own certificates through the Deevnet API and use them to log in to the MQTT broker"
+    added: "2026-11-01"
     status: planned
   - title: "Automatic certificate renewal, expiry monitoring, and a clean new root once device certificates work"
+    added: "2026-11-01"
     value: [secure-by-default, one-operator]
     status: planned
 ---

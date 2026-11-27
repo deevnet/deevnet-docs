@@ -10,10 +10,13 @@ deferred:
   until: "2027"
 waypoints:
   - title: "The home site's certificate authorities created under the Deevnet root"
+    added: "2026-11-01"
     status: planned
   - title: "The home site's network defined in inventory, with DNS and DHCP on its core router"
+    added: "2026-11-01"
     status: planned
   - title: "Later at the home site: Kea for DHCP, and a hypervisor when a tenant needs one"
+    added: "2026-11-01"
     status: planned
 ---
 

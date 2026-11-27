@@ -62,29 +62,29 @@ So "we made holes that trigger recycle" is the right instinct, and the ordering 
 
 Live as of 2026-09-04, found by reading the core router's reservations back and comparing them against inventory:
 
-- ⏳ Kea DHCP reservation `BC:24:11:F0:E4:68` → 10.20.99.90 (`provisioner-vm05`, host deleted)
-- ⏳ Unbound host override `provisioner-vm05.mobile.deevnet.net` → 10.20.99.90, which still resolves
-- ⏳ Four `grub.cfg-bc-24-11-f0-e4-68` files (case and path variants) in the TFTP root
-- ✅ Kea DHCP reservation `BC:24:11:2E:26:4E` → **192.168.10.20**, hostname `vyos-rt01` — a survivor of the pre-VLAN flat network. Neither the address range nor the hostname exists in inventory any more; the host is `dv02cor002p01` today. This one has outlived an entire addressing scheme, which is the clearest possible illustration of why additive-only reconciliation is a problem. Gone by 2026-11-12: none of the router's reservations matches its MAC, address or hostname ([CHG-0063](/docs/changes/2026/0063-retire-flat-lan-address/)). When it went is not recorded.
+- ⏳ Kea DHCP reservation `BC:24:11:F0:E4:68` → 10.20.99.90 (`provisioner-vm05`, host deleted) {{< added "2026-09-04" >}}
+- ⏳ Unbound host override `provisioner-vm05.mobile.deevnet.net` → 10.20.99.90, which still resolves {{< added "2026-09-05" >}}
+- ⏳ Four `grub.cfg-bc-24-11-f0-e4-68` files (case and path variants) in the TFTP root {{< added "2026-09-04" >}}
+- ✅ Kea DHCP reservation `BC:24:11:2E:26:4E` → **192.168.10.20**, hostname `vyos-rt01` — a survivor of the pre-VLAN flat network. Neither the address range nor the hostname exists in inventory any more; the host is `dv02cor002p01` today. This one has outlived an entire addressing scheme, which is the clearest possible illustration of why additive-only reconciliation is a problem. Gone by 2026-11-12: none of the router's reservations matches its MAC, address or hostname ([CHG-0063](/docs/changes/2026/0063-retire-flat-lan-address/)). When it went is not recorded. {{< added "2026-09-04" >}}
 
 Two further orphans, `BC:24:11:CE:51:EC` → 10.20.99.97 and `BC:24:11:DC:2A:24` → 10.20.99.96, are **not** deferrable drift: they hold the very addresses `provisioner-vm02` and `provisioner-vm03` are being rebuilt onto, under their old Proxmox-assigned MACs. They are removed as part of that rebuild rather than left for this project.
 
 ## Reconciliation Gaps ⏳
 
-- ⏳ **`opnsense_dhcp` does not prune.** Its removal list is built only from hosts that explicitly declare `dhcp_reservation: false`; a host deleted from inventory contributes nothing to it, so its reservation is never a candidate for removal.
-- ⏳ **`opnsense_dns` does not prune either.** `dns_delete_unmanaged` is named in the role's defaults and referenced in task comments, but no task implements it. The variable reads as a supported switch and is not one.
-- ⏳ **`bootstrap` `configure_grub_mac` does not prune.** It renders six filename variants per host to cover firmware differences in `$net_default_mac`, and removes none of them when the entry goes away.
-- ⏳ **Decide the safety model before writing any delete path.** Pruning is the one operation where an incomplete inventory is catastrophic rather than merely incomplete. `vm_identity` already sets the precedent worth copying: it surveys every hypervisor and *refuses to act on a partial survey* rather than allocating around the gap.
+- ⏳ **`opnsense_dhcp` does not prune.** Its removal list is built only from hosts that explicitly declare `dhcp_reservation: false`; a host deleted from inventory contributes nothing to it, so its reservation is never a candidate for removal. {{< added "2026-09-04" >}}
+- ⏳ **`opnsense_dns` does not prune either.** `dns_delete_unmanaged` is named in the role's defaults and referenced in task comments, but no task implements it. The variable reads as a supported switch and is not one. {{< added "2026-09-04" >}}
+- ⏳ **`bootstrap` `configure_grub_mac` does not prune.** It renders six filename variants per host to cover firmware differences in `$net_default_mac`, and removes none of them when the entry goes away. {{< added "2026-09-04" >}}
+- ⏳ **Decide the safety model before writing any delete path.** Pruning is the one operation where an incomplete inventory is catastrophic rather than merely incomplete. `vm_identity` already sets the precedent worth copying: it surveys every hypervisor and *refuses to act on a partial survey* rather than allocating around the gap. {{< added "2026-09-04" >}}
 
 ## Settings That Exist Only in the Running Config ⏳
 
 The mirror image of an orphan: state the substrate depends on that **no declaration describes at all**, so a rebuild of the device silently loses it.
 
-- ⏳ **Kea `next_server` is unmanaged, and is empty on all five VLAN subnets** — trusted (10), iot (30), iot_vendor (31), guest (40) and management (99). `opnsense_dhcp`'s subnet payload sets `pools`, `description` and three `option_data` fields, and never `next_server`, so every subnet the VLAN migration created came into existence without it. This is not a setting that was *lost* in the migration; it was never carried into the new model. Worse, `configure_subnets.yml` only *creates* subnets that do not exist — there is no update path — so adding the field to the payload would not repair the five that already exist.
+- ⏳ **Kea `next_server` is unmanaged, and is empty on all five VLAN subnets** — trusted (10), iot (30), iot_vendor (31), guest (40) and management (99). `opnsense_dhcp`'s subnet payload sets `pools`, `description` and three `option_data` fields, and never `next_server`, so every subnet the VLAN migration created came into existence without it. This is not a setting that was *lost* in the migration; it was never carried into the new model. Worse, `configure_subnets.yml` only *creates* subnets that do not exist — there is no update path — so adding the field to the payload would not repair the five that already exist. {{< added "2026-09-04" >}}
 
   Found 2026-09-04 when `provisioner-vm03` PXE-booted and made no TFTP contact whatsoever. With `next_server` empty, Kea advertises its own address in the BOOT header's `siaddr`, and UEFI firmware reads `siaddr` rather than DHCP option 66 — so the client tries to TFTP from the router, which runs no TFTP server. The per-host reservation's `option_data.tftp_server_name` looks like it covers this and does not: it is option 66, and reservations carry no `next_server` field at all, so the subnet is the only place it can live. Same root cause `PXE-TROUBLESHOOTING.md` recorded on 2026-01-10, whose hand-applied fix died with the flat network it was applied to.
-- ⏳ Give `configure_subnets.yml` an update path, so subnet settings converge instead of only being seeded at creation.
+- ⏳ Give `configure_subnets.yml` an update path, so subnet settings converge instead of only being seeded at creation. {{< added "2026-09-04" >}}
 
 ## Drift Visibility ⏳
 
-- ⏳ Add a read-only drift report that lists substrate-managed live state with no matching declaration — reservations, DNS records and MAC-specific boot configs — so orphans are noticed when they are created rather than months later.
+- ⏳ Add a read-only drift report that lists substrate-managed live state with no matching declaration — reservations, DNS records and MAC-specific boot configs — so orphans are noticed when they are created rather than months later. {{< added "2026-09-04" >}}

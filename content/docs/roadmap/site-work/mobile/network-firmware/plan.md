@@ -26,5 +26,5 @@ Firmware upgrades on the mobile site's network devices.
 
 Device firmware updates required for full automation coverage.
 
-- ✅ EAP650-Outdoor AP firmware update, so the controller can push VLAN configuration to it ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/))
-- ✅ SG2218 Access Switch firmware update ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Adoption into Omada is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold
+- ✅ EAP650-Outdoor AP firmware update, so the controller can push VLAN configuration to it ([CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/)) {{< added "2026-09-26" >}}
+- ✅ SG2218 Access Switch firmware update ([CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Adoption into Omada is [CHG-0009](/docs/changes/2026/0009-access-switch-adoption/), on hold {{< added "2026-09-26" >}}

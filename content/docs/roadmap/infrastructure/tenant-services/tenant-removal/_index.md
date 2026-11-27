@@ -7,12 +7,15 @@ weight: 5
 value: [contained-failure]
 waypoints:
   - title: "Removing a tenant also deletes its Terraform state and dashboards (CHG-0065)"
+    added: "2026-11-12"
     status: done
     date: "2026-11-12"
   - title: "Removing a tenant also deletes its log lines (CHG-0065)"
+    added: "2026-11-12"
     status: done
     date: "2026-11-12"
   - title: "Removing a tenant revokes its API token (CHG-0065)"
+    added: "2026-11-12"
     status: done
     date: "2026-11-12"
 ---

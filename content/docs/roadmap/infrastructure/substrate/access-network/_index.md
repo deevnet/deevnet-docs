@@ -6,9 +6,11 @@ aliases:
 weight: 6
 waypoints:
   - title: "A labeled block of access switch ports for plugging in management devices"
+    added: "2026-11-01"
     value: [one-operator]
     status: planned
   - title: "Unused access switch ports placed in a dead-end VLAN, so a device plugged into one reaches nothing"
+    added: "2026-11-01"
     value: [contained-failure]
     status: planned
 ---

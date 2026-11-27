@@ -46,9 +46,9 @@ Achieve fully automated, repeatable provisioning of the mobile (mobile) site fro
 
 ## Requirements ✅
 
-- ✅ Define substrate inventory and MAC addresses
-- ✅ Define network topology and VLANs
-- ✅ Define air-gap artifact requirements
+- ✅ Define substrate inventory and MAC addresses {{< added "2026-01-22" >}}
+- ✅ Define network topology and VLANs {{< added "2026-01-22" >}}
+- ✅ Define air-gap artifact requirements {{< added "2026-01-22" >}}
 
 ---
 
@@ -56,12 +56,12 @@ Achieve fully automated, repeatable provisioning of the mobile (mobile) site fro
 
 Core infrastructure for building and deploying the substrate.
 
-- ✅ Builder Node Ansible Collection (`deevnet.builder`)
-- ✅ Image Packaging - Proxmox Fedora template
-- ✅ Image Packaging - Proxmox installer
-- ✅ Image Packaging - Raspberry Pi Base Image
-- ✅ Bootstrap Node Provisioning Playbook
-- ✅ Full Air-Gap Support (Fedora Mirror)
+- ✅ Builder Node Ansible Collection (`deevnet.builder`) {{< added "2026-01-10" >}}
+- ✅ Image Packaging - Proxmox Fedora template {{< added "2026-01-10" >}}
+- ✅ Image Packaging - Proxmox installer {{< added "2026-01-10" >}}
+- ✅ Image Packaging - Raspberry Pi Base Image {{< added "2026-01-10" >}}
+- ✅ Bootstrap Node Provisioning Playbook {{< added "2026-01-10" >}}
+- ✅ Full Air-Gap Support (Fedora Mirror) {{< added "2026-01-10" >}}
 
 ---
 
@@ -71,8 +71,8 @@ Both Proxmox nodes were installed by hand from the standard ISO, and a rebuild i
 ([Build a Hypervisor](/docs/runbook/substrate/building-recovery/build-hypervisor/)).
 
 - 🔄 Unattended ISO in `deevnet-image-factory`: an embedded answer file with the install disk pinned
-  by serial builds, but has never installed a node
-- ⏳ Install a hypervisor from it, and make it the runbook's install step
+  by serial builds, but has never installed a node {{< added "2026-09-27" >}}
+- ⏳ Install a hypervisor from it, and make it the runbook's install step {{< added "2026-09-27" >}}
 
 ---
 
@@ -80,9 +80,9 @@ Both Proxmox nodes were installed by hand from the standard ISO, and a rebuild i
 
 Documentation and inventory definitions.
 
-- ✅ Hugo-based Documentation Site
-- ✅ Standards and Correctness Docs
-- ✅ mobile Site Bare-Metal Inventory (MAC addresses)
+- ✅ Hugo-based Documentation Site {{< added "2026-01-10" >}}
+- ✅ Standards and Correctness Docs {{< added "2026-01-10" >}}
+- ✅ mobile Site Bare-Metal Inventory (MAC addresses) {{< added "2026-09-05" >}}
 
 ---
 
@@ -90,16 +90,16 @@ Documentation and inventory definitions.
 
 Automated configuration of network infrastructure. Migration from flat 192.168.10.0/24 to segmented 10.20.x.0/24 VLANs completed 2026-03-25. Authority transition automation completed 2026-03-26.
 
-- ✅ OPNsense Alternatives Evaluation
-- ✅ Document network build/rebuild steps in recovery plan
-- ✅ mobile VLAN Plan
-- ✅ DNS Automation
-- ✅ DHCP Automation (Kea subnets auto-created, interface enablement automated)
-- ✅ Core Router Automation (OPNsense VLAN creation, firewall rules via API)
-- ✅ Access Switch Automation (SG2218 General mode, VLANs, trunk, access ports, default gateway)
-- ✅ Implement Network Segmentation (12 VLANs, zone-based firewall policy)
-- ✅ Migrate to RFC1918 10 space (10.20.x.0/24 subnets live)
-- ✅ Wireless AP SSID-to-VLAN configuration (manual via standalone UI — automation gap documented)
-- ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Management project)
-- ✅ Authority transition automation (bootstrap-auth/core-auth playbooks, DNS/DHCP host records from inventory, IP swap)
-- ✅ Unify build sequence documentation (authority transitions and network segmentation inline)
+- ✅ OPNsense Alternatives Evaluation {{< added "2026-01-10" >}}
+- ✅ Document network build/rebuild steps in recovery plan {{< added "2026-01-23" >}}
+- ✅ mobile VLAN Plan {{< added "2026-09-05" >}}
+- ✅ DNS Automation {{< added "2026-03-08" >}}
+- ✅ DHCP Automation (Kea subnets auto-created, interface enablement automated) {{< added "2026-03-25" >}}
+- ✅ Core Router Automation (OPNsense VLAN creation, firewall rules via API) {{< added "2026-03-25" >}}
+- ✅ Access Switch Automation (SG2218 General mode, VLANs, trunk, access ports, default gateway) {{< added "2026-03-25" >}}
+- ✅ Implement Network Segmentation (12 VLANs, zone-based firewall policy) {{< added "2026-03-25" >}}
+- ✅ Migrate to RFC1918 10 space (10.20.x.0/24 subnets live) {{< added "2026-03-25" >}}
+- ✅ Wireless AP SSID-to-VLAN configuration (manual via standalone UI — automation gap documented) {{< added "2026-03-25" >}}
+- ✅ Document automation shortcomings and improvement backlog (see migration runbook and Patch Management project) {{< added "2026-03-25" >}}
+- ✅ Authority transition automation (bootstrap-auth/core-auth playbooks, DNS/DHCP host records from inventory, IP swap) {{< added "2026-03-26" >}}
+- ✅ Unify build sequence documentation (authority transitions and network segmentation inline) {{< added "2026-03-26" >}}

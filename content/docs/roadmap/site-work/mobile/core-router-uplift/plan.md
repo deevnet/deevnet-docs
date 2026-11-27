@@ -27,7 +27,7 @@ them.
 
 ## Replacement ⏳
 
-- ⏳ Choose the hardware: the [N100 Router Appliance](/docs/platforms/evaluations/hardware/n100-router-appliance/) is the candidate under evaluation
-- ⏳ Build it from code and swap it in under a change record, the ZimaBoard kept to put back
-- ⏳ Prove it under load: a multi-gigabyte transfer and a full deploy through it, with no hang and no watchdog timeout
-- ⏳ Close INC-0004
+- ⏳ Choose the hardware: the [N100 Router Appliance](/docs/platforms/evaluations/hardware/n100-router-appliance/) is the candidate under evaluation {{< added "2026-11-01" >}}
+- ⏳ Build it from code and swap it in under a change record, the ZimaBoard kept to put back {{< added "2026-11-01" >}}
+- ⏳ Prove it under load: a multi-gigabyte transfer and a full deploy through it, with no hang and no watchdog timeout {{< added "2026-11-01" >}}
+- ⏳ Close INC-0004 {{< added "2026-11-01" >}}

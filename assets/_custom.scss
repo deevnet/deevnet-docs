@@ -644,3 +644,17 @@ ul.acc-list {
   padding: 0 0.35em;
   white-space: nowrap;
 }
+
+// -----------------------------------------------------------------------------
+// Roadmap: the age of open work items (span.added, filled in by docs/inject/body.html)
+// -----------------------------------------------------------------------------
+
+.added {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.added-old {
+  color: var(--badge-orange);
+}

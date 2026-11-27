@@ -3,18 +3,23 @@ title: "Enrichment"
 weight: 3
 waypoints:
   - title: "Music inventory gets discographies from MusicBrainz: built on the old schema, to be reworked onto v1"
+    added: "2026-11-01"
     group: "Enrichment"
     status: active
   - title: "Music inventory shows the original album's cover when the owner has it"
+    added: "2026-11-01"
     group: "Enrichment"
     status: planned
   - title: "Music inventory finds original release dates, and the original among reissues and box sets"
+    added: "2026-11-01"
     group: "Enrichment"
     status: planned
   - title: "Music inventory test case: Journey's *Infinity*, which a catalog never lists for its own tracks"
+    added: "2026-11-01"
     group: "Cases it must get right"
     status: planned
   - title: "Music inventory test case: Kansas' *Point of Know Return*, its 1977 sleeve rather than a live album's"
+    added: "2026-11-01"
     group: "Cases it must get right"
     status: planned
 ---

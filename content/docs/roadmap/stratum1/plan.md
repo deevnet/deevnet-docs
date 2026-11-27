@@ -43,32 +43,32 @@ Deploy a local Stratum 1 NTP server using GPS as the time source, providing accu
 
 ## Requirements ⏳
 
-- ⏳ Define time accuracy requirements
-- ⏳ Define GPS antenna placement constraints
-- ⏳ Define telemetry and alerting requirements
+- ⏳ Define time accuracy requirements {{< added "2026-01-22" >}}
+- ⏳ Define GPS antenna placement constraints {{< added "2026-01-22" >}}
+- ⏳ Define telemetry and alerting requirements {{< added "2026-01-22" >}}
 
 ---
 
 ## Hardware ⏳
 
-- ⏳ Pi Zero W/2W selection
-- ⏳ GPS HAT/module selection
-- ⏳ Hardware acquisition
+- ⏳ Pi Zero W/2W selection {{< added "2026-01-22" >}}
+- ⏳ GPS HAT/module selection {{< added "2026-01-22" >}}
+- ⏳ Hardware acquisition {{< added "2026-01-22" >}}
 
 ---
 
 ## Image Build ⏳
 
-- ⏳ Base Pi Zero image
-- ⏳ GPS daemon (gpsd) configuration
-- ⏳ NTP/Chrony configuration for Stratum 1
-- ⏳ Telemetry and alerting configuration
-- ⏳ Test scripts for time accuracy validation
+- ⏳ Base Pi Zero image {{< added "2026-01-22" >}}
+- ⏳ GPS daemon (gpsd) configuration {{< added "2026-01-22" >}}
+- ⏳ NTP/Chrony configuration for Stratum 1 {{< added "2026-01-22" >}}
+- ⏳ Telemetry and alerting configuration {{< added "2026-01-22" >}}
+- ⏳ Test scripts for time accuracy validation {{< added "2026-01-22" >}}
 
 ---
 
 ## Deployment ⏳
 
-- ⏳ Network position and VLAN assignment
-- ⏳ Client configuration to use Stratum 1
-- ⏳ Build documentation
+- ⏳ Network position and VLAN assignment {{< added "2026-01-22" >}}
+- ⏳ Client configuration to use Stratum 1 {{< added "2026-01-22" >}}
+- ⏳ Build documentation {{< added "2026-01-04" >}}

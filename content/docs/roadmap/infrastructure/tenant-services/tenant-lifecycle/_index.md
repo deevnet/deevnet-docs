@@ -8,29 +8,37 @@ weight: 2
 value: [fast-delivery]
 waypoints:
   - title: "The Deevnet API and its Terraform provider deployed; tenants built through them (CHG-0010)"
+    added: "2026-09-17"
     status: done
     date: "2026-09-17"
   - title: "The first tenant built end to end from its own repository: code, internet access and DNS"
+    added: "2026-09-03"
     status: done
     date: "2026-09-03"
   - title: "A reference tenant a newcomer can copy"
+    added: "2026-09-27"
     status: done
     date: "2026-09-27"
   - title: "Tenants log in to their own workloads and deploy their app (CHG-0028)"
+    added: "2026-09-27"
     status: done
     date: "2026-09-27"
   - title: "Tenants admitted and removed, and their Wi-Fi keys rotated, by make targets on the build server"
+    added: "2026-09-29"
     value: [fast-delivery, one-operator]
     status: done
     date: "2026-09-29"
   - title: "A tenant that lost the keys to its own state gets back in with a new key from the operator (CHG-0060)"
+    added: "2026-11-09"
     value: [rebuild-from-code, one-operator]
     status: done
     date: "2026-11-09"
   - title: "A tenant rebuilt from its own code in a drill"
+    added: "2026-11-01"
     value: [rebuild-from-code]
     status: planned
   - title: "The boundary between tenants and the site's infrastructure written as one specification"
+    added: "2026-11-01"
     status: done
     date: "2026-11-01"
 ---

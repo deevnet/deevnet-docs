@@ -3,13 +3,16 @@ title: "Schema v1"
 weight: 2
 waypoints:
   - title: "Music inventory schema agreed: own keys, outside IDs kept beside them; album, edition, holding; track and recording; source"
+    added: "2026-10-25"
     group: "Review"
     status: done
     date: "2026-10-25"
   - title: "Music inventory schema still to review: artist and album aliases, discography status, the enrichment counter, how enrichment fills the shape"
+    added: "2026-11-01"
     group: "Review"
     status: planned
   - title: "Music inventory schema v1 built, the iTunes importer changed and the store recollected"
+    added: "2026-11-01"
     group: "Build"
     status: planned
 ---

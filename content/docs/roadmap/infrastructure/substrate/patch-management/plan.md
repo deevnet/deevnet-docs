@@ -81,31 +81,31 @@ A dated report of what is actually running, compared with the catalog.
 
 - ✅ The catalog's rows are moved into a data file the page renders from, so a report can be
   compared with it mechanically. The page's grouping, columns and version-source terms stay as
-  they are.
+  they are. {{< added "2026-11-22" >}}
 - ✅ What was deployed as `-latest` is pinned: `deevnet-broker-account` (the `vernemq` role),
   `deevnet-log-user` (the `victorialogs` role), and the `deevnet-kit`, `deevnet-log-user` and
   `deevnet-log-bridge` binaries the Pi backend image fetches. The reference tenant's provider
   constraint moves to the line it actually runs. Each is pinned to the file `-latest` pointed at;
-  the reference tenant had already moved to `~> 0.5`, locked at 0.5.0
+  the reference tenant had already moved to `~> 0.5`, locked at 0.5.0 {{< added "2026-11-22" >}}
 - ✅ Every in-house repository is licensed: a LICENSE file in `deevnet-provisioning-api`,
   `terraform-provider-deevnet`, `deevnet-log-bridge`, `deevnet-container-image-factory` and the
   tenant repositories, and `galaxy.yml` agreeing with `LICENSE` in the `deevnet.mgmt` and
-  `deevnet.net` collections. Every Deevnet repository is Apache-2.0
+  `deevnet.net` collections. Every Deevnet repository is Apache-2.0 {{< added "2026-11-22" >}}
 - ✅ **Core router collector:** `opnsense-version -v` for the release and base, and `pkg info` for
   the bundled packages in use (Kea, Unbound) and every installed `os-*` plugin. `opnsense-diag.sh`
-  already gathers the first.
+  already gathers the first. {{< added "2026-11-22" >}}
 - ✅ **Hypervisor collector:** `pveversion -v`, which covers Proxmox VE, the kernel, FRR and the
-  SDN packages.
+  SDN packages. {{< added "2026-11-22" >}}
 - ✅ **Substrate service VM and Builder collector:** `/etc/os-release`, the kernel, the Podman
   version, and the image of every running container, read from the container and not from the
-  unit file.
+  unit file. {{< added "2026-11-22" >}}
 - ✅ **Network device collector:** the switch's `show system-info`, and the controller and AP
-  versions from the Omada Open API.
+  versions from the Omada Open API. {{< added "2026-11-22" >}}
 - ✅ One dated report per run, kept on the Builder, listing for each item the observed version and
   the catalog's version, and for each running container the image its role pins, with every
-  mismatch called out.
+  mismatch called out. {{< added "2026-11-23" >}}
 - ✅ The report runs from one `make` target, and after any change record that upgrades something,
-  so the catalog is updated in the same change.
+  so the catalog is updated in the same change. {{< added "2026-11-23" >}}
 
 **The choices, the owner's, 2026-11-23.** The report has its own `make discover` target; [Build
 Verification](/docs/roadmap/infrastructure/substrate/management-plane/) includes it when that report
@@ -136,23 +136,23 @@ with credentials that can read and nothing else.
 - ✅ Every substrate service VM, Builder VM and hypervisor carries the read-only `deevnet-watch`
   account: no sudo, its key pinned to one program, `deevnet-watch-check` (its `updates` check),
   with `command=`, `restrict` and `from=` the Builder. The check reads the package manager's cache only (`dnf` on
-  Fedora, `apt` on Proxmox VE), which each host's own timer keeps fresh, so it downloads nothing.
+  Fedora, `apt` on Proxmox VE), which each host's own timer keeps fresh, so it downloads nothing. {{< added "2026-11-23" >}}
 - ✅ The watcher runs daily on the Builder as its own account. It asks every host, and compares
   OPNsense's published releases with the version the newest discovery report saw on the core
-  router.
+  router. {{< added "2026-11-23" >}}
 - 🔄 It asks the Omada controller, with a view-only client, for the AP's latest firmware. Waits for
-  the owner to make the client.
+  the owner to make the client. {{< added "2026-11-24" >}}
 - ✅ It writes its report on the Builder, in `/srv/updates`: everything waiting now, and a dated
   file of what was new. A banner in every interactive login shell shows what is new until the
-  operator acknowledges it (`make update-watch-ack`).
+  operator acknowledges it (`make update-watch-ack`). {{< added "2026-11-23" >}}
 - ✅ What is new is reported once: a security update, a host newly behind, a new OPNsense release
   or device firmware. The banner counts the security updates. Ordinary package churn on a host
-  already behind is listed but is not news.
+  already behind is listed but is not news. {{< added "2026-11-23" >}}
 - ✅ Anything still waiting after 30 days is news again, and so is a system that didn't answer or
   couldn't check, once per outage. The hypervisors are listed but are not news, since Proxmox VE
-  notifies its own (CHG-0079).
+  notifies its own (CHG-0079). {{< added "2026-11-23" >}}
 - ✅ It is deployed by [CHG-0082](/docs/changes/2026/0082-update-watcher/), complete 2026-11-24
-  after the timer's first run on its own.
+  after the timer's first run on its own. {{< added "2026-11-23" >}}
 
 **The choices, the owner's, 2026-11-23.** The daily check runs unattended with credentials of its
 own that can only read: the automation key, the vault and OpenBao stay with the operator's
@@ -176,14 +176,14 @@ the access switch's firmware, and Deevnet's own pinned releases. The same report
 **Done when:**
 
 - ⏳ Each catalog item's **release source** and **advisory source** are recorded, as two new
-  catalog columns. For OPNsense, one entry covers its bundled services too.
+  catalog columns. For OPNsense, one entry covers its bundled services too. {{< added "2026-11-22" >}}
 - ⏳ The daily run checks every source (feeds where they exist, a checked list where they don't),
-  with each source's last-seen release.
-- ⏳ A release newer than the running version is reported once, as in v2.
+  with each source's last-seen release. {{< added "2026-11-23" >}}
+- ⏳ A release newer than the running version is reported once, as in v2. {{< added "2026-11-23" >}}
 - ⏳ Each new release is triaged as [Discovery](/docs/policies/lifecycle-management/discovery/)
   defines it (patch, new line, end of life, archived, advisory, or nothing relevant), and the outcome
-  recorded, so nothing is triaged twice.
-- ⏳ End-of-life dates are recorded for the lines in use, and any within six months reported.
+  recorded, so nothing is triaged twice. {{< added "2026-11-22" >}}
+- ⏳ End-of-life dates are recorded for the lines in use, and any within six months reported. {{< added "2026-11-22" >}}
 
 **Not in v3:** response times by severity (v4 sets the cycle they are measured against).
 
@@ -197,25 +197,25 @@ with a way back.
 - ⏳ The cycle is written in the runbook's [Patching](/docs/runbook/substrate/lifecycle/patching/)
   page: monthly, in the order substrate service VMs and the Builder, then the hypervisors one at a
   time, then the core router. A waiting security update the operator judges urgent starts an
-  out-of-cycle run.
+  out-of-cycle run. {{< added "2026-11-22" >}}
 - ⏳ A playbook patches the Fedora substrate service VMs and the Builder one host at a time:
   update, reboot when the kernel or a library in use changed, and a health check before the next
-  host. A snapshot is taken before each, and kept until the next cycle.
+  host. A snapshot is taken before each, and kept until the next cycle. {{< added "2026-11-22" >}}
 - ⏳ A runbook procedure patches each hypervisor within its Proxmox VE line, one at a time, with
-  its VMs shut down or moved first and verified after.
+  its VMs shut down or moved first and verified after. {{< added "2026-11-22" >}}
 - ✅ A runbook procedure patches the core router within its OPNsense line: `make backup-router`
   before and after, and the previous release as the way back
   ([Core Router Patch](/docs/runbook/substrate/lifecycle/core-router-patch/), written after
-  [CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/)).
+  [CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/)). {{< added "2026-11-22" >}}
 - ⏳ A monthly cycle is one change record, of a pre-approved standard type defined in
-  [Change Management](/docs/policies/change-management/), rather than a bespoke record per host.
-- ⏳ Each cycle ends with the v1 report run and the catalog updated from it.
+  [Change Management](/docs/policies/change-management/), rather than a bespoke record per host. {{< added "2026-11-22" >}}
+- ⏳ Each cycle ends with the v1 report run and the catalog updated from it. {{< added "2026-11-22" >}}
 - ✅ Claude reads what needs patching through read-only MCP tools on the Builder, over the update
   and health watchers' reports, and a `patch-status` skill ranks it
-  ([CHG-0089](/docs/changes/2026/0089-patch-tools-for-claude/)).
+  ([CHG-0089](/docs/changes/2026/0089-patch-tools-for-claude/)). {{< added "2026-11-24" >}}
 - ⏳ Skills on those tools carry each kind of patch change: the monthly cycle over the playbook
   above, a Fedora release upgrade, and a hypervisor, each drafting its change record and verifying
-  with the tools after.
+  with the tools after. {{< added "2026-11-24" >}}
 
 **Not in v4:** anything unattended (v5); switch and AP firmware, which stay per-change upgrades.
 
@@ -226,11 +226,11 @@ Security updates go in without the operator where a failure cannot take the site
 **Done when:**
 
 - ⏳ Security-only automatic updates on the Fedora substrate service VMs, staggered so no two run
-  at once, outside the hours the site is in use.
+  at once, outside the hours the site is in use. {{< added "2026-11-22" >}}
 - ⏳ Every unattended run is in the daily report; a failure or a pending reboot is told, not
-  found.
+  found. {{< added "2026-11-23" >}}
 - ⏳ What is **never** patched unattended is written down, each with its reason: the hypervisors,
-  the core router, switch and AP firmware, and OpenBao.
+  the core router, switch and AP firmware, and OpenBao. {{< added "2026-11-22" >}}
 
 ### v6, shipped images stay current
 
@@ -240,10 +240,10 @@ The take-home images in the tenant downloads are rebuilt so they don't age.
 
 - ⏳ Every take-home image, the Pi's and each virtual machine format, is rebuilt with the monthly
   cycle, and after any security update affecting it, and passes its self-test before it is
-  published.
-- ⏳ Each image states its base OS date, on the image and in the tenant downloads.
+  published. {{< added "2026-11-22" >}}
+- ⏳ Each image states its base OS date, on the image and in the tenant downloads. {{< added "2026-11-22" >}}
 - ⏳ The tenant guide says how an owner sees that a newer image exists, and how they update one
-  already flashed.
+  already flashed. {{< added "2026-11-22" >}}
 
 ### Later
 

@@ -19,10 +19,10 @@
 <p>Still open:</p>
 <ul class="waypoints">
 {{- range $m.active }}
-  <li>🔄 {{ .page.RenderString .title }} <a class="waypoint-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a></li>
+  <li>🔄 {{ .page.RenderString .title }} <a class="waypoint-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a>{{ with .added }} <span class="added" data-added="{{ . }}" data-open></span>{{ end }}</li>
 {{- end }}
 {{- range $m.planned }}
-  <li>⏳ {{ .page.RenderString .title }} <a class="waypoint-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a></li>
+  <li>⏳ {{ .page.RenderString .title }} <a class="waypoint-item" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a>{{ with .added }} <span class="added" data-added="{{ . }}" data-open></span>{{ end }}</li>
 {{- end }}
 </ul>
 {{- end }}

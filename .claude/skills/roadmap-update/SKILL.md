@@ -39,6 +39,7 @@ python3 $S/waypoints.py list | grep ⏸                 # open waypoints of defe
 ```yaml
 waypoints:
   - title: "The first Deevnet Pi (CHG-0056)"   # outcome-shaped; markdown allowed
+    added: "2026-10-20"   # the day it was put on the roadmap; never changes
     group: "Devices"      # only on pages drawn under headings, {{< waypoints group="Devices" >}}
     value: [secure-by-default]   # optional: replaces the item's `value:` for this waypoint
     milestone: true       # only when this waypoint closes a version (see below)
@@ -96,6 +97,23 @@ still marked done. **Taking it up again** removes the block. **Deferring it agai
 and keeps `since:`, so how long it has waited stays visible. A plan's single task or a version
 that slips is not deferred this way: it moves to the next version or **Later** (the
 `version-planning` skill).
+
+## Dating work items
+
+**Every task, definition-of-done point and waypoint carries the day it was added**, so it is
+plain when the goalposts move and how long something has waited. In a plan, end the item's first
+paragraph with the shortcode:
+
+```markdown
+- ⏳ Keep Podman's storage under `/srv` {{< added "2026-11-01" >}}
+- [ ] The store recollected from iTunes on schema v1 {{< added "2026-11-20" >}}
+```
+
+On a waypoint, `added:` follows its title. Set the date in the commit that adds the item, as
+today's date. **Never change it afterward**: not when the item is reworded, marked done, moved to
+the next version or deferred. A task split in two keeps the date on both halves. Open items show
+their age on the page, worked out in the browser; past 90 days it turns orange.
+`recount_plans.py` lists undated tasks and `waypoints.py check` warns on undated waypoints.
 
 ## When something is done
 

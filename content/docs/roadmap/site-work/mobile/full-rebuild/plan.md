@@ -41,13 +41,13 @@ Perform a complete tear-down and rebuild of the mobile (mobile) site to validate
 
 ## Full Site Rebuild Event ⏳
 
-- ⏳ Read and analyze the build/recovery plan
-- ⏳ Rebuild the builder node (no version bump)
-- ⏳ Rebuild core services (core router, access switch, AP) — collect timings, findings, and identify gaps
-- ⏳ Rebuild management plane (Proxmox, extended services)
-- ⏳ Bring tenants back: re-admit each tenant, each applies from its repository and pushes its application again; record what each tenant had to do
-- ⏳ Apply fixes and iterate until all steps are accounted for
-- ⏳ Tag all deevnet repos with a coordinated release version
+- ⏳ Read and analyze the build/recovery plan {{< added "2026-03-08" >}}
+- ⏳ Rebuild the builder node (no version bump) {{< added "2026-03-08" >}}
+- ⏳ Rebuild core services (core router, access switch, AP) — collect timings, findings, and identify gaps {{< added "2026-03-08" >}}
+- ⏳ Rebuild management plane (Proxmox, extended services) {{< added "2026-03-26" >}}
+- ⏳ Bring tenants back: re-admit each tenant, each applies from its repository and pushes its application again; record what each tenant had to do {{< added "2026-10-06" >}}
+- ⏳ Apply fixes and iterate until all steps are accounted for {{< added "2026-03-08" >}}
+- ⏳ Tag all deevnet repos with a coordinated release version {{< added "2026-03-08" >}}
 
 ## Scheduled Rebuilds ⏳
 
@@ -55,4 +55,4 @@ Perform a complete tear-down and rebuild of the mobile (mobile) site to validate
 management-hypervisor VM to be rebuilt once per Fedora release.
 
 - ⏳ Run the first scheduled round, each rebuild as a change record, and fold every unrecorded
-  step back into the runbook
+  step back into the runbook {{< added "2026-09-27" >}}

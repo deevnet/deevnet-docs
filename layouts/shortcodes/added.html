@@ -1,0 +1,7 @@
+{{- /* The day a plan's task or definition-of-done point was added:
+       {{< added "YYYY-MM-DD" >}} at the end of its first paragraph. An open
+       one (⏳ 🔄 or an unchecked box) shows its age, worked out in the
+       browser (docs/inject/body.html); a done one shows nothing. */ -}}
+{{- $d := .Get 0 -}}
+{{- if not (findRE `^\d{4}-\d{2}-\d{2}$` $d) -}}{{- errorf "%s: added needs a YYYY-MM-DD date, got %q" .Page.Path $d -}}{{- end -}}
+<span class="added" data-added="{{ $d }}"></span>

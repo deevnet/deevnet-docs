@@ -3,13 +3,17 @@ title: "EdS Local Song Detection"
 weight: 4
 waypoints:
   - title: "Choose a fingerprinting engine, and whether one match holds across masterings"
+    added: "2026-11-01"
     status: planned
   - title: "A song fingerprint index from the owner's rips, kept current as the library changes"
+    added: "2026-11-01"
     status: planned
   - title: "A local song recognizer EdS's turntable can ask in place of today's outside service"
+    added: "2026-11-01"
     value: [works-anywhere]
     status: planned
   - title: "Vinyl-only records added to the fingerprint index from their captures"
+    added: "2026-11-01"
     status: planned
 ---
 

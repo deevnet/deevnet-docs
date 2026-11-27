@@ -3,48 +3,60 @@ title: "The Stand and Its Light"
 weight: 1
 waypoints:
   - title: "The LP stand draws its own light effects and handles gamma; it is sent scenes, never frames (EdS ADR-0001, ADR-0002)"
+    added: "2026-09-07"
     group: "Light from the cover"
     status: done
     date: "2026-09-07"
   - title: "The LP stand's colors come from the album cover: one service finds them, another makes the scene, the stand draws it (EdS ADR-0009, CHG-0001, CHG-0003)"
+    added: "2026-10-11"
     group: "Light from the cover"
     status: done
     date: "2026-10-11"
   - title: "The LP stand reports what it shows, with `chase` and `morph` effects on 18 LEDs (EdS CHG-0008, CHG-0009, CHG-0010)"
+    added: "2026-10-11"
     group: "Light from the cover"
     status: done
     date: "2026-10-11"
   - title: "The LP stand in service, its effects seen on real LEDs (EdS CHG-0009, CHG-0010)"
+    added: "2026-10-11"
     group: "Light from the cover"
     status: done
     date: "2026-10-11"
   - title: "LP stand color fixes: `morph` blends in RGB, and an accent can sit too close to the dominant color (EdS CHG-0009, CHG-0010)"
+    added: "2026-11-01"
     group: "Light from the cover"
     status: planned
   - title: "Particular albums get their own light on the LP stand (EdS ADR-0019)"
+    added: "2026-10-11"
     group: "Looks"
     status: done
     date: "2026-10-11"
   - title: "A particular track gets its own light on the LP stand from any source, such as a `scanner` effect for Knight Rider (EdS ADR-0030)"
+    added: "2026-10-13"
     group: "Looks"
     status: done
     date: "2026-10-13"
   - title: "The LP stand stays dark until sent a scene, and red blinks say how far it got (EdS ADR-0029)"
+    added: "2026-10-13"
     group: "Looks"
     status: done
     date: "2026-10-13"
   - title: "The LP stand lights for records only, and is dim while the turntable is on (EdS ADR-0028)"
+    added: "2026-10-13"
     group: "Which sources light it"
     status: done
     date: "2026-10-13"
   - title: "The EdS console switches the LP stand between records only and every source (EdS ADR-0039)"
+    added: "2026-10-19"
     group: "Which sources light it"
     status: done
     date: "2026-10-19"
   - title: "A printed circuit board for the LP stand"
+    added: "2026-11-01"
     group: "Hardware"
     status: planned
   - title: "A permanent enclosure for the LP stand"
+    added: "2026-11-01"
     group: "Hardware"
     status: planned
 ---

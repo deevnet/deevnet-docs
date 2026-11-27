@@ -13,7 +13,9 @@ title, or a fragment that matches one waypoint only.
 
 Pages read: roadmap items, archived plans and Completed Projects entries. Only the
 list format this site writes is understood: one `- title:` per waypoint, then
-`group:`, `value:`, `milestone:`, `status:`, `date:`, `approx:` on their own lines.
+`added:`, `group:`, `value:`, `milestone:`, `status:`, `date:`, `approx:` on their own lines.
+`added:` is the day the waypoint was put on the roadmap; it never changes, even when the
+title is reworded. A waypoint without one is warned about.
 
 A waypoint with `milestone: true` closes a version: its definition of done, written in the
 item's plan, is met. `list` marks it with 🏁.
@@ -78,7 +80,7 @@ def parse(fm):
     ms = []
     for chunk in re.split(r'\n  - ', "\n" + "\n".join(block))[1:]:
         m = {}
-        for k, v in re.findall(r'^\s*(title|group|value|milestone|status|date|approx): (.*)$', chunk, re.M):
+        for k, v in re.findall(r'^\s*(title|added|group|value|milestone|status|date|approx): (.*)$', chunk, re.M):
             m[k] = json.loads(v) if v.startswith('"') else (v == "true" if k in ("approx", "milestone") else v)
         ms.append(m)
     return head, ms, after
@@ -88,6 +90,7 @@ def emit(head, ms, after):
     y = ["waypoints:"]
     for m in ms:
         y.append(f"  - title: {q(m['title'])}")
+        if m.get("added"): y.append(f"    added: {q(m['added'])}")
         if m.get("group"): y.append(f"    group: {q(m['group'])}")
         if "value" in m: y.append(f"    value: {m['value']}")
         if m.get("milestone"): y.append("    milestone: true")
@@ -138,6 +141,10 @@ def cmd_check(_):
             seen.add(t)
             if roadmap and len(re.sub(r'\([^)]*\)', '', t).split()) < 3:
                 warn(p, f"{t!r}: too short to stand alone; say what became true")
+            if "added" not in m:
+                if roadmap: warn(p, f"{t!r}: no added: date (the day it was put on the roadmap)")
+            elif not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(m["added"])): err(p, f"{t!r}: added: is not YYYY-MM-DD")
+            elif m.get("status") == "done" and str(m.get("date", "9")) < m["added"]: err(p, f"{t!r}: added after the day it was reached")
             if m.get("status") not in STATUSES: err(p, f"{t!r}: status {m.get('status')!r}")
             if m.get("status") == "done":
                 if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(m.get("date", ""))): err(p, f"{t!r}: done without a YYYY-MM-DD date")

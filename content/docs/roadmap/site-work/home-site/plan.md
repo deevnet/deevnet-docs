@@ -49,19 +49,19 @@ self-service: a change starts at the factory and arrives as a new image or a con
 
 ## PKI ⏳
 
-- ⏳ **Home Site CA.** Signed by the root in a ceremony (path 2), held offline ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) §1).
+- ⏳ **Home Site CA.** Signed by the root in a ceremony (path 2), held offline ([ADR-0039](/docs/architecture/decisions/substrate/0039-factory-tenant-cas-serve-every-site/) §1). {{< added "2026-10-25" >}}
 - ⏳ **Home Substrate CA.** Its key in home's vault, signed by the Home Site CA (path 3); home's
-  infrastructure certificates issued from it by Ansible.
+  infrastructure certificates issued from it by Ansible. {{< added "2026-10-25" >}}
 
 ## Network ⏳
 
 - ⏳ **Home inventory.** Hosts, VLANs and firewall policy, in the home inventory beside the mobile
-  site's.
-- ⏳ **DNS and DHCP on the core router**, OPNsense with Unbound, as on the mobile site.
+  site's. {{< added "2026-10-25" >}}
+- ⏳ **DNS and DHCP on the core router**, OPNsense with Unbound, as on the mobile site. {{< added "2026-10-25" >}}
 - ⏳ **DNS for hosted Pis.** Each Pi's site-less names (`<service>.<tenant>.deevnet.net`) and the
-  site names it carries, from the home inventory ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)).
+  site names it carries, from the home inventory ([ADR-0040](/docs/architecture/decisions/naming-and-dns/0040-tenant-names-without-a-site/)). {{< added "2026-10-25" >}}
 
 ## Later ⏳
 
-- ⏳ **Kea for DHCP**, for the API support found wanting on the mobile site.
-- ⏳ **A hypervisor at home**, when a tenant needs workloads there.
+- ⏳ **Kea for DHCP**, for the API support found wanting on the mobile site. {{< added "2026-10-25" >}}
+- ⏳ **A hypervisor at home**, when a tenant needs workloads there. {{< added "2026-10-25" >}}

@@ -5,12 +5,15 @@ weight: 3
 value: [no-surprises]
 waypoints:
   - title: "Central logging: a log store, each tenant seeing its own logs, device logs over MQTT, and Grafana"
+    added: "2026-09-24"
     value: [no-surprises, contained-failure]
     status: done
     date: "2026-09-24"
   - title: "Metrics collected from the site's infrastructure hosts and shown on dashboards"
+    added: "2026-11-01"
     status: active
   - title: "Alerts on infrastructure problems, delivered to the operator"
+    added: "2026-11-01"
     status: planned
 ---
 

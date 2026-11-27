@@ -41,16 +41,16 @@ index. [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log
 only**: the substrate's own logs are not centralized.
 
 - ✅ Evaluate logging stack: VictoriaLogs, over Loki and Logstash with OpenSearch
-  ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/))
+  ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/)) {{< added "2026-09-26" >}}
 - ✅ Deploy log aggregation service ([CHG-0018](/docs/changes/2026/0018-central-log-store/)), cut to
-  tenant scope ([CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/))
+  tenant scope ([CHG-0019](/docs/changes/2026/0019-log-store-tenant-scope/)) {{< added "2026-09-26" >}}
 - ✅ Tenant ingest and read tokens, issued by the Deevnet API
-  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/))
+  ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/)) {{< added "2026-09-26" >}}
 - ✅ Edge-device logs over MQTT into `(index, 2)`, through the MQTT log bridge
-  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
+  ([CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)) {{< added "2026-09-26" >}}
 - ✅ Deploy log visualization: Grafana OSS, one organization per tenant
-  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
-- ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) §6)
+  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) {{< added "2026-09-26" >}}
+- ✅ Define log retention and rotation ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) §6) {{< added "2026-09-26" >}}
 - Not pursued: shipping the substrate hosts' logs. CHG-0018 started it and CHG-0019 removed it
   under ADR-0027. Not counted
 
@@ -58,17 +58,17 @@ only**: the substrate's own logs are not centralized.
 
 - ⏳ Tenant events from services the site doesn't write. v1 publishes only the Deevnet API's events
   into a tenant's `(index, 1)`. A collector that maps PowerDNS and VerneMQ lines to a tenant gets its
-  own record, once those lines are shown to identify the tenant reliably (Open question 3)
+  own record, once those lines are shown to identify the tenant reliably (Open question 3) {{< added "2026-09-26" >}}
 - ⏳ Per-workload ingest tokens, so one workload can be revoked alone. v1 issues one per tenant.
   Waits on [ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/)'s delivery path (Open
-  question 5)
+  question 5) {{< added "2026-09-26" >}}
 - ⏳ Per-tenant quotas. v1 has one disk cap and one retention period, so a noisy tenant shortens
   everyone's history. Revisit when VictoriaLogs has per-tenant quotas, or if it happens (Open
-  question 4)
+  question 4) {{< added "2026-09-26" >}}
 - ⏳ Operator queries across tenants. v1 reads one partition at a time. Revisit when VictoriaLogs
-  ships multi-tenant querying (Open question 1)
+  ships multi-tenant querying (Open question 1) {{< added "2026-09-26" >}}
 - ⏳ Re-measure `obs`'s memory and disk at site volume. Measured so far at one host's volume, before
-  tenants shipped
+  tenants shipped {{< added "2026-09-26" >}}
 
 ---
 
@@ -76,12 +76,12 @@ only**: the substrate's own logs are not centralized.
 
 - 🔄 Evaluate metrics stack: a VictoriaMetrics cluster beside the logs, proposed in
   [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) for tenants
-  only. Whether the substrate's metrics go there too is undecided
-- ⏳ Deploy metrics collection service
-- ⏳ Configure exporters on substrate hosts
+  only. Whether the substrate's metrics go there too is undecided {{< added "2026-11-14" >}}
+- ⏳ Deploy metrics collection service {{< added "2026-01-22" >}}
+- ⏳ Configure exporters on substrate hosts {{< added "2026-01-22" >}}
 - ⏳ Deploy metrics dashboards. Grafana itself is up since
-  [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/); it has no metrics data sources yet
-- ⏳ Define metrics retention
+  [CHG-0024](/docs/changes/2026/0024-tenant-dashboards/); it has no metrics data sources yet {{< added "2026-09-26" >}}
+- ⏳ Define metrics retention {{< added "2026-01-22" >}}
 
 ---
 
@@ -90,7 +90,7 @@ only**: the substrate's own logs are not centralized.
 - 🔄 Evaluate alerting solutions: vmalert per tenant, one Alertmanager, ntfy, proposed for tenants
   in [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/). Alerting
   the operator, and noticing when the observability VM itself is down, are undecided. Grafana's own
-  alerting is off ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/))
-- ⏳ Deploy alerting service
-- ⏳ Define alert rules for infrastructure
-- ⏳ Configure notification channels (email, webhook, etc.)
+  alerting is off ([ADR-0024](/docs/architecture/decisions/platform-services/0024-dashboards/)) {{< added "2026-09-26" >}}
+- ⏳ Deploy alerting service {{< added "2026-01-22" >}}
+- ⏳ Define alert rules for infrastructure {{< added "2026-01-22" >}}
+- ⏳ Configure notification channels (email, webhook, etc.) {{< added "2026-01-22" >}}

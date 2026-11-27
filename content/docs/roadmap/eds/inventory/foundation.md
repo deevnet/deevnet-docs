@@ -3,30 +3,38 @@ title: "Foundation and Collecting"
 weight: 1
 waypoints:
   - title: "Music inventory built as Go services with a SQLite store (eds-inventory ADR-0001)"
+    added: "2026-10-24"
     group: "Foundation"
     status: done
     date: "2026-10-24"
   - title: "Music inventory's documentation and records started"
+    added: "2026-10-24"
     group: "Foundation"
     status: done
     date: "2026-10-24"
   - title: "Music inventory collects the iTunes library from its XML (eds-inventory ADR-0002)"
+    added: "2026-10-24"
     group: "Sources"
     status: done
     date: "2026-10-24"
   - title: "Music inventory collects the vinyl from Discogs"
+    added: "2026-11-01"
     group: "Sources"
     status: planned
   - title: "Music inventory collects the MusicBee library"
+    added: "2026-11-01"
     group: "Sources"
     status: planned
   - title: "Music inventory collects albums saved in Spotify and Tidal"
+    added: "2026-11-01"
     group: "Sources"
     status: planned
   - title: "Music inventory covers formats with no service, such as CDs"
+    added: "2026-11-01"
     group: "Sources"
     status: planned
   - title: "Music inventory matches one album across sources, and handles matches it is not sure of"
+    added: "2026-11-01"
     group: "Sources"
     status: planned
 ---

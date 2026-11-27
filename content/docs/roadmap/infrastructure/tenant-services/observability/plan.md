@@ -29,16 +29,16 @@ plans for the tenant platform, with
 - ✅ Metrics, step A: a Prometheus-compatible store beside the logs, written and read with the
   tenant's log tokens, with a metrics data source in each Grafana organization
   ([ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/),
-  [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/))
+  [CHG-0070](/docs/changes/2026/0070-tenant-metrics-store/)) {{< added "2026-11-14" >}}
 - ✅ Alerting, step B: alert rules over metrics or logs, each tenant's in its own vmalert, delivered
-  through ntfy to Android phones on site ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/))
+  through ntfy to Android phones on site ([CHG-0071](/docs/changes/2026/0071-tenant-alerting/)) {{< added "2026-11-14" >}}
 - ✅ The take-home Pi keeps the same metrics and alerting: the metrics store behind its vmauth,
   vmalert, Alertmanager and ntfy on the card, and rules imported from the tenant's Terraform
-  ([CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/))
+  ([CHG-0072](/docs/changes/2026/0072-pi-metrics-and-alerting/)) {{< added "2026-11-15" >}}
 - ✅ Buckets on the take-home Pi, on silo
-  ([CHG-0073](/docs/changes/2026/0073-pi-buckets/))
+  ([CHG-0073](/docs/changes/2026/0073-pi-buckets/)) {{< added "2026-11-15" >}}
 - ⏳ Workload resource use, step C: each workload's CPU, memory, disk and network as the hypervisor
-  sees it, published to the tenant
+  sees it, published to the tenant {{< added "2026-11-14" >}}
 - ⏳ Alerts that reach a phone away from the site, and on iOS (ADR-0023's open question 2): an
   ADR of its own, for where a tenant runs for real, on a take-home Pi or at the home site. The
-  mobile site is for development, where alerts on site prove the rules
+  mobile site is for development, where alerts on site prove the rules {{< added "2026-11-15" >}}

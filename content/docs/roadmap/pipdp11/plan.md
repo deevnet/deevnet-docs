@@ -43,8 +43,8 @@ Build a functional PDP-11 replica by assembling the PiDP-11 kit and running simh
 
 ## Requirements ⏳
 
-- ⏳ Define default OS configuration
-- ⏳ Define front panel behavior mapping
+- ⏳ Define default OS configuration {{< added "2026-01-22" >}}
+- ⏳ Define front panel behavior mapping {{< added "2026-01-22" >}}
 
 ---
 
@@ -52,9 +52,9 @@ Build a functional PDP-11 replica by assembling the PiDP-11 kit and running simh
 
 PiDP-11 kit build and hardware verification.
 
-- ⏳ Pretest components before soldering
-- ⏳ Assemble kit per instructions
-- ⏳ Verify front panel LED/switch operation
+- ⏳ Pretest components before soldering {{< added "2026-01-22" >}}
+- ⏳ Assemble kit per instructions {{< added "2026-01-22" >}}
+- ⏳ Verify front panel LED/switch operation {{< added "2026-01-22" >}}
 
 ---
 
@@ -62,13 +62,13 @@ PiDP-11 kit build and hardware verification.
 
 PDP-11 emulation running on Raspberry Pi.
 
-- ✅ Base Pi image with ansible support
-- 🔄 simh installation and configuration
-- ⏳ Multiple OS options (RT-11, RSX-11, 2.11BSD)
+- ✅ Base Pi image with ansible support {{< added "2026-01-10" >}}
+- 🔄 simh installation and configuration {{< added "2026-01-10" >}}
+- ⏳ Multiple OS options (RT-11, RSX-11, 2.11BSD) {{< added "2026-01-10" >}}
 
 ---
 
 ## Documentation ⏳
 
-- ⏳ Build documentation
-- ⏳ Usage guide
+- ⏳ Build documentation {{< added "2026-01-04" >}}
+- ⏳ Usage guide {{< added "2026-01-22" >}}

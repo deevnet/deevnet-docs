@@ -38,23 +38,23 @@ Secrets and identity services for the mobile site, one of three plans with the [
 OpenBao on `dv02idn001v01`, unsealed by a key ansible-vault delivers, which stays the root of trust
 ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)).
 
-- ✅ Migrate IaC secrets from env var lookups to Ansible Vault in inventory
+- ✅ Migrate IaC secrets from env var lookups to Ansible Vault in inventory {{< added "2026-03-14" >}}
 - ✅ Evaluate dedicated secrets solutions: OpenBao
-  ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/))
-- ✅ Deploy secrets management service ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/))
+  ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)) {{< added "2026-09-26" >}}
+- ✅ Deploy secrets management service ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)) {{< added "2026-09-26" >}}
 - 🔄 Integrate consumers: the Deevnet API reads its backend credentials at start
   ([CHG-0010](/docs/changes/2026/0010-tenant-api-cutover/)), and image-factory and tenant-fabric
   builds fetch the Proxmox token per run, with nothing on the Builder's disk
   ([CHG-0026](/docs/changes/2026/0026-build-secrets/)). Ansible administers OpenBao through its own
-  AppRole, but most playbook secrets are still read from ansible-vault in inventory
-- ⏳ Define secrets rotation policies ([Credential Rotation](/docs/roadmap/infrastructure/substrate/credential-rotation/))
+  AppRole, but most playbook secrets are still read from ansible-vault in inventory {{< added "2026-09-26" >}}
+- ⏳ Define secrets rotation policies ([Credential Rotation](/docs/roadmap/infrastructure/substrate/credential-rotation/)) {{< added "2026-09-26" >}}
 
 ---
 
 ## Identity Management 🔄
 
 - 🔄 Evaluate identity solutions: Keycloak, for the operator, proposed in
-  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
-- ⏳ Deploy identity provider
-- ⏳ Configure SSO for infrastructure services
-- ⏳ Define RBAC policies
+  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/) {{< added "2026-11-15" >}}
+- ⏳ Deploy identity provider {{< added "2026-01-22" >}}
+- ⏳ Configure SSO for infrastructure services {{< added "2026-01-22" >}}
+- ⏳ Define RBAC policies {{< added "2026-01-22" >}}
