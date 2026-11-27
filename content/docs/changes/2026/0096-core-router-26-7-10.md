@@ -97,5 +97,5 @@ There was no plan: the change was made before a record existed.
 ## Follow-ups
 
 - [ ] The health watcher logs which check failed, not only how many, so a blip like 04:30's can be read afterwards
-- [ ] Run `make backup-router` (operator), so the inventory holds 26.7.10's configuration
+- [x] Run `make backup-router` (operator), so the inventory holds 26.7.10's configuration: run 2026-11-27, committed in [ansible-inventory-deevnet #134](https://github.com/deevnet/ansible-inventory-deevnet/pull/134)
 - [ ] Scope automating the router's update through OPNsense's firmware API, and with it which key may hold "System: Firmware": discovery's `GET core/firmware/info` works with the key every `deevnet.net` role uses, so that key already holds it

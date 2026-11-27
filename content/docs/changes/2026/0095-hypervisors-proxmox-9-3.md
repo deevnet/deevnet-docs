@@ -10,7 +10,7 @@ weight: -95
 | **Date** | 2026-11-27 |
 | **Change type** | Upgrade |
 | **Classification** | Routine |
-| **Status** | **In progress**: started 2026-11-27 |
+| **Status** | **Complete, 2026-11-27** |
 | **Window** | One work session from the Builder, one hypervisor at a time, the management hypervisor first. No reboot and no guest restart: the Proxmox daemons restart and the web interface blips, while every VM keeps running |
 | **Site** | mobile |
 | **Systems** | `dv02hyp001p01` (the management hypervisor); `dv02hyp002p02` (the tenant hypervisor) and the tenant fabric it carries: the `tfab` fabric and the `cdeever`, `eds`, `mabell` and `tdemo` zones |
@@ -149,7 +149,7 @@ repository by version). A fabric that changed is put back from the saved configu
 - [x] Step 2: both downloads complete, no ping missed
 - [x] Step 3: both nodes on 9.3.1, every VM running throughout, the fabric unchanged
 - [x] Step 4: the watcher shows nothing waiting on either node; catalog updated
-- [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
+- [x] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
 
@@ -167,6 +167,7 @@ from the Builder over SSH as `a_autoprov`; the starting state, `/etc` tarballs a
 | 08:24–08:25 | 2, `dv02hyp002p02` | 37.1 MB in 31 s at 1,210 kB/s; no ping missed (peak 32 ms) |
 | 08:24–08:26 | 3, `dv02hyp002p02` | Exited 0 in 54 s, as on the management hypervisor; `libpve-network-perl` 1.6.15, FRR unchanged at 10.6.1. VMs, logical volumes, zones, vnets, FRR's running configuration and the VRFs identical to Step 1; `multipath -ll` empty. The `tdemo` VRF reached `1.1.1.1`; the egress agent's 08:28 run succeeded |
 | 08:28 | 4 | `make update-watch-now`: nothing waiting on any system. Software Catalog: Proxmox VE 9.3.1 on both hypervisors, Proxmox SDN 1.6.15 |
+| 08:55 | 4 | `make discover` (the operator): 56 matches, no mismatch, nothing unreachable; both hypervisors on Proxmox VE 9.3.1, Proxmox SDN 1.6.15 |
 
 ### Departures from the plan
 
