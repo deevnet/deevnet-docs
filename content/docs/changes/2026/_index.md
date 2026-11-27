@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0095 | 2026-11-27 | [Both Hypervisors Updated to Proxmox VE 9.3](0095-hypervisors-proxmox-9-3/) | Upgrade | mobile | In progress |
 | CHG-0094 | 2026-11-26 | [The Builder and Six Service VMs Patched Within Fedora 44](0094-patch-builder-service-vms/) | Upgrade | mobile | In progress |
 | CHG-0093 | 2026-11-26 | [Service VMs Moved Off the LSI Disk Controller](0093-service-vms-virtio-scsi/) | Configuration | mobile | Complete |
 | CHG-0092 | 2026-11-25 | [The Builder Repaved on Fedora 44](0092-builder-repave-f44/) | Deployment | mobile | Planned |

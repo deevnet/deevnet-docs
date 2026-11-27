@@ -144,10 +144,10 @@ tables:
       title: Version source
     rows:
     - component: '**Proxmox VE**'
-      version: '**9.2.32**'
+      version: '**9.3.1**'
       license: AGPL-3.0
       support: Community, commercial available. No-subscription repository
-      source: Observed 2026-11-21 ([CHG-0066](/docs/changes/2026/0066-hyp001-proxmox-9/))
+      source: Observed 2026-11-27 ([CHG-0095](/docs/changes/2026/0095-hypervisors-proxmox-9-3/))
     - component: Debian
       version: 13 (Trixie)
       license: Free software, per package
@@ -367,10 +367,10 @@ tables:
       title: Version source
     rows:
     - component: '**Proxmox VE**'
-      version: '**9.2.32**'
+      version: '**9.3.1**'
       license: AGPL-3.0
       support: Community, commercial available. No-subscription repository
-      source: Observed 2026-11-22 ([CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
+      source: Observed 2026-11-27 ([CHG-0095](/docs/changes/2026/0095-hypervisors-proxmox-9-3/))
     - component: Debian
       version: 13 (Trixie)
       license: Free software, per package
@@ -382,10 +382,10 @@ tables:
       support: Bundled
       source: Discovery, 2026-11-23 (7.0.14-30-pve, since [CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
     - component: Proxmox SDN (`libpve-network-perl`)
-      version: 1.6.10
+      version: 1.6.15
       license: AGPL-3.0
       support: Bundled
-      source: Observed 2026-11-22 ([CHG-0080](/docs/changes/2026/0080-hyp002-proxmox-9-2-32/))
+      source: Observed 2026-11-27 ([CHG-0095](/docs/changes/2026/0095-hypervisors-proxmox-9-3/))
     - component: Dell BIOS ([OptiPlex 7060 Micro](/docs/platforms/hardware/compute/dell-optiplex-7060-mff/))
       version: 1.32.0 (2024-09-03)
       license: Proprietary
