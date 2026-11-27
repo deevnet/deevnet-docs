@@ -18,10 +18,10 @@ tables:
       title: Version source
     rows:
     - component: '**OPNsense**'
-      version: '**26.7.9_3**'
+      version: '**26.7.10**'
       license: BSD-2-Clause
       support: Community, commercial available (Deciso)
-      source: Discovery, 2026-11-23 ([CHG-0081](/docs/changes/2026/0081-core-router-26-7-9/))
+      source: Discovery, 2026-11-27 ([CHG-0096](/docs/changes/2026/0096-core-router-26-7-10/))
     - component: FreeBSD base
       version: '15'
       license: BSD-2-Clause
