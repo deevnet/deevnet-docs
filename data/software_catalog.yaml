@@ -180,16 +180,16 @@ tables:
     rows:
     - component: '**Fedora Server**'
       vm: all
-      version: '**44** (template build 1.7). Kernel 7.2.5, systemd 259'
+      version: '**44** (template build 1.7). Kernel 7.3.5, systemd 259 (7.3.4 on `dv02obj001v01`)'
       license: Free software, per package (Fedora Project)
       support: Community
-      source: Pin (`deevnet_fedora_current`); observed 2026-09-15/21
+      source: Pin (`deevnet_fedora_current`); observed 2026-11-27, after [CHG-0094](/docs/changes/2026/0094-patch-builder-service-vms/)
     - component: Podman
       vm: all
-      version: not recorded (the Fedora 44 package)
+      version: 5.8.9 (the Fedora 44 package)
       license: Apache-2.0
       support: Community
-      source: Not recorded
+      source: Not pinned; observed 2026-11-27
     - component: '**OpenBao**'
       vm: '`dv02idn001v01`'
       version: '**2.6.2**'
@@ -319,17 +319,17 @@ tables:
       title: Version source
     rows:
     - component: Fedora Workstation (Builder)
-      version: '"43 or later". The exact release is not recorded'
+      version: 44, network-installed from `builder-node-44.ks` ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/)), the same `@core` install as the temporary builder. Kernel 7.3.6, systemd 259
       license: Free software, per package
       support: Community
-      source: Not recorded
+      source: Observed 2026-11-27
     - component: Fedora Server (temporary builder, `dv02bld001v01`)
-      version: 44, network-installed from `builder-node-44.ks` ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)). Kernel 7.3.4, systemd 259
+      version: 44, network-installed from `builder-node-44.ks` ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)). Kernel 7.3.6, systemd 259
       license: Free software, per package
       support: Community
-      source: Observed 2026-11-25 (`make discover`)
+      source: Observed 2026-11-27
     - component: Podman
-      version: Fedora package (5.7.1 on the Builder, 5.8.9 on the temporary builder)
+      version: 5.8.9 (the Fedora package, on both builders)
       license: Apache-2.0
       support: Community
       source: Not pinned

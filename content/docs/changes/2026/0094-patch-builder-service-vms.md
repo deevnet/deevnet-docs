@@ -7,10 +7,10 @@ weight: -94
 
 | | |
 |---|---|
-| **Date** | Unscheduled |
+| **Date** | 2026-11-26 |
 | **Change type** | Upgrade |
 | **Classification** | Routine |
-| **Status** | Planned |
+| **Status** | **In progress**: started 2026-11-26; the six VMs first, then the Builder |
 | **Window** | One work session, operator at the Builder, one host at a time. Each host is down for its reboot, about a minute. In turn: the Omada controller (the APs and switch keep forwarding), the log and metrics path, the MQTT broker, OpenBao and tenant DNS, then the Deevnet API, its database and the service proxy. Each VM's download at 1 MB/s takes several minutes |
 | **Site** | mobile |
 | **Systems** | `dv00bld001p01` (the Builder); on `dv02hyp001p01`: `dv02nms001v01` (VMID 204), `dv02col001v01` (206), `dv02msg001v01` (205), `dv02obs001v01` (207), `dv02idn001v01` (200), `dv02prv001v01` (201) |
@@ -198,9 +198,9 @@ snapshot is dropped in Step 5.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: discovery report and health state taken
+- [x] Step 1: discovery report and health state taken
 - [ ] Step 2: the Builder updated, rebooted, its watchers and `deevnet-patch` working
-- [ ] Step 3: the six VMs updated and rebooted, each one's service answering, no ping missed
+- [x] Step 3: the six VMs updated and rebooted, each one's service answering, no ping missed
 - [ ] Step 4: the watcher shows no Critical or Important advisory on the seven hosts; catalog updated
 - [ ] Step 5: the six snapshots dropped, three days or more after
 - [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
@@ -211,12 +211,45 @@ snapshot is dropped in Step 5.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 2026-11-26 | 1 | `make discover` and `make health-watch-now`: all well. (`make discover` first failed on `deevnet.net`'s connection plugin not being installed on the rebuilt Builder; `make publish` in that collection fixed it, and the Builder's repave runbook now says so) |
+| 2026-11-26 16:47 | 3, `dv02nms001v01` | Snapshot taken and the packages downloaded (149, 565 MiB, in 72 s), then stopped before the install: the operator's forwarded SSH agent had closed. Nothing installed; the VM ran on untouched |
+| 2026-11-26 21:34–21:38 | 3, `dv02nms001v01` | Installed from the cache (186 s), rebooted onto kernel 7.3.5, SSH back 17 s after. The Omada controller's container came up healthy about three minutes after boot, its web interface answered and every port it listened on before was back. One healthcheck run while it was still starting showed as a failed unit, and was cleared |
+| 2026-11-26 21:41–21:46 | 3, `dv02col001v01` | Downloaded in 66 s, installed in 164 s, rebooted onto 7.3.5; state identical, nothing failed |
+| 2026-11-26 21:46–21:51 | 3, `dv02msg001v01` | 565 MiB in 80 s, installed in 186 s, rebooted onto 7.3.5; state identical. The log bridge reconnected to the broker over TLS and subscribed |
+| 2026-11-26 21:52–21:57 | 3, `dv02obs001v01` | 564 MiB in 85 s, installed in 162 s, rebooted onto 7.3.5; state identical. The log and metrics stores, Grafana, `s3` and `tfstate` answer through the service proxy |
+| 2026-11-26 21:57–22:02 | 3, `dv02idn001v01` | 566 MiB in 69 s, installed in 192 s, rebooted onto 7.3.5; state identical. OpenBao answers its status, sealed, as expected; tenant DNS answers SOA queries for `tdemo`, `mabell` and the reverse zone |
+| 2026-11-26 22:03–22:08 | 3, `dv02prv001v01` | Backup idle (next run 23:00). 550 MiB in 60 s, installed in 206 s, rebooted onto 7.3.5 (from 7.2.8); state identical. `make health-watch-now`: all well, "Deevnet API alive" and "Deevnet API database" ok. The egress agent's 22:13 run succeeded |
+| 2026-11-26 | 3 | The watchdog across the core router missed no ping during any of the six downloads. Round-trip times rose from about 12 ms to a peak of 125–280 ms while each download ran |
+| 2026-11-27 | 2, the Builder | 18 packages, 449 MiB, downloaded in 241 s (about 1.9 MiB/s, still not the 1 MiB/s asked for) with no ping missed (peak 74 ms); installed from the cache in 50 s, among them kernel 7.3.6 and `firefox` 161. `dnf check-upgrade` lists nothing; a reboot is needed for the kernel, and the operator reboots it |
+| 2026-11-27 | 2, the Builder | Rebooted by the operator onto kernel 7.3.6; `make update-watch-now` run and the Builder checked by the operator |
+| 2026-11-27 04:53–05:01 | Added, `dv02bld001v01` (202) | Snapshot `pre-chg-0094`, 13 packages (291 MiB) downloaded in 294 s with no ping missed (peak 63 ms), installed from the cache in 72 s, rebooted onto 7.3.6, SSH back 10 s after; nothing failed. The only state difference was three libvirt daemons (`virtqemud`, `virtlxcd`, `virtvboxd`) running: socket-activated, they start at boot and exit when idle, and had exited before the change |
+| 2026-11-27 | Added, `dv02bld001v01` | `qemu-guest-agent` installed and started, at the operator's request: the Builder's kickstart, which built it, had no guest agent (CHG-0091's departure). `qm agent 202 ping` answers. The kickstart now installs it: [deevnet.builder #62](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/62) |
+| 2026-11-27 10:08Z | 4 | `make update-watch-now`: every Fedora host up to date, both builders included; what waits is the hypervisors' 33 updates each and OPNsense 26.7.10, both outside this change. `make update-watch-ack`: 29 acknowledged. Software Catalog updated from what each host reports: kernel 7.3.5 on the six VMs, 7.3.6 on both builders, Podman 5.8.9 everywhere, the Builder's release 44 |
 
 ### Departures from the plan
 
--
+- **The Builder goes last, not first.** The Claude Code session running this change is on the
+  Builder, and its reboot would end the session. The six VMs are patched from it first, and the
+  operator reboots the Builder at the end. `dv02bld001v01` stays until then, so the fallback
+  control node the plan wanted is still there.
+- **The temporary builder was patched too.** `dv02bld001v01` was out of scope, to be destroyed
+  under CHG-0092, but stays until then as the fallback control node, so the operator asked for it
+  to be patched the same way. It was never on the LSI controller (`virtio-scsi-pci`).
+- **The downloads were not throttled.** `--setopt=throttle=1M` did not limit them: each VM
+  fetched about 565 MiB in 60–85 s, around 7–8 MiB/s. Adding `max_parallel_downloads=1` (from
+  `dv02col001v01` on) and a per-repository `*.throttle=1M` (from `dv02obs001v01` on) changed
+  nothing. The core router carried all six at full speed without missing a ping, so the change
+  went on rather than stop; the install still ran from the cache. Why `dnf` 5.4.8 ignores the
+  setting is a follow-up.
+- **The SSH agent was lost once.** Between the download and the install on `dv02nms001v01`, the
+  login whose agent the session was using closed. The script stopped there, as it should, and the
+  VM was finished from the cache once the agent was back.
+- **`dv02col001v01` has no collector to check.** It runs only its base services, before the
+  change and after, so the plan's "logs and metrics still arrive" check for it had nothing to test.
+  The log path's own check passed on `dv02msg001v01` and `dv02obs001v01`.
 
 ## Follow-ups
+
+- [ ] Why `dnf`'s `throttle` does not limit downloads on Fedora 44, or another way to cap a host's bulk transfer across the core router (INC-0005)
 
 - [ ] A change record for the hypervisors' waiting updates (33 each, 6 security, without a severity)
