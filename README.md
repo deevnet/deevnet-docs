@@ -154,7 +154,7 @@ a tenant, using each service, running it).
 ---
 
 ### 9. Completed Projects
-Projects that are built, running on their own hardware, and documented — graduated from the Roadmap.
+Projects that are built, running on their own hardware, and documented. Their roadmap items stay on the Roadmap at 100%.
 
 ---
 
