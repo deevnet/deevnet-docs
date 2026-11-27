@@ -174,7 +174,7 @@ The template is rebuilt on the profile first. Then each VM moves, in a change re
 - [ ] The template build reads the profile from inventory (done, CHG-0098), and one service VM built from the new template
 - [ ] `proxmox_vm` and the Deevnet API set the profile (done, CHG-0098) and verify the VM they build
 - [ ] The compliance check built, run by hand and daily, alerting on drift
-- [ ] Every existing VM moved, by change record, and the check reports only declared exceptions
+- [x] Every existing VM moved, by change record, and the check reports only declared exceptions (CHG-0093, CHG-0097, CHG-0100; 2026-11-27)
 
 ## Open questions
 
