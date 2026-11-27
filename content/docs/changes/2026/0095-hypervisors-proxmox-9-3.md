@@ -145,23 +145,33 @@ repository by version). A fabric that changed is put back from the saved configu
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: both nodes' starting state saved and copied to the Builder
-- [ ] Step 2: both downloads complete, no ping missed
-- [ ] Step 3: both nodes on 9.3.1, every VM running throughout, the fabric unchanged
-- [ ] Step 4: the watcher shows nothing waiting on either node; catalog updated
+- [x] Step 1: both nodes' starting state saved and copied to the Builder
+- [x] Step 2: both downloads complete, no ping missed
+- [x] Step 3: both nodes on 9.3.1, every VM running throughout, the fabric unchanged
+- [x] Step 4: the watcher shows nothing waiting on either node; catalog updated
 - [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
 
 ## Outcome
 
-*Completed after the change has run.*
+**Both hypervisors run Proxmox VE 9.3.1, and nothing waits on either.** No node rebooted, every
+VM kept its QEMU process throughout, and the tenant fabric is exactly as it was. Every command ran
+from the Builder over SSH as `a_autoprov`; the starting state, `/etc` tarballs and logs are kept in
+`~/chg-0095/` on the Builder.
 
 | When | Steps | What happened |
 |---|---|---|
-| | | |
+| 08:21–08:22 | 1, `dv02hyp001p01` | 9.2.32 on 7.0.14-30. Eight VMs running (200, 201, 202, 204–208), with their QEMU process IDs; logical volumes listed. `/etc` tarball copied to the Builder, checksum matched |
+| 08:22–08:23 | 2, `dv02hyp001p01` | 37.1 MB fetched in 31 s at 1,202 kB/s. The watchdog missed no ping (peak 27 ms) |
+| 08:22–08:23 | 3, `dv02hyp001p01` | `apt dist-upgrade` exited 0 in 57 s with no configuration prompt and no `.dpkg-dist` left; `dpkg --audit` empty; `pveversion` 9.3.1; nothing upgradable; no failed unit. Every VM running with the same QEMU process ID, logical volumes unchanged. `multipathd` running and claiming nothing (`multipath -ll` empty). `make health-watch-now`: all well |
+| 08:24 | 1, `dv02hyp002p02` | 9.2.32 on 7.0.14-30. Five tenant VMs running; zones `cdeever`, `eds`, `mabell`, `tdemo` (EVPN, controller `evpn1`); four vnets; FRR's running configuration and the four VRFs saved. `/etc` tarball copied, checksum matched |
+| 08:24–08:25 | 2, `dv02hyp002p02` | 37.1 MB in 31 s at 1,210 kB/s; no ping missed (peak 32 ms) |
+| 08:24–08:26 | 3, `dv02hyp002p02` | Exited 0 in 54 s, as on the management hypervisor; `libpve-network-perl` 1.6.15, FRR unchanged at 10.6.1. VMs, logical volumes, zones, vnets, FRR's running configuration and the VRFs identical to Step 1; `multipath -ll` empty. The `tdemo` VRF reached `1.1.1.1`; the egress agent's 08:28 run succeeded |
+| 08:28 | 4 | `make update-watch-now`: nothing waiting on any system. Software Catalog: Proxmox VE 9.3.1 on both hypervisors, Proxmox SDN 1.6.15 |
 
 ### Departures from the plan
 
-None yet.
+- **The `/etc` copies are kept in the operator's home on the Builder** (`~/chg-0095/`), not in
+  CHG-0080's `/srv/pve1-vm-backups`, which the Builder's repave (CHG-0092) did not bring back.
 
 ## Follow-ups
 
