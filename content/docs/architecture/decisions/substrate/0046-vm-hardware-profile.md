@@ -171,8 +171,8 @@ The template is rebuilt on the profile first. Then each VM moves, in a change re
 ## To accept
 
 - [x] The profile's values agreed, SeaBIOS among them, and inventory as their only source (2026-11-21)
-- [ ] The template build reads the profile from inventory, and one service VM built from the new template
-- [ ] `proxmox_vm` and the Deevnet API set the profile and verify the VM they build
+- [ ] The template build reads the profile from inventory (done, CHG-0098), and one service VM built from the new template
+- [ ] `proxmox_vm` and the Deevnet API set the profile (done, CHG-0098) and verify the VM they build
 - [ ] The compliance check built, run by hand and daily, alerting on drift
 - [ ] Every existing VM moved, by change record, and the check reports only declared exceptions
 
