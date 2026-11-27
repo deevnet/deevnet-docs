@@ -10,7 +10,7 @@ weight: -98
 | **Date** | 2026-11-27 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress**: started 2026-11-27 |
+| **Status** | **Complete, 2026-11-27** |
 | **Window** | No outage. The API restarts once for its new release (seconds; tenants' workloads do not depend on it). The template builds run beside the old templates |
 | **Site** | mobile |
 | **Systems** | The template build (`deevnet-image-factory`); `proxmox_vm` and `deevnet_api` (`deevnet.mgmt`); the Deevnet API on `dv02prv001v01`; the templates on `dv02hyp001p01` and `dv02hyp002p02` |
@@ -114,19 +114,46 @@ old one is used until it is fixed. The API goes back by pinning 0.28.1 again.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the three pull requests merged
-- [ ] Step 2: the API on 0.29.0, alive, a reconcile completed
-- [ ] Step 3: both templates rebuilt on the profile, the old ones deleted
-- [ ] Step 4: `make vm-profile` shows only the tenant workloads drifting
+- [x] Step 1: the three pull requests merged
+- [x] Step 2: the API on 0.29.0, alive, a reconcile completed
+- [x] Step 3: both templates rebuilt on the profile, the old ones deleted
+- [x] Step 4: `make vm-profile` shows only the tenant workloads drifting
 
 ## Outcome
 
-*Completed after the change has run.*
+**Every VM builder applies the profile, and both templates are on it.** `make vm-profile` reports
+15 VMs: 9 compliant, 1 declared exception, and the five tenant workloads, which move in their own
+change. The deploy found two things the Builder's repave (CHG-0092) had not brought back; one is
+fixed for good, the other worked around (below).
 
-| When | Steps | What happened |
+| When (UTC) | Steps | What happened |
 |---|---|---|
-| | | |
+| Before Step 1 | 4, before | 15 VMs: 7 compliant, 1 declared exception, 7 drift (the two templates, the five tenant workloads) |
+| Before Step 2 | 1 | Merged: [deevnet-image-factory #51](https://github.com/deevnet/deevnet-image-factory/pull/51), [deevnet.mgmt #146](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/146), [deevnet-provisioning-api #87](https://github.com/deevnet/deevnet-provisioning-api/pull/87); `make publish` |
+| 17:50, 18:07 | 3 | `make proxmox-fedora-pve1`: `fedora-server-44-1.7` as VMID 101 on `dv02hyp001p01`; `make proxmox-fedora-tenant`: `fedora-tenant-44-1.7` as VMID 100 on `dv02hyp002p02`. Both compliant |
+| Before 19:50 | 2 | [deevnet-provisioning-api #88](https://github.com/deevnet/deevnet-provisioning-api/pull/88) (release notes), `v0.29.0` tagged on its merge `0b0c16d`, `make stage`; [deevnet.mgmt #147](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/147) pins it. The first `deevnet_api` play failed at its first OpenBao call, before writing anything: see the departures |
+| 19:50 | 2 | The `deevnet_api` play, OpenBao open: `ok=85 changed=7 failed=0`. The API logs `version v0.29.0 commit 0b0c16d`, its image the one staged; its environment carries `DEEVNET_TENANT_SCSIHW=virtio-scsi-single` and `DEEVNET_TENANT_DISK_OPTIONS=iothread=1,discard=on,cache=none` |
+| 19:57 | 2 | `make reconcile NAME=tdemo`: `reconciled tdemo` (200, 3.5 s). `tdemo-backend` (2040) still running and still on `lsi`: an adopted workload's hardware is not touched |
+| 20:00 | 3 | The old templates destroyed: VMID 100 on `dv02hyp001p01` and 102 on `dv02hyp002p02`, both `lsi`, no linked clone of either. Each had the same name as its replacement, so the API's newest-by-name choice could have taken the old one until then |
+| 20:01 | 4 | `make vm-profile`: 15 VMs, 9 compliant, 1 declared exception, 5 drift: 2040, 2080, 2160, 2161, 2162 |
 
 ### Departures from the plan
 
-None yet.
+- **`v0.29.0` was first tagged and staged on the wrong commit,** `4a0bad1`, before the release pull
+  request had merged (same code, no release-notes heading). The tag was moved to `0b0c16d` and the
+  image staged again before anything deployed it.
+- **The `deevnet_api` play could not find OpenBao's pin.** It read the Deevnet Root CA from a copy
+  the openbao role had left in `.openbao/` on the control node, which the repaved Builder did not
+  have. The inventory now pins `site_root_ca_file` directly
+  ([ansible-inventory-deevnet #137](https://github.com/deevnet/ansible-inventory-deevnet/pull/137)),
+  and the copy is gone ([deevnet.mgmt #148](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/148)):
+  a repave needs nothing local for it.
+- **`make reconcile` could not SSH to the API host by name.** The repaved Builder knew substrate
+  hosts' keys by address only, as Ansible (which does not check them) had recorded them. The API
+  host's name was added with the keys already held for its address, which match what it serves.
+  Every other host is still known by address only: a follow-up.
+
+## Follow-ups
+
+- **The Builder's knowledge of substrate host keys** survives a repave: by name and by address,
+  from a record in git rather than learned again.
