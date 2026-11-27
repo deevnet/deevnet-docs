@@ -10,7 +10,7 @@ weight: -97
 | **Date** | 2026-11-27 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress**: started 2026-11-27 |
+| **Status** | **Complete, 2026-11-27** |
 | **Window** | A few minutes. The standby builder is shut down for the controller change and started again; nothing depends on it while it is idle, and the Builder is the control node throughout |
 | **Site** | mobile |
 | **Systems** | `dv02bld001v01` (VMID 202 on `dv02hyp001p01`) |
@@ -100,7 +100,7 @@ The Goal: compliant with its exception, and its state the same as before.
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: the exception merged
+- [x] Step 1: the exception merged
 - [x] Step 2: the disk on the profile, the VM running as before
 - [x] Step 3: `make vm-profile` reports it compliant with its exception
 
@@ -119,4 +119,4 @@ The Goal: compliant with its exception, and its state the same as before.
 ### Departures from the plan
 
 - **Step 3 ran before Step 1's pull request was merged**, against its branch checked out on the
-  Builder. The change closes when it is merged.
+  Builder. It was merged the same day.
