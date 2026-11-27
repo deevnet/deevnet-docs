@@ -224,6 +224,7 @@ snapshot is dropped in Step 5.
 | 2026-11-27 | 2, the Builder | Rebooted by the operator onto kernel 7.3.6; `make update-watch-now` run and the Builder checked by the operator |
 | 2026-11-27 04:53–05:01 | Added, `dv02bld001v01` (202) | Snapshot `pre-chg-0094`, 13 packages (291 MiB) downloaded in 294 s with no ping missed (peak 63 ms), installed from the cache in 72 s, rebooted onto 7.3.6, SSH back 10 s after; nothing failed. The only state difference was three libvirt daemons (`virtqemud`, `virtlxcd`, `virtvboxd`) running: socket-activated, they start at boot and exit when idle, and had exited before the change |
 | 2026-11-27 | Added, `dv02bld001v01` | `qemu-guest-agent` installed and started, at the operator's request: the Builder's kickstart, which built it, had no guest agent (CHG-0091's departure). `qm agent 202 ping` answers. The kickstart now installs it: [deevnet.builder #62](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/62) |
+| 2026-11-27 10:08Z | 4 | `make update-watch-now`: every Fedora host up to date, both builders included; what waits is the hypervisors' 33 updates each and OPNsense 26.7.10, both outside this change. `make update-watch-ack`: 29 acknowledged. Software Catalog updated from what each host reports: kernel 7.3.5 on the six VMs, 7.3.6 on both builders, Podman 5.8.9 everywhere, the Builder's release 44 |
 
 ### Departures from the plan
 
