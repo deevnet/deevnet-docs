@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0100 | 2026-11-27 | [The Tenant Workloads on the VM Hardware Profile](0100-tenant-vms-vm-profile/) | Configuration | mobile | Complete |
 | CHG-0099 | 2026-11-27 | [The Site's SSH Host Keys Recorded in Git](0099-host-keys-in-git/) | Configuration | mobile | Complete |
 | CHG-0098 | 2026-11-27 | [Every VM Builder Applies the VM Hardware Profile](0098-vm-builders-apply-profile/) | Configuration | mobile | Complete |
 | CHG-0097 | 2026-11-27 | [The Standby Builder on the VM Hardware Profile](0097-standby-builder-vm-profile/) | Configuration | mobile | Complete |
