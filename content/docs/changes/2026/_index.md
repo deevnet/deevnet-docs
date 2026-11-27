@@ -8,6 +8,7 @@ bookCollapseSection: true
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0097 | 2026-11-27 | [The Standby Builder on the VM Hardware Profile](0097-standby-builder-vm-profile/) | Configuration | mobile | Complete |
 | CHG-0096 | 2026-11-27 | [The Core Router Updated to OPNsense 26.7.10](0096-core-router-26-7-10/) | Upgrade | mobile | Complete |
 | CHG-0095 | 2026-11-27 | [Both Hypervisors Updated to Proxmox VE 9.3](0095-hypervisors-proxmox-9-3/) | Upgrade | mobile | Complete |
 | CHG-0094 | 2026-11-26 | [The Builder and Six Service VMs Patched Within Fedora 44](0094-patch-builder-service-vms/) | Upgrade | mobile | In progress |
