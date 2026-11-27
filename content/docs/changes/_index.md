@@ -26,6 +26,7 @@ New records start from the [change record template](/docs/runbook/substrate/chan
 
 | ID | Date | Change | Type | Site | Status |
 |---|---|---|---|---|---|
+| CHG-0101 | 2026-11-27 | [The VM Hardware Profile Verified at Build and Watched](2026/0101-vm-profile-verified-and-watched/) | Configuration | mobile | Complete |
 | CHG-0100 | 2026-11-27 | [The Tenant Workloads on the VM Hardware Profile](2026/0100-tenant-vms-vm-profile/) | Configuration | mobile | Complete |
 | CHG-0099 | 2026-11-27 | [The Site's SSH Host Keys Recorded in Git](2026/0099-host-keys-in-git/) | Configuration | mobile | Complete |
 | CHG-0098 | 2026-11-27 | [Every VM Builder Applies the VM Hardware Profile](2026/0098-vm-builders-apply-profile/) | Configuration | mobile | Complete |

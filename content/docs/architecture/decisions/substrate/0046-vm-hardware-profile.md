@@ -7,7 +7,7 @@ weight: -46
 
 |  |  |
 |--|--|
-| **Status** | Proposed |
+| **Status** | Accepted (2026-11-27): built by [CHG-0098](/docs/changes/2026/0098-vm-builders-apply-profile/) and [CHG-0101](/docs/changes/2026/0101-vm-profile-verified-and-watched/), every existing VM moved by [CHG-0093](/docs/changes/2026/0093-service-vms-virtio-scsi/), [CHG-0097](/docs/changes/2026/0097-standby-builder-vm-profile/) and [CHG-0100](/docs/changes/2026/0100-tenant-vms-vm-profile/) |
 | **Date** | 2026-11-21 |
 | **Scope** | The virtual hardware of every VM Deevnet builds on a Proxmox hypervisor: the substrate's service VMs and tenant workloads. Not a VM's size (cores, memory, disk), which each VM declares; not the take-home images, which run on hypervisors Deevnet does not own ([ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/)) |
 | **Related** | [ADR-0013](/docs/architecture/decisions/substrate/0013-management-services-domain-vms/) (the service VMs), [ADR-0015](/docs/architecture/decisions/tenant-model/0015-tenant-onboarding-through-api/) §12 (tenant workloads), [ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/) (rebuilt from code), [INC-0006](/docs/incidents/2026/0006-api-vm-scsi-panic/), [INC-0002](/docs/incidents/2026/0002-controller-vm-network-hang/) |
@@ -170,14 +170,19 @@ The template is rebuilt on the profile first. Then each VM moves, in a change re
 
 ## To accept
 
+**This record is accepted when every item below is done.**
+
 - [x] The profile's values agreed, SeaBIOS among them, and inventory as their only source (2026-11-21)
-- [ ] The template build reads the profile from inventory (done, CHG-0098), and one service VM built from the new template
-- [ ] `proxmox_vm` and the Deevnet API set the profile (done, CHG-0098) and verify the VM they build
-- [ ] The compliance check built, run by hand and daily, alerting on drift
+- [x] The template build reads the profile from inventory (CHG-0098), and one service VM built from the new template: `dv02col001v01`, rebuilt from `fedora-server-44-1.7` (CHG-0101)
+- [x] `proxmox_vm` and the Deevnet API set the profile (CHG-0098) and verify the VM they build, before its first start (CHG-0101; the API from 0.30.0)
+- [x] The compliance check built, run by hand (`make vm-profile`, CHG-0093) and unattended, alerting on drift: the health watcher, every five minutes (CHG-0101)
 - [x] Every existing VM moved, by change record, and the check reports only declared exceptions (CHG-0093, CHG-0097, CHG-0100; 2026-11-27)
 
 ## Open questions
 
-- **Which daily job runs the check, and where its results show.** The site's alerting is on the
-  observability VM; the check needs read access to every hypervisor's API, which the automation
-  token has.
+None. **Which job runs the check, and where its results show** was answered by CHG-0101: the health
+watcher on the Builder, every five minutes rather than daily, raising drift on its login banner like
+any stopped service. It needs no API token: a root timer on each hypervisor writes only the
+profile's parts of each VM's configuration, and the watcher's pinned, unprivileged key reads that
+file. The watcher and `make vm-profile` share one comparison (`deevnet.builder`'s
+`module_utils/vm_profile.py`), so they cannot disagree.

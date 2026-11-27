@@ -358,7 +358,7 @@ Grouped by topic, newest first within each. Numbers are assigned in the order re
 ### [Substrate](substrate/)
 
 - [ADR-0046: One Hardware Profile for Every VM](/docs/architecture/decisions/substrate/0046-vm-hardware-profile/) —
-  *Proposed (2026-11-21).* Every VM Deevnet builds, service VM or tenant workload, has one declared
+  *Accepted (2026-11-27); built by CHG-0098 and CHG-0101.* Every VM Deevnet builds, service VM or tenant workload, has one declared
   virtual hardware profile: `virtio-scsi-single` with IO Thread and Discard, VirtIO network, host CPU,
   SeaBIOS, chosen deliberately. Inventory is its only source and every builder applies it; an
   exception is declared with its reason. The profile also says how each running VM is verified
