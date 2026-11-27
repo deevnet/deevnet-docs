@@ -49,7 +49,9 @@ when work on one of them starts.
 - **Ansible verifying host identity:**
   [R-17](/docs/policies/risk-management/risk-register/#register). All three collections set
   `host_key_checking = False`, so a play trusts whatever answers at a host's address. Hosts whose
-  key is held in a `known_hosts` are checked only by name or address as first recorded. Host
+  key is held in a `known_hosts` are checked only by name or address as first recorded. Since
+  [CHG-0099](/docs/changes/2026/0099-host-keys-in-git/) the builders hold every host's keys from a
+  record in git, so SSH from them checks every host; Ansible's own connections still do not. Host
   certificates signed by a Deevnet CA, trusted through one `@cert-authority` line, would let every
   play check every host, rebuilt ones included, without re-learning keys
   ([ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/) §4 covers

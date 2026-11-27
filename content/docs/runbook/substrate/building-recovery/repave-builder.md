@@ -192,7 +192,9 @@ cd ansible-collection-deevnet.builder
 ansible-playbook playbooks/site.yml --limit dv00bld001p01
 ```
 
-This applies `base` (identity, static address), `workstation` (operator accounts and tools),
+This applies `base` (identity, static address), `site_trust` and `ssh_known_hosts` (the site's root
+CA and every host's SSH keys, from inventory: [SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/)),
+`workstation` (operator accounts and tools),
 `artifacts` (stages everything again, from the internet over its upstream NIC) and `bootstrap`
 (TFTP only; dnsmasq stays off). It does **not** recreate the Omada cold fallback: the Builder is not
 in `network_controllers` unless it has been put back there for a recovery.
@@ -243,6 +245,8 @@ here, so `deevnet.mgmt` finds the role).
 ## Verify
 
 - `ssh a_autoprov@dv00bld001p01.mobile.deevnet.net` works.
+- From the new Builder, `ssh -o BatchMode=yes a_autoprov@dv02prv001v01.mobile.deevnet.net true`
+  works with no prompt: it trusts every host from the inventory's record.
 - The **Artifact server** row and the **PXE infrastructure** checks in
   [Verify Site](/docs/runbook/substrate/building-recovery/build-verification/) pass against the
   Builder.

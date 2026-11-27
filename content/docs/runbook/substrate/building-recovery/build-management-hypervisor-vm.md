@@ -86,6 +86,9 @@ ANSIBLE_COLLECTIONS_PATH="./.ansible/collections:$HOME/.ansible/collections" \
 The `ANSIBLE_COLLECTIONS_PATH` is not optional. A bare `ansible-playbook` resolves to the
 system-wide collections and silently ignores the project-local build.
 
+Once it answers, record its SSH host keys
+([SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/#a-host-is-built-or-rebuilt)).
+
 ### What it does, and what it checks
 
 Clone → set MAC and cloud-init → attach the data disk → read the config back → assert →
@@ -243,7 +246,8 @@ ansible-playbook playbooks/site.yml --limit <host>
 
 Check SSH explicitly. The kickstart fetches the `a_autoprov` public key with
 `curl ... || true`, so a failed fetch produces an unreachable host that looks like a
-healthy install.
+healthy install. Then record its SSH host keys
+([SSH Host Keys](/docs/runbook/substrate/lifecycle/host-keys/#a-host-is-built-or-rebuilt)).
 
 ---
 
