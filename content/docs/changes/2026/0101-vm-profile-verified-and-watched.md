@@ -10,7 +10,7 @@ weight: -101
 | **Date** | 2026-11-27 |
 | **Change type** | Configuration |
 | **Classification** | Routine |
-| **Status** | **In progress**: started 2026-11-27 |
+| **Status** | **Complete, 2026-11-27** |
 | **Window** | No service outage. The API restarts once for 0.30.0 (seconds). `dv02col001v01` is down while it is rebuilt; it runs nothing but its operating system |
 | **Site** | mobile |
 | **Systems** | `proxmox_vm` and `deevnet_api` (`deevnet.mgmt`); the Deevnet API on `dv02prv001v01`; the health watcher on `dv00bld001p01`; `dv02hyp001p01` and `dv02hyp002p02`; `dv02col001v01` |
@@ -115,20 +115,35 @@ is built again from the previous template's successor, or left down: nothing dep
 
 **This change closes when every item below is done.**
 
-- [ ] Step 1: merged, published, 0.30.0 staged
-- [ ] Step 2: the report on both hypervisors; the watcher reports the check and raises drift
-- [ ] Step 3: the API on 0.30.0, the reconciles completed
-- [ ] Step 4: the collector rebuilt from the new template, compliant, its keys recorded
-- [ ] Step 5: ADR-0046 accepted
+- [x] Step 1: merged, published, 0.30.0 staged
+- [x] Step 2: the report on both hypervisors; the watcher reports the check and raises drift
+- [x] Step 3: the API on 0.30.0, the reconciles completed
+- [x] Step 4: the collector rebuilt from the new template, compliant, its keys recorded
+- [x] Step 5: ADR-0046 accepted
 
 ## Outcome
 
-*Completed after the change has run.*
+**ADR-0046 is accepted.** Both builders check what they build, the collector runs on a clone of the
+new template, and the health watcher checks every VM against the profile every five minutes. The
+rebuild also showed the host-key record working: the watcher raised the rebuilt collector's changed
+key, and cleared it once its new keys were merged.
 
 | When (UTC) | Steps | What happened |
 |---|---|---|
 | Before Step 1 | Tests | `proxmox_vm`'s check: compliant and declared-exception read-backs pass, an `lsi` one fails naming the controller. The API: `go test ./...`, with a node that ignores the profile leaving the workload unstarted. The watcher with fake reports: compliant and excepted VMs pass, `lsi` flagged, a stale, missing or unread report flagged, an unanswered host's problems kept. `make vm-profile` through the moved comparison: unchanged, 14 compliant, 1 declared exception |
+| Before 20:56 | 1 | Merged: [deevnet.mgmt #149](https://github.com/deevnet/ansible-collection-deevnet.mgmt/pull/149), [deevnet-provisioning-api #89](https://github.com/deevnet/deevnet-provisioning-api/pull/89), [deevnet.builder #64](https://github.com/deevnet/ansible-collection-deevnet.builder/pull/64). `make publish` in both collections; `v0.30.0` tagged on `d8bcf6c` and staged |
+| 20:56 | 2 | `make update-watch`: the report's role on both hypervisors (5 changed each); `make health-watch`. Each `vms.json` seconds old, holding only `scsihw`, `cpu`, `bios`, `machine`, `agent`, the disks and the NICs. `make health-watch-now`: `ok` for both hypervisors' VM hardware report, all well |
+| 20:56 | 2 | A dry run against a copy of the watcher's configuration whose profile asks for `lsi`: all 15 VMs listed as failing, each naming `scsihw: is virtio-scsi-single, profile lsi`. Nothing written |
+| 20:56 | 4 | `dv02col001v01`'s configuration saved (`/root/chg-0101-206.conf`); shut down and destroyed with its disk and its `pre-chg-0094` snapshot. Its old keys removed from the operator's `known_hosts` |
+| Before 21:05 | 4 | The operator: `site.yml --limit dv02col001v01`. VMID 206 cloned from VMID 101 (`qmclone:101 … OK`). The play started it, which it does only after "is on the VM hardware profile" passes. `make vm-profile`: `206 dv02col001v01: COMPLIANT`; 15 VMs, 14 compliant, 1 declared exception, 0 drift |
+| 21:05–21:36 | 4 | The watcher raised `dv02col001v01 answers: Host key verification failed` (the record still held the old VM's keys). `make host-keys LIMIT=dv02col001v01`: all three keys `CHANGED`, the new fingerprints matching the host's own key files; [ansible-inventory-deevnet #139](https://github.com/deevnet/ansible-inventory-deevnet/pull/139) merged; `make host-keys-install`. The watcher cleared it at 21:36. SSH by name with no user `known_hosts`: kernel 7.3.6, `virtio_scsi` loaded, `running` |
+| 21:35 | 3 | The operator, OpenBao open: the `deevnet_api` play. The API logs `version v0.30.0 commit d8bcf6c`. `make reconcile` for `tdemo`, `eds`, `cdeever`: each reconciled |
+| 21:36 | 2 | `make health-watch-now`: all well |
+| After 21:36 | 5 | ADR-0046 accepted |
 
 ### Departures from the plan
 
-None yet.
+- **The check runs every five minutes, not daily** as ADR-0046 first said: it rides the health
+  watcher, whose runs are five minutes apart. The ADR's open question records it.
+- **Step 4's check was confirmed by the play starting the VM,** not from its output, which Ansible
+  does not log here: a failed check stops the play before it starts the VM.
