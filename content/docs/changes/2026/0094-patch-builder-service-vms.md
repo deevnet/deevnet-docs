@@ -199,11 +199,11 @@ snapshot is dropped in Step 5.
 **This change closes when every item below is done.**
 
 - [x] Step 1: discovery report and health state taken
-- [ ] Step 2: the Builder updated, rebooted, its watchers and `deevnet-patch` working
+- [x] Step 2: the Builder updated, rebooted, its watchers and `deevnet-patch` working
 - [x] Step 3: the six VMs updated and rebooted, each one's service answering, no ping missed
-- [ ] Step 4: the watcher shows no Critical or Important advisory on the seven hosts; catalog updated
-- [ ] Step 5: the six snapshots dropped, three days or more after
-- [ ] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it, and the Software Catalog updated from its report
+- [x] Step 4: the watcher shows no Critical or Important advisory on the seven hosts; catalog updated
+- [ ] Step 5: the six snapshots dropped, three days or more after (on or after 2026-11-29; `dv02col001v01`'s went with its rebuild in CHG-0101)
+- [x] For an Upgrade: `make discover` (`deevnet.mgmt`) run after it (by the operator, 2026-11-27), and the Software Catalog updated from its report (Step 4)
 
 ## Outcome
 

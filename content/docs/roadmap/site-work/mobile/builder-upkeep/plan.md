@@ -28,9 +28,9 @@ home network when the factory is parked there.
 `/home` is a 20 GB volume and was 96% full on 2026-11-01, mostly Podman's image store, the Go
 module cache and build caches, while `/srv` had 774 GB free.
 
-- 🔄 Rebuild or reconfigure the Builder with more space for `/home`: the builder kickstart gives it
-  60 GB ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)), which the Builder takes when
-  it is repaved
+- ✅ Rebuild or reconfigure the Builder with more space for `/home`: the builder kickstart gives it
+  60 GB ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)), which the Builder took when
+  it was repaved ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/), 2026-11-26)
 - ⏳ Keep Podman's storage and `GOPATH` under `/srv`, so build caches stop filling `/home`
 
 ---
