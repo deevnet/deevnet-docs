@@ -85,8 +85,9 @@ fresh router needs, in order:
 5. **Apply the zone policy:** `ansible-playbook playbooks/opnsense.yml -e firewall_apply=true`.
    Then remove, by hand, the stock allow rules a fresh install puts on LAN. They sit outside
    automation, and the policy is not enforced while they remain.
-6. **Set the management subnet's `next_server`** to the Builder, `10.20.99.95`, by hand. No role
-   manages it ([Bootstrap Role](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)).
+6. **Check the management subnet's `next_server`** is the Builder, `10.20.99.95`. The DHCP role in
+   Step 4 set it from the host that carries the `pxe` CNAME
+   ([Bootstrap Role](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)); if it is empty, no host in inventory carries `pxe`.
 7. **Register Wake-on-LAN hosts:** `ansible-playbook playbooks/wol.yml`.
 8. **Give the Deevnet API the new key:** in `deevnet.mgmt`,
    `ansible-playbook playbooks/site.yml --limit deevnet_api`, then reconcile each tenant.

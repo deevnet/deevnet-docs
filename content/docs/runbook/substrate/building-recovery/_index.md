@@ -138,7 +138,7 @@ tracks closing each of these.
 |---|---|
 | Install Fedora on the Builder from USB | [Build the Builder](build-the-builder/) |
 | Choose and hold the vault password | [Vault Operations](vault-operations/) |
-| Install OPNsense from USB, set its interface addresses and `next_server`, create its API key | [Build Network](build-network/), [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) |
+| Install OPNsense from USB, set its interface addresses, create its API key | [Build Network](build-network/), [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) |
 | Factory-reset the switch and the AP | [Build Network](build-network/) |
 | Install Proxmox from the ISO, run its console bootstrap, issue its API tokens | [Build a Hypervisor](build-hypervisor/) |
 | Run the Omada setup wizard, create the Owner and the Open API clients | ADR-0009 §5 |
