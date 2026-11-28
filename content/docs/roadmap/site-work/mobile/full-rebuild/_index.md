@@ -5,6 +5,9 @@ aliases:
   - /docs/roadmap/infrastructure/mobile/full-rebuild/
 weight: 5
 value: [rebuild-from-code]
+deferred:
+  since: "2026-11-27"
+  until: "2027"
 waypoints:
   - title: "The whole mobile site rebuilt from scratch, tenants brought back and gaps fixed"
     status: planned

@@ -624,3 +624,23 @@ ul.acc-list {
 .records-gauge-back {
   font-size: 0.85em;
 }
+
+// -----------------------------------------------------------------------------
+// Roadmap: deferred items
+// -----------------------------------------------------------------------------
+
+.deferred-note {
+  padding: 0.5em 0.8em;
+  border-left: 3px solid var(--text-muted);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.badge-deferred {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 0 0.35em;
+  white-space: nowrap;
+}

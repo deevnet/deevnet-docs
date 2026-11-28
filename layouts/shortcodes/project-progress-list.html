@@ -1,5 +1,6 @@
 {{- range .Page.Pages -}}
   {{- $n := partial "progress-counts.html" . -}}
+  {{- $deferred := partial "deferred.html" . -}}
   {{- $completed := $n.completed -}}
   {{- $in_progress := $n.in_progress -}}
   {{- $planned := $n.planned -}}
@@ -8,7 +9,7 @@
   {{- if gt $total 0 -}}
   <div style="margin-bottom: 1.5em;">
     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3em;">
-      <a href="{{ .RelPermalink }}" style="font-weight: 500;">{{ .Title }}</a>
+      <span><a href="{{ .RelPermalink }}" style="font-weight: 500;">{{ .Title }}</a>{{ with $deferred }} <span class="badge-deferred" title="Deferred{{ with .since }} since {{ . }}{{ end }}; left out of this area's progress">⏸ Deferred to {{ .until }}</span>{{ end }}</span>
       <span style="font-size: 0.85em; color: #888;">{{ $completed }}/{{ $total }}</span>
     </div>
     {{- partial "progress-bar.html" (dict "completed" $completed "in_progress" $in_progress "planned" $planned) -}}

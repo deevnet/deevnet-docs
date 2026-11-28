@@ -5,6 +5,9 @@ aliases:
   - /docs/roadmap/raspberry-pi/
   - /docs/roadmap/raspberry-pi/pidp11/
 weight: 5
+deferred:
+  since: "2026-11-27"
+  until: "2027"
 waypoints:
   - title: "PiDP-11 operating system and front panel behavior defined"
     status: planned

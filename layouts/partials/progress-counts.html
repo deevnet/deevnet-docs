@@ -1,7 +1,8 @@
 {{- /* A page's progress: its waypoints (the roadmap) or its hand-counted
        tasks_* (the plans). A section sums itself and everything beneath it,
        waypoints if any have them, so a roadmap item or area never counts
-       the tasks of the plans under it; otherwise tasks. */ -}}
+       the tasks of the plans under it; otherwise tasks. A deferred item is
+       left out of the sections above it, but counts on its own page. */ -}}
 {{- $c := 0 -}}{{- $a := 0 -}}{{- $p := 0 -}}
 {{- $pages := slice . -}}
 {{- if .IsSection -}}
@@ -10,7 +11,12 @@
 {{- end -}}
 {{- $hasWaypoints := false -}}
 {{- range $pages -}}{{- if .Params.waypoints -}}{{- $hasWaypoints = true -}}{{- end -}}{{- end -}}
+{{- $rootDeferred := partial "deferred.html" . -}}
+{{- $counted := slice -}}
 {{- range $pages -}}
+  {{- if or $rootDeferred (not (partial "deferred.html" .)) -}}{{- $counted = $counted | append . -}}{{- end -}}
+{{- end -}}
+{{- range $counted -}}
   {{- if $hasWaypoints -}}
     {{- range .Params.waypoints -}}
       {{- if eq .status "done" -}}{{- $c = add $c 1 -}}

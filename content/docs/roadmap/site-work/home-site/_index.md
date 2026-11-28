@@ -5,6 +5,9 @@ aliases:
   - /docs/roadmap/infrastructure/home-site/
 weight: 2
 value: [works-anywhere]
+deferred:
+  since: "2026-11-27"
+  until: "2027"
 waypoints:
   - title: "The home site's certificate authorities created under the Deevnet root"
     status: planned

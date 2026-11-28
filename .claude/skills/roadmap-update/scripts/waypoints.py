@@ -17,6 +17,10 @@ list format this site writes is understood: one `- title:` per waypoint, then
 
 A waypoint with `milestone: true` closes a version: its definition of done, written in the
 item's plan, is met. `list` marks it with 🏁.
+
+An item set aside until a later year carries `deferred:` in its front matter, with `since:`
+(the day it was deferred) and `until:` (a year, or a day), and optionally `reason:`. `list`
+shows its open waypoints as ⏸ instead of 🔄 or ⏳; its done ones stay ✅.
 """
 import argparse, glob, json, os, re, sys
 
@@ -43,6 +47,12 @@ def pages():
     out = [p for p in glob.glob("content/docs/roadmap/**/*.md", recursive=True) if is_item(p)]
     out += [p for p in glob.glob("content/projects/archive/*.md") + glob.glob("content/docs/completed/*.md") if not p.endswith("_index.md")]
     return sorted(out)
+
+def deferral(head):
+    """The item's `deferred:` block as a dict, or None."""
+    m = re.search(r'^deferred:\n((?:  .*\n?)+)', head + "\n", re.M)
+    if not m: return None
+    return {k: (json.loads(v) if v.startswith('"') else v) for k, v in re.findall(r'^  (\w+): (.*)$', m.group(1), re.M)}
 
 def resolve(page):
     if page.startswith("content/"): return page if page.endswith(".md") else page + ".md"
@@ -113,6 +123,12 @@ def cmd_check(_):
         tags = re.findall(r'^value: \[(.*)\]$', head, re.M) + [m["value"].strip("[]") for m in ms if "value" in m]
         for v in {x.strip() for t in tags for x in t.split(",") if x.strip()} - known:
             err(p, f"value objective {v!r} is not in data/value_objectives.yaml")
+        d = deferral(head)
+        if d is not None:
+            if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(d.get("since", ""))): err(p, "deferred: without a YYYY-MM-DD since:")
+            if not re.fullmatch(r'\d{4}(-\d{2}-\d{2})?', str(d.get("until", ""))): err(p, "deferred: without an until: year (YYYY) or day")
+            for k in set(d) - {"since", "until", "reason"}: err(p, f"deferred: unknown key {k!r}")
+            if d.get("since", "") and all(m.get("status") == "done" for m in ms): warn(p, "deferred, but every waypoint is done")
         if roadmap and re.search(r'^tasks_(completed|in_progress|planned):', fm, re.M):
             err(p, "tasks_* on a roadmap page; its progress is computed from waypoints")
         seen = set()
@@ -148,6 +164,7 @@ def cmd_list(a):
         parts = split(p); parsed = parts and parse(parts[0])
         if not parsed: continue
         title = re.search(r'^title: "?(.*?)"?$', parts[0], re.M).group(1)
+        deferred = deferral(parsed[0]) is not None
         for m in parsed[1]:
             d = m.get("date", "")
             if a.status and m["status"] != a.status: continue
@@ -155,7 +172,8 @@ def cmd_list(a):
             if a.date_from and d < a.date_from: continue
             if a.date_to and d > a.date_to: continue
             rel = p[len("content/docs/roadmap/"):-3].removesuffix("/_index") if p.startswith("content/docs/roadmap/") else "/" + p[len("content/"):-3]
-            print(f"{d or '-':10}\t{ICON[m['status']]}\t{rel}\t{title}\t{m['title']}" + ("\t(approx)" if m.get("approx") else "") + ("\t🏁" if m.get("milestone") else ""))
+            icon = "⏸" if deferred and m["status"] != "done" else ICON[m["status"]]
+            print(f"{d or '-':10}\t{icon}\t{rel}\t{title}\t{m['title']}" + ("\t(approx)" if m.get("approx") else "") + ("\t🏁" if m.get("milestone") else ""))
     return 0
 
 def cmd_set(a, status, date=None, approx=False):

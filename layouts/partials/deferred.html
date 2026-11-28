@@ -1,0 +1,10 @@
+{{- /* A roadmap page's deferral: its own `deferred:` front matter
+       ({since, until, reason}), or its nearest ancestor's, so a plan
+       beneath a deferred item is deferred too. Empty when not deferred. */ -}}
+{{- $d := .Params.deferred -}}
+{{- if not $d -}}
+  {{- range .Ancestors -}}
+    {{- if and (not $d) .Params.deferred -}}{{- $d = .Params.deferred -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return ($d | default false) -}}
