@@ -1,6 +1,6 @@
 # Q4 2026. Written from its months.
 through: "2026-11-27"
-reached: 98
+reached: 104
 headline: "Deevnet is its own certificate authority, and its first production tenant is in daily use."
 bullets:
   - text: "**Deevnet is its own certificate authority,** from an offline root down to tenants' services and their Pis. Every substrate service, appliance and tenant tool now trusts that root."
@@ -10,7 +10,7 @@ bullets:
   - text: "**Tenants can rely on more of the platform:** fixed addresses for their devices and their services on 443 by name. MaBell now sends its events as a tenant. Each tenant now has its own secrets, buckets, metrics, and alerts on a phone. Tenants can work from Windows laptops, one that loses its state's keys gets back in with a new one, and one that is removed leaves nothing behind. A tenant's whole backend can also go home, on a Pi, as a virtual machine for Proxmox, VirtualBox, Hyper-V or a Mac, or installed on its owner's own computer."
     items: [infrastructure/tenant-services/take-home-media, infrastructure/tenant-services/platform-services, infrastructure/tenant-services/observability, infrastructure/tenant-services/tenant-lifecycle, infrastructure/tenant-services/tenant-removal, mabell]
   - text: "**The platform is safer to operate:** credentials rotated, every public repository scanned, nightly encrypted backups with one restore rehearsed. The secrets manager stays sealed until an operator opens it with split-key shares. The core router has been restored from its backup, and the network devices are backed up after every change. The site now tells its operator what is waiting to be patched and what has stopped, and every VM runs on one hardware profile after a disk controller failed under load."
-    items: [infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane, infrastructure/substrate/secrets-identity, infrastructure/substrate/patch-management, infrastructure/tenant-services/tenant-fabric, site-work/mobile/hypervisor-uplift]
+    items: [infrastructure/substrate/credential-rotation, infrastructure/substrate/management-plane, infrastructure/substrate/secrets-identity, infrastructure/substrate/patch-management, infrastructure/tenant-services/tenant-fabric, infrastructure/substrate/vm-hardware-profile, site-work/mobile/hypervisor-uplift, site-work/mobile/builder-upkeep]
   - text: "**A second product started:** a catalog of the owner's music, which EdS already uses."
     items: [eds/inventory/foundation, eds/inventory/serving-eds, eds/inventory/schema]
 watch: "The mobile site's core router is unreliable under large transfers. It failed twice this quarter, the fault is not fixed, and its replacement is not chosen."
