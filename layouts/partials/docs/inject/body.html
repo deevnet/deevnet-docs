@@ -1,0 +1,25 @@
+{{- /* Ages of open work items: each span.added whose list item is open
+       (⏳ 🔄, an unchecked box, or data-open on a waypoint) gets "· N days"
+       and its added date as a tooltip. Worked out here so ages stay current
+       between deploys. */ -}}
+<script>
+(function () {
+  var spans = document.querySelectorAll("span.added[data-added]");
+  if (!spans.length) return;
+  var day = 864e5, now = new Date(); now.setHours(0, 0, 0, 0);
+  spans.forEach(function (s) {
+    var li = s.closest("li"), open = s.hasAttribute("data-open");
+    if (!open && li) {
+      var box = li.querySelector(":scope > input[type=checkbox], :scope > p:first-child > input[type=checkbox]");
+      open = box ? !box.checked : /^\s*(⏳|🔄)/.test(li.textContent);
+    }
+    if (!open) return;
+    var p = s.getAttribute("data-added").split("-");
+    var n = Math.round((now - new Date(+p[0], p[1] - 1, +p[2])) / day);
+    if (isNaN(n) || n < 0) return;
+    s.textContent = "· " + (n === 0 ? "added today" : n < 90 ? n + (n === 1 ? " day" : " days") : Math.round(n / 30.4) + " months");
+    s.title = "Added " + s.getAttribute("data-added");
+    if (n >= 90) s.classList.add("added-old");
+  });
+})();
+</script>

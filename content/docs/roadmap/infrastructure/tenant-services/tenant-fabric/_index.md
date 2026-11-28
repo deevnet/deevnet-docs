@@ -5,19 +5,24 @@ weight: 1
 value: [fast-delivery]
 waypoints:
   - title: "Tenant network architecture designed"
+    added: "2026-08-30"
     status: done
     date: "2026-08-30"
   - title: "Tenants publish their own DNS names"
+    added: "2026-09-03"
     status: done
     date: "2026-09-03"
   - title: "The EVPN/VXLAN tenant network running on one hypervisor, with internet access through the perimeter"
+    added: "2026-09-17"
     status: done
     date: "2026-09-17"
   - title: "The core router confined to the tenant perimeter: one transit network and one route into the tenant overlay, nothing per tenant"
+    added: "2026-11-12"
     value: [contained-failure]
     status: done
     date: "2026-11-12"
   - title: "Network isolation between two tenants' workloads tested"
+    added: "2026-11-01"
     value: [contained-failure]
     status: planned
 ---

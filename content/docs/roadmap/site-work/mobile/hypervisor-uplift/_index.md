@@ -6,21 +6,27 @@ aliases:
 weight: 1
 waypoints:
   - title: "The tenant hypervisor back in service on new hardware"
+    added: "2026-08-29"
     status: done
     date: "2026-08-29"
   - title: "Proxmox 9 pre-upgrade assessment done"
+    added: "2026-08-30"
     status: done
     date: "2026-08-30"
   - title: "Tenant hypervisor upgraded to Proxmox 9"
+    added: "2026-08-30"
     status: done
     date: "2026-08-30"
   - title: "The Proxmox networking API the tenant network depends on verified after the upgrade"
+    added: "2026-08-31"
     status: done
     date: "2026-08-31"
   - title: "Management hypervisor upgraded to Proxmox 9, in its own maintenance window"
+    added: "2026-11-01"
     status: done
     date: "2026-11-21"
   - title: "The provisioning toolchain aligned to Proxmox 9"
+    added: "2026-11-01"
     status: planned
 ---
 

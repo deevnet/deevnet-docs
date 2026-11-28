@@ -10,12 +10,16 @@ deferred:
   until: "2027"
 waypoints:
   - title: "PiDP-11 operating system and front panel behavior defined"
+    added: "2026-11-01"
     status: planned
   - title: "PiDP-11 kit assembled, its front panel lights and switches verified"
+    added: "2026-11-01"
     status: planned
   - title: "PDP-11 emulated on the Pi with simh, running RT-11, RSX-11 and 2.11BSD"
+    added: "2026-11-01"
     status: active
   - title: "PiDP-11 build and usage guides written"
+    added: "2026-11-01"
     status: planned
 ---
 

@@ -43,15 +43,15 @@ use, and nothing should need the operator's hands.
 ## Leftovers ✅
 
 - ✅ **State.** The delete removes every version of every object under `tenants/<name>/`, after the
-  tenant's store user. The API's store user may only list and delete there (API v0.20.0).
+  tenant's store user. The API's store user may only list and delete there (API v0.20.0). {{< added "2026-11-12" >}}
 - ✅ **Logs.** The delete purges the index's three partitions through VictoriaLogs' own delete API,
-  after the tenant's log users and before the index is freed (API v0.21.0).
+  after the tenant's log users and before the index is freed (API v0.21.0). {{< added "2026-11-12" >}}
 - ✅ **Dashboards.** The delete empties the organization (folders, dashboards, library panels,
-  snapshots, annotations) before it is renamed `deleted-<name>-<id>` (API v0.20.1).
+  snapshots, annotations) before it is renamed `deleted-<name>-<id>` (API v0.20.1). {{< added "2026-11-12" >}}
 
 ## Tokens ✅
 
 - ✅ **Revoke the API token.** The delete records the token's hash and the tenant's name in the same
   transaction that removes its row. Any token for a deleted name is refused until the name is
   admitted again, and the names were seeded from the audit log, so tenants deleted earlier are
-  covered too (API v0.20.0, v0.20.2).
+  covered too (API v0.20.0, v0.20.2). {{< added "2026-11-12" >}}

@@ -30,8 +30,8 @@ module cache and build caches, while `/srv` had 774 GB free.
 
 - ✅ Rebuild or reconfigure the Builder with more space for `/home`: the builder kickstart gives it
   60 GB ([CHG-0091](/docs/changes/2026/0091-temporary-builder-f44/)), which the Builder took when
-  it was repaved ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/), 2026-11-26)
-- ⏳ Keep Podman's storage and `GOPATH` under `/srv`, so build caches stop filling `/home`
+  it was repaved ([CHG-0092](/docs/changes/2026/0092-builder-repave-f44/), 2026-11-26) {{< added "2026-11-01" >}}
+- ⏳ Keep Podman's storage and `GOPATH` under `/srv`, so build caches stop filling `/home` {{< added "2026-11-01" >}}
 
 ---
 
@@ -41,5 +41,5 @@ The Builder has a Wi-Fi radio it does not use (`wlp3s0`, a Realtek RTL8821CE). I
 meant to join whatever network is there.
 
 - ⏳ Join the home network over Wi-Fi when the factory is parked there, during a maintenance window:
-  a Mac at home reaches the Builder, and the Builder reaches the home Pis (EdS ADR-0053)
-- ⏳ A record deciding how the upstream leg joins the house, and what it is called there
+  a Mac at home reaches the Builder, and the Builder reaches the home Pis (EdS ADR-0053) {{< added "2026-11-01" >}}
+- ⏳ A record deciding how the upstream leg joins the house, and what it is called there {{< added "2026-11-01" >}}

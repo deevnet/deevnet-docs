@@ -3,25 +3,31 @@ title: "Screens and Console"
 weight: 3
 waypoints:
   - title: "The EdS console, over TLS, showing what is playing, the stand and whether each part is up (EdS ADR-0018)"
+    added: "2026-10-11"
     group: "Console"
     status: done
     date: "2026-10-11"
   - title: "The EdS console also at a name not tied to a site, `console.eds.deevnet.net` (EdS CHG-0047)"
+    added: "2026-11-01"
     group: "Console"
     status: done
     date: "2026-11-01"
   - title: "EdS console fixes: covers sent at full size, recently played lost on restart, LED strip length told rather than reported (EdS CHG-0006, CHG-0010)"
+    added: "2026-11-01"
     group: "Console"
     status: planned
   - title: "A touch screen by the LP stand with the album cover, play/pause, skip and volume (EdS ADR-0020)"
+    added: "2026-10-11"
     group: "Cover screen"
     status: done
     date: "2026-10-11"
   - title: "The touch screen by the LP stand sleeps when nothing has played for five minutes (EdS ADR-0036)"
+    added: "2026-10-17"
     group: "Cover screen"
     status: done
     date: "2026-10-17"
   - title: "Find out why the touch screen by the LP stand sent no presses on its first start after new settings were written (EdS CHG-0042)"
+    added: "2026-11-01"
     group: "Cover screen"
     status: planned
 ---

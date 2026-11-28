@@ -4,11 +4,14 @@ bookCollapseSection: true
 weight: 4
 waypoints:
   - title: "More space for the build server's `/home` (CHG-0092)"
+    added: "2026-11-26"
     status: done
     date: "2026-11-26"
   - title: "The build server's build caches under `/srv`"
+    added: "2026-11-27"
     status: planned
   - title: "The build server's Wi-Fi onto the home network, decided in a change record (EdS ADR-0053)"
+    added: "2026-11-01"
     value: [works-anywhere]
     status: planned
 ---

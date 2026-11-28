@@ -11,7 +11,7 @@
     {{- range .Params.waypoints -}}
       {{- if or (eq .status "done") (not $deferred) -}}
       {{- if in (partial "waypoint-values.html" (dict "page" $page "waypoint" .)) $id -}}
-        {{- $row := dict "title" .title "status" .status "date" .date "approx" .approx "page" $page -}}
+        {{- $row := dict "title" .title "status" .status "date" .date "approx" .approx "added" .added "page" $page -}}
         {{- if eq .status "done" -}}{{- $done = $done | append $row -}}
         {{- else if eq .status "active" -}}{{- $active = $active | append $row -}}
         {{- else -}}{{- $planned = $planned | append $row -}}{{- end -}}

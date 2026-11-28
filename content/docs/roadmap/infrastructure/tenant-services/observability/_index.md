@@ -5,15 +5,19 @@ weight: 5
 value: [product-not-plumbing]
 waypoints:
   - title: "Tenants push metrics from their workloads and query them, in Grafana too, with their log tokens (CHG-0070)"
+    added: "2026-11-14"
     status: done
     date: "2026-11-14"
   - title: "Tenants get alerts on their phones, on site, from their own rules over their metrics and logs (CHG-0071)"
+    added: "2026-11-15"
     status: done
     date: "2026-11-15"
   - title: "A tenant's metrics, alerts and buckets come along when its app moves to a take-home Pi (CHG-0072, CHG-0073)"
+    added: "2026-11-16"
     status: done
     date: "2026-11-16"
   - title: "Tenants see each workload's CPU, memory, disk and network as the hypervisor measures it"
+    added: "2026-11-15"
     status: planned
 ---
 

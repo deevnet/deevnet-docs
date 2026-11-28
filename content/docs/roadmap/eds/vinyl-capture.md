@@ -3,6 +3,7 @@ title: "EdS Vinyl Capture"
 weight: 3
 waypoints:
   - title: "Each record played captured to FLAC, track by track (EdS capturing-vinyl proposal)"
+    added: "2026-11-01"
     status: planned
 ---
 

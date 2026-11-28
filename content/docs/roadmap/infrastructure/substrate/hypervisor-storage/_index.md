@@ -7,12 +7,16 @@ weight: 5
 value: [rebuild-from-code]
 waypoints:
   - title: "The management hypervisor's disk layout declared in inventory"
+    added: "2026-11-01"
     status: active
   - title: "A hypervisor storage standard written: what goes on which disk, and what a disk failure may cost"
+    added: "2026-11-01"
     status: planned
   - title: "Both hypervisors brought to the storage standard"
+    added: "2026-11-01"
     status: planned
   - title: "Hypervisor guest definitions survive an OS reinstall"
+    added: "2026-11-01"
     status: planned
 ---
 

@@ -5,46 +5,59 @@ weight: 6
 value: [works-anywhere]
 waypoints:
   - title: "Deevnet's take-home tools built for amd64 computers: deevnet-kit, the log bridge and the silo bucket store"
+    added: "2026-11-17"
     status: done
     date: "2026-11-17"
   - title: "A take-home virtual machine image of the tenant backend, built from the same configuration as the Pi image"
+    added: "2026-11-17"
     status: done
     date: "2026-11-17"
   - title: "The take-home virtual machine asks its owner for a user, a sign-in and a host name on its first boot"
+    added: "2026-11-17"
     value: [works-anywhere, secure-by-default]
     status: done
     date: "2026-11-17"
   - title: "The take-home virtual machine passes its full self-test and takes a tenant across with one file"
+    added: "2026-11-17"
     status: done
     date: "2026-11-17"
   - title: "Take-home media v1 done: a virtual machine image of the tenant backend for Proxmox and KVM, in the tenant downloads"
+    added: "2026-11-17"
     milestone: true
     status: done
     date: "2026-11-17"
   - title: "An installer ISO writes the take-home tenant backend to a disk its owner chooses, on UEFI and BIOS machines"
+    added: "2026-11-17"
     status: done
     date: "2026-11-17"
   - title: "Take-home media v2 done: an installer ISO for an owner's own hardware, in the tenant downloads"
+    added: "2026-11-17"
     milestone: true
     status: done
     date: "2026-11-17"
   - title: "The take-home virtual machine converts unchanged into VirtualBox's and Hyper-V's formats, and boots and passes its self-test in each one's firmware"
+    added: "2026-11-18"
     status: done
     date: "2026-11-18"
   - title: "Take-home media v3 done: the virtual machine for VirtualBox and Hyper-V, in the tenant downloads"
+    added: "2026-11-18"
     milestone: true
     status: done
     date: "2026-11-18"
   - title: "The take-home virtual machine builds for arm64 by the same play, and boots and passes its self-test as UTM's QEMU backend runs it"
+    added: "2026-11-18"
     status: done
     date: "2026-11-18"
   - title: "Take-home media v4 done: the virtual machine for UTM on Apple Silicon, in the tenant downloads"
+    added: "2026-11-18"
     milestone: true
     status: done
     date: "2026-11-18"
   - title: "The take-home backend's own tool is renamed tenant2backend, a name that is the owner's rather than Deevnet's, on every medium"
+    added: "2026-11-19"
     status: planned
   - title: "Take-home media v5 done: every take-home image rebuilt with tenant2backend, in the tenant downloads"
+    added: "2026-11-19"
     milestone: true
     status: planned
 ---

@@ -8,12 +8,16 @@ weight: 6
 value: [works-anywhere]
 waypoints:
   - title: "GPS time server requirements defined: accuracy, antenna placement and alerting"
+    added: "2026-11-01"
     status: planned
   - title: "Pi Zero and GPS module chosen and bought for the time server"
+    added: "2026-11-01"
     status: planned
   - title: "GPS time server image built, with Chrony, telemetry and accuracy tests"
+    added: "2026-11-01"
     status: planned
   - title: "GPS time server on the network, with clients using it"
+    added: "2026-11-01"
     status: planned
 ---
 

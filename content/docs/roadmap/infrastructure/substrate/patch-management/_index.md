@@ -10,28 +10,36 @@ weight: 11
 value: [no-surprises]
 waypoints:
   - title: "The Software Catalog's rows moved into a data file that reports can compare against"
+    added: "2026-11-01"
     status: done
     date: "2026-11-03"
   - title: "Deevnet's own software pinned to exact versions and licensed"
+    added: "2026-11-01"
     status: done
     date: "2026-11-03"
   - title: "Patch management v1 done: installed versions collected from routers, hypervisors, VMs and network devices, in a dated report against the catalog"
+    added: "2026-11-23"
     milestone: true
     status: done
     date: "2026-11-23"
   - title: "Patch management v2 done: the operator is told at login on the Builder when any substrate system has an update waiting, such as a new OPNsense patch"
+    added: "2026-11-23"
     milestone: true
     status: planned
   - title: "Patch management v3 done: new releases, advisories and end of life for software that can't report its own updates are reported too"
+    added: "2026-11-23"
     milestone: true
     status: planned
   - title: "Patch management v4 done: substrate hosts patched on a monthly cycle, in a fixed order, each with a way back"
+    added: "2026-11-23"
     milestone: true
     status: planned
   - title: "Patch management v5 done: security updates applied unattended on the substrate service VMs, with what is never unattended written down"
+    added: "2026-11-23"
     milestone: true
     status: planned
   - title: "Patch management v6 done: the take-home Pi and VM images rebuilt on a cadence, each stating how current it is"
+    added: "2026-11-23"
     milestone: true
     status: planned
 ---

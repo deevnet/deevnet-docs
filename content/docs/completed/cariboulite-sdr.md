@@ -6,6 +6,7 @@ aliases:
   - /docs/roadmap/raspberry-pi/sdr/
 waypoints:
   - title: "The CaribouLite SDR image: checked on air, served remotely by SoapySDRServer"
+    added: "2026-01-15"
     status: done
     date: "2026-01-15"
 ---

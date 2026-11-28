@@ -91,15 +91,15 @@ inference, not a vendor statement.
   switch is adopted into Omada ([ADR-0009](/docs/architecture/decisions/substrate/0009-network-device-config-ownership/),
   after [CHG-0005](/docs/changes/2026/0005-wireless-ap-firmware-and-adoption/) and
   [CHG-0006](/docs/changes/2026/0006-access-switch-firmware-upgrade/)). Doing it first through
-  `switch_vlans` would only be redone at adoption.
+  `switch_vlans` would only be redone at adoption. {{< added "2026-09-15" >}}
 - ⏳ Update the inventory comment on `gi1/0/2`, and the console-recovery pages
   ([index](/docs/runbook/substrate/recovery/console-recovery/),
   [wireless AP](/docs/runbook/substrate/recovery/console-recovery/wireless-ap/),
   [access switch](/docs/runbook/substrate/recovery/console-recovery/access-switch/)), which call it the only
-  spare management port.
+  spare management port. {{< added "2026-09-15" >}}
 - ⏳ If a dumb switch is ever added for cable reach: untagged VLAN 99 devices only; the core router and
   the AP stay on their own trunk ports; declare its uplink port with a description that says what
-  is behind it.
+  is behind it. {{< added "2026-09-15" >}}
 
 ## Unused ports ⏳
 
@@ -110,6 +110,6 @@ plugged in, rather than refusing it.
 - ⏳ Declare every unused port into the blackhole VLAN (999), so a device plugged into one is
   visibly refused. A change of its own. The
   [Network Segmentation](/docs/standards/network-segmentation/) standard requires 999 only as the
-  trunk native VLAN, so this also means amending the standard
+  trunk native VLAN, so this also means amending the standard {{< added "2026-09-26" >}}
 - ✅ Declare `dv02rpi003p01`'s port before it is cabled: `Gi1/0/11`, IoT access, 2026-10-18
-  ([CHG-0048](/docs/changes/2026/0048-rpi003-switch-port/))
+  ([CHG-0048](/docs/changes/2026/0048-rpi003-switch-port/)) {{< added "2026-09-26" >}}

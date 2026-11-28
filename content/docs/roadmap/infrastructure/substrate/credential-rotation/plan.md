@@ -47,8 +47,8 @@ This is **not** an urgent security posture item. mobile is a lab on hardware tha
 
 ## Credential Inventory 🔄
 
-- ✅ Enumerate every long-lived credential in the substrate and record, for each, what it authenticates, which repos and roles consume it, and whether a copy exists outside the vault
-- ✅ Identify which are **derivable or reissuable without coordination** (a Proxmox API token) versus which require simultaneous updates on both sides (a TSIG key shared with a tenant's Terraform)
+- ✅ Enumerate every long-lived credential in the substrate and record, for each, what it authenticates, which repos and roles consume it, and whether a copy exists outside the vault {{< added "2026-09-04" >}}
+- ✅ Identify which are **derivable or reissuable without coordination** (a Proxmox API token) versus which require simultaneous updates on both sides (a TSIG key shared with a tenant's Terraform) {{< added "2026-09-04" >}}
 
 **The credentials, ordered by what losing control of each would reach.** None has a defined
 lifetime. **Used by** names what reads each one, by repository and role (collections are
@@ -84,24 +84,24 @@ a credential documents how to rotate it, rather than this project writing every 
 ([2026-10 review, A8](/docs/architecture/reviews/2026-10-rebuild-and-access/#a8-rotation)). The three
 at the top need their own:
 
-- ⏳ Rekey the ansible-vault password (`ansible-vault rekey`), and what has to be updated with it
-- ⏳ Replace the `a_autoprov` SSH key on every host, from the artifact server's published copy onward
-- ✅ Rotate OpenBao's unseal shares: `make bao-rotate-shares`, run on 2026-11-08 (CHG-0053)
+- ⏳ Rekey the ansible-vault password (`ansible-vault rekey`), and what has to be updated with it {{< added "2026-10-06" >}}
+- ⏳ Replace the `a_autoprov` SSH key on every host, from the artifact server's published copy onward {{< added "2026-10-06" >}}
+- ✅ Rotate OpenBao's unseal shares: `make bao-rotate-shares`, run on 2026-11-08 (CHG-0053) {{< added "2026-11-08" >}}
 
 ## Rotation Procedures ⏳
 
-- ⏳ Write a procedure per credential class, each naming every consumer that must change in the same operation. A rotation that updates the issuer and misses a consumer is an outage, and for anything the substrate does not prune, it is a silent one
-- ⏳ Decide whether rotation is scheduled, event-driven (exposure, operator change, hardware disposal), or both
-- ⏳ Cover the awkward case explicitly: a credential shared with a tenant repo cannot be rotated unilaterally, so the procedure needs a handshake or a dual-key overlap window
+- ⏳ Write a procedure per credential class, each naming every consumer that must change in the same operation. A rotation that updates the issuer and misses a consumer is an outage, and for anything the substrate does not prune, it is a silent one {{< added "2026-09-04" >}}
+- ⏳ Decide whether rotation is scheduled, event-driven (exposure, operator change, hardware disposal), or both {{< added "2026-09-04" >}}
+- ⏳ Cover the awkward case explicitly: a credential shared with a tenant repo cannot be rotated unilaterally, so the procedure needs a handshake or a dual-key overlap window {{< added "2026-09-04" >}}
 
 ## Reducing Lifetime ⏳
 
-- ⏳ Assess which static credentials can become short-lived without a secrets manager — Proxmox API tokens support expiry dates, which would make rotation forced rather than optional
-- ⏳ Record which ones genuinely cannot yet, and why, so the gap is a documented decision rather than an oversight
+- ⏳ Assess which static credentials can become short-lived without a secrets manager — Proxmox API tokens support expiry dates, which would make rotation forced rather than optional {{< added "2026-09-04" >}}
+- ⏳ Record which ones genuinely cannot yet, and why, so the gap is a documented decision rather than an oversight {{< added "2026-09-04" >}}
 
 ## Handling Exposure ✅
 
-- ✅ Write down what "exposed" means here and what follows from it. A credential printed to a terminal, a log, a chat transcript or a CI job output is exposed even if the audience was trusted; the question is what the response is, not whether it felt risky at the time
-- ✅ Establish the default: in a lab with an ephemeral substrate, "reissue at the next convenient rebuild" is a legitimate answer — but it should be a stated policy rather than an implicit one
+- ✅ Write down what "exposed" means here and what follows from it. A credential printed to a terminal, a log, a chat transcript or a CI job output is exposed even if the audience was trusted; the question is what the response is, not whether it felt risky at the time {{< added "2026-09-04" >}}
+- ✅ Establish the default: in a lab with an ephemeral substrate, "reissue at the next convenient rebuild" is a legitimate answer — but it should be a stated policy rather than an implicit one {{< added "2026-09-04" >}}
 
 Both are in the [Exposed Credentials](/docs/policies/risk-management/exposed-credentials/) policy.

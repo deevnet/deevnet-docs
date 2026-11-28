@@ -10,8 +10,10 @@ deferred:
   until: "2027"
 waypoints:
   - title: "The whole mobile site rebuilt from scratch, tenants brought back and gaps fixed"
+    added: "2026-11-01"
     status: planned
   - title: "Site rebuilds run on a schedule, each under a change record"
+    added: "2026-11-01"
     status: planned
 ---
 

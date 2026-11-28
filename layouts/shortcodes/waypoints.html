@@ -1,7 +1,8 @@
 {{- /* A roadmap item's waypoints, from its front matter; with group="…",
        only those of that group. A done waypoint shows the day it was
        reached, "by" when that day is only known as a latest possible one.
-       A waypoint marked `milestone: true` closes a version and is flagged. */ -}}
+       A waypoint marked `milestone: true` closes a version and is flagged.
+       An open waypoint with `added:` shows its age (docs/inject/body.html). */ -}}
 {{- $group := .Get "group" -}}
 {{- $values := slice -}}
 {{- range .Page.Params.waypoints -}}
@@ -23,7 +24,8 @@
 {{- range .Page.Params.waypoints }}
   {{- if or (not $group) (eq .group $group) }}
   <li>{{ if eq .status "done" }}✅{{ else if eq .status "active" }}🔄{{ else }}⏳{{ end }} {{ $.Page.RenderString .title }}{{ if .milestone }} <span class="waypoint-milestone" title="Milestone: a version done">🏁 Milestone</span>{{ end }}
-  {{- if and (eq .status "done") .date }} <span class="waypoint-date">{{ if .approx }}by {{ end }}{{ .date }}</span>{{ end }}</li>
+  {{- if and (eq .status "done") .date }} <span class="waypoint-date">{{ if .approx }}by {{ end }}{{ .date }}</span>{{ end }}
+  {{- if and (ne .status "done") .added }} <span class="added" data-added="{{ .added }}" data-open></span>{{ end }}</li>
   {{- end }}
 {{- end }}
 </ul>

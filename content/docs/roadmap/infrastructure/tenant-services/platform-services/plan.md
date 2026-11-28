@@ -24,36 +24,36 @@ The services a tenant can use beyond networks, workloads and names, one of four 
 What a tenant can declare today beyond networks, workloads and names, each through the provider.
 
 - ✅ Wi-Fi keys: a PPSK key per tenant on `DVNTM-IOT`
-  ([CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/))
-- ✅ Device registry ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/))
+  ([CHG-0013](/docs/changes/2026/0013-tenant-wifi-ppsk-keys/)) {{< added "2026-09-26" >}}
+- ✅ Device registry ([CHG-0014](/docs/changes/2026/0014-tenant-device-registry/)) {{< added "2026-09-26" >}}
 - ✅ MQTT: VerneMQ, with broker accounts the API writes
   ([CHG-0015](/docs/changes/2026/0015-vernemq-broker/),
-  [CHG-0016](/docs/changes/2026/0016-broker-accounts/))
+  [CHG-0016](/docs/changes/2026/0016-broker-accounts/)) {{< added "2026-09-26" >}}
 - ✅ Logs: ingest and read tokens, and device logs over MQTT
   ([CHG-0020](/docs/changes/2026/0020-tenant-log-tokens/),
-  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/))
+  [CHG-0021](/docs/changes/2026/0021-mqtt-log-bridge/)) {{< added "2026-09-26" >}}
 - ✅ Dashboards: a Grafana organization per tenant
-  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/))
+  ([CHG-0024](/docs/changes/2026/0024-tenant-dashboards/)) {{< added "2026-09-26" >}}
 - ✅ A tenant dev network, `DVNTM-TD`, reaching only the API, the state store, the broker, logs,
-  Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/))
+  Grafana and downloads ([CHG-0022](/docs/changes/2026/0022-tenant-dev-network/)) {{< added "2026-09-26" >}}
 - ✅ Tenant downloads: the prebuilt provider, a laptop check and the large installers, served on
-  site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/))
+  site ([CHG-0025](/docs/changes/2026/0025-tenant-downloads/)) {{< added "2026-09-26" >}}
 - ✅ Secrets: an optional OpenBao namespace per tenant, written through the provider and read by
   each workload under its own AppRole ([ADR-0021](/docs/architecture/decisions/tenant-model/0021-tenant-secrets/),
-  [CHG-0067](/docs/changes/2026/0067-tenant-secrets/))
+  [CHG-0067](/docs/changes/2026/0067-tenant-secrets/)) {{< added "2026-11-14" >}}
 - ✅ Object storage, step one: a VM of its own, `dv02obj001v01`, running silo as a state store and
   a bucket store on separate disks, with tenants' state moved onto it and MinIO retired
   ([CHG-0068](/docs/changes/2026/0068-object-store-vm/),
-  [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/))
+  [ADR-0026](/docs/architecture/decisions/platform-services/0026-object-storage/)) {{< added "2026-11-14" >}}
 - ✅ Object storage, step two: tenant buckets, with quotas, keys, versioning, lifecycle and
   site-only anonymous read, through `deevnet_bucket` and `deevnet_bucket_key`
-  ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/))
+  ([CHG-0069](/docs/changes/2026/0069-tenant-buckets/)) {{< added "2026-11-14" >}}
 - ⏳ Device secrets in tenant code ([ADR-0033](/docs/architecture/decisions/tenant-model/0033-code-is-the-state/)):
   the provider takes a tenant-supplied broker password and Wi-Fi key as write-only arguments, the
   restore path reads them from configuration, and `eds` and `mabell` move theirs from state into
-  their repositories
-- ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node
-- ⏳ Workloads and DNS records come back after a rebuild: a reconcile re-ensures neither, and a tenant's plain apply sees no change. Re-ensure them in the reconcile, or give the tenant a documented way to force a re-apply
+  their repositories {{< added "2026-10-05" >}}
+- ⏳ Per-tenant resource quotas on the tenant hypervisor, so one tenant cannot use up the node {{< added "2026-09-27" >}}
+- ⏳ Workloads and DNS records come back after a rebuild: a reconcile re-ensures neither, and a tenant's plain apply sees no change. Re-ensure them in the reconcile, or give the tenant a documented way to force a re-apply {{< added "2026-09-27" >}}
 
 ---
 
@@ -65,19 +65,19 @@ PowerShell or under WSL2, and the tenant guide documents both
 ([CHG-0058](/docs/changes/2026/0058-windows-tenant-laptops/)).
 
 - ✅ Cross-compile the provider for Windows (`amd64` and `arm64`), named `.exe` as Terraform
-  requires, in `make release-build` and GoReleaser. Released in v0.9.0
+  requires, in `make release-build` and GoReleaser. Released in v0.9.0 {{< added "2026-09-26" >}}
 - ✅ Install on Windows without bash: `install-provider.ps1` into
   `%APPDATA%\terraform.d\plugins`, checked against `SHA256SUMS`, and `tenant-check.ps1` with
-  `winget` hints
-- ✅ `tenant-check.sh` under WSL2: networking mode, a checkout on a Windows drive, the site's names
+  `winget` hints {{< added "2026-11-03" >}}
+- ✅ `tenant-check.sh` under WSL2: networking mode, a checkout on a Windows drive, the site's names {{< added "2026-11-03" >}}
 - ✅ The reference tenant's targets without make: `tenant.ps1` in `deevnet-tenant-tdemo`, with the
-  Makefile's guards and a native `state-backend`
-- ✅ LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo
+  Makefile's guards and a native `state-backend` {{< added "2026-11-03" >}}
+- ✅ LF line endings in a Windows checkout: `.gitattributes` in the provider and tdemo {{< added "2026-11-03" >}}
 - ✅ Mirror Terraform, the `grafana` provider and Pi Imager for Windows in the
   [tenant downloads](/docs/changes/2026/0025-tenant-downloads/), with provider v0.9.0 and the
-  `.ps1` scripts. Served
+  `.ps1` scripts. Served {{< added "2026-11-03" >}}
 - ✅ [Before You Start](/docs/runbook/tenant/getting-started/before-you-start/) and the other tenant pages
-  gain the Windows lines and a *Working from Windows* section
+  gain the Windows lines and a *Working from Windows* section {{< added "2026-09-26" >}}
 - ✅ Proven from a Windows laptop on `DVNTM-TD`, natively (Windows PowerShell 5.1 and PowerShell 7)
-  and under WSL2, on 2026-11-07
+  and under WSL2, on 2026-11-07 {{< added "2026-11-03" >}}
 

@@ -48,12 +48,12 @@ An amd64 qcow2 of the tenant backend for Proxmox and KVM, on Debian bookworm lik
 
 **Done when:**
 
-- [x] deevnet-kit, the log bridge and silo are built for amd64 and staged on the artifact server, each with its sha256
-- [x] One `make` target on the Builder builds the qcow2 from the same configuration play as the Pi image
-- [x] Its first boot asks on the console for the user, the sign-in (password or SSH key) and the host name, then deevnet-kit makes the CA and the secrets
-- [x] The self-test passes every check under qemu on the Builder
-- [x] `tdemo` moves across with its `kit.env`: a test client publishes, and its log shows in Grafana
-- [x] The image is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for it
+- [x] deevnet-kit, the log bridge and silo are built for amd64 and staged on the artifact server, each with its sha256 {{< added "2026-11-17" >}}
+- [x] One `make` target on the Builder builds the qcow2 from the same configuration play as the Pi image {{< added "2026-11-17" >}}
+- [x] Its first boot asks on the console for the user, the sign-in (password or SSH key) and the host name, then deevnet-kit makes the CA and the secrets {{< added "2026-11-17" >}}
+- [x] The self-test passes every check under qemu on the Builder {{< added "2026-11-17" >}}
+- [x] `tdemo` moves across with its `kit.env`: a test client publishes, and its log shows in Grafana {{< added "2026-11-17" >}}
+- [x] The image is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for it {{< added "2026-11-17" >}}
 
 It is proven on the Builder under qemu only, never on the lab's hypervisors. A bridged run on a
 real hypervisor comes with v3, or the first time someone imports it.
@@ -66,11 +66,11 @@ An ISO that installs the same amd64 system as v1 on an owner's own hardware, wir
 
 **Done when:**
 
-- [x] One `make` target builds a hybrid ISO, bootable on UEFI and BIOS, that carries the v1 system image from the same build
-- [x] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from
-- [x] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [x] The installed system passes the self-test, every check
-- [x] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired
+- [x] One `make` target builds a hybrid ISO, bootable on UEFI and BIOS, that carries the v1 system image from the same build {{< added "2026-11-17" >}}
+- [x] In qemu on the Builder, the ISO boots under BIOS and under UEFI, lists the disks, and writes the system only to the disk the owner names and confirms, never to the stick it booted from {{< added "2026-11-17" >}}
+- [x] The installed system boots from its own disk, the ISO removed, under both firmwares, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk {{< added "2026-11-17" >}}
+- [x] The installed system passes the self-test, every check {{< added "2026-11-17" >}}
+- [x] The ISO is in the tenant downloads under `tenant/iso` with its sha256, and the tenant guide has a section for it: write it to a USB stick, boot, install, wired {{< added "2026-11-17" >}}
 
 **Secure Boot was a goal, not a point, and v2 reached it in qemu.** Most machines ship with it on,
 and the system's disk already carries Debian's signed shim and GRUB. The ISO and the installed
@@ -88,11 +88,11 @@ a VHDX for Hyper-V.
 
 **Done when:**
 
-- [x] One `make` target converts the v1 build's disk, unchanged, into an OVA for VirtualBox and a VHDX for a Hyper-V Generation 2 machine, each with its sha256; nothing is rebuilt
-- [x] Each format's disk compares equal to the v1 disk (`qemu-img compare`), and the OVA's manifest and descriptor check
-- [x] In qemu on the Builder, each boots in the firmware its hypervisor gives it, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [x] Each passes the self-test, every check
-- [x] Both are in the tenant downloads under `tenant/vm` with their sha256s, and the tenant guide has a section for each: import, bridged networking (VirtualBox's bridged adapter, Hyper-V's external switch), and the Secure Boot template Hyper-V needs
+- [x] One `make` target converts the v1 build's disk, unchanged, into an OVA for VirtualBox and a VHDX for a Hyper-V Generation 2 machine, each with its sha256; nothing is rebuilt {{< added "2026-11-18" >}}
+- [x] Each format's disk compares equal to the v1 disk (`qemu-img compare`), and the OVA's manifest and descriptor check {{< added "2026-11-18" >}}
+- [x] In qemu on the Builder, each boots in the firmware its hypervisor gives it, and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk {{< added "2026-11-18" >}}
+- [x] Each passes the self-test, every check {{< added "2026-11-18" >}}
+- [x] Both are in the tenant downloads under `tenant/vm` with their sha256s, and the tenant guide has a section for each: import, bridged networking (VirtualBox's bridged adapter, Hyper-V's external switch), and the Secure Boot template Hyper-V needs {{< added "2026-11-18" >}}
 
 **v3 is proven under qemu on the Builder only** (the owner's choice, 2026-11-18). VirtualBox and
 Hyper-V themselves, and the bridged run on a real computer that v1 put off to v3, move to Later.
@@ -107,10 +107,10 @@ same play, for UTM's QEMU backend.
 
 **Done when:**
 
-- [x] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256
-- [x] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk
-- [x] It passes the self-test, every check
-- [x] It is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for UTM: a new virtual machine (Virtualize, Linux, QEMU), the disk imported, and the Bridged network on the interface the owner picks
+- [x] One `make` target builds an arm64 qcow2 from Debian's bookworm arm64 image by the same configuration play as the Pi image and v1, with the Pi's arm64 inputs, and writes its sha256 {{< added "2026-11-18" >}}
+- [x] In qemu on the Builder, it boots as UTM's QEMU backend boots it (the `virt` machine, UEFI, virtio disk and network), and its first boot is the VM's: `deevnet-kit setup` on the console, and the root grown to fill the disk {{< added "2026-11-18" >}}
+- [x] It passes the self-test, every check {{< added "2026-11-18" >}}
+- [x] It is in the tenant downloads under `tenant/vm` with its sha256, and the tenant guide has a section for UTM: a new virtual machine (Virtualize, Linux, QEMU), the disk imported, and the Bridged network on the interface the owner picks {{< added "2026-11-18" >}}
 
 **The choices, the owner's, 2026-11-18.** A qcow2 and the guide, not a prebuilt `.utm` bundle:
 UTM's documentation does not describe the bundle's settings file, but it does describe making a
@@ -128,10 +128,10 @@ becomes `tenant2backend`, and its files take the plain noun `backend`, on every 
 
 **Done when:**
 
-- [x] The kit is `tenant2backend`, with `/etc/backend`, `/opt/backend`, the `backend-*` units, the `backend` group, `backend.txt` on the card and `backend-ca.pem`; `deevnet-kit` still works for one release, and says it is now `tenant2backend`
-- [ ] Every image, the Pi's, the virtual machine for amd64 and arm64, the OVA, the VHDX and the ISO, is rebuilt with it and passes the self-test, every check
-- [ ] EdS's backend image builds on the new Pi image
-- [ ] Every image is in the tenant downloads with its sha256, and the tenant guide and Deevnet Software name `tenant2backend`
+- [x] The kit is `tenant2backend`, with `/etc/backend`, `/opt/backend`, the `backend-*` units, the `backend` group, `backend.txt` on the card and `backend-ca.pem`; `deevnet-kit` still works for one release, and says it is now `tenant2backend` {{< added "2026-11-19" >}}
+- [ ] Every image, the Pi's, the virtual machine for amd64 and arm64, the OVA, the VHDX and the ISO, is rebuilt with it and passes the self-test, every check {{< added "2026-11-19" >}}
+- [ ] EdS's backend image builds on the new Pi image {{< added "2026-11-19" >}}
+- [ ] Every image is in the tenant downloads with its sha256, and the tenant guide and Deevnet Software name `tenant2backend` {{< added "2026-11-19" >}}
 
 **The choices, the owner's, 2026-11-19.** The name is `tenant2backend`: every subcommand configures
 or checks the backend, and the name says what the move makes of a tenant. Only names an owner
@@ -169,129 +169,129 @@ which come from other repositories (Later); dropping the `deevnet-kit` alias (th
 
 ## Records ✅
 
-- ✅ [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/), Accepted 2026-11-17: one backend on several media, each from its vendor's image by the same play
-- ✅ [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/), Complete 2026-11-17: building and publishing the virtual machine image
+- ✅ [ADR-0044](/docs/architecture/decisions/tenant-model/0044-take-home-media/), Accepted 2026-11-17: one backend on several media, each from its vendor's image by the same play {{< added "2026-11-17" >}}
+- ✅ [CHG-0074](/docs/changes/2026/0074-take-home-vm-image/), Complete 2026-11-17: building and publishing the virtual machine image {{< added "2026-11-17" >}}
 
 ## amd64 inputs ✅
 
-- ✅ deevnet-kit and the log bridge built for amd64 and staged at their pinned versions
-- ✅ silo for amd64 taken from the amd64 image Deevnet runs, built from the same release, so no build crosses the core router
-- ✅ The upstream amd64 releases (VictoriaLogs, vmutils, Grafana and its plugin, the alerting and notification services) staged with pinned sha256
+- ✅ deevnet-kit and the log bridge built for amd64 and staged at their pinned versions {{< added "2026-11-17" >}}
+- ✅ silo for amd64 taken from the amd64 image Deevnet runs, built from the same release, so no build crosses the core router {{< added "2026-11-17" >}}
+- ✅ The upstream amd64 releases (VictoriaLogs, vmutils, Grafana and its plugin, the alerting and notification services) staged with pinned sha256 {{< added "2026-11-17" >}}
 
 ## The image ✅
 
-- ✅ Build method chosen, 2026-11-17: Debian 12's official `nocloud` image, mounted, then the configuration play, as the Pi image starts from Raspberry Pi OS
-- ✅ The configuration play takes the architecture and the medium as variables, with the Pi-only steps (boot partition files) kept to the Pi
-- ✅ A `make` target builds a bookworm amd64 qcow2
+- ✅ Build method chosen, 2026-11-17: Debian 12's official `nocloud` image, mounted, then the configuration play, as the Pi image starts from Raspberry Pi OS {{< added "2026-11-17" >}}
+- ✅ The configuration play takes the architecture and the medium as variables, with the Pi-only steps (boot partition files) kept to the Pi {{< added "2026-11-17" >}}
+- ✅ A `make` target builds a bookworm amd64 qcow2 {{< added "2026-11-17" >}}
 
 ## First boot ✅
 
-- ✅ `deevnet-kit setup`, a console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot
+- ✅ `deevnet-kit setup`, a console prompt for the user, password or SSH key, and the host name, which runs before deevnet-kit's first boot {{< added "2026-11-17" >}}
 
 ## Proof ✅
 
-- ✅ The self-test passes every check under qemu on the Builder
-- ✅ `tdemo` across with its `kit.env`: a test client publishes and its log shows in Grafana
+- ✅ The self-test passes every check under qemu on the Builder {{< added "2026-11-17" >}}
+- ✅ `tdemo` across with its `kit.env`: a test client publishes and its log shows in Grafana {{< added "2026-11-17" >}}
 
 ## Publish ✅
 
-- ✅ A publish target puts the image under `tenant/vm` with its sha256, pushed throttled to the observability store
-- ✅ A section in the tenant guide: import, bridged networking, the first-boot prompt
+- ✅ A publish target puts the image under `tenant/vm` with its sha256, pushed throttled to the observability store {{< added "2026-11-17" >}}
+- ✅ A section in the tenant guide: import, bridged networking, the first-boot prompt {{< added "2026-11-17" >}}
 
 ---
 
 ## v2 records ✅
 
-- ✅ [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/), Complete 2026-11-17: building and publishing the installer ISO
-- ✅ No ADR: the ISO writes the virtual machine's disk unchanged, so ADR-0044's one way of making the system holds
+- ✅ [CHG-0075](/docs/changes/2026/0075-take-home-installer-iso/), Complete 2026-11-17: building and publishing the installer ISO {{< added "2026-11-17" >}}
+- ✅ No ADR: the ISO writes the virtual machine's disk unchanged, so ADR-0044's one way of making the system holds {{< added "2026-11-17" >}}
 
 ## v2 installer ✅
 
-- ✅ Boot design chosen, 2026-11-17: everything from the v1 disk, its kernel with an installer initramfs made by its `initramfs-tools`, its GRUB for BIOS, and Debian's signed shim and CD GRUB for UEFI; the v1 disk carried compressed, and nothing downloaded
-- ✅ The installer lists the disks, refuses the one it booted from, asks the owner to type the chosen disk's name, writes the system and checks what it wrote, then asks to remove the stick and reboots
-- ✅ A hybrid ISO, bootable on UEFI and BIOS, through Debian's signed shim and GRUB
-- ✅ One `make` target builds the ISO from the v1 build's disk
+- ✅ Boot design chosen, 2026-11-17: everything from the v1 disk, its kernel with an installer initramfs made by its `initramfs-tools`, its GRUB for BIOS, and Debian's signed shim and CD GRUB for UEFI; the v1 disk carried compressed, and nothing downloaded {{< added "2026-11-17" >}}
+- ✅ The installer lists the disks, refuses the one it booted from, asks the owner to type the chosen disk's name, writes the system and checks what it wrote, then asks to remove the stick and reboots {{< added "2026-11-17" >}}
+- ✅ A hybrid ISO, bootable on UEFI and BIOS, through Debian's signed shim and GRUB {{< added "2026-11-17" >}}
+- ✅ One `make` target builds the ISO from the v1 build's disk {{< added "2026-11-17" >}}
 
 ## v2 proof ✅
 
-- ✅ BIOS: the ISO installs to a blank virtual disk in qemu, and the installed system boots alone
-- ✅ UEFI: the same with OVMF
-- ✅ The installed system's first boot asks on the console, grows its root, and passes the self-test
-- ✅ Secure Boot tried with OVMF's Secure Boot firmware: the ISO and the installed system boot with it on, and the self-test passes
+- ✅ BIOS: the ISO installs to a blank virtual disk in qemu, and the installed system boots alone {{< added "2026-11-17" >}}
+- ✅ UEFI: the same with OVMF {{< added "2026-11-17" >}}
+- ✅ The installed system's first boot asks on the console, grows its root, and passes the self-test {{< added "2026-11-17" >}}
+- ✅ Secure Boot tried with OVMF's Secure Boot firmware: the ISO and the installed system boot with it on, and the self-test passes {{< added "2026-11-17" >}}
 
 ## v2 publish ✅
 
-- ✅ A publish target puts the ISO under `tenant/iso` with its sha256, pushed throttled and detached to the observability store
-- ✅ A section in the tenant guide: write the stick, boot, choose the disk, then setup as on the VM
+- ✅ A publish target puts the ISO under `tenant/iso` with its sha256, pushed throttled and detached to the observability store {{< added "2026-11-17" >}}
+- ✅ A section in the tenant guide: write the stick, boot, choose the disk, then setup as on the VM {{< added "2026-11-17" >}}
 
 ---
 
 ## v3 records ✅
 
-- ✅ [CHG-0076](/docs/changes/2026/0076-take-home-virtualbox-hyper-v/), Complete 2026-11-18: the VirtualBox and Hyper-V images converted, proven and published
+- ✅ [CHG-0076](/docs/changes/2026/0076-take-home-virtualbox-hyper-v/), Complete 2026-11-18: the VirtualBox and Hyper-V images converted, proven and published {{< added "2026-11-18" >}}
 
 No ADR is expected: the formats carry the v1 disk unchanged, so ADR-0044 holds. One is written only
 if a format needs the system itself changed.
 
 ## v3 formats ✅
 
-- ✅ One `make` target converts the v1 build's disk: an OVA (a stream-optimized VMDK, an OVF descriptor with a bridged adapter, and a manifest of sha256s) and a VHDX for a Hyper-V Generation 2 machine, shipped zipped
-- ✅ Each disk compared with the v1 disk, and the OVA's descriptor and manifest checked
+- ✅ One `make` target converts the v1 build's disk: an OVA (a stream-optimized VMDK, an OVF descriptor with a bridged adapter, and a manifest of sha256s) and a VHDX for a Hyper-V Generation 2 machine, shipped zipped {{< added "2026-11-18" >}}
+- ✅ Each disk compared with the v1 disk, and the OVA's descriptor and manifest checked {{< added "2026-11-18" >}}
 
 ## v3 proof ✅
 
-- ✅ The OVA's disk boots in qemu in VirtualBox's firmware for it: setup, root grown, self-test every check
-- ✅ The VHDX boots in qemu under OVMF with Secure Boot, as a Generation 2 machine does: setup, root grown, self-test every check
+- ✅ The OVA's disk boots in qemu in VirtualBox's firmware for it: setup, root grown, self-test every check {{< added "2026-11-18" >}}
+- ✅ The VHDX boots in qemu under OVMF with Secure Boot, as a Generation 2 machine does: setup, root grown, self-test every check {{< added "2026-11-18" >}}
 
 ## v3 publish ✅
 
-- ✅ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store
-- ✅ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template
+- ✅ A publish target puts both under `tenant/vm` with their sha256s, pushed throttled and detached to the observability store {{< added "2026-11-18" >}}
+- ✅ Tenant guide sections for VirtualBox and Hyper-V: import, the bridged adapter or external switch, and Hyper-V's Secure Boot template {{< added "2026-11-18" >}}
 
 ## v4 records ✅
 
-- ✅ [CHG-0077](/docs/changes/2026/0077-take-home-utm/), Complete 2026-11-18: the arm64 build for UTM, its proof and its publish
+- ✅ [CHG-0077](/docs/changes/2026/0077-take-home-utm/), Complete 2026-11-18: the arm64 build for UTM, its proof and its publish {{< added "2026-11-18" >}}
 
 No ADR is expected: the arm64 build is the same system by the same play, as ADR-0044 decided for
 every medium. One is written only if arm64 needs the system itself changed.
 
 ## v4 builder ✅
 
-- ✅ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder`
+- ✅ `qemu-system-aarch64` and an arm64 UEFI firmware on the Builder, through `deevnet.builder` {{< added "2026-11-18" >}}
 
 ## v4 build ✅
 
-- ✅ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256
+- ✅ A `make` target builds the arm64 qcow2 from Debian's bookworm arm64 image, with the Pi's arm64 inputs and the same play, and writes its sha256 {{< added "2026-11-18" >}}
 
 ## v4 proof ✅
 
-- ✅ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check
+- ✅ It boots in qemu as UTM's QEMU backend boots it: setup, root grown, self-test every check {{< added "2026-11-18" >}}
 
 ## v4 publish ✅
 
-- ✅ Under `tenant/vm` with its sha256, pushed throttled and detached to the observability store
-- ✅ A tenant guide section for UTM: the wizard, the disk imported, and the Bridged network
+- ✅ Under `tenant/vm` with its sha256, pushed throttled and detached to the observability store {{< added "2026-11-18" >}}
+- ✅ A tenant guide section for UTM: the wizard, the disk imported, and the Bridged network {{< added "2026-11-18" >}}
 
 ## v5 records 🔄
 
-- 🔄 [ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/), Proposed 2026-11-19: the take-home tool carries the owner's name, and the app contract keeps Deevnet's
-- 🔄 [CHG-0078](/docs/changes/2026/0078-take-home-tenant2backend/), In progress: the rename, the rebuilt images and their publish
+- 🔄 [ADR-0045](/docs/architecture/decisions/tenant-model/0045-take-home-tool-owners-name/), Proposed 2026-11-19: the take-home tool carries the owner's name, and the app contract keeps Deevnet's {{< added "2026-11-19" >}}
+- 🔄 [CHG-0078](/docs/changes/2026/0078-take-home-tenant2backend/), In progress: the rename, the rebuilt images and their publish {{< added "2026-11-19" >}}
 
 ## v5 kit ✅
 
-- ✅ `tenant2backend` in `deevnet-provisioning-api`, with its `backend` files, reading an old card's `deevnet-kit.txt`, released and staged (v0.28.0)
-- ✅ `deevnet-kit` kept as an alias that works and says the new name
+- ✅ `tenant2backend` in `deevnet-provisioning-api`, with its `backend` files, reading an old card's `deevnet-kit.txt`, released and staged (v0.28.0) {{< added "2026-11-19" >}}
+- ✅ `deevnet-kit` kept as an alias that works and says the new name {{< added "2026-11-19" >}}
 
 ## v5 images 🔄
 
-- ✅ The configuration play installs `tenant2backend`, its units, paths and group, and the alias; every image target pins the new release
-- 🔄 EdS's backend build accepts the new names (EdS #123, a draft until the new Pi image has run)
+- ✅ The configuration play installs `tenant2backend`, its units, paths and group, and the alias; every image target pins the new release {{< added "2026-11-19" >}}
+- 🔄 EdS's backend build accepts the new names (EdS #123, a draft until the new Pi image has run) {{< added "2026-11-19" >}}
 
 ## v5 proof 🔄
 
-- 🔄 Every image rebuilt passes the self-test: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi of the Pi lab
+- 🔄 Every image rebuilt passes the self-test: the virtual machines and the ISO in qemu on the Builder, the Pi image on a Pi of the Pi lab {{< added "2026-11-19" >}}
 
 ## v5 publish 🔄
 
-- 🔄 Every image under `tenant/` with its sha256, pushed throttled and detached to the observability store: five of six on 2026-11-19, the Pi image after the EdS Pi
-- ✅ The tenant guide and Deevnet Software name `tenant2backend`, with a note for older images
+- 🔄 Every image under `tenant/` with its sha256, pushed throttled and detached to the observability store: five of six on 2026-11-19, the Pi image after the EdS Pi {{< added "2026-11-19" >}}
+- ✅ The tenant guide and Deevnet Software name `tenant2backend`, with a note for older images {{< added "2026-11-19" >}}

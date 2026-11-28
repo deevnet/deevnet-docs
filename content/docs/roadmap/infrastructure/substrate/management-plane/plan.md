@@ -45,18 +45,18 @@ Deploy a unified management plane providing observability, security, and identit
 - ✅ Define service selection criteria: each service's choice is its own ADR, weighing alternatives
   against the site's constraints (offline operation, memory, tenancy)
   ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/) to
-  [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/))
+  [ADR-0027](/docs/architecture/decisions/platform-services/0027-tenant-log-store/)) {{< added "2026-09-26" >}}
 - 🔄 Define retention policies (logs, metrics): logs have one retention period and a disk cap for
   the whole store ([ADR-0022](/docs/architecture/decisions/platform-services/0022-central-logging/) §6); metrics wait
-  on ADR-0023
+  on ADR-0023 {{< added "2026-09-26" >}}
 - 🔄 Define alerting channels and escalation: proposed in
   [ADR-0023](/docs/architecture/decisions/platform-services/0023-metrics-and-alerting/) (one Alertmanager to ntfy on
-  Platform). Open: who watches the watcher, and reaching an off-site phone ([Management Plane → How the plane is watched](/docs/architecture/substrate/management-plane/#how-the-plane-is-watched))
+  Platform). Open: who watches the watcher, and reaching an off-site phone ([Management Plane → How the plane is watched](/docs/architecture/substrate/management-plane/#how-the-plane-is-watched)) {{< added "2026-09-26" >}}
 - ✅ Define secrets access policies: every OpenBao client is an AppRole whose policy names exactly
   its paths ([ADR-0016](/docs/architecture/decisions/substrate/0016-substrate-secrets-openbao/)); the image
-  factory's is read-only ([CHG-0026](/docs/changes/2026/0026-build-secrets/))
+  factory's is read-only ([CHG-0026](/docs/changes/2026/0026-build-secrets/)) {{< added "2026-09-26" >}}
 - 🔄 Define identity/RBAC model: proposed in
-  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/)
+  [ADR-0025](/docs/architecture/decisions/platform-services/0025-identity-directory/) {{< added "2026-09-26" >}}
 
 ---
 
@@ -69,13 +69,13 @@ vault-encrypted, into the inventory at the end of every run that changes them, a
 - ✅ Give the live controller a recovery path. Its settings are backed up after every change
   (`make wireless APPLY=1`, `make backup-wireless`), and a restore onto the Builder's cold controller
   was rehearsed in [CHG-0062](/docs/changes/2026/0062-device-backups-after-change/). The site is mostly
-  built, so a backup follows each change rather than a timer
+  built, so a backup follows each change rather than a timer {{< added "2026-11-11" >}}
 - ✅ Keep the core router's saved configurations somewhere that survives the Builder: they are what
   [Rebuild the Core Router](/docs/runbook/substrate/recovery/rebuild-core-router/) restores from,
   and they hold the router's secrets, so the copy is vault-encrypted. `make backup-router` seals it
   into the inventory with the vault password, where the ciphertext is public like every other vault
   file. A restore from the first backup was rehearsed in
-  [CHG-0061](/docs/changes/2026/0061-core-router-restore-rehearsal/)
+  [CHG-0061](/docs/changes/2026/0061-core-router-restore-rehearsal/) {{< added "2026-09-27" >}}
 
 ---
 
@@ -83,26 +83,26 @@ vault-encrypted, into the inventory at the end of every run that changes them, a
 
 Automated verification that the site was built according to inventory and is fully functional. Produces a single report proving build correctness.
 
-- ⏳ Inventory conformance checks (running state matches inventory definitions)
+- ⏳ Inventory conformance checks (running state matches inventory definitions) {{< added "2026-01-23" >}}
 - 🔄 Network connectivity matrix (verify all expected paths work): `segment-check.sh` proves what
   each SSID profile reaches and is refused, from a real client
   ([Segment Check](/docs/runbook/substrate/network/segment-check/)). Segments with no SSID aren't
-  covered
-- ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API)
-- ⏳ Hardware validation (MAC addresses, IP assignments match inventory)
-- ⏳ Build report generation (consolidated pass/fail with evidence)
+  covered {{< added "2026-01-23" >}}
+- ⏳ Service health checks (DNS, DHCP, PXE, Proxmox API) {{< added "2026-01-23" >}}
+- ⏳ Hardware validation (MAC addresses, IP assignments match inventory) {{< added "2026-01-23" >}}
+- ⏳ Build report generation (consolidated pass/fail with evidence) {{< added "2026-01-23" >}}
 - ⏳ Include the discovery report (`make discover`,
   [Patch Management](/docs/roadmap/infrastructure/substrate/patch-management/) v1): what runs, against
-  the Software Catalog and the pins
+  the Software Catalog and the pins {{< added "2026-11-23" >}}
 
 ---
 
 ## Documentation ✅
 
 - ✅ Management plane architecture overview, with how the layers depend on each other and how the
-  plane is watched: [Management Plane](/docs/architecture/substrate/management-plane/)
+  plane is watched: [Management Plane](/docs/architecture/substrate/management-plane/) {{< added "2026-11-11" >}}
 - ✅ Service deployment runbook:
   [Build a Management-Hypervisor VM](/docs/runbook/substrate/building-recovery/build-management-hypervisor-vm/),
-  with the domains and packaging in [Substrate Service VMs](/docs/platforms/management-plane/substrate-service-vms/)
+  with the domains and packaging in [Substrate Service VMs](/docs/platforms/management-plane/substrate-service-vms/) {{< added "2026-11-11" >}}
 - ✅ Operations and troubleshooting guide:
-  [Troubleshoot a Service VM](/docs/runbook/substrate/recovery/service-vm-troubleshooting/)
+  [Troubleshoot a Service VM](/docs/runbook/substrate/recovery/service-vm-troubleshooting/) {{< added "2026-11-11" >}}

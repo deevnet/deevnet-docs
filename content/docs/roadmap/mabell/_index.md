@@ -7,35 +7,43 @@ aliases:
 weight: 4
 waypoints:
   - title: "MaBell requirements, constraints and acceptance criteria defined"
+    added: "2026-01-22"
     group: "v0"
     status: done
     date: "2026-01-22"
   - title: "MaBell system, power, audio and firmware design finished"
+    added: "2025-12-29"
     group: "v0"
     status: done
     date: "2025-12-29"
   - title: "MaBell joined Deevnet as a tenant, its events in the central log store"
+    added: "2026-10-09"
     group: "v0"
     status: done
     date: "2026-10-09"
   - title: "MaBell v0 done: requirements, design and the first firmware in place, the base every prototype builds on"
+    added: "2026-10-10"
     group: "v0"
     milestone: true
     status: done
     date: "2026-10-10"
   - title: "MaBell v1 done: every part of the gateway proven on a breadboard, with a speaker, LEDs and a bare rotary dial standing in for the phone"
+    added: "2026-11-06"
     group: "v1"
     milestone: true
     status: planned
   - title: "MaBell v2 done: a real telephone makes and receives calls through the gateway on a low-voltage loop"
+    added: "2026-11-06"
     group: "v2"
     milestone: true
     status: planned
   - title: "MaBell v3 done: a vintage rotary phone rings and works at line voltage, and the circuit board's line interface is chosen"
+    added: "2026-11-06"
     group: "v3"
     milestone: true
     status: planned
   - title: "MaBell v4 done: the gateway on its own circuit board, in an enclosure, installed at home"
+    added: "2026-11-06"
     group: "v4"
     milestone: true
     status: planned

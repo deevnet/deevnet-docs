@@ -67,12 +67,12 @@ tenant workloads, so this is the cheapest point in the project's life to do it.
 
 Establish what each node needs before either is touched.
 
-- ✅ Run `pve8to9 --full` on dv02hyp001p01 and dv02hyp002p02 and record the findings
-- ✅ Confirm both nodes are on the latest 8.4 point release first (an upgrade prerequisite)
-- ✅ Confirm root filesystem headroom (≥ 10 GB recommended) and a tested backup of every guest
-- ✅ Confirm out-of-band access to each node before starting — the upgrade drops network mid-run
+- ✅ Run `pve8to9 --full` on dv02hyp001p01 and dv02hyp002p02 and record the findings {{< added "2026-09-09" >}}
+- ✅ Confirm both nodes are on the latest 8.4 point release first (an upgrade prerequisite) {{< added "2026-08-30" >}}
+- ✅ Confirm root filesystem headroom (≥ 10 GB recommended) and a tested backup of every guest {{< added "2026-08-30" >}}
+- ✅ Confirm out-of-band access to each node before starting — the upgrade drops network mid-run {{< added "2026-08-30" >}}
 - ✅ Review breaking changes against the estate: cgroup v1 removal (old-systemd containers),
-  `/etc/sysctl.conf` no longer honored (move to `/etc/sysctl.d/`), `/tmp` becomes tmpfs
+  `/etc/sysctl.conf` no longer honored (move to `/etc/sysctl.d/`), `/tmp` becomes tmpfs {{< added "2026-08-30" >}}
 
 ## Uplift dv02hyp002p02 — tenant hypervisor ✅
 

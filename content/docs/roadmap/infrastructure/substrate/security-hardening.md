@@ -4,15 +4,20 @@ weight: 13
 value: [secure-by-default, contained-failure]
 waypoints:
   - title: "Tenant workloads keep their own source address at platform services, so a secrets reader is bound to its one workload"
+    added: "2026-11-14"
     status: planned
     value: [contained-failure]
   - title: "A device's broker account works only from its own MQTT client id"
+    added: "2026-11-14"
     status: planned
   - title: "A revoked or exposed certificate under a Deevnet CA stops being trusted before it expires"
+    added: "2026-11-14"
     status: planned
   - title: "Tenant enrollment tokens are delivered encrypted to the tenant's own key"
+    added: "2026-11-14"
     status: planned
   - title: "Ansible verifies every substrate host's SSH identity, through host certificates signed by a Deevnet CA"
+    added: "2026-11-25"
     status: planned
 ---
 

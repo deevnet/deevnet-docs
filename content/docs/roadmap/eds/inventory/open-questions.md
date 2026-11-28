@@ -3,18 +3,23 @@ title: "Open Questions"
 weight: 5
 waypoints:
   - title: "Decide whether to run a private MusicBrainz, and which host has the disk and memory"
+    added: "2026-11-01"
     group: "Upstreams"
     status: planned
   - title: "Decide on identifying music files by their sound: AcoustID and Chromaprint, run where the files are"
+    added: "2026-11-01"
     group: "Upstreams"
     status: planned
   - title: "Decide how captured vinyl is held as copies of an edition, and what is still missing from one"
+    added: "2026-11-01"
     group: "Vinyl"
     status: planned
   - title: "Decide whether the music inventory takes vinyl or CDs first"
+    added: "2026-11-01"
     group: "Vinyl"
     status: planned
   - title: "Decide what the music inventory may keep under Discogs' terms, how it stores covers, its contract and its editing"
+    added: "2026-11-01"
     group: "Terms and shape"
     status: planned
 ---

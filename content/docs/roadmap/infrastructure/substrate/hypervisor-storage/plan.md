@@ -67,25 +67,25 @@ Things this layout does not explain:
 
 - 🔄 Declare `dv02hyp001p01`'s data-disk volume group, thin pool and PVE storage entries in inventory,
   applied by `deevnet.builder`'s `proxmox_node_storage` role. A reinstalled OS disk gets its
-  storage entries back; a replacement data disk gets its volume group and pool recreated.
+  storage entries back; a replacement data disk gets its volume group and pool recreated. {{< added "2026-09-14" >}}
 
 ## Decide the standard ⏳
 
 - ⏳ Write a hypervisor storage standard: the OS disk holds the OS only (or also guests); where
   templates, management VMs and data disks live; thin versus thick; how pools and storage IDs
-  are named
+  are named {{< added "2026-09-14" >}}
 - ⏳ Decide what a data-disk failure should cost, and whether that calls for redundancy or for
-  backups
+  backups {{< added "2026-09-14" >}}
 
 ## Converge the nodes ⏳
 
 - ⏳ Bring `dv02hyp001p01` to the standard: retire or repurpose the unused `local-lvm`, move VM 104
-  off thick volumes or document why it stays, and rename storage where it is worth the migration
+  off thick volumes or document why it stays, and rename storage where it is worth the migration {{< added "2026-09-14" >}}
 - ⏳ Apply the same standard to `dv02hyp002p02`, and drop the image factory's per-node storage
-  override if the pools converge
+  override if the pools converge {{< added "2026-09-14" >}}
 
 ## Guest configuration survives a rebuild ⏳
 
 - ⏳ Guest definitions live in `/etc/pve` on the OS disk, so a reinstall loses them even when their
   disks survive on the data disk. Back them up, or rely on rebuilding every guest from code, and
-  say which in the recovery runbook.
+  say which in the recovery runbook. {{< added "2026-09-14" >}}

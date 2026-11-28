@@ -4,9 +4,11 @@ bookCollapseSection: true
 weight: 3
 waypoints:
   - title: "Wi-Fi access point firmware updated, so the controller can push VLANs to it (CHG-0005)"
+    added: "2026-09-15"
     status: done
     date: "2026-09-15"
   - title: "Access switch firmware updated (CHG-0006)"
+    added: "2026-09-16"
     status: done
     date: "2026-09-16"
 ---

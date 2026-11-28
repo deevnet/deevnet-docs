@@ -3,17 +3,21 @@ title: "Serving EdS"
 weight: 4
 waypoints:
   - title: "Music inventory runs on EdS's workload, beside its voice service (eds-inventory ADR-0003)"
+    added: "2026-10-24"
     group: "Clients"
     status: done
     date: "2026-10-24"
   - title: "EdS's voice service asks the music inventory for artists and albums (EdS ADR-0047)"
+    added: "2026-10-24"
     group: "Clients"
     status: done
     date: "2026-10-24"
   - title: "EdS's now-playing service asks the music inventory for a track's album, cover and original (EdS music-inventory proposal)"
+    added: "2026-11-01"
     group: "Clients"
     status: planned
   - title: "Music inventory also runs on EdS's Pi at home"
+    added: "2026-11-01"
     group: "Where it runs"
     status: planned
 ---
