@@ -5,9 +5,9 @@ aliases:
   - /docs/projects/reconciliation/
   - /projects/reconciliation/
 weight: 4
-tasks_completed: 1
+tasks_completed: 3
 tasks_in_progress: 0
-tasks_planned: 10
+tasks_planned: 9
 ---
 
 # Declarative Reconciliation: Project Plan
@@ -80,10 +80,13 @@ Two further orphans, `BC:24:11:CE:51:EC` → 10.20.99.97 and `BC:24:11:DC:2A:24`
 
 The mirror image of an orphan: state the substrate depends on that **no declaration describes at all**, so a rebuild of the device silently loses it.
 
-- ⏳ **Kea `next_server` is unmanaged, and is empty on all five VLAN subnets** — trusted (10), iot (30), iot_vendor (31), guest (40) and management (99). `opnsense_dhcp`'s subnet payload sets `pools`, `description` and three `option_data` fields, and never `next_server`, so every subnet the VLAN migration created came into existence without it. This is not a setting that was *lost* in the migration; it was never carried into the new model. Worse, `configure_subnets.yml` only *creates* subnets that do not exist — there is no update path — so adding the field to the payload would not repair the five that already exist. {{< added "2026-09-04" >}}
+- ✅ **Kea `next_server` is unmanaged, and is empty on all five VLAN subnets** — trusted (10), iot (30), iot_vendor (31), guest (40) and management (99). `opnsense_dhcp`'s subnet payload sets `pools`, `description` and three `option_data` fields, and never `next_server`, so every subnet the VLAN migration created came into existence without it. This is not a setting that was *lost* in the migration; it was never carried into the new model. Worse, `configure_subnets.yml` only *creates* subnets that do not exist — there is no update path — so adding the field to the payload would not repair the five that already exist. {{< added "2026-09-04" >}}
 
   Found 2026-09-04 when `provisioner-vm03` PXE-booted and made no TFTP contact whatsoever. With `next_server` empty, Kea advertises its own address in the BOOT header's `siaddr`, and UEFI firmware reads `siaddr` rather than DHCP option 66 — so the client tries to TFTP from the router, which runs no TFTP server. The per-host reservation's `option_data.tftp_server_name` looks like it covers this and does not: it is option 66, and reservations carry no `next_server` field at all, so the subnet is the only place it can live. Same root cause `PXE-TROUBLESHOOTING.md` recorded on 2026-01-10, whose hand-applied fix died with the flat network it was applied to.
-- ⏳ Give `configure_subnets.yml` an update path, so subnet settings converge instead of only being seeded at creation. {{< added "2026-09-04" >}}
+
+  Managed since 2026-11-25 (`deevnet.net` 007b3a1): the host whose interface carries the `pxe` CNAME sets `next_server` on the subnet its address is in, so moving `pxe` for a repave moves network boot with it. The other subnets have no network-boot server and are given none, by design. The hand-set value had outlived the repave it was set for: on 2026-11-28 the management subnet still held `10.20.99.97`, the standby builder, while inventory put `pxe` on the Builder at `.95`. Every run now reports and repairs that; the first run with [deevnet.net#60](https://github.com/deevnet/ansible-collection-deevnet.net/pull/60) moved it back to `.95`.
+- ✅ Give `configure_subnets.yml` an update path, so subnet settings converge instead of only being seeded at creation. {{< added "2026-09-04" >}} Each subnet's declared settings (`pools`, `description`, `option_data.routers`, `domain_name_servers`, `domain_name`, and `next_server` where a `pxe` host is) are written down once; a missing subnet is created with them, and an existing one is sent only the fields that differ, then read back to prove nothing it was not sent moved. The comparison is the `kea_diff` filter, which unwraps OPNsense's option-list form, with unit tests; reservations use it too, so `make dhcp` no longer rewrites every reservation on every run. Pools had converged since CHG-0044; the rest had not ([deevnet.net#60](https://github.com/deevnet/ansible-collection-deevnet.net/pull/60)).
+- ⏳ **The trusted subnet carries a hand-set classless static route.** `option_data.classless_static_route` on 10.20.10.0/24 is `10.0.0.0/8 - 10.20.10.1`, and nothing in inventory or `opnsense_dhcp` describes it, so a rebuilt router would not have it. It is most likely part of the contractor-van path, where the operator at a mobile seat reaches the home site: it keeps Deevnet traffic on `DVNTM` for a laptop that is also on the home network. It carries no default entry, so an RFC 3442 client may drop its default route. Waits on ADR-0047, the mobile-to-home site link ([proposed](https://github.com/deevnet/deevnet-docs/pull/538)), which declares option 121 on trusted, with a default entry, for `opnsense_dhcp` to converge. {{< added "2026-11-28" >}}
 
 ## Drift Visibility ⏳
 

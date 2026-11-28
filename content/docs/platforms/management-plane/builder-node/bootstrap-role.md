@@ -120,9 +120,12 @@ Subnet: 10.20.99.0/24
 Next Server: 10.20.99.95
 ```
 
-**`next_server` must be set on the subnet, and no role manages it.** If it is empty, Kea advertises
-its own address in `siaddr`, and UEFI firmware reads `siaddr` rather than DHCP option 66, so the
-client tries to TFTP from the router.
+**`next_server` must be set on the subnet.** If it is empty, Kea advertises its own address in
+`siaddr`, and UEFI firmware reads `siaddr` rather than DHCP option 66, so the client tries to TFTP
+from the router. `opnsense_dhcp` manages it: the host whose interface carries the `pxe` CNAME sets
+`next_server` on the subnet its address is in, and every run puts it back if it has drifted. Moving
+`pxe` to another host (as a repave does) moves `next_server` with it. A subnet with no `pxe` host is
+given none.
 
 ### Per-Host Reservations
 
@@ -277,4 +280,5 @@ The PXE infrastructure is managed by the `bootstrap` role in `deevnet.builder`:
 1. **DHCP** (Core Router Kea) provides next-server and boot-file-name
 2. **TFTP** (Builder) serves GRUB and boot files
 3. **MAC-specific configs** enable zero-touch automated installs
-4. **Subnet `next_server`** is required; per-host reservations do not replace it
+4. **Subnet `next_server`** is required; per-host reservations do not replace it. It follows the
+   `pxe` CNAME

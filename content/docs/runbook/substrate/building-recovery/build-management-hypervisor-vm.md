@@ -138,8 +138,9 @@ single most common way this approach fails, and it fails silently.
           boot_file: "grubx64.efi"      # not pxelinux.0 - this guest is OVMF
 ```
 
-**3. The subnet must have `next_server` set.** Not managed by any role. If it is empty,
-Kea advertises its own address in `siaddr`, UEFI firmware reads `siaddr` rather than DHCP
+**3. The subnet must have `next_server` set.** `opnsense_dhcp` sets it to the address of the
+host that carries the `pxe` CNAME (the Builder, `10.20.99.95`), so `make dhcp` puts it right. If it
+is empty, Kea advertises its own address in `siaddr`, UEFI firmware reads `siaddr` rather than DHCP
 option 66, and the client tries to TFTP from the router. The per-host
 `option_data.tftp_server_name` looks like it covers this and does not — reservations carry
 no `next_server` field.
@@ -269,8 +270,8 @@ Two things this is **not**, both verified by rebuilding the VM from scratch each
 
 ### DHCP works, but no TFTP request follows
 
-`next_server` is empty on the subnet. Check the OFFER's `siaddr` in a capture before
-changing anything else.
+`next_server` is empty or wrong on the subnet. Check the OFFER's `siaddr` in a capture before
+changing anything else; then check which host carries the `pxe` CNAME and run `make dhcp`.
 
 ### TFTP requests arrive, but transfers fail
 

@@ -155,9 +155,10 @@ cd ansible-collection-deevnet.builder
 ansible-playbook playbooks/site.yml --limit dv02bld001v01 --tags grub-mac
 ```
 
-Then, **by hand on the core router**, set the management subnet's `next_server` to `10.20.99.97`.
-No role manages it, and UEFI firmware reads it rather than option 66
-([Bootstrap Role → Subnet-Level Settings](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)).
+Moving the `pxe` CNAME also moves the management subnet's `next_server`: `make dhcp` sets it to
+the address of whichever host carries `pxe`, here `10.20.99.97`. UEFI firmware reads it rather than
+option 66 ([Bootstrap Role → Subnet-Level Settings](/docs/platforms/management-plane/builder-node/bootstrap-role/#subnet-level-settings)). The run reports
+`management: ["next_server: '10.20.99.95' -> '10.20.99.97'"]`; if it does not, the CNAME did not move.
 
 Check before booting anything: `dig +short artifacts.mobile.deevnet.net` resolves to
 `dv02bld001v01`, and `curl -I http://artifacts.mobile.deevnet.net/kickstart/` answers from it.
@@ -206,7 +207,8 @@ in `network_controllers` unless it has been put back there for a recovery.
 1. Revert the Step 2 inventory edits: `pxe_boot` back to `10.20.99.95` and its previous boot file,
    the `artifacts` and `pxe` CNAMEs back on `dv00bld001p01`, and the `grub-mac` entry removed.
 2. Apply them with `make dns` and `make dhcp` in `deevnet.net`.
-3. Set the subnet's `next_server` back to `10.20.99.95` by hand.
+3. Check that the `make dhcp` run reported the management subnet's `next_server` moving back to
+   `10.20.99.95`. It follows the `pxe` CNAME; nothing is set by hand.
 4. Clone the repositories into `/srv/dvnt` on the Builder, and put back anything carried off.
 5. Leave `dv02bld001v01` running as the standby builder
    ([Keeping it ready](/docs/runbook/substrate/lifecycle/standby-builder/#keeping-it-ready)).
