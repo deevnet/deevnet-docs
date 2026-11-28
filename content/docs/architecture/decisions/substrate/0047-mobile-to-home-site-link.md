@@ -71,7 +71,8 @@ rule can then be narrowed without cutting the van off. **Chosen.**
 Mobile's inventory names the networks of the home site as one list, `10.10.0.0/16` and
 `192.168.2.0/24`, and the core router holds them as one alias, `deevnet_home`. Every rule and route
 in this record refers to the alias or the list, never to an address. When home is built and the
-home network moves into `10.10.0.0/16`, the list changes and nothing else does.
+home network moves into `10.10.0.0/16`, the list changes and nothing else does: `192.168.2.0/24`
+leaves it then, so the link no longer reaches a network of that number anywhere else.
 
 ### 2. Only the operator's seats start it
 
@@ -96,9 +97,10 @@ decision.
 Traffic to `deevnet_home` leaves mobile's core router by its WAN, NATed to the WAN address, as all
 outbound traffic does now. Home sees the van as one client of its network. For
 `192.168.2.0/24` that is all it takes when the van's upstream is the home network. For
-`10.10.0.0/16`, once home is built, either the upstream routes the block to home's core router or
-mobile's core router gets a declared static route to home's core router's upstream address
-(open question 1). Nothing turns NAT off and nothing renumbers.
+`10.10.0.0/16`, once home is built, mobile's core router gets a declared static route to home's
+core router's upstream address. It is declared with the other gateways, carries no monitoring and is
+never the default, like `TENANT_FABRIC_GW`. When the van is not at home, the route points at
+nothing and does no harm. Nothing turns NAT off and nothing renumbers.
 
 ### 5. Hosts and clients are told from inventory
 
@@ -108,7 +110,8 @@ mobile's core router gets a declared static route to home's core router's upstre
 - **Operator clients** on trusted (and on management, if it serves DHCP clients) get option 121
   declared on the VLAN in `deevnet_vlans` and converged by `opnsense_dhcp`. That means mobile's own
   block, each home network, and a default entry, all via the subnet's gateway. The default entry
-  keeps a strict client's default route (open question 2). The hand-set `10.0.0.0/8` value is
+  keeps a strict client's default route. A laptop also on another network then has two default
+  routes and picks one by metric, which is acceptable. The hand-set `10.0.0.0/8` value is
   replaced by the declared one.
 
 ### 6. The wide internet rule closes once the link is declared
@@ -121,9 +124,9 @@ edge router's admin. That becomes an explicit, named pass, and the two zones joi
 ## Consequences
 
 - The van's access to home is a decision with a name, so changing it is a change, not a tidy-up.
-- `192.168.2.0/24` is a common network number. When the van is parked somewhere whose network uses
-  it too, §2 lets the operator's seats reach *that* network. Today's wide rule already does, so
-  this is no worse, but it is now visible (open question 3).
+- `192.168.2.0/24` is a common network number. Until home is built, when the van is parked
+  somewhere whose network uses it too, §2 lets the operator's seats reach *that* network. Today's
+  wide rule already does, so this is no worse, and it ends when the number leaves the list (§1).
 - Option 121 on trusted becomes something inventory controls, so a client that loses its default
   route over it is found from a declaration, not by guessing at the router.
 - The architecture pages change: Naming and Addressing's WAN Operation names this link as the one
@@ -133,26 +136,21 @@ edge router's admin. That becomes an explicit, named pass, and the two zones joi
 
 **This record is accepted when every item below is done.**
 
-- [ ] The scope agreed: management and trusted to `10.10.0.0/16` and `192.168.2.0/24`, one way, over the upstream (2026-11-28, the owner)
-- [ ] Open questions 1–3 answered
+- [x] The scope agreed: management and trusted to `10.10.0.0/16` and `192.168.2.0/24`, one way, over the upstream (2026-11-28, the owner)
+- [x] Open questions 1–3 answered, each as recommended (2026-11-28, the owner)
 - [ ] `deevnet_home` declared in mobile's inventory, held as an alias by `opnsense_firewall`, with a pass rule for management and for trusted, applied by change record
-- [ ] Option 121 declared on trusted in `deevnet_vlans`, with the default entry, and converged by `opnsense_dhcp`; the hand-set `10.0.0.0/8` value replaced
+- [ ] What clients on `DVNTM` get today checked (`ip route`, `netstat -rn -f inet`), then option 121 declared on trusted in `deevnet_vlans`, with the default entry, and converged by `opnsense_dhcp`; the hand-set `10.0.0.0/8` value replaced
 - [ ] The Builder's home route rendered from the list
 - [ ] Trusted and management moved to `!deevnet_private` with an explicit pass for the upstream equipment they administer, and checked from a seat parked at home: `192.168.2.0/24` answers from trusted and management, and not from guest
 - [ ] Naming and Addressing and the Network Segmentation pages updated
 
 ## Open questions
 
-1. **How does `10.10.0.0/16` get to home's core router?** Through the upstream's routing, or by a
-   static route on mobile's core router that only works while the van is parked at home? This is
-   not needed until home is built. *Recommendation:* a static route, declared with the other
-   gateways, with no monitoring and never the default, the same as `TENANT_FABRIC_GW`. Out of
-   home, it points at nothing and does no harm.
-2. **Should option 121 carry a default entry?** With it, a laptop that is also on the home network
-   gets two default routes and picks one by metric. Without it, a strict client on `DVNTM` alone
-   may lose its default. *Recommendation:* carry it. First check what clients on `DVNTM` get
-   today: `ip route` or `netstat -rn -f inet` from a laptop on `DVNTM` alone.
-3. **Should the link only work at home?** `192.168.2.0/24` at another venue is someone else's network.
-   The rule could be limited to times when the WAN's own address is in the home network, or
-   `192.168.2.0/24` could drop out of the list once home is built. *Recommendation:* drop it once home is
-   built, and until then accept the same exposure the wide rule has today.
+All three were answered on 2026-11-28 as recommended, and the answers are in the decision above:
+
+1. **How `10.10.0.0/16` reaches home's core router:** by a declared static route on mobile's core
+   router, unmonitored and never the default, added when home is built (§4).
+2. **Whether option 121 carries a default entry:** it does (§5). What clients on `DVNTM` get today
+   is checked first.
+3. **Whether the link works only at home:** no rule limits it. `192.168.2.0/24` leaves the list once
+   home is built (§1), and until then the exposure is the same as the wide rule's today.
